@@ -205,6 +205,10 @@ ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
 {
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_copy_pattern_channel_run_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -225,6 +229,10 @@ ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conn
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
 
   ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
@@ -367,6 +375,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 						      AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AgsChannel *output, *source;
+  AgsPattern *pattern;
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
@@ -376,10 +385,11 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   GValue j_value = { 0, };
   GValue current_bit_value = { 0, };  
 
-  if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
-    g_message("blocked %d %d\0", AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order, run_order);
-    return;
-  }
+  //  g_message("pattern\0");
+  //  if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
+  //    g_message("blocked %d %d\0", AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order, run_order);
+  //    return;
+  //  }
 
   /* get AgsCopyPatternAudio */
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run->recall_audio);
@@ -400,7 +410,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   g_value_init(&offset_value, G_TYPE_UINT);
   g_value_set_uint(&offset_value,
 		   copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
-
+  
   ags_port_safe_set_property(copy_pattern_channel->pattern,
 			     "offset\0", &offset_value);
 
@@ -417,6 +427,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   current_bit = g_value_get_boolean(&current_bit_value);
 
+  /*  */
   if(current_bit){
     AgsDevout *devout;
     AgsRecycling *recycling;

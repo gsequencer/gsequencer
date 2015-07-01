@@ -913,17 +913,6 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
 	drum->selected_edit_button = drum->selected_pad->edit;
 	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
 
-	/* ags-play-notation */
-	ags_recall_factory_create(audio,
-				  NULL, NULL,
-				  "ags-play-notation\0",
-				  0, audio->audio_channels,
-				  pads_old, pads,
-				  (AGS_RECALL_FACTORY_INPUT |
-				   AGS_RECALL_FACTORY_REMAP |
-				   AGS_RECALL_FACTORY_RECALL),
-				  0);
-
 	/* set notation for AgsPlayNotationAudioRun recall */
 	list = audio->recall;
 

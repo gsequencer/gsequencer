@@ -1045,8 +1045,8 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       remove_domain = TRUE;
 
       while(output != NULL){
-	play = ags_devout_play_find_source(play_domain->devout_play,
-					   (GObject *) output);
+	play = output->devout_play; // ags_devout_play_find_source(play_domain->devout_play,
+	  //			   (GObject *) output);
 
 	if(play == NULL){
 	  output = output->next;
@@ -1054,19 +1054,20 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	}
 
 	if((AGS_DEVOUT_PLAY_REMOVE & (play->flags)) == 0){
-	  remove_domain = FALSE;
-	  
 	  if((AGS_DEVOUT_PLAY_SUPER_THREADED & (play->flags)) == 0){
 	    /* not super threaded */
 	    if((AGS_DEVOUT_PLAY_PLAYBACK & (play->flags)) != 0){
+	      remove_domain = FALSE;
 	      ags_channel_recursive_play(output, play->recall_id[0], stage);
 	    }
 
 	    if((AGS_DEVOUT_PLAY_SEQUENCER & (play->flags)) != 0){
+	      remove_domain = FALSE;
 	      ags_channel_recursive_play(output, play->recall_id[1], stage);
 	    }
 
 	    if((AGS_DEVOUT_PLAY_NOTATION & (play->flags)) != 0){
+	      remove_domain = FALSE;
 	      ags_channel_recursive_play(output, play->recall_id[2], stage);
 	    }
 

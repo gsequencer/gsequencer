@@ -888,6 +888,10 @@ ags_recall_connect(AgsConnectable *connectable)
 
   recall = AGS_RECALL(connectable);
 
+  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
+    return;
+  }
+  
   list = recall->children;
 
   while(list != NULL){
@@ -978,6 +982,10 @@ ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
   GList *list;
 
   recall = AGS_RECALL(dynamic_connectable);
+
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) != 0){
+    return;
+  }
 
 #ifdef AGS_DEBUG
       g_message("dynamic connect: %s\0", G_OBJECT_TYPE_NAME(recall));

@@ -181,6 +181,7 @@ ags_navigation_play_callback(GtkWidget *widget,
       ags_machine_set_run_extended(machine,
 				   TRUE,
 				   !gtk_toggle_button_get_active(navigation->exclude_sequencer), TRUE);
+      g_message("well off\0");
     }
 
     machines = machines->next;

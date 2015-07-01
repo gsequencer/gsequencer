@@ -276,6 +276,10 @@ ags_stream_channel_finalize(GObject *gobject)
 void
 ags_stream_channel_connect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_stream_channel_parent_connectable_interface->connect(connectable);
 
   /* empty */

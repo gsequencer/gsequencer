@@ -188,6 +188,10 @@ ags_buffer_channel_run_finalize(GObject *gobject)
 void
 ags_buffer_channel_run_connect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_buffer_channel_run_parent_connectable_interface->connect(connectable);
 
@@ -206,6 +210,10 @@ ags_buffer_channel_run_disconnect(AgsConnectable *connectable)
 void
 ags_buffer_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_buffer_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 

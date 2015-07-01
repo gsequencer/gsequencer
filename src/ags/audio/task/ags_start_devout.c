@@ -189,6 +189,7 @@ ags_start_devout_launch(AgsTask *task)
       
       g_message("starting devout failed\0");
     }else{
+      /*
       pthread_mutex_lock(AGS_THREAD(devout_thread)->start_mutex);
 
       val = g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags));
@@ -204,7 +205,7 @@ ags_start_devout_launch(AgsTask *task)
     
       //    ags_thread_unlock(AGS_THREAD(devout_thread));
       pthread_mutex_unlock(AGS_THREAD(devout_thread)->start_mutex);
-
+      */
       g_message("started devout\0");
     }
   }

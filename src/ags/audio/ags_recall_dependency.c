@@ -239,6 +239,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
 
       if(recall_list != NULL){
 	return(G_OBJECT(recall_list->data));
+      }else{
+	g_warning("dependency not found!\0");
       }
     }
   }else if(AGS_IS_RECALL_CHANNEL(dependency)){

@@ -163,7 +163,7 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
   gtk_adjustment_set_value(GTK_RANGE(note_edit->hscrollbar)->adjustment,
 			   position / old_upper * new_upper);
 
-  /* reset adjsutments */
+  /* reset adjustments */
   width = widget->allocation.width;
   gtk_adjustment_set_upper(GTK_RANGE(note_edit->hscrollbar)->adjustment,
 			   (gdouble) (note_edit->map_width - width));

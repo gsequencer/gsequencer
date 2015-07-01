@@ -1253,9 +1253,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     while(channel != NULL){
       ags_channel_set_link(channel, NULL, &error);
-      ags_channel_set_recycling(channel,
-				NULL, NULL,
-				TRUE, TRUE);
 
       channel = channel->next;
     }
@@ -1751,9 +1748,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
     while(channel != NULL){
       error = NULL;
       ags_channel_set_link(channel, NULL, &error);
-      ags_channel_set_recycling(channel,
-				NULL, NULL,
-				TRUE, TRUE);
 
       if(error != NULL){
 	g_error("%s\0", error->message);
@@ -2759,7 +2753,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   pthread_mutex_lock(mutex);
   
 #ifdef AGS_DEBUG
-  g_message("ags_audio_duplicate_recall: %s - audio.lines[%u,%u]\n\0", G_OBJECT_TYPE_NAME(audio->machine), audio->output_lines, audio->input_lines);
+  g_message("ags_audio_duplicate_recall: %s - audio.lines[%u,%u]\n\0", G_OBJECT_TYPE_NAME(audio->machine), audio->output_lines, audio->input_lines);  
 #endif
 
   playback = FALSE;
@@ -2789,20 +2783,20 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       list_recall = g_list_reverse(list_recall);
   }
 
-  /* return if already duplicated */
-  if((AGS_RECALL_ID_DUPLICATE & (recall_id->flags)) != 0){
-    while(list_recall != NULL){
-      /* notify run */
-      ags_recall_notify_dependency(AGS_RECALL(list_recall->data), AGS_RECALL_NOTIFY_RUN, 1);
+  /* notify run */  
+  //  ags_recall_notify_dependency(AGS_RECALL(list_recall->data), AGS_RECALL_NOTIFY_RUN, 1);
 
-      list_recall = list_recall->next;
-    }
-
+  /* return if already played */
+  if((AGS_RECALL_ID_PRE & (recall_id->flags)) != 0 ||
+     (AGS_RECALL_ID_INTER & (recall_id->flags)) != 0 ||
+     (AGS_RECALL_ID_POST & (recall_id->flags)) != 0){
     pthread_mutex_unlock(mutex);
     return;
-  }else{
-    //TODO:JK: optimize tree see deprecated AgsRunOrder
   }
+
+  ags_recall_id_set_run_stage(recall_id, 0);
+  ags_recall_id_set_run_stage(recall_id, 1);
+  ags_recall_id_set_run_stage(recall_id, 2);
 
   /* duplicate */
   while(list_recall != NULL){
@@ -2812,7 +2806,8 @@ ags_audio_duplicate_recall(AgsAudio *audio,
        AGS_IS_RECALL_AUDIO(recall) ||
        !((playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) ||
 	 (sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
-	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0))){
+	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0)) ||
+       recall->recall_id != NULL){
       list_recall = list_recall->next;
       continue;
     }  
@@ -2959,6 +2954,8 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
 
   pthread_mutex_lock(mutex);
 
+  /* check for init */
+  
   /* return if already initialized */
   switch(stage){
   case 0:
@@ -3000,14 +2997,17 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
     
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
       if(stage == 0){
+	recall_id->flags |= AGS_RECALL_ID_INIT_PRE;
 	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
     
 	recall->flags &= (~AGS_RECALL_HIDE);
 	ags_recall_run_init_pre(recall);
 	recall->flags &= (~AGS_RECALL_REMOVE);
       }else if(stage == 1){
+	recall_id->flags |= AGS_RECALL_ID_INIT_INTER;
 	ags_recall_run_init_inter(recall);
       }else{
+	recall_id->flags |= AGS_RECALL_ID_INIT_POST;
 	ags_recall_run_init_post(recall);
       }
     }
@@ -3108,27 +3108,44 @@ ags_audio_play(AgsAudio *audio,
 
   pthread_mutex_lock(mutex);
 
+  /* check for status */
+  if((AGS_RECALL_ID_PRE & (recall_id->flags)) != 0 &&
+     (AGS_RECALL_ID_INTER & (recall_id->flags)) != 0 &&
+     (AGS_RECALL_ID_POST & (recall_id->flags)) != 0){
+    recall_id->flags &= (~(AGS_RECALL_ID_PRE |
+			   AGS_RECALL_ID_INTER |
+			   AGS_RECALL_ID_POST));
+  }
+  
   /* return if already played */
   switch(stage){
   case 0:
+    ags_recall_id_unset_run_stage(recall_id, 1);
+    
     if((AGS_RECALL_ID_PRE & (recall_id->flags)) != 0){
       pthread_mutex_unlock(mutex);
       return;
     }
     break;
   case 1:
+    ags_recall_id_unset_run_stage(recall_id, 2);
+
     if((AGS_RECALL_ID_INTER & (recall_id->flags)) != 0){
       pthread_mutex_unlock(mutex);
       return;
     }
     break;
   case 2:
+    ags_recall_id_unset_run_stage(recall_id, 0);
+
     if((AGS_RECALL_ID_POST & (recall_id->flags)) != 0){
       pthread_mutex_unlock(mutex);
       return;
     }
     break;
   }
+
+  ags_recall_id_set_run_stage(recall_id, stage);
 
   /* retrieve appropriate recalls */
   if(recall_id->recycling_container->parent == NULL)
