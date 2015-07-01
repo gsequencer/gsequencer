@@ -572,6 +572,10 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
   AgsRecallChannelRun *recall_channel_run;
   GObject *gobject;
 
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_recall_channel_run_parent_connectable_interface->connect(connectable);
 
   /* AgsCopyChannelRun */
@@ -736,6 +740,10 @@ ags_recall_channel_run_unpack(AgsPackable *packable)
 void
 ags_recall_channel_run_connect_dynamic(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_recall_channel_run_parent_dynamic_connectable_interface->connect_dynamic(connectable);
 
   /* empty */
@@ -1058,10 +1066,19 @@ ags_recall_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 							 AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 							 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 							 AgsRecallChannelRun *recall_channel_run)
-{
-  ags_recall_channel_run_remap_child_source(recall_channel_run,
-  					    old_start_changed_region, old_end_changed_region,
-  					    new_start_changed_region, new_end_changed_region);
+{  
+  if(recall_channel_run->destination != NULL){
+    ags_recall_channel_run_remap_child_source(recall_channel_run,
+					      NULL, NULL,
+					      NULL, NULL);
+    ags_recall_channel_run_remap_child_destination(recall_channel_run,
+						   NULL, NULL,
+						   recall_channel_run->destination->first_recycling, recall_channel_run->destination->last_recycling);
+  }else{
+    ags_recall_channel_run_remap_child_source(recall_channel_run,
+					      old_start_changed_region, old_end_changed_region,
+					      new_start_changed_region, new_end_changed_region);
+  }
 }
 
 void

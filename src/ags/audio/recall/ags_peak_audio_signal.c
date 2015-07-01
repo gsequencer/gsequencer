@@ -180,6 +180,10 @@ ags_peak_audio_signal_finalize(GObject *gobject)
 void
 ags_peak_audio_signal_connect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_peak_audio_signal_parent_connectable_interface->connect(connectable);
 
@@ -198,6 +202,10 @@ ags_peak_audio_signal_disconnect(AgsConnectable *connectable)
 void
 ags_peak_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_peak_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 

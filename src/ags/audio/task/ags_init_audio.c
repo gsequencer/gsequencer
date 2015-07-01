@@ -165,7 +165,8 @@ ags_init_audio_launch(AgsTask *task)
 					 TRUE, FALSE, FALSE);
 
     while(list != NULL){
-      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[0] = list->data;
+      //      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[0] = list->data;
+      //      AGS_DEVOUT_PLAY(devout_play->data)->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
 
       devout_play = devout_play->next;
       list = list->next;
@@ -179,8 +180,9 @@ ags_init_audio_launch(AgsTask *task)
 					 FALSE, TRUE, FALSE);
 
     while(list != NULL){
-      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] = list->data;
-
+      //      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] = list->data;
+      //      AGS_DEVOUT_PLAY(devout_play->data)->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
+      
       devout_play = devout_play->next;
       list = list->next;
     }
@@ -193,7 +195,8 @@ ags_init_audio_launch(AgsTask *task)
 					 FALSE, FALSE, TRUE);
 
     while(list != NULL){
-      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2] = list->data;
+      //      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2] = list->data;
+      //      AGS_DEVOUT_PLAY(devout_play->data)->flags |= AGS_DEVOUT_PLAY_NOTATION;
 
       devout_play = devout_play->next;
       list = list->next;

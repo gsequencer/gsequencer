@@ -174,6 +174,10 @@ ags_buffer_recycling_finalize(GObject *gobject)
 void
 ags_buffer_recycling_connect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_buffer_recycling_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -190,6 +194,10 @@ ags_buffer_recycling_disconnect(AgsConnectable *connectable)
 void
 ags_buffer_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
+
   ags_buffer_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 }
 

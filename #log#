@@ -1,0 +1,582 @@
+** Message: add AgsBufferRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fcc94840]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[2]
+** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsBufferRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fcc94a20]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[2]
+** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsPeakRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc94c00]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[2]
+** Message: add AgsVolumeRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc94ed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[2]
+** Message: add AgsStreamRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc96120]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[2]
+** Message: add AgsStreamRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc96120]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[2]
+** Message: add AgsVolumeRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc94ed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[2]
+** Message: add AgsPeakRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc94c00]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[2]
+** Message: add AgsBufferRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fcc94a20]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[2]
+** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsBufferRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fcc94840]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[2]
+** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsBufferRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fccbd2d0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[3]
+** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsBufferRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fccbd4b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[3]
+** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsPeakRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccbd690]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[3]
+** Message: add AgsVolumeRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccbf1e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[3]
+** Message: add AgsStreamRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccbf3c0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[3]
+** Message: add AgsStreamRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccbf3c0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[3]
+** Message: add AgsVolumeRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccbf1e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[3]
+** Message: add AgsPeakRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccbd690]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[3]
+** Message: add AgsBufferRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fccbd4b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[3]
+** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsBufferRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fccbd2d0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[3]
+** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
+** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
+** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
+** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
+** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
+** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
+** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
+** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+
+
+
+
+mkdir -p html/
+xsltproc --output html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl ./doc/usersBook.xml
+Note: namesp. cut : stripped namespace before processing           Advanced Gtk+ Sequencer
+Note: namesp. cut : processing stripped document                   Advanced Gtk+ Sequencer
+Writing pr01.html for preface
+Writing ch01s02.html for sect1
+Writing ch01.html for chapter
+Writing ch02s02.html for sect1
+Writing ch02s03.html for sect1
+Writing ch02s04.html for sect1
+Writing ch02s05.html for sect1
+Writing ch02s06.html for sect1
+Writing ch02s07.html for sect1
+Writing ch02.html for chapter
+Writing ch03s02.html for sect1
+Writing ch03.html for chapter
+Writing ch04s02.html for sect1
+Writing ch04.html for chapter
+Writing apa.html for appendix(fdl)
+Writing apb.html for appendix
+Writing index.html for book
+Writing htmlhelp.hhp
+Writing toc.hhc
+make  all-am
+make[1]: Entering directory '/home/joelkraehemann/gsequencer'
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT gsequencer-ags_editor.o -MD -MP -MF .deps/gsequencer-ags_editor.Tpo -c -o gsequencer-ags_editor.o `test -f 'src/ags/X/ags_editor.c' || echo './'`src/ags/X/ags_editor.c
+In file included from /usr/include/glib-2.0/gobject/gobject.h:28:0,
+                 from /usr/include/glib-2.0/gobject/gbinding.h:29,
+                 from /usr/include/glib-2.0/glib-object.h:23,
+                 from ./src/ags/X/ags_editor.h:24,
+                 from src/ags/X/ags_editor.c:20:
+src/ags/X/ags_editor.c: In function ‘ags_editor_connect’:
+/usr/include/glib-2.0/gobject/gsignal.h:472:59: warning: passing argument 3 of ‘g_signal_connect_data’ from incompatible pointer type
+     g_signal_connect_data ((instance), (detailed_signal), (c_handler), (data), NULL, (GConnectFlags) 0)
+                                                           ^
+src/ags/X/ags_editor.c:329:3: note: in expansion of macro ‘g_signal_connect’
+   g_signal_connect(window->devout, "tic\0",
+   ^
+/usr/include/glib-2.0/gobject/gsignal.h:388:9: note: expected ‘GCallback’ but argument is of type ‘void (*)(struct AgsDevout *, struct AgsEditor *)’
+ gulong  g_signal_connect_data        (gpointer    instance,
+         ^
+src/ags/X/ags_editor.c: In function ‘ags_editor_real_machine_changed’:
+src/ags/X/ags_editor.c:383:38: warning: comparison of distinct pointer types lacks a cast
+     if(AGS_EDITOR_CHILD(child->data) == machine){
+                                      ^
+src/ags/X/ags_editor.c:391:21: warning: passing argument 1 of ‘gtk_widget_hide’ from incompatible pointer type
+     gtk_widget_hide(editor->current_notebook);
+                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:853:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsNotebook *’
+ void    gtk_widget_hide    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_editor.c:392:21: warning: passing argument 1 of ‘gtk_widget_hide’ from incompatible pointer type
+     gtk_widget_hide(editor->current_meter);
+                     ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:853:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsMeter *’
+ void    gtk_widget_hide    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_editor.c:402:39: warning: passing argument 1 of ‘gtk_container_get_children’ from incompatible pointer type
+     list = gtk_container_get_children(editor->machine_selector->popup);
+                                       ^
+In file included from /usr/include/gtk-2.0/gtk/gtkbin.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkcontainer.h:132:10: note: expected ‘struct GtkContainer *’ but argument is of type ‘struct GtkMenu *’
+ GList*   gtk_container_get_children     (GtkContainer       *container);
+          ^
+src/ags/X/ags_editor.c:442:70: warning: assignment from incompatible pointer type
+       AGS_NOTEBOOK_TAB(editor_child->notebook->tabs->data)->notation = g_list_nth(machine->audio->notation,
+                                                                      ^
+src/ags/X/ags_editor.c:448:25: warning: passing argument 1 of ‘gtk_widget_show_all’ from incompatible pointer type
+     gtk_widget_show_all(editor_child->notebook);
+                         ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:854:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsNotebook *’
+ void    gtk_widget_show_all    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_editor.c:460:25: warning: passing argument 1 of ‘gtk_widget_show_all’ from incompatible pointer type
+     gtk_widget_show_all(editor_child->meter);
+                         ^
+In file included from /usr/include/gtk-2.0/gtk/gtkcontainer.h:35:0,
+                 from /usr/include/gtk-2.0/gtk/gtkbin.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkwindow.h:36,
+                 from /usr/include/gtk-2.0/gtk/gtkdialog.h:35,
+                 from /usr/include/gtk-2.0/gtk/gtkaboutdialog.h:32,
+                 from /usr/include/gtk-2.0/gtk/gtk.h:33,
+                 from ./src/ags/X/ags_editor.h:26,
+                 from src/ags/X/ags_editor.c:20:
+/usr/include/gtk-2.0/gtk/gtkwidget.h:854:9: note: expected ‘struct GtkWidget *’ but argument is of type ‘struct AgsMeter *’
+ void    gtk_widget_show_all    (GtkWidget        *widget);
+         ^
+src/ags/X/ags_editor.c:464:30: warning: assignment from incompatible pointer type
+  editor->current_edit_widget = ags_note_edit_new();
+                              ^
+src/ags/X/ags_editor.c:474:36: warning: passing argument 1 of ‘ags_note_edit_set_map_height’ from incompatible pointer type
+       ags_note_edit_set_map_height(editor_child->edit_widget,
+                                    ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:144:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height);
+      ^
+src/ags/X/ags_editor.c:478:30: warning: assignment from incompatible pointer type
+  editor->current_edit_widget = ags_pattern_edit_new();
+                              ^
+src/ags/X/ags_editor.c:488:39: warning: passing argument 1 of ‘ags_pattern_edit_set_map_height’ from incompatible pointer type
+       ags_pattern_edit_set_map_height(editor_child->edit_widget,
+                                       ^
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:144:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_set_map_height(AgsPatternEdit *pattern_edit, guint map_height);
+      ^
+src/ags/X/ags_editor.c: In function ‘ags_editor_select_all’:
+src/ags/X/ags_editor.c:572:34: warning: passing argument 1 of ‘ags_note_edit_draw_segment’ from incompatible pointer type
+       ags_note_edit_draw_segment(editor->current_edit_widget, cr);
+                                  ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:149:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:573:35: warning: passing argument 1 of ‘ags_note_edit_draw_notation’ from incompatible pointer type
+       ags_note_edit_draw_notation(editor->current_edit_widget, cr);
+                                   ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:151:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:581:37: warning: passing argument 1 of ‘ags_pattern_edit_draw_segment’ from incompatible pointer type
+       ags_pattern_edit_draw_segment(editor->current_edit_widget, cr);
+                                     ^
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:149:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:582:38: warning: passing argument 1 of ‘ags_pattern_edit_draw_notation’ from incompatible pointer type
+       ags_pattern_edit_draw_notation(editor->current_edit_widget, cr);
+                                      ^
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:151:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c: In function ‘ags_editor_paste’:
+src/ags/X/ags_editor.c:814:34: warning: passing argument 1 of ‘ags_note_edit_draw_segment’ from incompatible pointer type
+       ags_note_edit_draw_segment(editor->current_edit_widget, cr);
+                                  ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:149:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:815:35: warning: passing argument 1 of ‘ags_note_edit_draw_notation’ from incompatible pointer type
+       ags_note_edit_draw_notation(editor->current_edit_widget, cr);
+                                   ^
+In file included from src/ags/X/ags_editor.c:30:0:
+./src/ags/X/editor/ags_note_edit.h:151:6: note: expected ‘struct AgsNoteEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:828:37: warning: passing argument 1 of ‘ags_pattern_edit_draw_segment’ from incompatible pointer type
+       ags_pattern_edit_draw_segment(editor->current_edit_widget, cr);
+                                     ^
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:149:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr);
+      ^
+src/ags/X/ags_editor.c:829:38: warning: passing argument 1 of ‘ags_pattern_edit_draw_notation’ from incompatible pointer type
+       ags_pattern_edit_draw_notation(editor->current_edit_widget, cr);
+                                      ^
+In file included from src/ags/X/ags_editor.c:32:0:
+./src/ags/X/editor/ags_pattern_edit.h:151:6: note: expected ‘struct AgsPatternEdit *’ but argument is of type ‘struct GtkWidget *’
+ void ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr);
+      ^
+mv -f .deps/gsequencer-ags_editor.Tpo .deps/gsequencer-ags_editor.Po
+gcc -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -ldl -fPIE -pie -Wl,-z,relro -Wl,-z,now -luuid  -lasound  -lao  -lxml2   -lsndfile  -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile  -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0  -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  -lcairo  -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype       -lm -lrt -lX11 -pthread -fPIE -pie -Wl,-z,relro -Wl,-z,now -o gsequencer  gsequencer-ags_audio.o gsequencer-ags_audio_signal.o gsequencer-ags_channel.o gsequencer-ags_channel_iter.o gsequencer-ags_config.o gsequencer-ags_devout.o gsequencer-ags_garbage_collector.o gsequencer-ags_input.o gsequencer-ags_libao.o gsequencer-ags_notation.o gsequencer-ags_note.o gsequencer-ags_output.o gsequencer-ags_pattern.o gsequencer-ags_port.o gsequencer-ags_recall_audio.o gsequencer-ags_recall_audio_run.o gsequencer-ags_recall_audio_signal.o gsequencer-ags_recall.o gsequencer-ags_recall_channel.o gsequencer-ags_recall_channel_run.o gsequencer-ags_recall_channel_run_dummy.o gsequencer-ags_recall_container.o gsequencer-ags_recall_dependency.o gsequencer-ags_recall_factory.o gsequencer-ags_recall_id.o gsequencer-ags_recall_ladspa.o gsequencer-ags_recall_ladspa_run.o gsequencer-ags_recall_recycling.o gsequencer-ags_recall_recycling_dummy.o gsequencer-ags_recycling.o gsequencer-ags_recycling_container.o gsequencer-ags_synths.o gsequencer-ags_task.o gsequencer-ags_timestamp.o gsequencer-ags_timestamp_factory.o gsequencer-ags_audio_file.o gsequencer-ags_audio_file_xml.o gsequencer-ags_ipatch.o gsequencer-ags_ipatch_sf2_reader.o gsequencer-ags_sndfile.o gsequencer-ags_amplifier.o gsequencer-ags_buffer_audio_signal.o gsequencer-ags_buffer_channel.o gsequencer-ags_buffer_channel_run.o gsequencer-ags_buffer_recycling.o gsequencer-ags_clone_channel.o gsequencer-ags_clone_channel_run.o gsequencer-ags_copy_audio_signal.o gsequencer-ags_copy_channel.o gsequencer-ags_copy_channel_run.o gsequencer-ags_copy_notation_audio.o gsequencer-ags_copy_notation_audio_run.o gsequencer-ags_copy_pattern_audio.o gsequencer-ags_copy_pattern_audio_run.o gsequencer-ags_copy_pattern_channel.o gsequencer-ags_copy_pattern_channel_run.o gsequencer-ags_copy_recycling.o gsequencer-ags_count_beats_audio.o gsequencer-ags_count_beats_audio_run.o gsequencer-ags_delay_audio.o gsequencer-ags_delay_audio_run.o gsequencer-ags_echo.o gsequencer-ags_loop_channel.o gsequencer-ags_loop_channel_run.o gsequencer-ags_mute_audio.o gsequencer-ags_mute_audio_run.o gsequencer-ags_mute_audio_signal.o gsequencer-ags_mute_channel.o gsequencer-ags_mute_channel_run.o gsequencer-ags_mute_recycling.o gsequencer-ags_peak_audio_signal.o gsequencer-ags_peak_channel.o gsequencer-ags_peak_channel_run.o gsequencer-ags_peak_recycling.o gsequencer-ags_play_audio.o gsequencer-ags_play_audio_file.o gsequencer-ags_play_audio_signal.o gsequencer-ags_play_channel.o gsequencer-ags_play_channel_run.o gsequencer-ags_play_channel_run_master.o gsequencer-ags_play_notation_audio.o gsequencer-ags_play_notation_audio_run.o gsequencer-ags_play_note.o gsequencer-ags_play_pattern.o gsequencer-ags_play_recycling.o gsequencer-ags_stream_audio_signal.o gsequencer-ags_stream.o gsequencer-ags_stream_channel.o gsequencer-ags_stream_channel_run.o gsequencer-ags_stream_recycling.o gsequencer-ags_volume_audio_signal.o gsequencer-ags_volume_channel.o gsequencer-ags_volume_channel_run.o gsequencer-ags_volume_recycling.o gsequencer-ags_add_audio.o gsequencer-ags_add_audio_signal.o gsequencer-ags_add_line_member.o gsequencer-ags_add_note.o gsequencer-ags_add_point_to_selection.o gsequencer-ags_add_recall.o gsequencer-ags_add_recall_container.o gsequencer-ags_add_region_to_selection.o gsequencer-ags_append_audio.o gsequencer-ags_append_audio_threaded.o gsequencer-ags_append_channel.o gsequencer-ags_append_recall.o gsequencer-ags_apply_synth.o gsequencer-ags_apply_wavetable.o gsequencer-ags_audio_set_recycling.o gsequencer-ags_cancel_audio.o gsequencer-ags_cancel_channel.o gsequencer-ags_cancel_recall.o gsequencer-ags_change_indicator.o gsequencer-ags_change_tact.o gsequencer-ags_channel_set_recycling.o gsequencer-ags_display_tact.o gsequencer-ags_export_output.o gsequencer-ags_free_selection.o gsequencer-ags_init_audio.o gsequencer-ags_init_channel.o gsequencer-ags_link_channel.o gsequencer-ags_open_file.o gsequencer-ags_open_single_file.o gsequencer-ags_remove_audio.o gsequencer-ags_remove_audio_signal.o gsequencer-ags_remove_note.o gsequencer-ags_remove_point_from_selection.o gsequencer-ags_remove_recall.o gsequencer-ags_remove_recall_container.o gsequencer-ags_remove_region_from_selection.o gsequencer-ags_resize_audio.o gsequencer-ags_save_file.o gsequencer-ags_scroll_on_play.o gsequencer-ags_seek_devout.o gsequencer-ags_set_audio_channels.o gsequencer-ags_set_buffer_size.o gsequencer-ags_set_devout_play_flags.o gsequencer-ags_set_output_device.o gsequencer-ags_set_samplerate.o gsequencer-ags_start_devout.o gsequencer-ags_toggle_led.o gsequencer-ags_toggle_pattern_bit.o gsequencer-ags_unref_audio_signal.o gsequencer-ags_apply_bpm.o gsequencer-ags_apply_sequencer_length.o gsequencer-ags_apply_tact.o gsequencer-ags_set_muted.o gsequencer-ags_file.o gsequencer-ags_file_gui.o gsequencer-ags_file_id_ref.o gsequencer-ags_file_launch.o gsequencer-ags_file_link.o gsequencer-ags_file_lookup.o gsequencer-ags_file_sound.o gsequencer-ags_file_thread.o gsequencer-ags_file_util.o gsequencer-ags_connectable.o gsequencer-ags_combo_box_text.o gsequencer-ags_container.o gsequencer-ags_list.o gsequencer-ags_log.o gsequencer-ags_parameter.o gsequencer-main.o gsequencer-ags_applicable.o gsequencer-ags_countable.o gsequencer-ags_dynamic_connectable.o gsequencer-ags_effect.o gsequencer-ags_main_loop.o gsequencer-ags_marshal.o gsequencer-ags_mutable.o gsequencer-ags_packable.o gsequencer-ags_persistable.o gsequencer-ags_playable.o gsequencer-ags_plugin.o gsequencer-ags_portlet.o gsequencer-ags_runnable.o gsequencer-ags_seekable.o gsequencer-ags_soundcard.o gsequencer-ags_stackable.o gsequencer-ags_tactable.o gsequencer-ags_tree_iterator.o gsequencer-ags_ladspa_manager.o gsequencer-ags_plugin_factory.o gsequencer-ags_registry.o gsequencer-ags_remote_task.o gsequencer-ags_server.o gsequencer-ags_async_queue.o gsequencer-ags_audio_loop.o gsequencer-ags_autosave_thread.o gsequencer-ags_devout_thread.o gsequencer-ags_export_thread.o gsequencer-ags_gui_task_thread.o gsequencer-ags_gui_thread.o gsequencer-ags_history.o gsequencer-ags_iterator_thread.o gsequencer-ags_mutex_manager.o gsequencer-ags_record_thread.o gsequencer-ags_recycling_thread.o gsequencer-ags_recycling_thread_callbacks.o gsequencer-ags_returnable_thread.o gsequencer-ags_single_thread.o gsequencer-ags_task_completion.o gsequencer-ags_task_thread.o gsequencer-ags_thread_pool.o gsequencer-ags_thread-posix.o gsequencer-ags_timestamp_thread.o gsequencer-ags_id_generator.o gsequencer-ags_cartesian.o gsequencer-ags_dial.o gsequencer-ags_expander.o gsequencer-ags_expander_set.o gsequencer-ags_hindicator.o gsequencer-ags_htimebar.o gsequencer-ags_indicator.o gsequencer-ags_led.o gsequencer-ags_menu.o gsequencer-ags_menu_item.o gsequencer-ags_option_menu.o gsequencer-ags_ruler.o gsequencer-ags_segment.o gsequencer-ags_table.o gsequencer-ags_timebar.o gsequencer-ags_vindicator.o gsequencer-ags_waveform.o gsequencer-ags_audio_preferences.o gsequencer-ags_audio_preferences_callbacks.o gsequencer-ags_editor.o gsequencer-ags_editor_callbacks.o gsequencer-ags_export_window.o gsequencer-ags_export_window_callbacks.o gsequencer-ags_generic_preferences.o gsequencer-ags_generic_preferences_callbacks.o gsequencer-ags_ladspa_browser.o gsequencer-ags_ladspa_browser_callbacks.o gsequencer-ags_line.o gsequencer-ags_line_callbacks.o gsequencer-ags_line_editor.o gsequencer-ags_line_editor_callbacks.o gsequencer-ags_line_member.o gsequencer-ags_line_member_callbacks.o gsequencer-ags_line_member_editor.o gsequencer-ags_line_member_editor_callbacks.o gsequencer-ags_link_collection_editor.o gsequencer-ags_link_collection_editor_callbacks.o gsequencer-ags_link_editor.o gsequencer-ags_link_editor_callbacks.o gsequencer-ags_listing_editor.o gsequencer-ags_listing_editor_callbacks.o gsequencer-ags_machine.o gsequencer-ags_machine_callbacks.o gsequencer-ags_machine_editor.o gsequencer-ags_machine_editor_callbacks.o gsequencer-ags_menu_bar.o gsequencer-ags_menu_bar_callbacks.o gsequencer-ags_navigation.o gsequencer-ags_navigation_callbacks.o gsequencer-ags_pad.o gsequencer-ags_pad_callbacks.o gsequencer-ags_pad_editor.o gsequencer-ags_pad_editor_callbacks.o gsequencer-ags_performance_preferences.o gsequencer-ags_performance_preferences_callbacks.o gsequencer-ags_plugin_preferences.o gsequencer-ags_plugin_preferences_callbacks.o gsequencer-ags_preferences.o gsequencer-ags_preferences_callbacks.o gsequencer-ags_property_collection_editor.o gsequencer-ags_property_collection_editor_callbacks.o gsequencer-ags_property_editor.o gsequencer-ags_property_editor_callbacks.o gsequencer-ags_property_listing_editor.o gsequencer-ags_resize_editor.o gsequencer-ags_server_preferences.o gsequencer-ags_server_preferences_callbacks.o gsequencer-ags_window.o gsequencer-ags_window_callbacks.o gsequencer-ags_file_selection.o gsequencer-ags_file_selection_callbacks.o gsequencer-ags_inline_player.o gsequencer-ags_inline_player_callbacks.o gsequencer-ags_machine_radio_button.o gsequencer-ags_machine_selection.o gsequencer-ags_machine_selector.o gsequencer-ags_machine_selector_callbacks.o gsequencer-ags_meter.o gsequencer-ags_meter_callbacks.o gsequencer-ags_notebook.o gsequencer-ags_notebook_callbacks.o gsequencer-ags_note_edit.o gsequencer-ags_note_edit_callbacks.o gsequencer-ags_pattern_edit.o gsequencer-ags_pattern_edit_callbacks.o gsequencer-ags_sf2_chooser.o gsequencer-ags_sf2_chooser_callbacks.o gsequencer-ags_toolbar.o gsequencer-ags_toolbar_callbacks.o gsequencer-ags_drum.o gsequencer-ags_drum_callbacks.o gsequencer-ags_drum_input_line.o gsequencer-ags_drum_input_line_callbacks.o gsequencer-ags_drum_input_pad.o gsequencer-ags_drum_input_pad_callbacks.o gsequencer-ags_drum_output_line.o gsequencer-ags_drum_output_line_callbacks.o gsequencer-ags_drum_output_pad.o gsequencer-ags_drum_output_pad_callbacks.o gsequencer-ags_ffplayer.o gsequencer-ags_ffplayer_callbacks.o gsequencer-ags_matrix.o gsequencer-ags_matrix_callbacks.o gsequencer-ags_mixer.o gsequencer-ags_mixer_callbacks.o gsequencer-ags_mixer_input_line.o gsequencer-ags_mixer_input_pad.o gsequencer-ags_oscillator.o gsequencer-ags_oscillator_callbacks.o gsequencer-ags_panel.o gsequencer-ags_panel_callbacks.o gsequencer-ags_panel_input_line.o gsequencer-ags_panel_input_pad.o gsequencer-ags_synth.o gsequencer-ags_synth_callbacks.o gsequencer-ags_synth_input_line.o gsequencer-ags_synth_input_pad.o  -lrt -lm -ldl -lX11 
+make[1]: Leaving directory '/home/joelkraehemann/gsequencer'

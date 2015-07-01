@@ -329,6 +329,10 @@ ags_play_channel_run_master_connect(AgsConnectable *connectable)
   AgsPlayChannelRunMaster *play_channel_run_master;
   GObject *gobject;
 
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_play_channel_run_master_parent_connectable_interface->connect(connectable);
 
   /* AgsPlayChannelRunMaster */
@@ -373,6 +377,10 @@ ags_play_channel_run_master_connect_dynamic(AgsDynamicConnectable *dynamic_conne
   GObject *gobject;
   AgsPlayChannelRunMasterStreamer *streamer;
   GList *list;
+
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
 
   ags_play_channel_run_master_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
@@ -618,7 +626,7 @@ ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
   play_channel_run_master = streamer->play_channel_run_master;
 
   play_channel_run_master->streamer = g_list_remove(play_channel_run_master->streamer,
-						    streamer);
+  						    streamer);
 
   if(play_channel_run_master->streamer == NULL){
     //    play_channel_run_master->flags |= AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING;

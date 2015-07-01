@@ -177,6 +177,10 @@ ags_stream_audio_signal_finalize(GObject *gobject)
 void
 ags_stream_audio_signal_connect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_stream_audio_signal_parent_connectable_interface->connect(connectable);
 
@@ -195,6 +199,10 @@ ags_stream_audio_signal_disconnect(AgsConnectable *connectable)
 void
 ags_stream_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_stream_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
@@ -269,7 +277,8 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 	}
       }
     }
-    
+
+    //    g_message("stream %x %x\0", AGS_RECALL_AUDIO_SIGNAL(recall)->source, AGS_RECALL_ID(AGS_RECALL_AUDIO_SIGNAL(recall)->source->recall_id)->recycling_container);
     AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current = AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->next;
 
     /* call parent */

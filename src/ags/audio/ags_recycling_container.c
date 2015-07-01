@@ -613,41 +613,20 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
 {
   AgsRecyclingContainer *new_recycling_container;
   AgsRecycling *recycling;
-  gint new_length;
+  guint new_length;
   gint first_index, last_index;
   guint i;
-  gboolean new_context;
 
-  if(old_first_recycling != NULL){
-    if(ags_recycling_position(old_first_recycling, old_last_recycling->next,
-			      new_first_recycling) == -1){
-      if(old_first_recycling->prev == new_last_recycling){
-	new_context = FALSE;
-      }else if(old_first_recycling->next == new_first_recycling){
-	new_context = FALSE;
-      }else{
-	new_context = TRUE;
-      }
-    }else{
-      new_context = FALSE;
-    }
-  }else{
-    new_context = FALSE;
-  }
-  
   /* retrieve new length of recycling array */
   new_length = ags_recycling_position(new_first_recycling, new_last_recycling->next,
 				      new_last_recycling);
   new_length++;
-  
+
   /* retrieve indices to replace */
-  if(new_context){
-    first_index = 0;
-    last_index = 0;
-  }else if(old_first_recycling != NULL){
+  if(old_first_recycling != NULL){
     first_index = ags_recycling_container_find(recycling_container,
 					       old_first_recycling);
-    
+
     last_index = ags_recycling_container_find(recycling_container,
 					      old_last_recycling);
   }else{
@@ -663,46 +642,30 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
       last_index = first_index;
     }
   }
-  
+
   /* instantiate */
-  if(new_context){
-    new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
-					   "length\0", new_length,
-					   NULL);
-  }else{
-    new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
-					   "length\0", (recycling_container->length -
-							(last_index - first_index) +
-							new_length),
-					   NULL);
+  new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+					 "length\0", (recycling_container->length -
+						      (last_index - first_index) +
+						      new_length),
+					 NULL);
+
+  new_recycling_container->children = g_list_copy(recycling_container->children);
+  g_object_set(new_recycling_container,
+	       "parent\0", recycling_container->parent,
+	       NULL);
+  g_object_set(recycling_container,
+	       "parent\0", NULL,
+	       NULL);
+
+
+  /* copy heading */
+  if(first_index > 0){
+    memcpy(new_recycling_container->recycling,
+	   recycling_container->recycling,
+	   first_index * sizeof(AgsRecycling *));
   }
 
-  if(recycling_container->parent != NULL){
-    GList *list;
-    
-    list = g_list_find(recycling_container->parent->children,
-		       recycling_container);
-    list->data = new_recycling_container;
-    g_object_ref(new_recycling_container);
-    
-    new_recycling_container->parent = recycling_container->parent;
-    g_object_ref(new_recycling_container->parent);
-    
-    new_recycling_container->recall_id = recycling_container->recall_id;
-    g_object_ref(recycling_container->recall_id);
-  }
-  
-  new_recycling_container->children = g_list_copy(recycling_container->children);
-  
-  /* copy heading */
-  if(!new_context){
-    if(first_index > 0){
-      memcpy(new_recycling_container->recycling,
-	     recycling_container->recycling,
-	     first_index * sizeof(AgsRecycling *));
-    }
-  }
-  
   /* insert new */
   recycling = new_first_recycling;
 
@@ -714,20 +677,18 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
   }
 
   /* copy trailing */
-  if(!new_context){
-    if(new_recycling_container->length - first_index > 0){
-      memcpy(&(new_recycling_container->recycling[first_index + new_length]),
-	     &(recycling_container->recycling[first_index]),
-	     (new_recycling_container->length - first_index - new_length) * sizeof(AgsRecycling *));
-    }
+  if(last_index + 1 != recycling_container->length){
+    memcpy(&(new_recycling_container->recycling[first_index + new_length]),
+	   recycling_container->recycling,
+	   (new_recycling_container->length - first_index - new_length) * sizeof(AgsRecycling *));
   }
-
+  
   return(new_recycling_container);
 }
 
 /**
  * ags_recycling_container_new:
- * @length: array dimension of context
+ * @length: array dimension of container
  *
  * Creates a #AgsRecyclingContainer, boundaries are specified by @length
  *

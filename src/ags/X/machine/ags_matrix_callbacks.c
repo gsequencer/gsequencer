@@ -138,6 +138,7 @@ gboolean
 ags_matrix_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsMatrix *matrix)
 {
   ags_matrix_draw_gutter(matrix);
+  ags_matrix_draw_matrix(matrix);
 
   return(FALSE);
 }
