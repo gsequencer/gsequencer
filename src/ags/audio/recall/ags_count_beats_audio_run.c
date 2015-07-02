@@ -31,15 +31,20 @@
 #include <ags/object/ags_seekable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
+
+#include <ags/audio/task/ags_cancel_audio.h>
 
 #include <math.h>
 
@@ -888,7 +893,7 @@ ags_count_beats_audio_run_duplicate(AgsRecall *recall,
 												       recall_id,
 												       n_params, parameter));
 
-  g_message("ags_count_beats_audio_run_duplicate\n\0");
+  //  g_message("ags_count_beats_audio_run_duplicate\n\0");
 
   return((AgsRecall *) copy);
 }
@@ -905,7 +910,7 @@ ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
     count_beats_audio_run->hide_ref += count;
-    g_message("count_beats_audio_run->hide_ref: %u\n\0", count_beats_audio_run->hide_ref);
+    //    g_message("count_beats_audio_run->hide_ref: %u\n\0", count_beats_audio_run->hide_ref);
     break;
   case AGS_RECALL_NOTIFY_AUDIO:
     break;
@@ -942,16 +947,46 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 void
 ags_count_beats_audio_run_done(AgsRecall *recall)
 {
+  AgsDevout *devout;
+
   AgsCountBeatsAudio *count_beats_audio;
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
+  AgsCancelAudio *cancel_audio;
+
+  AgsThread *task_thread;
+
+  gboolean sequencer, notation;
+  
   AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done(recall);
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
+  devout = AGS_RECALL_AUDIO(count_beats_audio)->audio->devout;
+  task_thread = (AgsThread *) AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread;
+
+  ags_recall_done(count_beats_audio_run->delay_audio_run);
   ags_audio_done(AGS_RECALL_AUDIO(count_beats_audio)->audio,
 		 AGS_RECALL(count_beats_audio_run)->recall_id);
+
+  if((AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
+    sequencer = TRUE;
+  }
+
+  notation = FALSE;
+  
+  if((AGS_RECALL_ID_NOTATION & (recall->recall_id->flags)) != 0){
+    //  notation = TRUE;
+  }
+  
+  /* create cancel task */
+  cancel_audio = ags_cancel_audio_new(AGS_RECALL_AUDIO(count_beats_audio)->audio,
+				      FALSE, sequencer, notation);
+  
+  /* append AgsCancelAudio */
+  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+			      (AgsTask *) cancel_audio);  
 }
 
 /**
@@ -1272,7 +1307,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
       /* emit stop signals */
       ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
-					       run_order);
+					       FALSE);
 
       /* set done flag in devout play */
       while(devout_play != NULL){
@@ -1405,22 +1440,24 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
     if(count_beats_audio_run->sequencer_counter < (guint) g_value_get_double(&loop_end_sequencer) - 1.0){
       return;
     }
-  }
-
-  if((AGS_RECALL_ID_NOTATION & (recall->recall_id->flags)) != 0){
-    return;
-  }
   
-  /* you're done */
-  ags_count_beats_audio_run_done(count_beats_audio_run);
+    /* you're done */
+    ags_count_beats_audio_run_done(count_beats_audio_run);
+  }
 }
 
 void
 ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 			       gboolean notation)
 {
-  //TODO:JK: enhance me
-  ags_count_beats_audio_run_done(count_beats_audio_run);
+  if(!notation){
+    if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) != 0){
+      //TODO:JK: enhance me
+      ags_count_beats_audio_run_done(count_beats_audio_run);
+    }
+  }else{
+    //    ags_count_beats_audio_run_done(count_beats_audio_run);
+  }
 } 
 
 /**

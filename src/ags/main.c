@@ -77,7 +77,7 @@ void ags_signal_handler(int signr);
 static gpointer ags_main_parent_class = NULL;
 static sigset_t ags_wait_mask;
 
-pthread_mutex_t ags_application_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t ags_application_mutex;
 static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
 static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
 
@@ -777,6 +777,8 @@ main(int argc, char **argv)
   const char *error;
   const rlim_t kStackSize = 256L * 1024L * 1024L;   // min stack size = 128 Mb
 
+  pthread_mutexattr_t attr;
+  
   //  mtrace();
   atexit(ags_signal_cleanup);
 
@@ -807,6 +809,13 @@ main(int argc, char **argv)
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+
+  /**/
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+  pthread_mutex_init(&ags_application_mutex,
+		     &attr);
 
   /**/
   LIBXML_TEST_VERSION;

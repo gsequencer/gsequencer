@@ -741,7 +741,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 				       //"destination\0", recall_recycling->child_destination,
 				       "source\0", audio_signal,
 				       NULL);
-    //    g_message("%s\0", G_OBJECT_TYPE_NAME(recall_audio_signal));
+    g_message("%s\0", G_OBJECT_TYPE_NAME(recall_audio_signal));
 
     ags_recall_add_child(AGS_RECALL(recall_recycling), AGS_RECALL(recall_audio_signal));
   }
@@ -889,8 +889,8 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
     if(recall_recycling->child_source != NULL){
-      //      g_list_free_full(recall_recycling->child_source,
-      //	       g_object_unref);
+      g_list_free_full(recall_recycling->child_source,
+		       g_object_unref);
     }
     
     recall_recycling->child_source = NULL;

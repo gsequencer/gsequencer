@@ -2006,7 +2006,9 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 						 NULL);
       AGS_RECALL(mute_audio)->flags |= (AGS_RECALL_TEMPLATE |
 					(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-					AGS_RECALL_SEQUENCER);
+					AGS_RECALL_PLAYBACK |
+					AGS_RECALL_SEQUENCER |
+					AGS_RECALL_NOTATION);
       ags_audio_add_recall(audio, (GObject *) mute_audio, TRUE);
 
       /* AgsMuteAudioRun */
@@ -2018,7 +2020,9 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 							NULL);
       AGS_RECALL(mute_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
 					    (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-					    AGS_RECALL_SEQUENCER);
+					    AGS_RECALL_PLAYBACK |
+					    AGS_RECALL_SEQUENCER |
+					    AGS_RECALL_NOTATION);
       ags_audio_add_recall(audio, (GObject *) mute_audio_run, TRUE);
     }else{
       GList *list;
@@ -2126,7 +2130,9 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 							NULL);
       AGS_RECALL(mute_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
 					    (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-					    AGS_RECALL_SEQUENCER);
+					    AGS_RECALL_PLAYBACK |
+					    AGS_RECALL_SEQUENCER |
+					    AGS_RECALL_NOTATION);
       ags_audio_add_recall(audio, (GObject *) mute_audio_run, FALSE);
     }else{
       GList *list;

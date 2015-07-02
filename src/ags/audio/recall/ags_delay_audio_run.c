@@ -620,7 +620,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
     delay_audio_run->hide_ref += count;
-    g_message("delay_audio_run->hide_ref: %u\n\0", delay_audio_run->hide_ref);
+    //  g_message("delay_audio_run->hide_ref: %u\n\0", delay_audio_run->hide_ref);
     break;
   case AGS_RECALL_NOTIFY_AUDIO:
     break;
