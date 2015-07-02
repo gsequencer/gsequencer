@@ -39,6 +39,8 @@ struct _AgsGenericPreferences
   GtkCheckButton *autosave_thread;
 
   GtkComboBox *audio_output_module;
+
+  GtkComboBox *segmentation;
 };
 
 struct _AgsGenericPreferencesClass

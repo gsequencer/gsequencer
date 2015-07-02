@@ -71,7 +71,8 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 
   gtk_label_set_text(export_window->duration,
 		     ags_navigation_tact_to_time_string(gtk_spin_button_get_value(export_window->tact),
-							window->navigation->bpm->adjustment->value));
+							window->navigation->bpm->adjustment->value,
+							window->devout->delay_factor));
 }
 
 void

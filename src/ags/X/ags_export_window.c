@@ -314,7 +314,8 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   0, 0);
 
   export_window->duration = (GtkLabel *) gtk_label_new(ags_navigation_tact_to_time_string(0.0,
-											  AGS_DEVOUT_DEFAULT_BPM));
+											  AGS_DEVOUT_DEFAULT_BPM,
+											  1.0));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->duration),
 		     FALSE, FALSE,

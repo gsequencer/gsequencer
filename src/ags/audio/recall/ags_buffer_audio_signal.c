@@ -274,7 +274,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   ags_recycling_create_audio_signal_with_defaults(recycling,
 						  destination,
 						  delay, attack);
-  length =  (guint) (2.0 * devout->delay[devout->tic_counter]) + 1;
+  length = 3; //(guint) (2.0 * devout->delay[devout->tic_counter]) + 1;
   ags_audio_signal_stream_resize(destination,
 				 length);
 

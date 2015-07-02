@@ -3175,7 +3175,8 @@ ags_audio_play(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
        recall->recall_id == NULL ||
-       (recall->recall_id->recycling_container != recall_id->recycling_container)){
+       (recall->recall_id->recycling_container != recall_id->recycling_container) ||
+       AGS_IS_RECALL_AUDIO(recall)){
       list = list_next;
 
       continue;

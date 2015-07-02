@@ -1,3 +1,22 @@
+ags (0.4.2.92)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash while hot-link matrix and synth with multi-output
+	* implemnted segmentation
+
+ags (0.4.2.91)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed multiple occurence of recalls
+	* fixed potential infinite loop while reset recall ids
+	* migrated away from hide references to recall id status
+	* fixed proper unlink as adjusting channels
+	* fixed allocation of ags-buffer
+	* fixed selective creation of recalls in ags_recall_recycling.c
+	* fixed remap of recycling recalls for available destination in ags_recall_channel_run.c
+	* minor bug-fixes
+	* note speed may differ for now
+
 ags (0.4.2.90)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1123,6 +1123,8 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
       /* iterate */
       list_play_domain = list_next_play_domain;
     }
+
+    //g_message("stage\0");
   }
 }
 
@@ -1140,12 +1142,11 @@ ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
 {
   if(g_list_find(audio_loop->play_audio,
 		 AGS_AUDIO(audio)->devout_play_domain) == NULL){
+    audio_loop->play_audio_ref = audio_loop->play_audio_ref + 1;
     g_object_ref(G_OBJECT(audio));
 
     audio_loop->play_audio = g_list_prepend(audio_loop->play_audio,
 					    AGS_AUDIO(audio)->devout_play_domain);
-
-    audio_loop->play_audio_ref = audio_loop->play_audio_ref + 1;
   }
 }
 

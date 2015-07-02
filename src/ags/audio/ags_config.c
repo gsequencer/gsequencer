@@ -215,6 +215,7 @@ void
 ags_config_load_defaults(AgsConfig *config)
 {
   ags_config_set(config, ags_config_generic, "autosave-thread\0", "false\0");
+  ags_config_set(config, ags_config_generic, "segmentation\0", "4/4\0");
 
   ags_config_set(config, ags_config_thread, "model\0", "multi-threaded\0");
   ags_config_set(config, ags_config_thread, "lock-global\0", "ags-thread\0");
@@ -415,6 +416,29 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
       }else{
 	ags_thread_stop((AgsThread *) autosave_thread);
       }
+    }else if(!strncmp(key,
+		      "segmentation\0",
+		      13)){
+      
+      AgsDevout *devout;
+      guint discriminante, nominante;
+      gdouble factor;
+      
+      if(ags_main == NULL ||
+	 ags_main->devout == NULL){
+	return;
+      }
+
+      devout = ags_main->devout->data;
+      sscanf(value, "%d/%d\0",
+	     &discriminante,
+	     &nominante);
+      
+      factor = 1.0 / nominante * (nominante / discriminante);
+      
+      g_object_set(devout,
+		   "delay-factor\0", factor,
+		   NULL);
     }
   }else if(!strncmp(group,
 		    ags_config_thread,
