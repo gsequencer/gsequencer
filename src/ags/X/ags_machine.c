@@ -906,7 +906,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
   }else{
     AgsCancelAudio *cancel_audio;
 
-    /* create append task */
+    /* create cancel task */
     cancel_audio = ags_cancel_audio_new(machine->audio,
 					FALSE, sequencer, notation);
     

@@ -785,9 +785,13 @@ ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate
 void
 ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels, signed short *source, guint schannels, guint size)
 {
-  for(; 0<size; --size){
-    *destination += *source;
+  signed long value;
 
+  for(; 0<size; --size){
+    //    *destination += *source;
+    value = 0xffff & ((*destination) + (*source));
+    *destination = (signed short) value;
+    
     destination += dchannels;
     source += schannels;
   }

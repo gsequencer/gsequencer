@@ -102,6 +102,15 @@ typedef enum
   AGS_DEVOUT_PLAY_SUPER_THREADED    = 1 <<  8,
 }AgsDevoutPlayFlags;
 
+typedef enum
+{
+  AGS_DEVOUT_PLAY_SCOPE_SINGLE_THREADED            = 1 ,
+  AGS_DEVOUT_PLAY_SCOPE_MULTI_THREADED             = 1 <<  1,
+  AGS_DEVOUT_PLAY_SCOPE_SUPER_THREADED_AUDIO       = 1 <<  2,
+  AGS_DEVOUT_PLAY_SCOPE_SUPER_THREADED_CHANNEL     = 1 <<  3,
+  AGS_DEVOUT_PLAY_SCOPE_SUPER_THREADED_RECYCLING   = 1 <<  4,
+}AgsDevoutPlayFlags;
+
 typedef enum{
   AGS_DEVOUT_RESOLUTION_8_BIT    = 8,
   AGS_DEVOUT_RESOLUTION_16_BIT   = 16,
@@ -210,7 +219,9 @@ struct _AgsDevoutPlayDomain
 struct _AgsDevoutPlay
 {
   guint flags;
-
+  volatile guint thread_scope;
+  
+  pthread_t *thread;
   AgsIteratorThread **iterator_thread;
 
   GObject *source;

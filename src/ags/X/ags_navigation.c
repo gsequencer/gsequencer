@@ -640,7 +640,7 @@ ags_navigation_relative_tact_to_time_string(gchar *timestr,
     sec_value += (prev_hsec / 100.0);
   }
   
-  sec_value += (1.0 / delay * (60.0 / bpm) * delay_factor);
+  sec_value += (1.0 / delay * delay_factor);
 
   min = (guint) floor(sec_value / 60);
 

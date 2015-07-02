@@ -105,7 +105,6 @@ enum{
 };
 
 static gpointer ags_audio_parent_class = NULL;
-
 static guint audio_signals[LAST_SIGNAL];
 
 extern pthread_mutex_t ags_application_mutex;

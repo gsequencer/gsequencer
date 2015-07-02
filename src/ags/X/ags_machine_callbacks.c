@@ -578,8 +578,10 @@ ags_machine_done_callback(AgsAudio *audio,
 
   machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
-  gtk_toggle_button_set_active(machine->play, FALSE);
-
+  if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) != 0){
+    gtk_toggle_button_set_active(machine->play, FALSE);
+  }
+  
   /* cancel playback */
   channel = audio->output;
   

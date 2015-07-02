@@ -233,7 +233,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
 
     if(recall_list != NULL){
       return(G_OBJECT(recall_list->data));
-    }else{
+    }else if(recall_id->recycling_container->parent != NULL){
       recall_list = ags_recall_find_recycling_container(recall_container->recall_audio_run,
 							(GObject *) recall_id->recycling_container->parent);
 
@@ -266,7 +266,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
 
     if(recall_list != NULL){
       return(G_OBJECT(recall_list->data));
-    }else{
+    }else if(recall_id->recycling_container->parent != NULL){
       recall_list = ags_recall_find_provider_with_recycling_container(recall_container->recall_channel_run,
 								      (GObject *) AGS_RECALL_CHANNEL_RUN(dependency)->recall_channel->source,
 								      (GObject *) recall_id->recycling_container->parent);
