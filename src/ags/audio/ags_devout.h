@@ -131,7 +131,8 @@ struct _AgsDevout
   signed short** buffer;
 
   double bpm; // beats per minute
-
+  gdouble delay_factor;
+  
   gdouble *delay; // count of tics within buffer size
   guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
 

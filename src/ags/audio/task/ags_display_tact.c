@@ -161,7 +161,8 @@ ags_display_tact_launch(AgsTask *task)
 
   timestr = ags_navigation_relative_tact_to_time_string(navigation->duration_time->label,
 							window->devout->delay[window->devout->tic_counter],
-							window->devout->bpm);
+							window->devout->bpm,
+							window->devout->delay_factor);
   
   gtk_label_set_text(navigation->duration_time, timestr);
 

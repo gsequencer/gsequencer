@@ -93,14 +93,17 @@ struct _AgsNavigationClass
 GType ags_navigation_get_type(void);
 
 gchar* ags_navigation_tact_to_time_string(gdouble tact,
-					  gdouble bpm);
+					  gdouble bpm,
+					  gdouble delay_factor);
 
 gchar* ags_navigation_relative_tact_to_time_string(gchar *timestr,
 						   gdouble delay,
-						   gdouble bpm);
+						   gdouble bpm,
+						   gdouble delay_factor);
 
 void ags_navigation_update_time_string(double tact,
 				       gdouble bpm,
+				       gdouble delay_factor,
 				       gchar *time_string);
 
 void ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,

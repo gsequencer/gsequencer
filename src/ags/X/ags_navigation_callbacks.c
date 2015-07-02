@@ -230,7 +230,8 @@ ags_navigation_stop_callback(GtkWidget *widget,
   navigation->start_tact = 0.0;
 
   timestr = ags_navigation_tact_to_time_string(0.0,
-					       navigation->bpm->adjustment->value);
+					       navigation->bpm->adjustment->value,
+					       window->devout->delay_factor);
   gtk_label_set_text(navigation->duration_time, timestr);
   
   g_free(timestr);

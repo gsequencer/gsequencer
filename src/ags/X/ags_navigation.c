@@ -497,7 +497,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   }
   
   timestr = ags_navigation_tact_to_time_string(tact_counter,
-					       navigation->bpm->adjustment->value);
+					       navigation->bpm->adjustment->value,
+					       window->devout->delay_factor);
   gtk_label_set_text(navigation->position_time, timestr);
   
   g_free(timestr);
@@ -538,7 +539,8 @@ ags_navigation_change_position(AgsNavigation *navigation,
  */
 gchar*
 ags_navigation_tact_to_time_string(gdouble tact,
-				   gdouble bpm)
+				   gdouble bpm,
+				   gdouble delay_factor)
 {
   static gdouble delay_min, delay_sec, delay_hsec;
   static gboolean initialized = FALSE;
@@ -547,7 +549,7 @@ ags_navigation_tact_to_time_string(gdouble tact,
   guint min, sec, hsec;
 
   if(!initialized){
-    delay_min = bpm * (60.0 / bpm) * (60.0 / bpm);
+    delay_min = bpm * (60.0 / bpm) * (60.0 / bpm) * delay_factor;
     delay_sec = delay_min / 60.0;
     delay_hsec = delay_sec / 100.0;
 
@@ -587,21 +589,17 @@ ags_navigation_tact_to_time_string(gdouble tact,
 void
 ags_navigation_update_time_string(double tact,
 				  gdouble bpm,
+				  gdouble delay_factor,
 				  gchar *time_string)
 {
-  static gdouble delay_min, delay_sec, delay_hsec;
-  static gboolean initialized = FALSE;
+  gdouble delay_min, delay_sec, delay_hsec;
   gchar *timestr;
   gdouble tact_redux;
   guint min, sec, hsec;
 
-  if(!initialized){
-    delay_min = bpm * (60.0 / bpm) * (60.0 / bpm);
-    delay_sec = delay_min / 60.0;
-    delay_hsec = delay_sec / 100.0;
-
-    initialized = TRUE;
-  }
+  delay_min = bpm * (60.0 / bpm) * (60.0 / bpm) * delay_factor;
+  delay_sec = delay_min / 60.0;
+  delay_hsec = delay_sec / 100.0;
 
   tact_redux = 1.0 / 16.0;
 
@@ -625,7 +623,8 @@ ags_navigation_update_time_string(double tact,
 gchar*
 ags_navigation_relative_tact_to_time_string(gchar *timestr,
 					    gdouble delay,
-					    gdouble bpm)
+					    gdouble bpm,
+					    gdouble delay_factor)
 {
   gchar *tmp;
   guint min, sec, hsec;
@@ -641,7 +640,7 @@ ags_navigation_relative_tact_to_time_string(gchar *timestr,
     sec_value += (prev_hsec / 100.0);
   }
   
-  sec_value += (1.0 / delay * (60.0 / bpm));
+  sec_value += (1.0 / delay * (60.0 / bpm) * delay_factor);
 
   min = (guint) floor(sec_value / 60);
 

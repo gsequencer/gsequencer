@@ -1,20 +1,19 @@
-/* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2014 Joël Krähemann
  *
- * This file is part of GSequencer.
- *
- * GSequencer is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * GSequencer is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
 #include <ags/audio/ags_recycling_container.h>
@@ -613,20 +612,41 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
 {
   AgsRecyclingContainer *new_recycling_container;
   AgsRecycling *recycling;
-  guint new_length;
+  gint new_length;
   gint first_index, last_index;
   guint i;
+  gboolean new_context;
 
+  if(old_first_recycling != NULL){
+    if(ags_recycling_position(old_first_recycling, old_last_recycling->next,
+			      new_first_recycling) == -1){
+      if(old_first_recycling->prev == new_last_recycling){
+	new_context = FALSE;
+      }else if(old_first_recycling->next == new_first_recycling){
+	new_context = FALSE;
+      }else{
+	new_context = TRUE;
+      }
+    }else{
+      new_context = FALSE;
+    }
+  }else{
+    new_context = FALSE;
+  }
+  
   /* retrieve new length of recycling array */
   new_length = ags_recycling_position(new_first_recycling, new_last_recycling->next,
 				      new_last_recycling);
   new_length++;
-
+  
   /* retrieve indices to replace */
-  if(old_first_recycling != NULL){
+  if(new_context){
+    first_index = 0;
+    last_index = 0;
+  }else if(old_first_recycling != NULL){
     first_index = ags_recycling_container_find(recycling_container,
 					       old_first_recycling);
-
+    
     last_index = ags_recycling_container_find(recycling_container,
 					      old_last_recycling);
   }else{
@@ -642,30 +662,46 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
       last_index = first_index;
     }
   }
-
+  
   /* instantiate */
-  new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
-					 "length\0", (recycling_container->length -
-						      (last_index - first_index) +
-						      new_length),
-					 NULL);
-
-  new_recycling_container->children = g_list_copy(recycling_container->children);
-  g_object_set(new_recycling_container,
-	       "parent\0", recycling_container->parent,
-	       NULL);
-  g_object_set(recycling_container,
-	       "parent\0", NULL,
-	       NULL);
-
-
-  /* copy heading */
-  if(first_index > 0){
-    memcpy(new_recycling_container->recycling,
-	   recycling_container->recycling,
-	   first_index * sizeof(AgsRecycling *));
+  if(new_context){
+    new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+					   "length\0", new_length,
+					   NULL);
+  }else{
+    new_recycling_container = g_object_new(AGS_TYPE_RECYCLING_CONTAINER,
+					   "length\0", (recycling_container->length -
+							(last_index - first_index) +
+							new_length),
+					   NULL);
   }
 
+  if(recycling_container->parent != NULL){
+    GList *list;
+    
+    list = g_list_find(recycling_container->parent->children,
+		       recycling_container);
+    list->data = new_recycling_container;
+    g_object_ref(new_recycling_container);
+    
+    new_recycling_container->parent = recycling_container->parent;
+    g_object_ref(new_recycling_container->parent);
+    
+    new_recycling_container->recall_id = recycling_container->recall_id;
+    g_object_ref(recycling_container->recall_id);
+  }
+  
+  new_recycling_container->children = g_list_copy(recycling_container->children);
+  
+  /* copy heading */
+  if(!new_context){
+    if(first_index > 0){
+      memcpy(new_recycling_container->recycling,
+	     recycling_container->recycling,
+	     first_index * sizeof(AgsRecycling *));
+    }
+  }
+  
   /* insert new */
   recycling = new_first_recycling;
 
@@ -677,18 +713,20 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
   }
 
   /* copy trailing */
-  if(last_index + 1 != recycling_container->length){
-    memcpy(&(new_recycling_container->recycling[first_index + new_length]),
-	   recycling_container->recycling,
-	   (new_recycling_container->length - first_index - new_length) * sizeof(AgsRecycling *));
+  if(!new_context){
+    if(new_recycling_container->length - first_index > 0){
+      memcpy(&(new_recycling_container->recycling[first_index + new_length]),
+	     &(recycling_container->recycling[first_index]),
+	     (new_recycling_container->length - first_index - new_length) * sizeof(AgsRecycling *));
+    }
   }
-  
+
   return(new_recycling_container);
 }
 
 /**
  * ags_recycling_container_new:
- * @length: array dimension of container
+ * @length: array dimension of context
  *
  * Creates a #AgsRecyclingContainer, boundaries are specified by @length
  *
