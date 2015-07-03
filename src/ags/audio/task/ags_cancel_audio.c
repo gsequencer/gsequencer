@@ -148,17 +148,20 @@ ags_cancel_audio_finalize(GObject *gobject)
 void
 ags_cancel_audio_launch(AgsTask *task)
 {
-  AgsCancelAudio *cancel_audio;
+  AgsDevoutPlayDomain *devout_play_domain;
   AgsAudio *audio;
   AgsChannel *channel;
+
+  AgsCancelAudio *cancel_audio;
 
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
   audio = cancel_audio->audio;
-
+  devout_play_domain = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain);
+  
   /* cancel playback */
   if(cancel_audio->playback){
-    g_atomic_int_and(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+    g_atomic_int_and(&(devout_play_domain->flags),
 		     (~AGS_DEVOUT_PLAY_DOMAIN_PLAYBACK));
 
     channel = audio->output;
@@ -184,11 +187,15 @@ ags_cancel_audio_launch(AgsTask *task)
       
       channel = channel->next;
     }
+
+    if((AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(devout_play_domain->flags)))) != 0){
+      ags_thread_stop(devout_play_domain->audio_thread[0]);
+    }
   }
 
   /* cancel sequencer */
   if(cancel_audio->sequencer){
-    g_atomic_int_and(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+    g_atomic_int_and(&(devout_play_domain->flags),
 		     (~AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER));
 
     channel = audio->output;
@@ -215,11 +222,15 @@ ags_cancel_audio_launch(AgsTask *task)
       
       channel = channel->next;
     }
+
+    if((AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(devout_play_domain->flags)))) != 0){
+      ags_thread_stop(devout_play_domain->audio_thread[1]);
+    }
   }
 
   /* cancel notation */
   if(cancel_audio->notation){
-    g_atomic_int_and(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+    g_atomic_int_and(&(devout_play_domain->flags),
 		     (~AGS_DEVOUT_PLAY_DOMAIN_NOTATION));
 
     channel = audio->output;
@@ -243,6 +254,10 @@ ags_cancel_audio_launch(AgsTask *task)
       }
       
       channel = channel->next;
+    }
+
+    if((AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(devout_play_domain->flags)))) != 0){
+      ags_thread_stop(devout_play_domain->audio_thread[2]);
     }
   }
 }

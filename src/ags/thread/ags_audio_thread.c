@@ -272,9 +272,13 @@ ags_audio_thread_finalize(GObject *gobject)
 void
 ags_audio_thread_start(AgsThread *thread)
 {
-  //TODO:JK: implement me
-  g_message("starting\0");
-  
+  /* reset status */
+  g_atomic_int_and(&(AGS_AUDIO_THREAD(thread)->flags),
+		   (~(AGS_AUDIO_THREAD_WAKEUP |
+		      AGS_AUDIO_THREAD_WAITING |
+		      AGS_AUDIO_THREAD_NOTIFY |
+  		      AGS_AUDIO_THREAD_DONE)));
+
   AGS_THREAD_CLASS(ags_audio_thread_parent_class)->start(thread);
 }
 
@@ -291,10 +295,25 @@ ags_audio_thread_run(AgsThread *thread)
   gint stage;
   
   pthread_mutex_t *audio_mutex;
+
+  if(!thread->rt_setup){
+    struct sched_param param;
+    
+    /* Declare ourself as a real time task */
+    param.sched_priority = AGS_RT_PRIORITY;
+      
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
+
+    thread->rt_setup = TRUE;
+  }
   
   audio_thread = AGS_AUDIO_THREAD(thread);
   audio = audio_thread->audio;
-
+  
+  //  g_message(" --- a");
+  
   /* start - wait until signaled */
   pthread_mutex_lock(audio_thread->wakeup_mutex);
 
@@ -306,13 +325,12 @@ ags_audio_thread_run(AgsThread *thread)
       pthread_cond_wait(audio_thread->wakeup_cond,
 			audio_thread->wakeup_mutex);
     }
-
-    g_atomic_int_and(&(audio_thread->flags),
-		     (~AGS_AUDIO_THREAD_WAKEUP));
   }
   
   g_atomic_int_and(&(audio_thread->flags),
 		   (~AGS_AUDIO_THREAD_WAITING));
+  g_atomic_int_and(&(audio_thread->flags),
+		   (~AGS_AUDIO_THREAD_WAKEUP));
   
   pthread_mutex_unlock(audio_thread->wakeup_mutex);
 
@@ -364,9 +382,20 @@ ags_audio_thread_run(AgsThread *thread)
 void
 ags_audio_thread_stop(AgsThread *thread)
 {
-  g_atomic_int_and(&(AGS_AUDIO_THREAD(thread)->flags),
-		   (~(AGS_AUDIO_THREAD_WAKEUP |
-		      AGS_AUDIO_THREAD_WAITING)));
+  AgsAudioThread *audio_thread;
+
+  audio_thread = AGS_AUDIO_THREAD(thread);
+  
+  pthread_mutex_lock(audio_thread->wakeup_mutex);
+  
+  g_atomic_int_or(&(audio_thread->flags),
+		  AGS_AUDIO_THREAD_WAKEUP);
+
+  if((AGS_AUDIO_THREAD_WAITING & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
+    pthread_cond_signal(audio_thread->wakeup_cond);
+  }
+  
+  pthread_mutex_unlock(audio_thread->wakeup_mutex);
   
   AGS_THREAD_CLASS(ags_audio_thread_parent_class)->stop(thread);
 }
