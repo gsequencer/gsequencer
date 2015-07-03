@@ -1,3 +1,8 @@
+ags (0.4.2.93)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemnted first super-threaded context for AgsAudio
+
 ags (0.4.2.92)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

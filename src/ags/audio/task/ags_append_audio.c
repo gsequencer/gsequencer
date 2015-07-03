@@ -23,6 +23,12 @@
 
 #include <ags/main.h>
 
+#include <ags/thread/ags_audio_thread.h>
+#include <ags/thread/ags_channel_thread.h>
+
+#include <ags/audio/ags_config.h>
+#include <ags/audio/ags_devout.h>
+
 void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);
 void ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_audio_init(AgsAppendAudio *append_audio);
@@ -44,6 +50,8 @@ void ags_append_audio_launch(AgsTask *task);
 
 static gpointer ags_append_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_append_audio_parent_connectable_interface;
+
+extern AgsConfig *config;
 
 GType
 ags_append_audio_get_type()
@@ -144,18 +152,51 @@ ags_append_audio_finalize(GObject *gobject)
 void
 ags_append_audio_launch(AgsTask *task)
 {
-  AgsServer *server;
+  AgsAudio *audio;
+
   AgsAppendAudio *append_audio;
+
   AgsAudioLoop *audio_loop;
+  
+  AgsServer *server;
 
   append_audio = AGS_APPEND_AUDIO(task);
 
+  audio = append_audio->audio;
   audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);
 
   /* append to AgsDevout */
   ags_audio_loop_add_audio(audio_loop,
-			   append_audio->audio);
+			   audio);
 
+  /**/  
+  if(!g_ascii_strncasecmp(ags_config_get(config,
+					 AGS_CONFIG_THREAD,
+					 "model\0"),
+			  "super-threaded\0",
+			  15)){
+    /* super threaed setup */
+    if(!g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "audio\0",
+			    6)){
+      ags_thread_add_child_extended(audio_loop, AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1],
+				    TRUE, TRUE);
+      ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1]));
+
+      ags_thread_add_child_extended(audio_loop, AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2],
+				    TRUE, TRUE);
+      ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2]));
+    }else if(!g_ascii_strncasecmp(ags_config_get(config,
+						 AGS_CONFIG_THREAD,
+						 "super-threaded-scope\0"),
+				  "channel\0",
+				  8)){
+      //TODO:JK: implement me
+    }
+  }
+  
   /* add to server registry */
   server = AGS_MAIN(audio_loop->ags_main)->server;
 

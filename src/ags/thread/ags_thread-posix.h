@@ -178,6 +178,8 @@ AgsThread* ags_thread_last(AgsThread *thread);
 
 void ags_thread_remove_child(AgsThread *thread, AgsThread *child);
 void ags_thread_add_child(AgsThread *thread, AgsThread *child);
+void ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
+				   gboolean no_start, gboolean no_Wait);
 
 gboolean ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent);
 gboolean ags_thread_sibling_is_locked(AgsThread *thread);

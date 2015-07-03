@@ -141,7 +141,8 @@ ags_append_audio_threaded_launch(AgsTask *task)
 
   /* append to AgsDevout */
   append_audio_threaded->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-  append_audio_threaded->devout_play->flags |= AGS_DEVOUT_PLAY_SUPER_THREADED;
+  //FIXME:JK: not applicable anymore
+  //  append_audio_threaded->devout_play->flags |= AGS_DEVOUT_PLAY_SUPER_THREADED;
   audio_loop->play_audio = g_list_append(audio_loop->play_audio,
 					 append_audio_threaded->devout_play);
   audio_loop->play_audio_ref += 1;

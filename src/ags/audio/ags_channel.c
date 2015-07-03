@@ -28,8 +28,10 @@
 #include <ags/object/ags_marshal.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_channel_thread.h>
 #include <ags/thread/ags_recycling_thread.h>
 
+#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
@@ -92,6 +94,8 @@ static gpointer ags_channel_parent_class = NULL;
 static guint channel_signals[LAST_SIGNAL];
 
 extern pthread_mutex_t ags_application_mutex;
+
+extern AgsConfig *config;
 
 GType
 ags_channel_get_type (void)
@@ -291,6 +295,26 @@ ags_channel_init(AgsChannel *channel)
   channel->devout_play = ags_devout_play_alloc();
   AGS_DEVOUT_PLAY(channel->devout_play)->source = (GObject *) channel;
 
+  if(!g_ascii_strncasecmp(ags_config_get(config,
+					 AGS_CONFIG_THREAD,
+					 "model\0"),
+			  "super-threaded\0",
+			  15)){
+    if(!g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "channel\0",
+			    8)){
+      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->thread_scope),
+		      AGS_DEVOUT_PLAY_THREAD_SCOPE_SUPER_THREADED_CHANNEL);
+
+      AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[1] = ags_channel_thread_new(NULL,
+											channel);
+      AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[2] = ags_channel_thread_new(NULL,
+											channel);
+    }
+  }
+  
   channel->recall_id = NULL;
   channel->container = NULL;
 
@@ -437,7 +461,7 @@ ags_channel_connect(AgsConnectable *connectable)
 #ifdef AGS_DEBUG
   g_message("connecting channel\0");
 #endif
-
+  
   //  ags_connectable_add_to_registry(connectable);
 
   /* connect recall ids */

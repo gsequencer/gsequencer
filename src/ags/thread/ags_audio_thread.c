@@ -23,9 +23,11 @@
 
 #include <ags/main.h>
 
-#include <ags/thread/ags_timestamp_thread.h>
+#include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
 
 void ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread);
 void ags_audio_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -56,13 +58,15 @@ void ags_audio_thread_stop(AgsThread *thread);
  * The #AgsAudioThread acts as audio output thread to soundcard.
  */
 
-static gpointer ags_audio_thread_parent_class = NULL;
-static AgsConnectableInterface *ags_audio_thread_parent_connectable_interface;
-
 enum{
   PROP_0,
   PROP_AUDIO,
 };
+
+static gpointer ags_audio_thread_parent_class = NULL;
+static AgsConnectableInterface *ags_audio_thread_parent_connectable_interface;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_audio_thread_get_type()
@@ -106,7 +110,8 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
 {
   GObjectClass *gobject;
   AgsThreadClass *thread;
-
+  GParamSpec *param_spec;
+  
   ags_audio_thread_parent_class = g_type_class_peek_parent(audio_thread);
 
   /* GObject */
@@ -154,9 +159,12 @@ ags_audio_thread_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_audio_thread_init(AgsAudioThread *audio_thread)
 {
+  AGS_THREAD(audio_thread)->freq = AGS_AUDIO_THREAD_DEFAULT_JIFFIE;
+
   g_atomic_int_set(&(audio_thread->flags),
 		   0);
-  
+
+  /* start */
   pthread_mutexattr_init(&(audio_thread->wakeup_attr));
   pthread_mutexattr_settype(&(audio_thread->wakeup_attr),
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -167,6 +175,18 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   
   audio_thread->wakeup_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(audio_thread->wakeup_cond, NULL);
+
+  /* sync */
+  pthread_mutexattr_init(&(audio_thread->done_attr));
+  pthread_mutexattr_settype(&(audio_thread->done_attr),
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  audio_thread->done_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(audio_thread->done_mutex,
+		     &(audio_thread->done_attr));
+  
+  audio_thread->done_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(audio_thread->done_cond, NULL);
 }
 
 void
@@ -253,6 +273,7 @@ void
 ags_audio_thread_start(AgsThread *thread)
 {
   //TODO:JK: implement me
+  g_message("starting\0");
   
   AGS_THREAD_CLASS(ags_audio_thread_parent_class)->start(thread);
 }
@@ -260,37 +281,92 @@ ags_audio_thread_start(AgsThread *thread)
 void
 ags_audio_thread_run(AgsThread *thread)
 {
+  AgsAudio *audio;
+  AgsChannel *output;
+  AgsDevoutPlay *devout_play;
+  
+  AgsMutexManager *mutex_manager;
   AgsAudioThread *audio_thread;
 
+  gint stage;
+  
+  pthread_mutex_t *audio_mutex;
+  
   audio_thread = AGS_AUDIO_THREAD(thread);
+  audio = audio_thread->audio;
 
-  /* wait until signaled */
+  /* start - wait until signaled */
   pthread_mutex_lock(audio_thread->wakeup_mutex);
 
   if((AGS_AUDIO_THREAD_WAKEUP & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
     g_atomic_int_or(&(audio_thread->flags),
-		    AGS_THREAD_WAITING);
+		    AGS_AUDIO_THREAD_WAITING);
     
     while((AGS_AUDIO_THREAD_WAKEUP & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
       pthread_cond_wait(audio_thread->wakeup_cond,
 			audio_thread->wakeup_mutex);
     }
+
+    g_atomic_int_and(&(audio_thread->flags),
+		     (~AGS_AUDIO_THREAD_WAKEUP));
   }
   
   g_atomic_int_and(&(audio_thread->flags),
-		   (~AGS_THREAD_WAKEUP));
+		   (~AGS_AUDIO_THREAD_WAITING));
   
   pthread_mutex_unlock(audio_thread->wakeup_mutex);
 
+  /* audio mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+      
+  pthread_mutex_unlock(&(ags_application_mutex));
+
   /* do audio processing */
+  for(stage = 0; stage < 3; stage++){
+    output = audio->output;
+
+    while(output != NULL){
+      devout_play = output->devout_play;
+    
+      if((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0){
+	ags_channel_recursive_play(output, devout_play->recall_id[0], stage);
+      }
+
+      if((AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0){
+	ags_channel_recursive_play(output, devout_play->recall_id[1], stage);
+      }
+
+      if((AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0){
+	ags_channel_recursive_play(output, devout_play->recall_id[2], stage);
+      }
+    
+      output = output->next;
+    }
+  }
+
+  /* sync */
+  pthread_mutex_lock(audio_thread->done_mutex);
+
+  g_atomic_int_or(&(audio_thread->flags),
+		  AGS_AUDIO_THREAD_DONE);
+	    
+  if((AGS_AUDIO_THREAD_NOTIFY & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
+    pthread_cond_signal(audio_thread->done_cond);
+  }
+	    
+  pthread_mutex_unlock(audio_thread->done_mutex);
 }
 
 void
 ags_audio_thread_stop(AgsThread *thread)
 {
-  g_atomic_int_and(&(audio_thread->flags),
-		   (~(AGS_THREAD_WAKEUP |
-		      AGS_THREAD_WAITING)));
+  g_atomic_int_and(&(AGS_AUDIO_THREAD(thread)->flags),
+		   (~(AGS_AUDIO_THREAD_WAKEUP |
+		      AGS_AUDIO_THREAD_WAITING)));
   
   AGS_THREAD_CLASS(ags_audio_thread_parent_class)->stop(thread);
 }

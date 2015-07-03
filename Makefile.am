@@ -593,7 +593,9 @@ gsequencer_SOURCES = \
 	src/ags/server/ags_server.c \
 	src/ags/thread/ags_async_queue.c \
 	src/ags/thread/ags_audio_loop.c \
+	src/ags/thread/ags_audio_thread.c \
 	src/ags/thread/ags_autosave_thread.c \
+	src/ags/thread/ags_channel_thread.c \
 	src/ags/thread/ags_devout_thread.c \
 	src/ags/thread/ags_export_thread.c \
 	src/ags/thread/ags_gui_task_thread.c \

@@ -106,7 +106,8 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
 {
   GObjectClass *gobject;
   AgsThreadClass *thread;
-
+  GParamSpec *param_spec;
+  
   ags_channel_thread_parent_class = g_type_class_peek_parent(channel_thread);
 
   /* GObject */
@@ -157,7 +158,8 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   g_atomic_int_set(&(channel_thread->flags),
 		   0);
 
- pthread_mutexattr_init(&(channel_thread->wakeup_attr));
+  /* start */
+  pthread_mutexattr_init(&(channel_thread->wakeup_attr));
   pthread_mutexattr_settype(&(channel_thread->wakeup_attr),
 			    PTHREAD_MUTEX_RECURSIVE);
 
@@ -167,6 +169,18 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   
   channel_thread->wakeup_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(channel_thread->wakeup_cond, NULL);
+
+  /* sync */
+  pthread_mutexattr_init(&(channel_thread->done_attr));
+  pthread_mutexattr_settype(&(channel_thread->done_attr),
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  channel_thread->done_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(channel_thread->done_mutex,
+		     &(channel_thread->done_attr));
+  
+  channel_thread->done_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(channel_thread->done_cond, NULL);
 }
 
 void

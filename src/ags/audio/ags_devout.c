@@ -100,8 +100,6 @@ enum{
   LAST_SIGNAL,
 };
 
-extern AgsConfig *config;
-
 static gpointer ags_devout_parent_class = NULL;
 static guint devout_signals[LAST_SIGNAL];
 
@@ -109,6 +107,8 @@ static guint devout_signals[LAST_SIGNAL];
 static gboolean DEBUG_DEVOUT = FALSE;
 
 extern pthread_mutex_t ags_application_mutex;
+
+extern AgsConfig *config;
 
 GType
 ags_devout_get_type (void)
@@ -866,12 +866,18 @@ ags_devout_play_domain_alloc()
 
   devout_play_domain = (AgsDevoutPlayDomain *) malloc(sizeof(AgsDevoutPlayDomain));
 
+  g_atomic_int_set(&(devout_play_domain->flags),
+		   0);
+
+  /* super threaded audio */
+  devout_play_domain->audio_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
+
+  devout_play_domain->audio_thread[0] = NULL;
+  devout_play_domain->audio_thread[1] = NULL;
+  devout_play_domain->audio_thread[2] = NULL;
+
+  /* domain */
   devout_play_domain->domain = NULL;
-
-  devout_play_domain->playback = FALSE;
-  devout_play_domain->sequencer = FALSE;
-  devout_play_domain->notation = FALSE;
-
   devout_play_domain->devout_play = NULL;
 
   return(devout_play_domain);
@@ -911,16 +917,28 @@ ags_devout_play_alloc()
   play = (AgsDevoutPlay *) malloc(sizeof(AgsDevoutPlay));
 
   play->flags = 0;
+  g_atomic_int_set(&(play->thread_scope),
+		   0);
 
+  /* super threaded channel */
+  play->channel_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
+
+  play->channel_thread[0] = NULL;
+  play->channel_thread[1] = NULL;
+  play->channel_thread[2] = NULL;
+
+  /* fully super threaded recycling */
   play->iterator_thread = (AgsIteratorThread **) malloc(3 * sizeof(AgsIteratorThread *));
 
-  play->iterator_thread[0] = ags_iterator_thread_new();
-  play->iterator_thread[1] = ags_iterator_thread_new();
-  play->iterator_thread[2] = ags_iterator_thread_new();
+  play->iterator_thread[0] = NULL;
+  play->iterator_thread[1] = NULL;
+  play->iterator_thread[2] = NULL;
 
+  /* source */
   play->source = NULL;
   play->audio_channel = 0;
 
+  /* playback, sequencer and notation */
   play->recall_id = (AgsDevoutPlay **) malloc(3 * sizeof(AgsDevoutPlay *));
 
   play->recall_id[0] = NULL;

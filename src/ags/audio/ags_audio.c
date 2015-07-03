@@ -30,8 +30,10 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_audio_thread.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -108,6 +110,7 @@ static gpointer ags_audio_parent_class = NULL;
 static guint audio_signals[LAST_SIGNAL];
 
 extern pthread_mutex_t ags_application_mutex;
+extern AgsConfig *config;
 
 GType
 ags_audio_get_type (void)
@@ -340,6 +343,27 @@ ags_audio_init(AgsAudio *audio)
   audio->devout_play_domain = ags_devout_play_domain_alloc();
   AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->domain = (GObject *) audio;
 
+  
+  if(!g_ascii_strncasecmp(ags_config_get(config,
+					 AGS_CONFIG_THREAD,
+					 "model\0"),
+			  "super-threaded\0",
+			  15)){
+    if(!g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "audio\0",
+			    6)){
+      g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+		      AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO);
+
+      AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
+												audio);
+      AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
+												audio);
+    }
+  }
+  
   audio->notation = NULL;
 
   audio->recall_id = NULL;
@@ -3443,6 +3467,30 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
 
   pthread_mutex_lock(mutex);
 
+  /**/  
+  if(!g_ascii_strncasecmp(ags_config_get(config,
+					 AGS_CONFIG_THREAD,
+					 "model\0"),
+			  "super-threaded\0",
+			  15)){
+    /* super threaed setup */
+    if(!g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "audio\0",
+			    6)){
+      /* sequencer */
+      g_object_set(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1],
+		   "devout\0", devout,
+		   NULL);
+  
+      /* notation */
+      g_object_set(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2],
+		   "devout\0", devout,
+		   NULL);
+    }
+  }
+  
   /* audio */
   if(audio->devout == devout){
     pthread_mutex_unlock(mutex);

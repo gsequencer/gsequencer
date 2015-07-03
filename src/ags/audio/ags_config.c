@@ -217,7 +217,8 @@ ags_config_load_defaults(AgsConfig *config)
   ags_config_set(config, ags_config_generic, "autosave-thread\0", "false\0");
   ags_config_set(config, ags_config_generic, "segmentation\0", "4/4\0");
 
-  ags_config_set(config, ags_config_thread, "model\0", "multi-threaded\0");
+  ags_config_set(config, ags_config_thread, "model\0", "super-threaded\0");
+  ags_config_set(config, ags_config_thread, "super-threaded-scope\0", "audio\0");
   ags_config_set(config, ags_config_thread, "lock-global\0", "ags-thread\0");
   ags_config_set(config, ags_config_thread, "lock-parent\0", "ags-recycling-thread\0");
 

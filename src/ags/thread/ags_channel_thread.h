@@ -56,6 +56,10 @@ struct _AgsChannelThread
   pthread_mutex_t *wakeup_mutex;
   pthread_cond_t *wakeup_cond;
 
+  pthread_mutexattr_t done_attr;
+  pthread_mutex_t *done_mutex;
+  pthread_cond_t *done_cond;
+
   GObject *channel;
 };
 
