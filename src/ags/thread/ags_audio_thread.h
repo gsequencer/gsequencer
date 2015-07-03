@@ -44,6 +44,8 @@ typedef struct _AgsAudioThreadClass AgsAudioThreadClass;
 typedef enum{
   AGS_AUDIO_THREAD_WAITING    = 1,
   AGS_AUDIO_THREAD_WAKEUP     = 1 <<  1,
+  AGS_AUDIO_THREAD_DONE       = 1 <<  2,
+  AGS_AUDIO_THREAD_NOTIFY     = 1 <<  3,
 }AgsAudioThreadFlags;
 
 struct _AgsAudioThread
@@ -55,6 +57,10 @@ struct _AgsAudioThread
   pthread_mutexattr_t wakeup_attr;
   pthread_mutex_t *wakeup_mutex;
   pthread_cond_t *wakeup_cond;
+
+  pthread_mutexattr_t done_attr;
+  pthread_mutex_t *done_mutex;
+  pthread_cond_t *done_cond;
 
   GObject *audio;
 };

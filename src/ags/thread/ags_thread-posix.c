@@ -25,6 +25,7 @@
 
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
+#include <ags/thread/ags_audio_thread.h>
 
 #include <ags/audio/ags_devout.h>
 
@@ -919,6 +920,25 @@ ags_thread_remove_child(AgsThread *thread, AgsThread *child)
 void
 ags_thread_add_child(AgsThread *thread, AgsThread *child)
 {
+  ags_thread_add_child_extended(thread, child,
+				FALSE, TRUE);
+}
+
+/**
+ * ags_thread_add_child:
+ * @thread: an #AgsThread
+ * @child: the child to remove
+ * @no_start: don't start thread
+ * @no_wait: don't wait until started
+ * 
+ * Add child to thread.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
+			      gboolean no_start, gboolean no_wait)
+{
   AgsThread *main_loop;
 
   if(thread == NULL || child == NULL){
@@ -949,10 +969,31 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
 
   ags_thread_unlock(main_loop);
     
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
-    guint val;
-    
-    ags_thread_start(child);
+  if(!no_start){
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
+      /* start child */
+      ags_thread_start(child);
+
+      if(!no_wait){
+	guint val;
+
+	/* wait child */
+	pthread_mutex_lock(child->start_mutex);
+
+	val = g_atomic_int_get(&(child->flags));
+
+	if((AGS_THREAD_INITIAL_RUN & val) != 0){
+	  while((AGS_THREAD_INITIAL_RUN & val) != 0){
+	    pthread_cond_wait(child->start_cond,
+			      child->start_mutex);
+
+	    val = g_atomic_int_get(&(child->flags));
+	  }
+	}
+	
+	pthread_mutex_unlock(child->start_mutex);
+      }
+    }
   }
 }
 
@@ -1943,7 +1984,7 @@ ags_thread_loop(void *ptr)
   g_atomic_int_or(&(thread->flags),
 		  (AGS_THREAD_RUNNING |
 		   AGS_THREAD_INITIAL_RUN));
-  
+
   running = g_atomic_int_get(&(thread->flags));
 
   if(thread->freq >= 1.0){
@@ -2007,7 +2048,7 @@ ags_thread_loop(void *ptr)
 			   (~AGS_THREAD_INITIAL_RUN));
 
 	  pthread_cond_signal(thread->start_cond);
-
+	  
 	  pthread_mutex_unlock(thread->mutex);
 	}else{
 	  /* run in hierarchy */
@@ -2019,7 +2060,6 @@ ags_thread_loop(void *ptr)
 	}
 
 	//	pthread_yield();
-
 	continue;
       }else{
 	counter = 0;

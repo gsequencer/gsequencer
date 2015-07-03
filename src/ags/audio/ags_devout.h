@@ -99,17 +99,22 @@ typedef enum
   AGS_DEVOUT_PLAY_PLAYBACK          = 1 <<  5,
   AGS_DEVOUT_PLAY_SEQUENCER         = 1 <<  6,
   AGS_DEVOUT_PLAY_NOTATION          = 1 <<  7,
-  AGS_DEVOUT_PLAY_SUPER_THREADED    = 1 <<  8,
 }AgsDevoutPlayFlags;
+
+typedef enum{
+  AGS_DEVOUT_PLAY_DOMAIN_PLAYBACK                   = 1,
+  AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER                  = 1 <<  1,
+  AGS_DEVOUT_PLAY_DOMAIN_NOTATION                   = 1 <<  2,
+  AGS_DEVOUT_PLAY_DOMAIN_SINGLE_THREADED            = 1 <<  3,
+  AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  4,
+}AgsDevoutPlayDomainFlags;
 
 typedef enum
 {
-  AGS_DEVOUT_PLAY_SCOPE_SINGLE_THREADED            = 1 ,
-  AGS_DEVOUT_PLAY_SCOPE_MULTI_THREADED             = 1 <<  1,
-  AGS_DEVOUT_PLAY_SCOPE_SUPER_THREADED_AUDIO       = 1 <<  2,
-  AGS_DEVOUT_PLAY_SCOPE_SUPER_THREADED_CHANNEL     = 1 <<  3,
-  AGS_DEVOUT_PLAY_SCOPE_SUPER_THREADED_RECYCLING   = 1 <<  4,
-}AgsDevoutPlayFlags;
+  AGS_DEVOUT_PLAY_THREAD_SCOPE_MULTI_THREADED             = 1,
+  AGS_DEVOUT_PLAY_THREAD_SCOPE_SUPER_THREADED_CHANNEL     = 1 <<  1,
+  AGS_DEVOUT_PLAY_THREAD_SCOPE_SUPER_THREADED_RECYCLING   = 1 <<  2,
+}AgsDevoutPlayThreadScope;
 
 typedef enum{
   AGS_DEVOUT_RESOLUTION_8_BIT    = 8,
@@ -196,12 +201,11 @@ struct _AgsDevoutClass
  */
 struct _AgsDevoutPlayDomain
 {
-  GObject *domain;
+  volatile guint flags;
   
-  gboolean playback;
-  gboolean sequencer;
-  gboolean notation;
+  AgsThread **audio_thread;
 
+  GObject *domain;  
   GList *devout_play;
 };
 
@@ -221,7 +225,7 @@ struct _AgsDevoutPlay
   guint flags;
   volatile guint thread_scope;
   
-  pthread_t *thread;
+  AgsThread **channel_thread;
   AgsIteratorThread **iterator_thread;
 
   GObject *source;

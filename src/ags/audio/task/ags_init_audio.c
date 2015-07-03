@@ -159,6 +159,8 @@ ags_init_audio_launch(AgsTask *task)
 
   /* init audio */
   if(init_audio->playback){
+    g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+		    AGS_DEVOUT_PLAY_DOMAIN_PLAYBACK);
     devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
     
     list = ags_audio_recursive_play_init(audio,
@@ -174,6 +176,8 @@ ags_init_audio_launch(AgsTask *task)
   }
 
   if(init_audio->sequencer){
+    g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+		    AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER);
     devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
 
     list = ags_audio_recursive_play_init(audio,
@@ -189,6 +193,8 @@ ags_init_audio_launch(AgsTask *task)
   }
 
   if(init_audio->notation){
+    g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+		    AGS_DEVOUT_PLAY_DOMAIN_NOTATION);
     devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
 
     list = ags_audio_recursive_play_init(audio,

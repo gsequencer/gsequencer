@@ -158,6 +158,9 @@ ags_cancel_audio_launch(AgsTask *task)
 
   /* cancel playback */
   if(cancel_audio->playback){
+    g_atomic_int_and(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+		     (~AGS_DEVOUT_PLAY_DOMAIN_PLAYBACK));
+
     channel = audio->output;
 
     while(channel != NULL){
@@ -185,6 +188,9 @@ ags_cancel_audio_launch(AgsTask *task)
 
   /* cancel sequencer */
   if(cancel_audio->sequencer){
+    g_atomic_int_and(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+		     (~AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER));
+
     channel = audio->output;
 
     while(channel != NULL){
@@ -213,6 +219,9 @@ ags_cancel_audio_launch(AgsTask *task)
 
   /* cancel notation */
   if(cancel_audio->notation){
+    g_atomic_int_and(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
+		     (~AGS_DEVOUT_PLAY_DOMAIN_NOTATION));
+
     channel = audio->output;
 
     while(channel != NULL){

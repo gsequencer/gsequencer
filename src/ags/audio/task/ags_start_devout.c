@@ -202,7 +202,6 @@ ags_start_devout_launch(AgsTask *task)
 	}
       }
     
-      //    ags_thread_unlock(AGS_THREAD(devout_thread));
       pthread_mutex_unlock(AGS_THREAD(devout_thread)->start_mutex);
 
       g_message("started devout\0");
