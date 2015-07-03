@@ -297,6 +297,7 @@ ags_thread_init(AgsThread *thread)
 {
   g_atomic_int_set(&(thread->flags),
 		   0);
+  thread->rt_setup = FALSE;
 
   thread->devout = NULL;
   
@@ -1854,7 +1855,8 @@ ags_thread_real_start(AgsThread *thread)
   }
 
   main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
-
+  thread->rt_setup = FALSE;
+  
 #ifdef AGS_DEBUG
   g_message("thread start: %s\0", G_OBJECT_TYPE_NAME(thread));
 #endif
@@ -2047,7 +2049,7 @@ ags_thread_loop(void *ptr)
 	  g_atomic_int_and(&(thread->flags),
 			   (~AGS_THREAD_INITIAL_RUN));
 
-	  pthread_cond_signal(thread->start_cond);
+	  pthread_cond_broadcast(thread->start_cond);
 	  
 	  pthread_mutex_unlock(thread->mutex);
 	}else{
@@ -2076,7 +2078,7 @@ ags_thread_loop(void *ptr)
 			   (~AGS_THREAD_WAIT_0));
 
 	  /* signal AgsAudioLoop */
-	  pthread_cond_signal(thread->start_cond);
+	  pthread_cond_broadcast(thread->start_cond);
 	}else{
 	  /* run in hierarchy */
 	  pthread_mutex_lock(thread->mutex);

@@ -65,7 +65,8 @@
 #define AGS_EFFECTS_DEFAULT_VERSION "0.4.2\0"
 #define AGS_DEFAULT_DIRECTORY ".gsequencer\0"
 #define AGS_DEFAULT_CONFIG "ags.conf\0"
-#define AGS_PRIORITY (49)
+#define AGS_PRIORITY (5)
+#define AGS_RT_PRIORITY (49)
 
 typedef struct _AgsMain AgsMain;
 typedef struct _AgsMainClass AgsMainClass;

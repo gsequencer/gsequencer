@@ -96,6 +96,8 @@ struct _AgsThread
 
   volatile guint flags;
 
+  gboolean rt_setup;
+  
   sigset_t wait_mask;
 
   GObject *devout;
