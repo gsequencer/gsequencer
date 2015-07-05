@@ -184,7 +184,8 @@ ags_init_channel_launch(AgsTask *task)
       while(channel != next_pad){
 	if(stage == 0){
 	  if(init_channel->playback){
-	    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
+	    g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			    AGS_DEVOUT_PLAY_PLAYBACK);
 
 	    recall_id = ags_channel_recursive_play_init(channel, stage,
 							arrange_recall_id, duplicate_templates,
@@ -195,7 +196,8 @@ ags_init_channel_launch(AgsTask *task)
 	  }
 	  
 	  if(init_channel->sequencer){
-	    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
+	    g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			      AGS_DEVOUT_PLAY_SEQUENCER);
 
 	    recall_id = ags_channel_recursive_play_init(channel, stage,
 							arrange_recall_id, duplicate_templates,
@@ -206,7 +208,8 @@ ags_init_channel_launch(AgsTask *task)
 	  }
 	  
 	  if(init_channel->notation){
-	    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_NOTATION;
+	    g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			    AGS_DEVOUT_PLAY_NOTATION);
 
 	    recall_id = ags_channel_recursive_play_init(channel, stage,
 							arrange_recall_id, duplicate_templates,
@@ -262,7 +265,8 @@ ags_init_channel_launch(AgsTask *task)
 						  TRUE,
 						  NULL);
     
-      AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
+      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+		      AGS_DEVOUT_PLAY_PLAYBACK);
       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id;
     }
 
@@ -273,7 +277,8 @@ ags_init_channel_launch(AgsTask *task)
 						  TRUE,
 						  NULL);
     
-      AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
+      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+		      AGS_DEVOUT_PLAY_SEQUENCER);
       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = recall_id;
     }
 
@@ -284,7 +289,8 @@ ags_init_channel_launch(AgsTask *task)
 						  TRUE,
 						  NULL);
     
-      AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_NOTATION;
+      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+		      AGS_DEVOUT_PLAY_NOTATION);
       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = recall_id;
     }
   }

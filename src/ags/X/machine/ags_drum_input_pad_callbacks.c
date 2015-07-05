@@ -450,17 +450,17 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
     channel = AGS_PAD(drum_input_pad)->channel;
 
     if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL ||
-       (AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->flags)) != 0){
+       (AGS_DEVOUT_PLAY_DONE & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->flags)))) != 0){
       pthread_mutex_unlock(audio_mutex);
       return;
     }
 
-    if((AGS_DEVOUT_PLAY_PAD & (AGS_DEVOUT_PLAY(channel->devout_play)->flags)) != 0){
+    if((AGS_DEVOUT_PLAY_PAD & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) != 0){
       AgsChannel *next_pad;
 
       next_pad = channel->next_pad;
 
-      if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(channel->devout_play)->flags)) == 0){
+      if((AGS_DEVOUT_PLAY_DONE & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) == 0){
 	/* cancel request */
 	while(channel != next_pad){
 	  cancel_channel = ags_cancel_channel_new(channel, AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0],
@@ -473,8 +473,10 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       }else{
 	/* done */
 	while(channel != next_pad){
-	  AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;
-	  AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
+	  g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			  AGS_DEVOUT_PLAY_REMOVE);
+	  g_atomic_int_and(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			   (~AGS_DEVOUT_PLAY_DONE));
 
 	  channel = channel->next;
 	}
@@ -491,7 +493,7 @@ ags_drum_input_pad_play_callback(GtkToggleButton *toggle_button, AgsDrumInputPad
       /*  */
       channel = line->channel;
 
-      if((AGS_DEVOUT_PLAY_DONE & (AGS_DEVOUT_PLAY(channel->devout_play)->flags)) == 0){
+      if((AGS_DEVOUT_PLAY_DONE & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) == 0){
 	/* cancel request */
 	cancel_channel = ags_cancel_channel_new(channel, AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0],
 						AGS_DEVOUT_PLAY(channel->devout_play));

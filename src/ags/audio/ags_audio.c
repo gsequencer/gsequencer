@@ -3092,9 +3092,9 @@ ags_audio_is_playing(AgsAudio *audio)
   while(output != NULL){
     devout_play = AGS_DEVOUT_PLAY(output->devout_play);
 
-    if((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0 ||
-       (AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0 ||
-       (AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0){
+    if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(devout_play->flags)))) != 0 ||
+       (AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(devout_play->flags)))) != 0 ||
+       (AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(devout_play->flags)))) != 0){
   
       pthread_mutex_unlock(mutex);
       

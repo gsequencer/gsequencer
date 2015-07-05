@@ -354,18 +354,18 @@ ags_audio_thread_run(AgsThread *thread)
     while(output != NULL){
       devout_play = output->devout_play;
       
-      if((AGS_DEVOUT_PLAY_THREAD_SCOPE_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->thread_scope)))) != 0){
+      if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
 	ags_audio_thread_play_channel_super_threaded(audio_thread, devout_play);
       }else{
-	if((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0){
+	if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(devout_play->flags)))) != 0){
 	  ags_channel_recursive_play(output, devout_play->recall_id[0], stage);
 	}
 
-	if((AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0){
+	if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(devout_play->flags)))) != 0){
 	  ags_channel_recursive_play(output, devout_play->recall_id[1], stage);
 	}
 
-	if((AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0){
+	if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(devout_play->flags)))) != 0){
 	  ags_channel_recursive_play(output, devout_play->recall_id[2], stage);
 	}
       }
@@ -381,7 +381,7 @@ ags_audio_thread_run(AgsThread *thread)
   while(output != NULL){
     devout_play = output->devout_play;
     
-    if((AGS_DEVOUT_PLAY_THREAD_SCOPE_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->thread_scope)))) != 0){
+    if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
       ags_audio_thread_sync_channel_super_threaded(audio_thread, devout_play);
     }
     
@@ -546,7 +546,7 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsDe
   notation = FALSE;
 	
   /* playback */
-  if((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0){
+  if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(devout_play->flags)))) != 0){
     playback = TRUE;
 
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play->channel_thread[0]->flags)))) != 0 &&
@@ -578,7 +578,7 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsDe
   }
 
   /* sequencer */
-  if((AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0){
+  if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(devout_play->flags)))) != 0){
     sequencer = TRUE;
     
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play->channel_thread[1]->flags)))) != 0 &&
@@ -608,7 +608,7 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsDe
   }
 
   /* notation */
-  if((AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0){
+  if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(devout_play->flags)))) != 0){
     notation = TRUE;
 
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play->channel_thread[2]->flags)))) != 0 &&
