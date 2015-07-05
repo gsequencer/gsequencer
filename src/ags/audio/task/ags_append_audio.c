@@ -180,7 +180,12 @@ ags_append_audio_launch(AgsTask *task)
 					   AGS_CONFIG_THREAD,
 					   "super-threaded-scope\0"),
 			    "audio\0",
-			    6)){
+			    6) ||
+       !g_ascii_strncasecmp(ags_config_get(config,
+						 AGS_CONFIG_THREAD,
+						 "super-threaded-scope\0"),
+				  "channel\0",
+				  8)){
       ags_thread_add_child_extended(audio_loop, AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1],
 				    TRUE, TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1]));
@@ -188,12 +193,6 @@ ags_append_audio_launch(AgsTask *task)
       ags_thread_add_child_extended(audio_loop, AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2],
 				    TRUE, TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2]));
-    }else if(!g_ascii_strncasecmp(ags_config_get(config,
-						 AGS_CONFIG_THREAD,
-						 "super-threaded-scope\0"),
-				  "channel\0",
-				  8)){
-      //TODO:JK: implement me
     }
   }
   

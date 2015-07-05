@@ -44,6 +44,8 @@ typedef struct _AgsChannelThreadClass AgsChannelThreadClass;
 typedef enum{
   AGS_CHANNEL_THREAD_WAITING    = 1,
   AGS_CHANNEL_THREAD_WAKEUP     = 1 <<  1,
+  AGS_CHANNEL_THREAD_DONE       = 1 <<  2,
+  AGS_CHANNEL_THREAD_NOTIFY     = 1 <<  3,
 }AgsChannelThreadFlags;
 
 struct _AgsChannelThread

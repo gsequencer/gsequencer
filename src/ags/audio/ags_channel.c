@@ -814,17 +814,49 @@ ags_channel_set_devout(AgsChannel *channel, GObject *devout)
   GList *list;
 
   /* channel */
-  if(channel->devout == devout)
+  if(channel->devout == devout){
     return;
+  }
 
-  if(channel->devout != NULL)
+  if(channel->devout != NULL){
     g_object_unref(channel->devout);
-
-  if(devout != NULL)
+  }
+  
+  if(devout != NULL){
     g_object_ref(devout);
-
+  }
+  
   channel->devout = (GObject *) devout;
 
+  /**/
+  if(!g_ascii_strncasecmp(ags_config_get(config,
+					 AGS_CONFIG_THREAD,
+					 "model\0"),
+			  "super-threaded\0",
+			  15)){
+    /* super threaed setup */
+    if(!g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "channel\0",
+			    8)){
+      /* playback */
+      g_object_set(AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[0],
+		   "devout\0", devout,
+		   NULL);
+      
+      /* sequencer */
+      g_object_set(AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[1],
+		   "devout\0", devout,
+		   NULL);
+  
+      /* notation */
+      g_object_set(AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[2],
+		   "devout\0", devout,
+		   NULL);
+    }
+  }
+  
   /* recall */
   list = channel->play;
 
@@ -1018,8 +1050,13 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 {
   AgsChannel *old_channel_link, *old_link_link;
   AgsRecycling *first_recycling, *last_recycling;
-  GError *this_error;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *channel_mutex, *link_mutex;
+
+  GError *this_error;
+  
   if(channel == NULL &&
      link == NULL){
     return;
@@ -1039,6 +1076,26 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     old_channel_link = NULL;
   }
 
+  /* retrieve lock */
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+
+  link_mutex = ags_mutex_manager_lookup(mutex_manager,
+					(GObject *) link);
+  
+
+  if(channel_mutex != NULL){
+    pthread_mutex_lock(channel_mutex);
+  }
+
+  if(link_mutex != NULL){
+    pthread_mutex_lock(link_mutex);
+  }
+  
   if(link != NULL){
     old_link_link = link->link;
   }else{
@@ -1082,7 +1139,18 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			channel->line, G_OBJECT_TYPE_NAME(audio),
 			link->line, G_OBJECT_TYPE_NAME(link->audio));
 	  }
-	  
+
+	  /* release lock */
+	  if(link_mutex != NULL){
+	    pthread_mutex_unlock(link_mutex);
+	  }
+
+	  if(channel_mutex != NULL){
+	    pthread_mutex_unlock(channel_mutex);
+	  }
+  
+	  pthread_mutex_unlock(&(ags_application_mutex));
+
 	  return;
 	}
 
@@ -1180,6 +1248,17 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
   /* reset recall id */
   ags_channel_recursive_reset_recall_ids(channel, link,
 					 old_channel_link, old_link_link);
+
+  /* release lock */
+  if(link_mutex != NULL){
+    pthread_mutex_unlock(link_mutex);
+  }
+
+  if(channel_mutex != NULL){
+    pthread_mutex_unlock(channel_mutex);
+  }
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
 }
 
 /**
@@ -7068,8 +7147,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     return;
   }
 
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   if((link != NULL && (AGS_IS_OUTPUT(link)) ||
       AGS_IS_INPUT(channel))){
     AgsChannel *tmp, *tmp_old;
@@ -7190,8 +7267,6 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
   g_list_free(channel_recall_id_list);
   g_list_free(link_recall_id_list);
-
-  pthread_mutex_unlock(&(ags_application_mutex));
 }
 
 void
