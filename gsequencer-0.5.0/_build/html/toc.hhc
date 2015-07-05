@@ -17,54 +17,54 @@
 <UL>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="File">
-<param name="Local" value="ch01.html#idp48222656"></OBJECT></LI>
+<param name="Local" value="ch01.html#idp63193136"></OBJECT></LI>
 <UL>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Export to PCM audio file">
-<param name="Local" value="ch01.html#idp46890720"></OBJECT></LI>
+<param name="Local" value="ch01.html#idp64308832"></OBJECT></LI>
 </UL><LI><OBJECT type="text/sitemap">
 <param name="Name" value="Edit">
 <param name="Local" value="ch01s02.html"></OBJECT></LI>
 <UL>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Preferences dialog">
-<param name="Local" value="ch01s02.html#idp45319664"></OBJECT></LI>
+<param name="Local" value="ch01s02.html#idp64264096"></OBJECT></LI>
 <UL>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Generic">
-<param name="Local" value="ch01s02.html#idp46885040"></OBJECT></LI>
+<param name="Local" value="ch01s02.html#idp64265472"></OBJECT></LI>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Audio">
-<param name="Local" value="ch01s02.html#idp46886960"></OBJECT></LI>
+<param name="Local" value="ch01s02.html#idp66921072"></OBJECT></LI>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Performance">
-<param name="Local" value="ch01s02.html#idp43867936"></OBJECT></LI>
+<param name="Local" value="ch01s02.html#idp66923776"></OBJECT></LI>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Server">
-<param name="Local" value="ch01s02.html#idp43870080"></OBJECT></LI>
+<param name="Local" value="ch01s02.html#idp65095232"></OBJECT></LI>
 </UL></UL></UL><LI><OBJECT type="text/sitemap">
 <param name="Name" value="Engines">
 <param name="Local" value="ch02.html"></OBJECT></LI>
 <UL>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Machine Properties">
-<param name="Local" value="ch02.html#idp48364896"></OBJECT></LI>
+<param name="Local" value="ch02.html#idp65430464"></OBJECT></LI>
 <UL>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="">
-<param name="Local" value="ch02.html#idp48366016"></OBJECT></LI>
+<param name="Local" value="ch02.html#idp66182544"></OBJECT></LI>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="">
-<param name="Local" value="ch02.html#idp44681760"></OBJECT></LI>
+<param name="Local" value="ch02.html#idp66184112"></OBJECT></LI>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="">
-<param name="Local" value="ch02.html#idp44683360"></OBJECT></LI>
+<param name="Local" value="ch02.html#idp66185200"></OBJECT></LI>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="">
-<param name="Local" value="ch02.html#idp45550848"></OBJECT></LI>
+<param name="Local" value="ch02.html#idp66345616"></OBJECT></LI>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="">
-<param name="Local" value="ch02.html#idp45552352"></OBJECT></LI>
+<param name="Local" value="ch02.html#idp66347856"></OBJECT></LI>
 </UL><LI><OBJECT type="text/sitemap">
 <param name="Name" value="Panel">
 <param name="Local" value="ch02s02.html"></OBJECT></LI>
@@ -89,7 +89,7 @@
 <UL>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Linking">
-<param name="Local" value="ch03.html#idp46300784"></OBJECT></LI>
+<param name="Local" value="ch03.html#idp63851904"></OBJECT></LI>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Toolbar">
 <param name="Local" value="ch03s02.html"></OBJECT></LI>
@@ -99,7 +99,7 @@
 <UL>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="BPM">
-<param name="Local" value="ch04.html#idp45602448"></OBJECT></LI>
+<param name="Local" value="ch04.html#idp64986784"></OBJECT></LI>
 <LI><OBJECT type="text/sitemap">
 <param name="Name" value="Playback controls">
 <param name="Local" value="ch04s02.html"></OBJECT></LI>
