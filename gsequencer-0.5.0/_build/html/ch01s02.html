@@ -1,0 +1,97 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Edit</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Advanced Gtk+ Sequencer"><link rel="up" href="ch01.html" title="Chapter 1. The menubar"><link rel="prev" href="ch01.html" title="Chapter 1. The menubar"><link rel="next" href="ch02.html" title="Chapter 2. Engines"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp46179360"></a>Edit</h2></div></div></div>
+    
+    <p>
+      The edit menu lets you add/remove audio machines or open preferences dialog.
+    </p>
+
+    <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	<p>
+	  Add - select of different machines
+	</p>
+
+	<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	    <p>
+	      Panel - acts as your default sink.
+	    </p>
+	  </li><li class="listitem" style="list-style-type: disc">
+	    <p>
+	      Mixer - enables you to bundle your different output engines.
+	    </p>
+	  </li><li class="listitem" style="list-style-type: disc">
+	    <p>
+	      Drum - is used to do pattern editing using PCM audio files. 
+	    </p>
+	  </li><li class="listitem" style="list-style-type: disc">
+	    <p>
+	      Matrix - is used to pattern editing, intended to be linked against Synth.
+	    </p>
+	  </li><li class="listitem" style="list-style-type: disc">
+	    <p>
+	      Synth - is a software synthesizer.
+	    </p>
+	  </li><li class="listitem" style="list-style-type: disc">
+	    <p>
+	      FFPlayer - may be used to open Soundfont2 audio file container format.
+	    </p>
+	  </li></ul></div>
+	
+      </li><li class="listitem" style="list-style-type: disc">
+	<p>
+	  Remove - the focused machine.
+	</p>
+      </li><li class="listitem" style="list-style-type: disc">
+	<p>
+	  Preferences - open preferences dialog.
+	</p>
+      </li></ul></div>
+
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="idp45319664"></a>Preferences dialog</h3></div></div></div>
+      
+      <p>
+	Within preferences dialog you may choose between different topics. For each one one tab.
+      </p>
+
+      <div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a name="idp46885040"></a>Generic</h4></div></div></div>
+	
+	<img src="../images/ags_generic_preferences.png">
+	<p>
+	  The autosave thread option enables auto-saving to $HOME/.gsequencer directory.
+	</p>
+      </div>
+
+      <div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a name="idp46886960"></a>Audio</h4></div></div></div>
+	
+	<img src="../images/ags_audio_preferences.png">
+	<p>
+	  Sound card is your physical devices to do playback.
+	</p>
+	<p>
+	  Audio channels specifies the audio channels to allocate for output device.
+	</p>
+	<p>
+	  Samplerate affects the entire project. Your audio files have to be at very same rate further
+	  your device has to support the given rate.
+	</p>
+	<p>
+	  Buffer size is used for all audio buffers. Your soundcard has to support the passed buffer size.
+	</p>
+      </div>
+
+      <div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a name="idp43867936"></a>Performance</h4></div></div></div>
+	
+	<img src="../images/ags_performance_preferences.png">
+	<p>
+	  Auto-sense on stream is required for certain LADSPA plugins but may cause additional performance losses.
+	</p>
+      </div>
+
+      <div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a name="idp43870080"></a>Server</h4></div></div></div>
+	
+	<img src="../images/ags_server_preferences.png">
+	<p>
+	  Ignored for now.
+	</p>
+      </div>
+
+    </div>
+  </div></body></html>
