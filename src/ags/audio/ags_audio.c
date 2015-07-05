@@ -19,12 +19,11 @@
 
 #include <ags/audio/ags_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/main.h>
 
 #include <ags/lib/ags_list.h>
 
+#include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_marshal.h>
 
@@ -353,7 +352,12 @@ ags_audio_init(AgsAudio *audio)
 					   AGS_CONFIG_THREAD,
 					   "super-threaded-scope\0"),
 			    "audio\0",
-			    6)){
+			    6) ||
+       !g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "channel\0",
+			    8)){
       g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
 		      AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO);
 
@@ -907,6 +911,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   void ags_audio_set_audio_channels_grow_one(GType type){
     channel = (AgsChannel *) g_object_new(type,
 					  "audio\0", (GObject *) audio,
+					  "devout\0", audio->devout,
 					  NULL);
 
     if(type == AGS_TYPE_OUTPUT){
@@ -947,6 +952,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       channel->next =
 	channel->next_pad = (AgsChannel *) g_object_new(type,
 							"audio\0", (GObject *) audio,
+							"devout\0", audio->devout,
 							NULL);
       channel->next->prev = channel;
       channel = channel->next;
@@ -998,6 +1004,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     start =
       channel = (AgsChannel *) g_object_new(type,
 					    "audio\0", (GObject *) audio,
+					    "devout\0", audio->devout,
 					    NULL);
 
     channel->audio_channel = audio->audio_channels;
@@ -1044,6 +1051,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     for(j = audio->audio_channels + 1; j < audio_channels; j++){
       channel->next = (AgsChannel *) g_object_new(type,
 						  "audio\0", (GObject *) audio,
+						  "devout\0", audio->devout,
 						  NULL);
       channel->next->prev = channel;
       channel = channel->next;
@@ -1134,6 +1142,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       start =
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio\0", (GObject *) audio,
+					      "devout\0", audio->devout,
 					      NULL);
 
       next_channel = prev_channel->next;
@@ -1149,6 +1158,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       for(; j < audio_channels; j++){
 	channel->next = (AgsChannel *) g_object_new(type,
 						    "audio\0", (GObject *) audio,
+						    "devout\0", audio->devout,
 						    NULL);
 
 	channel->next->prev = channel;
@@ -1212,6 +1222,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     start =
       channel = (AgsChannel *) g_object_new(type,
 					    "audio\0", (GObject *) audio,
+					    "devout\0", audio->devout,
 					    NULL);
 
     prev_channel->next = start;
@@ -1223,6 +1234,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     for(; j < audio_channels; j++){
       channel->next = (AgsChannel *) g_object_new(type,
 						  "audio\0", (GObject *) audio,
+						  "devout\0", audio->devout,
 						  NULL);
 
       channel->next->prev = channel;
@@ -1574,6 +1586,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     start =
       channel = (AgsChannel *) g_object_new(type,
 					    "audio\0", (GObject *) audio,
+					    "devout\0", audio->devout,
 					    NULL);
 
     if(alloc_recycling){
@@ -1602,6 +1615,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     for(j = 1; j < audio->audio_channels; j++){
       channel->next = (AgsChannel *) g_object_new(type,
 						  "audio\0", (GObject *) audio,
+						  "devout\0", audio->devout,
 						  NULL);
       channel->next->prev = channel;
       channel = channel->next;
@@ -1697,6 +1711,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       for(j = 0; j < audio->audio_channels; j++){
 	channel->next = (AgsChannel *) g_object_new(type,
 						    "audio\0", (GObject *) audio,
+						    "devout\0", audio->devout,
 						    NULL);
 	channel->next->prev = channel;
 	channel = channel->next;
@@ -3478,7 +3493,12 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
 					   AGS_CONFIG_THREAD,
 					   "super-threaded-scope\0"),
 			    "audio\0",
-			    6)){
+			    6) ||
+       !g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "channel\0",
+			    8)){
       /* sequencer */
       g_object_set(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1],
 		   "devout\0", devout,

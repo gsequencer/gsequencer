@@ -23,8 +23,9 @@
 
 #include <ags/main.h>
 
-#include <ags/thread/ags_timestamp_thread.h>
+#include <ags/thread/ags_mutex_manager.h>
 
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
 
 void ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread);
@@ -56,13 +57,15 @@ void ags_channel_thread_stop(AgsThread *thread);
  * The #AgsChannelThread acts as channel output thread to soundcard.
  */
 
-static gpointer ags_channel_thread_parent_class = NULL;
-static AgsConnectableInterface *ags_channel_thread_parent_connectable_interface;
-
 enum{
   PROP_0,
   PROP_CHANNEL,
 };
+
+static gpointer ags_channel_thread_parent_class = NULL;
+static AgsConnectableInterface *ags_channel_thread_parent_connectable_interface;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_channel_thread_get_type()
@@ -266,7 +269,12 @@ ags_channel_thread_finalize(GObject *gobject)
 void
 ags_channel_thread_start(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  /* reset status */
+  g_atomic_int_and(&(AGS_CHANNEL_THREAD(thread)->flags),
+		   (~(AGS_CHANNEL_THREAD_WAKEUP |
+		      AGS_CHANNEL_THREAD_WAITING |
+		      AGS_CHANNEL_THREAD_NOTIFY |
+  		      AGS_CHANNEL_THREAD_DONE)));
   
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->start(thread);
 }
@@ -274,13 +282,109 @@ ags_channel_thread_start(AgsThread *thread)
 void
 ags_channel_thread_run(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsChannel *channel;
+  AgsDevoutPlay *devout_play;
+
+  AgsMutexManager *mutex_manager;
+  AgsChannelThread *channel_thread;
+
+  gint stage;
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!thread->rt_setup){
+    struct sched_param param;
+    
+    /* Declare ourself as a real time task */
+    param.sched_priority = AGS_RT_PRIORITY;
+      
+    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+      perror("sched_setscheduler failed\0");
+    }
+
+    thread->rt_setup = TRUE;
+  }
+  
+  channel_thread = AGS_CHANNEL_THREAD(thread);
+  channel = channel_thread->channel;
+  devout_play = channel->devout_play;
+  
+  //  g_message(" --- a");
+  
+  /* start - wait until signaled */
+  pthread_mutex_lock(channel_thread->wakeup_mutex);
+
+  if((AGS_CHANNEL_THREAD_WAKEUP & (g_atomic_int_get(&(channel_thread->flags)))) == 0){
+    g_atomic_int_or(&(channel_thread->flags),
+		    AGS_CHANNEL_THREAD_WAITING);
+    
+    while((AGS_CHANNEL_THREAD_WAKEUP & (g_atomic_int_get(&(channel_thread->flags)))) == 0){
+      pthread_cond_wait(channel_thread->wakeup_cond,
+			channel_thread->wakeup_mutex);
+    }
+  }
+  
+  g_atomic_int_and(&(channel_thread->flags),
+		   (~AGS_CHANNEL_THREAD_WAITING));
+  g_atomic_int_and(&(channel_thread->flags),
+		   (~AGS_CHANNEL_THREAD_WAKEUP));
+  
+  pthread_mutex_unlock(channel_thread->wakeup_mutex);
+
+  /* channel mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+      
+  pthread_mutex_unlock(&(ags_application_mutex));
+  
+  /* do channel processing */
+  for(stage = 0; stage < 3; stage++){
+    if((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0){
+      ags_channel_recursive_play(channel, devout_play->recall_id[0], stage);
+    }
+
+    if((AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0){
+      ags_channel_recursive_play(channel, devout_play->recall_id[1], stage);
+    }
+
+    if((AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0){
+      ags_channel_recursive_play(channel, devout_play->recall_id[2], stage);
+    }
+  }
+
+  /* sync */
+  pthread_mutex_lock(channel_thread->done_mutex);
+
+  g_atomic_int_or(&(channel_thread->flags),
+		  AGS_CHANNEL_THREAD_DONE);
+	    
+  if((AGS_CHANNEL_THREAD_NOTIFY & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
+    pthread_cond_signal(channel_thread->done_cond);
+  }
+	    
+  pthread_mutex_unlock(channel_thread->done_mutex);
 }
 
 void
 ags_channel_thread_stop(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsChannelThread *channel_thread;
+
+  channel_thread = AGS_CHANNEL_THREAD(thread);
+  
+  pthread_mutex_lock(channel_thread->wakeup_mutex);
+  
+  g_atomic_int_or(&(channel_thread->flags),
+		  AGS_CHANNEL_THREAD_WAKEUP);
+
+  if((AGS_CHANNEL_THREAD_WAITING & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
+    pthread_cond_signal(channel_thread->wakeup_cond);
+  }
+  
+  pthread_mutex_unlock(channel_thread->wakeup_mutex);
   
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->stop(thread);
 }
