@@ -1,0 +1,192 @@
+ags (0.4.2.93)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemnted first super-threaded context for AgsAudio
+
+ags (0.4.2.92)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash while hot-link matrix and synth with multi-output
+	* implemnted segmentation
+
+ags (0.4.2.91)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed multiple occurence of recalls
+	* fixed potential infinite loop while reset recall ids
+	* migrated away from hide references to recall id status
+	* fixed proper unlink as adjusting channels
+	* fixed allocation of ags-buffer
+	* fixed selective creation of recalls in ags_recall_recycling.c
+	* fixed remap of recycling recalls for available destination in ags_recall_channel_run.c
+	* minor bug-fixes
+	* note speed may differ for now
+
+ags (0.4.2.90)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed led in sequencers
+	* fixed missing mutex in matrix tact callback
+	* fixed cut to nowhere
+	* fixed ags.xsl notation translate
+	* fixed redraw of piano
+	* fixed redraw of matrix
+	* fixed deny output pads to be resize for mixer
+
+ags (0.4.2.89)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed bug in ags_recall_channel_run.c that caused destination not being mapped
+
+ags (0.4.2.88)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved auto-scroll to be loop aware
+
+ags (0.4.2.87)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed auto-scroll
+
+ags (0.4.2.86)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed version string from autoconf
+	* fixed chrash during removing not existing machine selector
+	* added experimental auto-scroll capabilities
+
+ags (0.4.2.85)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed allocation of piano
+	* fixed grained mutices for accessing notation
+	* fixed cursor in edit widgets
+
+ags (0.4.2.84)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dialog owned by machines to destroy
+	* fixed make machine selection dialog modal
+
+ags (0.4.2.83)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed playback within AgsDrumInputPad
+	* fixed thread-safety of editor with AgsMutexManager
+	* hided playback button of AgsDrumInputPad open dialog
+	* fixed spin button in AgsDrumInputPad open dialog
+
+ags (0.4.2.82)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed default device as reading XML files
+	* fixed floor to round in XSL for reading MIDI notes
+	* fixed unlink AgsAudio on remove
+	* fixed termination of sequencer in ags_machine_play_callback()
+	* fixed crash during channel resize if not shown in editor, hide widgets instead of remove
+	* fixed destroying of machines removing editor widget
+	* fixed paste notes
+	* added flag to AgsDevout to fix unavailable soundcard
+
+ags (0.4.2.81)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* removed useless controls add/remove in machine property editor
+	* fixed navigation duration
+	* fixed seeking
+	* fixed crash according not properbly cleaning up after playing
+
+ags (0.4.2.80)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed renaming
+	* fixed audio channel bug in notation recall
+
+ags (0.4.2.79)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* renamed binary and project
+	* added missing copyright notice
+
+ags (0.4.2-78)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented distinct between sequencer and notation loop
+	* fixed unnecessary return if notation reaches notation-loop-end
+	* fixed selection for pattern and notation editor
+	* refactored fix auto-scroll
+	* added exclude sequencer for export dialog
+
+ags (0.4.2-77)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed possible NULL pointer in ags_play_notation.c
+	* fixed editor crash and missing notebook
+	* implemented AGS_AUDIO_REVERSE_MAPPING flag, it indicates channel mapping should be interpreted in reverse order
+	* implemented invert tool for notation editor
+
+ags (0.4.2-76)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed boundary for matrix clipboard
+	* fixed paste to mono or different audio allocation
+	* fixed piano shift to correct direction
+	* fixed reset vscrollbar in editor widgets
+	* refactored ags_editor.c
+	* fixed already selected machines in editor not to add again
+	* fixed audio channel resize for mono machines, disabled it in machine properties dialog
+	* enhanced LADSPA browser refresh
+
+ags (0.4.2-75)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed deactivate led in AgsDrum and AgsMatrix
+	* fixed multi-output
+	* fixed adjusting audio channels for tabs of editor
+	* implemented shift piano thereby fixed piano allocation
+
+ags (0.4.2-74)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsPatternEdit focus, selection, coloring of selected notes and a crash related to wrong function call
+	* added exclusion for sequencers by using "exclude sequencers" checkbutton in navigation
+	* added copy & paste pattern context menu items to drum and matrix
+	* fixed AgsMatrix input
+	* fixed NULL pointer error in ags_count_beats_audio_run.c
+
+ags (0.4.2-73)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* back-ported AgsPatternEdit
+	* implemented basic editing key strokes like Ctrl-c, Ctrl-v and Ctrl-x for AgsPatternEdit
+
+ags (0.4.2-72)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented basic editing key strokes like Ctrl-c, Ctrl-v and Ctrl-x
+	* implemented seeking for paste if position tool is selected
+	* updated clipboard version to 0.4.2
+
+ags (0.4.2-71)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* commented-out two unimplemented menu entries in editor's machine selector. Add and remove tab you may do so by using resize tab of machine properties dialog.
+	* implemented select-all in editor
+	* fixed multi-channel editing mode
+	* fixed refresh of GUI after cut or paste
+	* fixed crash related to XML IO
+
+ags (0.4.2-70)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor bug-fixes
+
+ags (0.4.2-69)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added XSL file to transform output of `midi2xml` using `xsltproc`
+
+ags (0.4.2-68)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added `midi2xml` the MIDI file to XML parser
