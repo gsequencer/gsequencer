@@ -158,6 +158,8 @@ ags_channel_thread_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_channel_thread_init(AgsChannelThread *channel_thread)
 {
+  AGS_THREAD(channel_thread)->freq = AGS_CHANNEL_THREAD_DEFAULT_JIFFIE;
+
   g_atomic_int_set(&(channel_thread->flags),
 		   0);
 

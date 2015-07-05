@@ -51,8 +51,7 @@
 
 #include <X11/Xlib.h>
 
-void ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
-void ags_menu_bar_open_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar);
+void ags_menu_bar_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, AgsMenuBar *menu_bar);
 
 gboolean
 ags_menu_bar_destroy_callback(GtkObject *object, AgsMenuBar *menu_bar)
@@ -71,51 +70,48 @@ ags_menu_bar_show_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
 void
 ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  GtkFileSelection *file_selection;
-
-  file_selection = (GtkFileSelection *) gtk_file_selection_new(g_strdup("open file\0"));
-  gtk_file_selection_set_select_multiple(file_selection, FALSE);
-
-  gtk_widget_show_all((GtkWidget *) file_selection);
-
-  g_signal_connect((GObject *) file_selection->ok_button, "clicked\0",
-		   G_CALLBACK(ags_menu_bar_open_ok_callback), menu_bar);
-  g_signal_connect((GObject *) file_selection->cancel_button, "clicked\0",
-		   G_CALLBACK(ags_menu_bar_open_cancel_callback), menu_bar);
-}
-
-void
-ags_menu_bar_open_ok_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
-{
   AgsWindow *window;
-  GtkFileSelection *file_selection;
-  char *filename;
-  gchar **argv;
-  GError *error;
+  GtkFileChooserDialog *file_chooser;
+  gint response;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
-  file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_DIALOG);
 
-  filename = g_strdup(gtk_file_selection_get_filename(file_selection));
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("open file\0",
+								      (GtkWindow *) window,
+								      GTK_FILE_CHOOSER_ACTION_OPEN,
+								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+								      NULL);
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
+  gtk_widget_show_all((GtkWidget *) file_chooser);
 
-  error = NULL;
+  response = gtk_dialog_run(GTK_DIALOG(file_chooser));
 
-  g_spawn_command_line_async(g_strdup_printf("./gsequencer --filename %s\0",
-					     filename),
-			     &error);
-
-  gtk_widget_destroy((GtkWidget *) file_selection);
-
-  g_free(filename);
+  g_signal_connect((GObject *) file_chooser, "response\0",
+		   G_CALLBACK(ags_menu_bar_open_response_callback), menu_bar);
 }
 
 void
-ags_menu_bar_open_cancel_callback(GtkWidget *widget, AgsMenuBar *menu_bar)
+ags_menu_bar_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, AgsMenuBar *menu_bar)
 {
-  GtkFileSelection *file_selection;
+  if(response == GTK_RESPONSE_ACCEPT){
+    AgsFile *file;
+    AgsSaveFile *save_file;
+    char *filename;
 
-  file_selection = (GtkFileSelection *) gtk_widget_get_ancestor(widget, GTK_TYPE_DIALOG);
-  gtk_widget_destroy((GtkWidget *) file_selection);
+    GError *error;
+
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
+
+    error = NULL;
+
+    g_spawn_command_line_async(g_strdup_printf("./gsequencer --filename %s\0",
+					       filename),
+			       &error);
+    g_free(filename);
+  }
+
+  gtk_widget_destroy((GtkWidget *) file_chooser);
 }
 
 void
