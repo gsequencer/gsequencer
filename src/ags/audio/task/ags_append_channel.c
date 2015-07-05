@@ -23,6 +23,11 @@
 
 #include <ags/main.h>
 
+#include <ags/thread/ags_channel_thread.h>
+
+#include <ags/audio/ags_config.h>
+#include <ags/audio/ags_devout.h>
+
 void ags_append_channel_class_init(AgsAppendChannelClass *append_channel);
 void ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_append_channel_init(AgsAppendChannel *append_channel);
@@ -44,6 +49,8 @@ void ags_append_channel_launch(AgsTask *task);
 
 static gpointer ags_append_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_append_channel_parent_connectable_interface;
+
+extern AgsConfig *config;
 
 GType
 ags_append_channel_get_type()
@@ -144,18 +151,42 @@ ags_append_channel_finalize(GObject *gobject)
 void
 ags_append_channel_launch(AgsTask *task)
 {
+  AgsChannel *channel;
   AgsServer *server;
   AgsAppendChannel *append_channel;
   AgsAudioLoop *audio_loop;
-
+  
   append_channel = AGS_APPEND_CHANNEL(task);
 
   audio_loop = AGS_AUDIO_LOOP(append_channel->audio_loop);
-
+  channel = append_channel->channel;
+  
   /* append to AgsDevout */
   ags_audio_loop_add_channel(audio_loop,
-			     append_channel->channel);
+			    channel);
 
+  /**/  
+  if(!g_ascii_strncasecmp(ags_config_get(config,
+					 AGS_CONFIG_THREAD,
+					 "model\0"),
+			  "super-threaded\0",
+			  15)){
+    /* super threaed setup */
+    if(!g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+				  "channel\0",
+			    8)){
+      if(AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[0]->parent == NULL &&
+	 (AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) != 0){
+	ags_thread_add_child_extended(audio_loop,
+				      AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[0],
+				      TRUE, TRUE);
+	ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[0]));
+      }
+    }
+  }
+  
   /* add to server registry */
   server = AGS_MAIN(audio_loop->ags_main)->server;
 

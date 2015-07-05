@@ -175,7 +175,6 @@ ags_append_audio_launch(AgsTask *task)
 					 "model\0"),
 			  "super-threaded\0",
 			  15)){
-    /* super threaed setup */
     if(!g_ascii_strncasecmp(ags_config_get(config,
 					   AGS_CONFIG_THREAD,
 					   "super-threaded-scope\0"),
@@ -186,13 +185,51 @@ ags_append_audio_launch(AgsTask *task)
 						 "super-threaded-scope\0"),
 				  "channel\0",
 				  8)){
-      ags_thread_add_child_extended(audio_loop, AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1],
-				    TRUE, TRUE);
-      ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1]));
+      /* super threaded setup - audio */
+      if(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1]->parent == NULL &&
+	 (AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER & (g_atomic_int_get(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags)))) != 0){
+	ags_thread_add_child_extended(audio_loop, AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1],
+				      TRUE, TRUE);
+	ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1]));
+      }
 
-      ags_thread_add_child_extended(audio_loop, AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2],
-				    TRUE, TRUE);
-      ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2]));
+      if(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2]->parent == NULL &&
+	 (AGS_DEVOUT_PLAY_DOMAIN_NOTATION & (g_atomic_int_get(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags)))) != 0){
+	ags_thread_add_child_extended(audio_loop, AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2],
+				      TRUE, TRUE);
+	ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2]));
+      }
+
+      /* super threaed setup - channel */
+      if(!g_ascii_strncasecmp(ags_config_get(config,
+					     AGS_CONFIG_THREAD,
+					     "super-threaded-scope\0"),
+			      "channel\0",
+			      8)){
+	AgsChannel *output;
+
+	output = audio->output;
+
+	while(output != NULL){
+	  if(AGS_DEVOUT_PLAY(output->devout_play)->channel_thread[1]->parent == NULL &&
+	     (AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER & (g_atomic_int_get(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags)))) != 0){
+	    ags_thread_add_child_extended(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1],
+					  AGS_DEVOUT_PLAY(output->devout_play)->channel_thread[1],
+					  TRUE, TRUE);
+	    ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY(output->devout_play)->channel_thread[1]));
+	  }
+
+	  if(AGS_DEVOUT_PLAY(output->devout_play)->channel_thread[2]->parent == NULL &&
+	     (AGS_DEVOUT_PLAY_DOMAIN_NOTATION & (g_atomic_int_get(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags)))) != 0){
+	    ags_thread_add_child_extended(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2],
+					  AGS_DEVOUT_PLAY(output->devout_play)->channel_thread[2],
+					  TRUE, TRUE);
+	    ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY(output->devout_play)->channel_thread[2]));
+	  }
+	  
+	  output = output->next;
+	}
+      }
     }
   }
   

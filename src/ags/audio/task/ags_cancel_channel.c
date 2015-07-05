@@ -144,31 +144,63 @@ ags_cancel_channel_finalize(GObject *gobject)
 void
 ags_cancel_channel_launch(AgsTask *task)
 {
-  AgsCancelChannel *cancel_channel;
+  AgsDevoutPlay *devout_play;
   AgsChannel *channel;
-  AgsRecallID *recall_id;
+
+  AgsCancelChannel *cancel_channel;
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
   channel = cancel_channel->channel;
-
+  devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
+  
   /* cancel playback */
-  if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){
-    return;
+  if(cancel_channel->recall_id == AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]){
+    g_atomic_int_and(&(devout_play->flags),
+		     (~AGS_DEVOUT_PLAY_PLAYBACK));
+
+    g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+    ags_channel_tillrecycling_cancel(channel,
+				     AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+
+    if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
+      ags_thread_stop(devout_play->channel_thread[0]);
+    }
   }
 
-  recall_id = AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0];
-  
-  g_object_ref(recall_id);
-  ags_channel_tillrecycling_cancel(channel,
-				   recall_id);
+  /* cancel sequencer */
+  if(cancel_channel->recall_id == AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]){
+    g_atomic_int_and(&(devout_play->flags),
+		     (~AGS_DEVOUT_PLAY_SEQUENCER));
 
-  /* set recall id to NULL */
-  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
-    
-  /* emit done */
+    g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+    ags_channel_tillrecycling_cancel(channel,
+				     AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = NULL;
+
+    if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
+      ags_thread_stop(devout_play->channel_thread[1]);
+    }
+  }
+
+  /* cancel notation */
+  if(cancel_channel->recall_id == AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]){
+    g_atomic_int_and(&(devout_play->flags),
+		     (~AGS_DEVOUT_PLAY_NOTATION));
+
+    g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+    ags_channel_tillrecycling_cancel(channel,
+				     AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = NULL;
+
+    if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
+      ags_thread_stop(devout_play->channel_thread[2]);
+    }
+  }
+
   ags_channel_done(channel,
-		   recall_id);
+		   cancel_channel->recall_id);		   
 }
 
 /**

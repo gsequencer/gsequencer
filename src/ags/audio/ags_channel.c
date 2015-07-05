@@ -308,6 +308,8 @@ ags_channel_init(AgsChannel *channel)
       g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
 		      AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL);
 
+      AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[0] = ags_channel_thread_new(NULL,
+											channel);
       AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[1] = ags_channel_thread_new(NULL,
 											channel);
       AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[2] = ags_channel_thread_new(NULL,
@@ -887,12 +889,14 @@ ags_channel_set_devout(AgsChannel *channel, GObject *devout)
 
     recycling = channel->first_recycling;
 
-    while(recycling != channel->last_recycling->next){
-      g_object_set(G_OBJECT(recycling),
-		   "devout\0", devout,
-		   NULL); 
+    if(recycling != NULL){
+      while(recycling != channel->last_recycling->next){
+	g_object_set(G_OBJECT(recycling),
+		     "devout\0", devout,
+		     NULL); 
 
-      recycling = recycling->next;
+	recycling = recycling->next;
+      }
     }
   }
 }

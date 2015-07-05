@@ -361,6 +361,8 @@ ags_audio_init(AgsAudio *audio)
       g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
 		      AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO);
 
+      AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
+												audio);
       AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
 												audio);
       AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
