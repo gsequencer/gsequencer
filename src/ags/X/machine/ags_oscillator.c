@@ -19,16 +19,16 @@
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_oscillator_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
+
+#include <math.h>
 
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
 void ags_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -176,7 +176,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new("length\0"),
 			    4, 5, 0, 1);
-  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(44100.0 / 27.5, 100000.0, 1.0);
+  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(44100.0 / AGS_OSCILLATOR_BASE_FREQUENCY, 100000.0, 1.0);
   oscillator->frame_count->adjustment->value = 3200;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frame_count, 5, 6, 0, 1);
 
@@ -190,8 +190,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new("frequency\0"),
 			    2, 3, 1, 2);
-  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-  oscillator->frequency->adjustment->value = 27.5;
+  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 0.0675);
+  oscillator->frequency->adjustment->value = AGS_OSCILLATOR_BASE_FREQUENCY;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frequency, 3, 4, 1, 2);
 
   gtk_table_attach_defaults(table,
@@ -269,7 +269,7 @@ ags_file_read_oscillator(AgsFile *file, xmlNode *node, AgsOscillator **oscillato
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -343,7 +343,7 @@ ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscilla
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

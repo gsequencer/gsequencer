@@ -19,8 +19,8 @@
 #ifndef __AGS_AUDIO_H__
 #define __AGS_AUDIO_H__
 
+#include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtk.h>
 
 #include <ags/audio/ags_channel.h>
 
@@ -35,15 +35,16 @@ typedef struct _AgsAudio AgsAudio;
 typedef struct _AgsAudioClass AgsAudioClass;
 
 typedef enum{
-  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1,
-  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  1,
-  AGS_AUDIO_INPUT_TAKES_FILE            = 1 <<  2,
-  AGS_AUDIO_HAS_NOTATION                = 1 <<  3,
-  AGS_AUDIO_SYNC                        = 1 <<  4, // can be combined with below
-  AGS_AUDIO_ASYNC                       = 1 <<  5,
-  AGS_AUDIO_RUNNING                     = 1 <<  6,
-  AGS_AUDIO_PLAYING                     = 1 <<  7,
-  AGS_AUDIO_NOTATION_DEFAULT            = 1 <<  8,
+  AGS_AUDIO_CONNECTED                   = 1,
+  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  1,
+  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  2,
+  AGS_AUDIO_INPUT_TAKES_FILE            = 1 <<  3,
+  AGS_AUDIO_HAS_NOTATION                = 1 <<  4,
+  AGS_AUDIO_SYNC                        = 1 <<  5, // can be combined with below
+  AGS_AUDIO_ASYNC                       = 1 <<  6,
+  AGS_AUDIO_RUNNING                     = 1 <<  7,
+  AGS_AUDIO_PLAYING                     = 1 <<  8,
+  AGS_AUDIO_NOTATION_DEFAULT            = 1 <<  9,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -52,7 +53,7 @@ struct _AgsAudio
 
   guint flags;
 
-  GObject *devout;
+  GObject *soundcard;
   guint level;
   
   guint sequence_length;
@@ -68,13 +69,13 @@ struct _AgsAudio
   AgsChannel *output;
   AgsChannel *input;
 
-  gpointer devout_play_domain;
+  GObject *playback_domain;
 
   GList *notation;
   GList *automation;
   
   GList *recall_id;
-  GList *recycling_container;
+  GList *recycling_context;
 
   GList *container;
   GList *recall;
@@ -83,7 +84,7 @@ struct _AgsAudio
   GList *recall_remove; //TODO:JK: verify deprecation
   GList *play_remove; //TODO:JK: verify deprecation
 
-  GtkWidget *machine;
+  GObject *machine_widget;
 };
 
 struct _AgsAudioClass
@@ -115,7 +116,7 @@ void ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id);
 
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
-void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
+void ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard);
 
 void ags_audio_add_notation(AgsAudio *audio,
 			      GObject *notation);
@@ -130,8 +131,8 @@ void ags_audio_remove_automation(AgsAudio *audio,
 void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);
 
-void ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container);
-void ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container);
+void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
+void ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context);
 
 void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
 void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container);
@@ -169,6 +170,6 @@ void ags_audio_open_files(AgsAudio *audio,
 
 GList* ags_audio_find_port(AgsAudio *audio);
 
-AgsAudio* ags_audio_new();
+AgsAudio* ags_audio_new(GObject *soundcard);
 
 #endif /*__AGS_AUDIO_H__*/

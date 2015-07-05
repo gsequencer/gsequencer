@@ -20,13 +20,12 @@
 #include <ags/audio/recall/ags_mute_audio.h>
 #include <ags/audio/recall/ags_mute_channel.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
 #include <ags/object/ags_dynamic_connectable.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
@@ -156,8 +155,8 @@ void
 ags_mute_audio_signal_init(AgsMuteAudioSignal *mute_audio_signal)
 {
   AGS_RECALL(mute_audio_signal)->name = "ags-mute\0";
-  AGS_RECALL(mute_audio_signal)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(mute_audio_signal)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(mute_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(mute_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(mute_audio_signal)->xml_type = "ags-mute-audio-signal\0";
   AGS_RECALL(mute_audio_signal)->port = NULL;
 

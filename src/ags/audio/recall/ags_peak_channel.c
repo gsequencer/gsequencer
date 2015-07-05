@@ -18,12 +18,11 @@
 
 #include <ags/audio/recall/ags_peak_channel.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel);
 void ags_peak_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -41,8 +40,6 @@ void ags_peak_channel_connect(AgsConnectable *connectable);
 void ags_peak_channel_disconnect(AgsConnectable *connectable);
 void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_peak_channel_finalize(GObject *gobject);
-
-extern AgsConfig *config;
 
 /**
  * SECTION:ags_peak_channel
@@ -172,8 +169,8 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
   GList *port;
 
   AGS_RECALL(peak_channel)->name = "ags-peak\0";
-  AGS_RECALL(peak_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(peak_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(peak_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(peak_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(peak_channel)->xml_type = "ags-peak-channel\0";
 
   port = NULL;
@@ -309,6 +306,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   AgsRecall *recall;
   AgsChannel *source;
   AgsRecycling *recycling;
+  AgsSoundcard *soundcard;
   GList *audio_signal;
   double *buffer;
   double current_value;
@@ -322,17 +320,20 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   recall = (AgsRecall *) peak_channel;
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
-				 NULL,
-				 10);
-
+  soundcard = AGS_SOUNDCARD(recall->soundcard);
+  
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;
 
+  ags_soundcard_get_presets(soundcard,
+			    NULL,
+			    NULL,
+			    &buffer_size,
+			    NULL);
+  
   /* initialize buffer */
   buffer = (double *) malloc(buffer_size * sizeof(double));
+  
   for(i = 0; i < buffer_size; i++) buffer[i] = 0.0;
 
   while(recycling != source->last_recycling->next){
@@ -351,6 +352,12 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
     recycling = recycling->next;
   }
+    
+  /* 
+   * The idea is that accoustics has it's highest pressure at 440 Hz that's why it is called harmonic oscillation in air pressure.
+   * The trigonemetric functions sin and atan are combined as alike average value. They should have many common points or at least
+   * near points what equals pressure = 1.0 and if not then rather = 0.0. Then you can scale using factor.
+   */
 
   /* calculate average value */
   current_value = 0.0;
@@ -358,7 +365,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   for(i = 0; i < buffer_size; i++){
     current_value +=  (1.0 / (1.0 / G_MAXUINT16 * buffer[i]));
   }
-  
+
   /* break down to scale */
   //TODO:JK: verify me
   current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 440.0));

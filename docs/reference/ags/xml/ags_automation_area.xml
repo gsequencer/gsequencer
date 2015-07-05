@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsAutomationArea">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsAutomationArea.top_of_page">AgsAutomationArea</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAutomationArea</refname>
+<refpurpose>area automations</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsAutomationArea.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-AUTOMATION-AREA-DEFAULT-HEIGHT:CAPS">AGS_AUTOMATION_AREA_DEFAULT_HEIGHT</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-area-draw-strip">ags_automation_area_draw_strip</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-area-draw-scale">ags_automation_area_draw_scale</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-area-draw-automation">ags_automation_area_draw_automation</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-area-draw-surface">ags_automation_area_draw_surface</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsAutomationArea"><returnvalue>AgsAutomationArea</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-automation-area-new">ags_automation_area_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAutomationArea.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsAutomation"><type>AgsAutomation</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAutomationArea--automation">automation</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAutomationArea.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkDrawingArea">GtkDrawingArea</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAutomationArea
+</screen>
+</refsect1>
+
+<refsect1 id="AgsAutomationArea.includes"><title>Includes</title><synopsis>#include &lt;ags/X/areaor/ags_automation_area.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsAutomationArea.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link> lets you area automations.</para>
+
+</refsect1>
+<refsect1 id="AgsAutomationArea.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="AGS-AUTOMATION-AREA-DEFAULT-HEIGHT:CAPS" role="macro">
+<title>AGS_AUTOMATION_AREA_DEFAULT_HEIGHT</title>
+<indexterm zone="AGS-AUTOMATION-AREA-DEFAULT-HEIGHT:CAPS"><primary>AGS_AUTOMATION_AREA_DEFAULT_HEIGHT</primary></indexterm>
+<programlisting language="C">#define AGS_AUTOMATION_AREA_DEFAULT_HEIGHT (128)
+</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-area-draw-strip" role="function" condition="since:0.4">
+<title>ags_automation_area_draw_strip&#160;()</title>
+<indexterm zone="ags-automation-area-draw-strip" role="0.4"><primary>ags_automation_area_draw_strip</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_area_draw_strip (<parameter><link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link> *automation_area</parameter>,
+                                <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>);</programlisting>
+<para>Plot data.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>automation_area</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>cr</para></entry>
+<entry role="parameter_description"><para>the <link linkend="cairo-t"><type>cairo_t</type></link> surface</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-automation-area-draw-scale" role="function" condition="since:0.4">
+<title>ags_automation_area_draw_scale&#160;()</title>
+<indexterm zone="ags-automation-area-draw-scale" role="0.4"><primary>ags_automation_area_draw_scale</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_area_draw_scale (<parameter><link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link> *automation_area</parameter>,
+                                <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>);</programlisting>
+<para>Draw a scale and its boundaries.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>automation_area</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>cr</para></entry>
+<entry role="parameter_description"><para>the <link linkend="cairo-t"><type>cairo_t</type></link> surface</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-automation-area-draw-automation" role="function" condition="since:0.4">
+<title>ags_automation_area_draw_automation&#160;()</title>
+<indexterm zone="ags-automation-area-draw-automation" role="0.4"><primary>ags_automation_area_draw_automation</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_area_draw_automation (<parameter><link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link> *automation_area</parameter>,
+                                     <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>);</programlisting>
+<para>Draw the <link linkend="AgsAutomation"><type>AgsAutomation</type></link> of selected <link linkend="AgsMachine"><type>AgsMachine</type></link> on <parameter>automation_edit</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>automation_area</para></entry>
+<entry role="parameter_description"><para>a <link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>cr</para></entry>
+<entry role="parameter_description"><para>the <link linkend="cairo-t"><type>cairo_t</type></link> surface</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-automation-area-draw-surface" role="function" condition="since:0.4">
+<title>ags_automation_area_draw_surface&#160;()</title>
+<indexterm zone="ags-automation-area-draw-surface" role="0.4"><primary>ags_automation_area_draw_surface</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_area_draw_surface (<parameter><link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link> *automation_area</parameter>,
+                                  <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>,
+                                  <parameter><link linkend="gdouble"><type>gdouble</type></link> x0</parameter>,
+                                  <parameter><link linkend="gdouble"><type>gdouble</type></link> y0</parameter>,
+                                  <parameter><link linkend="gdouble"><type>gdouble</type></link> x1</parameter>,
+                                  <parameter><link linkend="gdouble"><type>gdouble</type></link> y1</parameter>);</programlisting>
+<para>Draw a portion of data.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>automation_area</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>cr</para></entry>
+<entry role="parameter_description"><para>the <link linkend="cairo-t"><type>cairo_t</type></link> surface</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>x0</para></entry>
+<entry role="parameter_description"><para>x offset</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>y0</para></entry>
+<entry role="parameter_description"><para>y offset</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>x1</para></entry>
+<entry role="parameter_description"><para>x offset</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>y1</para></entry>
+<entry role="parameter_description"><para>y offset</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-automation-area-new" role="function" condition="since:0.4">
+<title>ags_automation_area_new&#160;()</title>
+<indexterm zone="ags-automation-area-new" role="0.4"><primary>ags_automation_area_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAutomationArea"><returnvalue>AgsAutomationArea</returnvalue></link>&#160;*
+ags_automation_area_new ();</programlisting>
+<para>Create a new <link linkend="AgsAutomationArea"><type>AgsAutomationArea</type></link>.</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsAutomationArea.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsAutomationArea.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsAutomationArea--automation" role="property"><title>The <literal>“automation”</literal> property</title>
+<indexterm zone="AgsAutomationArea--automation" role="0.4.0"><primary>AgsAutomationArea:automation</primary></indexterm>
+<programlisting>  “automation”               <link linkend="AgsAutomation"><type>AgsAutomation</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsAutomation"><type>AgsAutomation</type></link></para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+
+</refsect1>
+
+</refentry>

@@ -25,10 +25,4 @@
 
 #include <ags/X/editor/ags_notebook.h>
 
-#include <ags/X/ags_machine.h>
-#include <ags/X/ags_editor.h>
-
-void ags_notebook_machine_changed_callback(AgsEditor *editor, AgsMachine *machine,
-					   AgsNotebook *notebook);
-
 #endif /*__AGS_NOTEBOOK_CALLBACKS_H__*/

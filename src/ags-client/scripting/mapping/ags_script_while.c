@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_while.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_while_class_init(AgsScriptWhileClass *script_while);
 void ags_script_while_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsFFPlayer">
+<refentry id="AgsFFPlayer">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsFFPlayer.top_of_page">AgsFFPlayer</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsFFPlayer.top_of_page">AgsFFPlayer</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,74 +14,82 @@
 </refmeta>
 <refnamediv>
 <refname>AgsFFPlayer</refname>
-<refpurpose></refpurpose>
+<refpurpose>ffplayer notation</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsFFPlayer.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsFFPlayer.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-ffplayer-paint">ags_ffplayer_paint</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsFFPlayer"><returnvalue>AgsFFPlayer</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ffplayer-new">ags_ffplayer_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsFFPlayer">AgsFFPlayer</link>;
-struct              <link linkend="AgsFFPlayerClass">AgsFFPlayerClass</link>;
-<link linkend="AgsFFPlayer"><returnvalue>AgsFFPlayer</returnvalue></link> *       <link linkend="ags-ffplayer-new">ags_ffplayer_new</link>                    (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-ffplayer-paint">ags_ffplayer_paint</link>                  (<parameter><link linkend="AgsFFPlayer"><type>AgsFFPlayer</type></link> *ffplayer</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsFFPlayer.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsFFPlayer.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsFFPlayer" role="struct">
-<title>struct AgsFFPlayer</title>
-<indexterm zone="AgsFFPlayer"><primary>AgsFFPlayer</primary></indexterm>
-<programlisting>struct AgsFFPlayer {
-  AgsMachine machine;
+<refsect1 id="AgsFFPlayer.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkHandleBox">GtkHandleBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMachine">AgsMachine</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsFFPlayer
+</screen>
+</refsect1>
 
-  guint mapped_output_pad;
-  guint mapped_input_pad;
+<refsect1 id="AgsFFPlayer.includes"><title>Includes</title><synopsis>#include &lt;ags/X/machine/ags_ffplayer.h&gt;
+</synopsis></refsect1>
 
-  gchar *name;
-  gchar *xml_type;
+<refsect1 id="AgsFFPlayer.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsFFPlayer"><type>AgsFFPlayer</type></link> is a composite widget to act as soundfont2 notation player.</para>
 
-  GtkButton *open;
-
-  guint control_width;
-  guint control_height;
-  
-  GtkDrawingArea *drawing_area;
-  GtkAdjustment *hadjustment;
-
-  AgsIpatch *ipatch;
-  GtkComboBoxText *preset;
-  GtkComboBoxText *instrument;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsFFPlayerClass" role="struct">
-<title>struct AgsFFPlayerClass</title>
-<indexterm zone="AgsFFPlayerClass"><primary>AgsFFPlayerClass</primary></indexterm>
-<programlisting>struct AgsFFPlayerClass {
-  AgsMachineClass machine;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ffplayer-new" role="function">
-<title>ags_ffplayer_new ()</title>
-<indexterm zone="ags-ffplayer-new"><primary>ags_ffplayer_new</primary></indexterm>
-<programlisting><link linkend="AgsFFPlayer"><returnvalue>AgsFFPlayer</returnvalue></link> *       ags_ffplayer_new                    (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsFFPlayer.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-ffplayer-paint" role="function">
-<title>ags_ffplayer_paint ()</title>
+<title>ags_ffplayer_paint&#160;()</title>
 <indexterm zone="ags-ffplayer-paint"><primary>ags_ffplayer_paint</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_ffplayer_paint                  (<parameter><link linkend="AgsFFPlayer"><type>AgsFFPlayer</type></link> *ffplayer</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_ffplayer_paint (<parameter><link linkend="AgsFFPlayer"><type>AgsFFPlayer</type></link> *ffplayer</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-ffplayer-new" role="function" condition="since:0.3">
+<title>ags_ffplayer_new&#160;()</title>
+<indexterm zone="ags-ffplayer-new" role="0.3"><primary>ags_ffplayer_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsFFPlayer"><returnvalue>AgsFFPlayer</returnvalue></link>&#160;*
+ags_ffplayer_new (<parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsFFPlayer"><type>AgsFFPlayer</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the assigned soundcard.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsFFPlayer"><type>AgsFFPlayer</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsFFPlayer.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

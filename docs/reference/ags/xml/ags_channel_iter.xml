@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-channel-iter">
 <refmeta>
@@ -17,31 +17,110 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-channel-iter.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-channel-iter.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsChannelIter"><returnvalue>AgsChannelIter</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-channel-iter-alloc">ags_channel_iter_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-channel-iter-free">ags_channel_iter_free</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-channel-iter-prev">ags_channel_iter_prev</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-channel-iter-next">ags_channel_iter_next</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsChannelIter">AgsChannelIter</link>;
-enum                <link linkend="AgsChannelIterFlags">AgsChannelIterFlags</link>;
-<link linkend="AgsChannelIter"><returnvalue>AgsChannelIter</returnvalue></link> *    <link linkend="ags-channel-iter-alloc">ags_channel_iter_alloc</link>              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *start</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-channel-iter-free">ags_channel_iter_free</link>               (<parameter><link linkend="AgsChannelIter"><type>AgsChannelIter</type></link> *iter</parameter>);
-<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-iter-next">ags_channel_iter_next</link>               (<parameter><link linkend="AgsChannelIter"><type>AgsChannelIter</type></link> *iter</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> mode</parameter>);
-<link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        <link linkend="ags-channel-iter-prev">ags_channel_iter_prev</link>               (<parameter><link linkend="AgsChannelIter"><type>AgsChannelIter</type></link> *iter</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> mode</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="ags-ags-channel-iter.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsChannelIterFlags">AgsChannelIterFlags</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsChannelIter">AgsChannelIter</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-channel-iter.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-channel-iter.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="ags-ags-channel-iter.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-channel-iter-alloc" role="function">
+<title>ags_channel_iter_alloc&#160;()</title>
+<indexterm zone="ags-channel-iter-alloc"><primary>ags_channel_iter_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsChannelIter"><returnvalue>AgsChannelIter</returnvalue></link>&#160;*
+ags_channel_iter_alloc (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *start</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-channel-iter-free" role="function">
+<title>ags_channel_iter_free&#160;()</title>
+<indexterm zone="ags-channel-iter-free"><primary>ags_channel_iter_free</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_channel_iter_free (<parameter><link linkend="AgsChannelIter"><type>AgsChannelIter</type></link> *iter</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-channel-iter-prev" role="function">
+<title>ags_channel_iter_prev&#160;()</title>
+<indexterm zone="ags-channel-iter-prev"><primary>ags_channel_iter_prev</primary></indexterm>
+<programlisting language="C"><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link>&#160;*
+ags_channel_iter_prev (<parameter><link linkend="AgsChannelIter"><type>AgsChannelIter</type></link> *iter</parameter>,
+                       <parameter><link linkend="guint"><type>guint</type></link> mode</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-channel-iter-next" role="function">
+<title>ags_channel_iter_next&#160;()</title>
+<indexterm zone="ags-channel-iter-next"><primary>ags_channel_iter_next</primary></indexterm>
+<programlisting language="C"><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link>&#160;*
+ags_channel_iter_next (<parameter><link linkend="AgsChannelIter"><type>AgsChannelIter</type></link> *iter</parameter>,
+                       <parameter><link linkend="guint"><type>guint</type></link> mode</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-channel-iter.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsChannelIterFlags" role="enum">
+<title>enum AgsChannelIterFlags</title>
+<indexterm zone="AgsChannelIterFlags"><primary>AgsChannelIterFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-CHANNEL-ITER-LEVEL-STRICT:CAPS">AGS_CHANNEL_ITER_LEVEL_STRICT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-CHANNEL-ITER-DIRECTION-AXIS-TO-LEAFES:CAPS">AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-CHANNEL-ITER-DIRECTION-AXIS-TO-ROOT:CAPS">AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_ROOT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-CHANNEL-ITER-DIRECTION-LEAFES-TO-ROOT:CAPS">AGS_CHANNEL_ITER_DIRECTION_LEAFES_TO_ROOT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-CHANNEL-ITER-DIRECTION-ROOT-TO-LEAFES:CAPS">AGS_CHANNEL_ITER_DIRECTION_ROOT_TO_LEAFES</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="AgsChannelIter" role="struct">
 <title>struct AgsChannelIter</title>
 <indexterm zone="AgsChannelIter"><primary>AgsChannelIter</primary></indexterm>
-<programlisting>struct AgsChannelIter {
+<programlisting language="C">struct AgsChannelIter {
   AgsChannel *current_start;
 
   AgsChannelIter *parent;
@@ -51,47 +130,7 @@ enum                <link linkend="AgsChannelIterFlags">AgsChannelIterFlags</lin
   AgsChannel *current;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsChannelIterFlags" role="enum">
-<title>enum AgsChannelIterFlags</title>
-<indexterm zone="AgsChannelIterFlags"><primary>AgsChannelIterFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_CHANNEL_ITER_LEVEL_STRICT,
-  AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES,
-  AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_ROOT,
-  AGS_CHANNEL_ITER_DIRECTION_LEAFES_TO_ROOT,
-  AGS_CHANNEL_ITER_DIRECTION_ROOT_TO_LEAFES,
-} AgsChannelIterFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-channel-iter-alloc" role="function">
-<title>ags_channel_iter_alloc ()</title>
-<indexterm zone="ags-channel-iter-alloc"><primary>ags_channel_iter_alloc</primary></indexterm>
-<programlisting><link linkend="AgsChannelIter"><returnvalue>AgsChannelIter</returnvalue></link> *    ags_channel_iter_alloc              (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *start</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-channel-iter-free" role="function">
-<title>ags_channel_iter_free ()</title>
-<indexterm zone="ags-channel-iter-free"><primary>ags_channel_iter_free</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_channel_iter_free               (<parameter><link linkend="AgsChannelIter"><type>AgsChannelIter</type></link> *iter</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-channel-iter-next" role="function">
-<title>ags_channel_iter_next ()</title>
-<indexterm zone="ags-channel-iter-next"><primary>ags_channel_iter_next</primary></indexterm>
-<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_iter_next               (<parameter><link linkend="AgsChannelIter"><type>AgsChannelIter</type></link> *iter</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> mode</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-channel-iter-prev" role="function">
-<title>ags_channel_iter_prev ()</title>
-<indexterm zone="ags-channel-iter-prev"><primary>ags_channel_iter_prev</primary></indexterm>
-<programlisting><link linkend="AgsChannel"><returnvalue>AgsChannel</returnvalue></link> *        ags_channel_iter_prev               (<parameter><link linkend="AgsChannelIter"><type>AgsChannelIter</type></link> *iter</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> mode</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 
 </refsect1>
 

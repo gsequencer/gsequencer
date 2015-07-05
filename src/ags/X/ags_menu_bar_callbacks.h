@@ -33,6 +33,7 @@ void ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_export_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_import_midi_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
 void ags_menu_bar_add_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
@@ -44,9 +45,14 @@ void ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar
 void ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
+void ags_menu_bar_add_replicator_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+
+void ags_menu_bar_add_ladspa_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+
 void ags_menu_bar_remove_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
-void ags_menu_bar_automation_editor_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_automation_window_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
 void ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 

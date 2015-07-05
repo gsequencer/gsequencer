@@ -18,22 +18,19 @@
 
 #include <ags/audio/ags_recall_ladspa.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/audio/ags_config.h>
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_port.h>
 
 #include <dlfcn.h>
@@ -83,8 +80,6 @@ enum{
   PROP_EFFECT,
   PROP_INDEX,
 };
-
-extern AgsConfig *config;
 
 static gpointer ags_recall_ladspa_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
@@ -171,7 +166,7 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
 				  param_spec);
 
   /**
-   * AgsRecallLadspa:recycling:
+   * AgsRecallLadspa:effect:
    *
    * The effect's name.
    * 
@@ -187,7 +182,7 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
 				  param_spec);
 
   /**
-   * AgsRecallLadspa:recycling:
+   * AgsRecallLadspa:index:
    *
    * The effect's index.
    * 
@@ -229,14 +224,14 @@ void
 ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
 {
   AGS_RECALL(recall_ladspa)->name = "ags-ladspa\0";
-  AGS_RECALL(recall_ladspa)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(recall_ladspa)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(recall_ladspa)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(recall_ladspa)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(recall_ladspa)->xml_type = "ags-recall-ladspa\0";
   AGS_RECALL(recall_ladspa)->port = NULL;
 
   recall_ladspa->filename = NULL;
   recall_ladspa->effect = NULL;
-  recall_ladspa->index = 0;
+  recall_ladspa->effect_index = 0;
 
   recall_ladspa->plugin_descriptor = NULL;
 
@@ -260,7 +255,6 @@ ags_recall_ladspa_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      AgsDevout *devout;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -286,20 +280,24 @@ ags_recall_ladspa_set_property(GObject *gobject,
 	return;
       }
 
+      if(recall_ladspa->effect != NULL){
+	g_free(recall_ladspa->effect);
+      }
+
       recall_ladspa->effect = g_strdup(effect);
     }
     break;
   case PROP_INDEX:
     {
-      unsigned long *index;
+      unsigned long *effect_index;
       
-      index = g_value_get_ulong(value);
+      effect_index = g_value_get_ulong(value);
 
-      if(index == recall_ladspa->index){
+      if(effect_index == recall_ladspa->effect_index){
 	return;
       }
 
-      recall_ladspa->index = index;
+      recall_ladspa->effect_index = effect_index;
     }
     break;
   default:
@@ -331,7 +329,7 @@ ags_recall_ladspa_get_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      g_value_set_ulong(value, recall_ladspa->index);
+      g_value_set_ulong(value, recall_ladspa->effect_index);
     }
     break;
   default:
@@ -359,7 +357,6 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   AgsLadspaPlugin *ladspa_plugin;
   AgsPort *current;
   GList *list;
-  gchar *path;
   unsigned long port_count;
   unsigned long i;
 
@@ -376,13 +373,13 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   
   plugin_so = ladspa_plugin->plugin_so;
 
-  if(plugin_so){
+  if(plugin_so != NULL){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
       recall_ladspa->plugin_descriptor = 
-	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->effect_index);
 
       port_count = plugin_descriptor->PortCount;
       port_descriptor = plugin_descriptor->PortDescriptors;
@@ -419,22 +416,22 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
 	    if(recall_ladspa->input_port == NULL){
-	      recall_ladspa->input_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->input_port[0] = i;
 	    }else{
-	      recall_ladspa->input_port = (guint *) realloc(recall_ladspa->input_port,
-							    (recall_ladspa->input_lines + 1) * sizeof(guint));
+	      recall_ladspa->input_port = (unsigned long *) realloc(recall_ladspa->input_port,
+							    (recall_ladspa->input_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->input_port[recall_ladspa->input_lines] = i;
 	    }
 
 	    recall_ladspa->input_lines += 1;
 	  }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	    if(recall_ladspa->output_port == NULL){
-	      recall_ladspa->output_port = (guint *) malloc(sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) malloc(sizeof(unsigned long));
 	      recall_ladspa->output_port[0] = i;
 	    }else{
-	      recall_ladspa->output_port = (guint *) realloc(recall_ladspa->output_port,
-							    (recall_ladspa->output_lines + 1) * sizeof(guint));
+	      recall_ladspa->output_port = (unsigned long *) realloc(recall_ladspa->output_port,
+							    (recall_ladspa->output_lines + 1) * sizeof(unsigned long));
 	      recall_ladspa->output_port[recall_ladspa->output_lines] = i;
 	    }
 
@@ -465,13 +462,13 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   AgsRecallLadspa *gobject;
   AgsLadspaPlugin *ladspa_plugin;
   gchar *filename, *effect;
-  unsigned long index;
+  unsigned long effect_index;
 
   gobject = AGS_RECALL_LADSPA(plugin);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -482,7 +479,7 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 			"filename\0");
   effect = xmlGetProp(node,
 		      "effect\0");
-  index = g_ascii_strtoull(xmlGetProp(node,
+  effect_index = g_ascii_strtoull(xmlGetProp(node,
 				      "index\0"),
 			   NULL,
 			   10);
@@ -490,7 +487,7 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
   g_object_set(gobject,
 	       "filename\0", filename,
 	       "effect\0", effect,
-	       "index\0", index,
+	       "index\0", effect_index,
 	       NULL);
 
   ags_recall_ladspa_load(gobject);
@@ -503,7 +500,6 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   xmlNode *node;
   GList *list;
   gchar *id;
-  guint i;
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
 
@@ -517,7 +513,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -534,7 +530,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "index\0",
-	     g_strdup_printf("%d\0", recall_ladspa->index));
+	     g_strdup_printf("%d\0", recall_ladspa->effect_index));
 
   xmlAddChild(parent,
 	      node);
@@ -548,7 +544,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Set up LADSPA handle.
  * 
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
@@ -565,13 +561,13 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   
   plugin_so = ladspa_plugin->plugin_so;
 
-  if(plugin_so){
+  if(plugin_so != NULL){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
       recall_ladspa->plugin_descriptor = 
-	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->effect_index);
     }
   }
 }
@@ -584,7 +580,7 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
  *
  * Returns: a #GList containing #AgsPort.
  * 
- * Since: 0.4
+ * Since: 0.4.2
  */
 GList*
 ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
@@ -592,7 +588,6 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   AgsLadspaPlugin *ladspa_plugin;
   AgsPort *current;
   GList *port;
-  gchar *path;
   unsigned long port_count;
   unsigned long i;
 
@@ -608,13 +603,13 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   
   plugin_so = ladspa_plugin->plugin_so;
 
-  if(plugin_so){
+  if(plugin_so != NULL){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
       recall_ladspa->plugin_descriptor = 
-	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+	plugin_descriptor = ladspa_descriptor(recall_ladspa->effect_index);
 
       port_count = plugin_descriptor->PortCount;
       port_descriptor = plugin_descriptor->PortDescriptors;
@@ -688,7 +683,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
  *
  * Convert data type.
  * 
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_recall_ladspa_short_to_float(signed short *buffer,
@@ -713,7 +708,7 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
  *
  * Convert data type.
  * 
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_recall_ladspa_float_to_short(float *buffer,
@@ -731,7 +726,7 @@ ags_recall_ladspa_float_to_short(float *buffer,
 }
 
 /**
- * ags_recall_ladpsa_find:
+ * ags_recall_ladspa_find:
  * @recall: a #GList containing #AgsRecall
  * @filename: plugin filename
  * @effect: effect's name
@@ -740,10 +735,10 @@ ags_recall_ladspa_float_to_short(float *buffer,
  *
  * Returns: Next match.
  * 
- * Since: 0.4
+ * Since: 0.4.2
  */
 GList*
-ags_recall_ladpsa_find(GList *recall,
+ags_recall_ladspa_find(GList *recall,
 		       gchar *filename, gchar *effect)
 {
   while(recall != NULL){
@@ -767,35 +762,35 @@ ags_recall_ladpsa_find(GList *recall,
  * @source: the source
  * @filename: the LADSPA plugin filename
  * @effect: effect's name
- * @index: effect's index
+ * @effect_index: effect's index
  *
  * Creates a #AgsRecallLadspa
  *
  * Returns: a new #AgsRecallLadspa
  * 
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsRecallLadspa*
 ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *filename,
 		      gchar *effect,
-		      unsigned long index)
+		      unsigned long effect_index)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsRecallLadspa *recall_ladspa;
 
   if(source != NULL){
-    devout = AGS_AUDIO(source->audio)->devout;
+    soundcard = AGS_AUDIO(source->audio)->soundcard;
   }else{
-    devout = NULL;
+    soundcard = NULL;
   }
 
   recall_ladspa = (AgsRecallLadspa *) g_object_new(AGS_TYPE_RECALL_LADSPA,
-						   "devout\0", devout,
+						   "soundcard\0", soundcard,
 						   "source\0", source,
 						   "filename\0", filename,
 						   "effect\0", effect,
-						   "index\0", index,
+						   "index\0", effect_index,
 						   NULL);
 
   return(recall_ladspa);

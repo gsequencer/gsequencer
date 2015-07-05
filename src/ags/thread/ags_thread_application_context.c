@@ -16,12 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/thread/ags_thread_application_context.h>
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_gui_thread.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
+
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
+#include <ags/thread/file/ags_thread_file_xml.h>
 #include <ags/thread/ags_autosave_thread.h>
-#include <ags/thread/ags_single_thread.h>
 
 void ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thread_application_context);
 void ags_thread_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -38,7 +43,22 @@ void ags_thread_application_context_connect(AgsConnectable *connectable);
 void ags_thread_application_context_disconnect(AgsConnectable *connectable);
 void ags_thread_application_context_finalize(GObject *gobject);
 
+void ags_thread_application_context_load_config(AgsApplicationContext *application_context);
+void ags_thread_application_context_register_types(AgsApplicationContext *application_context);
+void ags_thread_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
+xmlNode* ags_thread_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
+
+void ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
+						       AgsThreadApplicationContext *thread_application_context);
+
+static gpointer ags_thread_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_thread_application_context_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_AUTOSAVE_THREAD,
+  PROP_THREAD_POOL,
+};
 
 GType
 ags_thread_application_context_get_type()
@@ -82,22 +102,58 @@ ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thre
 {
   GObjectClass *gobject;
   AgsApplicationContextClass *application_context;
-
-  ags_thread_application_context_parent_class = g_type_class_peek_parent(ags_thread_application_context);
+  GParamSpec *param_spec;
+  
+  ags_thread_application_context_parent_class = g_type_class_peek_parent(thread_application_context);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) ags_thread_application_context;
+  gobject = (GObjectClass *) thread_application_context;
 
   gobject->set_property = ags_thread_application_context_set_property;
   gobject->get_property = ags_thread_application_context_get_property;
 
   gobject->finalize = ags_thread_application_context_finalize;
 
+  /**
+   * AgsThreadApplicationContext:autosave-thread:
+   *
+   * The assigned thread pool.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("autosave-thread\0",
+				   "thread pool of thread application context\0",
+				   "The thread pool which this thread application context assigned to\0",
+				   AGS_TYPE_AUTOSAVE_THREAD,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_THREAD_POOL,
+				  param_spec);
+
+
+  /**
+   * AgsThreadApplicationContext:thread-pool:
+   *
+   * The assigned thread pool.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("thread-pool\0",
+				   "thread pool of thread application context\0",
+				   "The thread pool which this thread application context assigned to\0",
+				   AGS_TYPE_THREAD_POOL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_THREAD_POOL,
+				  param_spec);
+
   /* AgsThreadApplicationContextClass */
-  application_context = (AgsApplicationContextClass *) thread_application_context_class;
+  application_context = (AgsApplicationContextClass *) thread_application_context;
   
   application_context->load_config = ags_thread_application_context_load_config;
   application_context->register_types = ags_thread_application_context_register_types;
+  application_context->read = ags_thread_application_context_read;
+  application_context->write = ags_thread_application_context_write;
 }
 
 void
@@ -114,12 +170,10 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
 {
   thread_application_context->flags = 0;
 
-  /* AgsAutosaveThread */
-  thread_application_context->autosave_thread = NULL;
-  thread_application_context->autosave_thread = ags_autosave_thread_new(NULL, thread_application_context);
-  g_object_ref(G_OBJECT(thread_application_context->autosave_thread));
-  
-  application_context->thread_pool = ags_thread_pool_new(NULL);
+  g_object_set(thread_application_context,
+	       "autosave-thread", ags_autosave_thread_new(thread_application_context),
+	       "thread-pool\0", ags_thread_pool_new(NULL),
+	       NULL);
 }
 
 void
@@ -133,6 +187,42 @@ ags_thread_application_context_set_property(GObject *gobject,
   thread_application_context = AGS_THREAD_APPLICATION_CONTEXT(gobject);
 
   switch(prop_id){
+  case PROP_AUTOSAVE_THREAD:
+    {
+      AgsAutosaveThread *autosave_thread;
+      
+      autosave_thread = (AgsAutosaveThread *) g_value_get_object(value);
+
+      if(autosave_thread == thread_application_context->autosave_thread)
+	return;
+
+      if(thread_application_context->autosave_thread != NULL)
+	g_object_unref(thread_application_context->autosave_thread);
+
+      if(autosave_thread != NULL)
+	g_object_ref(G_OBJECT(autosave_thread));
+
+      thread_application_context->autosave_thread = autosave_thread;
+    }
+    break;
+  case PROP_THREAD_POOL:
+    {
+      AgsThreadPool *thread_pool;
+      
+      thread_pool = (AgsThreadPool *) g_value_get_object(value);
+
+      if(thread_pool == thread_application_context->thread_pool)
+	return;
+
+      if(thread_application_context->thread_pool != NULL)
+	g_object_unref(thread_application_context->thread_pool);
+
+      if(thread_pool != NULL)
+	g_object_ref(G_OBJECT(thread_pool));
+
+      thread_application_context->thread_pool = thread_pool;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -150,6 +240,16 @@ ags_thread_application_context_get_property(GObject *gobject,
   thread_application_context = AGS_THREAD_APPLICATION_CONTEXT(gobject);
 
   switch(prop_id){
+  case PROP_AUTOSAVE_THREAD:
+    {
+      g_value_set_object(value, thread_application_context->autosave_thread);
+    }
+    break;
+  case PROP_THREAD_POOL:
+    {
+      g_value_set_object(value, thread_application_context->thread_pool);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -163,13 +263,18 @@ ags_thread_application_context_connect(AgsConnectable *connectable)
 
   thread_application_context = AGS_THREAD_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_THREAD_APPLICATION_CONTEXT_CONNECTED & (thread_application_context->flags)) != 0){
+  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(thread_application_context)->flags)) != 0){
     return;
   }
 
   ags_thread_application_context_parent_connectable_interface->connect(connectable);
 
+  g_message("connecting threads\0");
+  
   ags_connectable_connect(AGS_CONNECTABLE(thread_application_context->autosave_thread));
+
+  ags_connectable_connect(AGS_CONNECTABLE(AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop));
+  ags_connectable_connect(AGS_CONNECTABLE(thread_application_context->thread_pool));
 }
 
 void
@@ -179,7 +284,7 @@ ags_thread_application_context_disconnect(AgsConnectable *connectable)
 
   thread_application_context = AGS_THREAD_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_THREAD_APPLICATION_CONTEXT_CONNECTED & (thread_application_context->flags)) == 0){
+  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(thread_application_context)->flags)) == 0){
     return;
   }
 
@@ -194,6 +299,221 @@ ags_thread_application_context_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_thread_application_context_parent_class)->finalize(gobject);
 
   thread_application_context = AGS_THREAD_APPLICATION_CONTEXT(gobject);
+}
+
+void
+ags_thread_application_context_load_config(AgsApplicationContext *application_context)
+{
+  AgsConfig *config;
+  gchar *model;
+
+  config = application_context->config;
+  
+  model = ags_config_get_value(config,
+			       AGS_CONFIG_THREAD,
+			       "model\0");
+    
+  if(model != NULL){
+    if(!strncmp(model,
+		"single-threaded\0",
+		16)){
+      //TODO:JK: implement me
+	
+    }else if(!strncmp(model,
+		      "multi-threaded",
+		      15)){
+      //TODO:JK: implement me
+    }else if(!strncmp(model,
+		      "super-threaded",
+		      15)){
+      //TODO:JK: implement me
+    }
+  }
+}
+
+void
+ags_thread_application_context_register_types(AgsApplicationContext *application_context)
+{
+  ags_thread_get_type();
+
+  ags_task_thread_get_type();
+
+  ags_timestamp_thread_get_type();
+
+  ags_thread_pool_get_type();
+  ags_returnable_thread_get_type();
+}
+
+void
+ags_thread_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context)
+{
+  AgsThreadApplicationContext *gobject;
+  GList *list;
+  xmlNode *child;
+
+  if(*application_context == NULL){
+    gobject = g_object_new(AGS_TYPE_THREAD_APPLICATION_CONTEXT,
+			   NULL);
+
+    *application_context = (GObject *) gobject;
+  }else{
+    gobject = (AgsApplicationContext *) *application_context;
+  }
+
+  file->application_context = gobject;
+
+  g_object_set(G_OBJECT(file),
+	       "application-context\0", gobject,
+	       NULL);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+  
+  /* properties */
+  AGS_APPLICATION_CONTEXT(gobject)->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+								     NULL,
+								     16);
+
+  AGS_APPLICATION_CONTEXT(gobject)->version = xmlGetProp(node,
+							 AGS_FILE_VERSION_PROP);
+
+  AGS_APPLICATION_CONTEXT(gobject)->build_id = xmlGetProp(node,
+							  AGS_FILE_BUILD_ID_PROP);
+
+  //TODO:JK: check version compatibelity
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-thread\0",
+		     child->name,
+		     11)){
+	ags_file_read_thread(file,
+			     child,
+			     (AgsThread **) &(AGS_APPLICATION_CONTEXT(gobject)->main_loop));
+      }else if(!xmlStrncmp("ags-thread-pool\0",
+			   child->name,
+			   16)){
+	ags_file_read_thread_pool(file,
+				  child,
+				  (AgsThreadPool **) &(gobject->thread_pool));
+      }
+    }
+
+    child = child->next;
+  }
+
+  //TODO:JK: decide about returnable thread
+}
+
+xmlNode*
+ags_thread_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context)
+{
+  xmlNode *node, *child;
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-application-context\0");
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", application_context,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_CONTEXT_PROP,
+	     "thread\0");
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", ((~AGS_APPLICATION_CONTEXT_CONNECTED) & (AGS_APPLICATION_CONTEXT(application_context)->flags))));
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_APPLICATION_CONTEXT(application_context)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_APPLICATION_CONTEXT(application_context)->build_id);
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  /* child elements */
+  ags_file_write_thread(file,
+			node,
+			AGS_THREAD(AGS_THREAD_APPLICATION_CONTEXT(application_context)->main_loop));
+
+  ags_file_write_thread_pool(file,
+			     node,
+			     AGS_THREAD_POOL(AGS_THREAD_APPLICATION_CONTEXT(application_context)->thread_pool));
+
+  return(node);
+}
+
+void
+ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
+						  AgsThreadApplicationContext *thread_application_context)
+{
+  if(!strncmp(group,
+	      AGS_CONFIG_GENERIC,
+	      8)){
+    if(!strncmp(key,
+		"autosave-thread\0",
+		15)){
+      AgsAutosaveThread *autosave_thread;
+
+      if(thread_application_context == NULL ||
+	 thread_application_context->autosave_thread == NULL){
+	return;
+      }
+      
+      autosave_thread = thread_application_context->autosave_thread;
+
+      if(!strncmp(value,
+		  "true\0",
+		  5)){
+	ags_thread_start(autosave_thread);
+      }else{
+	ags_thread_stop(autosave_thread);
+      }
+    }
+  }else if(!strncmp(group,
+		    AGS_CONFIG_THREAD,
+		    7)){
+    if(!strncmp(key,
+		"model\0",
+		6)){
+      //TODO:JK: implement me
+    }else if(!strncmp(key,
+		      "lock-global\0",
+		      11)){
+      //TODO:JK: implement me
+    }else if(!strncmp(key,
+		      "lock-parent\0",
+		      11)){
+      //TODO:JK: implement me
+    }
+  }
 }
 
 AgsThreadApplicationContext*

@@ -21,9 +21,9 @@
 #include <ags/lib/ags_list.h>
 
 #include <ags/object/ags_marshal.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 
@@ -64,7 +64,12 @@ void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
+  PROP_CHANNEL,
+  PROP_PARENT,
+  PROP_NEXT,
+  PROP_PREV,
+  PROP_AUDIO_SIGNAL,
 };
 
 enum{
@@ -135,19 +140,100 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 
   /* properties */
   /**
-   * AgsRecycling:devout:
+   * AgsRecycling:soundcard:
    *
-   * The assigned #AgsDevout acting as default sink.
+   * The assigned #AgsSoundcard acting as default sink.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
-				   AGS_TYPE_DEVOUT,
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
+				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+
+  /**
+   * AgsRecycling:channel:
+   *
+   * The assigned #AgsChannel.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("channel\0",
+				   "assigned channel\0",
+				   "The channel it is assigned with\0",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsRecycling:parent:
+   *
+   * The assigned parent #AgsRecycling.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("parent\0",
+				   "assigned parent\0",
+				   "The parent it is assigned with\0",
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PARENT,
+				  param_spec);
+
+  /**
+   * AgsRecycling:prev:
+   *
+   * The assigned prev #AgsRecycling.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("prev\0",
+				   "assigned prev\0",
+				   "The prev it is assigned with\0",
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PREV,
+				  param_spec);
+
+  /**
+   * AgsRecycling:next:
+   *
+   * The assigned next #AgsRecycling.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("next\0",
+				   "assigned next\0",
+				   "The next it is assigned with\0",
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NEXT,
+				  param_spec);
+
+  /**
+   * AgsRecycling:audio-signal:
+   *
+   * The containing  #AgsAudioSignal.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("audio-signal\0",
+				   "containing audio signal\0",
+				   "The audio signal it contains\0",
+				   AGS_TYPE_AUDIO_SIGNAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_SIGNAL,
 				  param_spec);
 
   /*  */
@@ -203,8 +289,7 @@ ags_recycling_init(AgsRecycling *recycling)
 {
   recycling->flags = 0;
 
-  recycling->devout = NULL;
-
+  recycling->soundcard = NULL;
   recycling->channel = NULL;
 
   recycling->parent = NULL;
@@ -226,13 +311,112 @@ ags_recycling_set_property(GObject *gobject,
   recycling = AGS_RECYCLING(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
-      ags_recycling_set_devout(recycling, (GObject *) devout);
+      ags_recycling_set_soundcard(recycling, (GObject *) soundcard);
+    }
+    break;
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      if(recycling->channel == channel){
+	return;
+      }
+
+      if(recycling->channel != NULL){
+	g_object_unref(recycling->channel);
+      }
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      recycling->channel = channel;
+    }
+    break;
+  case PROP_PARENT:
+    {
+      AgsRecycling *recycling;
+
+      recycling = (AgsRecycling *) g_value_get_object(value);
+
+      if(recycling->parent == recycling){
+	return;
+      }
+
+      if(recycling->parent != NULL){
+	g_object_unref(recycling->parent);
+      }
+
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+
+      recycling->parent = recycling;
+    }
+    break;
+  case PROP_NEXT:
+    {
+      AgsRecycling *recycling;
+
+      recycling = (AgsRecycling *) g_value_get_object(value);
+
+      if(recycling->next == recycling){
+	return;
+      }
+
+      if(recycling->next != NULL){
+	g_object_unref(recycling->next);
+      }
+
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+
+      recycling->next = recycling;
+    }
+    break;
+  case PROP_PREV:
+    {
+      AgsRecycling *recycling;
+
+      recycling = (AgsRecycling *) g_value_get_object(value);
+
+      if(recycling->prev == recycling){
+	return;
+      }
+
+      if(recycling->prev != NULL){
+	g_object_unref(recycling->prev);
+      }
+
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+
+      recycling->prev = recycling;
+    }
+    break;
+  case PROP_AUDIO_SIGNAL:
+    {
+      AgsAudioSignal *audio_signal;
+
+      audio_signal = g_value_get_object(value);
+
+      if(audio_signal == NULL ||
+	 g_list_find(recycling->audio_signal, audio_signal) != NULL){
+	return;
+      }
+
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal);
     }
     break;
   default:
@@ -252,8 +436,35 @@ ags_recycling_get_property(GObject *gobject,
   recycling = AGS_RECYCLING(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    g_value_set_object(value, recycling->devout);
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, recycling->soundcard);
+    }
+    break;
+  case PROP_CHANNEL:
+    {
+      g_value_set_object(value, recycling->channel);
+    }
+    break;
+  case PROP_PARENT:
+    {
+      g_value_set_object(value, recycling->parent);
+    }
+    break;
+  case PROP_NEXT:
+    {
+      g_value_set_object(value, recycling->next);
+    }
+    break;
+  case PROP_PREV:
+    {
+      g_value_set_object(value, recycling->prev);
+    }
+    break;
+  case PROP_AUDIO_SIGNAL:
+    {
+      g_value_set_pointer(value, g_list_copy(recycling->audio_signal));
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -289,28 +500,28 @@ ags_recycling_finalize(GObject *gobject)
 }
 
 /**
- * ags_recycling_set_devout:
+ * ags_recycling_set_soundcard:
  * @recycling:  an #AgsRecycling
- * @devout: the #AgsDevout to set
+ * @soundcard: the #AgsSoundcard to set
  *
- * Sets #AgsDevout to recycling.
+ * Sets #AgsSoundcard to recycling.
  *
  * Since: 0.3
  */
 void
-ags_recycling_set_devout(AgsRecycling *recycling, GObject *devout)
+ags_recycling_set_soundcard(AgsRecycling *recycling, GObject *soundcard)
 {
   /* recycling */
-  if(recycling->devout == devout)
+  if(recycling->soundcard == soundcard)
     return;
 
-  if(recycling->devout != NULL)
-    g_object_unref(recycling->devout);
+  if(recycling->soundcard != NULL)
+    g_object_unref(recycling->soundcard);
 
-  if(devout != NULL)
-    g_object_ref(devout);
+  if(soundcard != NULL)
+    g_object_ref(soundcard);
 
-  recycling->devout = (GObject *) devout;
+  recycling->soundcard = (GObject *) soundcard;
 }
 
 /**
@@ -409,13 +620,13 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
     return;
   }
 
-  audio_signal->devout = template->devout;
+  audio_signal->soundcard = template->soundcard;
 
   audio_signal->recycling = (GObject *) recycling;
 
   audio_signal->samplerate = template->samplerate;
   audio_signal->buffer_size = template->buffer_size;
-  audio_signal->resolution = template->resolution;
+  audio_signal->format = template->format;
 
   audio_signal->last_frame = (((guint)(delay *
 				       template->buffer_size) +
@@ -458,7 +669,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 						   guint frame_count,
 						   gdouble delay, guint attack)
 {
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsAudioSignal *template;
   GList *stream, *template_stream, *template_loop;
   guint frames_copied;
@@ -468,9 +679,9 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   /* some init */
   template = ags_audio_signal_get_template(recycling->audio_signal);
 
-  audio_signal->devout = template->devout;
+  audio_signal->soundcard = template->soundcard;
 
-  devout = AGS_DEVOUT(audio_signal->devout);
+  soundcard = AGS_SOUNDCARD(audio_signal->soundcard);
 
   audio_signal->recycling = (GObject *) recycling;
 
@@ -627,23 +838,23 @@ ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
 
 /**
  * ags_recycling_new:
- * @devout: the #AgsDevout
+ * @soundcard: the #AgsSoundcard
  *
- * Creates a #AgsRecycling, with defaults of @devout.
+ * Creates a #AgsRecycling, with defaults of @soundcard.
  *
  * Returns: a new #AgsRecycling
  *
  * Since: 0.3
  */
 AgsRecycling*
-ags_recycling_new(GObject *devout)
+ags_recycling_new(GObject *soundcard)
 {
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
   recycling = (AgsRecycling *) g_object_new(AGS_TYPE_RECYCLING, NULL);
 
-  audio_signal = ags_audio_signal_new(devout,
+  audio_signal = ags_audio_signal_new(soundcard,
 				      (GObject *) recycling,
 				      NULL);
   audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

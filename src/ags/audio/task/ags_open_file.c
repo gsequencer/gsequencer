@@ -18,11 +18,11 @@
 
 #include <ags/audio/task/ags_open_file.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file_link.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -180,8 +180,6 @@ ags_open_file_launch(AgsTask *task)
 
   /*  */
   if(open_file->create_channels){
-    AgsMachine *machine;
-    GList *list;
     guint pads_old;
 
     i_stop = g_slist_length(open_file->filenames);
@@ -210,25 +208,13 @@ ags_open_file_launch(AgsTask *task)
 
       iter = iter->next;
     }
-
-    machine = audio->machine;
-    list = gtk_container_get_children(machine->input);
-    list = g_list_nth(list,
-		      pads_old);
-
-    while(list != NULL){
-      ags_connectable_connect(AGS_CONNECTABLE(list->data));
-      gtk_widget_show_all(list->data);
-
-      list = list->next;
-    }
   }
 
   for(i = 0; i < i_stop && current != NULL; i++){
     current_filename = (gchar *) current->data;
 
     audio_file = ags_audio_file_new((gchar *) current_filename,
-				    AGS_DEVOUT(audio->devout),
+				    audio->soundcard,
 				    0, open_file->audio->audio_channels);
 
     ags_audio_file_open(audio_file);

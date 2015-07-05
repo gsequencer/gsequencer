@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPlayChannelRunMaster">
+<refentry id="AgsPlayChannelRunMaster">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPlayChannelRunMaster.top_of_page">AgsPlayChannelRunMaster</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPlayChannelRunMaster.top_of_page">AgsPlayChannelRunMaster</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,107 +17,137 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPlayChannelRunMaster.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPlayChannelRunMaster.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-PLAY-CHANNEL-RUN-MASTER-STREAMER:CAPS">AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPlayChannelRunMasterStreamer"><returnvalue>AgsPlayChannelRunMasterStreamer</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-play-channel-run-master-streamer-alloc">ags_play_channel_run_master_streamer_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-play-channel-run-master-find-streamer">ags_play_channel_run_master_find_streamer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPlayChannelRunMaster"><returnvalue>AgsPlayChannelRunMaster</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-play-channel-run-master-new">ags_play_channel_run_master_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-PLAY-CHANNEL-RUN-MASTER-STREAMER:CAPS">AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER</link>(strct)
-struct              <link linkend="AgsPlayChannelRunMaster">AgsPlayChannelRunMaster</link>;
-struct              <link linkend="AgsPlayChannelRunMasterClass">AgsPlayChannelRunMasterClass</link>;
-enum                <link linkend="AgsPlayChannelRunMasterFlags">AgsPlayChannelRunMasterFlags</link>;
-struct              <link linkend="AgsPlayChannelRunMasterStreamer">AgsPlayChannelRunMasterStreamer</link>;
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-play-channel-run-master-find-streamer">ags_play_channel_run_master_find_streamer</link>
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
-                                                         <parameter><link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link> *stream_channel_run</parameter>);
-<link linkend="AgsPlayChannelRunMaster"><returnvalue>AgsPlayChannelRunMaster</returnvalue></link> * <link linkend="ags-play-channel-run-master-new">ags_play_channel_run_master_new</link>
-                                                        ();
-<link linkend="AgsPlayChannelRunMasterStreamer"><returnvalue>AgsPlayChannelRunMasterStreamer</returnvalue></link> * <link linkend="ags-play-channel-run-master-streamer-alloc">ags_play_channel_run_master_streamer_alloc</link>
-                                                        (<parameter><link linkend="AgsPlayChannelRunMaster"><type>AgsPlayChannelRunMaster</type></link> *play_channel_run_master</parameter>,
-                                                         <parameter><link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link> *stream_channel_run</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPlayChannelRunMaster.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPlayChannelRunMaster.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsPlayChannelRunMaster.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPlayChannelRunMaster--stream-channel-run">stream-channel-run</link></entry><entry role="property_flags">Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPlayChannelRunMaster.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsPlayChannelRunMasterFlags">AgsPlayChannelRunMasterFlags</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsPlayChannelRunMasterStreamer">AgsPlayChannelRunMasterStreamer</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPlayChannelRunMaster.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPlayChannelRunMaster
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsPlayChannelRunMaster.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsPlayChannelRunMaster.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-PLAY-CHANNEL-RUN-MASTER-STREAMER:CAPS" role="macro">
 <title>AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER()</title>
 <indexterm zone="AGS-PLAY-CHANNEL-RUN-MASTER-STREAMER:CAPS"><primary>AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER</primary></indexterm>
-<programlisting>#define AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER(strct)     ((AgsPlayChannelRunMasterStreamer *)(strct))
+<programlisting language="C">#define AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER(strct)     ((AgsPlayChannelRunMasterStreamer *)(strct))
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPlayChannelRunMaster" role="struct">
-<title>struct AgsPlayChannelRunMaster</title>
-<indexterm zone="AgsPlayChannelRunMaster"><primary>AgsPlayChannelRunMaster</primary></indexterm>
-<programlisting>struct AgsPlayChannelRunMaster {
-  AgsRecallChannelRun recall_channel_run;
+</refsect2>
+<refsect2 id="ags-play-channel-run-master-streamer-alloc" role="function">
+<title>ags_play_channel_run_master_streamer_alloc&#160;()</title>
+<indexterm zone="ags-play-channel-run-master-streamer-alloc"><primary>ags_play_channel_run_master_streamer_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPlayChannelRunMasterStreamer"><returnvalue>AgsPlayChannelRunMasterStreamer</returnvalue></link>&#160;*
+ags_play_channel_run_master_streamer_alloc
+                               (<parameter><link linkend="AgsPlayChannelRunMaster"><type>AgsPlayChannelRunMaster</type></link> *play_channel_run_master</parameter>,
+                                <parameter><link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link> *stream_channel_run</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-play-channel-run-master-find-streamer" role="function">
+<title>ags_play_channel_run_master_find_streamer&#160;()</title>
+<indexterm zone="ags-play-channel-run-master-find-streamer"><primary>ags_play_channel_run_master_find_streamer</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_play_channel_run_master_find_streamer
+                               (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
+                                <parameter><link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link> *stream_channel_run</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-play-channel-run-master-new" role="function">
+<title>ags_play_channel_run_master_new&#160;()</title>
+<indexterm zone="ags-play-channel-run-master-new"><primary>ags_play_channel_run_master_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPlayChannelRunMaster"><returnvalue>AgsPlayChannelRunMaster</returnvalue></link>&#160;*
+ags_play_channel_run_master_new ();</programlisting>
+</refsect2>
 
-  guint flags;
-
-  GList *streamer;
-
-  gulong source_recycling_changed_handler;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPlayChannelRunMasterClass" role="struct">
-<title>struct AgsPlayChannelRunMasterClass</title>
-<indexterm zone="AgsPlayChannelRunMasterClass"><primary>AgsPlayChannelRunMasterClass</primary></indexterm>
-<programlisting>struct AgsPlayChannelRunMasterClass {
-  AgsRecallChannelRunClass recall_channel_run;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsPlayChannelRunMaster.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsPlayChannelRunMasterFlags" role="enum">
 <title>enum AgsPlayChannelRunMasterFlags</title>
 <indexterm zone="AgsPlayChannelRunMasterFlags"><primary>AgsPlayChannelRunMasterFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING        = 1,
-} AgsPlayChannelRunMasterFlags;
-</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-PLAY-CHANNEL-RUN-MASTER-TERMINATING:CAPS">AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="AgsPlayChannelRunMasterStreamer" role="struct">
 <title>struct AgsPlayChannelRunMasterStreamer</title>
 <indexterm zone="AgsPlayChannelRunMasterStreamer"><primary>AgsPlayChannelRunMasterStreamer</primary></indexterm>
-<programlisting>struct AgsPlayChannelRunMasterStreamer {
+<programlisting language="C">struct AgsPlayChannelRunMasterStreamer {
   AgsPlayChannelRunMaster *play_channel_run_master;
 
   AgsStreamChannelRun *stream_channel_run;
   gulong done_handler;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-play-channel-run-master-find-streamer" role="function">
-<title>ags_play_channel_run_master_find_streamer ()</title>
-<indexterm zone="ags-play-channel-run-master-find-streamer"><primary>ags_play_channel_run_master_find_streamer</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_play_channel_run_master_find_streamer
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
-                                                         <parameter><link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link> *stream_channel_run</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-play-channel-run-master-new" role="function">
-<title>ags_play_channel_run_master_new ()</title>
-<indexterm zone="ags-play-channel-run-master-new"><primary>ags_play_channel_run_master_new</primary></indexterm>
-<programlisting><link linkend="AgsPlayChannelRunMaster"><returnvalue>AgsPlayChannelRunMaster</returnvalue></link> * ags_play_channel_run_master_new
-                                                        ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-play-channel-run-master-streamer-alloc" role="function">
-<title>ags_play_channel_run_master_streamer_alloc ()</title>
-<indexterm zone="ags-play-channel-run-master-streamer-alloc"><primary>ags_play_channel_run_master_streamer_alloc</primary></indexterm>
-<programlisting><link linkend="AgsPlayChannelRunMasterStreamer"><returnvalue>AgsPlayChannelRunMasterStreamer</returnvalue></link> * ags_play_channel_run_master_streamer_alloc
-                                                        (<parameter><link linkend="AgsPlayChannelRunMaster"><type>AgsPlayChannelRunMaster</type></link> *play_channel_run_master</parameter>,
-                                                         <parameter><link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link> *stream_channel_run</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsPlayChannelRunMaster.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsPlayChannelRunMaster--stream-channel-run" role="property"><title>The <literal>“stream-channel-run”</literal> property</title>
+<indexterm zone="AgsPlayChannelRunMaster--stream-channel-run"><primary>AgsPlayChannelRunMaster:stream-channel-run</primary></indexterm>
+<programlisting>  “stream-channel-run”       <link linkend="AgsStreamChannelRun"><type>AgsStreamChannelRun</type></link>&#160;*</programlisting>
+<para>an assigned AgsStreamChannelRun.</para><para>Flags: Write</para>
+</refsect2>
 
 </refsect1>
 

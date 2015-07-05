@@ -19,7 +19,7 @@
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_editor_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
@@ -66,7 +66,7 @@ enum{
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
 };
 
 static gpointer ags_editor_parent_class = NULL;
@@ -129,19 +129,19 @@ ags_editor_class_init(AgsEditorClass *editor)
 
   /* properties */
   /**
-   * AgsEditor:devout:
+   * AgsEditor:soundcard:
    *
-   * The assigned #AgsDevout acting as default sink.
+   * The assigned #AgsSoundcard acting as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /* AgsEditorClass */
@@ -189,37 +189,46 @@ ags_editor_init(AgsEditor *editor)
   editor->version = AGS_EDITOR_DEFAULT_VERSION;
   editor->build_id = AGS_EDITOR_DEFAULT_BUILD_ID;
 
-  editor->devout = NULL;
+  editor->soundcard = NULL;
 
   editor->toolbar = ags_toolbar_new();
   gtk_box_pack_start((GtkBox *) editor,
 		     (GtkWidget *) editor->toolbar,
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
   paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_box_pack_start((GtkBox *) editor,
 		     (GtkWidget *) paned,
-		     TRUE, TRUE, 0);
+		     TRUE, TRUE,
+		     0);
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
   //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   editor->machine_selector = ags_machine_selector_new();
-  gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) editor->machine_selector);
+  gtk_scrolled_window_add_with_viewport(scrolled_window,
+					(GtkWidget *) editor->machine_selector);
 
   editor->selected_machine = NULL;
 
   editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) editor->table, TRUE, FALSE);
+  gtk_paned_pack2((GtkPaned *) paned,
+		  (GtkWidget *) editor->table,
+		  TRUE, FALSE);
   
   editor->notebook = ags_notebook_new();
-  gtk_table_attach(editor->table, (GtkWidget *) editor->notebook,
-		   0, 3, 0, 1,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL,
+  editor->notebook->flags |= AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL;
+  gtk_table_attach(editor->table,
+		   (GtkWidget *) editor->notebook,
+		   0, 3,
+		   0, 1,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL,
 		   0, 0);
 
-  editor->piano.meter = NULL;
+  editor->meter.piano = NULL;
   editor->edit.note_edit = NULL;
 
   editor->tact_counter = 0;
@@ -236,19 +245,19 @@ ags_editor_set_property(GObject *gobject,
   editor = AGS_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
-      if(editor->devout == devout)
+      if(editor->soundcard == soundcard)
 	return;
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      editor->devout = devout;
+      editor->soundcard = soundcard;
     }
     break;
   default:
@@ -268,8 +277,8 @@ ags_editor_get_property(GObject *gobject,
   editor = AGS_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    g_value_set_object(value, editor->devout);
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, editor->soundcard);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -315,15 +324,135 @@ ags_editor_disconnect(AgsConnectable *connectable)
 void
 ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 {
+  AgsMachine *machine_old;
+  AgsNotebook *notebook;
   GtkTable *table;
+
   guint pads;
+  guint i, stop;
+  
+  auto void ags_editor_notebook_change_machine_shrink();
+  auto void ags_editor_notebook_change_machine_grow();
+
+  void ags_editor_notebook_change_machine_shrink(){
+    GtkWidget *widget;
+
+    for(; i < stop; i++)
+      ags_notebook_remove_tab((GtkNotebook *) notebook,
+			      0);
+  }
+  void ags_editor_notebook_change_machine_grow(){
+    for(; i < stop; i++){
+      ags_notebook_add_tab((GtkNotebook *) notebook);
+    }
+  }
+
 
   if(editor->selected_machine == machine){
     return;
   }
 
+  machine_old = editor->selected_machine;
   editor->selected_machine = machine;
 
+  /* resize notebook */
+  notebook = editor->notebook;
+  
+  if(machine == NULL){
+    if(machine_old != NULL){
+      i = 0;
+
+      if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+	stop = machine_old->audio->audio_channels;
+      }else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+	if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	  stop = machine_old->audio->output_pads;
+	}else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){
+	  stop = machine_old->audio->input_pads;
+	}
+      }else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+	if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	  stop = machine_old->audio->output_lines;
+	}else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){	
+	  stop = machine_old->audio->input_lines;
+	}
+      }
+
+      ags_editor_notebook_change_machine_shrink();
+    }
+  }else{
+    if(machine_old == NULL){
+      if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+	stop = machine->audio->audio_channels;
+      }else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+	if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	  stop = machine->audio->output_pads;
+	}else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){
+	  stop = machine->audio->input_pads;
+	}
+      }else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+	if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	  stop = machine->audio->output_lines;
+	}else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){	
+	  stop = machine->audio->input_lines;
+	}
+      }
+
+      ags_editor_notebook_change_machine_grow();
+    }else{
+      if(machine->audio->audio_channels > machine_old->audio->audio_channels){
+	if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+	  i = machine_old->audio->audio_channels;
+	  stop = machine->audio->audio_channels;
+	}else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+	  if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	    i = machine_old->audio->output_pads;
+	    stop = machine->audio->output_pads;
+	  }else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){
+	    i = machine_old->audio->input_pads;
+	    stop = machine->audio->input_pads;
+	  }
+	}else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+	  if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	    i = machine_old->audio->output_lines;
+	    stop = machine->audio->output_lines;
+	  }else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){	
+	    i = machine_old->audio->input_lines;
+	    stop = machine->audio->input_lines;
+	  }
+	}
+
+	ags_editor_notebook_change_machine_grow();
+      }else if(machine->audio->audio_channels < machine_old->audio->audio_channels){
+	if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+	  i = machine->audio->audio_channels;
+	  stop = machine_old->audio->audio_channels;
+	}else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+	  if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	    i = machine->audio->output_pads;
+	    stop = machine_old->audio->output_pads;
+	  }else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){
+	    i = machine->audio->input_pads;
+	    stop = machine_old->audio->input_pads;
+	  }
+	}else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+	  if((AGS_NOTEBOOK_SHOW_OUTPUT & (notebook->flags)) != 0){
+	    i = machine->audio->output_lines;
+	    stop = machine_old->audio->output_lines;
+	  }else if((AGS_NOTEBOOK_SHOW_INPUT & (notebook->flags)) != 0){	
+	    i = machine->audio->input_lines;
+	    stop = machine_old->audio->input_lines;
+	  }
+	}
+
+	ags_editor_notebook_change_machine_shrink();
+      }
+    }
+  }
+  
+  gtk_widget_show_all((GtkWidget *) notebook);
+  
+  /* instantiate note edit or pattern edit */
   if(machine == NULL){
     return;
   }
@@ -344,13 +473,13 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
     editor->flags |= AGS_EDITOR_TOOL_NOTE_EDIT;
 
-    editor->piano.meter = ags_meter_new();
-    gtk_table_attach(editor->table, (GtkWidget *) editor->piano.meter,
+    editor->meter.piano = ags_piano_new();
+    gtk_table_attach(editor->table, (GtkWidget *) editor->meter.piano,
 		     0, 1, 1, 2,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
-    ags_connectable_connect(AGS_CONNECTABLE(editor->piano.meter));
-    gtk_widget_show_all(editor->piano.meter);
+    ags_connectable_connect(AGS_CONNECTABLE(editor->meter.piano));
+    gtk_widget_show_all(editor->meter.piano);
 
     editor->edit.note_edit = ags_note_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.note_edit,
@@ -368,13 +497,13 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   }else if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0){
     editor->flags |= AGS_EDITOR_TOOL_PATTERN_EDIT;
 
-    editor->piano.soundset = ags_soundset_new();
-    gtk_table_attach(editor->table, (GtkWidget *) editor->piano.soundset,
+    editor->meter.soundset = ags_soundset_new();
+    gtk_table_attach(editor->table, (GtkWidget *) editor->meter.soundset,
 		     0, 1, 1, 2,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
-    ags_connectable_connect(AGS_CONNECTABLE(editor->piano.soundset));
-    gtk_widget_show_all(editor->piano.soundset);
+    ags_connectable_connect(AGS_CONNECTABLE(editor->meter.soundset));
+    gtk_widget_show_all(editor->meter.soundset);
 
     editor->edit.pattern_edit = ags_pattern_edit_new();
     gtk_table_attach(table, (GtkWidget *) editor->edit.pattern_edit,

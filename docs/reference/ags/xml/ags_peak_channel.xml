@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPeakChannel">
+<refentry id="AgsPeakChannel">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPeakChannel.top_of_page">AgsPeakChannel</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPeakChannel.top_of_page">AgsPeakChannel</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,60 +14,101 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPeakChannel</refname>
-<refpurpose></refpurpose>
+<refpurpose>peaks channel</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPeakChannel.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPeakChannel.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-peak-channel-retrieve-peak">ags_peak_channel_retrieve_peak</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPeakChannel"><returnvalue>AgsPeakChannel</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-peak-channel-new">ags_peak_channel_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPeakChannel">AgsPeakChannel</link>;
-struct              <link linkend="AgsPeakChannelClass">AgsPeakChannelClass</link>;
-<link linkend="AgsPeakChannel"><returnvalue>AgsPeakChannel</returnvalue></link> *    <link linkend="ags-peak-channel-new">ags_peak_channel_new</link>                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-peak-channel-retrieve-peak">ags_peak_channel_retrieve_peak</link>      (<parameter><link linkend="AgsPeakChannel"><type>AgsPeakChannel</type></link> *peak_channel</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> is_play</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPeakChannel.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPeakChannel.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPeakChannel" role="struct">
-<title>struct AgsPeakChannel</title>
-<indexterm zone="AgsPeakChannel"><primary>AgsPeakChannel</primary></indexterm>
-<programlisting>struct AgsPeakChannel {
-  AgsRecallChannel recall_channel;
+<refsect1 id="AgsPeakChannel.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPeakChannel--peak">peak</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsPort *peak;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPeakChannelClass" role="struct">
-<title>struct AgsPeakChannelClass</title>
-<indexterm zone="AgsPeakChannelClass"><primary>AgsPeakChannelClass</primary></indexterm>
-<programlisting>struct AgsPeakChannelClass {
-  AgsRecallChannelClass recall_channel;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-peak-channel-new" role="function">
-<title>ags_peak_channel_new ()</title>
-<indexterm zone="ags-peak-channel-new"><primary>ags_peak_channel_new</primary></indexterm>
-<programlisting><link linkend="AgsPeakChannel"><returnvalue>AgsPeakChannel</returnvalue></link> *    ags_peak_channel_new                (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPeakChannel.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannel">AgsRecallChannel</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPeakChannel
+</screen>
+</refsect1>
+
+<refsect1 id="AgsPeakChannel.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_peak_channel.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsPeakChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsPeakChannel"><type>AgsPeakChannel</type></link> class provides ports to the effect processor.</para>
+
+</refsect1>
+<refsect1 id="AgsPeakChannel.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-peak-channel-retrieve-peak" role="function">
-<title>ags_peak_channel_retrieve_peak ()</title>
+<title>ags_peak_channel_retrieve_peak&#160;()</title>
 <indexterm zone="ags-peak-channel-retrieve-peak"><primary>ags_peak_channel_retrieve_peak</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_peak_channel_retrieve_peak      (<parameter><link linkend="AgsPeakChannel"><type>AgsPeakChannel</type></link> *peak_channel</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> is_play</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_peak_channel_retrieve_peak (<parameter><link linkend="AgsPeakChannel"><type>AgsPeakChannel</type></link> *peak_channel</parameter>,
+                                <parameter><link linkend="gboolean"><type>gboolean</type></link> is_play</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-peak-channel-new" role="function" condition="since:0.4">
+<title>ags_peak_channel_new&#160;()</title>
+<indexterm zone="ags-peak-channel-new" role="0.4"><primary>ags_peak_channel_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPeakChannel"><returnvalue>AgsPeakChannel</returnvalue></link>&#160;*
+ags_peak_channel_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsPeakChannel"><type>AgsPeakChannel</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>source</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> as source</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsPeakChannel"><type>AgsPeakChannel</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPeakChannel.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsPeakChannel.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsPeakChannel--peak" role="property"><title>The <literal>“peak”</literal> property</title>
+<indexterm zone="AgsPeakChannel--peak"><primary>AgsPeakChannel:peak</primary></indexterm>
+<programlisting>  “peak”                     <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The peak of channel.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

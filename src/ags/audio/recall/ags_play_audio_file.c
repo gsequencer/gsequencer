@@ -18,7 +18,7 @@
 
 #include <ags/audio/recall/ags_play_audio_file.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_recall_id.h>
 
@@ -43,7 +43,7 @@ void ags_play_audio_file_cancel(AgsRecall *recall);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
   PROP_AUDIO_FILE,
   PROP_CURRENT_FRAME,
 };
@@ -106,13 +106,13 @@ ags_play_audio_file_class_init(AgsPlayAudioFileClass *play_audio_file)
   gobject->finalize = ags_play_audio_file_finalize;
 
   /* properties */
-  param_spec = g_param_spec_gtype("devout\0",
-				  "assigned devout\0",
-				  "The devout this recall is assigned to\0",
+  param_spec = g_param_spec_gtype("soundcard\0",
+				  "assigned soundcard\0",
+				  "The soundcard this recall is assigned to\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   param_spec = g_param_spec_gtype("audio_file\0",
@@ -154,7 +154,7 @@ ags_play_audio_file_init(AgsPlayAudioFile *play_audio_file)
   play_audio_file->audio_file = NULL;
   play_audio_file->current_frame = 0;
 
-  play_audio_file->devout = NULL;
+  play_audio_file->soundcard = NULL;
 }
 
 void
@@ -168,22 +168,22 @@ ags_play_audio_file_set_property(GObject *gobject,
   play_audio_file = AGS_PLAY_AUDIO_FILE(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
-      if(play_audio_file->devout == devout)
+      if(play_audio_file->soundcard == soundcard)
 	return;
 
-      if(play_audio_file->devout != NULL)
-	g_object_unref(play_audio_file->devout);
+      if(play_audio_file->soundcard != NULL)
+	g_object_unref(play_audio_file->soundcard);
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      play_audio_file->devout = devout;
+      play_audio_file->soundcard = soundcard;
     }
     break;
   case PROP_AUDIO_FILE:
@@ -230,9 +230,9 @@ ags_play_audio_file_get_property(GObject *gobject,
   play_audio_file = AGS_PLAY_AUDIO_FILE(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      g_value_set_object(value, play_audio_file->devout);
+      g_value_set_object(value, play_audio_file->soundcard);
     }
     break;
   case PROP_AUDIO_FILE:
@@ -276,7 +276,7 @@ ags_play_audio_file_finalize(GObject *gobject)
 
   g_object_unref(G_OBJECT(play_audio_file->audio_file));
 
-  g_object_unref(G_OBJECT(play_audio_file->devout));
+  g_object_unref(G_OBJECT(play_audio_file->soundcard));
 
   G_OBJECT_CLASS(ags_play_audio_file_parent_class)->finalize(gobject);
 }
@@ -284,46 +284,7 @@ ags_play_audio_file_finalize(GObject *gobject)
 void
 ags_play_audio_file_run_inter(AgsRecall *recall)
 {
-  /* DEPRECATED
-  AgsPlayAudioFile *play_audio_file;
-  signed short *buffer;
-  guint i0, i1, j, stop;
-  gboolean play_done;
-
-  AGS_RECALL_CLASS(ags_play_audio_file_parent_class)->run_inter(recall);
-
-  play_audio_file = (AgsPlayAudioFile *) recall;
-
-  if((AGS_DEVOUT_BUFFER0 & play_audio_file->devout->flags) != 0){
-    buffer = play_audio_file->devout->buffer[1];
-  }else if((AGS_DEVOUT_BUFFER1 & play_audio_file->devout->flags) != 0){
-    buffer = play_audio_file->devout->buffer[2];
-  }else if((AGS_DEVOUT_BUFFER2 & play_audio_file->devout->flags) != 0){
-    buffer = play_audio_file->devout->buffer[3];
-  }else if((AGS_DEVOUT_BUFFER3 & play_audio_file->devout->flags) != 0){
-    buffer = play_audio_file->devout->buffer[0];
-  }
-
-  i0 = play_audio_file->current_frame;
-  stop = i0 + play_audio_file->devout->buffer_size;
-
-  if(stop < play_audio_file->audio_file->frames)
-    play_done = FALSE;
-  else{
-    stop = play_audio_file->audio_file->frames;
-    play_done = TRUE;
-  }
-
-  for(i1 = 0; i0 < stop; i0++, i1++){
-    for(j = 0; j < play_audio_file->audio_file->channels || j < play_audio_file->devout->dsp_channels; j++)
-      buffer[i1 * play_audio_file->devout->dsp_channels + j] = ((buffer[i1 * play_audio_file->devout->dsp_channels + j]) / 2) + ((play_audio_file->audio_file->buffer[i0 * play_audio_file->audio_file->channels + j]) / 2);
-  }
-
-  play_audio_file->current_frame = i0;
-
-  if(play_done)
-    ags_recall_done(recall);
-*/
+  /* DEPRECATED */
 }
 
 void
@@ -340,13 +301,13 @@ ags_play_audio_file_cancel(AgsRecall *recall)
 
 AgsPlayAudioFile*
 ags_play_audio_file_new(AgsAudioFile *audio_file,
-			AgsDevout *devout)
+			GObject *soundcard)
 {
   AgsPlayAudioFile *play_audio_file;
 
   play_audio_file = (AgsPlayAudioFile *) g_object_new(AGS_TYPE_PLAY_AUDIO_FILE,
 						      "audio_file\0", audio_file,
-						      "devout\0", devout,
+						      "soundcard\0", soundcard,
 						      NULL);
 
   return(play_audio_file);

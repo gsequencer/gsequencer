@@ -27,6 +27,7 @@
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_machine_selector.h>
+#include <ags/X/editor/ags_scale.h>
 #include <ags/X/editor/ags_automation_edit.h>
 
 #define AGS_TYPE_AUTOMATION_EDITOR                (ags_automation_editor_get_type())
@@ -41,12 +42,10 @@ typedef struct _AgsAutomationEditorClass AgsAutomationEditorClass;
 
 struct _AgsAutomationEditor
 {
-  GtkDialog dialog;
+  GtkVBox vbox;
 
   gchar *version;
   gchar *build_id;
-
-  GObject *window;
 
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
@@ -55,12 +54,24 @@ struct _AgsAutomationEditor
 
   AgsAutomationToolbar *automation_toolbar;
 
-  AgsAutomationEdit *automation_edit;
+  GtkTable *audio_table;
+  AgsScale *audio_scale;
+  AgsAutomationEdit *audio_automation_edit;
+
+  GtkTable *output_table;
+  AgsScale *output_scale;
+  AgsNotebook *output_notebook;
+  AgsAutomationEdit *output_automation_edit;
+
+  GtkTable *input_table;
+  AgsScale *input_scale;
+  AgsNotebook *input_notebook;
+  AgsAutomationEdit *input_automation_edit;
 };
 
 struct _AgsAutomationEditorClass
 {
-  GtkDialogClass dialog;
+  GtkVBoxClass vbox;
 
   void (*machine_changed)(AgsAutomationEditor *automation_editor,
 			  AgsMachine *machine);
@@ -71,6 +82,6 @@ GType ags_automation_editor_get_type(void);
 void ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor,
 					   AgsMachine *machine);
 
-AgsAutomationEditor* ags_automation_editor_new(GObject *window);
+AgsAutomationEditor* ags_automation_editor_new();
 
 #endif /*__AGS_AUTOMATION_EDITOR_H__*/

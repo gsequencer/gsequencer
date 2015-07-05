@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_valueof.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_valueof_class_init(AgsScriptValueofClass *script_valueof);
 void ags_script_valueof_connectable_interface_init(AgsConnectableInterface *connectable);

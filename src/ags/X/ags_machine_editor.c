@@ -19,12 +19,13 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_machine_editor_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_link_collection_editor.h>
 
 void ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor);
@@ -133,7 +134,7 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
 
   /* properties */
   /**
-   * AgsMachine:machine:
+   * AgsMachineEditor:machine:
    *
    * The #AgsMachine to edit.
    * 
@@ -200,11 +201,15 @@ ags_machine_editor_init(AgsMachineEditor *machine_editor)
   machine_editor->version = AGS_MACHINE_EDITOR_DEFAULT_VERSION;
   machine_editor->build_id = AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID;
 
+  machine_editor->parent = NULL;
   machine_editor->machine = NULL;
 
   machine_editor->notebook =
     notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_box_pack_start((GtkBox *) machine_editor->dialog.vbox, (GtkWidget*) notebook, TRUE, TRUE, 0);
+  gtk_box_pack_start((GtkBox *) machine_editor->dialog.vbox,
+		     (GtkWidget*) notebook,
+		     TRUE, TRUE,
+		     0);
 
   /* AgsOutput */
   machine_editor->output_scrolled_window =
@@ -478,18 +483,30 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 void
 ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor, AgsMachine *machine)
 {
+  AgsWindow *window;
+  
   if(machine_editor->machine != NULL){
     gtk_widget_destroy(GTK_WIDGET(machine_editor->output_editor));
     gtk_widget_destroy(GTK_WIDGET(machine_editor->input_editor));
     gtk_widget_destroy(GTK_WIDGET(machine_editor->output_link_editor));
     gtk_widget_destroy(GTK_WIDGET(machine_editor->input_link_editor));
     gtk_widget_destroy(GTK_WIDGET(machine_editor->resize_editor));
-  }
-  
-  machine_editor->machine = machine;
 
-  if(machine != NULL)
+    g_object_unref(machine_editor->machine);
+  }
+
+  if(machine != NULL){
+    window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+    
+    g_object_ref(machine);
+  }
+
+  machine_editor->machine = machine;
+  machine_editor->parent = window;
+  
+  if(machine != NULL){
     ags_machine_editor_add_children(machine_editor);
+  }
 }
 
 /**

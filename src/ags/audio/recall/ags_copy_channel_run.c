@@ -19,7 +19,7 @@
 #include <ags/audio/recall/ags_copy_channel_run.h>
 #include <ags/audio/recall/ags_copy_recycling.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -167,8 +167,8 @@ void
 ags_copy_channel_run_init(AgsCopyChannelRun *copy_channel_run)
 {
   AGS_RECALL(copy_channel_run)->name = "ags-copy\0";
-  AGS_RECALL(copy_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(copy_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(copy_channel_run)->xml_type = "ags-copy-channel-run\0";
   AGS_RECALL(copy_channel_run)->port = NULL;
 
@@ -250,7 +250,7 @@ ags_copy_channel_run_duplicate(AgsRecall *recall,
  * ags_copy_channel_run_new:
  * @destination: the destination #AgsChannel
  * @source: the source #AgsChannel
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #GObject implementing #AgsSoundcard defaulting to
  *
  * Creates an #AgsCopyChannelRun
  *
@@ -261,14 +261,14 @@ ags_copy_channel_run_duplicate(AgsRecall *recall,
 AgsCopyChannelRun*
 ags_copy_channel_run_new(AgsChannel *destination,
 			 AgsChannel *source,
-			 AgsDevout *devout)
+			 GObject *soundcard)
 {
   AgsCopyChannelRun *copy_channel_run;
 
   copy_channel_run = (AgsCopyChannelRun *) g_object_new(AGS_TYPE_COPY_CHANNEL_RUN,
 							"destination\0", destination,
 							"source\0", source,
-							"devout\0", devout,
+							"soundcard\0", soundcard,
 							NULL);
 
   return(copy_channel_run);

@@ -22,9 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_log.h>
-
-#include <ags/object/ags_main_loop.h>
+#include <ags/object/ags_config.h>
 
 #include <ags/file/ags_file.h>
 
@@ -40,6 +38,8 @@
 
 #define AGS_DEFAULT_DIRECTORY ".gsequencer\0"
 #define AGS_DEFAULT_CONFIG "ags.conf\0"
+
+#define AGS_INIT_CONTEXT_TSD_APPLICATION_CONTEXT "ags-application-context\0"
 
 typedef struct _AgsApplicationContext AgsApplicationContext;
 typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
@@ -63,16 +63,22 @@ struct _AgsApplicationContext
   gchar *version;
   gchar *build_id;
 
-  AgsLog *log;
+  int argc;
+  char **argv;
+  
+  GObject *log;
 
+  gchar *domain;
   GList *sibling;
   
-  GList *domain;
   AgsConfig *config;
 
-  pthread_mutex_t mutex;
-  AgsMainLoop *main_loop;
-
+  pthread_mutex_t *mutex;
+  
+  GObject *main_loop;
+  GObject *autosave_thread;
+  GObject *task_thread;
+  
   AgsFile *file;
 };
 
@@ -83,11 +89,17 @@ struct _AgsApplicationContextClass
   void (*load_config)(AgsApplicationContext *application_context);
   
   void (*register_types)(AgsApplicationContext *application_context);
+
+  void (*read)(AgsFile *file, xmlNode *node, GObject **gobject);
+  xmlNode* (*write)(AgsFile *file, xmlNode *parent, GObject *gobject);
 };
 
 GType ags_application_context_get_type();
 
 void ags_application_context_load_config(AgsApplicationContext *application_context);
+
+void ags_application_read(AgsFile *file, xmlNode *node, GObject **gobject);
+xmlNode* ags_application_write(AgsFile *file, xmlNode *parent, GObject *gobject);
 
 void ags_application_context_add_sibling(AgsApplicationContext *application_context,
 					 AgsApplicationContext *sibling);
@@ -97,8 +109,7 @@ void ags_application_context_remove_sibling(AgsApplicationContext *application_c
 AgsApplicationContext* ags_application_context_find_default(GList *application_context);
 GList* ags_application_context_find_main_loop(GList *application_context);
 
-AgsApplicationContext* ags_application_context_get_instance();
-AgsApplicationContext* ags_application_context_new(AgsMainLoop *main_loop,
+AgsApplicationContext* ags_application_context_new(GObject *main_loop,
 						   AgsConfig *config);
 
 #endif /*__AGS_APPLICATION_CONTEXT_H__*/

@@ -20,7 +20,7 @@
 #include <ags/X/editor/ags_toolbar_callbacks.h>
 #include <ags/X/editor/ags_toolbar_mode_stock.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_menu_bar.h>
 
@@ -31,7 +31,6 @@
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtkcheckbutton.h>
 #include <gtk/gtklabel.h>
-#include <gtk/gtkoptionmenu.h>
 #include <gtk/gtkimage.h>
 #include <gtk/gtkstock.h>
 
@@ -40,7 +39,6 @@ void ags_toolbar_connectable_interface_init(AgsConnectableInterface *connectable
 void ags_toolbar_init(AgsToolbar *toolbar);
 void ags_toolbar_connect(AgsConnectable *connectable);
 void ags_toolbar_disconnect(AgsConnectable *connectable);
-void ags_toolbar_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_toolbar
@@ -186,9 +184,6 @@ ags_toolbar_connect(AgsConnectable *connectable)
 
   toolbar = AGS_TOOLBAR(connectable);
 
-  g_signal_connect((GObject *) toolbar, "show\0",
-		   G_CALLBACK(ags_toolbar_show_callback), (gpointer) toolbar);
-
   /* tool */
   g_signal_connect_after((GObject *) toolbar->position, "toggled\0",
 			 G_CALLBACK(ags_toolbar_position_callback), (gpointer) toolbar);
@@ -225,22 +220,6 @@ void
 ags_toolbar_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
-}
-
-void
-ags_toolbar_show(GtkWidget *widget)
-{
-  /*
-  GList *list;
-
-  list = gtk_container_get_children((GtkContainer *) widget);
-
-  while(list != NULL){
-    gtk_widget_show_all((GtkWidget *) widget);
-
-    list = list->next;
-  }
-  */
 }
 
 /**

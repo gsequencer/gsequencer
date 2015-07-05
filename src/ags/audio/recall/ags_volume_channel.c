@@ -18,7 +18,7 @@
 
 #include <ags/audio/recall/ags_volume_channel.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -163,8 +163,8 @@ ags_volume_channel_init(AgsVolumeChannel *volume_channel)
   GList *port;
 
   AGS_RECALL(volume_channel)->name = "ags-volume\0";
-  AGS_RECALL(volume_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(volume_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(volume_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(volume_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(volume_channel)->xml_type = "ags-volume-channel\0";
 
   port = NULL;

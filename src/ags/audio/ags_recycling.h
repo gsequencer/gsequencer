@@ -44,7 +44,7 @@ struct _AgsRecycling
   guint flags;
 
   GObject *channel;
-  GObject *devout;
+  GObject *soundcard;
 
   AgsRecycling *parent;
 
@@ -66,7 +66,7 @@ struct _AgsRecyclingClass
 
 GType ags_recycling_get_type();
 
-void ags_recycling_set_devout(AgsRecycling *recycling, GObject *devout);
+void ags_recycling_set_soundcard(AgsRecycling *recycling, GObject *soundcard);
 
 void ags_recycling_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal);
@@ -86,6 +86,6 @@ gint ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_reg
 AgsRecycling* ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
 					      GObject *prev_channel);
 
-AgsRecycling* ags_recycling_new(GObject *devout);
+AgsRecycling* ags_recycling_new(GObject *soundcard);
 
 #endif /*__AGS_RECYCLING_H__*/

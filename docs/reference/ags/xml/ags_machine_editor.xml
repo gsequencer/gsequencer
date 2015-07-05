@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsMachineEditor">
+<refentry id="AgsMachineEditor">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsMachineEditor.top_of_page">AgsMachineEditor</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsMachineEditor.top_of_page">AgsMachineEditor</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,153 +14,234 @@
 </refmeta>
 <refnamediv>
 <refname>AgsMachineEditor</refname>
-<refpurpose></refpurpose>
+<refpurpose>pack pad editors.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsMachineEditor.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsMachineEditor.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-editor-add-children">ags_machine_editor_add_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-editor-set-machine">ags_machine_editor_set_machine</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-editor-add-input">ags_machine_editor_add_input</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-editor-add-output">ags_machine_editor_add_output</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-editor-remove-input">ags_machine_editor_remove_input</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-editor-remove-output">ags_machine_editor_remove_output</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMachineEditor"><returnvalue>AgsMachineEditor</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-machine-editor-new">ags_machine_editor_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-MACHINE-EDITOR-DEFAULT-BUILD-ID:CAPS">AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID</link>
-#define             <link linkend="AGS-MACHINE-EDITOR-DEFAULT-VERSION:CAPS">AGS_MACHINE_EDITOR_DEFAULT_VERSION</link>
-struct              <link linkend="AgsMachineEditor">AgsMachineEditor</link>;
-struct              <link linkend="AgsMachineEditorClass">AgsMachineEditorClass</link>;
-enum                <link linkend="AgsMachineEditorFlags">AgsMachineEditorFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-editor-add-children">ags_machine_editor_add_children</link>     (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-editor-add-input">ags_machine_editor_add_input</link>        (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-editor-add-output">ags_machine_editor_add_output</link>       (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
-<link linkend="AgsMachineEditor"><returnvalue>AgsMachineEditor</returnvalue></link> *  <link linkend="ags-machine-editor-new">ags_machine_editor_new</link>              (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-editor-remove-input">ags_machine_editor_remove_input</link>     (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-editor-remove-output">ags_machine_editor_remove_output</link>    (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-editor-set-machine">ags_machine_editor_set_machine</link>      (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsMachineEditor.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsMachineEditor.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-MACHINE-EDITOR-DEFAULT-BUILD-ID:CAPS" role="macro">
-<title>AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID</title>
-<indexterm zone="AGS-MACHINE-EDITOR-DEFAULT-BUILD-ID:CAPS"><primary>AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID</primary></indexterm>
-<programlisting>#define AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsMachineEditor.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsMachine"><type>AgsMachine</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsMachineEditor--machine">machine</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMachineEditor.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMachineEditor-set-machine">set-machine</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMachineEditor.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MACHINE-EDITOR-DEFAULT-VERSION:CAPS">AGS_MACHINE_EDITOR_DEFAULT_VERSION</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MACHINE-EDITOR-DEFAULT-BUILD-ID:CAPS">AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsMachineEditorFlags">AgsMachineEditorFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMachineEditor.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWindow">GtkWindow</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkDialog">GtkDialog</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMachineEditor
+</screen>
+</refsect1>
+
+<refsect1 id="AgsMachineEditor.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_machine_editor.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsMachineEditor.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> is a composite widget to edit all aspects of <link linkend="AgsAudio"><type>AgsAudio</type></link>.
+It consists of multiple child editors.</para>
+
+</refsect1>
+<refsect1 id="AgsMachineEditor.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-machine-editor-add-children" role="function" condition="since:0.3">
+<title>ags_machine_editor_add_children&#160;()</title>
+<indexterm zone="ags-machine-editor-add-children" role="0.3"><primary>ags_machine_editor_add_children</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_editor_add_children (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+<para>Add all child editors.</para>
+<para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-machine-editor-set-machine" role="function" condition="since:0.3">
+<title>ags_machine_editor_set_machine&#160;()</title>
+<indexterm zone="ags-machine-editor-set-machine" role="0.3"><primary>ags_machine_editor_set_machine</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_editor_set_machine (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>,
+                                <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>Is emitted as machine gets modified.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine_editor</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the new <link linkend="AgsMachine"><type>AgsMachine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-machine-editor-add-input" role="function">
+<title>ags_machine_editor_add_input&#160;()</title>
+<indexterm zone="ags-machine-editor-add-input"><primary>ags_machine_editor_add_input</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_editor_add_input (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-editor-add-output" role="function">
+<title>ags_machine_editor_add_output&#160;()</title>
+<indexterm zone="ags-machine-editor-add-output"><primary>ags_machine_editor_add_output</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_editor_add_output (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-editor-remove-input" role="function">
+<title>ags_machine_editor_remove_input&#160;()</title>
+<indexterm zone="ags-machine-editor-remove-input"><primary>ags_machine_editor_remove_input</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_editor_remove_input (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-editor-remove-output" role="function">
+<title>ags_machine_editor_remove_output&#160;()</title>
+<indexterm zone="ags-machine-editor-remove-output"><primary>ags_machine_editor_remove_output</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_editor_remove_output (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-editor-new" role="function" condition="since:0.3">
+<title>ags_machine_editor_new&#160;()</title>
+<indexterm zone="ags-machine-editor-new" role="0.3"><primary>ags_machine_editor_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMachineEditor"><returnvalue>AgsMachineEditor</returnvalue></link>&#160;*
+ags_machine_editor_new (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the assigned machine.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMachineEditor.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AGS-MACHINE-EDITOR-DEFAULT-VERSION:CAPS" role="macro">
 <title>AGS_MACHINE_EDITOR_DEFAULT_VERSION</title>
 <indexterm zone="AGS-MACHINE-EDITOR-DEFAULT-VERSION:CAPS"><primary>AGS_MACHINE_EDITOR_DEFAULT_VERSION</primary></indexterm>
-<programlisting>#define AGS_MACHINE_EDITOR_DEFAULT_VERSION "0.4.2\0"
+<programlisting language="C">#define AGS_MACHINE_EDITOR_DEFAULT_VERSION "0.4.2\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMachineEditor" role="struct">
-<title>struct AgsMachineEditor</title>
-<indexterm zone="AgsMachineEditor"><primary>AgsMachineEditor</primary></indexterm>
-<programlisting>struct AgsMachineEditor {
-  GtkDialog dialog;
-
-  guint flags;
-
-  gchar *version;
-  gchar *build_id;
-
-  AgsMachine *machine;
-
-  GtkNotebook *notebook;
-
-  GtkScrolledWindow *output_scrolled_window;
-  AgsListingEditor *output_editor;
-
-  GtkScrolledWindow *input_scrolled_window;
-  AgsListingEditor *input_editor;
-
-  GtkScrolledWindow *output_link_editor_scrolled_window;
-  AgsPropertyCollectionEditor *output_link_editor;
-
-  GtkScrolledWindow *input_link_editor_scrolled_window;
-  AgsPropertyCollectionEditor *input_link_editor;
-
-  GtkScrolledWindow *resize_editor_scrolled_window;
-  AgsResizeEditor *resize_editor;
-
-  GtkButton *add;
-  GtkButton *remove;
-  GtkButton *apply;
-  GtkButton *ok;
-  GtkButton *cancel;
-};
+</refsect2>
+<refsect2 id="AGS-MACHINE-EDITOR-DEFAULT-BUILD-ID:CAPS" role="macro">
+<title>AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID</title>
+<indexterm zone="AGS-MACHINE-EDITOR-DEFAULT-BUILD-ID:CAPS"><primary>AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID</primary></indexterm>
+<programlisting language="C">#define AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMachineEditorClass" role="struct">
-<title>struct AgsMachineEditorClass</title>
-<indexterm zone="AgsMachineEditorClass"><primary>AgsMachineEditorClass</primary></indexterm>
-<programlisting>struct AgsMachineEditorClass {
-  GtkDialogClass dialog;
-
-  void (*set_machine)(AgsMachineEditor *machine_editor,
-		      AgsMachine *machine);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AgsMachineEditorFlags" role="enum">
 <title>enum AgsMachineEditorFlags</title>
 <indexterm zone="AgsMachineEditorFlags"><primary>AgsMachineEditorFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_MACHINE_EDITOR_CLOSING   =  1,
-} AgsMachineEditorFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-editor-add-children" role="function">
-<title>ags_machine_editor_add_children ()</title>
-<indexterm zone="ags-machine-editor-add-children"><primary>ags_machine_editor_add_children</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_editor_add_children     (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-editor-add-input" role="function">
-<title>ags_machine_editor_add_input ()</title>
-<indexterm zone="ags-machine-editor-add-input"><primary>ags_machine_editor_add_input</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_editor_add_input        (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-editor-add-output" role="function">
-<title>ags_machine_editor_add_output ()</title>
-<indexterm zone="ags-machine-editor-add-output"><primary>ags_machine_editor_add_output</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_editor_add_output       (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-editor-new" role="function">
-<title>ags_machine_editor_new ()</title>
-<indexterm zone="ags-machine-editor-new"><primary>ags_machine_editor_new</primary></indexterm>
-<programlisting><link linkend="AgsMachineEditor"><returnvalue>AgsMachineEditor</returnvalue></link> *  ags_machine_editor_new              (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-editor-remove-input" role="function">
-<title>ags_machine_editor_remove_input ()</title>
-<indexterm zone="ags-machine-editor-remove-input"><primary>ags_machine_editor_remove_input</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_editor_remove_input     (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-editor-remove-output" role="function">
-<title>ags_machine_editor_remove_output ()</title>
-<indexterm zone="ags-machine-editor-remove-output"><primary>ags_machine_editor_remove_output</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_editor_remove_output    (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-editor-set-machine" role="function">
-<title>ags_machine_editor_set_machine ()</title>
-<indexterm zone="ags-machine-editor-set-machine"><primary>ags_machine_editor_set_machine</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_editor_set_machine      (<parameter><link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *machine_editor</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-EDITOR-CLOSING:CAPS">AGS_MACHINE_EDITOR_CLOSING</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsMachineEditor.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsMachineEditor--machine" role="property"><title>The <literal>“machine”</literal> property</title>
+<indexterm zone="AgsMachineEditor--machine" role="0.3"><primary>AgsMachineEditor:machine</primary></indexterm>
+<programlisting>  “machine”                  <link linkend="AgsMachine"><type>AgsMachine</type></link>&#160;*</programlisting>
+<para>The <link linkend="AgsMachine"><type>AgsMachine</type></link> to edit.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMachineEditor.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsMachineEditor-set-machine" role="signal"><title>The <literal>“set-machine”</literal> signal</title>
+<indexterm zone="AgsMachineEditor-set-machine"><primary>AgsMachineEditor::set-machine</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link> *agsmachineeditor,
+               <link linkend="GObject"><type>GObject</type></link>          *arg1,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

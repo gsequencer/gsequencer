@@ -18,24 +18,28 @@
 
 #include <ags/audio/ags_recall.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/lib/ags_parameter.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
+
+#include <ags/server/ags_service_provider.h>
+#include <ags/server/ags_server.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/plugin/ags_lv2_manager.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -44,10 +48,13 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -139,12 +146,13 @@ enum{
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
   PROP_CONTAINER,
   PROP_DEPENDENCY,
   PROP_RECALL_ID,
   PROP_PARENT,
   PROP_CHILD,
+  PROP_PORT,
 };
 
 static gpointer ags_recall_parent_class = NULL;
@@ -235,19 +243,19 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /* properties */
   /**
-   * AgsRecall:devout:
+   * AgsRecall:soundcard:
    *
-   * The assigned devout.
+   * The assigned soundcard.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "devout of recall\0",
-				   "The devout which this recall is packed into\0",
-				   AGS_TYPE_DEVOUT,
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard of recall\0",
+				   "The soundcard which this recall is packed into\0",
+				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /**
@@ -259,7 +267,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    */
   param_spec = g_param_spec_object("recall-container\0",
 				   "container of recall\0",
-				   "The container which this recall is packed into\0",
+				   "The container what recall is packed into\0",
 				   AGS_TYPE_RECALL_CONTAINER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -328,6 +336,22 @@ ags_recall_class_init(AgsRecallClass *recall)
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD,
+				  param_spec);
+
+  /**
+   * AgsRecall:port:
+   *
+   * The assigned #AgsPort
+   * 
+   * Since: 0.4.3
+   */
+  param_spec = g_param_spec_object("port\0",
+				   "port of recall\0",
+				   "The port of recall\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT,
 				  param_spec);
 
   /* AgsRecallClass */
@@ -633,7 +657,7 @@ ags_recall_init(AgsRecall *recall)
 {
   recall->flags = 0;
 
-  recall->devout = NULL;
+  recall->soundcard = NULL;
   recall->container = NULL;
 
   recall->version = NULL;
@@ -671,29 +695,29 @@ ags_recall_set_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
       GList *current;
       
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
-      if(devout == ((AgsDevout *) recall->devout))
+      if(soundcard == ((GObject *) recall->soundcard))
 	return;
 
-      if(recall->devout != NULL)
-	g_object_unref(recall->devout);
+      if(recall->soundcard != NULL)
+	g_object_unref(recall->soundcard);
 
-      if(devout != NULL)
-	g_object_ref(G_OBJECT(devout));
+      if(soundcard != NULL)
+	g_object_ref(G_OBJECT(soundcard));
 
-      recall->devout = (GObject *) devout;
+      recall->soundcard = (GObject *) soundcard;
 
       current = recall->children;
 
       while(current != NULL){
 	g_object_set(G_OBJECT(current->data),
-		     "devout\0", devout,
+		     "soundcard\0", soundcard,
 		     NULL);
 
 	current = current->next;
@@ -793,6 +817,22 @@ ags_recall_set_property(GObject *gobject,
       ags_recall_add_child(recall, child);
     }
     break;
+  case PROP_PORT:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == NULL ||
+	 g_list_find(recall->port, port) != NULL){
+	return;
+      }
+
+      g_object_ref(port);
+      recall->port = g_list_prepend(recall->port,
+				    port);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -810,9 +850,9 @@ ags_recall_get_property(GObject *gobject,
   recall = AGS_RECALL(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      g_value_set_object(value, recall->devout);
+      g_value_set_object(value, recall->soundcard);
     }
     break;
   case PROP_CONTAINER:
@@ -830,6 +870,11 @@ ags_recall_get_property(GObject *gobject,
       g_value_set_object(value, recall->parent);
     }
     break;
+  case PROP_PORT:
+    {
+      g_value_set_object(value, g_list_copy(recall->port));
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -839,23 +884,25 @@ ags_recall_get_property(GObject *gobject,
 void
 ags_recall_add_to_registry(AgsConnectable *connectable)
 {
-  AgsMain *ags_main;
-  AgsServer *server;
+  AgsApplicationContext *application_context;
   AgsRecall *recall;
-  AgsRegistryEntry *entry;
-  GList *list;
   
   recall = AGS_RECALL(connectable);
 
-  ags_main = AGS_MAIN(AGS_DEVOUT(recall->devout)->ags_main);
+  application_context = ags_soundcard_get_application_context(recall->soundcard);
 
-  server = ags_main->server;
-
-  entry = ags_registry_entry_alloc(server->registry);
-  g_value_set_object(&(entry->entry),
-		     (gpointer) recall);
-  ags_registry_add(server->registry,
-		   entry);
+  if(AGS_IS_SERVICE_PROVIDER(application_context)){
+    AgsServer *server;
+    AgsRegistryEntry *entry;
+    
+    server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
+  
+    entry = ags_registry_entry_alloc(server->registry);
+    g_value_set_object(&(entry->entry),
+		       (gpointer) recall);
+    ags_registry_add(server->registry,
+		     entry);
+  }
 }
 
 void
@@ -1099,7 +1146,7 @@ ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "main\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall,
@@ -1125,7 +1172,7 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "main\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", recall,
@@ -1148,8 +1195,8 @@ ags_recall_finalize(GObject *gobject)
   g_message("finalize %s\n\0", G_OBJECT_TYPE_NAME(gobject));
 #endif
 
-  if(recall->devout != NULL){
-    g_object_unref(recall->devout);
+  if(recall->soundcard != NULL){
+    g_object_unref(recall->soundcard);
   }
 
   if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
@@ -1163,9 +1210,11 @@ ags_recall_finalize(GObject *gobject)
   //  if(recall->name != NULL)
   //    g_free(recall->name);
 
-  ags_list_free_and_unref_link(recall->dependencies);
+  g_list_free_full(recall->dependencies,
+		   g_object_unref);
 
-  ags_list_free_and_unref_link(recall->children);
+  g_list_free_full(recall->children,
+		   g_object_unref);
 
   if(recall->container != NULL){
     ags_packable_unpack(recall);
@@ -1660,19 +1709,19 @@ ags_recall_remove(AgsRecall *recall)
 /**
  * ags_recall_is_done:
  * @recall: an #AgsRecall
- * @recycling_container: an #AgsRecyclingContainer
+ * @recycling_context: an #RecyclingContext
  *
  * Check if recall is over.
  * 
  * Since: 0.4
  */
 gboolean
-ags_recall_is_done(GList *recalls, GObject *recycling_container)
+ags_recall_is_done(GList *recalls, GObject *recycling_context)
 {
   AgsRecall *recall;
 
   if(recalls == NULL ||
-     !AGS_IS_RECYCLING_CONTAINER(recycling_container)){
+     !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
     return(FALSE);
   }
 
@@ -1683,7 +1732,7 @@ ags_recall_is_done(GList *recalls, GObject *recycling_container)
        !AGS_IS_RECALL_AUDIO(recall) &&
        !AGS_IS_RECALL_CHANNEL(recall) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container){
+       recall->recall_id->recycling_context == recycling_context){
       if((AGS_RECALL_DONE & (recall->flags)) == 0){
 	recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
 	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
@@ -1710,7 +1759,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "devout\0", recall->devout,
+				 "soundcard\0", recall->soundcard,
 				 "recall_id\0", recall_id,
 				 "recall_container\0", recall->container,
 				 NULL);
@@ -1968,7 +2017,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     parent->children = g_list_prepend(parent->children, child);
 
     g_object_set(G_OBJECT(child),
-		 "devout\0", parent->devout,
+		 "soundcard\0", parent->soundcard,
 		 "recall_id\0", parent->recall_id,
 		 NULL);
     g_signal_connect(G_OBJECT(child), "done\0",
@@ -2005,17 +2054,70 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
  * 
  * Since: 0.4
  */
-//FIXME:JK: duplicate the list
 GList*
 ags_recall_get_children(AgsRecall *recall)
 {
-  return(recall->children);
+  return(g_list_copy(recall->children));
+}
+
+/**
+ * ags_recall_get_by_effect:
+ * @list: a #GList with recalls
+ * @filename: the filename containing @effect or %NULL
+ * @effect: the effect name
+ *
+ * Finds all matching effect and filename.
+ *
+ * Returns: a GList, or %NULL if not found
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
+{
+  AgsRecall *current;
+  GList *list;
+
+  list = NULL;
+
+  while(recall != NULL){
+    current = AGS_RECALL(recall->data);
+    
+    if(filename != NULL){
+      if(AGS_IS_RECALL_LADSPA(current) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(current)->filename, filename) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(current)->effect, effect)){
+	list = g_list_prepend(list,
+			      current);
+      }else if(AGS_IS_RECALL_LV2(current) &&
+	       !g_strcmp0(AGS_RECALL_LV2(current)->filename, filename)){
+	gchar *uri;
+	
+	uri = effect;
+	
+	if(!g_strcmp0(AGS_RECALL_LV2(current)->uri, uri)){
+	  list = g_list_prepend(list,
+				current);
+	}
+      }else  if(!g_strcmp0(current->effect, effect)){
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
+    
+    recall = recall->next;
+  }
+  
+  list = g_list_reverse(list);
+  
+  return(list);
 }
 
 /**
  * ags_recall_find_by_effect:
  * @list: a #GList with recalls
  * @recall_id: an #AgsRecallId
+ * @filename: the filename containing @effect or %NULL
  * @effect: the effect name
  *
  * Finds next matching effect name. Intended to be used as
@@ -2023,24 +2125,68 @@ ags_recall_get_children(AgsRecall *recall)
  *
  * Returns: a GList, or %NULL if not found
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 GList*
-ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
+ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect)
 {
   AgsRecall *recall;
 
   while(list != NULL){
     recall = AGS_RECALL(list->data);
-    
-    if(((recall_id != NULL &&
-	 recall->recall_id != NULL &&
-	 recall_id->recycling_container == recall->recall_id->recycling_container) ||
-	(recall_id == NULL &&
-	 recall->recall_id == NULL)) &&
-	!g_strcmp0(G_OBJECT_TYPE_NAME(G_OBJECT(recall)), effect))
-      return(list);
 
+    if(filename == NULL){
+      if(((recall_id != NULL &&
+	   recall->recall_id != NULL &&
+	   recall_id->recycling_context == recall->recall_id->recycling_context) ||
+	  (recall_id == NULL &&
+	   recall->recall_id == NULL)) &&
+	 !g_strcmp0(recall->effect, effect)){
+	return(list);
+      }
+    }else{
+      if(AGS_IS_RECALL_LADSPA(recall) &&
+	 ((recall_id != NULL &&
+	   recall->recall_id != NULL &&
+	   recall_id->recycling_context == recall->recall_id->recycling_context) ||
+	  (recall_id == NULL &&
+	   recall->recall_id == NULL)) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(recall)->filename, filename) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(recall)->effect, effect)){
+	return(list);
+      }else if(AGS_IS_RECALL_LV2(recall) &&
+	       ((recall_id != NULL &&
+		 recall->recall_id != NULL &&
+		 recall_id->recycling_context == recall->recall_id->recycling_context) ||
+		(recall_id == NULL &&
+		 recall->recall_id == NULL)) &&
+	       !g_strcmp0(AGS_RECALL_LV2(recall)->filename, filename)){
+	AgsLv2Plugin *lv2_plugin;
+	GList *uri_node;
+	
+	gchar *uri;
+	gchar *str;
+      
+	lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+	str = g_strdup_printf("/rdf-turtle/rdf-list/rdf-triple/rdf-verb[@do=\"doap:name\"]\0");
+	uri_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					 str);
+	free(str);
+  
+	str = xmlGetProp(((xmlNode *) uri_node->data)->parent,
+			 "subject\0");
+	uri = g_strndup(&(str[1]),
+			strlen(str) - 2);
+	free(uri);
+
+	if(!g_strcmp0(AGS_RECALL_LV2(recall)->uri, uri)){
+	  list = g_list_prepend(list,
+				recall);
+	  return(list);
+	}
+      }
+    }
+  
     list = list->next;
   }
 
@@ -2050,7 +2196,7 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
 /**
  * ags_recall_find_type:
  * @recall_i: a #GList containing recalls
- * @type: a #GType
+ * @recall_type: a #GType
  * 
  * Finds next matching recall for type. Intended to be used as
  * iteration function.
@@ -2060,14 +2206,14 @@ ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, char *effect)
  * Since: 0.4
  */
 GList*
-ags_recall_find_type(GList *recall_i, GType type)
+ags_recall_find_type(GList *recall_i, GType recall_type)
 {
   AgsRecall *recall;
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if(G_OBJECT_TYPE(recall) == type)
+    if(G_OBJECT_TYPE(recall) == recall_type)
       break;
 
     recall_i = recall_i->next;
@@ -2107,7 +2253,7 @@ ags_recall_find_template(GList *recall_i)
 /**
  * ags_recall_template_find_type:
  * @recall_i: a #GList containing recalls
- * @type: a #GType
+ * @recall_type: a #GType
  * 
  * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
  * Intended to be used as iteration function.
@@ -2117,7 +2263,7 @@ ags_recall_find_template(GList *recall_i)
  * Since: 0.4
  */
 GList*
-ags_recall_template_find_type(GList *recall_i, GType type)
+ags_recall_template_find_type(GList *recall_i, GType recall_type)
 {
   AgsRecall *recall;
 
@@ -2125,7 +2271,7 @@ ags_recall_template_find_type(GList *recall_i, GType type)
     recall = AGS_RECALL(recall_i->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
-       G_TYPE_CHECK_INSTANCE_TYPE((recall), type)){
+       G_TYPE_CHECK_INSTANCE_TYPE((recall), recall_type)){
       break;
     }
 
@@ -2136,20 +2282,80 @@ ags_recall_template_find_type(GList *recall_i, GType type)
 }
 
 /**
- * ags_recall_find_type_with_recycling_container:
+ * ags_recall_template_find_type:
+ * @recall_i: a #GList containing recalls
+ * @recall_type: a #GType
+ * 
+ * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
+ * Intended to be used as iteration function.
+ *
+ * Returns: a #GList containing recalls, or %NULL if not found
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_recall_template_find_all_type(GList *recall_i, ...)
+{
+  AgsRecall *recall;
+  
+  GList *start, *list;
+  GType current;
+  va_list ap;
+
+  list = NULL;
+  va_start(ap,
+	   recall_i);
+
+  while((current = va_arg(ap, GType)) != G_TYPE_NONE){
+    list = g_list_prepend(list,
+			  current);
+  }
+  
+  va_end(ap);
+
+  start = list;
+  
+  while(recall_i != NULL){
+    recall = AGS_RECALL(recall_i->data);
+
+    list = start;
+    
+    while(list != NULL){
+      current = list->data;
+      
+      if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
+	 G_TYPE_CHECK_INSTANCE_TYPE((recall), current)){
+	g_list_free(start);
+	
+	return(recall_i);
+      }
+
+      list = list->next;
+    }
+
+    recall_i = recall_i->next;
+  }
+
+  g_list_free(start);
+	
+  return(NULL);
+}
+
+/**
+ * ags_recall_find_type_with_recycling_context:
  * @recall_i: a #GList containing recalls
  * @type: a #GType
- * @recycling_container: an #AgsRecyclingContainer
+ * @recycling_context: an #RecyclingContext
  * 
- * Finds next matching recall for type which has @recycling_container, see #AgsRecallId for further
- * details about #AgsRecyclingContainer. Intended to be used as iteration function.
+ * Finds next matching recall for type which has @recycling_context, see #AgsRecallId for further
+ * details about #RecyclingContext. Intended to be used as iteration function.
  *
  * Returns: a #GList containing recalls, or %NULL if not found
  *
  * Since: 0.4
  */
 GList*
-ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObject *recycling_container)
+ags_recall_find_type_with_recycling_context(GList *recall_i, GType type, GObject *recycling_context)
 {
   AgsRecall *recall;
 
@@ -2158,7 +2364,7 @@ ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObje
 
     if(g_type_is_a(G_OBJECT_TYPE(recall), type) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container)
+       recall->recall_id->recycling_context == recycling_context)
       return(recall_i);
 
     recall_i = recall_i->next;
@@ -2168,24 +2374,24 @@ ags_recall_find_type_with_recycling_container(GList *recall_i, GType type, GObje
 }
 
 /**
- * ags_recall_find_recycling_container:
+ * ags_recall_find_recycling_context:
  * @recall_i: a #GList containing recalls
- * @recycling_container: an #AgsRecyclingContainer
+ * @recycling_context: an #RecyclingContext
  * 
- * Finds next matching recall which has @recycling_container, see #AgsRecallId for further
- * details about #AgsRecyclingContainer. Intended to be used as iteration function.
+ * Finds next matching recall which has @recycling_context, see #AgsRecallId for further
+ * details about #RecyclingContext. Intended to be used as iteration function.
  *
  * Returns: a #GList containing recalls, or %NULL if not found
  *
  * Since: 0.4
  */
 GList*
-ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_container)
+ags_recall_find_recycling_context(GList *recall_i, GObject *recycling_context)
 {
   AgsRecall *recall;
 
 #ifdef AGS_DEBUG
-  g_message("ags_recall_find_recycling_container: recycling_container = %llx\n\0", recycling_container);
+  g_message("ags_recall_find_recycling_context: recycling_context = %llx\n\0", recycling_context);
 #endif
 
   while(recall_i != NULL){
@@ -2193,11 +2399,11 @@ ags_recall_find_recycling_container(GList *recall_i, GObject *recycling_containe
 
     if(recall->recall_id != NULL)
 #ifdef AGS_DEBUG
-      g_message("ags_recall_find_recycling_container: recall_id->recycling_contianer = %llx\n\0", (long long unsigned int) recall->recall_id->recycling_container);
+      g_message("ags_recall_find_recycling_context: recall_id->recycling_contianer = %llx\n\0", (long long unsigned int) recall->recall_id->recycling_context);
 #endif
 
     if(recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container){
+       recall->recall_id->recycling_context == recycling_context){
 	return(recall_i);
     }
 
@@ -2301,19 +2507,19 @@ ags_recall_template_find_provider(GList *recall, GObject *provider)
 }
 
 /**
- * ags_recall_find_provider_with_recycling_container:
+ * ags_recall_find_provider_with_recycling_context:
  * @recall_i: a #GList containing recalls
  * @provider: a #GObject
- * @recycling_container: an #AgsRecyclingContainer
+ * @recycling_context: an #RecyclingContext
  * 
- * Like ags_recall_template_find_provider() but given additionally @recycling_container as search parameter.
+ * Like ags_recall_template_find_provider() but given additionally @recycling_context as search parameter.
  *
  * Returns: a #GList containing recalls, or %NULL if not found
  * 
  * Since: 0.4
  */
 GList*
-ags_recall_find_provider_with_recycling_container(GList *recall_i, GObject *provider, GObject *recycling_container)
+ags_recall_find_provider_with_recycling_context(GList *recall_i, GObject *provider, GObject *recycling_context)
 {
   AgsRecall *recall;
 
@@ -2321,7 +2527,7 @@ ags_recall_find_provider_with_recycling_container(GList *recall_i, GObject *prov
     recall = AGS_RECALL(recall_i->data);
     
     if(recall->recall_id != NULL &&
-       recall->recall_id->recycling_container == recycling_container){
+       recall->recall_id->recycling_context == recycling_context){
       return(recall_i);
     }
 

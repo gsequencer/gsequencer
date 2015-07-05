@@ -18,10 +18,6 @@
 
 #include <ags/X/ags_editor_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags/thread/ags_audio_loop.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -31,7 +27,7 @@
 
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_notebook.h>
-#include <ags/X/editor/ags_meter.h>
+#include <ags/X/editor/ags_piano.h>
 #include <ags/X/editor/ags_note_edit.h>
 
 #include <math.h>
@@ -63,7 +59,7 @@ ags_editor_set_audio_channels_callback(AgsAudio *audio,
     for(i = audio_channels_old; i < audio_channels; i++){
       ags_notebook_insert_tab(editor->notebook,
 			      i);
-      AGS_NOTEBOOK_TAB(tabs->data)->notation = notation->data;
+      AGS_NOTEBOOK_TAB(tabs->data)->data = notation->data;
 
       tabs = tabs->next;
       notation = notation->next;
@@ -137,9 +133,9 @@ ags_editor_edit_vscrollbar_value_changed_callback(GtkWidget *note_edit,
 						  AgsEditor *editor)
 {
   if((AGS_MACHINE_IS_SYNTHESIZER & (editor->selected_machine->flags)) != 0){
-    gtk_widget_queue_draw(editor->piano.meter);
+    gtk_widget_queue_draw(editor->meter.piano);
   }else if((AGS_MACHINE_IS_SEQUENCER & (editor->selected_machine->flags)) != 0){
-    gtk_widget_queue_draw(editor->piano.soundset);
+    gtk_widget_queue_draw(editor->meter.soundset);
   }else{
   }
 }

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsOutput">
+<refentry id="AgsOutput">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsOutput.top_of_page">AgsOutput</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsOutput.top_of_page">AgsOutput</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,76 +14,119 @@
 </refmeta>
 <refnamediv>
 <refname>AgsOutput</refname>
-<refpurpose></refpurpose>
+<refpurpose>Output of <link linkend="AgsAudio"><type>AgsAudio</type></link></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsOutput.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsOutput.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-output-find-first-input-recycling">ags_output_find_first_input_recycling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-output-find-last-input-recycling">ags_output_find_last_input_recycling</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsOutput"><returnvalue>AgsOutput</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-output-new">ags_output_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsOutput">AgsOutput</link>;
-struct              <link linkend="AgsOutputClass">AgsOutputClass</link>;
-<link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link> *      <link linkend="ags-output-find-first-input-recycling">ags_output_find_first_input_recycling</link>
-                                                        (<parameter><link linkend="AgsOutput"><type>AgsOutput</type></link> *output</parameter>);
-<link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link> *      <link linkend="ags-output-find-last-input-recycling">ags_output_find_last_input_recycling</link>
-                                                        (<parameter><link linkend="AgsOutput"><type>AgsOutput</type></link> *output</parameter>);
-<link linkend="AgsOutput"><returnvalue>AgsOutput</returnvalue></link> *         <link linkend="ags-output-new">ags_output_new</link>                      (<parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsOutput.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsOutput.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsOutput" role="struct">
-<title>struct AgsOutput</title>
-<indexterm zone="AgsOutput"><primary>AgsOutput</primary></indexterm>
-<programlisting>struct AgsOutput {
-  AgsChannel channel;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsOutputClass" role="struct">
-<title>struct AgsOutputClass</title>
-<indexterm zone="AgsOutputClass"><primary>AgsOutputClass</primary></indexterm>
-<programlisting>struct AgsOutputClass {
-  AgsChannelClass channel;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-output-find-first-input-recycling" role="function">
-<title>ags_output_find_first_input_recycling ()</title>
-<indexterm zone="ags-output-find-first-input-recycling"><primary>ags_output_find_first_input_recycling</primary></indexterm>
-<programlisting><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link> *      ags_output_find_first_input_recycling
-                                                        (<parameter><link linkend="AgsOutput"><type>AgsOutput</type></link> *output</parameter>);</programlisting>
-<para>
-Retrieve first input recycling.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the first <link linkend="AgsRecycling"><type>AgsRecycling</type></link> of <link linkend="AgsAudio"><type>AgsAudio</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-output-find-last-input-recycling" role="function">
-<title>ags_output_find_last_input_recycling ()</title>
-<indexterm zone="ags-output-find-last-input-recycling"><primary>ags_output_find_last_input_recycling</primary></indexterm>
-<programlisting><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link> *      ags_output_find_last_input_recycling
-                                                        (<parameter><link linkend="AgsOutput"><type>AgsOutput</type></link> *output</parameter>);</programlisting>
-<para>
-Retrieve last input recycling.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>the last <link linkend="AgsRecycling"><type>AgsRecycling</type></link> of <link linkend="AgsAudio"><type>AgsAudio</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-output-new" role="function">
-<title>ags_output_new ()</title>
-<indexterm zone="ags-output-new"><primary>ags_output_new</primary></indexterm>
-<programlisting><link linkend="AgsOutput"><returnvalue>AgsOutput</returnvalue></link> *         ags_output_new                      (<parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
-<para>
-Creates an <link linkend="AgsOutput"><type>AgsOutput</type></link>, linking tree to <parameter>audio</parameter>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsOutput"><type>AgsOutput</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
+<refsect1 id="AgsOutput.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsChannel">AgsChannel</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsOutput
+</screen>
+</refsect1>
+
+<refsect1 id="AgsOutput.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_output.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsOutput.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsOutput"><type>AgsOutput</type></link> represents an output channel of <link linkend="AgsAudio"><type>AgsAudio</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsOutput.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-output-find-first-input-recycling" role="function" condition="since:0.4">
+<title>ags_output_find_first_input_recycling&#160;()</title>
+<indexterm zone="ags-output-find-first-input-recycling" role="0.4"><primary>ags_output_find_first_input_recycling</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link>&#160;*
+ags_output_find_first_input_recycling (<parameter><link linkend="AgsOutput"><type>AgsOutput</type></link> *output</parameter>);</programlisting>
+<para>Retrieve first input recycling.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>output</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsOutput"><type>AgsOutput</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the first <link linkend="AgsRecycling"><type>AgsRecycling</type></link> of <link linkend="AgsAudio"><type>AgsAudio</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-output-find-last-input-recycling" role="function" condition="since:0.4">
+<title>ags_output_find_last_input_recycling&#160;()</title>
+<indexterm zone="ags-output-find-last-input-recycling" role="0.4"><primary>ags_output_find_last_input_recycling</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecycling"><returnvalue>AgsRecycling</returnvalue></link>&#160;*
+ags_output_find_last_input_recycling (<parameter><link linkend="AgsOutput"><type>AgsOutput</type></link> *output</parameter>);</programlisting>
+<para>Retrieve last input recycling.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>output</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsOutput"><type>AgsOutput</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the last <link linkend="AgsRecycling"><type>AgsRecycling</type></link> of <link linkend="AgsAudio"><type>AgsAudio</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-output-new" role="function" condition="since:0.3">
+<title>ags_output_new&#160;()</title>
+<indexterm zone="ags-output-new" role="0.3"><primary>ags_output_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsOutput"><returnvalue>AgsOutput</returnvalue></link>&#160;*
+ags_output_new (<parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsOutput"><type>AgsOutput</type></link>, linking tree to <parameter>audio</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsOutput"><type>AgsOutput</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsOutput.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

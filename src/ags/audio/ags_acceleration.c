@@ -18,7 +18,7 @@
 
 #include <ags/audio/ags_acceleration.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <stdlib.h>
 
@@ -66,9 +66,9 @@ ags_acceleration_get_type()
     };
 
     ags_type_acceleration = g_type_register_static(G_TYPE_OBJECT,
-					   "AgsAcceleration\0",
-					   &ags_acceleration_info,
-					   0);
+						   "AgsAcceleration\0",
+						   &ags_acceleration_info,
+						   0);
     
     g_type_add_interface_static(ags_type_acceleration,
 				AGS_TYPE_CONNECTABLE,
@@ -106,7 +106,6 @@ ags_acceleration_init(AgsAcceleration *acceleration)
   acceleration->y = 0;
 
   acceleration->name = NULL;
-  acceleration->frequency = 440.0;
 }
 
 void
@@ -137,7 +136,7 @@ ags_acceleration_finalize(GObject *gobject)
  *
  * Returns: the duplicated #AgsAcceleration.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsAcceleration*
 ags_acceleration_duplicate(AgsAcceleration *acceleration)
@@ -151,6 +150,8 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
   copy->x = acceleration->x;
   copy->y = acceleration->y;
 
+  copy->name = g_strdup(acceleration->name);
+  
   return(copy);
 }
 
@@ -161,7 +162,7 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
  *
  * Returns: a new #AgsAcceleration
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsAcceleration*
 ags_acceleration_new()

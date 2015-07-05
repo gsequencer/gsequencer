@@ -23,7 +23,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/object/ags_playable.h>
+#include <ags/audio/file/ags_playable.h>
 
 #define AGS_TYPE_INLINE_PLAYER                (ags_inline_player_get_type ())
 #define AGS_INLINE_PLAYER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_INLINE_PLAYER, AgsInlinePlayer))

@@ -23,8 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/editor/ags_port_selection.h>
-
 #define AGS_TYPE_AUTOMATION_TOOLBAR                (ags_automation_toolbar_get_type())
 #define AGS_AUTOMATION_TOOLBAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION_TOOLBAR, AgsAutomationToolbar))
 #define AGS_AUTOMATION_TOOLBAR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUTOMATION_TOOLBAR, AgsAutomationToolbarClass))
@@ -38,10 +36,16 @@
 typedef struct _AgsAutomationToolbar AgsAutomationToolbar;
 typedef struct _AgsAutomationToolbarClass AgsAutomationToolbarClass;
 
+typedef enum{
+  AGS_AUTOMATION_TOOLBAR_RESET_PORT   = 1,
+}AgsAutomationToolbarFlags;
+
 struct _AgsAutomationToolbar
 {
   GtkToolbar toolbar;
 
+  guint flags;
+  
   GtkToggleButton *selected_edit_mode;
   GtkToggleButton *position;
   GtkToggleButton *edit;
@@ -52,9 +56,10 @@ struct _AgsAutomationToolbar
   GtkMenuItem *cut;
   GtkMenuItem *paste;
 
+  guint zoom_history;
   GtkComboBox *zoom;
 
-  AgsPortSelection *port_selection;
+  GtkComboBox *port;
 };
 
 struct _AgsAutomationToolbarClass
@@ -63,6 +68,10 @@ struct _AgsAutomationToolbarClass
 };
 
 GType ags_automation_toolbar_get_type(void);
+
+void ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar);
+void ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
+				       gchar *control_name);
 
 AgsAutomationToolbar* ags_automation_toolbar_new();
 

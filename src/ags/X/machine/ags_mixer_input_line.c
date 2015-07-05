@@ -18,7 +18,7 @@
 
 #include <ags/X/machine/ags_mixer_input_line.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/plugin/ags_plugin_stock.h>
 
@@ -239,7 +239,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
 
   audio = AGS_AUDIO(line->channel->audio);
 
-  mixer = AGS_MIXER(audio->machine);
+  mixer = AGS_MIXER(audio->machine_widget);
 
   source = line->channel;
 

@@ -19,9 +19,7 @@
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_notebook_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/X/ags_editor.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_notebook_class_init(AgsNotebookClass *notebook);
 void ags_notebook_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -116,14 +114,10 @@ void
 ags_notebook_connect(AgsConnectable *connectable)
 {
   AgsNotebook *notebook;
-  AgsEditor *editor;
 
   notebook = AGS_NOTEBOOK(connectable);
 
-  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook, AGS_TYPE_EDITOR);
-
-  g_signal_connect((GObject *) editor, "machine-changed\0",
-		   G_CALLBACK(ags_notebook_machine_changed_callback), notebook);
+  //TODO:JK: implement me
 }
 
 void
@@ -142,14 +136,14 @@ ags_notebook_tab_alloc()
   notebook_tab->flags = 0;
 
   notebook_tab->toggle = NULL;
-  notebook_tab->notation = NULL;
+  notebook_tab->data = NULL;
 
   return(notebook_tab);
 }
 
 gint
 ags_notebook_tab_index(AgsNotebook *notebook,
-		       GObject *notation)
+		       gpointer data)
 {
   GList *list;
   gint i;
@@ -157,7 +151,7 @@ ags_notebook_tab_index(AgsNotebook *notebook,
   list = notebook->tabs;
 
   for(i = 0; list != NULL; i++){
-    if(AGS_NOTEBOOK_TAB(list->data)->notation == notation){
+    if(AGS_NOTEBOOK_TAB(list->data)->data == data){
       return(i);
     }
 
@@ -171,23 +165,35 @@ gint
 ags_notebook_add_tab(AgsNotebook *notebook)
 {
   AgsNotebookTab *tab;
-  gint index;
+  gint tab_index;
 
   tab = ags_notebook_tab_alloc();
 
   notebook->tabs = g_list_prepend(notebook->tabs,
 				  tab);
-  index = g_list_length(notebook->tabs);
+  tab_index = g_list_length(notebook->tabs);
 
-  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("channel %d\0",
-										     index));
+  if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+    tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("channel %d\0",
+										       tab_index));
+  }else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+    tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("pad %d\0",
+										       tab_index));
+  }else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+    tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("line %d\0",
+										       tab_index));
+  }else{
+    tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%d\0",
+										       tab_index));
+  }
+  
   gtk_toggle_button_set_active(tab->toggle, TRUE);
   gtk_box_pack_start(GTK_BOX(notebook->hbox),
 		     GTK_WIDGET(tab->toggle),
 		     FALSE, FALSE,
 		     0);
 
-  return(index);
+  return(tab_index);
 }
 
 gint
@@ -217,7 +223,10 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 			gint position)
 {
   AgsNotebookTab *tab;
+  GList *list;
+  gchar *str;
   gint length;
+  guint i;
 
   length = g_list_length(notebook->tabs);
 
@@ -226,8 +235,20 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 				 tab,
 				 length - position);
 
-  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("channel %d\0",
-										     position));
+  if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+    tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("channel %d\0",
+										       position));
+  }else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+    tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("pad %d\0",
+										       position));
+  }else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+    tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("line %d\0",
+										       position));
+  }else{
+    tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%d\0",
+										       position));
+  }
+  
   gtk_box_pack_start(GTK_BOX(notebook->hbox),
 		     GTK_WIDGET(tab->toggle),
 		     FALSE, FALSE,
@@ -235,6 +256,32 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
   gtk_box_reorder_child(GTK_BOX(notebook->hbox),
 			GTK_WIDGET(tab->toggle),
 			position);
+
+  list = g_list_nth(notebook->tabs,
+		    length - position);
+  list = list->prev;
+  i = position + 2;
+  
+  while(list != NULL){
+    if((AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL & (notebook->flags)) != 0){
+      g_strdup_printf("channel %d\0",
+		      i);
+    }else if((AGS_NOTEBOOK_SHOW_PAD & (notebook->flags)) != 0){
+      g_strdup_printf("pad %d\0",
+		      i);
+    }else if((AGS_NOTEBOOK_SHOW_LINE & (notebook->flags)) != 0){
+      g_strdup_printf("line %d\0",
+		      i);
+    }else{
+      g_strdup_printf("%d\0",
+		      i);
+    }
+    
+    gtk_button_set_label(AGS_NOTEBOOK_TAB(list->data)->toggle,
+			 str);
+    list = list->prev;
+    i++;
+  }
 }
 
 void

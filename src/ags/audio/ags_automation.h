@@ -32,8 +32,21 @@
 #define AGS_IS_AUTOMATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUTOMATION))
 #define AGS_AUTOMATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUTOMATION, AgsAutomationClass))
 
+#define AGS_AUTOMATION_DEFAULT_BPM (120.0)
+
+#define AGS_AUTOMATION_TICS_PER_BEAT (1.0)
+#define AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH (1.0 / 16.0 / 64.0)
+
+#define AGS_AUTOMATION_DEFAULT_LENGTH (64 * 16 * 1200 / AGS_AUTOMATION_TICS_PER_BEAT)
+#define AGS_AUTOMATION_DEFAULT_JIFFIE (60.0 / AGS_AUTOMATION_DEFAULT_BPM / AGS_AUTOMATION_TICS_PER_BEAT)
+#define AGS_AUTOMATION_DEFAULT_DURATION (AGS_AUTOMATION_DEFAULT_LENGTH * AGS_AUTOMATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
+
 typedef struct _AgsAutomation AgsAutomation;
 typedef struct _AgsAutomationClass AgsAutomationClass;
+
+typedef enum{
+  AGS_AUTOMATION_BYPASS   = 1,
+}AgsAutomationFlags;
 
 struct _AgsAutomation
 {
@@ -51,7 +64,8 @@ struct _AgsAutomation
   guint steps;
   gdouble upper;
   gdouble lower;
-
+  gdouble default_value;
+  
   GList *acceleration;
 
   gdouble start_loop;
@@ -111,8 +125,8 @@ void ags_automation_remove_region_from_selection(AgsAutomation *automation,
 						 guint x0, guint y0,
 						 guint x1, guint y1);
 
-xmlNodePtr ags_automation_copy_selection(AgsAutomation *automation);
-xmlNodePtr ags_automation_cut_selection(AgsAutomation *automation);
+xmlNode* ags_automation_copy_selection(AgsAutomation *automation);
+xmlNode* ags_automation_cut_selection(AgsAutomation *automation);
 
 void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 					  xmlNodePtr content,
@@ -121,6 +135,13 @@ void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 
 GList* ags_automation_get_current(AgsAutomation *automation);
 
-AgsAutomation* ags_automation_new();
+gchar** ags_automation_get_specifier_unique(GList *automation);
+GList* ags_automation_find_specifier(GList *automation,
+				     gchar *specifier);
+
+AgsAutomation* ags_automation_new(GObject *audio,
+				  guint line,
+				  GType channel_type,
+				  gchar *control_name);
 
 #endif /*__AGS_AUTOMATION_H__*/

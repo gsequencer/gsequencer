@@ -27,12 +27,6 @@
 #include <math.h>
 
 void
-ags_toolbar_show_callback(GtkWidget *widget, AgsToolbar *toolbar)
-{
-  ags_toolbar_show(widget);
-}
-
-void
 ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
 {
   AgsEditor *editor;
@@ -152,7 +146,7 @@ ags_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsToolbar *toolbar)
     /* create notation nodes */
     list_notation = machine->audio->notation;
 
-    if(gtk_option_menu_get_history(toolbar->mode) == 0){
+    if(gtk_combo_box_get_active(toolbar->mode) == 0){
       if(editor->notebook->tabs != NULL){
 	list_notation = g_list_nth(list_notation,
 				   ags_notebook_next_active_tab(editor->notebook,
@@ -344,7 +338,7 @@ ags_toolbar_mode_callback(GtkWidget *widget, AgsToolbar *toolbar)
   notebook = editor->notebook;
 
   /* toggle AgsNotebook */
-  history = gtk_option_menu_get_history(toolbar->mode);
+  history = gtk_combo_box_get_active(toolbar->mode);
 
   switch(history){
   case 0:

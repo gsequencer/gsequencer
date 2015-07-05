@@ -25,7 +25,7 @@
 
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_LINE_MEMBER                (ags_line_member_get_type())
 #define AGS_LINE_MEMBER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE_MEMBER, AgsLineMember))

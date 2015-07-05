@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsLadspaManager">
+<refentry id="AgsLadspaManager">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsLadspaManager.top_of_page">AgsLadspaManager</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsLadspaManager.top_of_page">AgsLadspaManager</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,135 +14,250 @@
 </refmeta>
 <refnamediv>
 <refname>AgsLadspaManager</refname>
-<refpurpose></refpurpose>
+<refpurpose>Singleton pattern to organize LADSPA</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsLadspaManager.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsLadspaManager.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-LADSPA-PLUGIN:CAPS">AGS_LADSPA_PLUGIN</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLadspaPlugin"><returnvalue>AgsLadspaPlugin</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ladspa-plugin-alloc">ags_ladspa_plugin_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-ladspa-plugin-free">ags_ladspa_plugin_free</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;**
+</entry><entry role="function_name"><link linkend="ags-ladspa-manager-get-filenames">ags_ladspa_manager_get_filenames</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLadspaPlugin"><returnvalue>AgsLadspaPlugin</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ladspa-manager-find-ladspa-plugin">ags_ladspa_manager_find_ladspa_plugin</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-ladspa-manager-load-file">ags_ladspa_manager_load_file</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-ladspa-manager-load-default-directory">ags_ladspa_manager_load_default_directory</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type">unsigned <link linkend="long"><returnvalue>long</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-ladspa-manager-effect-index">ags_ladspa_manager_effect_index</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLadspaManager"><returnvalue>AgsLadspaManager</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ladspa-manager-get-instance">ags_ladspa_manager_get_instance</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLadspaManager"><returnvalue>AgsLadspaManager</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ladspa-manager-new">ags_ladspa_manager_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-LADSPA-PLUGIN:CAPS">AGS_LADSPA_PLUGIN</link>                   (ptr)
-struct              <link linkend="AgsLadspaManager">AgsLadspaManager</link>;
-struct              <link linkend="AgsLadspaManagerClass">AgsLadspaManagerClass</link>;
-struct              <link linkend="AgsLadspaPlugin">AgsLadspaPlugin</link>;
-enum                <link linkend="AgsLadspaPluginFlags">AgsLadspaPluginFlags</link>;
-<link linkend="AgsLadspaPlugin"><returnvalue>AgsLadspaPlugin</returnvalue></link> *   <link linkend="ags-ladspa-manager-find-ladspa-plugin">ags_ladspa_manager_find_ladspa_plugin</link>
-                                                        (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);
-<link linkend="gchar"><returnvalue>gchar</returnvalue></link> **            <link linkend="ags-ladspa-manager-get-filenames">ags_ladspa_manager_get_filenames</link>    ();
-<link linkend="AgsLadspaManager"><returnvalue>AgsLadspaManager</returnvalue></link> *  <link linkend="ags-ladspa-manager-get-instance">ags_ladspa_manager_get_instance</link>     ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-ladspa-manager-load-default-directory">ags_ladspa_manager_load_default_directory</link>
-                                                        ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-ladspa-manager-load-file">ags_ladspa_manager_load_file</link>        (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);
-<link linkend="AgsLadspaManager"><returnvalue>AgsLadspaManager</returnvalue></link> *  <link linkend="ags-ladspa-manager-new">ags_ladspa_manager_new</link>              ();
-<link linkend="AgsLadspaPlugin"><returnvalue>AgsLadspaPlugin</returnvalue></link> *   <link linkend="ags-ladspa-plugin-alloc">ags_ladspa_plugin_alloc</link>             ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-ladspa-plugin-free">ags_ladspa_plugin_free</link>              (<parameter><link linkend="AgsLadspaPlugin"><type>AgsLadspaPlugin</type></link> *ladspa_plugin</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsLadspaManager.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsLadspaManager.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsLadspaManager.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsLadspaPluginFlags">AgsLadspaPluginFlags</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsLadspaPlugin">AgsLadspaPlugin</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLadspaManager.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsLadspaManager
+</screen>
+</refsect1>
+
+<refsect1 id="AgsLadspaManager.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_ladspa_manager.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsLadspaManager.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsLadspaManager"><type>AgsLadspaManager</type></link> loads/unloads LADSPA plugins.</para>
+
+</refsect1>
+<refsect1 id="AgsLadspaManager.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-LADSPA-PLUGIN:CAPS" role="macro">
 <title>AGS_LADSPA_PLUGIN()</title>
 <indexterm zone="AGS-LADSPA-PLUGIN:CAPS"><primary>AGS_LADSPA_PLUGIN</primary></indexterm>
-<programlisting>#define AGS_LADSPA_PLUGIN(ptr) ((AgsLadspaPlugin *)(ptr))
+<programlisting language="C">#define AGS_LADSPA_PLUGIN(ptr) ((AgsLadspaPlugin *)(ptr))
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsLadspaManager" role="struct">
-<title>struct AgsLadspaManager</title>
-<indexterm zone="AgsLadspaManager"><primary>AgsLadspaManager</primary></indexterm>
-<programlisting>struct AgsLadspaManager {
-  GObject object;
-  
-  GList *ladspa_plugin;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsLadspaManagerClass" role="struct">
-<title>struct AgsLadspaManagerClass</title>
-<indexterm zone="AgsLadspaManagerClass"><primary>AgsLadspaManagerClass</primary></indexterm>
-<programlisting>struct AgsLadspaManagerClass {
-  GObjectClass object;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+<refsect2 id="ags-ladspa-plugin-alloc" role="function" condition="since:0.4">
+<title>ags_ladspa_plugin_alloc&#160;()</title>
+<indexterm zone="ags-ladspa-plugin-alloc" role="0.4"><primary>ags_ladspa_plugin_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLadspaPlugin"><returnvalue>AgsLadspaPlugin</returnvalue></link>&#160;*
+ags_ladspa_plugin_alloc ();</programlisting>
+<para>Alloc the <link linkend="AgsLadspaPlugin-struct"><type>AgsLadspaPlugin</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> the <link linkend="AgsLadspaPlugin-struct"><type>AgsLadspaPlugin</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-ladspa-plugin-free" role="function" condition="since:0.4">
+<title>ags_ladspa_plugin_free&#160;()</title>
+<indexterm zone="ags-ladspa-plugin-free" role="0.4"><primary>ags_ladspa_plugin_free</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_ladspa_plugin_free (<parameter><link linkend="AgsLadspaPlugin"><type>AgsLadspaPlugin</type></link> *ladspa_plugin</parameter>);</programlisting>
+<para>Free the <link linkend="AgsLadspaPlugin-struct"><type>AgsLadspaPlugin</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>ladspa_plugin</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsLadspaPlugin-struct"><type>AgsLadspaPlugin</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-ladspa-manager-get-filenames" role="function" condition="since:0.4">
+<title>ags_ladspa_manager_get_filenames&#160;()</title>
+<indexterm zone="ags-ladspa-manager-get-filenames" role="0.4"><primary>ags_ladspa_manager_get_filenames</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;**
+ags_ladspa_manager_get_filenames ();</programlisting>
+<para>Retrieve all filenames</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="NULL:CAPS"><literal>NULL</literal></link>-terminated array of filenames</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-ladspa-manager-find-ladspa-plugin" role="function" condition="since:0.4">
+<title>ags_ladspa_manager_find_ladspa_plugin&#160;()</title>
+<indexterm zone="ags-ladspa-manager-find-ladspa-plugin" role="0.4"><primary>ags_ladspa_manager_find_ladspa_plugin</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLadspaPlugin"><returnvalue>AgsLadspaPlugin</returnvalue></link>&#160;*
+ags_ladspa_manager_find_ladspa_plugin (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+<para>Lookup filename in loaded plugins.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename of the plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the <link linkend="AgsLadspaPlugin-struct"><type>AgsLadspaPlugin</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-ladspa-manager-load-file" role="function" condition="since:0.4">
+<title>ags_ladspa_manager_load_file&#160;()</title>
+<indexterm zone="ags-ladspa-manager-load-file" role="0.4"><primary>ags_ladspa_manager_load_file</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_ladspa_manager_load_file (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+<para>Load <parameter>filename</parameter>
+ specified plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename of the plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-ladspa-manager-load-default-directory" role="function" condition="since:0.4">
+<title>ags_ladspa_manager_load_default_directory&#160;()</title>
+<indexterm zone="ags-ladspa-manager-load-default-directory" role="0.4"><primary>ags_ladspa_manager_load_default_directory</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_ladspa_manager_load_default_directory
+                               ();</programlisting>
+<para>Loads all available plugins.</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-ladspa-manager-effect-index" role="function" condition="since:0.4">
+<title>ags_ladspa_manager_effect_index&#160;()</title>
+<indexterm zone="ags-ladspa-manager-effect-index" role="0.4"><primary>ags_ladspa_manager_effect_index</primary></indexterm>
+<programlisting language="C">unsigned <link linkend="long"><returnvalue>long</returnvalue></link>
+ags_ladspa_manager_effect_index (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                                 <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);</programlisting>
+<para>Retrieve the effect's index within <parameter>filename</parameter>
+</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the plugin.so filename</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>effect</para></entry>
+<entry role="parameter_description"><para>the effect's name within plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the index, G_MAXULONG if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-ladspa-manager-get-instance" role="function" condition="since:0.4">
+<title>ags_ladspa_manager_get_instance&#160;()</title>
+<indexterm zone="ags-ladspa-manager-get-instance" role="0.4"><primary>ags_ladspa_manager_get_instance</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLadspaManager"><returnvalue>AgsLadspaManager</returnvalue></link>&#160;*
+ags_ladspa_manager_get_instance ();</programlisting>
+<para>Get instance.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> the <link linkend="AgsLadspaManager"><type>AgsLadspaManager</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-ladspa-manager-new" role="function" condition="since:0.4">
+<title>ags_ladspa_manager_new&#160;()</title>
+<indexterm zone="ags-ladspa-manager-new" role="0.4"><primary>ags_ladspa_manager_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLadspaManager"><returnvalue>AgsLadspaManager</returnvalue></link>&#160;*
+ags_ladspa_manager_new ();</programlisting>
+<para>Creates an <link linkend="AgsLadspaManager"><type>AgsLadspaManager</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsLadspaManager"><type>AgsLadspaManager</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsLadspaManager.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsLadspaPluginFlags" role="enum">
+<title>enum AgsLadspaPluginFlags</title>
+<indexterm zone="AgsLadspaPluginFlags"><primary>AgsLadspaPluginFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LADSPA-PLUGIN-IS-LOADED:CAPS">AGS_LADSPA_PLUGIN_IS_LOADED</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="AgsLadspaPlugin" role="struct">
 <title>struct AgsLadspaPlugin</title>
 <indexterm zone="AgsLadspaPlugin"><primary>AgsLadspaPlugin</primary></indexterm>
-<programlisting>struct AgsLadspaPlugin {
+<programlisting language="C">struct AgsLadspaPlugin {
   guint flags;
 
   gchar *filename;
   void *plugin_so;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsLadspaPluginFlags" role="enum">
-<title>enum AgsLadspaPluginFlags</title>
-<indexterm zone="AgsLadspaPluginFlags"><primary>AgsLadspaPluginFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_LADSPA_PLUGIN_IS_LOADED    = 1,
-} AgsLadspaPluginFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ladspa-manager-find-ladspa-plugin" role="function">
-<title>ags_ladspa_manager_find_ladspa_plugin ()</title>
-<indexterm zone="ags-ladspa-manager-find-ladspa-plugin"><primary>ags_ladspa_manager_find_ladspa_plugin</primary></indexterm>
-<programlisting><link linkend="AgsLadspaPlugin"><returnvalue>AgsLadspaPlugin</returnvalue></link> *   ags_ladspa_manager_find_ladspa_plugin
-                                                        (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ladspa-manager-get-filenames" role="function">
-<title>ags_ladspa_manager_get_filenames ()</title>
-<indexterm zone="ags-ladspa-manager-get-filenames"><primary>ags_ladspa_manager_get_filenames</primary></indexterm>
-<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> **            ags_ladspa_manager_get_filenames    ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ladspa-manager-get-instance" role="function">
-<title>ags_ladspa_manager_get_instance ()</title>
-<indexterm zone="ags-ladspa-manager-get-instance"><primary>ags_ladspa_manager_get_instance</primary></indexterm>
-<programlisting><link linkend="AgsLadspaManager"><returnvalue>AgsLadspaManager</returnvalue></link> *  ags_ladspa_manager_get_instance     ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ladspa-manager-load-default-directory" role="function">
-<title>ags_ladspa_manager_load_default_directory ()</title>
-<indexterm zone="ags-ladspa-manager-load-default-directory"><primary>ags_ladspa_manager_load_default_directory</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_ladspa_manager_load_default_directory
-                                                        ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ladspa-manager-load-file" role="function">
-<title>ags_ladspa_manager_load_file ()</title>
-<indexterm zone="ags-ladspa-manager-load-file"><primary>ags_ladspa_manager_load_file</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_ladspa_manager_load_file        (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ladspa-manager-new" role="function">
-<title>ags_ladspa_manager_new ()</title>
-<indexterm zone="ags-ladspa-manager-new"><primary>ags_ladspa_manager_new</primary></indexterm>
-<programlisting><link linkend="AgsLadspaManager"><returnvalue>AgsLadspaManager</returnvalue></link> *  ags_ladspa_manager_new              ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ladspa-plugin-alloc" role="function">
-<title>ags_ladspa_plugin_alloc ()</title>
-<indexterm zone="ags-ladspa-plugin-alloc"><primary>ags_ladspa_plugin_alloc</primary></indexterm>
-<programlisting><link linkend="AgsLadspaPlugin"><returnvalue>AgsLadspaPlugin</returnvalue></link> *   ags_ladspa_plugin_alloc             ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ladspa-plugin-free" role="function">
-<title>ags_ladspa_plugin_free ()</title>
-<indexterm zone="ags-ladspa-plugin-free"><primary>ags_ladspa_plugin_free</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_ladspa_plugin_free              (<parameter><link linkend="AgsLadspaPlugin"><type>AgsLadspaPlugin</type></link> *ladspa_plugin</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 
 </refsect1>
 

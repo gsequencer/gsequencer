@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsIpatchSF2Reader">
+<refentry id="AgsIpatchSF2Reader">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsIpatchSF2Reader.top_of_page">AgsIpatchSF2Reader</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsIpatchSF2Reader.top_of_page">AgsIpatchSF2Reader</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,79 +14,93 @@
 </refmeta>
 <refnamediv>
 <refname>AgsIpatchSF2Reader</refname>
-<refpurpose></refpurpose>
+<refpurpose>interfacing Soundfont2 related API of libinstpatch</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsIpatchSF2Reader.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsIpatchSF2Reader.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsIpatchSF2Reader"><returnvalue>AgsIpatchSF2Reader</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ipatch-sf2-reader-new">ags_ipatch_sf2_reader_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsIpatchSF2Reader">AgsIpatchSF2Reader</link>;
-struct              <link linkend="AgsIpatchSF2ReaderClass">AgsIpatchSF2ReaderClass</link>;
-enum                <link linkend="AgsSF2Levels">AgsSF2Levels</link>;
-<link linkend="AgsIpatchSF2Reader"><returnvalue>AgsIpatchSF2Reader</returnvalue></link> * <link linkend="ags-ipatch-sf2-reader-new">ags_ipatch_sf2_reader_new</link>          ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsIpatchSF2Reader.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsIpatchSF2Reader.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsIpatchSF2Reader" role="struct">
-<title>struct AgsIpatchSF2Reader</title>
-<indexterm zone="AgsIpatchSF2Reader"><primary>AgsIpatchSF2Reader</primary></indexterm>
-<programlisting>struct AgsIpatchSF2Reader {
-  GObject object;
+<refsect1 id="AgsIpatchSF2Reader.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsSF2Levels">AgsSF2Levels</link></entry></row>
 
-  AgsIpatch *ipatch;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsIpatchSF2Reader.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsIpatchSF2Reader
+</screen>
+</refsect1>
 
-  gchar **selected;
+<refsect1 id="AgsIpatchSF2Reader.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/file/ags_ipatch_sf2_reader.h&gt;
+</synopsis></refsect1>
 
-  IpatchSF2Reader *reader;
+<refsect1 id="AgsIpatchSF2Reader.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsIpatchSF2Reader"><type>AgsIpatchSF2Reader</type></link> is the base object to ineract with Soundfont2 related API.</para>
 
-  IpatchSF2 *sf2;
+</refsect1>
+<refsect1 id="AgsIpatchSF2Reader.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-ipatch-sf2-reader-new" role="function" condition="since:0.4">
+<title>ags_ipatch_sf2_reader_new&#160;()</title>
+<indexterm zone="ags-ipatch-sf2-reader-new" role="0.4"><primary>ags_ipatch_sf2_reader_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsIpatchSF2Reader"><returnvalue>AgsIpatchSF2Reader</returnvalue></link>&#160;*
+ags_ipatch_sf2_reader_new ();</programlisting>
+<para>Creates an <link linkend="AgsIpatchSF2Reader"><type>AgsIpatchSF2Reader</type></link>.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> an empty <link linkend="AgsIpatchSF2Reader"><type>AgsIpatchSF2Reader</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  int bank;
-  int program;
-
-  IpatchContainer *preset;
-  IpatchContainer *instrument;
-  IpatchContainer *sample;
-
-  int count;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsIpatchSF2ReaderClass" role="struct">
-<title>struct AgsIpatchSF2ReaderClass</title>
-<indexterm zone="AgsIpatchSF2ReaderClass"><primary>AgsIpatchSF2ReaderClass</primary></indexterm>
-<programlisting>struct AgsIpatchSF2ReaderClass {
-  GObjectClass object;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsIpatchSF2Reader.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsSF2Levels" role="enum">
 <title>enum AgsSF2Levels</title>
 <indexterm zone="AgsSF2Levels"><primary>AgsSF2Levels</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_SF2_FILENAME = 0,
-  AGS_SF2_PHDR = 1,
-  AGS_SF2_IHDR = 2,
-  AGS_SF2_SHDR = 3,
-} AgsSF2Levels;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-ipatch-sf2-reader-new" role="function">
-<title>ags_ipatch_sf2_reader_new ()</title>
-<indexterm zone="ags-ipatch-sf2-reader-new"><primary>ags_ipatch_sf2_reader_new</primary></indexterm>
-<programlisting><link linkend="AgsIpatchSF2Reader"><returnvalue>AgsIpatchSF2Reader</returnvalue></link> * ags_ipatch_sf2_reader_new          ();</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SF2-FILENAME:CAPS">AGS_SF2_FILENAME</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SF2-PHDR:CAPS">AGS_SF2_PHDR</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SF2-IHDR:CAPS">AGS_SF2_IHDR</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SF2-SHDR:CAPS">AGS_SF2_SHDR</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
 </refsect1>
 

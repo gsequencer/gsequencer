@@ -21,11 +21,22 @@
 #include <ags/main.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
 
 #include <ags/object/ags_plugin.h>
 
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_output.h>
 
+#include <ags/audio/task/ags_add_effect.h>
+
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
@@ -35,6 +46,8 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
+#include <ags/X/ags_lv2_browser.h>
+#include <ags/X/ags_ladspa_browser.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -49,27 +62,33 @@ void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
 {
-  gtk_widget_show_all(line_member_editor->ladspa_browser);
+  gtk_widget_show_all(line_member_editor->plugin_browser);
 }
 
 void
-ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
+ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 							gint response,
 							AgsLineMemberEditor *line_member_editor)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
 
+  AgsThread *main_loop;
+  AgsThread *task_thread;
+  
+  AgsApplicationContext *application_context;
+  
   GList *pad, *pad_start;
   GList *list, *list_start;
   gchar *filename, *effect;
   gboolean has_bridge;
   gboolean is_output;
   
-  auto void ags_line_member_editor_ladspa_browser_response_create_entry();
+  auto void ags_line_member_editor_plugin_browser_response_create_entry();
   
-  void ags_line_member_editor_ladspa_browser_response_create_entry(){
+  void ags_line_member_editor_plugin_browser_response_create_entry(){
     GtkHBox *hbox;
     GtkCheckButton *check_button;
     GtkLabel *label;
@@ -108,6 +127,16 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 
       machine = machine_editor->machine;
 
+      window = gtk_widget_get_toplevel(machine);
+      g_object_get(window,
+		   "application-context\0" , &application_context,
+		   NULL);
+
+      main_loop = application_context->main_loop;
+
+      task_thread = ags_thread_find_type(main_loop,
+					 AGS_TYPE_TASK_THREAD);
+      
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;
       }else{
@@ -158,16 +187,20 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	g_list_free(pad_start);
 
 	/* retrieve plugin */
-	filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
-	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
+	filename = ags_plugin_browser_get_plugin_filename(line_member_editor->plugin_browser);
+	effect = ags_plugin_browser_get_plugin_effect(line_member_editor->plugin_browser);
 
 	if(line != NULL){
-	  ags_line_member_editor_ladspa_browser_response_create_entry();
+	  AgsAddEffect *add_effect;
+	  
+	  ags_line_member_editor_plugin_browser_response_create_entry();
 	
 	  /* add effect */
-	  ags_line_add_effect(line,
-			      filename,
-			      effect);
+	  add_effect = ags_add_effect_new(line->channel,
+					  filename,
+					  effect);
+	  ags_task_thread_append_task(task_thread,
+				      add_effect);
 	}
       }else{
 	AgsEffectBridge *effect_bridge;
@@ -207,16 +240,20 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	g_list_free(pad_start);
 
 	/* retrieve plugin */
-	filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
-	effect = ags_ladspa_browser_get_plugin_effect(line_member_editor->ladspa_browser);
+	filename = ags_plugin_browser_get_plugin_filename(line_member_editor->plugin_browser);
+	effect = ags_plugin_browser_get_plugin_effect(line_member_editor->plugin_browser);
 
 	if(effect_line != NULL){
-	  ags_line_member_editor_ladspa_browser_response_create_entry();
+	  AgsAddEffect *add_effect;
+	  
+	  ags_line_member_editor_plugin_browser_response_create_entry();
 
 	  /* add effect */
-	  ags_effect_line_add_effect(effect_line,
-				     filename,
-				     effect);
+	  add_effect = ags_add_effect_new(effect_line->channel,
+					  filename,
+					  effect);
+	  ags_task_thread_append_task(task_thread,
+				      add_effect);
 	}
       }
     }
@@ -239,9 +276,9 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   gboolean has_bridge;
   gboolean is_output;
   
-  auto void ags_line_member_editor_ladspa_browser_response_destroy_entry();
+  auto void ags_line_member_editor_plugin_browser_response_destroy_entry();
   
-  void ags_line_member_editor_ladspa_browser_response_destroy_entry(){
+  void ags_line_member_editor_plugin_browser_response_destroy_entry(){
     /* destroy line member editor entry */
     gtk_widget_destroy(GTK_WIDGET(line_member->data));
   }
@@ -316,7 +353,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  ags_line_member_editor_ladspa_browser_response_destroy_entry();
+	  ags_line_member_editor_plugin_browser_response_destroy_entry();
 	
 	  /* remove effect */
 	  ags_line_remove_effect(line,
@@ -370,7 +407,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  ags_line_member_editor_ladspa_browser_response_destroy_entry();
+	  ags_line_member_editor_plugin_browser_response_destroy_entry();
 	
 	  /* remove effect */
 	  ags_effect_line_remove_effect(effect_line,

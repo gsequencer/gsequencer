@@ -16,7 +16,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_application_context.h>
+
+#include <ags/object/ags_marshal.h>
+#include <ags/object/ags_connectable.h>
+
+#include <gio/gio.h>
+
+#include <sys/types.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <pwd.h>
 
 void ags_application_context_class_init(AgsApplicationContextClass *application_context);
 void ags_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -44,14 +55,13 @@ enum{
 
 enum{
   PROP_0,
+  PROP_APPLICATION_MUTEX,
   PROP_MAIN_LOOP,
   PROP_CONFIG,
 };
 
+static gpointer ags_application_context_parent_class = NULL;
 static guint application_context_signals[LAST_SIGNAL];
-
-static AgsApplicationContext *ags_application_context = NULL;
-extern AgsConfig *ags_config;
 
 GType
 ags_application_context_get_type()
@@ -94,11 +104,12 @@ void
 ags_application_context_class_init(AgsApplicationContextClass *application_context)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
-  ags_application_context_parent_class = g_type_class_peek_parent(ags_application_context);
+  ags_application_context_parent_class = g_type_class_peek_parent(application_context);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) ags_application_context;
+  gobject = (GObjectClass *) application_context;
 
   gobject->set_property = ags_application_context_set_property;
   gobject->get_property = ags_application_context_get_property;
@@ -116,10 +127,26 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
   param_spec = g_param_spec_object("main-loop\0",
 				   "main-loop of application context\0",
 				   "The main-loop what application context is running in\0",
-				   AGS_TYPE_MAIN_LOOP,
+				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAIN_LOOP,
+				  param_spec);
+
+  /**
+   * AgsApplicationContext:config:
+   *
+   * The assigned config.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("config\0",
+				   "config of application context\0",
+				   "The config what application context is running in\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONFIG,
 				  param_spec);
 
   /* AgsApplicationContextClass */
@@ -172,44 +199,28 @@ ags_application_context_init(AgsApplicationContext *application_context)
 {
   GFile *file;
   struct passwd *pw;
-  uid_t uid;
-  gchar *wdir, *filename;
   pthread_mutexattr_t mutexattr;
-    
-  uid = getuid();
-  pw = getpwuid(uid);
-  
-  wdir = g_strdup_printf("%s/%s\0",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
-
-  file = g_file_new_for_path(wdir);
-
-  g_file_make_directory(file,
-			NULL,
-			NULL);
 
   application_context->flags = 0;
 
+  application_context->argc = 0;
+  application_context->argv = NULL;
+  
   application_context->version = AGS_VERSION;
   application_context->build_id = AGS_BUILD_ID;
 
-  application_context->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
-						     "file\0", stdout,
-						     NULL);
-  
-  application_context->sibling = g_list_alloc();
-  application_context->sibling->data = application_context;
-  
+  application_context->log = NULL;  
   application_context->domain = NULL;
   application_context->config = NULL;
 
   pthread_mutexattr_init(&(mutexattr));
   pthread_mutexattr_settype(&(mutexattr), PTHREAD_MUTEX_RECURSIVE);
 
-  pthread_mutex_init(&(application_context->mutex), &(mutexattr));
+  application_context->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(application_context->mutex, &(mutexattr));
 
   application_context->main_loop = NULL;
+  application_context->autosave_thread = NULL;
   
   application_context->file = NULL;
 
@@ -227,6 +238,42 @@ ags_application_context_set_property(GObject *gobject,
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
   switch(prop_id){
+  case PROP_CONFIG:
+    {
+      AgsConfig *config;
+      
+      config = (AgsApplicationContext *) g_value_get_object(value);
+
+      if(config == application_context->config)
+	return;
+
+      if(application_context->config != NULL)
+	g_object_unref(application_context->config);
+
+      if(config != NULL)
+	g_object_ref(G_OBJECT(config));
+
+      application_context->config = (GObject *) config;
+    }
+    break;
+  case PROP_MAIN_LOOP:
+    {
+      GObject *main_loop;
+      
+      main_loop = (GObject *) g_value_get_object(value);
+
+      if(main_loop == application_context->main_loop)
+	return;
+
+      if(application_context->main_loop != NULL)
+	g_object_unref(application_context->main_loop);
+
+      if(main_loop != NULL)
+	g_object_ref(G_OBJECT(main_loop));
+
+      application_context->main_loop = main_loop;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -245,6 +292,16 @@ ags_application_context_get_property(GObject *gobject,
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
   switch(prop_id){
+  case PROP_CONFIG:
+    {
+      g_value_set_object(value, application_context->config);
+    }
+    break;
+  case PROP_MAIN_LOOP:
+    {
+      g_value_set_object(value, application_context->main_loop);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -255,7 +312,6 @@ void
 ags_application_context_connect(AgsConnectable *connectable)
 {
   AgsApplicationContext *application_context;
-  GList *list;
 
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
@@ -264,23 +320,21 @@ ags_application_context_connect(AgsConnectable *connectable)
 
   application_context->flags |= AGS_APPLICATION_CONTEXT_CONNECTED;
 
-  ags_connectable_connect(AGS_CONNECTABLE(application_context->application_context_loop));
-  ags_connectable_connect(AGS_CONNECTABLE(application_context->thread_pool));
+  if((AGS_APPLICATION_CONTEXT_DEFAULT & (application_context->flags)) != 0){
+    GList *list;
 
-  g_message("connected threads\0");
+    list = application_context->sibling;
 
-  list = application_context->devout;
+    while(list != NULL){
+      if(application_context != list->data){
+	ags_connectable_connect(AGS_CONNECTABLE(list->data));
+      }
 
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
+      list = list->next;
+    }
   }
 
-  g_message("connected audio\0");
-
-  ags_connectable_connect(AGS_CONNECTABLE(application_context->window));
-  g_message("connected gui\0");
+  /* note main loop won't connect here */
 }
 
 void
@@ -297,84 +351,15 @@ ags_application_context_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_application_context_parent_class)->finalize(gobject);
 
   application_context = AGS_APPLICATION_CONTEXT(gobject);
+
+  //TODO:JK: implement me
 }
 
 void
 ags_application_context_real_load_config(AgsApplicationContext *application_context)
 {
   AgsConfig *config;
-  GList *list;
 
-  auto void ags_application_context_load_config_thread(AgsThread *thread);
-  auto void ags_application_context_load_config_devout(AgsDevout *devout);
-
-  void ags_application_context_load_config_thread(AgsThread *thread){
-    gchar *model;
-    
-    model = ags_config_get(config,
-			   ags_config_devout,
-			   "model\0");
-    
-    if(model != NULL){
-      if(!strncmp(model,
-		  "single-threaded\0",
-		  16)){
-	//TODO:JK: implement me
-	
-      }else if(!strncmp(model,
-			"multi-threaded",
-			15)){
-	//TODO:JK: implement me
-      }else if(!strncmp(model,
-			"super-threaded",
-			15)){
-	//TODO:JK: implement me
-      }
-    }
-  }
-  void ags_application_context_load_config_devout(AgsDevout *devout){
-    gchar *alsa_handle;
-    guint samplerate;
-    guint buffer_size;
-    guint pcm_channels, dsp_channels;
-
-    alsa_handle = ags_config_get(config,
-				 ags_config_devout,
-				 "alsa-handle\0");
-
-    dsp_channels = strtoul(ags_config_get(config,
-					  ags_config_devout,
-					  "dsp-channels\0"),
-			   NULL,
-			   10);
-    
-    pcm_channels = strtoul(ags_config_get(config,
-					  ags_config_devout,
-					  "pcm-channels\0"),
-			   NULL,
-			   10);
-
-    samplerate = strtoul(ags_config_get(config,
-					ags_config_devout,
-					"samplerate\0"),
-			 NULL,
-			 10);
-
-    buffer_size = strtoul(ags_config_get(config,
-					 ags_config_devout,
-					 "buffer-size\0"),
-			  NULL,
-			  10);
-    
-    g_object_set(G_OBJECT(devout),
-		 "device\0", alsa_handle,
-		 "dsp-channels\0", dsp_channels,
-		 "pcm-channels\0", pcm_channels,
-		 "frequency\0", samplerate,
-		 "buffer-size\0", buffer_size,
-		 NULL);
-  }
-  
   if(application_context == NULL){
     return;
   }
@@ -385,17 +370,7 @@ ags_application_context_real_load_config(AgsApplicationContext *application_cont
     return;
   }
 
-  /* thread */
-  ags_application_context_load_config_thread(application_context->application_context_loop);
-
-  /* devout */
-  list = application_context->devout;
-
-  while(list != NULL){
-    ags_application_context_load_config_devout(AGS_DEVOUT(list->data));
-
-    list = list->next;
-  }
+  //TODO:JK: implement me
 }
 
 void
@@ -471,18 +446,7 @@ ags_application_context_find_main_loop(GList *application_context)
 }
 
 AgsApplicationContext*
-ags_application_context_get_instance()
-{
-  if(ags_application_context == NULL){
-    ags_application_context = ags_application_context_new(NULL,
-							  ags_config);
-  }
-  
-  return(ags_application_context);
-}
-
-AgsApplicationContext*
-ags_application_context_new(AgsMainLoop *main_loop,
+ags_application_context_new(GObject *main_loop,
 			    AgsConfig *config)
 {
   AgsApplicationContext *application_context;

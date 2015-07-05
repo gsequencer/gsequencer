@@ -22,7 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_pattern.h>
 
 #define AGS_TYPE_TOGGLE_PATTERN_BIT                (ags_toggle_pattern_bit_get_type())

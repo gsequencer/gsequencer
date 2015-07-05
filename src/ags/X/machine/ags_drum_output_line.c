@@ -19,10 +19,10 @@
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum_output_line_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -229,16 +229,16 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
   drum_output_line = AGS_DRUM_OUTPUT_LINE(line);
 
   if(channel != NULL){
-    AgsDevout *devout;
+    AgsSoundcard *soundcard;
     AgsAudioSignal *audio_signal;
     gdouble delay;
     guint stop;
 
     if(channel->audio != NULL &&
-       AGS_AUDIO(channel->audio)->devout != NULL){
-      devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
+       AGS_AUDIO(channel->audio)->soundcard != NULL){
+      soundcard = AGS_SOUNDCARD(AGS_AUDIO(channel->audio)->soundcard);
 
-      audio_signal = ags_audio_signal_new(devout,
+      audio_signal = ags_audio_signal_new(soundcard,
 					  channel->first_recycling,
 					  NULL);
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -310,7 +310,7 @@ ags_drum_output_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -337,7 +337,7 @@ ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

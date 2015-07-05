@@ -84,9 +84,9 @@ struct _AgsMachine
   GtkContainer *input;
 
   GtkContainer *bridge;
-  
-  GList *port;
 
+  gchar **automation_port;
+  
   GtkMenu *popup;
   GtkDialog *properties;
   GtkDialog *rename;
@@ -130,6 +130,6 @@ void ags_machine_open_files(AgsMachine *machine,
 			    gboolean overwrite_channels,
 			    gboolean create_channels);
 
-AgsMachine* ags_machine_new(GObject *devout);
+AgsMachine* ags_machine_new(GObject *soundcard);
 
 #endif /*__AGS_MACHINE_H__*/

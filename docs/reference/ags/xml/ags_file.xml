@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsFile">
+<refentry id="AgsFile">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsFile.top_of_page">AgsFile</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsFile.top_of_page">AgsFile</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,291 +14,442 @@
 </refmeta>
 <refnamediv>
 <refname>AgsFile</refname>
-<refpurpose></refpurpose>
+<refpurpose>read/write XML file</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsFile.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsFile.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-FILE-CHECKSUM-LENGTH:CAPS">AGS_FILE_CHECKSUM_LENGTH</link></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-str2md5">ags_file_str2md5</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-add-id-ref">ags_file_add_id_ref</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-find-id-ref-by-node">ags_file_find_id_ref_by_node</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-find-id-ref-by-xpath">ags_file_find_id_ref_by_xpath</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-find-id-ref-by-reference">ags_file_find_id_ref_by_reference</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-add-lookup">ags_file_add_lookup</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-add-launch">ags_file_add_launch</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-open">ags_file_open</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-open-from-data">ags_file_open_from_data</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-rw-open">ags_file_rw_open</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-open-filename">ags_file_open_filename</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-close">ags_file_close</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-write">ags_file_write</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-write-concurrent">ags_file_write_concurrent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-write-resolve">ags_file_write_resolve</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read">ags_file_read</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-resolve">ags_file_read_resolve</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-start">ags_file_read_start</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-read-application-context">ags_file_read_application_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-write-application-context">ags_file_write_application_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsFile"><returnvalue>AgsFile</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-new">ags_file_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-FILE-CHECKSUM-LENGTH:CAPS">AGS_FILE_CHECKSUM_LENGTH</link>
-#define             <link linkend="AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS">AGS_FILE_DEFAULT_AUDIO_ENCODING</link>
-#define             <link linkend="AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS">AGS_FILE_DEFAULT_AUDIO_FORMAT</link>
-#define             <link linkend="AGS-FILE-DEFAULT-DTD:CAPS">AGS_FILE_DEFAULT_DTD</link>
-#define             <link linkend="AGS-FILE-DEFAULT-ENCODING:CAPS">AGS_FILE_DEFAULT_ENCODING</link>
-struct              <link linkend="AgsFile">AgsFile</link>;
-struct              <link linkend="AgsFileClass">AgsFileClass</link>;
-enum                <link linkend="AgsFileFlags">AgsFileFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-add-id-ref">ags_file_add_id_ref</link>                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *id_ref</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-add-launch">ags_file_add_launch</link>                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *file_launch</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-add-lookup">ags_file_add_lookup</link>                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *file_lookup</parameter>);
-<link linkend="GObject"><returnvalue>GObject</returnvalue></link> *           <link linkend="ags-file-find-id-ref-by-node">ags_file_find_id_ref_by_node</link>        (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>);
-<link linkend="GObject"><returnvalue>GObject</returnvalue></link> *           <link linkend="ags-file-find-id-ref-by-reference">ags_file_find_id_ref_by_reference</link>   (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> ref</parameter>);
-<link linkend="GObject"><returnvalue>GObject</returnvalue></link> *           <link linkend="ags-file-find-id-ref-by-xpath">ags_file_find_id_ref_by_xpath</link>       (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *xpath</parameter>);
-<link linkend="AgsFile"><returnvalue>AgsFile</returnvalue></link> *           <link linkend="ags-file-new">ags_file_new</link>                        ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-read">ags_file_read</link>                       (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-read-main">ags_file_read_main</link>                  (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> **main</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-read-resolve">ags_file_read_resolve</link>               (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-read-server">ags_file_read_server</link>                (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> **server</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-read-start">ags_file_read_start</link>                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);
-<link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             <link linkend="ags-file-str2md5">ags_file_str2md5</link>                    (<parameter><link linkend="gchar"><type>gchar</type></link> *content</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> strlen</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-write">ags_file_write</link>                      (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-write-concurrent">ags_file_write_concurrent</link>           (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-write-main">ags_file_write_main</link>                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *main</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-write-resolve">ags_file_write_resolve</link>              (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-write-server">ags_file_write_server</link>               (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *server</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsFile.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsFile.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsFile.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsFile--application-context">application-context</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsFile--audio-encoding">audio-encoding</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsFile--audio-format">audio-format</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsFile--encoding">encoding</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsFile--filename">filename</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFile.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFile-open">open</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFile-open-from-data">open-from-data</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFile-read">read</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFile-read-resolve">read-resolve</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFile-read-start">read-start</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFile-rw-open">rw-open</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFile-write">write</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFile-write-concurrent">write-concurrent</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFile-write-resolve">write-resolve</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFile.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-FILE-DEFAULT-ENCODING:CAPS">AGS_FILE_DEFAULT_ENCODING</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-FILE-DEFAULT-DTD:CAPS">AGS_FILE_DEFAULT_DTD</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS">AGS_FILE_DEFAULT_AUDIO_FORMAT</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS">AGS_FILE_DEFAULT_AUDIO_ENCODING</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsFileFlags">AgsFileFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFile.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsFile
+</screen>
+</refsect1>
+
+<refsect1 id="AgsFile.includes"><title>Includes</title><synopsis>#include &lt;ags/file/ags_file.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsFile.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsFile"><type>AgsFile</type></link> is an object to read or write files using XML. It
+is the persisting layer of Advanced Gtk+ Sequencer.</para>
+
+</refsect1>
+<refsect1 id="AgsFile.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-FILE-CHECKSUM-LENGTH:CAPS" role="macro">
 <title>AGS_FILE_CHECKSUM_LENGTH</title>
 <indexterm zone="AGS-FILE-CHECKSUM-LENGTH:CAPS"><primary>AGS_FILE_CHECKSUM_LENGTH</primary></indexterm>
-<programlisting>#define AGS_FILE_CHECKSUM_LENGTH (g_checksum_type_get_length(G_CHECKSUM_MD5))
+<programlisting language="C">#define AGS_FILE_CHECKSUM_LENGTH (g_checksum_type_get_length(G_CHECKSUM_MD5))
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS" role="macro">
-<title>AGS_FILE_DEFAULT_AUDIO_ENCODING</title>
-<indexterm zone="AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS"><primary>AGS_FILE_DEFAULT_AUDIO_ENCODING</primary></indexterm>
-<programlisting>#define AGS_FILE_DEFAULT_AUDIO_ENCODING "base64\0"
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS" role="macro">
-<title>AGS_FILE_DEFAULT_AUDIO_FORMAT</title>
-<indexterm zone="AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS"><primary>AGS_FILE_DEFAULT_AUDIO_FORMAT</primary></indexterm>
-<programlisting>#define AGS_FILE_DEFAULT_AUDIO_FORMAT "raw\0"
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-FILE-DEFAULT-DTD:CAPS" role="macro">
-<title>AGS_FILE_DEFAULT_DTD</title>
-<indexterm zone="AGS-FILE-DEFAULT-DTD:CAPS"><primary>AGS_FILE_DEFAULT_DTD</primary></indexterm>
-<programlisting>#define AGS_FILE_DEFAULT_DTD "ags_file.dtd\0"
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+<refsect2 id="ags-file-str2md5" role="function">
+<title>ags_file_str2md5&#160;()</title>
+<indexterm zone="ags-file-str2md5"><primary>ags_file_str2md5</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_file_str2md5 (<parameter><link linkend="gchar"><type>gchar</type></link> *content</parameter>,
+                  <parameter><link linkend="guint"><type>guint</type></link> strlen</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-add-id-ref" role="function">
+<title>ags_file_add_id_ref&#160;()</title>
+<indexterm zone="ags-file-add-id-ref"><primary>ags_file_add_id_ref</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_add_id_ref (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                     <parameter><link linkend="GObject"><type>GObject</type></link> *id_ref</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-find-id-ref-by-node" role="function">
+<title>ags_file_find_id_ref_by_node&#160;()</title>
+<indexterm zone="ags-file-find-id-ref-by-node"><primary>ags_file_find_id_ref_by_node</primary></indexterm>
+<programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+ags_file_find_id_ref_by_node (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                              <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-find-id-ref-by-xpath" role="function">
+<title>ags_file_find_id_ref_by_xpath&#160;()</title>
+<indexterm zone="ags-file-find-id-ref-by-xpath"><primary>ags_file_find_id_ref_by_xpath</primary></indexterm>
+<programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+ags_file_find_id_ref_by_xpath (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                               <parameter><link linkend="gchar"><type>gchar</type></link> *xpath</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-find-id-ref-by-reference" role="function">
+<title>ags_file_find_id_ref_by_reference&#160;()</title>
+<indexterm zone="ags-file-find-id-ref-by-reference"><primary>ags_file_find_id_ref_by_reference</primary></indexterm>
+<programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+ags_file_find_id_ref_by_reference (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                   <parameter><link linkend="gpointer"><type>gpointer</type></link> ref</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-add-lookup" role="function">
+<title>ags_file_add_lookup&#160;()</title>
+<indexterm zone="ags-file-add-lookup"><primary>ags_file_add_lookup</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_add_lookup (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                     <parameter><link linkend="GObject"><type>GObject</type></link> *file_lookup</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-add-launch" role="function">
+<title>ags_file_add_launch&#160;()</title>
+<indexterm zone="ags-file-add-launch"><primary>ags_file_add_launch</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_add_launch (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                     <parameter><link linkend="GObject"><type>GObject</type></link> *file_launch</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-open" role="function">
+<title>ags_file_open&#160;()</title>
+<indexterm zone="ags-file-open"><primary>ags_file_open</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_open (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-open-from-data" role="function">
+<title>ags_file_open_from_data&#160;()</title>
+<indexterm zone="ags-file-open-from-data"><primary>ags_file_open_from_data</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_open_from_data (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                         <parameter><link linkend="gchar"><type>gchar</type></link> *data</parameter>,
+                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-rw-open" role="function">
+<title>ags_file_rw_open&#160;()</title>
+<indexterm zone="ags-file-rw-open"><primary>ags_file_rw_open</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_rw_open (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                  <parameter><link linkend="gboolean"><type>gboolean</type></link> create</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-open-filename" role="function">
+<title>ags_file_open_filename&#160;()</title>
+<indexterm zone="ags-file-open-filename"><primary>ags_file_open_filename</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_open_filename (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                        <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-close" role="function">
+<title>ags_file_close&#160;()</title>
+<indexterm zone="ags-file-close"><primary>ags_file_close</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_close (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write" role="function">
+<title>ags_file_write&#160;()</title>
+<indexterm zone="ags-file-write"><primary>ags_file_write</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_write (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-concurrent" role="function">
+<title>ags_file_write_concurrent&#160;()</title>
+<indexterm zone="ags-file-write-concurrent"><primary>ags_file_write_concurrent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_write_concurrent (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-resolve" role="function">
+<title>ags_file_write_resolve&#160;()</title>
+<indexterm zone="ags-file-write-resolve"><primary>ags_file_write_resolve</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_write_resolve (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read" role="function">
+<title>ags_file_read&#160;()</title>
+<indexterm zone="ags-file-read"><primary>ags_file_read</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-resolve" role="function">
+<title>ags_file_read_resolve&#160;()</title>
+<indexterm zone="ags-file-read-resolve"><primary>ags_file_read_resolve</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_resolve (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-start" role="function">
+<title>ags_file_read_start&#160;()</title>
+<indexterm zone="ags-file-read-start"><primary>ags_file_read_start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_start (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-read-application-context" role="function">
+<title>ags_file_read_application_context&#160;()</title>
+<indexterm zone="ags-file-read-application-context"><primary>ags_file_read_application_context</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_read_application_context (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                   <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
+                                   <parameter><link linkend="GObject"><type>GObject</type></link> **application_context</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-write-application-context" role="function">
+<title>ags_file_write_application_context&#160;()</title>
+<indexterm zone="ags-file-write-application-context"><primary>ags_file_write_application_context</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_write_application_context (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                                    <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
+                                    <parameter><link linkend="GObject"><type>GObject</type></link> *application_context</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-new" role="function" condition="since:0.3">
+<title>ags_file_new&#160;()</title>
+<indexterm zone="ags-file-new" role="0.3"><primary>ags_file_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsFile"><returnvalue>AgsFile</returnvalue></link>&#160;*
+ags_file_new ();</programlisting>
+<para>Creates an <link linkend="AgsFile"><type>AgsFile</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsFile"><type>AgsFile</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsFile.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AGS-FILE-DEFAULT-ENCODING:CAPS" role="macro">
 <title>AGS_FILE_DEFAULT_ENCODING</title>
 <indexterm zone="AGS-FILE-DEFAULT-ENCODING:CAPS"><primary>AGS_FILE_DEFAULT_ENCODING</primary></indexterm>
-<programlisting>#define AGS_FILE_DEFAULT_ENCODING "UTF-8\0"
+<programlisting language="C">#define AGS_FILE_DEFAULT_ENCODING "UTF-8\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsFile" role="struct">
-<title>struct AgsFile</title>
-<indexterm zone="AgsFile"><primary>AgsFile</primary></indexterm>
-<programlisting>struct AgsFile {
-  GObject object;
-
-  guint flags;
-
-  gchar *filename;
-  gchar *encoding;
-  gchar *dtd;
-
-  gchar *audio_format;
-  gchar *audio_encoding;
-
-  xmlDoc *doc;
-
-  GList *id_refs;
-  GList *lookup;
-  GList *launch;
-
-  GObject *ags_main;
-
-  GObject *clipboard;
-  GList *property;
-  GList *script;
-  GObject *cluster;
-  GObject *client;
-  GObject *server;
-
-  GObject *history;
-
-  GList *embedded_audio;
-  GList *file_link;
-};
+</refsect2>
+<refsect2 id="AGS-FILE-DEFAULT-DTD:CAPS" role="macro">
+<title>AGS_FILE_DEFAULT_DTD</title>
+<indexterm zone="AGS-FILE-DEFAULT-DTD:CAPS"><primary>AGS_FILE_DEFAULT_DTD</primary></indexterm>
+<programlisting language="C">#define AGS_FILE_DEFAULT_DTD "ags_file.dtd\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsFileClass" role="struct">
-<title>struct AgsFileClass</title>
-<indexterm zone="AgsFileClass"><primary>AgsFileClass</primary></indexterm>
-<programlisting>struct AgsFileClass {
-  GObjectClass object;
-
-  void (*write)(AgsFile *file);
-  void (*write_concurrent)(AgsFile *file);
-  void (*write_resolve)(AgsFile *file);
-
-  void (*read)(AgsFile *file);
-  void (*read_resolve)(AgsFile *file);
-  void (*read_start)(AgsFile *file);
-};
+</refsect2>
+<refsect2 id="AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS" role="macro">
+<title>AGS_FILE_DEFAULT_AUDIO_FORMAT</title>
+<indexterm zone="AGS-FILE-DEFAULT-AUDIO-FORMAT:CAPS"><primary>AGS_FILE_DEFAULT_AUDIO_FORMAT</primary></indexterm>
+<programlisting language="C">#define AGS_FILE_DEFAULT_AUDIO_FORMAT "raw\0"
 </programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+<refsect2 id="AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS" role="macro">
+<title>AGS_FILE_DEFAULT_AUDIO_ENCODING</title>
+<indexterm zone="AGS-FILE-DEFAULT-AUDIO-ENCODING:CAPS"><primary>AGS_FILE_DEFAULT_AUDIO_ENCODING</primary></indexterm>
+<programlisting language="C">#define AGS_FILE_DEFAULT_AUDIO_ENCODING "base64\0"
+</programlisting>
+</refsect2>
 <refsect2 id="AgsFileFlags" role="enum">
 <title>enum AgsFileFlags</title>
 <indexterm zone="AgsFileFlags"><primary>AgsFileFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_FILE_READ                    = 1,
-  AGS_FILE_READ_AUDIO_SIGNAL       = 1 &lt;&lt; 1,
-  AGS_FILE_READ_EMBEDDED_AUDIO     = 1 &lt;&lt; 2,
-  AGS_FILE_WRITE                   = 1 &lt;&lt; 3,
-  AGS_FILE_WRITE_AUDIO_SIGNAL      = 1 &lt;&lt; 4,
-  AGS_FILE_WRITE_EMBEDDED_AUDIO    = 1 &lt;&lt; 5,
-} AgsFileFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-add-id-ref" role="function">
-<title>ags_file_add_id_ref ()</title>
-<indexterm zone="ags-file-add-id-ref"><primary>ags_file_add_id_ref</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_add_id_ref                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *id_ref</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-add-launch" role="function">
-<title>ags_file_add_launch ()</title>
-<indexterm zone="ags-file-add-launch"><primary>ags_file_add_launch</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_add_launch                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *file_launch</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-add-lookup" role="function">
-<title>ags_file_add_lookup ()</title>
-<indexterm zone="ags-file-add-lookup"><primary>ags_file_add_lookup</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_add_lookup                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *file_lookup</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-find-id-ref-by-node" role="function">
-<title>ags_file_find_id_ref_by_node ()</title>
-<indexterm zone="ags-file-find-id-ref-by-node"><primary>ags_file_find_id_ref_by_node</primary></indexterm>
-<programlisting><link linkend="GObject"><returnvalue>GObject</returnvalue></link> *           ags_file_find_id_ref_by_node        (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-find-id-ref-by-reference" role="function">
-<title>ags_file_find_id_ref_by_reference ()</title>
-<indexterm zone="ags-file-find-id-ref-by-reference"><primary>ags_file_find_id_ref_by_reference</primary></indexterm>
-<programlisting><link linkend="GObject"><returnvalue>GObject</returnvalue></link> *           ags_file_find_id_ref_by_reference   (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> ref</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-find-id-ref-by-xpath" role="function">
-<title>ags_file_find_id_ref_by_xpath ()</title>
-<indexterm zone="ags-file-find-id-ref-by-xpath"><primary>ags_file_find_id_ref_by_xpath</primary></indexterm>
-<programlisting><link linkend="GObject"><returnvalue>GObject</returnvalue></link> *           ags_file_find_id_ref_by_xpath       (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *xpath</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-new" role="function">
-<title>ags_file_new ()</title>
-<indexterm zone="ags-file-new"><primary>ags_file_new</primary></indexterm>
-<programlisting><link linkend="AgsFile"><returnvalue>AgsFile</returnvalue></link> *           ags_file_new                        ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-read" role="function">
-<title>ags_file_read ()</title>
-<indexterm zone="ags-file-read"><primary>ags_file_read</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_read                       (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-read-main" role="function">
-<title>ags_file_read_main ()</title>
-<indexterm zone="ags-file-read-main"><primary>ags_file_read_main</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_read_main                  (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> **main</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-read-resolve" role="function">
-<title>ags_file_read_resolve ()</title>
-<indexterm zone="ags-file-read-resolve"><primary>ags_file_read_resolve</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_read_resolve               (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-read-server" role="function">
-<title>ags_file_read_server ()</title>
-<indexterm zone="ags-file-read-server"><primary>ags_file_read_server</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_read_server                (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> **server</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-read-start" role="function">
-<title>ags_file_read_start ()</title>
-<indexterm zone="ags-file-read-start"><primary>ags_file_read_start</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_read_start                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-str2md5" role="function">
-<title>ags_file_str2md5 ()</title>
-<indexterm zone="ags-file-str2md5"><primary>ags_file_str2md5</primary></indexterm>
-<programlisting><link linkend="gchar"><returnvalue>gchar</returnvalue></link> *             ags_file_str2md5                    (<parameter><link linkend="gchar"><type>gchar</type></link> *content</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> strlen</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-write" role="function">
-<title>ags_file_write ()</title>
-<indexterm zone="ags-file-write"><primary>ags_file_write</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_write                      (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-write-concurrent" role="function">
-<title>ags_file_write_concurrent ()</title>
-<indexterm zone="ags-file-write-concurrent"><primary>ags_file_write_concurrent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_write_concurrent           (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-write-main" role="function">
-<title>ags_file_write_main ()</title>
-<indexterm zone="ags-file-write-main"><primary>ags_file_write_main</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_write_main                 (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *main</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-write-resolve" role="function">
-<title>ags_file_write_resolve ()</title>
-<indexterm zone="ags-file-write-resolve"><primary>ags_file_write_resolve</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_write_resolve              (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-write-server" role="function">
-<title>ags_file_write_server ()</title>
-<indexterm zone="ags-file-write-server"><primary>ags_file_write_server</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_write_server               (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                                                         <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *server</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-FILE-READ:CAPS">AGS_FILE_READ</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-FILE-READ-AUDIO-SIGNAL:CAPS">AGS_FILE_READ_AUDIO_SIGNAL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-FILE-READ-EMBEDDED-AUDIO:CAPS">AGS_FILE_READ_EMBEDDED_AUDIO</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-FILE-WRITE:CAPS">AGS_FILE_WRITE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-FILE-WRITE-AUDIO-SIGNAL:CAPS">AGS_FILE_WRITE_AUDIO_SIGNAL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-FILE-WRITE-EMBEDDED-AUDIO:CAPS">AGS_FILE_WRITE_EMBEDDED_AUDIO</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsFile.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsFile--application-context" role="property"><title>The <literal>“application-context”</literal> property</title>
+<indexterm zone="AgsFile--application-context"><primary>AgsFile:application-context</primary></indexterm>
+<programlisting>  “application-context”      <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</programlisting>
+<para>The main object to write to file.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsFile--audio-encoding" role="property"><title>The <literal>“audio-encoding”</literal> property</title>
+<indexterm zone="AgsFile--audio-encoding"><primary>AgsFile:audio-encoding</primary></indexterm>
+<programlisting>  “audio-encoding”           <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The audio encoding used to embedded audio.</para><para>Flags: Read / Write</para>
+<para>Default value: "base64"</para>
+</refsect2>
+<refsect2 id="AgsFile--audio-format" role="property"><title>The <literal>“audio-format”</literal> property</title>
+<indexterm zone="AgsFile--audio-format"><primary>AgsFile:audio-format</primary></indexterm>
+<programlisting>  “audio-format”             <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The audio format used to embedded audio.</para><para>Flags: Read / Write</para>
+<para>Default value: "raw"</para>
+</refsect2>
+<refsect2 id="AgsFile--encoding" role="property"><title>The <literal>“encoding”</literal> property</title>
+<indexterm zone="AgsFile--encoding"><primary>AgsFile:encoding</primary></indexterm>
+<programlisting>  “encoding”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The encoding of the XML document.</para><para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+</refsect2>
+<refsect2 id="AgsFile--filename" role="property"><title>The <literal>“filename”</literal> property</title>
+<indexterm zone="AgsFile--filename"><primary>AgsFile:filename</primary></indexterm>
+<programlisting>  “filename”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The filename to read or write to.</para><para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsFile.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsFile-open" role="signal"><title>The <literal>“open”</literal> signal</title>
+<indexterm zone="AgsFile-open"><primary>AgsFile::open</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFile-open-from-data" role="signal"><title>The <literal>“open-from-data”</literal> signal</title>
+<indexterm zone="AgsFile-open-from-data"><primary>AgsFile::open-from-data</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFile-read" role="signal"><title>The <literal>“read”</literal> signal</title>
+<indexterm zone="AgsFile-read"><primary>AgsFile::read</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFile-read-resolve" role="signal"><title>The <literal>“read-resolve”</literal> signal</title>
+<indexterm zone="AgsFile-read-resolve"><primary>AgsFile::read-resolve</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFile-read-start" role="signal"><title>The <literal>“read-start”</literal> signal</title>
+<indexterm zone="AgsFile-read-start"><primary>AgsFile::read-start</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFile-rw-open" role="signal"><title>The <literal>“rw-open”</literal> signal</title>
+<indexterm zone="AgsFile-rw-open"><primary>AgsFile::rw-open</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFile-write" role="signal"><title>The <literal>“write”</literal> signal</title>
+<indexterm zone="AgsFile-write"><primary>AgsFile::write</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFile-write-concurrent" role="signal"><title>The <literal>“write-concurrent”</literal> signal</title>
+<indexterm zone="AgsFile-write-concurrent"><primary>AgsFile::write-concurrent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFile-write-resolve" role="signal"><title>The <literal>“write-resolve”</literal> signal</title>
+<indexterm zone="AgsFile-write-resolve"><primary>AgsFile::write-resolve</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

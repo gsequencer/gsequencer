@@ -21,14 +21,9 @@
 
 #include <ags/main.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_dynamic_connectable.h>
-
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/audio/ags_devout.h>
 
 #include <ags/audio/task/ags_remove_audio_signal.h>
 
@@ -156,8 +151,8 @@ void
 ags_stream_recycling_init(AgsStreamRecycling *stream_recycling)
 {
   AGS_RECALL(stream_recycling)->name = "ags-stream\0";
-  AGS_RECALL(stream_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(stream_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(stream_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(stream_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(stream_recycling)->xml_type = "ags-stream-recycling\0";
   AGS_RECALL(stream_recycling)->port = NULL;
 
@@ -244,7 +239,7 @@ ags_stream_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   //  AgsTaskThread *task_thread;
   //  AgsUnrefAudioSignal *unref_audio_signal;
 
-  //  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_RECALL(gobject)->devout)->ags_main)->main_loop)->task_thread;
+  //  task_thread = AGS_AUDIO_LOOP(ags_soundcard_get_application_context(AGS_RECALL(gobject)->soundcard)->main_loop)->task_thread;
 
   //  unref_audio_signal = ags_unref_audio_signal_new(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
   //  ags_task_thread_append_task(task_thread,

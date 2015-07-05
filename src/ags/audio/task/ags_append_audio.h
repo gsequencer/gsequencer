@@ -22,8 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_APPEND_AUDIO                (ags_append_audio_get_type())
 #define AGS_APPEND_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPEND_AUDIO, AgsAppendAudio))

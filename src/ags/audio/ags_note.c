@@ -18,7 +18,7 @@
 
 #include <ags/audio/ags_note.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <stdlib.h>
 
@@ -154,6 +154,83 @@ ags_note_duplicate(AgsNote *note)
   copy->y = note->y;
 
   return(copy);
+}
+
+/**
+ * ags_note_find_prev:
+ * @note: a #GList containing #AgsNote
+ * @x0: x offset
+ * @y:  y offset
+ * 
+ * Find prev note.
+ *
+ * Returns: the matching entry as #GList.
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_note_find_prev(GList *note,
+		   guint x0, guint y)
+{
+  GList *current_match;
+
+  current_match = NULL;
+  
+  while(note != NULL){
+    if(AGS_NOTE(note->data)->y == y){
+      current_match = note;
+
+      note = note->next;
+      continue;
+    }
+
+    if(AGS_NOTE(note->data)->x[0] > x0){
+      return(current_match);
+    }
+    
+    note = note->next;
+  }
+
+  return(current_match);
+}
+
+/**
+ * ags_note_find_next:
+ * @note: a #GList containing #AgsNote
+ * @x0: x offset
+ * @y:  y offset
+ * 
+ * Find next note.
+ *
+ * Returns: the matching entry as #GList.
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_note_find_next(GList *note,
+		   guint x0, guint y)
+{
+  GList *current_match;
+
+  note = g_list_last(note);
+  current_match = NULL;
+    
+  while(note != NULL){
+    if(AGS_NOTE(note->data)->y == y){
+      current_match = note;
+
+      note = note->prev;
+      continue;
+    }
+
+    if(AGS_NOTE(note->data)->x[0] < x0){
+      return(current_match);
+    }
+    
+    note = note->prev;
+  }
+
+  return(current_match);
 }
 
 /**

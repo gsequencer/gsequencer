@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsTable">
+<refentry id="AgsTable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsTable.top_of_page">AgsTable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsTable.top_of_page">AgsTable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,50 +17,52 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsTable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsTable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsTable"><returnvalue>AgsTable</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-table-new">ags_table_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsTable">AgsTable</link>;
-struct              <link linkend="AgsTableClass">AgsTableClass</link>;
-<link linkend="AgsTable"><returnvalue>AgsTable</returnvalue></link> *          <link linkend="ags-table-new">ags_table_new</link>                       (<parameter><link linkend="guint"><type>guint</type></link> row</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> columns</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> homogeneous</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsTable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsTable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsTable" role="struct">
-<title>struct AgsTable</title>
-<indexterm zone="AgsTable"><primary>AgsTable</primary></indexterm>
-<programlisting>struct AgsTable {
-  GtkTable table;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsTableClass" role="struct">
-<title>struct AgsTableClass</title>
-<indexterm zone="AgsTableClass"><primary>AgsTableClass</primary></indexterm>
-<programlisting>struct AgsTableClass {
-  GtkTableClass table;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsTable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkTable">GtkTable</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsTable
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMenuItem">AgsMenuItem</link>
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsTable.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsTable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-table-new" role="function">
-<title>ags_table_new ()</title>
+<title>ags_table_new&#160;()</title>
 <indexterm zone="ags-table-new"><primary>ags_table_new</primary></indexterm>
-<programlisting><link linkend="AgsTable"><returnvalue>AgsTable</returnvalue></link> *          ags_table_new                       (<parameter><link linkend="guint"><type>guint</type></link> row</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> columns</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> homogeneous</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsTable"><returnvalue>AgsTable</returnvalue></link>&#160;*
+ags_table_new (<parameter><link linkend="guint"><type>guint</type></link> row</parameter>,
+               <parameter><link linkend="guint"><type>guint</type></link> columns</parameter>,
+               <parameter><link linkend="gboolean"><type>gboolean</type></link> homogeneous</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsTable.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

@@ -30,10 +30,7 @@
 
 #include <ao/ao.h>
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_devout_thread.h>
-#include <ags/thread/ags_iterator_thread.h>
+#include <ags/audio/thread/ags_iterator_thread.h>
 
 #include <ags/audio/ags_recall_id.h>
 
@@ -144,7 +141,7 @@ struct _AgsLibao
     }ao;
   }out;
 
-  GObject *ags_main;
+  GObject *application_context;
   
   GList *audio;
 };
@@ -207,7 +204,7 @@ void ags_libao_tic(AgsLibao *libao);
 
 void ags_libao_note_offset_changed(AgsLibao *libao, guint note_offset);
 
-AgsLibao* ags_libao_new(GObject *ags_main);
+AgsLibao* ags_libao_new(GObject *application_context);
 
 #endif /*__AGS_LIBAO_H__*/
 

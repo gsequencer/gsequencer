@@ -19,13 +19,14 @@
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_automation_toolbar_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
@@ -103,7 +104,8 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   GtkMenuToolButton *menu_tool_button;
   GtkMenu *menu;
   GtkLabel *label;
-
+  GtkCellRenderer *cell_renderer;
+  
   automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					      "image\0", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
 										  GTK_ICON_SIZE_LARGE_TOOLBAR),
@@ -172,6 +174,8 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
+  automation_toolbar->zoom_history = 4;
+  
   label = gtk_label_new("zoom\0");
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    label);
@@ -184,9 +188,32 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
-  automation_toolbar->port_selection = ags_port_selection_new();
+  label = gtk_label_new("port\0");
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    label);
+
+  automation_toolbar->port = gtk_combo_box_new();
+
+  cell_renderer = gtk_cell_renderer_toggle_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->port),
+			     cell_renderer,
+			     FALSE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(automation_toolbar->port), cell_renderer,
+				 "active\0", 0,
+				 NULL);
+  gtk_cell_renderer_toggle_set_activatable(cell_renderer,
+					   TRUE);
+  
+  cell_renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(automation_toolbar->port),
+			     cell_renderer,
+			     FALSE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(automation_toolbar->port), cell_renderer,
+				 "text\0", 1,
+				 NULL);
+
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
-			    (GtkWidget *) automation_toolbar->port_selection,
+			    (GtkWidget *) automation_toolbar->port,
 			    NULL,
 			    NULL);
 }
@@ -204,6 +231,37 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   /*  */
   g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed\0",
 			 G_CALLBACK(ags_automation_toolbar_machine_changed_callback), automation_toolbar);
+
+  /* tool */
+  g_signal_connect_after((GObject *) automation_toolbar->position, "toggled\0",
+			 G_CALLBACK(ags_automation_toolbar_position_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect_after((GObject *) automation_toolbar->edit, "toggled\0",
+			 G_CALLBACK(ags_automation_toolbar_edit_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect_after((GObject *) automation_toolbar->clear, "toggled\0",
+			 G_CALLBACK(ags_automation_toolbar_clear_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect_after((GObject *) automation_toolbar->select, "toggled\0",
+			 G_CALLBACK(ags_automation_toolbar_select_callback), (gpointer) automation_toolbar);
+
+  /* edit */
+  g_signal_connect((GObject *) automation_toolbar->copy, "clicked\0",
+		   G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect((GObject *) automation_toolbar->cut, "clicked\0",
+		   G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback), (gpointer) automation_toolbar);
+
+  g_signal_connect((GObject *) automation_toolbar->paste, "clicked\0",
+		   G_CALLBACK(ags_automation_toolbar_paste_callback), (gpointer) automation_toolbar);
+
+  /* zoom */
+  g_signal_connect_after((GObject *) automation_toolbar->zoom, "changed\0",
+			 G_CALLBACK(ags_automation_toolbar_zoom_callback), (gpointer) automation_toolbar);
+
+  /* port */
+  g_signal_connect(automation_toolbar->port, "changed\0",
+		   G_CALLBACK(ags_automation_toolbar_port_changed_callback), automation_toolbar);
 }
 
 void
@@ -213,11 +271,287 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_automation_toolbar_load_port:
+ * @automation_toolbar: an #AgsAutomationToolbar
+ *
+ * Fill in port field with available ports.
+ *
+ * Since: 0.4.3
+ */
+void
+ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+  AgsMachine *machine;
+  
+  GtkListStore *list_store;
+  GtkTreeIter iter;
+
+  gchar **specifier;
+  
+  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  machine = automation_editor->selected_machine;
+
+  if(machine == NULL){
+    gtk_combo_box_set_model(automation_toolbar->port,
+			    NULL);
+    return;
+  }
+  
+  list_store = gtk_list_store_new(2,
+				  G_TYPE_BOOLEAN,
+				  G_TYPE_STRING);
+  gtk_combo_box_set_model(automation_toolbar->port,
+			  GTK_TREE_MODEL(list_store));
+
+  specifier = ags_automation_get_specifier_unique(machine->audio->automation);
+  
+  for(; *specifier != NULL; specifier++){
+    g_message(*specifier);
+    gtk_list_store_append(list_store, &iter);
+    gtk_list_store_set(list_store, &iter,
+		       0, g_strv_contains(machine->automation_port, *specifier),
+		       1, g_strdup(*specifier),
+		       -1);
+  }
+}
+
+/**
+ * ags_automation_toolbar_load_port:
+ * @automation_toolbar: an #AgsAutomationToolbar
+ * @control_name: the specifier as string
+ *
+ * Applies all port to appropriate #AgsMachine.
+ *
+ * Since: 0.4.3
+ */
+void
+ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
+				  gchar *control_name)
+{
+  AgsAutomationEditor *automation_editor;
+  AgsMachine *machine;
+
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  gchar **specifier, *current;
+  guint length;
+  gboolean is_active;
+  
+  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  machine = automation_editor->selected_machine;
+
+  model = gtk_combo_box_get_model(automation_toolbar->port);
+
+  /* create specifier array */
+  specifier = NULL;
+  length = 0;
+  
+  if(gtk_tree_model_get_iter_first(model,
+				   &iter)){
+    do{
+      gtk_tree_model_get(model,
+			 &iter,
+			 0, &is_active,
+			 -1);
+
+      if(is_active){
+	if(length == 0){
+	  specifier = (gchar **) malloc(2 * sizeof(gchar *));
+	}else{
+	  specifier = (gchar **) realloc(specifier,
+					 (length + 2) * sizeof(gchar *));
+	}
+      
+	gtk_tree_model_get(model,
+			   &iter,
+			   1, &current,
+			   -1);
+	specifier[length] = current;
+
+	length++;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+    specifier[length] = NULL;
+  }
+
+  if(machine->automation_port != NULL){
+    free(machine->automation_port);
+  }
+
+  /* apply */
+  machine->automation_port = specifier;
+  
+  if(g_strv_contains(specifier,
+		     control_name)){
+    AgsScaleArea *scale_area;
+    AgsAutomationArea *automation_area;
+
+    AgsAudio *audio;
+    AgsAutomation *automation;
+
+    GList *list;
+
+    gboolean found_audio, found_output, found_input;
+    
+    audio = machine->audio;
+    list = audio->automation;
+    
+    /* add port */
+    found_audio = FALSE;
+    found_output = FALSE;
+    found_input = FALSE;
+    
+    while((list = ags_automation_find_specifier(list,
+						control_name)) != NULL &&
+	  (!found_audio || !found_output || !found_input)){
+      if(AGS_AUTOMATION(list->data)->channel_type == G_TYPE_NONE &&
+	 !found_audio){
+	scale_area = ags_scale_area_new(automation_editor->audio_scale,
+					control_name,
+					AGS_AUTOMATION(list->data)->lower,
+					AGS_AUTOMATION(list->data)->upper,
+					AGS_AUTOMATION(list->data)->steps);
+	ags_scale_add_area(automation_editor->audio_scale,
+			   scale_area);
+	gtk_widget_queue_draw(automation_editor->audio_scale);
+	
+	automation_area = ags_automation_area_new(automation_editor->audio_automation_edit->drawing_area,
+						  audio,
+						  G_TYPE_NONE,
+						  control_name);
+	ags_automation_edit_add_area(automation_editor->audio_automation_edit,
+				     automation_area);
+	gtk_widget_queue_draw(automation_editor->audio_automation_edit->drawing_area);
+
+	found_audio = TRUE;
+      }
+
+      if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_OUTPUT &&
+	 !found_output){
+	scale_area = ags_scale_area_new(automation_editor->output_scale,
+					control_name,
+					AGS_AUTOMATION(list->data)->lower,
+					AGS_AUTOMATION(list->data)->upper,
+					AGS_AUTOMATION(list->data)->steps);
+	ags_scale_add_area(automation_editor->output_scale,
+			   scale_area);
+	gtk_widget_queue_draw(automation_editor->output_scale);
+	
+	automation_area = ags_automation_area_new(automation_editor->output_automation_edit->drawing_area,
+						  audio,
+						  AGS_TYPE_OUTPUT,
+						  control_name);
+	ags_automation_edit_add_area(automation_editor->output_automation_edit,
+				     automation_area);
+	gtk_widget_queue_draw(automation_editor->output_automation_edit->drawing_area);
+	
+	found_output = TRUE;
+      }
+
+      if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_INPUT &&
+	 !found_input){
+	scale_area = ags_scale_area_new(automation_editor->input_scale,
+					control_name,
+					AGS_AUTOMATION(list->data)->lower,
+					AGS_AUTOMATION(list->data)->upper,
+					AGS_AUTOMATION(list->data)->steps);
+	ags_scale_add_area(automation_editor->input_scale,
+			   scale_area);
+	gtk_widget_queue_draw(automation_editor->input_scale);
+	
+	automation_area = ags_automation_area_new(automation_editor->input_automation_edit->drawing_area,
+						  audio,
+						  AGS_TYPE_INPUT,
+						  control_name);
+	ags_automation_edit_add_area(automation_editor->input_automation_edit,
+				     automation_area);
+	gtk_widget_queue_draw(automation_editor->input_automation_edit->drawing_area);
+	
+	found_input = TRUE;
+      }
+      
+      list = list->next;
+    }
+  }else{
+    AgsAutomationEdit *automation_edit;
+    AgsScale *scale;
+    
+    GList *scale_area;
+    GList *automation_area;
+
+    /* remove audio port */
+    automation_edit = automation_editor->audio_automation_edit;
+    scale = automation_editor->audio_scale;
+
+    scale_area = ags_scale_area_find_specifier(scale->scale_area,
+					       control_name);
+    
+    if(scale_area != NULL){
+      automation_area = ags_automation_area_find_specifier(automation_edit->automation_area,
+							   control_name);
+
+      ags_scale_remove_area(scale,
+			    scale_area->data);
+      gtk_widget_queue_draw(scale);
+
+      ags_automation_edit_remove_area(automation_edit,
+				      automation_area->data);
+      gtk_widget_queue_draw(automation_edit->drawing_area);
+    }
+    
+    /* remove output port */
+    automation_edit = automation_editor->output_automation_edit;
+    scale = automation_editor->output_scale;
+    
+    scale_area = ags_scale_area_find_specifier(scale->scale_area,
+					       control_name);
+
+    if(scale_area != NULL){
+      automation_area = ags_automation_area_find_specifier(automation_edit->automation_area,
+							   control_name);
+
+      ags_scale_remove_area(scale,
+			    scale_area->data);
+      gtk_widget_queue_draw(scale);
+
+      ags_automation_edit_remove_area(automation_edit,
+				      automation_area->data);
+      gtk_widget_queue_draw(automation_edit->drawing_area);
+    }
+
+    /* remove input port */
+    automation_edit = automation_editor->input_automation_edit;
+    scale = automation_editor->input_scale;
+    
+    scale_area = ags_scale_area_find_specifier(scale->scale_area,
+					       control_name);
+
+    if(scale_area != NULL){
+      automation_area = ags_automation_area_find_specifier(automation_edit->automation_area,
+							   control_name);
+
+      ags_scale_remove_area(scale,
+			    scale_area->data);
+      gtk_widget_queue_draw(scale);
+
+      ags_automation_edit_remove_area(automation_edit,
+				      automation_area->data);
+      gtk_widget_queue_draw(automation_edit->drawing_area);
+    }
+  }
+}
+
+/**
  * ags_automation_toolbar_new:
  *
  * Create a new #AgsAutomationToolbar.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsAutomationToolbar*
 ags_automation_toolbar_new()

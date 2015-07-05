@@ -1,57 +1,67 @@
-41% symbol docs coverage.
-1242 symbols documented.
-519 symbols incomplete.
-1776 not documented.
+51% symbol docs coverage.
+1633 symbols documented.
+1070 symbols incomplete.
+1546 not documented.
 
 
-AGS_ACCOUNTING_TABLE
-AGS_ASYNC_QUEUE_CLOCK_ID
-AGS_ASYNC_QUEUE_DEFAULT_SYSTEM_JIFFIE
-AGS_ASYNC_QUEUE_SIGNAL_HIGH
-AGS_ASYNC_QUEUE_SIGNAL_LOW
+AGS_ACCOUNTING_TABLE (<parameters>)
+AGS_AUDIO_BUILD_ID
+AGS_AUDIO_DEFAULT_VERSION
 AGS_AUDIO_LOOP_DEFAULT_JIFFIE
+AGS_AUDIO_RT_PRIORITY
+AGS_AUTOMATION_AREA_DEFAULT_HEIGHT
+AGS_AUTOMATION_EDIT_MAX_CONTROLS
+AGS_AUTOMATION_TOOLBAR_DATA_CHANNEL
+AGS_AUTOMATION_TOOLBAR_DATA_PORT
 AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME
 AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE
 AGS_BUILD_ID
+AGS_BULK_PORT (<parameters>)
 AGS_CHANNEL_ERROR
 AGS_CLIPBOARD_DEFAULT_VERSION
 AGS_CONFIG_DEFAULT_BUILD_ID
 AGS_CONFIG_DEFAULT_VERSION
-AGS_CONFIG_DEVOUT
+AGS_CONFIG_GENERIC
+AGS_CONFIG_RECALL
+AGS_CONFIG_SOUNDCARD
 AGS_CONFIG_THREAD
-AGS_DEVOUT_DEFAULT_BPM
-AGS_DEVOUT_DEFAULT_BUFFER_SIZE
-AGS_DEVOUT_DEFAULT_DELAY
-AGS_DEVOUT_DEFAULT_FORMAT
-AGS_DEVOUT_DEFAULT_JIFFIE
-AGS_DEVOUT_DEFAULT_SAMPLERATE
-AGS_DEVOUT_DEFAULT_SCALE
-AGS_DEVOUT_DEFAULT_TACT
-AGS_DEVOUT_DEFAULT_TACTRATE
-AGS_DEVOUT_DEFAULT_TACT_JIFFIE
+AGS_DEFAULT_CONFIG
+AGS_DEFAULT_DIRECTORY
 AGS_DEVOUT_ERROR
-AGS_DEVOUT_PLAY
-AGS_DEVOUT_PLAY_DOMAIN
-AGS_DEVOUT_THREAD_DEFAULT_JIFFIE
 AGS_DIAL_DEFAULT_PRECISION
 AGS_DRUM_PATTERN_CONTROLS
 AGS_EDITOR_DEFAULT
 AGS_EDITOR_DEFAULT_BUILD_ID
 AGS_EDITOR_DEFAULT_VERSION
 AGS_EFFECTS_DEFAULT_VERSION
+AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID
+AGS_EFFECT_BRIDGE_DEFAULT_VERSION
+AGS_EFFECT_BRIDGE_MAX_COLUMNS
+AGS_EFFECT_BULK_COLUMNS_COUNT
+AGS_EFFECT_BULK_DEFAULT_BUILD_ID
+AGS_EFFECT_BULK_DEFAULT_VERSION
+AGS_EFFECT_BULK_PLUGIN (<parameters>)
 AGS_EFFECT_COPY_BUFFER
 AGS_EFFECT_COPY_STREAM
 AGS_EFFECT_DOWN_MIX
-AGS_EXPANDER_CHILD
-AGS_EXPANDER_SET_CHILD
-AGS_EXPORT_THREAD_BUFFER_TIME
+AGS_EFFECT_LINE_COLUMNS_COUNT
+AGS_EFFECT_LINE_DEFAULT_BUILD_ID
+AGS_EFFECT_LINE_DEFAULT_VERSION
+AGS_EFFECT_PAD_COLUMNS_COUNT
+AGS_EFFECT_PAD_DEFAULT_BUILD_ID
+AGS_EFFECT_PAD_DEFAULT_VERSION
+AGS_EXPANDER_CHILD (<parameters>)
+AGS_EXPANDER_SET_CHILD (<parameters>)
 AGS_EXPORT_THREAD_DEFAULT_JIFFIE
+AGS_FFPLAYER_BULK_INPUT_DEFAULT_BUILD_ID
+AGS_FFPLAYER_BULK_INPUT_DEFAULT_VERSION
 AGS_FILE_BOOLEAN_POINTER_PROP
 AGS_FILE_BOOLEAN_PROP
 AGS_FILE_BUILD_ID_PROP
 AGS_FILE_CHAR_POINTER_PROP
 AGS_FILE_CHAR_PROP
 AGS_FILE_CHECKSUM_LENGTH
+AGS_FILE_CONTEXT_PROP
 AGS_FILE_DEFAULT_AUDIO_ENCODING
 AGS_FILE_DEFAULT_AUDIO_FORMAT
 AGS_FILE_DEFAULT_DTD
@@ -85,9 +95,9 @@ AGS_FILE_INT64_PROP
 AGS_FILE_NAME_PROP
 AGS_FILE_OBJECT_PROP
 AGS_FILE_POINTER_PROP
-AGS_FILE_RESOLVE
+AGS_FILE_RESOLVE (<parameters>)
 AGS_FILE_SCOPE_PROP
-AGS_FILE_SELECTION_ENTRY
+AGS_FILE_SELECTION_ENTRY (<parameters>)
 AGS_FILE_TRUE
 AGS_FILE_TYPE_PROP
 AGS_FILE_UINT64_POINTER_PROP
@@ -98,7 +108,9 @@ AGS_GUI_THREAD_DEFAULT_JIFFIE
 AGS_IPATCH_DEFAULT_CHANNELS
 AGS_IPATCH_READ
 AGS_IPATCH_WRITE
-AGS_LADSPA_PLUGIN
+AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID
+AGS_LADSPA_BRIDGE_DEFAULT_VERSION
+AGS_LADSPA_PLUGIN (<parameters>)
 AGS_LIBAO_DEFAULT_BPM
 AGS_LIBAO_DEFAULT_BUFFER_SIZE
 AGS_LIBAO_DEFAULT_DELAY
@@ -108,13 +120,22 @@ AGS_LIBAO_DEFAULT_TACT
 AGS_LIBAO_DEFAULT_TACTRATE
 AGS_LIBAO_DEFAULT_TACT_JIFFIE
 AGS_LIBAO_ERROR
-AGS_LIBAO_PLAY
-AGS_LIBAO_PLAY_DOMAIN
+AGS_LIBAO_PLAY (<parameters>)
+AGS_LIBAO_PLAY_DOMAIN (<parameters>)
 AGS_LINE_DEFAULT_BUILD_ID
 AGS_LINE_DEFAULT_VERSION
 AGS_LINE_EDITOR_DEFAULT_BUILD_ID
 AGS_LINE_EDITOR_DEFAULT_VERSION
-AGS_MACHINE_COUNTER
+AGS_LOG_FORMATED_MESSAGE (<parameters>)
+AGS_LOG_MESSAGE (<parameters>)
+AGS_LOG_MESSAGE_DATE_LENGTH
+AGS_LOG_MESSAGE_LENGTH
+AGS_LV2UI_PLUGIN (<parameters>)
+AGS_LV2_BRIDGE_DEFAULT_BUILD_ID
+AGS_LV2_BRIDGE_DEFAULT_VERSION
+AGS_LV2_MANAGER_DEFAULT_LOCALE
+AGS_LV2_PLUGIN (<parameters>)
+AGS_MACHINE_COUNTER (<parameters>)
 AGS_MACHINE_DEFAULT_BUILD_ID
 AGS_MACHINE_DEFAULT_VERSION
 AGS_MACHINE_EDITOR_DEFAULT_BUILD_ID
@@ -123,7 +144,14 @@ AGS_MATRIX_CELL_HEIGHT
 AGS_MATRIX_CELL_WIDTH
 AGS_MATRIX_OCTAVE
 AGS_MATRIX_PATTERN_CONTROLS
+AGS_MENU_BAR_LADSPA_EFFECT_KEY
+AGS_MENU_BAR_LADSPA_FILENAME_KEY
+AGS_MENU_BAR_LV2_FILENAME_KEY
+AGS_MENU_BAR_LV2_URI_KEY
 AGS_MICROSECONDS_PER_SECOND
+AGS_MIDI_DEFAULT_BEATS
+AGS_MIDI_PARSER_MTCK
+AGS_MIDI_PARSER_MTHD
 AGS_NAVIGATION_DEFAULT_TACT_STEP
 AGS_NAVIGATION_REWIND_STEPS
 AGS_NAVIGATION_SEEK_STEPS
@@ -134,31 +162,57 @@ AGS_NOTATION_DEFAULT_LENGTH
 AGS_NOTATION_MAXIMUM_NOTE_LENGTH
 AGS_NOTATION_MINIMUM_NOTE_LENGTH
 AGS_NOTATION_TICS_PER_BEAT
-AGS_NOTEBOOK_TAB
+AGS_NOTEBOOK_TAB (<parameters>)
 AGS_NOTE_EDIT_MAX_CONTROLS
+AGS_OSCILLATOR_BASE_FREQUENCY
+AGS_OSCILLATOR_DEFAULT_STEPS
 AGS_PAD_DEFAULT_BUILD_ID
 AGS_PAD_DEFAULT_VERSION
 AGS_PAD_EDITOR_DEFAULT_BUILD_ID
 AGS_PAD_EDITOR_DEFAULT_VERSION
+AGS_PATTERN_EDIT_MAX_CONTROLS
 AGS_PLAYABLE_ERROR
-AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER
+AGS_PLAY_CHANNEL_RUN_MASTER_STREAMER (<parameters>)
 AGS_PLUGIN_NAME_VOLUME
-AGS_PRIORITY
+AGS_PORT_SELECTION_DATA_CHANNEL
+AGS_PORT_SELECTION_DATA_PORT
+AGS_PREFERENCES_DEFAULT_FILENAME
 AGS_RECALL_DEFAULT_BUILD_ID
 AGS_RECALL_DEFAULT_VERSION
-AGS_RECALL_HANDLER
+AGS_RECALL_HANDLER (<parameters>)
 AGS_RECORD_THREAD_DEFAULT_DELAY
 AGS_RECYCLING_THREAD_DEFAULT_JIFFIE
 AGS_REGISTRY_DEFAULT_ID_LENGTH
+AGS_REPLICATOR_BRIDGE_DEFAULT_BUILD_ID
+AGS_REPLICATOR_BRIDGE_DEFAULT_VERSION
 AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE
+AGS_RT_PRIORITY
 AGS_RULER_DEFAULT_STEP
 AGS_RULER_LARGE_STEP
 AGS_RULER_SMALL_STEP
-AGS_SEGMENT_FLAGS (<items>)
-AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE
+AGS_SERVER_BUILD_ID
+AGS_SERVER_DEFAULT_VERSION
+AGS_SINGLE_THREAD_DEFAULT_JIFFIE
+AGS_SOUNDCARD_DEFAULT_BPM
+AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE
+AGS_SOUNDCARD_DEFAULT_DELAY
+AGS_SOUNDCARD_DEFAULT_DEVICE
+AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS
+AGS_SOUNDCARD_DEFAULT_FORMAT
+AGS_SOUNDCARD_DEFAULT_JIFFIE
+AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS
+AGS_SOUNDCARD_DEFAULT_PERIOD
+AGS_SOUNDCARD_DEFAULT_SAMPLERATE
+AGS_SOUNDCARD_DEFAULT_SCALE
+AGS_SOUNDCARD_DEFAULT_TACT
+AGS_SOUNDCARD_DEFAULT_TACTRATE
+AGS_SOUNDCARD_DEFAULT_TACT_JIFFIE
+AGS_SOUNDCARD_THREAD_DEFAULT_JIFFIE
 AGS_TASK_THREAD_DEFAULT_JIFFIE
+AGS_THREAD_BUILD_ID
 AGS_THREAD_DEFAULT_ATTACK
 AGS_THREAD_DEFAULT_JIFFIE
+AGS_THREAD_DEFAULT_VERSION
 AGS_THREAD_MAX_PRECISION
 AGS_THREAD_RESUME_SIG
 AGS_THREAD_STACKSIZE
@@ -171,1529 +225,1198 @@ AGS_TIMESTAMP_THREAD_DEFAULT_TIC
 AGS_TOOLBAR_MODE_ALL_CHANNELS
 AGS_TOOLBAR_MODE_MULTI_CHANNEL
 AGS_TOOLBAR_MODE_SINGLE_CHANNEL
+AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS
+AGS_TURTLE_DEFAULT_ENCODING
 AGS_VERSION
+AGS_XORG_BUILD_ID
+AGS_XORG_VERSION
 ALSA_PCM_NEW_HW_PARAMS_API
+AgsAccelerationFlags (<items>)
 AgsAccountingTable (<items>)
-AgsAddAudio
-AgsAddAudioClass (<items>)
-AgsAddAudioSignal
-AgsAddAudioSignalClass (<items>)
-AgsAddLineMember
-AgsAddLineMemberClass (<items>)
-AgsAddNote
-AgsAddNoteClass (<items>)
-AgsAddPointToSelection
-AgsAddPointToSelectionClass (<items>)
-AgsAddRecall
-AgsAddRecallClass (<items>)
-AgsAddRegionToSelection
-AgsAddRegionToSelectionClass (<items>)
-AgsAppendAudio
-AgsAppendAudioClass (<items>)
-AgsAppendAudioThreaded (<items>)
-AgsAppendAudioThreadedClass (<items>)
-AgsAppendChannel
-AgsAppendChannelClass (<items>)
-AgsAppendRecall
-AgsAppendRecallClass (<items>)
-AgsApplicable
-AgsApplicableInterface (<items>)
-AgsApplyBpm
-AgsApplyBpmClass (<items>)
-AgsApplySequencerLength
-AgsApplySequencerLengthClass (<items>)
-AgsApplySynth
-AgsApplySynthClass (<items>)
+AgsApplicationContextFlags (<items>)
 AgsApplySynthWave (<items>)
-AgsApplyTact
-AgsApplyTactClass (<items>)
-AgsApplyWavetable
-AgsApplyWavetableClass (<items>)
-AgsAsyncQueue
-AgsAsyncQueue::interrupt
-AgsAsyncQueue::pop-context
-AgsAsyncQueue::push-context
-AgsAsyncQueueClass (<items>)
-AgsAsyncQueueFlags (<items>)
-AgsAttack
-AgsAttackFlags (<items>)
-AgsAudio
-AgsAudioClass (<items>)
-AgsAudioFile
-AgsAudioFileClass (<items>)
-AgsAudioFileXml
-AgsAudioFileXmlClass (<items>)
+AgsAudioApplicationContextFlags (<items>)
 AgsAudioFlags (<items>)
-AgsAudioLoop
-AgsAudioLoopClass (<items>)
 AgsAudioLoopFlags (<items>)
-AgsAudioPreferences
-AgsAudioPreferencesClass (<items>)
-AgsAudioSetRecycling
-AgsAudioSetRecyclingClass (<items>)
-AgsAudioSignal
-AgsAudioSignalClass (<items>)
 AgsAudioSignalFlags (<items>)
-AgsAutosaveThread
-AgsAutosaveThreadClass (<items>)
-AgsBufferAudioSignal
-AgsBufferAudioSignalClass (<items>)
-AgsBufferChannel
-AgsBufferChannelClass (<items>)
-AgsBufferChannelRun
-AgsBufferChannelRunClass (<items>)
-AgsBufferRecycling
-AgsBufferRecyclingClass (<items>)
-AgsCancelAudio
-AgsCancelAudioClass (<items>)
-AgsCancelChannel
-AgsCancelChannelClass (<items>)
-AgsCancelRecall
-AgsCancelRecallClass (<items>)
-AgsCartesian (<items>)
-AgsCartesianClass (<items>)
-AgsChangeIndicator
-AgsChangeIndicatorClass (<items>)
-AgsChangeTact
-AgsChangeTactClass (<items>)
-AgsChannel
-AgsChannelClass (<items>)
+AgsAudioSignalFormat (<items>)
+AgsAutomationEditFlags (<items>)
+AgsAutomationEditResetFlags (<items>)
+AgsAutomationEditor::machine-changed
+AgsBulkMemberFlags (<items>)
+AgsBulkPort (<items>)
 AgsChannelError (<items>)
 AgsChannelFlags (<items>)
 AgsChannelIter (<items>)
 AgsChannelIterFlags (<items>)
 AgsChannelRecallIDMode (<items>)
-AgsChannelSetRecycling
-AgsChannelSetRecyclingClass (<items>)
-AgsCloneChannel (<items>)
-AgsCloneChannelClass (<items>)
-AgsCloneChannelRun (<items>)
-AgsCloneChannelRunClass (<items>)
-AgsConfig
-AgsConfigClass (<items>)
-AgsContext (<items>)
-AgsCopyAudioSignal
-AgsCopyAudioSignalClass (<items>)
-AgsCopyChannel
-AgsCopyChannelClass (<items>)
-AgsCopyChannelRun
-AgsCopyChannelRunClass (<items>)
 AgsCopyChannelRunFlags (<items>)
-AgsCopyNotationAudio
-AgsCopyNotationAudioClass (<items>)
 AgsCopyNotationAudioFlags (<items>)
-AgsCopyNotationAudioRun
-AgsCopyNotationAudioRunClass (<items>)
-AgsCopyPatternAudio
-AgsCopyPatternAudioClass (<items>)
-AgsCopyPatternAudioRun
-AgsCopyPatternAudioRunClass (<items>)
-AgsCopyPatternChannel
-AgsCopyPatternChannelClass (<items>)
-AgsCopyPatternChannelRun
-AgsCopyPatternChannelRunClass (<items>)
-AgsCopyRecycling
-AgsCopyRecyclingClass (<items>)
-AgsCountBeatsAudio
-AgsCountBeatsAudioClass (<items>)
-AgsCountBeatsAudioRun
-AgsCountBeatsAudioRunClass (<items>)
-AgsCountable
-AgsCountableInterface (<items>)
-AgsDelayAudio
-AgsDelayAudioClass (<items>)
-AgsDelayAudioRun
-AgsDelayAudioRunClass (<items>)
-AgsDevout
-AgsDevoutClass (<items>)
 AgsDevoutError (<items>)
 AgsDevoutFlags (<items>)
-AgsDevoutPlayFlags (<items>)
-AgsDevoutResolutionMode (<items>)
-AgsDevoutThread
-AgsDevoutThreadClass (<items>)
-AgsDial
-AgsDialClass (<items>)
+AgsDevoutPlayDomain
 AgsDialFlags (<items>)
-AgsDisplayTact
-AgsDisplayTactClass (<items>)
-AgsDrum
-AgsDrumClass (<items>)
 AgsDrumFlags (<items>)
-AgsDrumInputLine
-AgsDrumInputLineClass (<items>)
-AgsDrumInputPad
-AgsDrumInputPadClass (<items>)
 AgsDrumInputPadFlags (<items>)
-AgsDrumOutputLine
-AgsDrumOutputLineClass (<items>)
-AgsDrumOutputPad
-AgsDrumOutputPadClass (<items>)
 AgsDrumOutputPadFlags (<items>)
-AgsDynamicConnectable
-AgsDynamicConnectableInterface (<items>)
-AgsEditor
-AgsEditorClass (<items>)
-AgsEffect
-AgsEffectInterface (<items>)
-AgsExpander
+AgsEffectBridgeFlags (<items>)
+AgsEffectBulkFlags (<items>)
+AgsEffectBulkPlugin (<items>)
+AgsEffectLineFlags (<items>)
+AgsEffectPad::resize-lines
+AgsEffectPadFlags (<items>)
 AgsExpanderChild (<items>)
-AgsExpanderClass (<items>)
 AgsExpanderFlags (<items>)
-AgsExpanderSet
 AgsExpanderSetChild (<items>)
-AgsExpanderSetClass (<items>)
 AgsExpanderSetFlags (<items>)
-AgsExportOutput
-AgsExportOutputClass (<items>)
-AgsExportThread
-AgsExportThreadClass (<items>)
-AgsExportWindow
-AgsExportWindowClass (<items>)
 AgsExportWindowFlags (<items>)
-AgsFFPlayer
-AgsFFPlayerClass (<items>)
-AgsFile
+AgsFFPlayerBulkInputFlags (<items>)
+AgsFile::open
+AgsFile::open-from-data
 AgsFile::read
 AgsFile::read-resolve
 AgsFile::read-start
+AgsFile::rw-open
 AgsFile::write
 AgsFile::write-concurrent
 AgsFile::write-resolve
-AgsFileClass (<items>)
 AgsFileFlags (<items>)
-AgsFileIdRef
 AgsFileIdRef::resolved
-AgsFileIdRefClass (<items>)
-AgsFileLaunch
 AgsFileLaunch::start
-AgsFileLaunchClass (<items>)
-AgsFileLink
-AgsFileLinkClass (<items>)
-AgsFileLookup
 AgsFileLookup::resolve
-AgsFileLookupClass (<items>)
-AgsFileRead (<items>)
-AgsFileReadClass (<items>)
 AgsFileResolve
-AgsFileSelection
 AgsFileSelection::add-entry
 AgsFileSelection::completed
 AgsFileSelection::remove-entry
-AgsFileSelectionClass (<items>)
 AgsFileSelectionEntry (<items>)
 AgsFileSelectionFlags (<items>)
-AgsFileValueFactory (<items>)
-AgsFileValueFactoryClass (<items>)
-AgsFileWrite (<items>)
-AgsFileWriteClass (<items>)
-AgsFreeSelection
-AgsFreeSelectionClass (<items>)
-AgsGarbageCollector
-AgsGarbageCollectorClass (<items>)
-AgsGarbageCollectorFlags (<items>)
-AgsGenericPreferences (<items>)
-AgsGenericPreferencesClass (<items>)
-AgsGuiTaskThread
-AgsGuiTaskThreadClass (<items>)
-AgsGuiThread
-AgsGuiThreadClass (<items>)
-AgsHIndicator (<items>)
-AgsHIndicatorClass (<items>)
-AgsHTimebar (<items>)
-AgsHTimebarClass (<items>)
-AgsHistory (<items>)
 AgsHistoryAppend
-AgsHistoryClass (<items>)
-AgsIndicator
-AgsIndicatorClass (<items>)
-AgsInitAudio
-AgsInitAudioClass (<items>)
-AgsInitChannel
-AgsInitChannelClass (<items>)
-AgsInlinePlayer
-AgsInlinePlayerClass (<items>)
-AgsInput
-AgsInputClass (<items>)
-AgsIpatch
-AgsIpatchClass (<items>)
 AgsIpatchFlags (<items>)
-AgsIpatchSF2Reader
-AgsIpatchSF2ReaderClass (<items>)
-AgsIteratorThread
 AgsIteratorThread::children-ready
-AgsIteratorThreadClass (<items>)
 AgsIteratorThreadFlags (<items>)
-AgsLadspaBrowser
-AgsLadspaBrowserClass (<items>)
-AgsLadspaManager
-AgsLadspaManagerClass (<items>)
+AgsLadspaBridgeFlags (<items>)
 AgsLadspaPlugin (<items>)
 AgsLadspaPluginFlags (<items>)
 AgsLadspaPluginPreferences (<items>)
-AgsLed
-AgsLedClass (<items>)
 AgsLedFlags (<items>)
-AgsLibao (<items>)
-AgsLibaoClass (<items>)
+AgsLibao::tic
 AgsLibaoError (<items>)
 AgsLibaoFlags (<items>)
 AgsLibaoPlay (<items>)
 AgsLibaoPlayDomain (<items>)
 AgsLibaoPlayFlags (<items>)
 AgsLibaoResolutionMode (<items>)
-AgsLine
-AgsLine::resize-lines
-AgsLineClass (<items>)
-AgsLineEditor
-AgsLineEditorClass (<items>)
 AgsLineFlags (<items>)
-AgsLineMember
-AgsLineMemberClass (<items>)
-AgsLineMemberEditor
-AgsLineMemberEditorClass (<items>)
 AgsLineMemberFlags (<items>)
-AgsLinkChannel
-AgsLinkChannelClass (<items>)
-AgsLinkCollectionEditor
-AgsLinkCollectionEditorClass (<items>)
-AgsLinkEditor
-AgsLinkEditorClass (<items>)
 AgsLinkEditorFlags (<items>)
-AgsListingEditor
-AgsListingEditorClass (<items>)
-AgsLog (<items>)
-AgsLogClass (<items>)
-AgsLogFlags (<items>)
+AgsLogFLags (<items>)
 AgsLogFormatedMessage (<items>)
 AgsLogMessage (<items>)
-AgsLoopChannel
-AgsLoopChannelClass (<items>)
-AgsLoopChannelRun
-AgsLoopChannelRunClass (<items>)
-AgsMachine
-AgsMachineClass (<items>)
+AgsLogMode (<items>)
+AgsLv2BridgeFlags (<items>)
+AgsLv2Plugin (<items>)
+AgsLv2PluginFlags (<items>)
+AgsLv2uiPlugin (<items>)
+AgsLv2uiPluginFlags (<items>)
 AgsMachineCounter (<items>)
-AgsMachineEditor
 AgsMachineEditor::set-machine
-AgsMachineEditorClass (<items>)
 AgsMachineEditorFlags (<items>)
 AgsMachineFileInputFlags (<items>)
 AgsMachineFlags (<items>)
-AgsMachineRadioButton
-AgsMachineRadioButtonClass (<items>)
-AgsMachineSelection
-AgsMachineSelectionClass (<items>)
-AgsMachineSelector
 AgsMachineSelector::changed
-AgsMachineSelectorClass (<items>)
-AgsMain
-AgsMainClass (<items>)
-AgsMainFlags (<items>)
-AgsMainLoop
-AgsMainLoopInterface (<items>)
-AgsMatrix
-AgsMatrixClass (<items>)
-AgsMenu
-AgsMenuBar
-AgsMenuBarClass (<items>)
-AgsMenuClass (<items>)
-AgsMenuItem
-AgsMenuItemClass (<items>)
-AgsMeter
-AgsMeterClass (<items>)
-AgsMixer
-AgsMixerClass (<items>)
-AgsMixerInputLine
-AgsMixerInputLineClass (<items>)
-AgsMixerInputPad
-AgsMixerInputPadClass (<items>)
-AgsMutable
-AgsMutableInterface (<items>)
-AgsMuteAudio
-AgsMuteAudioClass (<items>)
-AgsMuteAudioSignal
-AgsMuteAudioSignalClass (<items>)
-AgsMuteChannel
-AgsMuteChannelClass (<items>)
-AgsMuteChannelRun
-AgsMuteChannelRunClass (<items>)
-AgsMuteRecycling
-AgsMuteRecyclingClass (<items>)
-AgsNavigation
-AgsNavigationClass (<items>)
+AgsMidiChunkFlags (<items>)
+AgsMidiImportWizardFlags (<items>)
+AgsMidiParser::change-channel-pressure
+AgsMidiParser::change-parameter
+AgsMidiParser::change-pitch-bend
+AgsMidiParser::change-program
+AgsMidiParser::end-of-track
+AgsMidiParser::key-off
+AgsMidiParser::key-on
+AgsMidiParser::key-pressure
+AgsMidiParser::key-signature
+AgsMidiParser::meta-event
+AgsMidiParser::midi-getc
+AgsMidiParser::not-defined
+AgsMidiParser::on-error
+AgsMidiParser::parse-full
+AgsMidiParser::parse-header
+AgsMidiParser::parse-track
+AgsMidiParser::sequence-number
+AgsMidiParser::sequencer-meta-event
+AgsMidiParser::smpte
+AgsMidiParser::sysex
+AgsMidiParser::system-common
+AgsMidiParser::tempo
+AgsMidiParser::text-event
+AgsMidiParser::time-signature
+AgsMidiParserFlags (<items>)
 AgsNavigationFlags (<items>)
-AgsNotation
-AgsNotationClass (<items>)
 AgsNotationFlags (<items>)
-AgsNote
-AgsNoteClass (<items>)
-AgsNoteEdit
-AgsNoteEditClass (<items>)
 AgsNoteEditFlags (<items>)
 AgsNoteEditResetFlags (<items>)
 AgsNoteFlags (<items>)
-AgsNotebook
-AgsNotebookClass (<items>)
 AgsNotebookTab (<items>)
 AgsNotebookTabFlags (<items>)
-AgsOpenFile
-AgsOpenFileClass (<items>)
-AgsOpenSingleFile
-AgsOpenSingleFileClass (<items>)
-AgsOptionMenu
-AgsOptionMenuClass (<items>)
-AgsOscillator
-AgsOscillatorClass (<items>)
-AgsOutput
-AgsOutputClass (<items>)
-AgsPackable
-AgsPackableInterface (<items>)
-AgsPad
-AgsPad::resize-lines
-AgsPad::set-channel
-AgsPadClass (<items>)
-AgsPadEditor
-AgsPadEditorClass (<items>)
 AgsPadFlags (<items>)
-AgsPanel
-AgsPanelClass (<items>)
-AgsPanelInputLine
-AgsPanelInputLineClass (<items>)
-AgsPanelInputPad
-AgsPanelInputPadClass (<items>)
-AgsPattern
-AgsPatternClass (<items>)
-AgsPeakChannel
-AgsPeakChannelClass (<items>)
-AgsPeakChannelRun
-AgsPeakChannelRunClass (<items>)
-AgsPerformancePreferences
-AgsPerformancePreferencesClass (<items>)
-AgsPersistable
-AgsPersistableInterface (<items>)
-AgsPlayAudio
-AgsPlayAudioClass (<items>)
-AgsPlayAudioFile
-AgsPlayAudioFileClass (<items>)
-AgsPlayAudioSignal
-AgsPlayAudioSignalClass (<items>)
-AgsPlayChannel
-AgsPlayChannelClass (<items>)
-AgsPlayChannelRun
-AgsPlayChannelRunClass (<items>)
+AgsPatternEditFlags (<items>)
+AgsPatternEditResetFlags (<items>)
 AgsPlayChannelRunFlags (<items>)
-AgsPlayChannelRunMaster
-AgsPlayChannelRunMasterClass (<items>)
 AgsPlayChannelRunMasterFlags (<items>)
 AgsPlayChannelRunMasterStreamer (<items>)
-AgsPlayNotationAudio
-AgsPlayNotationAudioClass (<items>)
-AgsPlayNotationAudioRun
-AgsPlayNotationAudioRunClass (<items>)
 AgsPlayNotationAudioRunFlags (<items>)
-AgsPlayNote
-AgsPlayNoteClass (<items>)
-AgsPlayPattern
-AgsPlayPatternClass (<items>)
-AgsPlayRecycling
-AgsPlayRecyclingClass (<items>)
-AgsPlayable
 AgsPlayableError (<items>)
-AgsPlayableInterface (<items>)
-AgsPlugin
-AgsPluginFactory
+AgsPlaybackFlags (<items>)
 AgsPluginFactory::add
 AgsPluginFactory::create
-AgsPluginFactoryClass (<items>)
-AgsPluginInterface (<items>)
 AgsPluginMetadata (<items>)
-AgsPluginPreferences
-AgsPluginPreferencesClass (<items>)
-AgsPort
-AgsPortClass (<items>)
-AgsPortableThread (<items>)
-AgsPortableThreadClass (<items>)
+AgsPortSelection::add-port
 AgsPortableThreadFlags (<items>)
-AgsPortlet
-AgsPortletInterface (<items>)
-AgsPreferences
-AgsPreferencesClass (<items>)
 AgsPreferencesFlags (<items>)
-AgsPropertyCollectionEditor
-AgsPropertyCollectionEditorClass (<items>)
-AgsPropertyEditor
-AgsPropertyEditorClass (<items>)
 AgsPropertyEditorFlags (<items>)
-AgsPropertyListingEditor
-AgsPropertyListingEditorClass (<items>)
-AgsRecall
-AgsRecallAudio
-AgsRecallAudioClass (<items>)
-AgsRecallAudioRun
-AgsRecallAudioRunClass (<items>)
-AgsRecallAudioSignal
-AgsRecallAudioSignalClass (<items>)
 AgsRecallAudioSignalFlags (<items>)
-AgsRecallChannel
-AgsRecallChannelClass (<items>)
-AgsRecallChannelRun
-AgsRecallChannelRunClass (<items>)
-AgsRecallChannelRunDummy
-AgsRecallChannelRunDummyClass (<items>)
-AgsRecallClass (<items>)
-AgsRecallContainer
-AgsRecallContainerClass (<items>)
 AgsRecallContainerFindFlags (<items>)
 AgsRecallContainerFlags (<items>)
-AgsRecallDependency
-AgsRecallDependencyClass (<items>)
-AgsRecallFactory
-AgsRecallFactoryClass (<items>)
 AgsRecallFactoryCreateFlags (<items>)
 AgsRecallFlags (<items>)
-AgsRecallHandler (signal_name, callback, data, handler)
-AgsRecallID
-AgsRecallIDClass (<items>)
+AgsRecallHandler (<items>)
 AgsRecallIDFlags (<items>)
-AgsRecallLadspa
-AgsRecallLadspaClass (<items>)
-AgsRecallLadspaRun
-AgsRecallLadspaRunClass (<items>)
 AgsRecallNotifyDependencyMode (<items>)
-AgsRecallRecycling
-AgsRecallRecyclingClass (<items>)
-AgsRecallRecyclingDummy
-AgsRecallRecyclingDummyClass (<items>)
 AgsRecallRecyclingFlags (<items>)
-AgsRecordThread (<items>)
-AgsRecordThreadClass (<items>)
-AgsRecycling
-AgsRecyclingClass (<items>)
-AgsRecyclingContainer
-AgsRecyclingContainerClass (<items>)
 AgsRecyclingFlags (<items>)
-AgsRecyclingThread
 AgsRecyclingThread::play-audio
 AgsRecyclingThread::play-channel
-AgsRecyclingThreadClass (<items>)
 AgsRecyclingThreadFlags (<items>)
-AgsRegistry
-AgsRegistryClass (<items>)
 AgsRegistryEntry (<items>)
-AgsRemoteTask
-AgsRemoteTaskClass (<items>)
-AgsRemoveAudio
-AgsRemoveAudioClass (<items>)
-AgsRemoveAudioSignal
-AgsRemoveAudioSignalClass (<items>)
-AgsRemoveNote
-AgsRemoveNoteClass (<items>)
-AgsRemovePointFromSelection
-AgsRemovePointFromSelectionClass (<items>)
-AgsRemoveRecall
-AgsRemoveRecallClass (<items>)
-AgsRemoveRegionFromSelection
-AgsRemoveRegionFromSelectionClass (<items>)
-AgsResizeEditor (<items>)
-AgsResizeEditorClass (<items>)
-AgsReturnableThread
+AgsReplicatorBridgeFlags (<items>)
 AgsReturnableThread::safe-run
-AgsReturnableThreadCallback
-AgsReturnableThreadClass (<items>)
+AgsReturnableThreadCallback (<parameters>)
 AgsReturnableThreadFlags (<items>)
-AgsRuler
-AgsRulerClass (<items>)
-AgsRunnable
-AgsRunnableInterface (<items>)
-AgsSF2Chooser
-AgsSF2ChooserClass (<items>)
 AgsSF2Levels (<items>)
-AgsSaveFile
-AgsSaveFileClass (<items>)
-AgsScrollOnPlay
-AgsScrollOnPlayClass (<items>)
-AgsSeekable
-AgsSeekableInterface (<items>)
-AgsSegment (<items>)
-AgsSegmentClass (<items>)
-AgsSegmentFields (<items>)
-AgsServer
 AgsServer::start
-AgsServerClass (<items>)
+AgsServerApplicationContextFlags (<items>)
 AgsServerFlags (<items>)
-AgsServerPreferences
-AgsServerPreferencesClass (<items>)
-AgsSetAudioChannels
-AgsSetAudioChannelsClass (<items>)
-AgsSetBufferSize
-AgsSetBufferSizeClass (<items>)
-AgsSetDevoutPlayFlags
-AgsSetDevoutPlayFlagsClass (<items>)
-AgsSetMuted
-AgsSetMutedClass (<items>)
-AgsSetOutputDevice
-AgsSetOutputDeviceClass (<items>)
-AgsSetSamplerate
-AgsSetSamplerateClass (<items>)
-AgsSingleThread
-AgsSingleThreadClass (<items>)
-AgsSndfile
-AgsSndfileClass (<items>)
 AgsSndfileFlags (<items>)
-AgsSoundcard
-AgsSoundcardInterface (<items>)
-AgsStackable
-AgsStackableInterface (<items>)
-AgsStartDevout
-AgsStartDevoutClass (<items>)
-AgsStream
-AgsStreamAudioSignal
-AgsStreamAudioSignalClass (<items>)
-AgsStreamChannel
-AgsStreamChannelClass (<items>)
-AgsStreamChannelRun
-AgsStreamChannelRunClass (<items>)
-AgsStreamClass (<items>)
-AgsStreamRecycling
-AgsStreamRecyclingClass (<items>)
-AgsSynth
-AgsSynthClass (<items>)
+AgsSoundcardResolutionMode (<items>)
 AgsSynthFlags (<items>)
-AgsSynthInputLine
-AgsSynthInputLineClass (<items>)
-AgsSynthInputPad
-AgsSynthInputPadClass (<items>)
-AgsTable
-AgsTableClass (<items>)
-AgsTactable
-AgsTactableInterface (<items>)
-AgsTask
-AgsTaskClass (<items>)
 AgsTaskFlags (<items>)
-AgsTaskThread
 AgsTaskThreadAppend (<items>)
-AgsTaskThreadClass (<items>)
-AgsThread
-AgsThreadClass (<items>)
+AgsThreadApplicationContextFlags (<items>)
 AgsThreadFlags (<items>)
-AgsThreadPool
 AgsThreadPool::start
-AgsThreadPoolClass (<items>)
 AgsThreadPoolFlags (<items>)
-AgsTimebar (<items>)
-AgsTimebarClass (<items>)
-AgsTimer (<items>)
-AgsTimestamp
-AgsTimestampClass (<items>)
-AgsTimestampFactory
 AgsTimestampFactory::create
-AgsTimestampFactoryClass (<items>)
 AgsTimestampFactoryFlags (<items>)
 AgsTimestampFlags (<items>)
-AgsTimestampThread
-AgsTimestampThreadClass (<items>)
-AgsToggleLed
-AgsToggleLedClass (<items>)
-AgsTogglePatternBit
 AgsTogglePatternBit::refresh-gui
-AgsTogglePatternBitClass (<items>)
-AgsToolbar
-AgsToolbarClass (<items>)
-AgsTreeIterator
-AgsTreeIteratorInterface (<items>)
-AgsUnrefAudioSignal
-AgsUnrefAudioSignalClass (<items>)
-AgsVIndicator
-AgsVIndicatorClass (<items>)
-AgsVolumeAudioSignal
-AgsVolumeAudioSignalClass (<items>)
-AgsVolumeChannel
-AgsVolumeChannelClass (<items>)
-AgsVolumeChannelRun
-AgsVolumeChannelRunClass (<items>)
-AgsVolumeRecycling
-AgsVolumeRecyclingClass (<items>)
-AgsWaveform (<items>)
-AgsWaveformClass (<items>)
-AgsWindow
-AgsWindowClass (<items>)
+AgsTurtleFlags (<items>)
 AgsWindowFlags (<items>)
+AgsXorgApplicationContextFlags (<items>)
 MSEC_PER_SEC
 NSEC_PER_SEC
-ags_accounting_table_alloc
-ags_accounting_table_set_sanity
-ags_amplifier
-ags_append_audio_threaded_new
-ags_append_recall_new (devout_play)
+ags_accounting_table_alloc (<parameters>)
+ags_accounting_table_set_sanity (<parameters>)
+ags_add_bulk_member_new (bulk_member, effect_bulk)
+ags_add_recall_container_new (audio, recall_container)
+ags_append_audio_threaded_new (<parameters>)
+ags_application_context_add_sibling (<parameters>)
+ags_application_context_find_default (<parameters>)
+ags_application_context_find_main_loop (<parameters>)
+ags_application_context_load_config (<parameters>)
+ags_application_context_new (<parameters>)
+ags_application_context_remove_sibling (<parameters>)
+ags_application_read (<parameters>)
+ags_application_write (<parameters>)
 ags_apply_sequencer_length_new (length)
-ags_apply_synth_new (start_channel, count, wave, attack, frame_count, frequency, phase, start, volume, loop_start, loop_end, start_channel, count, wave, attack, frame_count, frequency, phase, start, volume, loop_start, loop_end)
-ags_apply_wavetable_new
-ags_async_queue_add
-ags_async_queue_find_context
-ags_async_queue_idle
-ags_async_queue_initerrupt
-ags_async_queue_new
-ags_async_queue_next_interval
-ags_async_queue_pop_context
-ags_async_queue_push_context
-ags_async_queue_remove
-ags_async_queue_worker
+ags_apply_synth_new (start_channel, count, wave, attack, frame_count, frequency, phase, start, volume, loop_start, loop_end)
 ags_audio_add_recall (recall)
-ags_audio_file_open (Returns)
-ags_audio_file_open_from_data (Returns)
-ags_audio_file_rw_open (Returns)
-ags_audio_file_xml_new
-ags_audio_preferences_audio_channels_changed
-ags_audio_preferences_buffer_size_changed
-ags_audio_preferences_card_changed_callback
-ags_audio_preferences_samplerate_changed
-ags_audio_recall_change_state
+ags_audio_application_context_new (<parameters>)
+ags_audio_init_context (<parameters>)
+ags_audio_loop_add_recall (playback)
+ags_audio_loop_remove_recall (playback)
+ags_audio_loop_stopped_all (<parameters>)
+ags_audio_preferences_audio_channels_changed (<parameters>)
+ags_audio_preferences_buffer_size_changed (<parameters>)
+ags_audio_preferences_card_changed_callback (<parameters>)
+ags_audio_preferences_samplerate_changed (<parameters>)
+ags_audio_recall_change_state (<parameters>)
 ags_audio_remove_recall (recall)
-ags_audio_set_recycling_new
-ags_audio_signal_new_with_length
-ags_audio_unset_flags
+ags_audio_set_recycling_new (<parameters>)
+ags_audio_signal_tile (length)
+ags_automation_add_acceleration (<parameters>)
+ags_automation_add_point_to_selection (<parameters>)
+ags_automation_add_region_to_selection (<parameters>)
+ags_automation_area_button_press_event (<parameters>)
+ags_automation_area_button_release_event (<parameters>)
+ags_automation_area_configure_event (<parameters>)
+ags_automation_area_expose_event (<parameters>)
+ags_automation_area_motion_notify_event (<parameters>)
+ags_automation_copy_selection (<parameters>)
+ags_automation_cut_selection (<parameters>)
+ags_automation_edit_add_area (<parameters>)
+ags_automation_edit_add_drawing_area
+ags_automation_edit_draw_scroll (drawing_area)
+ags_automation_edit_hscrollbar_value_changed (<parameters>)
+ags_automation_edit_scrolled_window_button_press_event (<parameters>)
+ags_automation_edit_scrolled_window_button_release_event (<parameters>)
+ags_automation_edit_scrolled_window_configure_event (<parameters>)
+ags_automation_edit_scrolled_window_expose_event (<parameters>)
+ags_automation_edit_scrolled_window_motion_notify_event (<parameters>)
+ags_automation_edit_vscrollbar_value_changed (<parameters>)
+ags_automation_editor_change_position_callback (<parameters>)
+ags_automation_editor_delete_event_callback (<parameters>)
+ags_automation_editor_edit_vscrollbar_value_changed_callback (<parameters>)
+ags_automation_editor_machine_changed_callback (<parameters>)
+ags_automation_editor_new (window)
+ags_automation_editor_set_audio_channels_callback (<parameters>)
+ags_automation_editor_set_pads_callback (<parameters>)
+ags_automation_find_near_timestamp (<parameters>)
+ags_automation_find_point (<parameters>)
+ags_automation_find_region (<parameters>)
+ags_automation_free_selection (<parameters>)
+ags_automation_get_current (<parameters>)
+ags_automation_get_selection (<parameters>)
+ags_automation_insert_from_clipboard (<parameters>)
+ags_automation_is_acceleration_selected (<parameters>)
+ags_automation_new (audio, channel_type, control_name)
+ags_automation_remove_acceleration_at_position (<parameters>)
+ags_automation_remove_point_from_selection (<parameters>)
+ags_automation_remove_region_from_selection (<parameters>)
+ags_automation_toolbar_machine_changed_callback (<parameters>)
+ags_bulk_member_button_clicked_callback (<parameters>)
+ags_bulk_member_change_port (<parameters>)
+ags_bulk_member_check_button_clicked_callback (<parameters>)
+ags_bulk_member_dial_changed_callback (<parameters>)
+ags_bulk_member_get_widget (<parameters>)
+ags_bulk_member_hscale_changed_callback (<parameters>)
+ags_bulk_member_parent_set_callback (<parameters>)
+ags_bulk_member_port_safe_write_callback (<parameters>)
+ags_bulk_member_spin_button_changed_callback (<parameters>)
+ags_bulk_member_toggle_button_clicked_callback (<parameters>)
+ags_bulk_member_vscale_changed_callback (<parameters>)
+ags_bulk_port_alloc (<parameters>)
+ags_cancel_channel_new (playback)
 ags_cartesian_new
-ags_change_tact_new
-ags_channel_add_recall (recall)
+ags_change_tact_new (<parameters>)
+ags_channel_add_effect (<parameters>)
+ags_channel_add_pattern (<parameters>)
 ags_channel_error_quark
-ags_channel_find_recall
+ags_channel_get_recall_by_effect (<parameters>)
 ags_channel_init_recall (stage)
-ags_channel_iter_alloc
-ags_channel_iter_free
-ags_channel_iter_next
-ags_channel_iter_prev
-ags_channel_recall_id_set
-ags_channel_recursive_play_init (Returns)
-ags_channel_remove_recall (recall)
+ags_channel_iter_alloc (<parameters>)
+ags_channel_iter_free (<parameters>)
+ags_channel_iter_next (<parameters>)
+ags_channel_iter_prev (<parameters>)
+ags_channel_recall_id_set (<parameters>)
+ags_channel_remove_effect (<parameters>)
 ags_channel_safe_resize_audio_signal (size)
-ags_channel_set_recycling_new
-ags_clone_channel_new
+ags_channel_set_recycling_new (<parameters>)
+ags_clone_channel_new (<parameters>)
 ags_clone_channel_run_new
-ags_container_add_all
-ags_context_alloc
-ags_copy_notation_audio_new (devout)
+ags_concurrency_provider_get_main_loop (<parameters>)
+ags_concurrency_provider_get_task_thread (<parameters>)
+ags_concurrency_provider_get_thread_pool (<parameters>)
+ags_config_new (application_context)
+ags_connectable_add_to_registry (<parameters>)
+ags_connectable_connect (<parameters>)
+ags_connectable_disconnect (<parameters>)
+ags_container_add_all (<parameters>)
 ags_copy_notation_audio_run_new (count_beats_audio_run)
-ags_copy_pattern_channel_template_find_source_and_destination
-ags_countable_get_notation_counter
-ags_countable_get_sequencer_counter
-ags_default_log
-ags_delay_audio_notation_duration_changed
-ags_delay_audio_sequencer_duration_changed
+ags_copy_pattern_channel_template_find_source_and_destination (<parameters>)
+ags_countable_get_notation_counter (<parameters>)
+ags_countable_get_sequencer_counter (<parameters>)
+ags_delay_audio_notation_duration_changed (<parameters>)
+ags_delay_audio_sequencer_duration_changed (<parameters>)
 ags_devout_error_quark
-ags_devout_note_offset_changed
-ags_devout_pcm_info (buffer_size_max)
-ags_devout_play_find_source (source)
-ags_drum_done_callback
-ags_drum_index0_callback
-ags_drum_index1_callback
-ags_drum_input_line_audio_set_pads_callback
-ags_drum_input_line_channel_done_callback
-ags_drum_input_line_map_recall
-ags_drum_input_line_parent_set_callback
-ags_drum_input_pad_edit_callback
-ags_drum_input_pad_open_callback
-ags_drum_input_pad_play_callback
-ags_drum_length_spin_callback
-ags_drum_loop_button_callback
-ags_drum_offset_callback
-ags_drum_open_callback
-ags_drum_output_line_add_default_recall
-ags_drum_output_line_parent_set_callback
-ags_drum_output_pad_play_cancel
-ags_drum_output_pad_play_done
-ags_drum_pad_callback
-ags_drum_parent_set_callback
-ags_drum_set_pattern
-ags_drum_tact_callback
-ags_dynamic_connectable_connect
-ags_dynamic_connectable_disconnect
-ags_echo
-ags_editor_change_position_callback
-ags_editor_machine_changed_callback
-ags_editor_parent_set_callback
-ags_editor_set_audio_channels_callback
-ags_editor_set_pads_callback
-ags_expander_child_alloc
-ags_expander_child_find
-ags_expander_set_child_alloc
-ags_expander_set_child_find
-ags_expander_set_set_flags
-ags_export_thread_new (devout)
-ags_export_window_export_callback
-ags_export_window_file_chooser_button_callback
+ags_drum_done_callback (<parameters>)
+ags_drum_index0_callback (<parameters>)
+ags_drum_index1_callback (<parameters>)
+ags_drum_input_line_audio_set_pads_callback (<parameters>)
+ags_drum_input_line_channel_done_callback (<parameters>)
+ags_drum_input_line_parent_set_callback (<parameters>)
+ags_drum_input_pad_edit_callback (<parameters>)
+ags_drum_input_pad_open_callback (<parameters>)
+ags_drum_input_pad_play_callback (<parameters>)
+ags_drum_length_spin_callback (<parameters>)
+ags_drum_loop_button_callback (<parameters>)
+ags_drum_offset_callback (<parameters>)
+ags_drum_open_callback (<parameters>)
+ags_drum_output_line_parent_set_callback (<parameters>)
+ags_drum_output_pad_play_cancel (<parameters>)
+ags_drum_output_pad_play_done (<parameters>)
+ags_drum_pad_callback (<parameters>)
+ags_drum_parent_set_callback (<parameters>)
+ags_drum_set_pattern (<parameters>)
+ags_drum_tact_callback (<parameters>)
+ags_dynamic_connectable_connect (<parameters>)
+ags_dynamic_connectable_disconnect (<parameters>)
+ags_editor_change_position_callback (<parameters>)
+ags_editor_edit_vscrollbar_value_changed_callback (<parameters>)
+ags_editor_machine_changed_callback (<parameters>)
+ags_editor_parent_set_callback (<parameters>)
+ags_editor_set_audio_channels_callback (<parameters>)
+ags_editor_set_pads_callback (<parameters>)
+ags_effect_bridge_resize_audio_channels (<parameters>)
+ags_effect_bridge_resize_pads (<parameters>)
+ags_effect_bridge_set_audio_channels_callback (<parameters>)
+ags_effect_bridge_set_pads_callback (<parameters>)
+ags_effect_bulk_add_callback (<parameters>)
+ags_effect_bulk_add_effect (<parameters>)
+ags_effect_bulk_lv2ui_write_function (<parameters>)
+ags_effect_bulk_plugin_alloc (<parameters>)
+ags_effect_bulk_plugin_browser_response_callback (<parameters>)
+ags_effect_bulk_remove_callback (<parameters>)
+ags_effect_bulk_remove_effect (<parameters>)
+ags_effect_bulk_resize_audio_channels (<parameters>)
+ags_effect_bulk_resize_pads (<parameters>)
+ags_effect_bulk_set_audio_channels_callback (<parameters>)
+ags_effect_bulk_set_pads_callback (<parameters>)
+ags_effect_line_add_effect (<parameters>)
+ags_effect_line_add_effect_callback (<parameters>)
+ags_effect_line_remove_effect (<parameters>)
+ags_effect_pad_resize_lines (<parameters>)
+ags_expander_child_alloc (<parameters>)
+ags_expander_child_find (<parameters>)
+ags_expander_set_child_alloc (<parameters>)
+ags_expander_set_child_find (<parameters>)
+ags_expander_set_set_flags (<parameters>)
+ags_export_window_export_callback (<parameters>)
+ags_export_window_file_chooser_button_callback (<parameters>)
 ags_export_window_new
-ags_export_window_tact_callback
-ags_ffplayer_drawing_area_button_press_callback
-ags_ffplayer_drawing_area_configure_callback
-ags_ffplayer_drawing_area_expose_callback
-ags_ffplayer_hscrollbar_value_changed
-ags_ffplayer_instrument_changed_callback
-ags_ffplayer_open_clicked_callback
-ags_ffplayer_open_dialog_response_callback
-ags_ffplayer_paint
-ags_ffplayer_parent_set_callback
-ags_ffplayer_preset_changed_callback
-ags_file_add_id_ref
-ags_file_add_launch
-ags_file_add_lookup
-ags_file_find_id_ref_by_node
-ags_file_find_id_ref_by_reference
-ags_file_find_id_ref_by_xpath
-ags_file_id_ref_resolved
-ags_file_launch_start
-ags_file_lookup_find_by_node
-ags_file_lookup_resolve
-ags_file_read
-ags_file_read_audio
-ags_file_read_audio_list
-ags_file_read_audio_loop
-ags_file_read_audio_signal
-ags_file_read_audio_signal_list
-ags_file_read_channel
-ags_file_read_channel_list
-ags_file_read_devout
-ags_file_read_devout_list
-ags_file_read_devout_play
-ags_file_read_devout_play_list
-ags_file_read_dialog
-ags_file_read_dialog_list
-ags_file_read_editor
-ags_file_read_embedded_audio
-ags_file_read_embedded_audio_list
-ags_file_read_file_link
-ags_file_read_file_link_list
-ags_file_read_input
-ags_file_read_line
-ags_file_read_line_editor
-ags_file_read_line_list
-ags_file_read_line_member
-ags_file_read_line_member_editor
-ags_file_read_line_member_list
-ags_file_read_link_collection_editor
-ags_file_read_link_editor
-ags_file_read_machine
-ags_file_read_machine_counter
-ags_file_read_machine_counter_list
-ags_file_read_machine_editor
-ags_file_read_machine_editor_list
-ags_file_read_machine_list
-ags_file_read_machine_selector
-ags_file_read_main
-ags_file_read_menu_bar
-ags_file_read_mixer_input_pad
-ags_file_read_mixer_output_pad
-ags_file_read_navigation
-ags_file_read_new
-ags_file_read_notation
-ags_file_read_notation_list
-ags_file_read_note
-ags_file_read_note_list
-ags_file_read_notebook
-ags_file_read_notebook_tab
-ags_file_read_notebook_tab_list
-ags_file_read_oscillator
-ags_file_read_output
-ags_file_read_pad
-ags_file_read_pad_editor
-ags_file_read_pad_list
-ags_file_read_pattern
-ags_file_read_pattern_data
-ags_file_read_pattern_data_list
-ags_file_read_pattern_list
-ags_file_read_port
-ags_file_read_port_list
-ags_file_read_recall
-ags_file_read_recall_audio
-ags_file_read_recall_audio_run
-ags_file_read_recall_audio_signal
-ags_file_read_recall_channel
-ags_file_read_recall_channel_run
-ags_file_read_recall_container
-ags_file_read_recall_container_list
-ags_file_read_recall_list
-ags_file_read_recall_recycling
-ags_file_read_recycling
-ags_file_read_recycling_list
-ags_file_read_resize_editor
-ags_file_read_resolve
-ags_file_read_server
-ags_file_read_start
-ags_file_read_stream
-ags_file_read_stream_list
-ags_file_read_task
-ags_file_read_task_list
-ags_file_read_thread
-ags_file_read_thread_list
-ags_file_read_thread_pool
-ags_file_read_timestamp
-ags_file_read_timestamp_list
-ags_file_read_toolbar
-ags_file_read_widget
-ags_file_read_window
-ags_file_selection_add_entry
-ags_file_selection_completed
-ags_file_selection_contains_file
+ags_export_window_tact_callback (<parameters>)
+ags_ffplayer_drawing_area_button_press_callback (<parameters>)
+ags_ffplayer_drawing_area_configure_callback (<parameters>)
+ags_ffplayer_drawing_area_expose_callback (<parameters>)
+ags_ffplayer_hscrollbar_value_changed (<parameters>)
+ags_ffplayer_input_line_notify_channel_callback (<parameters>)
+ags_ffplayer_instrument_changed_callback (<parameters>)
+ags_ffplayer_open_clicked_callback (<parameters>)
+ags_ffplayer_open_dialog_response_callback (<parameters>)
+ags_ffplayer_paint (<parameters>)
+ags_ffplayer_parent_set_callback (<parameters>)
+ags_ffplayer_preset_changed_callback (<parameters>)
+ags_file_add_id_ref (<parameters>)
+ags_file_add_launch (<parameters>)
+ags_file_add_lookup (<parameters>)
+ags_file_close (<parameters>)
+ags_file_find_id_ref_by_node (<parameters>)
+ags_file_find_id_ref_by_reference (<parameters>)
+ags_file_find_id_ref_by_xpath (<parameters>)
+ags_file_id_ref_resolved (<parameters>)
+ags_file_launch_start (<parameters>)
+ags_file_lookup_find_by_node (<parameters>)
+ags_file_lookup_resolve (<parameters>)
+ags_file_open (<parameters>)
+ags_file_open_filename (<parameters>)
+ags_file_open_from_data (<parameters>)
+ags_file_read (<parameters>)
+ags_file_read_application_context (<parameters>)
+ags_file_read_audio (<parameters>)
+ags_file_read_audio_list (<parameters>)
+ags_file_read_audio_signal (<parameters>)
+ags_file_read_audio_signal_list (<parameters>)
+ags_file_read_channel (<parameters>)
+ags_file_read_channel_list (<parameters>)
+ags_file_read_devout (<parameters>)
+ags_file_read_devout_list (<parameters>)
+ags_file_read_dialog (<parameters>)
+ags_file_read_dialog_list (<parameters>)
+ags_file_read_editor (<parameters>)
+ags_file_read_embedded_audio (<parameters>)
+ags_file_read_embedded_audio_list (<parameters>)
+ags_file_read_file_link (<parameters>)
+ags_file_read_file_link_list (<parameters>)
+ags_file_read_input (<parameters>)
+ags_file_read_line (<parameters>)
+ags_file_read_line_editor (<parameters>)
+ags_file_read_line_list (<parameters>)
+ags_file_read_line_member (<parameters>)
+ags_file_read_line_member_editor (<parameters>)
+ags_file_read_line_member_list (<parameters>)
+ags_file_read_link_collection_editor (<parameters>)
+ags_file_read_link_editor (<parameters>)
+ags_file_read_machine (<parameters>)
+ags_file_read_machine_counter (<parameters>)
+ags_file_read_machine_counter_list (<parameters>)
+ags_file_read_machine_editor (<parameters>)
+ags_file_read_machine_editor_list (<parameters>)
+ags_file_read_machine_list (<parameters>)
+ags_file_read_machine_resolve_audio (<parameters>)
+ags_file_read_machine_selector (<parameters>)
+ags_file_read_main_loop (<parameters>)
+ags_file_read_menu_bar (<parameters>)
+ags_file_read_mixer_input_pad (<parameters>)
+ags_file_read_mixer_output_pad (<parameters>)
+ags_file_read_navigation (<parameters>)
+ags_file_read_notation (<parameters>)
+ags_file_read_notation_list (<parameters>)
+ags_file_read_note (<parameters>)
+ags_file_read_note_list (<parameters>)
+ags_file_read_notebook (<parameters>)
+ags_file_read_notebook_tab (<parameters>)
+ags_file_read_notebook_tab_list (<parameters>)
+ags_file_read_oscillator (<parameters>)
+ags_file_read_output (<parameters>)
+ags_file_read_pad (<parameters>)
+ags_file_read_pad_editor (<parameters>)
+ags_file_read_pad_list (<parameters>)
+ags_file_read_pattern (<parameters>)
+ags_file_read_pattern_data (<parameters>)
+ags_file_read_pattern_data_list (<parameters>)
+ags_file_read_pattern_list (<parameters>)
+ags_file_read_playback (<parameters>)
+ags_file_read_playback_list (<parameters>)
+ags_file_read_port (<parameters>)
+ags_file_read_port_list (<parameters>)
+ags_file_read_recall (<parameters>)
+ags_file_read_recall_audio (<parameters>)
+ags_file_read_recall_audio_run (<parameters>)
+ags_file_read_recall_audio_signal (<parameters>)
+ags_file_read_recall_channel (<parameters>)
+ags_file_read_recall_channel_run (<parameters>)
+ags_file_read_recall_container (<parameters>)
+ags_file_read_recall_container_list (<parameters>)
+ags_file_read_recall_list (<parameters>)
+ags_file_read_recall_recycling (<parameters>)
+ags_file_read_recycling (<parameters>)
+ags_file_read_recycling_list (<parameters>)
+ags_file_read_resize_editor (<parameters>)
+ags_file_read_resolve (<parameters>)
+ags_file_read_start (<parameters>)
+ags_file_read_stream (<parameters>)
+ags_file_read_stream_list (<parameters>)
+ags_file_read_task (<parameters>)
+ags_file_read_task_list (<parameters>)
+ags_file_read_thread (<parameters>)
+ags_file_read_thread_list (<parameters>)
+ags_file_read_thread_pool (<parameters>)
+ags_file_read_timestamp (<parameters>)
+ags_file_read_timestamp_list (<parameters>)
+ags_file_read_toolbar (<parameters>)
+ags_file_read_widget (<parameters>)
+ags_file_read_window (<parameters>)
+ags_file_rw_open (<parameters>)
+ags_file_selection_add_entry (<parameters>)
+ags_file_selection_completed (<parameters>)
+ags_file_selection_contains_file (<parameters>)
 ags_file_selection_entry_alloc
 ags_file_selection_new
-ags_file_selection_remove_callback
-ags_file_selection_remove_entry
+ags_file_selection_remove_callback (<parameters>)
+ags_file_selection_remove_entry (<parameters>)
 ags_file_selection_set_entry (file_selection, entry)
-ags_file_str2md5
-ags_file_util_read_dependency
-ags_file_util_read_history
-ags_file_util_read_object
-ags_file_util_read_parameter
-ags_file_util_read_value
-ags_file_util_write_dependency
-ags_file_util_write_history
-ags_file_util_write_object
-ags_file_util_write_parameter
-ags_file_util_write_value
-ags_file_value_factory_new
-ags_file_write
-ags_file_write_audio
-ags_file_write_audio_list
-ags_file_write_audio_loop
-ags_file_write_audio_signal
-ags_file_write_audio_signal_list
-ags_file_write_channel
-ags_file_write_channel_list
-ags_file_write_concurrent
-ags_file_write_devout
-ags_file_write_devout_list
-ags_file_write_devout_play
-ags_file_write_devout_play_list
-ags_file_write_dialog
-ags_file_write_dialog_list
-ags_file_write_editor
-ags_file_write_embedded_audio
-ags_file_write_embedded_audio_list
-ags_file_write_file_link
-ags_file_write_file_link_list
-ags_file_write_input
-ags_file_write_line
-ags_file_write_line_editor
-ags_file_write_line_list
-ags_file_write_line_member
-ags_file_write_line_member_editor
-ags_file_write_line_member_list
-ags_file_write_link_collection_editor
-ags_file_write_link_editor
-ags_file_write_machine
-ags_file_write_machine_counter
-ags_file_write_machine_counter_list
-ags_file_write_machine_editor
-ags_file_write_machine_editor_list
-ags_file_write_machine_list
-ags_file_write_machine_selector
-ags_file_write_main
-ags_file_write_menu_bar
-ags_file_write_mixer_input_pad
-ags_file_write_mixer_output_pad
-ags_file_write_navigation
-ags_file_write_new
-ags_file_write_notation
-ags_file_write_notation_list
-ags_file_write_note
-ags_file_write_note_list
-ags_file_write_notebook
-ags_file_write_notebook_tab
-ags_file_write_notebook_tab_list
-ags_file_write_oscillator
-ags_file_write_output
-ags_file_write_pad
-ags_file_write_pad_editor
-ags_file_write_pad_list
-ags_file_write_pattern
-ags_file_write_pattern_data
-ags_file_write_pattern_data_list
-ags_file_write_pattern_list
-ags_file_write_port
-ags_file_write_port_list
-ags_file_write_recall
-ags_file_write_recall_audio
-ags_file_write_recall_audio_run
-ags_file_write_recall_audio_signal
-ags_file_write_recall_channel
-ags_file_write_recall_channel_run
-ags_file_write_recall_container
-ags_file_write_recall_container_list
-ags_file_write_recall_list
-ags_file_write_recall_recycling
-ags_file_write_recycling
-ags_file_write_recycling_list
-ags_file_write_resize_editor
-ags_file_write_resolve
-ags_file_write_server
-ags_file_write_stream
-ags_file_write_stream_list
-ags_file_write_task
-ags_file_write_task_list
-ags_file_write_thread
-ags_file_write_thread_list
-ags_file_write_thread_pool
-ags_file_write_timestamp
-ags_file_write_timestamp_list
-ags_file_write_toolbar
-ags_file_write_widget
-ags_file_write_window
+ags_file_str2md5 (<parameters>)
+ags_file_util_read_dependency (<parameters>)
+ags_file_util_read_history (<parameters>)
+ags_file_util_read_object (<parameters>)
+ags_file_util_read_parameter (<parameters>)
+ags_file_util_read_value (<parameters>)
+ags_file_util_write_dependency (<parameters>)
+ags_file_util_write_history (<parameters>)
+ags_file_util_write_object (<parameters>)
+ags_file_util_write_parameter (<parameters>)
+ags_file_util_write_value (<parameters>)
+ags_file_write (<parameters>)
+ags_file_write_application_context (<parameters>)
+ags_file_write_audio (<parameters>)
+ags_file_write_audio_list (<parameters>)
+ags_file_write_audio_signal (<parameters>)
+ags_file_write_audio_signal_list (<parameters>)
+ags_file_write_channel (<parameters>)
+ags_file_write_channel_list (<parameters>)
+ags_file_write_concurrent (<parameters>)
+ags_file_write_devout (<parameters>)
+ags_file_write_devout_list (<parameters>)
+ags_file_write_dialog (<parameters>)
+ags_file_write_dialog_list (<parameters>)
+ags_file_write_editor (<parameters>)
+ags_file_write_embedded_audio (<parameters>)
+ags_file_write_embedded_audio_list (<parameters>)
+ags_file_write_file_link (<parameters>)
+ags_file_write_file_link_list (<parameters>)
+ags_file_write_input (<parameters>)
+ags_file_write_line (<parameters>)
+ags_file_write_line_editor (<parameters>)
+ags_file_write_line_list (<parameters>)
+ags_file_write_line_member (<parameters>)
+ags_file_write_line_member_editor (<parameters>)
+ags_file_write_line_member_list (<parameters>)
+ags_file_write_link_collection_editor (<parameters>)
+ags_file_write_link_editor (<parameters>)
+ags_file_write_machine (<parameters>)
+ags_file_write_machine_counter (<parameters>)
+ags_file_write_machine_counter_list (<parameters>)
+ags_file_write_machine_editor (<parameters>)
+ags_file_write_machine_editor_list (<parameters>)
+ags_file_write_machine_list (<parameters>)
+ags_file_write_machine_selector (<parameters>)
+ags_file_write_main_loop (<parameters>)
+ags_file_write_menu_bar (<parameters>)
+ags_file_write_mixer_input_pad (<parameters>)
+ags_file_write_mixer_output_pad (<parameters>)
+ags_file_write_navigation (<parameters>)
+ags_file_write_notation (<parameters>)
+ags_file_write_notation_list (<parameters>)
+ags_file_write_note (<parameters>)
+ags_file_write_note_list (<parameters>)
+ags_file_write_notebook (<parameters>)
+ags_file_write_notebook_tab (<parameters>)
+ags_file_write_notebook_tab_list (<parameters>)
+ags_file_write_oscillator (<parameters>)
+ags_file_write_output (<parameters>)
+ags_file_write_pad (<parameters>)
+ags_file_write_pad_editor (<parameters>)
+ags_file_write_pad_list (<parameters>)
+ags_file_write_pattern (<parameters>)
+ags_file_write_pattern_data (<parameters>)
+ags_file_write_pattern_data_list (<parameters>)
+ags_file_write_pattern_list (<parameters>)
+ags_file_write_playback (<parameters>)
+ags_file_write_playback_list (<parameters>)
+ags_file_write_port (<parameters>)
+ags_file_write_port_list (<parameters>)
+ags_file_write_recall (<parameters>)
+ags_file_write_recall_audio (<parameters>)
+ags_file_write_recall_audio_run (<parameters>)
+ags_file_write_recall_audio_signal (<parameters>)
+ags_file_write_recall_channel (<parameters>)
+ags_file_write_recall_channel_run (<parameters>)
+ags_file_write_recall_container (<parameters>)
+ags_file_write_recall_container_list (<parameters>)
+ags_file_write_recall_list (<parameters>)
+ags_file_write_recall_recycling (<parameters>)
+ags_file_write_recycling (<parameters>)
+ags_file_write_recycling_list (<parameters>)
+ags_file_write_resize_editor (<parameters>)
+ags_file_write_resolve (<parameters>)
+ags_file_write_stream (<parameters>)
+ags_file_write_stream_list (<parameters>)
+ags_file_write_task (<parameters>)
+ags_file_write_task_list (<parameters>)
+ags_file_write_thread (<parameters>)
+ags_file_write_thread_list (<parameters>)
+ags_file_write_thread_pool (<parameters>)
+ags_file_write_timestamp (<parameters>)
+ags_file_write_timestamp_list (<parameters>)
+ags_file_write_toolbar (<parameters>)
+ags_file_write_widget (<parameters>)
+ags_file_write_window (<parameters>)
 ags_free_selection_new (notation)
-ags_garbage_collector_add
-ags_garbage_collector_new
-ags_garbage_collector_remove
-ags_garbage_collector_run
-ags_generic_preferences_new
-ags_gui_task_thread_new
+ags_generic_preferences_autosave_thread_clicked_callback (<parameters>)
+ags_gui_init_context (<parameters>)
 ags_hindicator_new
 ags_history_new
 ags_htimebar_new
+ags_init_context (<parameters>)
 ags_inline_player_new
 ags_ipatch_read_audio_signal (Returns)
-ags_iterator_thread_children_ready
+ags_iterator_thread_children_ready (<parameters>)
 ags_iterator_thread_new
-ags_ladspa_browser_cancel_callback
+ags_ladspa_bridge_load (<parameters>)
 ags_ladspa_browser_get_plugin_effect (ladspa_browser)
 ags_ladspa_browser_get_plugin_filename (ladspa_browser)
-ags_ladspa_browser_new (parent)
-ags_ladspa_browser_ok_callback
-ags_ladspa_browser_plugin_effect_callback
-ags_ladspa_browser_plugin_filename_callback
-ags_ladspa_browser_preview_close_callback
+ags_ladspa_browser_plugin_effect_callback (<parameters>)
+ags_ladspa_browser_plugin_filename_callback (<parameters>)
 ags_ladspa_browser_preview_new
 ags_ladspa_plugin_preferences_alloc
-ags_led_set_active
-ags_led_unset_active
+ags_led_set_active (<parameters>)
+ags_led_unset_active (<parameters>)
 ags_libao_error_quark
-ags_libao_list_cards
-ags_libao_new
-ags_libao_note_offset_changed
-ags_libao_pcm_info
+ags_libao_list_cards (<parameters>)
+ags_libao_new (<parameters>)
+ags_libao_note_offset_changed (<parameters>)
+ags_libao_pcm_info (<parameters>)
 ags_libao_play_alloc
 ags_libao_play_domain_alloc
-ags_libao_play_domain_free
-ags_libao_play_free
-ags_libao_tic
-ags_line_channel_done_callback
-ags_line_copy_pattern_cancel
-ags_line_copy_pattern_done
-ags_line_editor_destroy_callback
-ags_line_editor_parent_set_callback
-ags_line_editor_show_callback
-ags_line_find_next_grouped (Returns)
-ags_line_group_clicked_callback
-ags_line_member_button_clicked_callback
-ags_line_member_change_port
-ags_line_member_check_button_clicked_callback
-ags_line_member_dial_changed_callback
-ags_line_member_editor_add_callback
-ags_line_member_editor_ladspa_browser_response_callback
-ags_line_member_editor_remove_callback
-ags_line_member_get_widget
-ags_line_member_hscale_changed_callback
-ags_line_member_parent_set_callback
-ags_line_member_port_safe_write_callback
-ags_line_member_spin_button_changed_callback
-ags_line_member_toggle_button_clicked_callback
-ags_line_member_vscale_changed_callback
-ags_line_parent_set_callback
-ags_line_peak_run_post_callback
-ags_line_play_channel_run_cancel
-ags_line_play_volume_cancel
-ags_line_play_volume_done
-ags_line_recall_volume_cancel
-ags_line_recall_volume_done
-ags_line_remove_recall_callback
-ags_line_volume_callback
+ags_libao_play_domain_free (<parameters>)
+ags_libao_play_free (<parameters>)
+ags_libao_tic (<parameters>)
+ags_line_add_effect (<parameters>)
+ags_line_add_effect_callback (<parameters>)
+ags_line_channel_done_callback (<parameters>)
+ags_line_copy_pattern_cancel (<parameters>)
+ags_line_copy_pattern_done (<parameters>)
+ags_line_editor_destroy_callback (<parameters>)
+ags_line_editor_parent_set_callback (<parameters>)
+ags_line_editor_show_callback (<parameters>)
+ags_line_group_clicked_callback (<parameters>)
+ags_line_map_recall (output_pad_start)
+ags_line_member_button_clicked_callback (<parameters>)
+ags_line_member_change_port (<parameters>)
+ags_line_member_check_button_clicked_callback (<parameters>)
+ags_line_member_dial_changed_callback (<parameters>)
+ags_line_member_editor_add_callback (<parameters>)
+ags_line_member_editor_plugin_browser_response_callback (<parameters>)
+ags_line_member_editor_remove_callback (<parameters>)
+ags_line_member_get_widget (<parameters>)
+ags_line_member_hscale_changed_callback (<parameters>)
+ags_line_member_parent_set_callback (<parameters>)
+ags_line_member_port_safe_write_callback (<parameters>)
+ags_line_member_spin_button_changed_callback (<parameters>)
+ags_line_member_toggle_button_clicked_callback (<parameters>)
+ags_line_member_vscale_changed_callback (<parameters>)
+ags_line_parent_set_callback (<parameters>)
+ags_line_peak_run_post_callback (<parameters>)
+ags_line_play_channel_run_cancel (<parameters>)
+ags_line_play_volume_cancel (<parameters>)
+ags_line_play_volume_done (<parameters>)
+ags_line_recall_volume_cancel (<parameters>)
+ags_line_recall_volume_done (<parameters>)
+ags_line_remove_effect (<parameters>)
+ags_line_remove_recall_callback (<parameters>)
+ags_line_volume_callback (<parameters>)
 ags_link_channel_new (link)
-ags_link_collection_editor_check_count
-ags_link_collection_editor_check_first_line
-ags_link_collection_editor_check_first_link
-ags_link_collection_editor_count_callback
-ags_link_collection_editor_first_line_callback
-ags_link_collection_editor_first_link_callback
-ags_link_collection_editor_link_callback
-ags_link_collection_editor_parent_set_callback
-ags_link_editor_combo_callback
-ags_link_editor_destroy_callback
-ags_link_editor_parent_set_callback
-ags_link_editor_show_callback
-ags_list_duplicate_list
-ags_listing_editor_add_children (listing_editor)
-ags_listing_editor_parent_set_callback
-ags_listing_editor_set_pads_callback
-ags_log_debug
-ags_log_message
-ags_log_start_queue
-ags_log_stop_queue
-ags_machine_button_press_callback
-ags_machine_counter_alloc
-ags_machine_destroy_callback
-ags_machine_done_callback
-ags_machine_editor_add_callback
+ags_link_collection_editor_check_count (<parameters>)
+ags_link_collection_editor_check_first_line (<parameters>)
+ags_link_collection_editor_check_first_link (<parameters>)
+ags_link_collection_editor_count_callback (<parameters>)
+ags_link_collection_editor_first_line_callback (<parameters>)
+ags_link_collection_editor_first_link_callback (<parameters>)
+ags_link_collection_editor_link_callback (<parameters>)
+ags_link_collection_editor_parent_set_callback (<parameters>)
+ags_link_editor_combo_callback (<parameters>)
+ags_link_editor_destroy_callback (<parameters>)
+ags_link_editor_parent_set_callback (<parameters>)
+ags_link_editor_show_callback (<parameters>)
+ags_list_duplicate_list (<parameters>)
+ags_listing_editor_parent_set_callback (<parameters>)
+ags_log_add_queue (<parameters>)
+ags_log_debug (<parameters>)
+ags_log_error (<parameters>)
+ags_log_formated_message_alloc (<parameters>)
+ags_log_formated_message_free (<parameters>)
+ags_log_message (<parameters>)
+ags_log_message_alloc (<parameters>)
+ags_log_message_free (<parameters>)
+ags_log_new (<parameters>)
+ags_log_output (<parameters>)
+ags_log_warn (<parameters>)
+ags_lv2_bridge_load (<parameters>)
+ags_lv2_browser_get_plugin_effect (<parameters>)
+ags_lv2_browser_get_plugin_filename (lv2_browser)
+ags_lv2_browser_plugin_filename_callback (<parameters>)
+ags_lv2_browser_plugin_uri_callback (<parameters>)
+ags_lv2_browser_preview_new
+ags_lv2_manager_load_file (turtle)
+ags_lv2ui_manager_load_file (turtle)
+ags_machine_button_press_callback (<parameters>)
+ags_machine_counter_alloc (<parameters>)
+ags_machine_destroy_callback (<parameters>)
+ags_machine_done_callback (<parameters>)
+ags_machine_editor_add_callback (<parameters>)
 ags_machine_editor_add_children (machine_editor)
-ags_machine_editor_add_input
-ags_machine_editor_add_output
-ags_machine_editor_apply_callback
-ags_machine_editor_back_callback
-ags_machine_editor_cancel_callback
-ags_machine_editor_destroy_callback
-ags_machine_editor_ok_callback
-ags_machine_editor_parent_set_callback
-ags_machine_editor_remove_callback
-ags_machine_editor_remove_input
-ags_machine_editor_remove_output
-ags_machine_editor_show_callback
-ags_machine_editor_switch_page_callback
-ags_machine_file_chooser_dialog_new (Returns)
-ags_machine_find_by_name (Returns)
-ags_machine_open_response_callback
-ags_machine_parent_set_callback
-ags_machine_play_callback
-ags_machine_popup_destroy_activate_callback
-ags_machine_popup_hide_activate_callback
-ags_machine_popup_move_down_activate_callback
-ags_machine_popup_move_up_activate_callback
-ags_machine_popup_properties_activate_callback
-ags_machine_popup_rename_activate_callback
-ags_machine_popup_show_activate_callback
-ags_machine_radio_button_new (Returns)
-ags_machine_selection_new (window, Returns)
+ags_machine_editor_add_input (<parameters>)
+ags_machine_editor_add_output (<parameters>)
+ags_machine_editor_apply_callback (<parameters>)
+ags_machine_editor_back_callback (<parameters>)
+ags_machine_editor_cancel_callback (<parameters>)
+ags_machine_editor_destroy_callback (<parameters>)
+ags_machine_editor_ok_callback (<parameters>)
+ags_machine_editor_parent_set_callback (<parameters>)
+ags_machine_editor_remove_callback (<parameters>)
+ags_machine_editor_remove_input (<parameters>)
+ags_machine_editor_remove_output (<parameters>)
+ags_machine_editor_show_callback (<parameters>)
+ags_machine_editor_switch_page_callback (<parameters>)
+ags_machine_open_response_callback (<parameters>)
+ags_machine_parent_set_callback (<parameters>)
+ags_machine_play_callback (<parameters>)
+ags_machine_popup_destroy_activate_callback (<parameters>)
+ags_machine_popup_hide_activate_callback (<parameters>)
+ags_machine_popup_move_down_activate_callback (<parameters>)
+ags_machine_popup_move_up_activate_callback (<parameters>)
+ags_machine_popup_properties_activate_callback (<parameters>)
+ags_machine_popup_rename_activate_callback (<parameters>)
+ags_machine_popup_show_activate_callback (<parameters>)
+ags_machine_selection_load_default (<parameters>)
+ags_machine_selection_new (window)
 ags_machine_selector_changed (machine_selector, machine)
-ags_machine_selector_new (Returns)
-ags_machine_selector_popup_add_index_callback
-ags_machine_selector_popup_add_tab_callback
-ags_machine_selector_popup_link_index_callback
-ags_machine_selector_popup_new (machine_selector, Returns)
-ags_machine_selector_popup_remove_index_callback
-ags_machine_selector_popup_remove_tab_callback
-ags_machine_selector_radio_changed
-ags_machine_start_failure_callback
-ags_machine_tact_callback
-ags_main_add_devout
-ags_main_load_config
-ags_main_loop_get_async_queue
-ags_main_loop_set_async_queue
-ags_main_new
-ags_main_quit
-ags_main_register_machine_type
-ags_main_register_recall_type
-ags_main_register_task_type
-ags_main_register_thread_type
-ags_main_register_widget_type
-ags_matrix_adjustment_value_changed_callback
-ags_matrix_bpm_callback
-ags_matrix_done_callback
-ags_matrix_draw_gutter
-ags_matrix_draw_matrix
-ags_matrix_drawing_area_button_press_callback
-ags_matrix_drawing_area_expose_callback
-ags_matrix_highlight_gutter_point
-ags_matrix_index_callback
-ags_matrix_input_map_recall
-ags_matrix_length_spin_callback
-ags_matrix_loop_button_callback
-ags_matrix_output_map_recall
-ags_matrix_parent_set_callback
-ags_matrix_redraw_gutter_point
-ags_matrix_tact_callback
-ags_matrix_unpaint_gutter_point
-ags_menu_bar_about_callback
-ags_menu_bar_add_callback
-ags_menu_bar_add_drum_callback
-ags_menu_bar_add_ffplayer_callback
-ags_menu_bar_add_matrix_callback
-ags_menu_bar_add_mixer_callback
-ags_menu_bar_add_panel_callback
-ags_menu_bar_add_synth_callback
-ags_menu_bar_destroy_callback
-ags_menu_bar_export_callback
-ags_menu_bar_open_callback
-ags_menu_bar_preferences_callback
-ags_menu_bar_quit_callback
-ags_menu_bar_remove_callback
-ags_menu_bar_save_as_callback
-ags_menu_bar_save_callback
-ags_menu_bar_show_callback
+ags_machine_selector_popup_add_index_callback (<parameters>)
+ags_machine_selector_popup_add_tab_callback (<parameters>)
+ags_machine_selector_popup_link_index_callback (<parameters>)
+ags_machine_selector_popup_new (machine_selector)
+ags_machine_selector_popup_remove_index_callback (<parameters>)
+ags_machine_selector_popup_remove_tab_callback (<parameters>)
+ags_machine_selector_radio_changed (<parameters>)
+ags_machine_set_audio_channels (<parameters>)
+ags_machine_set_pads (<parameters>)
+ags_machine_start_failure_callback (<parameters>)
+ags_machine_tact_callback (<parameters>)
+ags_main_loop_get_application_context (<parameters>)
+ags_main_loop_set_application_context (<parameters>)
+ags_main_quit (<parameters>)
+ags_matrix_adjustment_value_changed_callback (<parameters>)
+ags_matrix_bpm_callback (<parameters>)
+ags_matrix_done_callback (<parameters>)
+ags_matrix_draw_gutter (<parameters>)
+ags_matrix_draw_matrix (<parameters>)
+ags_matrix_drawing_area_button_press_callback (<parameters>)
+ags_matrix_drawing_area_expose_callback (<parameters>)
+ags_matrix_highlight_gutter_point (<parameters>)
+ags_matrix_index_callback (<parameters>)
+ags_matrix_input_map_recall (<parameters>)
+ags_matrix_length_spin_callback (<parameters>)
+ags_matrix_loop_button_callback (<parameters>)
+ags_matrix_output_map_recall (<parameters>)
+ags_matrix_parent_set_callback (<parameters>)
+ags_matrix_redraw_gutter_point (<parameters>)
+ags_matrix_tact_callback (<parameters>)
+ags_matrix_unpaint_gutter_point (<parameters>)
+ags_menu_bar_about_callback (<parameters>)
+ags_menu_bar_add_callback (<parameters>)
+ags_menu_bar_add_drum_callback (<parameters>)
+ags_menu_bar_add_ffplayer_callback (<parameters>)
+ags_menu_bar_add_ladspa_bridge_callback (<parameters>)
+ags_menu_bar_add_lv2_bridge_callback (<parameters>)
+ags_menu_bar_add_matrix_callback (<parameters>)
+ags_menu_bar_add_mixer_callback (<parameters>)
+ags_menu_bar_add_panel_callback (<parameters>)
+ags_menu_bar_add_replicator_bridge_callback (<parameters>)
+ags_menu_bar_add_synth_callback (<parameters>)
+ags_menu_bar_automation_editor_callback (<parameters>)
+ags_menu_bar_destroy_callback (<parameters>)
+ags_menu_bar_export_callback (<parameters>)
+ags_menu_bar_import_midi_callback (<parameters>)
+ags_menu_bar_open_callback (<parameters>)
+ags_menu_bar_preferences_callback (<parameters>)
+ags_menu_bar_quit_callback (<parameters>)
+ags_menu_bar_remove_callback (<parameters>)
+ags_menu_bar_save_as_callback (<parameters>)
+ags_menu_bar_save_callback (<parameters>)
+ags_menu_bar_show_callback (<parameters>)
 ags_menu_item_new
 ags_menu_new
-ags_meter_configure_event
-ags_meter_destroy_callback
-ags_meter_expose_event
-ags_meter_new (Returns)
-ags_meter_paint
-ags_meter_show_callback
-ags_meter_sound_string
-ags_mixer_input_line_map_recall
-ags_mixer_parent_set_callback
-ags_mutable_set_muted
-ags_mute_channel_run_new
-ags_navigation_bpm_callback
-ags_navigation_destroy_callback
-ags_navigation_duration_tact_callback
-ags_navigation_expander_callback
-ags_navigation_forward_callback
-ags_navigation_loop_callback
-ags_navigation_loop_left_tact_callback
-ags_navigation_loop_right_tact_callback
-ags_navigation_next_callback
-ags_navigation_parent_set_callback
-ags_navigation_play_callback
-ags_navigation_position_tact_callback
-ags_navigation_prev_callback
-ags_navigation_raster_callback
-ags_navigation_rewind_callback
-ags_navigation_set_seeking_sensitive
-ags_navigation_show_callback
-ags_navigation_stop_callback
-ags_navigation_tic_callback
-ags_navigation_update_time_string (time_string)
+ags_midi_import_wizard_response_callback (<parameters>)
+ags_midi_parser_change_channel_pressure (<parameters>)
+ags_midi_parser_change_parameter (<parameters>)
+ags_midi_parser_change_pitch_bend (<parameters>)
+ags_midi_parser_change_program (<parameters>)
+ags_midi_parser_channel_message (<parameters>)
+ags_midi_parser_end_of_track (<parameters>)
+ags_midi_parser_key_off (<parameters>)
+ags_midi_parser_key_on (<parameters>)
+ags_midi_parser_key_pressure (<parameters>)
+ags_midi_parser_key_signature (<parameters>)
+ags_midi_parser_meta_event (<parameters>)
+ags_midi_parser_meta_misc (<parameters>)
+ags_midi_parser_midi_getc (<parameters>)
+ags_midi_parser_new (<parameters>)
+ags_midi_parser_not_defined (<parameters>)
+ags_midi_parser_on_error (<parameters>)
+ags_midi_parser_parse_full (<parameters>)
+ags_midi_parser_parse_header (<parameters>)
+ags_midi_parser_parse_track (<parameters>)
+ags_midi_parser_read_gint16 (<parameters>)
+ags_midi_parser_read_gint24 (<parameters>)
+ags_midi_parser_read_gint32 (<parameters>)
+ags_midi_parser_read_text (<parameters>)
+ags_midi_parser_read_varlength (<parameters>)
+ags_midi_parser_sequence_number (<parameters>)
+ags_midi_parser_sequencer_meta_event (<parameters>)
+ags_midi_parser_smpte (<parameters>)
+ags_midi_parser_sysex (<parameters>)
+ags_midi_parser_system_common (<parameters>)
+ags_midi_parser_tempo (<parameters>)
+ags_midi_parser_text_event (<parameters>)
+ags_midi_parser_ticks_to_sec (<parameters>)
+ags_midi_parser_time_signature (<parameters>)
+ags_mixer_parent_set_callback (<parameters>)
+ags_mutable_set_muted (<parameters>)
+ags_mute_channel_run_new (<parameters>)
+ags_mutex_manager_get_instance
+ags_mutex_manager_insert (<parameters>)
+ags_mutex_manager_lookup (<parameters>)
+ags_mutex_manager_new
+ags_mutex_manager_remove (<parameters>)
+ags_navigation_bpm_callback (<parameters>)
+ags_navigation_change_position (bpm)
+ags_navigation_destroy_callback (<parameters>)
+ags_navigation_duration_tact_callback (<parameters>)
+ags_navigation_expander_callback (<parameters>)
+ags_navigation_forward_callback (<parameters>)
+ags_navigation_loop_callback (<parameters>)
+ags_navigation_loop_left_tact_callback (<parameters>)
+ags_navigation_loop_right_tact_callback (<parameters>)
+ags_navigation_next_callback (<parameters>)
+ags_navigation_parent_set_callback (<parameters>)
+ags_navigation_play_callback (<parameters>)
+ags_navigation_position_tact_callback (<parameters>)
+ags_navigation_prev_callback (<parameters>)
+ags_navigation_raster_callback (<parameters>)
+ags_navigation_rewind_callback (<parameters>)
+ags_navigation_set_seeking_sensitive (<parameters>)
+ags_navigation_show_callback (<parameters>)
+ags_navigation_stop_callback (<parameters>)
+ags_navigation_tact_to_time_string (bpm)
+ags_navigation_tic_callback (<parameters>)
+ags_navigation_update_time_string (time_string, bpm)
 ags_notation_find_region (use_selection_list)
-ags_notation_get_current
+ags_notation_get_current (<parameters>)
 ags_notation_insert_from_clipboard (content)
-ags_note_edit_drawing_area_button_press_event
-ags_note_edit_drawing_area_button_release_event
-ags_note_edit_drawing_area_configure_event
-ags_note_edit_drawing_area_expose_event
-ags_note_edit_drawing_area_motion_notify_event
-ags_note_edit_hscrollbar_value_changed
-ags_note_edit_new (Returns)
-ags_note_edit_vscrollbar_value_changed
-ags_notebook_add_child
-ags_notebook_add_tab
-ags_notebook_insert_tab
-ags_notebook_machine_changed_callback
-ags_notebook_new (Returns)
-ags_notebook_next_active_tab
-ags_notebook_remove_child
-ags_notebook_remove_tab
-ags_notebook_tab_index
+ags_note_edit_drawing_area_button_press_event (<parameters>)
+ags_note_edit_drawing_area_button_release_event (<parameters>)
+ags_note_edit_drawing_area_configure_event (<parameters>)
+ags_note_edit_drawing_area_expose_event (<parameters>)
+ags_note_edit_drawing_area_motion_notify_event (<parameters>)
+ags_note_edit_hscrollbar_value_changed (<parameters>)
+ags_note_edit_vscrollbar_value_changed (<parameters>)
+ags_notebook_add_child (<parameters>)
+ags_notebook_add_tab (<parameters>)
+ags_notebook_insert_tab (<parameters>)
+ags_notebook_machine_changed_callback (<parameters>)
+ags_notebook_next_active_tab (<parameters>)
+ags_notebook_remove_child (<parameters>)
+ags_notebook_remove_tab (<parameters>)
+ags_notebook_tab_index (<parameters>)
 ags_open_file_new (audio)
-ags_open_single_file_new
+ags_open_single_file_new (<parameters>)
 ags_option_menu_new
-ags_oscillator_attack_callback
-ags_oscillator_frame_count_callback
-ags_oscillator_frequency_callback
-ags_oscillator_phase_callback
-ags_oscillator_volume_callback
-ags_oscillator_wave_callback
+ags_oscillator_attack_callback (<parameters>)
+ags_oscillator_frame_count_callback (<parameters>)
+ags_oscillator_frequency_callback (<parameters>)
+ags_oscillator_phase_callback (<parameters>)
+ags_oscillator_volume_callback (<parameters>)
+ags_oscillator_wave_callback (<parameters>)
 ags_packable_pack (container)
-ags_pad_destroy_callback
-ags_pad_editor_destroy_callback
-ags_pad_editor_parent_set_callback
-ags_pad_editor_set_audio_channels_callback
-ags_pad_editor_show_callback
-ags_pad_group_clicked_callback
-ags_pad_mute_clicked_callback
-ags_pad_option_changed_callback
-ags_pad_parent_set_callback
-ags_pad_show_callback
-ags_pad_solo_clicked_callback
-ags_panel_input_line_map_recall
-ags_panel_parent_set_callback
+ags_pad_editor_destroy_callback (<parameters>)
+ags_pad_editor_parent_set_callback (<parameters>)
+ags_pad_editor_resize_lines (<parameters>)
+ags_pad_editor_show_callback (<parameters>)
+ags_pad_group_clicked_callback (<parameters>)
+ags_pad_mute_clicked_callback (<parameters>)
+ags_pad_option_changed_callback (<parameters>)
+ags_pad_parent_set_callback (<parameters>)
+ags_pad_solo_clicked_callback (<parameters>)
+ags_panel_parent_set_callback (<parameters>)
 ags_parameter_grow (type)
-ags_pattern_get_by_timestamp
+ags_pattern_edit_drawing_area_button_press_event (<parameters>)
+ags_pattern_edit_drawing_area_button_release_event (<parameters>)
+ags_pattern_edit_drawing_area_configure_event (<parameters>)
+ags_pattern_edit_drawing_area_expose_event (<parameters>)
+ags_pattern_edit_drawing_area_motion_notify_event (<parameters>)
+ags_pattern_edit_hscrollbar_value_changed (<parameters>)
+ags_pattern_edit_vscrollbar_value_changed (<parameters>)
+ags_pattern_get_by_timestamp (list)
 ags_pattern_set_dim (lenght)
-ags_peak_channel_retrieve_peak
-ags_persistable_read
-ags_persistable_read_link
-ags_persistable_write
-ags_persistable_write_link
-ags_play_audio_file_new
+ags_peak_channel_retrieve_peak (<parameters>)
+ags_persistable_read (<parameters>)
+ags_persistable_read_link (<parameters>)
+ags_persistable_write (<parameters>)
+ags_persistable_write_link (<parameters>)
+ags_piano_configure_event (<parameters>)
+ags_piano_expose_event (<parameters>)
+ags_piano_paint (<parameters>)
+ags_piano_sound_string
+ags_play_audio_file_new (<parameters>)
 ags_play_audio_signal_new (audio_channel)
-ags_play_channel_run_master_find_streamer
+ags_play_channel_run_master_find_streamer (<parameters>)
 ags_play_channel_run_master_new
-ags_play_channel_run_master_streamer_alloc
+ags_play_channel_run_master_streamer_alloc (<parameters>)
 ags_play_note_new
-ags_play_pattern_connect
+ags_play_pattern_connect (<parameters>)
 ags_playable_error_quark
-ags_playable_iter_next (Returns)
+ags_playable_get_loop (<parameters>)
 ags_playable_read_audio_signal (channels)
-ags_plugin_factory_add
-ags_plugin_factory_create
+ags_playable_set_current (current)
+ags_playable_set_loop (<parameters>)
+ags_playback_find_source (<parameters>)
+ags_plugin_browser_cancel_callback (<parameters>)
+ags_plugin_browser_get_plugin_effect (plugin_browser)
+ags_plugin_browser_get_plugin_filename (plugin_browser)
+ags_plugin_browser_new (parent)
+ags_plugin_browser_ok_callback (<parameters>)
+ags_plugin_browser_plugin_type_changed_callback (<parameters>)
+ags_plugin_factory_add (<parameters>)
+ags_plugin_factory_create (<parameters>)
 ags_plugin_factory_get_instance
-ags_plugin_factory_list_by_name
+ags_plugin_factory_list_by_name (<parameters>)
 ags_plugin_factory_new
-ags_plugin_factory_new_from_file
-ags_plugin_factory_read_file
-ags_portable_thread_add_child
-ags_portable_thread_children_is_locked
-ags_portable_thread_first (thread, Returns)
-ags_portable_thread_get_toplevel (thread, Returns)
-ags_portable_thread_is_current_ready
-ags_portable_thread_is_current_synced
-ags_portable_thread_is_tree_ready
-ags_portable_thread_is_tree_synced
-ags_portable_thread_last (thread, Returns)
+ags_plugin_factory_new_from_file (<parameters>)
+ags_plugin_factory_read_file (<parameters>)
+ags_port_selection_add_port
+ags_port_selection_enable_ports (selection)
+ags_port_selection_load_ports
+ags_port_selection_ports_toggled_callback (<parameters>)
+ags_portable_thread_add_child (<parameters>)
+ags_portable_thread_children_is_locked (<parameters>)
+ags_portable_thread_first (thread)
+ags_portable_thread_get_toplevel (thread)
+ags_portable_thread_is_current_ready (<parameters>)
+ags_portable_thread_is_current_synced (<parameters>)
+ags_portable_thread_is_tree_ready (<parameters>)
+ags_portable_thread_is_tree_synced (<parameters>)
+ags_portable_thread_last (thread)
 ags_portable_thread_lock (thread)
-ags_portable_thread_lock_all
+ags_portable_thread_lock_all (<parameters>)
 ags_portable_thread_lock_children (thread)
 ags_portable_thread_lock_parent (thread, parent)
 ags_portable_thread_lock_sibling (thread)
-ags_portable_thread_main_loop_unlock_children
-ags_portable_thread_new (data, Returns)
-ags_portable_thread_next_children_locked (thread, Returns)
-ags_portable_thread_next_parent_locked (thread, parent, Returns)
-ags_portable_thread_next_sibling_locked (thread, Returns)
-ags_portable_thread_parental_is_locked (thread, parent, Returns)
-ags_portable_thread_remove_child
+ags_portable_thread_main_loop_unlock_children (<parameters>)
+ags_portable_thread_new (data)
+ags_portable_thread_next_children_locked (thread)
+ags_portable_thread_next_parent_locked (parent, thread)
+ags_portable_thread_next_sibling_locked (thread)
+ags_portable_thread_parental_is_locked (thread, parent)
+ags_portable_thread_remove_child (<parameters>)
 ags_portable_thread_run (thread)
-ags_portable_thread_sibling_is_locked (thread, Returns)
+ags_portable_thread_sibling_is_locked (thread)
 ags_portable_thread_signal_children (thread, broadcast)
 ags_portable_thread_signal_parent (thread, parent, broadcast)
 ags_portable_thread_signal_sibling (thread, broadcast)
 ags_portable_thread_start (thread)
 ags_portable_thread_stop (thread)
-ags_portable_thread_timelock
-ags_portable_thread_trylock
+ags_portable_thread_timelock (<parameters>)
+ags_portable_thread_trylock (<parameters>)
 ags_portable_thread_unlock (thread)
-ags_portable_thread_unlock_all
+ags_portable_thread_unlock_all (<parameters>)
 ags_portable_thread_unlock_children (thread)
 ags_portable_thread_unlock_parent (thread, parent)
 ags_portable_thread_unlock_sibling (thread)
 ags_portable_thread_wait_children (thread)
 ags_portable_thread_wait_parent (thread, parent)
 ags_portable_thread_wait_sibling (thread)
-ags_preferences_response_callback
-ags_property_collection_editor_add_collection_callback
+ags_preferences_response_callback (<parameters>)
+ags_property_collection_editor_add_collection_callback (<parameters>)
 ags_property_collection_editor_new (child_type, child_parameter_count, child_parameter)
-ags_property_collection_editor_remove_collection_callback
-ags_property_editor_enable_callback
+ags_property_collection_editor_remove_collection_callback (<parameters>)
+ags_property_editor_enable_callback (<parameters>)
 ags_property_listing_editor_new
 ags_recall_add_child (recall)
 ags_recall_add_dependency (dependency)
 ags_recall_audio_new (audio)
 ags_recall_channel_find_channel (channel)
-ags_recall_channel_run_get_run_order
-ags_recall_child_added
+ags_recall_channel_run_get_run_order (<parameters>)
+ags_recall_child_added (<parameters>)
 ags_recall_dependency_resolve (recall_dependency)
-ags_recall_duplicate (Returns)
 ags_recall_factory_create (play_container)
 ags_recall_factory_get_instance
-ags_recall_factory_remove
-ags_recall_find_provider_with_recycling_container (recall)
-ags_recall_find_recycling_container (recall)
+ags_recall_factory_remove (<parameters>)
+ags_recall_find_provider_with_recycling_context (recall)
+ags_recall_find_recall_id_with_effect (<parameters>)
+ags_recall_find_recycling_context (recall)
 ags_recall_find_template (recall)
 ags_recall_find_type (recall)
-ags_recall_find_type_with_recycling_container (recall)
-ags_recall_handler_alloc (Returns)
-ags_recall_id_find_parent_recycling_container (parent_recycling_container)
-ags_recall_id_new (recycling, recycling)
-ags_recall_is_done (recalls, Returns)
+ags_recall_find_type_with_recycling_context (recall_type, recall)
+ags_recall_get_by_effect (recall)
+ags_recall_id_find_parent_recycling_context (parent_recycling_context)
+ags_recall_id_new (recycling)
+ags_recall_is_done (recalls)
+ags_recall_ladpsa_find (<parameters>)
+ags_recall_ladspa_float_to_short (lines)
+ags_recall_ladspa_short_to_float (buffer_size, lines)
+ags_recall_lv2_float_to_short (lines)
+ags_recall_lv2_new (turtle)
+ags_recall_lv2_short_to_float (lines, buffer_size)
 ags_recall_notify_dependency (dependency)
-ags_recall_recycling_dummy_new (recycling, child_type)
-ags_recall_recycling_get_child_source
+ags_recall_recycling_dummy_new (child_type, recycling)
+ags_recall_recycling_get_child_source (<parameters>)
 ags_recall_remove_child (recall)
 ags_recall_remove_dependency (template)
 ags_recall_resolve_dependencies (reall)
-ags_recall_run_init
-ags_recall_run_init_inter
-ags_recall_run_init_post
-ags_recall_set_devout_recursive
-ags_recall_set_effect
-ags_recall_template_find_provider
+ags_recall_run_init (<parameters>)
+ags_recall_set_soundcard_recursive (<parameters>)
+ags_recall_template_find_all_type (<parameters>)
+ags_recall_template_find_provider (<parameters>)
 ags_recall_template_find_type (recall)
-ags_record_thread_new
-ags_recycling_container_remove
-ags_recycling_container_replace
-ags_recycling_create_audio_signal_with_defaults (delay, attack, delay, attack)
-ags_recycling_create_audio_signal_with_frame_count (delay, attack, delay, attack)
+ags_record_thread_new (<parameters>)
+ags_recycling_create_audio_signal_with_defaults (delay, attack)
+ags_recycling_create_audio_signal_with_frame_count (delay, attack)
 ags_recycling_position (start_recycling)
-ags_recycling_set_devout
-ags_recycling_thread_iterate_callback
+ags_recycling_thread_iterate_callback (<parameters>)
 ags_recycling_thread_new
-ags_recycling_thread_play_audio
-ags_recycling_thread_play_channel
-ags_registry_add
-ags_registry_entry_alloc
-ags_registry_entry_bulk
-ags_registry_entry_find
+ags_recycling_thread_play_audio (<parameters>)
+ags_recycling_thread_play_channel (<parameters>)
+ags_registry_add (<parameters>)
+ags_registry_entry_alloc (<parameters>)
+ags_registry_entry_bulk (<parameters>)
+ags_registry_entry_find (<parameters>)
 ags_registry_new
-ags_remote_task_launch
-ags_remote_task_launch_timed
+ags_remote_task_launch (<parameters>)
+ags_remote_task_launch_timed (<parameters>)
 ags_remote_task_new
-ags_remove_point_from_selection_new
-ags_remove_region_from_selection_new
-ags_returnable_thread_safe_run
-ags_runnable_run
-ags_runnable_stop
-ags_seekable_seek
-ags_segment_draw_string
-ags_segment_field_off
-ags_segment_field_on
-ags_segment_new
-ags_server_create_object
-ags_server_lookup
-ags_server_new
-ags_server_object_set_property
-ags_server_start
+ags_remove_point_from_selection_new (<parameters>)
+ags_remove_recall_container_new (audio, recall_container)
+ags_remove_region_from_selection_new (<parameters>)
+ags_returnable_thread_safe_run (<parameters>)
+ags_runnable_run (<parameters>)
+ags_runnable_stop (<parameters>)
+ags_seekable_seek (<parameters>)
+ags_server_application_context_new (<parameters>)
+ags_server_create_object (<parameters>)
+ags_server_init_context (<parameters>)
+ags_server_lookup (<parameters>)
+ags_server_new (<parameters>)
+ags_server_object_set_property (<parameters>)
+ags_server_start (<parameters>)
+ags_service_provider_get_server (<parameters>)
 ags_set_buffer_size_new (gobject)
-ags_set_devout_play_flags_new (play, devout_play_flags)
+ags_set_playback_flags_new (playback_flags, play)
 ags_set_samplerate_new (gobject)
-ags_sf2_chooser_completed
-ags_sf2_chooser_instrument_changed
+ags_sf2_chooser_completed (<parameters>)
+ags_sf2_chooser_instrument_changed (<parameters>)
 ags_sf2_chooser_new
-ags_sf2_chooser_open
-ags_sf2_chooser_preset_changed
-ags_sf2_chooser_remove_all_from_combo
-ags_sf2_chooser_sample_changed
+ags_sf2_chooser_open (<parameters>)
+ags_sf2_chooser_preset_changed (<parameters>)
+ags_sf2_chooser_remove_all_from_combo (<parameters>)
+ags_sf2_chooser_sample_changed (<parameters>)
 ags_single_thread_new
-ags_soundcard_list_cards
-ags_soundcard_offset_changed
-ags_soundcard_pcm_info
-ags_soundcard_tic (soundcard)
-ags_stackable_pop
-ags_stackable_push
-ags_stream
-ags_stream_new
-ags_synth_auto_update_callback
-ags_synth_input_line_map_recall
-ags_synth_lower_callback
-ags_synth_parent_set_callback
+ags_sound_provider_get_soundcard (<parameters>)
+ags_soundcard_get_presets (format, channels, buffer_size, rate)
+ags_soundcard_offset_changed (<parameters>)
+ags_soundcard_play_init (<parameters>)
+ags_soundcard_set_presets (rate, channels, buffer_size, format)
+ags_soundset_configure_event (<parameters>)
+ags_soundset_expose_event (<parameters>)
+ags_soundset_paint (<parameters>)
+ags_soundset_sound_string
+ags_stackable_pop (<parameters>)
+ags_stackable_push (<parameters>)
+ags_start_thread_new (parent, child)
+ags_synth_auto_update_callback (<parameters>)
+ags_synth_lower_callback (<parameters>)
+ags_synth_output_line_notify_channel_callback (<parameters>)
+ags_synth_parent_set_callback (<parameters>)
 ags_synth_saw (<parameters>)
 ags_synth_sin (<parameters>)
 ags_synth_square (<parameters>)
 ags_synth_triangle (<parameters>)
-ags_synth_update_callback
-ags_table_new
+ags_synth_update_callback (<parameters>)
+ags_table_new (<parameters>)
 ags_tact_combo_box_new
 ags_tact_menu_new
-ags_thread_add_child (thread, child)
-ags_thread_children_is_locked (thread, Returns, thread, Returns)
-ags_thread_first (thread, Returns, thread, Returns)
-ags_thread_get_toplevel (thread, Returns)
-ags_thread_hangcheck (thread, thread)
-ags_thread_is_current_ready
-ags_thread_is_tree_ready
-ags_thread_last (thread, Returns, thread, Returns)
-ags_thread_lock (thread, thread)
-ags_thread_lock_all
-ags_thread_lock_children (thread, thread)
-ags_thread_lock_parent (thread, parent, thread, parent)
-ags_thread_lock_sibling (thread, thread)
-ags_thread_new (data, Returns, data, Returns)
-ags_thread_next_children_locked (thread, Returns, thread, Returns)
-ags_thread_next_parent_locked (thread, parent, Returns, thread, parent, Returns)
-ags_thread_next_sibling_locked (thread, Returns, thread, Returns)
-ags_thread_parental_is_locked (thread, parent, Returns, thread, parent, Returns)
-ags_thread_remove_child (thread, child)
-ags_thread_resume
-ags_thread_run (thread, thread)
-ags_thread_set_sync (thread, tic, thread, tic)
-ags_thread_set_sync_all
-ags_thread_sibling_is_locked (thread, Returns, thread, Returns)
-ags_thread_signal_children (thread, broadcast, thread, broadcast)
-ags_thread_signal_parent (thread, parent, broadcast, thread, parent, broadcast)
-ags_thread_signal_sibling (thread, broadcast, thread, broadcast)
-ags_thread_start (thread, thread)
-ags_thread_stop (thread, thread)
-ags_thread_suspend
-ags_thread_timelock
-ags_thread_trylock (Returns, thread, Returns)
-ags_thread_unlock (thread, thread)
-ags_thread_unlock_all
-ags_thread_unlock_children (thread, thread)
-ags_thread_unlock_parent (thread, parent, thread, parent)
-ags_thread_unlock_sibling (thread, thread)
-ags_thread_wait_children (thread, thread)
-ags_thread_wait_parent (thread, parent, thread, parent)
-ags_thread_wait_sibling (thread, thread)
+ags_thread_application_context_new (<parameters>)
+ags_thread_find_type (<parameters>)
+ags_thread_init_context (<parameters>)
+ags_thread_is_current_ready (<parameters>)
+ags_thread_is_tree_ready (<parameters>)
+ags_thread_lock_all (<parameters>)
+ags_thread_resume (<parameters>)
+ags_thread_set_sync_all (<parameters>)
+ags_thread_signal_parent (parent)
+ags_thread_suspend (<parameters>)
+ags_thread_timelock (<parameters>)
+ags_thread_unlock_all (<parameters>)
 ags_timebar_new
-ags_timer_alloc
-ags_timestamp_factory_create
+ags_timestamp_factory_create (<parameters>)
 ags_timestamp_factory_get_instance
 ags_timestamp_thread_new
-ags_toggle_pattern_bit_new (line, line)
-ags_toggle_pattern_bit_refresh_gui
-ags_toolbar_clear_callback
-ags_toolbar_copy_or_cut_callback
-ags_toolbar_destroy_callback
-ags_toolbar_edit_callback
-ags_toolbar_mode_callback
-ags_toolbar_new (Returns)
-ags_toolbar_paste_callback
-ags_toolbar_position_callback
-ags_toolbar_select_callback
-ags_toolbar_show_callback
-ags_toolbar_zoom_callback
-ags_tree_iterator_is_inverse_mode
-ags_tree_iterator_iterate
-ags_tree_iterator_iterate_nested
-ags_tree_iterator_safe_iterate
-ags_tree_iterator_safe_iterate_nested
-ags_tree_iterator_set_inverse_mode
-ags_unref_audio_signal_new
-ags_vindicator_new (Returns)
+ags_toggle_pattern_bit_new (line)
+ags_toggle_pattern_bit_refresh_gui (<parameters>)
+ags_toolbar_clear_callback (<parameters>)
+ags_toolbar_copy_or_cut_callback (<parameters>)
+ags_toolbar_destroy_callback (<parameters>)
+ags_toolbar_edit_callback (<parameters>)
+ags_toolbar_mode_callback (<parameters>)
+ags_toolbar_paste_callback (<parameters>)
+ags_toolbar_position_callback (<parameters>)
+ags_toolbar_select_callback (<parameters>)
+ags_toolbar_show_callback (<parameters>)
+ags_toolbar_zoom_callback (<parameters>)
+ags_track_collection_add_mapper (<parameters>)
+ags_track_collection_new (child_type, child_parameter_count, child_parameter)
+ags_track_collection_parse (<parameters>)
+ags_tree_iterator_is_inverse_mode (<parameters>)
+ags_tree_iterator_iterate (<parameters>)
+ags_tree_iterator_iterate_nested (<parameters>)
+ags_tree_iterator_safe_iterate (<parameters>)
+ags_tree_iterator_safe_iterate_nested (<parameters>)
+ags_tree_iterator_set_inverse_mode (<parameters>)
+ags_turtle_find_xpath (<parameters>)
+ags_turtle_load (<parameters>)
+ags_turtle_new (<parameters>)
+ags_unref_audio_signal_new (<parameters>)
+ags_update_bulk_member_new (<parameters>)
 ags_volume_channel_run_new (channel)
 ags_waveform_new
-ags_window_decrement_machine_counter
-ags_window_delete_event_callback
-ags_window_find_machine_counter
-ags_window_increment_machine_counter
+ags_window_decrement_machine_counter (<parameters>)
+ags_window_delete_event_callback (<parameters>)
+ags_window_find_machine_counter (<parameters>)
+ags_window_increment_machine_counter (<parameters>)
+ags_xorg_application_context_new
+ags_xorg_init_context (<parameters>)
 ags_zoom_menu_new
-g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT
-g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT
-g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER
-g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING
-g_cclosure_user_marshal_OBJECT__VOID
-g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER
-g_cclosure_user_marshal_ULONG__VOID
-g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE
-g_cclosure_user_marshal_VOID__OBJECT_OBJECT
-g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN
-g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT
-g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN
-g_cclosure_user_marshal_VOID__OBJECT_UINT
-g_cclosure_user_marshal_VOID__STRING_POINTER
-g_cclosure_user_marshal_VOID__UINT_DOUBLE
-g_cclosure_user_marshal_VOID__UINT_INT
-g_cclosure_user_marshal_VOID__UINT_UINT
-g_cclosure_user_marshal_VOID__UINT_UINT_UINT
-g_cclosure_user_marshal_VOID__ULONG_UINT
-g_cclosure_user_marshal_VOID__ULONG_UINT_UINT
-j_math_algebra_brackeds_out
-j_math_algebra_functions_out
-j_math_algebra_operations_out
-j_math_algebra_solve
-j_math_and
-j_math_cut_leading_zeros
-j_math_exclusive_or
-j_math_exp
-j_math_exp2
-j_math_gauss
-j_math_get_first_level_operator
-j_math_get_second_level_operator
-j_math_is_function
-j_math_is_function_backward
-j_math_is_operator
-j_math_less
-j_math_make_valid
-j_math_more
-j_math_or
-j_math_put_null_at_beginning
-j_math_put_null_at_end
-j_math_root
-j_math_root2
-j_math_solve_arithmetic
-j_math_sort_array
-j_math_width
-j_math_width_list
+g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT (<parameters>)
+g_cclosure_user_marshal_INT__VOID (<parameters>)
+g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT (<parameters>)
+g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER (<parameters>)
+g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING (<parameters>)
+g_cclosure_user_marshal_OBJECT__VOID (<parameters>)
+g_cclosure_user_marshal_POINTER__STRING_STRING (<parameters>)
+g_cclosure_user_marshal_POINTER__UINT (<parameters>)
+g_cclosure_user_marshal_POINTER__VOID (<parameters>)
+g_cclosure_user_marshal_STRING__STRING_STRING (<parameters>)
+g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER (<parameters>)
+g_cclosure_user_marshal_ULONG__VOID (<parameters>)
+g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE (<parameters>)
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT (<parameters>)
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN (<parameters>)
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT (<parameters>)
+g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN (<parameters>)
+g_cclosure_user_marshal_VOID__OBJECT_UINT (<parameters>)
+g_cclosure_user_marshal_VOID__STRING_POINTER (<parameters>)
+g_cclosure_user_marshal_VOID__STRING_STRING_STRING (<parameters>)
+g_cclosure_user_marshal_VOID__STRING_UINT (<parameters>)
+g_cclosure_user_marshal_VOID__UINT_DOUBLE (<parameters>)
+g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT (<parameters>)
+g_cclosure_user_marshal_VOID__UINT_INT (<parameters>)
+g_cclosure_user_marshal_VOID__UINT_UINT (<parameters>)
+g_cclosure_user_marshal_VOID__UINT_UINT_UINT (<parameters>)
+g_cclosure_user_marshal_VOID__ULONG_UINT (<parameters>)
+g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN (<parameters>)
+g_cclosure_user_marshal_VOID__ULONG_UINT_UINT (<parameters>)
+j_math_algebra_brackeds_out (<parameters>)
+j_math_algebra_functions_out (<parameters>)
+j_math_algebra_operations_out (<parameters>)
+j_math_algebra_solve (<parameters>)
+j_math_and (<parameters>)
+j_math_cut_leading_zeros (<parameters>)
+j_math_exclusive_or (<parameters>)
+j_math_exp (<parameters>)
+j_math_exp2 (<parameters>)
+j_math_gauss (<parameters>)
+j_math_get_first_level_operator (<parameters>)
+j_math_get_second_level_operator (<parameters>)
+j_math_is_function (<parameters>)
+j_math_is_function_backward (<parameters>)
+j_math_is_operator (<parameters>)
+j_math_less (<parameters>)
+j_math_make_valid (<parameters>)
+j_math_more (<parameters>)
+j_math_or (<parameters>)
+j_math_put_null_at_beginning (<parameters>)
+j_math_put_null_at_end (<parameters>)
+j_math_root (<parameters>)
+j_math_root2 (<parameters>)
+j_math_solve_arithmetic (<parameters>)
+j_math_sort_array (<parameters>)
+j_math_width (<parameters>)
+j_math_width_list (<parameters>)
 
+ags_machine_add_default_recalls (<parameters>)
 
-ags_amplifier:Long_Description
-ags_amplifier:Short_Description
 ags_append_audio_threaded:Long_Description
 ags_append_audio_threaded:Short_Description
-ags_apply_wavetable:Long_Description
-ags_apply_wavetable:Short_Description
-ags_async_queue:Long_Description
-ags_async_queue:Short_Description
+ags_application_context:Long_Description
+ags_application_context:Short_Description
+ags_audio_application_context:Long_Description
+ags_audio_application_context:Short_Description
 ags_audio_file_xml:Long_Description
 ags_audio_file_xml:Short_Description
+ags_audio_init:Long_Description
+ags_audio_init:Short_Description
 ags_audio_preferences_callbacks:Long_Description
 ags_audio_preferences_callbacks:Short_Description
 ags_audio_set_recycling:Long_Description
 ags_audio_set_recycling:Short_Description
+ags_automation_area_callbacks:Long_Description
+ags_automation_area_callbacks:Short_Description
+ags_automation_edit_callbacks:Long_Description
+ags_automation_edit_callbacks:Short_Description
+ags_automation_editor_callbacks:Long_Description
+ags_automation_editor_callbacks:Short_Description
+ags_automation_toolbar_callbacks:Long_Description
+ags_automation_toolbar_callbacks:Short_Description
+ags_bulk_member_callbacks:Long_Description
+ags_bulk_member_callbacks:Short_Description
 ags_cartesian:Long_Description
 ags_cartesian:Short_Description
 ags_change_tact:Long_Description
@@ -1706,12 +1429,12 @@ ags_clone_channel:Long_Description
 ags_clone_channel:Short_Description
 ags_clone_channel_run:Long_Description
 ags_clone_channel_run:Short_Description
+ags_concurrency_provider:Long_Description
+ags_concurrency_provider:Short_Description
 ags_container:Long_Description
 ags_container:Short_Description
 ags_countable:Long_Description
 ags_countable:Short_Description
-ags_down_mix:Long_Description
-ags_down_mix:Short_Description
 ags_drum_callbacks:Long_Description
 ags_drum_callbacks:Short_Description
 ags_drum_input_line_callbacks:Long_Description
@@ -1722,52 +1445,46 @@ ags_drum_output_line_callbacks:Long_Description
 ags_drum_output_line_callbacks:Short_Description
 ags_drum_output_pad_callbacks:Long_Description
 ags_drum_output_pad_callbacks:Short_Description
-ags_echo:Long_Description
-ags_echo:Short_Description
 ags_editor_callbacks:Long_Description
 ags_editor_callbacks:Short_Description
 ags_effect:Long_Description
 ags_effect:Short_Description
+ags_effect_bridge_callbacks:Long_Description
+ags_effect_bridge_callbacks:Short_Description
+ags_effect_bulk_callbacks:Long_Description
+ags_effect_bulk_callbacks:Short_Description
+ags_effect_line_callbacks:Long_Description
+ags_effect_line_callbacks:Short_Description
 ags_export_window_callbacks:Long_Description
 ags_export_window_callbacks:Short_Description
 ags_ffplayer_callbacks:Long_Description
 ags_ffplayer_callbacks:Short_Description
-ags_file_gui:Long_Description
-ags_file_gui:Short_Description
-ags_file_read:Long_Description
-ags_file_read:Short_Description
+ags_ffplayer_input_line_callbacks:Long_Description
+ags_ffplayer_input_line_callbacks:Short_Description
 ags_file_selection:Long_Description
 ags_file_selection:Short_Description
 ags_file_selection_callbacks:Long_Description
 ags_file_selection_callbacks:Short_Description
-ags_file_sound:Long_Description
-ags_file_sound:Short_Description
 ags_file_stock:Long_Description
 ags_file_stock:Short_Description
-ags_file_thread:Long_Description
-ags_file_thread:Short_Description
 ags_file_util:Long_Description
 ags_file_util:Short_Description
-ags_file_value_factory:Long_Description
-ags_file_value_factory:Short_Description
-ags_file_write:Long_Description
-ags_file_write:Short_Description
-ags_garbage_collector:Long_Description
-ags_garbage_collector:Short_Description
-ags_generic_preferences:Long_Description
-ags_generic_preferences:Short_Description
-ags_gui_task_thread:Long_Description
-ags_gui_task_thread:Short_Description
+ags_generic_preferences_callbacks:Long_Description
+ags_generic_preferences_callbacks:Short_Description
+ags_gsequencer_file_xml:Long_Description
+ags_gsequencer_file_xml:Short_Description
+ags_gui_init:Long_Description
+ags_gui_init:Short_Description
 ags_hindicator:Long_Description
 ags_hindicator:Short_Description
 ags_history:Long_Description
 ags_history:Short_Description
 ags_htimebar:Long_Description
 ags_htimebar:Short_Description
+ags_init:Long_Description
+ags_init:Short_Description
 ags_inline_player:Long_Description
 ags_inline_player:Short_Description
-ags_inline_player_callbacks:Long_Description
-ags_inline_player_callbacks:Short_Description
 ags_iterator_thread:Long_Description
 ags_iterator_thread:Short_Description
 ags_ladspa_browser_callbacks:Long_Description
@@ -1790,6 +1507,8 @@ ags_listing_editor_callbacks:Long_Description
 ags_listing_editor_callbacks:Short_Description
 ags_log:Long_Description
 ags_log:Short_Description
+ags_lv2_browser_callbacks:Long_Description
+ags_lv2_browser_callbacks:Short_Description
 ags_machine_callbacks:Long_Description
 ags_machine_callbacks:Short_Description
 ags_machine_editor_callbacks:Long_Description
@@ -1806,14 +1525,16 @@ ags_menu_bar_callbacks:Long_Description
 ags_menu_bar_callbacks:Short_Description
 ags_menu_item:Long_Description
 ags_menu_item:Short_Description
-ags_meter_callbacks:Long_Description
-ags_meter_callbacks:Short_Description
+ags_midi_import_wizard_callbacks:Long_Description
+ags_midi_import_wizard_callbacks:Short_Description
 ags_mixer_callbacks:Long_Description
 ags_mixer_callbacks:Short_Description
 ags_mutable:Long_Description
 ags_mutable:Short_Description
 ags_mute_channel_run:Long_Description
 ags_mute_channel_run:Short_Description
+ags_mutex_manager:Long_Description
+ags_mutex_manager:Short_Description
 ags_navigation_callbacks:Long_Description
 ags_navigation_callbacks:Short_Description
 ags_note_edit_callbacks:Long_Description
@@ -1832,10 +1553,12 @@ ags_pad_editor_callbacks:Long_Description
 ags_pad_editor_callbacks:Short_Description
 ags_panel_callbacks:Long_Description
 ags_panel_callbacks:Short_Description
-ags_performance_preferences_callbacks:Long_Description
-ags_performance_preferences_callbacks:Short_Description
+ags_pattern_edit_callbacks:Long_Description
+ags_pattern_edit_callbacks:Short_Description
 ags_persistable:Long_Description
 ags_persistable:Short_Description
+ags_piano_callbacks:Long_Description
+ags_piano_callbacks:Short_Description
 ags_play_audio_file:Long_Description
 ags_play_audio_file:Short_Description
 ags_play_channel_run_master:Long_Description
@@ -1844,12 +1567,14 @@ ags_play_note:Long_Description
 ags_play_note:Short_Description
 ags_play_pattern:Long_Description
 ags_play_pattern:Short_Description
+ags_plugin_browser_callbacks:Long_Description
+ags_plugin_browser_callbacks:Short_Description
 ags_plugin_factory:Long_Description
 ags_plugin_factory:Short_Description
-ags_plugin_preferences_callbacks:Long_Description
-ags_plugin_preferences_callbacks:Short_Description
 ags_plugin_stock:Long_Description
 ags_plugin_stock:Short_Description
+ags_port_selection_callbacks:Long_Description
+ags_port_selection_callbacks:Short_Description
 ags_portable_thread:Long_Description
 ags_portable_thread:Short_Description
 ags_preferences_callbacks:Long_Description
@@ -1878,32 +1603,44 @@ ags_runnable:Long_Description
 ags_runnable:Short_Description
 ags_seekable:Long_Description
 ags_seekable:Short_Description
-ags_segment:Long_Description
-ags_segment:Short_Description
 ags_server:Long_Description
 ags_server:Short_Description
-ags_server_preferences_callbacks:Long_Description
-ags_server_preferences_callbacks:Short_Description
+ags_server_application_context:Long_Description
+ags_server_application_context:Short_Description
+ags_server_init:Long_Description
+ags_server_init:Short_Description
+ags_service_provider:Long_Description
+ags_service_provider:Short_Description
 ags_sf2_chooser:Long_Description
 ags_sf2_chooser:Short_Description
 ags_sf2_chooser_callbacks:Long_Description
 ags_sf2_chooser_callbacks:Short_Description
 ags_single_thread:Long_Description
 ags_single_thread:Short_Description
+ags_sound_provider:Long_Description
+ags_sound_provider:Short_Description
 ags_soundcard:Long_Description
 ags_soundcard:Short_Description
+ags_soundset_callbacks:Long_Description
+ags_soundset_callbacks:Short_Description
 ags_stackable:Long_Description
 ags_stackable:Short_Description
-ags_stream:Long_Description
-ags_stream:Short_Description
 ags_synth_callbacks:Long_Description
 ags_synth_callbacks:Short_Description
+ags_synth_output_line_callbacks:Long_Description
+ags_synth_output_line_callbacks:Short_Description
 ags_synths:Long_Description
 ags_synths:Short_Description
 ags_table:Long_Description
 ags_table:Short_Description
 ags_thread-kthreads:Long_Description
 ags_thread-kthreads:Short_Description
+ags_thread_application_context:Long_Description
+ags_thread_application_context:Short_Description
+ags_thread_file_xml:Long_Description
+ags_thread_file_xml:Short_Description
+ags_thread_init:Long_Description
+ags_thread_init:Short_Description
 ags_timebar:Long_Description
 ags_timebar:Short_Description
 ags_timestamp_thread:Long_Description
@@ -1914,12 +1651,19 @@ ags_toolbar_mode_stock:Long_Description
 ags_toolbar_mode_stock:Short_Description
 ags_tree_iterator:Long_Description
 ags_tree_iterator:Short_Description
+ags_turtle:Long_Description
+ags_turtle:Short_Description
 ags_unref_audio_signal:Long_Description
 ags_unref_audio_signal:Short_Description
 ags_waveform:Long_Description
 ags_waveform:Short_Description
 ags_window_callbacks:Long_Description
 ags_window_callbacks:Short_Description
+ags_xorg_application_context:Long_Description
+ags_xorg_application_context:Short_Description
+ags_xorg_init:Long_Description
+ags_xorg_init:Short_Description
 jmath:Long_Description
 jmath:Short_Description
+main:Long_Description
 main:Short_Description

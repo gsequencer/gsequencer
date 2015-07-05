@@ -1,42 +1,71 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-ags-combo-box-text">
+<refentry id="ags-AgsComboBoxText">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-ags-combo-box-text.top_of_page">ags_combo_box_text</refentrytitle>
+<refentrytitle role="top_of_page" id="ags-AgsComboBoxText.top_of_page">AgsComboBoxText</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
 </refmiscinfo>
 </refmeta>
 <refnamediv>
-<refname>ags_combo_box_text</refname>
-<refpurpose></refpurpose>
+<refname>AgsComboBoxText</refname>
+<refpurpose>Complete GtkComboBox</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-combo-box-text.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-AgsComboBoxText.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-combo-box-text-remove-all">ags_combo_box_text_remove_all</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-combo-box-text-remove-all">ags_combo_box_text_remove_all</link>       (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo_box</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-ags-combo-box-text.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-ags-combo-box-text.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-combo-box-text-remove-all" role="function">
-<title>ags_combo_box_text_remove_all ()</title>
-<indexterm zone="ags-combo-box-text-remove-all"><primary>ags_combo_box_text_remove_all</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_combo_box_text_remove_all       (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo_box</parameter>);</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="ags-AgsComboBoxText.includes"><title>Includes</title><synopsis>#include &lt;ags/lib/ags_combo_box_text.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="ags-AgsComboBoxText.description" role="desc">
+<title role="desc.title">Description</title>
+<para>Functions completing <link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> API.</para>
+
+</refsect1>
+<refsect1 id="ags-AgsComboBoxText.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-combo-box-text-remove-all" role="function" condition="since:0.4">
+<title>ags_combo_box_text_remove_all&#160;()</title>
+<indexterm zone="ags-combo-box-text-remove-all" role="0.4"><primary>ags_combo_box_text_remove_all</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_combo_box_text_remove_all (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo_box</parameter>);</programlisting>
+<para>Emptys <link linkend="GtkTreeModel"><type>GtkTreeModel</type></link> of <parameter>combo_box</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>combo_box</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsComboBoxText.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

@@ -1,0 +1,1125 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsMidiParser">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsMidiParser.top_of_page">AgsMidiParser</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsMidiParser</refname>
+<refpurpose>the menu bar.</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsMidiParser.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gint16"><returnvalue>gint16</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-parser-read-gint16">ags_midi_parser_read_gint16</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gint32"><returnvalue>gint32</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-parser-read-gint24">ags_midi_parser_read_gint24</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gint32"><returnvalue>gint32</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-parser-read-gint32">ags_midi_parser_read_gint32</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="long"><returnvalue>long</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-parser-read-varlength">ags_midi_parser_read_varlength</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-read-text">ags_midi_parser_read_text</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gdouble"><returnvalue>gdouble</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-parser-ticks-to-sec">ags_midi_parser_ticks_to_sec</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-parser-midi-getc">ags_midi_parser_midi_getc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-parser-on-error">ags_midi_parser_on_error</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlDoc"><returnvalue>xmlDoc</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-parse-full">ags_midi_parser_parse_full</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-parse-header">ags_midi_parser_parse_header</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-parse-track">ags_midi_parser_parse_track</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-channel-message">ags_midi_parser_channel_message</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-key-on">ags_midi_parser_key_on</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-key-off">ags_midi_parser_key_off</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-key-pressure">ags_midi_parser_key_pressure</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-change-parameter">ags_midi_parser_change_parameter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-change-pitch-bend">ags_midi_parser_change_pitch_bend</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-change-program">ags_midi_parser_change_program</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-change-channel-pressure">ags_midi_parser_change_channel_pressure</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-not-defined">ags_midi_parser_not_defined</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-sysex">ags_midi_parser_sysex</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-system-common">ags_midi_parser_system_common</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-meta-event">ags_midi_parser_meta_event</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-sequence-number">ags_midi_parser_sequence_number</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-end-of-track">ags_midi_parser_end_of_track</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-smpte">ags_midi_parser_smpte</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-tempo">ags_midi_parser_tempo</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-time-signature">ags_midi_parser_time_signature</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-key-signature">ags_midi_parser_key_signature</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-sequencer-meta-event">ags_midi_parser_sequencer_meta_event</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-meta-misc">ags_midi_parser_meta_misc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-text-event">ags_midi_parser_text_event</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMidiParser"><returnvalue>AgsMidiParser</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-parser-new">ags_midi_parser_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiParser.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gint"><type>gint</type></link></entry><entry role="property_name"><link linkend="AgsMidiParser--fd">fd</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiParser.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-change-channel-pressure">change-channel-pressure</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-change-parameter">change-parameter</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-change-pitch-bend">change-pitch-bend</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-change-program">change-program</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-end-of-track">end-of-track</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-key-off">key-off</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-key-on">key-on</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-key-pressure">key-pressure</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-key-signature">key-signature</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-meta-event">meta-event</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gint"><returnvalue>gint</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-midi-getc">midi-getc</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-not-defined">not-defined</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-on-error">on-error</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-parse-full">parse-full</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-parse-header">parse-header</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-parse-track">parse-track</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-sequence-number">sequence-number</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-sequencer-meta-event">sequencer-meta-event</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-smpte">smpte</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-sysex">sysex</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-system-common">system-common</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-tempo">tempo</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-text-event">text-event</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMidiParser-time-signature">time-signature</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiParser.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MIDI-PARSER-MTHD:CAPS">AGS_MIDI_PARSER_MTHD</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MIDI-PARSER-MTCK:CAPS">AGS_MIDI_PARSER_MTCK</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsMidiParserFlags">AgsMidiParserFlags</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsMidiChunkFlags">AgsMidiChunkFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiParser.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMidiParser
+</screen>
+</refsect1>
+
+<refsect1 id="AgsMidiParser.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_midi_parser.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsMidiParser.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> reads your midi parsers.</para>
+
+</refsect1>
+<refsect1 id="AgsMidiParser.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-midi-parser-read-gint16" role="function">
+<title>ags_midi_parser_read_gint16&#160;()</title>
+<indexterm zone="ags-midi-parser-read-gint16"><primary>ags_midi_parser_read_gint16</primary></indexterm>
+<programlisting language="C"><link linkend="gint16"><returnvalue>gint16</returnvalue></link>
+ags_midi_parser_read_gint16 (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-read-gint24" role="function">
+<title>ags_midi_parser_read_gint24&#160;()</title>
+<indexterm zone="ags-midi-parser-read-gint24"><primary>ags_midi_parser_read_gint24</primary></indexterm>
+<programlisting language="C"><link linkend="gint32"><returnvalue>gint32</returnvalue></link>
+ags_midi_parser_read_gint24 (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-read-gint32" role="function">
+<title>ags_midi_parser_read_gint32&#160;()</title>
+<indexterm zone="ags-midi-parser-read-gint32"><primary>ags_midi_parser_read_gint32</primary></indexterm>
+<programlisting language="C"><link linkend="gint32"><returnvalue>gint32</returnvalue></link>
+ags_midi_parser_read_gint32 (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-read-varlength" role="function">
+<title>ags_midi_parser_read_varlength&#160;()</title>
+<indexterm zone="ags-midi-parser-read-varlength"><primary>ags_midi_parser_read_varlength</primary></indexterm>
+<programlisting language="C"><link linkend="long"><returnvalue>long</returnvalue></link>
+ags_midi_parser_read_varlength (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-read-text" role="function">
+<title>ags_midi_parser_read_text&#160;()</title>
+<indexterm zone="ags-midi-parser-read-text"><primary>ags_midi_parser_read_text</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_midi_parser_read_text (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                           <parameter><link linkend="gint"><type>gint</type></link> length</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-ticks-to-sec" role="function">
+<title>ags_midi_parser_ticks_to_sec&#160;()</title>
+<indexterm zone="ags-midi-parser-ticks-to-sec"><primary>ags_midi_parser_ticks_to_sec</primary></indexterm>
+<programlisting language="C"><link linkend="gdouble"><returnvalue>gdouble</returnvalue></link>
+ags_midi_parser_ticks_to_sec (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> ticks</parameter>,
+                              <parameter><link linkend="gint"><type>gint</type></link> division</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> tempo</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-midi-getc" role="function">
+<title>ags_midi_parser_midi_getc&#160;()</title>
+<indexterm zone="ags-midi-parser-midi-getc"><primary>ags_midi_parser_midi_getc</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_midi_parser_midi_getc (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-on-error" role="function">
+<title>ags_midi_parser_on_error&#160;()</title>
+<indexterm zone="ags-midi-parser-on-error"><primary>ags_midi_parser_on_error</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_midi_parser_on_error (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                          <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-parse-full" role="function">
+<title>ags_midi_parser_parse_full&#160;()</title>
+<indexterm zone="ags-midi-parser-parse-full"><primary>ags_midi_parser_parse_full</primary></indexterm>
+<programlisting language="C"><link linkend="xmlDoc"><returnvalue>xmlDoc</returnvalue></link>&#160;*
+ags_midi_parser_parse_full (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-parse-header" role="function">
+<title>ags_midi_parser_parse_header&#160;()</title>
+<indexterm zone="ags-midi-parser-parse-header"><primary>ags_midi_parser_parse_header</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_parse_header (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-parse-track" role="function">
+<title>ags_midi_parser_parse_track&#160;()</title>
+<indexterm zone="ags-midi-parser-parse-track"><primary>ags_midi_parser_parse_track</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_parse_track (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-channel-message" role="function">
+<title>ags_midi_parser_channel_message&#160;()</title>
+<indexterm zone="ags-midi-parser-channel-message"><primary>ags_midi_parser_channel_message</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_channel_message (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                                 <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-key-on" role="function">
+<title>ags_midi_parser_key_on&#160;()</title>
+<indexterm zone="ags-midi-parser-key-on"><primary>ags_midi_parser_key_on</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_key_on (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-key-off" role="function">
+<title>ags_midi_parser_key_off&#160;()</title>
+<indexterm zone="ags-midi-parser-key-off"><primary>ags_midi_parser_key_off</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_key_off (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                         <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-key-pressure" role="function">
+<title>ags_midi_parser_key_pressure&#160;()</title>
+<indexterm zone="ags-midi-parser-key-pressure"><primary>ags_midi_parser_key_pressure</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_key_pressure (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-change-parameter" role="function">
+<title>ags_midi_parser_change_parameter&#160;()</title>
+<indexterm zone="ags-midi-parser-change-parameter"><primary>ags_midi_parser_change_parameter</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_change_parameter (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                                  <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-change-pitch-bend" role="function">
+<title>ags_midi_parser_change_pitch_bend&#160;()</title>
+<indexterm zone="ags-midi-parser-change-pitch-bend"><primary>ags_midi_parser_change_pitch_bend</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_change_pitch_bend (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                                   <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-change-program" role="function">
+<title>ags_midi_parser_change_program&#160;()</title>
+<indexterm zone="ags-midi-parser-change-program"><primary>ags_midi_parser_change_program</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_change_program (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-change-channel-pressure" role="function">
+<title>ags_midi_parser_change_channel_pressure&#160;()</title>
+<indexterm zone="ags-midi-parser-change-channel-pressure"><primary>ags_midi_parser_change_channel_pressure</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_change_channel_pressure
+                               (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-not-defined" role="function">
+<title>ags_midi_parser_not_defined&#160;()</title>
+<indexterm zone="ags-midi-parser-not-defined"><primary>ags_midi_parser_not_defined</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_not_defined (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                             <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-sysex" role="function">
+<title>ags_midi_parser_sysex&#160;()</title>
+<indexterm zone="ags-midi-parser-sysex"><primary>ags_midi_parser_sysex</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_sysex (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                       <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-system-common" role="function">
+<title>ags_midi_parser_system_common&#160;()</title>
+<indexterm zone="ags-midi-parser-system-common"><primary>ags_midi_parser_system_common</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_system_common (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-meta-event" role="function">
+<title>ags_midi_parser_meta_event&#160;()</title>
+<indexterm zone="ags-midi-parser-meta-event"><primary>ags_midi_parser_meta_event</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_meta_event (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                            <parameter><link linkend="guint"><type>guint</type></link> status</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-sequence-number" role="function">
+<title>ags_midi_parser_sequence_number&#160;()</title>
+<indexterm zone="ags-midi-parser-sequence-number"><primary>ags_midi_parser_sequence_number</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_sequence_number (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                                 <parameter><link linkend="guint"><type>guint</type></link> meta_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-end-of-track" role="function">
+<title>ags_midi_parser_end_of_track&#160;()</title>
+<indexterm zone="ags-midi-parser-end-of-track"><primary>ags_midi_parser_end_of_track</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_end_of_track (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> meta_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-smpte" role="function">
+<title>ags_midi_parser_smpte&#160;()</title>
+<indexterm zone="ags-midi-parser-smpte"><primary>ags_midi_parser_smpte</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_smpte (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                       <parameter><link linkend="guint"><type>guint</type></link> meta_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-tempo" role="function">
+<title>ags_midi_parser_tempo&#160;()</title>
+<indexterm zone="ags-midi-parser-tempo"><primary>ags_midi_parser_tempo</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_tempo (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                       <parameter><link linkend="guint"><type>guint</type></link> meta_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-time-signature" role="function">
+<title>ags_midi_parser_time_signature&#160;()</title>
+<indexterm zone="ags-midi-parser-time-signature"><primary>ags_midi_parser_time_signature</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_time_signature (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> meta_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-key-signature" role="function">
+<title>ags_midi_parser_key_signature&#160;()</title>
+<indexterm zone="ags-midi-parser-key-signature"><primary>ags_midi_parser_key_signature</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_key_signature (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> meta_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-sequencer-meta-event" role="function">
+<title>ags_midi_parser_sequencer_meta_event&#160;()</title>
+<indexterm zone="ags-midi-parser-sequencer-meta-event"><primary>ags_midi_parser_sequencer_meta_event</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_sequencer_meta_event (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                                      <parameter><link linkend="guint"><type>guint</type></link> meta_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-meta-misc" role="function">
+<title>ags_midi_parser_meta_misc&#160;()</title>
+<indexterm zone="ags-midi-parser-meta-misc"><primary>ags_midi_parser_meta_misc</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_meta_misc (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> meta_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-text-event" role="function">
+<title>ags_midi_parser_text_event&#160;()</title>
+<indexterm zone="ags-midi-parser-text-event"><primary>ags_midi_parser_text_event</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
+ags_midi_parser_text_event (<parameter><link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser</parameter>,
+                            <parameter><link linkend="guint"><type>guint</type></link> meta_type</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-parser-new" role="function">
+<title>ags_midi_parser_new&#160;()</title>
+<indexterm zone="ags-midi-parser-new"><primary>ags_midi_parser_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMidiParser"><returnvalue>AgsMidiParser</returnvalue></link>&#160;*
+ags_midi_parser_new (<parameter><link linkend="FILE:CAPS"><type>FILE</type></link> *file</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsMidiParser.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-MIDI-PARSER-MTHD:CAPS" role="macro">
+<title>AGS_MIDI_PARSER_MTHD</title>
+<indexterm zone="AGS-MIDI-PARSER-MTHD:CAPS"><primary>AGS_MIDI_PARSER_MTHD</primary></indexterm>
+<programlisting language="C">#define AGS_MIDI_PARSER_MTHD "MThd\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-MIDI-PARSER-MTCK:CAPS" role="macro">
+<title>AGS_MIDI_PARSER_MTCK</title>
+<indexterm zone="AGS-MIDI-PARSER-MTCK:CAPS"><primary>AGS_MIDI_PARSER_MTCK</primary></indexterm>
+<programlisting language="C">#define AGS_MIDI_PARSER_MTCK "MTrk\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AgsMidiParserFlags" role="enum">
+<title>enum AgsMidiParserFlags</title>
+<indexterm zone="AgsMidiParserFlags"><primary>AgsMidiParserFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MIDI-PARSER-EOF:CAPS">AGS_MIDI_PARSER_EOF</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MIDI-PARSER-EOT:CAPS">AGS_MIDI_PARSER_EOT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="AgsMidiChunkFlags" role="enum">
+<title>enum AgsMidiChunkFlags</title>
+<indexterm zone="AgsMidiChunkFlags"><primary>AgsMidiChunkFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MIDI-CHUNK-HEADER:CAPS">AGS_MIDI_CHUNK_HEADER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MIDI-CHUNK-TRACK:CAPS">AGS_MIDI_CHUNK_TRACK</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MIDI-CHUNK-UNKNOWN:CAPS">AGS_MIDI_CHUNK_UNKNOWN</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMidiParser.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsMidiParser--fd" role="property"><title>The <literal>“fd”</literal> property</title>
+<indexterm zone="AgsMidiParser--fd"><primary>AgsMidiParser:fd</primary></indexterm>
+<programlisting>  “fd”                       <link linkend="gint"><type>gint</type></link></programlisting>
+<para>The file to parse as fd.</para><para>Flags: Read / Write</para>
+<para>Allowed values: &gt;= -1</para>
+<para>Default value: -1</para>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsMidiParser.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsMidiParser-change-channel-pressure" role="signal"><title>The <literal>“change-channel-pressure”</literal> signal</title>
+<indexterm zone="AgsMidiParser-change-channel-pressure"><primary>AgsMidiParser::change-channel-pressure</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::change-channel-pressure signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-change-parameter" role="signal"><title>The <literal>“change-parameter”</literal> signal</title>
+<indexterm zone="AgsMidiParser-change-parameter"><primary>AgsMidiParser::change-parameter</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::change-parameter signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-change-pitch-bend" role="signal"><title>The <literal>“change-pitch-bend”</literal> signal</title>
+<indexterm zone="AgsMidiParser-change-pitch-bend"><primary>AgsMidiParser::change-pitch-bend</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::change-pitch-bend signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-change-program" role="signal"><title>The <literal>“change-program”</literal> signal</title>
+<indexterm zone="AgsMidiParser-change-program"><primary>AgsMidiParser::change-program</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::change-program signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-end-of-track" role="signal"><title>The <literal>“end-of-track”</literal> signal</title>
+<indexterm zone="AgsMidiParser-end-of-track"><primary>AgsMidiParser::end-of-track</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::end-of-track signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-key-off" role="signal"><title>The <literal>“key-off”</literal> signal</title>
+<indexterm zone="AgsMidiParser-key-off"><primary>AgsMidiParser::key-off</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::key-off signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-key-on" role="signal"><title>The <literal>“key-on”</literal> signal</title>
+<indexterm zone="AgsMidiParser-key-on"><primary>AgsMidiParser::key-on</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::key-on signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-key-pressure" role="signal"><title>The <literal>“key-pressure”</literal> signal</title>
+<indexterm zone="AgsMidiParser-key-pressure"><primary>AgsMidiParser::key-pressure</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::key-pressure signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-key-signature" role="signal"><title>The <literal>“key-signature”</literal> signal</title>
+<indexterm zone="AgsMidiParser-key-signature"><primary>AgsMidiParser::key-signature</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::key-signature signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-meta-event" role="signal"><title>The <literal>“meta-event”</literal> signal</title>
+<indexterm zone="AgsMidiParser-meta-event"><primary>AgsMidiParser::meta-event</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::meta-event signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-midi-getc" role="signal"><title>The <literal>“midi-getc”</literal> signal</title>
+<indexterm zone="AgsMidiParser-midi-getc"><primary>AgsMidiParser::midi-getc</primary></indexterm>
+<programlisting language="C"><link linkend="gint"><returnvalue>gint</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::midi-getc signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-not-defined" role="signal"><title>The <literal>“not-defined”</literal> signal</title>
+<indexterm zone="AgsMidiParser-not-defined"><primary>AgsMidiParser::not-defined</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::not-defined signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-on-error" role="signal"><title>The <literal>“on-error”</literal> signal</title>
+<indexterm zone="AgsMidiParser-on-error"><primary>AgsMidiParser::on-error</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::on-error signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-parse-full" role="signal"><title>The <literal>“parse-full”</literal> signal</title>
+<indexterm zone="AgsMidiParser-parse-full"><primary>AgsMidiParser::parse-full</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::parse-full signal is emited during parsing of midi file.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-parse-header" role="signal"><title>The <literal>“parse-header”</literal> signal</title>
+<indexterm zone="AgsMidiParser-parse-header"><primary>AgsMidiParser::parse-header</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the header</para>
+<para>The ::parse-header signal is emited during parsing of header.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-parse-track" role="signal"><title>The <literal>“parse-track”</literal> signal</title>
+<indexterm zone="AgsMidiParser-parse-track"><primary>AgsMidiParser::parse-track</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the track</para>
+<para>The ::parse-track signal is emited during parsing of track.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-sequence-number" role="signal"><title>The <literal>“sequence-number”</literal> signal</title>
+<indexterm zone="AgsMidiParser-sequence-number"><primary>AgsMidiParser::sequence-number</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::sequence-number signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-sequencer-meta-event" role="signal"><title>The <literal>“sequencer-meta-event”</literal> signal</title>
+<indexterm zone="AgsMidiParser-sequencer-meta-event"><primary>AgsMidiParser::sequencer-meta-event</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::sequencer-meta-event signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-smpte" role="signal"><title>The <literal>“smpte”</literal> signal</title>
+<indexterm zone="AgsMidiParser-smpte"><primary>AgsMidiParser::smpte</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::smpte signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-sysex" role="signal"><title>The <literal>“sysex”</literal> signal</title>
+<indexterm zone="AgsMidiParser-sysex"><primary>AgsMidiParser::sysex</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::sysex signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-system-common" role="signal"><title>The <literal>“system-common”</literal> signal</title>
+<indexterm zone="AgsMidiParser-system-common"><primary>AgsMidiParser::system-common</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::system-common signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-tempo" role="signal"><title>The <literal>“tempo”</literal> signal</title>
+<indexterm zone="AgsMidiParser-tempo"><primary>AgsMidiParser::tempo</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::tempo signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-text-event" role="signal"><title>The <literal>“text-event”</literal> signal</title>
+<indexterm zone="AgsMidiParser-text-event"><primary>AgsMidiParser::text-event</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::text-event signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMidiParser-time-signature" role="signal"><title>The <literal>“time-signature”</literal> signal</title>
+<indexterm zone="AgsMidiParser-time-signature"><primary>AgsMidiParser::time-signature</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMidiParser"><type>AgsMidiParser</type></link> *midi_parser,
+               <link linkend="guint"><type>guint</type></link>          Returns,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>midi_parser</para></entry>
+<entry role="parameter_description"><para>the parser</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The XML node representing the event</para>
+<para>The ::time-signature signal is emited during parsing of event.</para>
+<para></para>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
+</refsect1>
+
+</refentry>

@@ -19,7 +19,7 @@
 #include <ags/X/machine/ags_synth_callbacks.h>
 #include <ags/X/machine/ags_oscillator.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_window.h>
 

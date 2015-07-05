@@ -42,7 +42,7 @@ void ags_copy_notation_audio_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
   PROP_NOTATION,
   PROP_AUDIO_CHANNEL,
 };
@@ -135,22 +135,22 @@ ags_copy_notation_audio_set_property(GObject *gobject,
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_object(value);
 
-      if(copy_notation_audio->devout != devout)
+      if(copy_notation_audio->soundcard != soundcard)
 	return;
 
-      if(copy_notation_audio->devout != NULL)
-	g_object_unref(copy_notation_audio->devout);
+      if(copy_notation_audio->soundcard != NULL)
+	g_object_unref(copy_notation_audio->soundcard);
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      copy_notation_audio->devout = devout;
+      copy_notation_audio->soundcard = soundcard;
     }
     break;
   case PROP_NOTATION:
@@ -196,9 +196,9 @@ ags_copy_notation_audio_get_property(GObject *gobject,
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      g_value_set_object(value, copy_notation_audio->devout);
+      g_value_set_object(value, copy_notation_audio->soundcard);
     }
     break;
   case PROP_NOTATION:
@@ -225,7 +225,7 @@ ags_copy_notation_audio_finalize(GObject *gobject)
 
 /**
  * ags_copy_notation_audio_new:
- * @audio: the #AgsAudio
+ * @soundcard: the #GObject implementing #AgsSoundcard
  * @notation: the notation
  * @audio_channel: the audio channel to use
  *
@@ -236,14 +236,14 @@ ags_copy_notation_audio_finalize(GObject *gobject)
  * Since: 0.4
  */
 AgsCopyNotationAudio*
-ags_copy_notation_audio_new(AgsDevout *devout,
+ags_copy_notation_audio_new(GObject *soundcard,
 			    AgsNotation *notation,
 			    guint audio_channel)
 {
   AgsCopyNotationAudio *copy_notation_audio;
 
   copy_notation_audio = (AgsCopyNotationAudio *) g_object_new(AGS_TYPE_COPY_NOTATION_AUDIO,
-							      "devout\0", devout,
+							      "soundcard\0", soundcard,
 							      "notation\0", notation,
 							      "audio_channel\0", audio_channel,
 							      NULL);

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsFileSelection">
+<refentry id="AgsFileSelection">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsFileSelection.top_of_page">AgsFileSelection</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsFileSelection.top_of_page">AgsFileSelection</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,79 +17,160 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsFileSelection.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsFileSelection.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-FILE-SELECTION-ENTRY:CAPS">AGS_FILE_SELECTION_ENTRY</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsFileSelectionEntry"><returnvalue>AgsFileSelectionEntry</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-selection-entry-alloc">ags_file_selection_entry_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-selection-set-entry">ags_file_selection_set_entry</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-selection-add-entry">ags_file_selection_add_entry</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-selection-remove-entry">ags_file_selection_remove_entry</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-selection-contains-file">ags_file_selection_contains_file</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-selection-completed">ags_file_selection_completed</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsFileSelection"><returnvalue>AgsFileSelection</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-selection-new">ags_file_selection_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-FILE-SELECTION-ENTRY:CAPS">AGS_FILE_SELECTION_ENTRY</link>            (strct)
-struct              <link linkend="AgsFileSelection">AgsFileSelection</link>;
-struct              <link linkend="AgsFileSelectionClass">AgsFileSelectionClass</link>;
-struct              <link linkend="AgsFileSelectionEntry">AgsFileSelectionEntry</link>;
-enum                <link linkend="AgsFileSelectionFlags">AgsFileSelectionFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-selection-add-entry">ags_file_selection_add_entry</link>        (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
-                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-selection-completed">ags_file_selection_completed</link>        (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-file-selection-contains-file">ags_file_selection_contains_file</link>    (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);
-<link linkend="AgsFileSelectionEntry"><returnvalue>AgsFileSelectionEntry</returnvalue></link> * <link linkend="ags-file-selection-entry-alloc">ags_file_selection_entry_alloc</link>  ();
-<link linkend="AgsFileSelection"><returnvalue>AgsFileSelection</returnvalue></link> *  <link linkend="ags-file-selection-new">ags_file_selection_new</link>              ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-selection-remove-entry">ags_file_selection_remove_entry</link>     (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
-                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-file-selection-set-entry">ags_file_selection_set_entry</link>        (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> *entry</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsFileSelection.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsFileSelection.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsFileSelection.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFileSelection-add-entry">add-entry</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFileSelection-completed">completed</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFileSelection-remove-entry">remove-entry</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFileSelection.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsFileSelectionFlags">AgsFileSelectionFlags</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsFileSelectionEntry">AgsFileSelectionEntry</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFileSelection.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsFileSelection
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsFileSelection.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsFileSelection.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-FILE-SELECTION-ENTRY:CAPS" role="macro">
 <title>AGS_FILE_SELECTION_ENTRY()</title>
 <indexterm zone="AGS-FILE-SELECTION-ENTRY:CAPS"><primary>AGS_FILE_SELECTION_ENTRY</primary></indexterm>
-<programlisting>#define AGS_FILE_SELECTION_ENTRY(strct)        ((AgsFileSelectionEntry *) (strct))
+<programlisting language="C">#define AGS_FILE_SELECTION_ENTRY(strct)        ((AgsFileSelectionEntry *) (strct))
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsFileSelection" role="struct">
-<title>struct AgsFileSelection</title>
-<indexterm zone="AgsFileSelection"><primary>AgsFileSelection</primary></indexterm>
-<programlisting>struct AgsFileSelection {
-  GtkVBox vbox;
-  
-  guint flags;
+</refsect2>
+<refsect2 id="ags-file-selection-entry-alloc" role="function">
+<title>ags_file_selection_entry_alloc&#160;()</title>
+<indexterm zone="ags-file-selection-entry-alloc"><primary>ags_file_selection_entry_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsFileSelectionEntry"><returnvalue>AgsFileSelectionEntry</returnvalue></link>&#160;*
+ags_file_selection_entry_alloc ();</programlisting>
+</refsect2>
+<refsect2 id="ags-file-selection-set-entry" role="function">
+<title>ags_file_selection_set_entry&#160;()</title>
+<indexterm zone="ags-file-selection-set-entry"><primary>ags_file_selection_set_entry</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_selection_set_entry (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
+                              <parameter><link linkend="GList"><type>GList</type></link> *entry</parameter>);</programlisting>
+<para>Add new entries to the <link linkend="AgsFileSelection"><type>AgsFileSelection</type></link>.</para>
+</refsect2>
+<refsect2 id="ags-file-selection-add-entry" role="function">
+<title>ags_file_selection_add_entry&#160;()</title>
+<indexterm zone="ags-file-selection-add-entry"><primary>ags_file_selection_add_entry</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_selection_add_entry (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
+                              <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-selection-remove-entry" role="function">
+<title>ags_file_selection_remove_entry&#160;()</title>
+<indexterm zone="ags-file-selection-remove-entry"><primary>ags_file_selection_remove_entry</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_selection_remove_entry (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
+                                 <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-selection-contains-file" role="function">
+<title>ags_file_selection_contains_file&#160;()</title>
+<indexterm zone="ags-file-selection-contains-file"><primary>ags_file_selection_contains_file</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_file_selection_contains_file (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
+                                  <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-selection-completed" role="function">
+<title>ags_file_selection_completed&#160;()</title>
+<indexterm zone="ags-file-selection-completed"><primary>ags_file_selection_completed</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_selection_completed (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-selection-new" role="function">
+<title>ags_file_selection_new&#160;()</title>
+<indexterm zone="ags-file-selection-new"><primary>ags_file_selection_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsFileSelection"><returnvalue>AgsFileSelection</returnvalue></link>&#160;*
+ags_file_selection_new ();</programlisting>
+</refsect2>
 
-  gchar *directory;
-
-  guint entry_count;
-  GList *entry;
-
-  GtkLabel *chosed;
-  GtkLabel *selected;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsFileSelectionClass" role="struct">
-<title>struct AgsFileSelectionClass</title>
-<indexterm zone="AgsFileSelectionClass"><primary>AgsFileSelectionClass</primary></indexterm>
-<programlisting>struct AgsFileSelectionClass {
-  GtkVBoxClass vbox;
-
-  void (*add_entry)(AgsFileSelection *file_selection, GtkWidget *widget);
-  void (*remove_entry)(AgsFileSelection *file_selection, GtkWidget *widget);
-
-  void (*completed)(AgsFileSelection *file_selection);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsFileSelection.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsFileSelectionFlags" role="enum">
+<title>enum AgsFileSelectionFlags</title>
+<indexterm zone="AgsFileSelectionFlags"><primary>AgsFileSelectionFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-FILE-SELECTION-COMPLETED:CAPS">AGS_FILE_SELECTION_COMPLETED</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="AgsFileSelectionEntry" role="struct">
 <title>struct AgsFileSelectionEntry</title>
 <indexterm zone="AgsFileSelectionEntry"><primary>AgsFileSelectionEntry</primary></indexterm>
-<programlisting>struct AgsFileSelectionEntry {
+<programlisting language="C">struct AgsFileSelectionEntry {
   GtkTable *table;
 
   GtkWidget *entry;
@@ -102,65 +183,32 @@ enum                <link linkend="AgsFileSelectionFlags">AgsFileSelectionFlags<
   GtkSpinButton *count;
 };
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsFileSelectionFlags" role="enum">
-<title>enum AgsFileSelectionFlags</title>
-<indexterm zone="AgsFileSelectionFlags"><primary>AgsFileSelectionFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_FILE_SELECTION_COMPLETED   = 1,
-} AgsFileSelectionFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-selection-add-entry" role="function">
-<title>ags_file_selection_add_entry ()</title>
-<indexterm zone="ags-file-selection-add-entry"><primary>ags_file_selection_add_entry</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_selection_add_entry        (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
-                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-selection-completed" role="function">
-<title>ags_file_selection_completed ()</title>
-<indexterm zone="ags-file-selection-completed"><primary>ags_file_selection_completed</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_selection_completed        (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-selection-contains-file" role="function">
-<title>ags_file_selection_contains_file ()</title>
-<indexterm zone="ags-file-selection-contains-file"><primary>ags_file_selection_contains_file</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_file_selection_contains_file    (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-selection-entry-alloc" role="function">
-<title>ags_file_selection_entry_alloc ()</title>
-<indexterm zone="ags-file-selection-entry-alloc"><primary>ags_file_selection_entry_alloc</primary></indexterm>
-<programlisting><link linkend="AgsFileSelectionEntry"><returnvalue>AgsFileSelectionEntry</returnvalue></link> * ags_file_selection_entry_alloc  ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-selection-new" role="function">
-<title>ags_file_selection_new ()</title>
-<indexterm zone="ags-file-selection-new"><primary>ags_file_selection_new</primary></indexterm>
-<programlisting><link linkend="AgsFileSelection"><returnvalue>AgsFileSelection</returnvalue></link> *  ags_file_selection_new              ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-selection-remove-entry" role="function">
-<title>ags_file_selection_remove_entry ()</title>
-<indexterm zone="ags-file-selection-remove-entry"><primary>ags_file_selection_remove_entry</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_selection_remove_entry     (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
-                                                         <parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-file-selection-set-entry" role="function">
-<title>ags_file_selection_set_entry ()</title>
-<indexterm zone="ags-file-selection-set-entry"><primary>ags_file_selection_set_entry</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_file_selection_set_entry        (<parameter><link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *file_selection</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> *entry</parameter>);</programlisting>
-<para>
-Add new entries to the <link linkend="AgsFileSelection"><type>AgsFileSelection</type></link>.
-</para></refsect2>
+</refsect2>
 
+</refsect1>
+<refsect1 id="AgsFileSelection.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsFileSelection-add-entry" role="signal"><title>The <literal>“add-entry”</literal> signal</title>
+<indexterm zone="AgsFileSelection-add-entry"><primary>AgsFileSelection::add-entry</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *agsfileselection,
+               <link linkend="GObject"><type>GObject</type></link>          *arg1,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFileSelection-completed" role="signal"><title>The <literal>“completed”</literal> signal</title>
+<indexterm zone="AgsFileSelection-completed"><primary>AgsFileSelection::completed</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *agsfileselection,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsFileSelection-remove-entry" role="signal"><title>The <literal>“remove-entry”</literal> signal</title>
+<indexterm zone="AgsFileSelection-remove-entry"><primary>AgsFileSelection::remove-entry</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFileSelection"><type>AgsFileSelection</type></link> *agsfileselection,
+               <link linkend="GObject"><type>GObject</type></link>          *arg1,
+               <link linkend="gpointer"><type>gpointer</type></link>          user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

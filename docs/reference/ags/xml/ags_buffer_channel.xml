@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsBufferChannel">
+<refentry id="AgsBufferChannel">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsBufferChannel.top_of_page">AgsBufferChannel</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsBufferChannel.top_of_page">AgsBufferChannel</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,51 +14,80 @@
 </refmeta>
 <refnamediv>
 <refname>AgsBufferChannel</refname>
-<refpurpose></refpurpose>
+<refpurpose>buffers channel</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsBufferChannel.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsBufferChannel.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsBufferChannel"><returnvalue>AgsBufferChannel</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-buffer-channel-new">ags_buffer_channel_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsBufferChannel">AgsBufferChannel</link>;
-struct              <link linkend="AgsBufferChannelClass">AgsBufferChannelClass</link>;
-<link linkend="AgsBufferChannel"><returnvalue>AgsBufferChannel</returnvalue></link> *  <link linkend="ags-buffer-channel-new">ags_buffer_channel_new</link>              ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsBufferChannel.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsBufferChannel.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsBufferChannel" role="struct">
-<title>struct AgsBufferChannel</title>
-<indexterm zone="AgsBufferChannel"><primary>AgsBufferChannel</primary></indexterm>
-<programlisting>struct AgsBufferChannel {
-  AgsRecallChannel recall_channel;
+<refsect1 id="AgsBufferChannel.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsBufferChannel--muted">muted</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsPort *muted;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsBufferChannelClass" role="struct">
-<title>struct AgsBufferChannelClass</title>
-<indexterm zone="AgsBufferChannelClass"><primary>AgsBufferChannelClass</primary></indexterm>
-<programlisting>struct AgsBufferChannelClass {
-  AgsRecallChannelClass recall_channel;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-buffer-channel-new" role="function">
-<title>ags_buffer_channel_new ()</title>
-<indexterm zone="ags-buffer-channel-new"><primary>ags_buffer_channel_new</primary></indexterm>
-<programlisting><link linkend="AgsBufferChannel"><returnvalue>AgsBufferChannel</returnvalue></link> *  ags_buffer_channel_new              ();</programlisting>
-<para>
-</para></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsBufferChannel.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannel">AgsRecallChannel</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsBufferChannel
+</screen>
+</refsect1>
+
+<refsect1 id="AgsBufferChannel.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_buffer_channel.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsBufferChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsBufferChannel"><type>AgsBufferChannel</type></link> class provides ports to the effect processor.</para>
+
+</refsect1>
+<refsect1 id="AgsBufferChannel.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-buffer-channel-new" role="function" condition="since:0.4">
+<title>ags_buffer_channel_new&#160;()</title>
+<indexterm zone="ags-buffer-channel-new" role="0.4"><primary>ags_buffer_channel_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsBufferChannel"><returnvalue>AgsBufferChannel</returnvalue></link>&#160;*
+ags_buffer_channel_new ();</programlisting>
+<para>Creates an <link linkend="AgsBufferChannel"><type>AgsBufferChannel</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsBufferChannel"><type>AgsBufferChannel</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsBufferChannel.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsBufferChannel.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsBufferChannel--muted" role="property"><title>The <literal>“muted”</literal> property</title>
+<indexterm zone="AgsBufferChannel--muted"><primary>AgsBufferChannel:muted</primary></indexterm>
+<programlisting>  “muted”                    <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>Mute the channel.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

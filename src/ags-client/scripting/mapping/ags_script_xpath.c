@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_xpath.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_xpath_class_init(AgsScriptXPathClass *script_xpath);
 void ags_script_xpath_connectable_interface_init(AgsConnectableInterface *connectable);

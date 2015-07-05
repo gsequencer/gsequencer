@@ -19,7 +19,7 @@
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_pad_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -60,8 +60,8 @@ void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
  * @section_id:
  * @include: ags/X/ags_effect_pad.h
  *
- * #AgsEffectPad is a composite widget to visualize one #AgsChannel. It should be
- * packed by an #AgsEffectPad.
+ * #AgsEffectPad is a composite widget to visualize a bunch of #AgsChannel. It should be
+ * packed by an #AgsEffectBridge.
  */
 
 enum{
@@ -286,7 +286,37 @@ ags_effect_pad_get_property(GObject *gobject,
 void
 ags_effect_pad_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsEffectPad *effect_pad;
+  GList *effect_line_list, *effect_line_list_start;
+
+  /* AgsEffect_Pad */
+  effect_pad = AGS_EFFECT_PAD(connectable);
+
+  if((AGS_EFFECT_PAD_CONNECTED & (effect_pad->flags)) != 0){
+    return;
+  }
+  
+  effect_pad->flags |= AGS_EFFECT_PAD_CONNECTED;
+
+  if((AGS_EFFECT_PAD_PREMAPPED_RECALL & (effect_pad->flags)) == 0){
+    if((AGS_EFFECT_PAD_MAPPED_RECALL & (effect_pad->flags)) == 0){
+      //TODO:JK: implement me
+    }
+  }else{
+    effect_pad->flags &= (~AGS_EFFECT_PAD_PREMAPPED_RECALL);
+  }
+
+  /* AgsEffectLine */
+  effect_line_list_start =  
+    effect_line_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+
+  while(effect_line_list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(effect_line_list->data));
+
+    effect_line_list = effect_line_list->next;
+  }
+
+  g_list_free(effect_line_list_start);
 }
 
 void
@@ -380,7 +410,7 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
     list = g_list_nth(list,
 		      audio_channels);
 
-    while(list = list->next){
+    while(list != NULL){
       list_next = list->next;
       
       gtk_widget_destroy(list->data);

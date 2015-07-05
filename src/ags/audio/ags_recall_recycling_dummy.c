@@ -19,16 +19,11 @@
 #include <ags/audio/ags_recall_recycling_dummy.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_dynamic_connectable.h>
 
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
-
-#include <ags/audio/ags_devout.h>
 
 #include <ags/audio/task/ags_remove_audio_signal.h>
 
@@ -149,8 +144,8 @@ void
 ags_recall_recycling_dummy_init(AgsRecallRecyclingDummy *recall_recycling_dummy)
 {
   AGS_RECALL(recall_recycling_dummy)->name = "ags-recall\0";
-  AGS_RECALL(recall_recycling_dummy)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(recall_recycling_dummy)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(recall_recycling_dummy)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(recall_recycling_dummy)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(recall_recycling_dummy)->xml_type = "ags-recall-recycling-dummy\0";
   AGS_RECALL(recall_recycling_dummy)->port = NULL;
 

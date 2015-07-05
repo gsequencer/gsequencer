@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsCountBeatsAudio">
+<refentry id="AgsCountBeatsAudio">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsCountBeatsAudio.top_of_page">AgsCountBeatsAudio</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsCountBeatsAudio.top_of_page">AgsCountBeatsAudio</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,56 +14,117 @@
 </refmeta>
 <refnamediv>
 <refname>AgsCountBeatsAudio</refname>
-<refpurpose></refpurpose>
+<refpurpose>count audio beats</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsCountBeatsAudio.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsCountBeatsAudio.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsCountBeatsAudio"><returnvalue>AgsCountBeatsAudio</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-count-beats-audio-new">ags_count_beats_audio_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsCountBeatsAudio">AgsCountBeatsAudio</link>;
-struct              <link linkend="AgsCountBeatsAudioClass">AgsCountBeatsAudioClass</link>;
-<link linkend="AgsCountBeatsAudio"><returnvalue>AgsCountBeatsAudio</returnvalue></link> * <link linkend="ags-count-beats-audio-new">ags_count_beats_audio_new</link>          (<parameter><link linkend="gboolean"><type>gboolean</type></link> loop</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsCountBeatsAudio.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsCountBeatsAudio.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsCountBeatsAudio" role="struct">
-<title>struct AgsCountBeatsAudio</title>
-<indexterm zone="AgsCountBeatsAudio"><primary>AgsCountBeatsAudio</primary></indexterm>
-<programlisting>struct AgsCountBeatsAudio {
-  AgsRecallAudio recall_audio;
+<refsect1 id="AgsCountBeatsAudio.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsCountBeatsAudio--loop">loop</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsCountBeatsAudio--notation-loop-end">notation-loop-end</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsCountBeatsAudio--notation-loop-start">notation-loop-start</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsCountBeatsAudio--sequencer-loop-end">sequencer-loop-end</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsCountBeatsAudio--sequencer-loop-start">sequencer-loop-start</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsPort *loop;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsCountBeatsAudio.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudio">AgsRecallAudio</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsCountBeatsAudio
+</screen>
+</refsect1>
 
-  AgsPort *notation_loop_start;
-  AgsPort *notation_loop_end;
-  AgsPort *sequencer_loop_start;
-  AgsPort *sequencer_loop_end;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsCountBeatsAudioClass" role="struct">
-<title>struct AgsCountBeatsAudioClass</title>
-<indexterm zone="AgsCountBeatsAudioClass"><primary>AgsCountBeatsAudioClass</primary></indexterm>
-<programlisting>struct AgsCountBeatsAudioClass {
-  AgsRecallAudioClass recall_audio;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-count-beats-audio-new" role="function">
-<title>ags_count_beats_audio_new ()</title>
-<indexterm zone="ags-count-beats-audio-new"><primary>ags_count_beats_audio_new</primary></indexterm>
-<programlisting><link linkend="AgsCountBeatsAudio"><returnvalue>AgsCountBeatsAudio</returnvalue></link> * ags_count_beats_audio_new          (<parameter><link linkend="gboolean"><type>gboolean</type></link> loop</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsCountBeatsAudio.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_count_beats_audio.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsCountBeatsAudio.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsCountBeatsAudio"><type>AgsCountBeatsAudio</type></link> class provides ports to the effect processor.</para>
+
+</refsect1>
+<refsect1 id="AgsCountBeatsAudio.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-count-beats-audio-new" role="function" condition="since:0.4">
+<title>ags_count_beats_audio_new&#160;()</title>
+<indexterm zone="ags-count-beats-audio-new" role="0.4"><primary>ags_count_beats_audio_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsCountBeatsAudio"><returnvalue>AgsCountBeatsAudio</returnvalue></link>&#160;*
+ags_count_beats_audio_new (<parameter><link linkend="gboolean"><type>gboolean</type></link> loop</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsCountBeatsAudio"><type>AgsCountBeatsAudio</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>loop</para></entry>
+<entry role="parameter_description"><para>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> after exceeding counter, effect loops</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsCountBeatsAudio"><type>AgsCountBeatsAudio</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsCountBeatsAudio.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsCountBeatsAudio.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsCountBeatsAudio--loop" role="property"><title>The <literal>“loop”</literal> property</title>
+<indexterm zone="AgsCountBeatsAudio--loop" role="0.4"><primary>AgsCountBeatsAudio:loop</primary></indexterm>
+<programlisting>  “loop”                     <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The sequencer's loop-end.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsCountBeatsAudio--notation-loop-end" role="property"><title>The <literal>“notation-loop-end”</literal> property</title>
+<indexterm zone="AgsCountBeatsAudio--notation-loop-end"><primary>AgsCountBeatsAudio:notation-loop-end</primary></indexterm>
+<programlisting>  “notation-loop-end”        <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The end beat of the notation loop.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsCountBeatsAudio--notation-loop-start" role="property"><title>The <literal>“notation-loop-start”</literal> property</title>
+<indexterm zone="AgsCountBeatsAudio--notation-loop-start"><primary>AgsCountBeatsAudio:notation-loop-start</primary></indexterm>
+<programlisting>  “notation-loop-start”      <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The start beat of the notation loop.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsCountBeatsAudio--sequencer-loop-end" role="property"><title>The <literal>“sequencer-loop-end”</literal> property</title>
+<indexterm zone="AgsCountBeatsAudio--sequencer-loop-end"><primary>AgsCountBeatsAudio:sequencer-loop-end</primary></indexterm>
+<programlisting>  “sequencer-loop-end”       <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The end beat of the sequencer loop.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsCountBeatsAudio--sequencer-loop-start" role="property"><title>The <literal>“sequencer-loop-start”</literal> property</title>
+<indexterm zone="AgsCountBeatsAudio--sequencer-loop-start"><primary>AgsCountBeatsAudio:sequencer-loop-start</primary></indexterm>
+<programlisting>  “sequencer-loop-start”     <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The start beat of the sequencer loop.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

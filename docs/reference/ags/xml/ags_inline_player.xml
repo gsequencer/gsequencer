@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsInlinePlayer">
+<refentry id="AgsInlinePlayer">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsInlinePlayer.top_of_page">AgsInlinePlayer</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsInlinePlayer.top_of_page">AgsInlinePlayer</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,52 +17,73 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsInlinePlayer.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsInlinePlayer.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsInlinePlayer"><returnvalue>AgsInlinePlayer</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-inline-player-new">ags_inline_player_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsInlinePlayer">AgsInlinePlayer</link>;
-struct              <link linkend="AgsInlinePlayerClass">AgsInlinePlayerClass</link>;
-<link linkend="AgsInlinePlayer"><returnvalue>AgsInlinePlayer</returnvalue></link> *   <link linkend="ags-inline-player-new">ags_inline_player_new</link>               ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsInlinePlayer.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsInlinePlayer.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsInlinePlayer" role="struct">
-<title>struct AgsInlinePlayer</title>
-<indexterm zone="AgsInlinePlayer"><primary>AgsInlinePlayer</primary></indexterm>
-<programlisting>struct AgsInlinePlayer {
-  GtkHBox vbox;
+<refsect1 id="AgsInlinePlayer.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsInlinePlayer--playable">playable</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  AgsPlayable *playable;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsInlinePlayer.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsInlinePlayer
+</screen>
+</refsect1>
 
-  GtkToggleButton *play;
-  GtkHScale *position;
-  GtkVolumeButton *volume;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsInlinePlayerClass" role="struct">
-<title>struct AgsInlinePlayerClass</title>
-<indexterm zone="AgsInlinePlayerClass"><primary>AgsInlinePlayerClass</primary></indexterm>
-<programlisting>struct AgsInlinePlayerClass {
-  GtkHBoxClass vbox;
-};
-</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsInlinePlayer.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsInlinePlayer.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-inline-player-new" role="function">
-<title>ags_inline_player_new ()</title>
+<title>ags_inline_player_new&#160;()</title>
 <indexterm zone="ags-inline-player-new"><primary>ags_inline_player_new</primary></indexterm>
-<programlisting><link linkend="AgsInlinePlayer"><returnvalue>AgsInlinePlayer</returnvalue></link> *   ags_inline_player_new               ();</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsInlinePlayer"><returnvalue>AgsInlinePlayer</returnvalue></link>&#160;*
+ags_inline_player_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsInlinePlayer.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsInlinePlayer.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsInlinePlayer--playable" role="property"><title>The <literal>“playable”</literal> property</title>
+<indexterm zone="AgsInlinePlayer--playable"><primary>AgsInlinePlayer:playable</primary></indexterm>
+<programlisting>  “playable”                 <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The AgsPlayable to use within the AgsInlinePlayer.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

@@ -19,7 +19,7 @@
 #include <ags/X/machine/ags_synth_bulk_output.h>
 #include <ags/X/machine/ags_synth_bulk_output_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

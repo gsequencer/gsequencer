@@ -30,7 +30,7 @@
 
 #include <ags/thread/ags_thread_pool.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_TASK_THREAD                (ags_task_thread_get_type())
 #define AGS_TASK_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TASK_THREAD, AgsTaskThread))
@@ -51,19 +51,14 @@ struct _AgsTaskThread
 
   guint flags;
 
-  GMutex mutex;
-  GCond cond;
-
-  pthread_mutex_t read_mutex;
-  pthread_mutex_t launch_mutex;
+  pthread_mutex_t *read_mutex;
+  pthread_mutex_t *launch_mutex;
 
   volatile guint queued;
   volatile guint pending;
 
   volatile GList *exec;
   volatile GList *queue;
-
-  AgsThreadPool *thread_pool;
 };
 
 struct _AgsTaskThreadClass
@@ -82,6 +77,6 @@ GType ags_task_thread_get_type();
 void ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task);
 void ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list);
 
-AgsTaskThread* ags_task_thread_new(GObject *devout);
+AgsTaskThread* ags_task_thread_new();
 
 #endif /*__AGS_TASK_THREAD_H__*/

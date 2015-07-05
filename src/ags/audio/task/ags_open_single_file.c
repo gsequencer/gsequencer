@@ -18,11 +18,10 @@
 
 #include <ags/audio/task/ags_open_single_file.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/file/ags_file_link.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 
@@ -108,7 +107,7 @@ void
 ags_open_single_file_init(AgsOpenSingleFile *open_single_file)
 {
   open_single_file->channel = NULL;
-  open_single_file->devout = NULL;
+  open_single_file->soundcard = NULL;
   open_single_file->filename = NULL;
   open_single_file->start_channel = 0;
   open_single_file->audio_channels = 0;
@@ -154,7 +153,7 @@ ags_open_single_file_launch(AgsTask *task)
 
   /* open audio file and read audio signal */
   audio_file = ags_audio_file_new(open_single_file->filename,
-				  open_single_file->devout,
+				  open_single_file->soundcard,
 				  open_single_file->start_channel, open_single_file->audio_channels);
 
   ags_audio_file_open(audio_file);
@@ -207,7 +206,7 @@ ags_open_single_file_launch(AgsTask *task)
 
 AgsOpenSingleFile*
 ags_open_single_file_new(AgsChannel *channel,
-			 AgsDevout *devout,
+			 GObject *soundcard,
 			 gchar *filename,
 			 guint start_channel,
 			 guint audio_channels)
@@ -218,7 +217,7 @@ ags_open_single_file_new(AgsChannel *channel,
 							NULL);
 
   open_single_file->channel = channel;
-  open_single_file->devout = devout;
+  open_single_file->soundcard = soundcard;
   open_single_file->filename = filename;
   open_single_file->start_channel = start_channel;
   open_single_file->audio_channels = audio_channels;

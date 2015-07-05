@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsLv2Bridge">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsLv2Bridge.top_of_page">AgsLv2Bridge</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLv2Bridge</refname>
+<refpurpose>A composite widget to visualize a bunch of <link linkend="AgsChannel"><type>AgsChannel</type></link></refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsLv2Bridge.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-lv2-bridge-load">ags_lv2_bridge_load</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLv2Bridge"><returnvalue>AgsLv2Bridge</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-lv2-bridge-new">ags_lv2_bridge_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLv2Bridge.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsLv2Bridge--filename">filename</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gulong"><type>gulong</type></link></entry><entry role="property_name"><link linkend="AgsLv2Bridge--index">index</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsLv2Bridge--uri">uri</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLv2Bridge.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-LV2-BRIDGE-DEFAULT-VERSION:CAPS">AGS_LV2_BRIDGE_DEFAULT_VERSION</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-LV2-BRIDGE-DEFAULT-BUILD-ID:CAPS">AGS_LV2_BRIDGE_DEFAULT_BUILD_ID</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsLv2BridgeFlags">AgsLv2BridgeFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLv2Bridge.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkHandleBox">GtkHandleBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMachine">AgsMachine</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsLv2Bridge
+</screen>
+</refsect1>
+
+<refsect1 id="AgsLv2Bridge.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_lv2_bridge.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsLv2Bridge.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsLv2Bridge"><type>AgsLv2Bridge</type></link> is a composite widget to visualize all <link linkend="AgsChannel"><type>AgsChannel</type></link>. It should be
+packed by an <link linkend="AgsMachine"><type>AgsMachine</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsLv2Bridge.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-lv2-bridge-load" role="function">
+<title>ags_lv2_bridge_load&#160;()</title>
+<indexterm zone="ags-lv2-bridge-load"><primary>ags_lv2_bridge_load</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_lv2_bridge_load (<parameter><link linkend="AgsLv2Bridge"><type>AgsLv2Bridge</type></link> *lv2_bridge</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-lv2-bridge-new" role="function" condition="since:0.4.3">
+<title>ags_lv2_bridge_new&#160;()</title>
+<indexterm zone="ags-lv2-bridge-new" role="0.4.3"><primary>ags_lv2_bridge_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLv2Bridge"><returnvalue>AgsLv2Bridge</returnvalue></link>&#160;*
+ags_lv2_bridge_new (<parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>,
+                    <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                    <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsLv2Bridge"><type>AgsLv2Bridge</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the assigned soundcard.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the ui.so</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>uri</para></entry>
+<entry role="parameter_description"><para>the uri's URI</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsLv2Bridge"><type>AgsLv2Bridge</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsLv2Bridge.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-LV2-BRIDGE-DEFAULT-VERSION:CAPS" role="macro">
+<title>AGS_LV2_BRIDGE_DEFAULT_VERSION</title>
+<indexterm zone="AGS-LV2-BRIDGE-DEFAULT-VERSION:CAPS"><primary>AGS_LV2_BRIDGE_DEFAULT_VERSION</primary></indexterm>
+<programlisting language="C">#define AGS_LV2_BRIDGE_DEFAULT_VERSION "0.4.3\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-LV2-BRIDGE-DEFAULT-BUILD-ID:CAPS" role="macro">
+<title>AGS_LV2_BRIDGE_DEFAULT_BUILD_ID</title>
+<indexterm zone="AGS-LV2-BRIDGE-DEFAULT-BUILD-ID:CAPS"><primary>AGS_LV2_BRIDGE_DEFAULT_BUILD_ID</primary></indexterm>
+<programlisting language="C">#define AGS_LV2_BRIDGE_DEFAULT_BUILD_ID "CEST 13-05-2015 13:40\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AgsLv2BridgeFlags" role="enum">
+<title>enum AgsLv2BridgeFlags</title>
+<indexterm zone="AgsLv2BridgeFlags"><primary>AgsLv2BridgeFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LV2-BRIDGE-DISPLAY-INPUT:CAPS">AGS_LV2_BRIDGE_DISPLAY_INPUT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LV2-BRIDGE-BULK-OUTPUT:CAPS">AGS_LV2_BRIDGE_BULK_OUTPUT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LV2-BRIDGE-DISPLAY-OUTPUT:CAPS">AGS_LV2_BRIDGE_DISPLAY_OUTPUT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LV2-BRIDGE-BULK-INPUT:CAPS">AGS_LV2_BRIDGE_BULK_INPUT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsLv2Bridge.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsLv2Bridge--filename" role="property"><title>The <literal>“filename”</literal> property</title>
+<indexterm zone="AgsLv2Bridge--filename"><primary>AgsLv2Bridge:filename</primary></indexterm>
+<programlisting>  “filename”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The filename as string of object file.</para><para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+</refsect2>
+<refsect2 id="AgsLv2Bridge--index" role="property"><title>The <literal>“index”</literal> property</title>
+<indexterm zone="AgsLv2Bridge--index"><primary>AgsLv2Bridge:index</primary></indexterm>
+<programlisting>  “index”                    <link linkend="gulong"><type>gulong</type></link></programlisting>
+<para>The numerical index of uri.</para><para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+</refsect2>
+<refsect2 id="AgsLv2Bridge--uri" role="property"><title>The <literal>“uri”</literal> property</title>
+<indexterm zone="AgsLv2Bridge--uri"><primary>AgsLv2Bridge:uri</primary></indexterm>
+<programlisting>  “uri”                      <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The uri's string representation.</para><para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+</refsect2>
+
+</refsect1>
+
+</refentry>

@@ -24,7 +24,8 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_note.h>
 
@@ -33,7 +34,7 @@
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notebook.h>
-#include <ags/X/editor/ags_meter.h>
+#include <ags/X/editor/ags_piano.h>
 #include <ags/X/editor/ags_soundset.h>
 #include <ags/X/editor/ags_note_edit.h>
 #include <ags/X/editor/ags_pattern_edit.h>
@@ -69,7 +70,7 @@ struct _AgsEditor
   gchar *version;
   gchar *build_id;
 
-  AgsDevout *devout;
+  GObject *soundcard;
 
   GtkTable *table;
 
@@ -82,15 +83,14 @@ struct _AgsEditor
 
   AgsNotebook *notebook;
 
-  union AgsPiano{
-    AgsMeter *meter;
+  union AgsMeter{
+    AgsPiano *piano;
     AgsSoundset *soundset;
-  }piano;
+  }meter;
 
   union AgsEdit{
     AgsNoteEdit *note_edit;
     AgsPatternEdit *pattern_edit;
-    AgsAutomationEdit *automation_edit;
   }edit;
 
   guint tact_counter;

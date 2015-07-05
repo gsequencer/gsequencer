@@ -18,21 +18,49 @@
 
 #include <ags/X/ags_automation_editor_callbacks.h>
 
-gboolean
-ags_automation_editor_delete_event_callback(GtkWidget *automation_editor,
-					    gpointer data)
-{
-  gtk_widget_hide(automation_editor);
-
-  return(TRUE);
-}
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 
 void
 ags_automation_editor_set_audio_channels_callback(AgsAudio *audio,
 						  guint audio_channels, guint audio_channels_old,
 						  AgsAutomationEditor *automation_editor)
 {
-  //TODO:JK: implement me
+  guint i, j;
+
+  if(audio_channels_old < audio_channels){
+    /* output */
+    for(i = 0; i < audio->output_pads; i++){
+      for(j = audio_channels_old; j < audio_channels; j++){
+	ags_notebook_insert_tab(automation_editor->output_notebook,
+				i * audio_channels + j);
+      }
+    }
+
+    /* input */
+    for(i = 0; i < audio->input_pads; i++){
+      for(j = audio_channels_old; j < audio_channels; j++){
+	ags_notebook_insert_tab(automation_editor->input_notebook,
+				i * audio_channels + j);
+      }
+    }
+  }else{
+    /* output */
+    for(i = 0; i < audio->output_pads; i++){
+      for(j = audio_channels; j < audio_channels_old; j++){
+	ags_notebook_remove_tab(automation_editor->output_notebook,
+				i * audio_channels + j);
+      }
+    }
+
+    /* input */
+    for(i = 0; i < audio->input_pads; i++){
+      for(j = audio_channels; j < audio_channels_old; j++){
+	ags_notebook_remove_tab(automation_editor->input_notebook,
+				i * audio_channels + j);
+      }
+    }
+  }
 }
 
 void
@@ -41,7 +69,45 @@ ags_automation_editor_set_pads_callback(AgsAudio *audio,
 					guint pads, guint pads_old,
 					AgsAutomationEditor *automation_editor)
 {
-  //TODO:JK: implement me
+  guint i, j;
+  
+  if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
+    /* output */
+    if(pads > pads_old){
+      /* grow */
+      for(i = pads_old; i < pads; i++){
+	for(j = 0; j < audio->audio_channels; j++){
+	  ags_notebook_add_tab(automation_editor->output_notebook);
+	}
+      }
+    }else{
+      /* shrink */
+      for(i = pads_old; i < pads; i++){
+	for(j = 0; j < audio->audio_channels; j++){
+	  ags_notebook_remove_tab(automation_editor->output_notebook,
+				  i * audio->audio_channels + j);
+	}
+      }
+    }
+  }else if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    /* input */
+    if(pads > pads_old){
+      /* grow */
+      for(i = pads_old; i < pads; i++){
+	for(j = 0; j < audio->audio_channels; j++){
+	  ags_notebook_add_tab(automation_editor->input_notebook);
+	}
+      }
+    }else{
+      /* shrink */
+      for(i = pads_old; i < pads; i++){
+	for(j = 0; j < audio->audio_channels; j++){
+	  ags_notebook_remove_tab(automation_editor->input_notebook,
+				  i * audio->audio_channels + j);
+	}
+      }
+    }
+  }
 }
 
 void
@@ -60,7 +126,7 @@ ags_automation_editor_change_position_callback(AgsNavigation *navigation, gdoubl
 }
 
 void
-ags_automation_editor_edit_vscrollbar_value_changed_callback(GtkWidget *note_edit,
+ags_automation_editor_edit_vscrollbar_value_changed_callback(GtkWidget *automation_edit,
 							     AgsAutomationEditor *automation_editor)
 {
   //TODO:JK: implement me

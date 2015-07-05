@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsDrum">
+<refentry id="AgsDrum">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsDrum.top_of_page">AgsDrum</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsDrum.top_of_page">AgsDrum</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,108 +14,118 @@
 </refmeta>
 <refnamediv>
 <refname>AgsDrum</refname>
-<refpurpose></refpurpose>
+<refpurpose>drum sequencer</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsDrum.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsDrum.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-DRUM-PATTERN-CONTROLS:CAPS">AGS_DRUM_PATTERN_CONTROLS</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-drum-set-pattern">ags_drum_set_pattern</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsDrum"><returnvalue>AgsDrum</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-drum-new">ags_drum_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-DRUM-PATTERN-CONTROLS:CAPS">AGS_DRUM_PATTERN_CONTROLS</link>
-struct              <link linkend="AgsDrum">AgsDrum</link>;
-struct              <link linkend="AgsDrumClass">AgsDrumClass</link>;
-enum                <link linkend="AgsDrumFlags">AgsDrumFlags</link>;
-<link linkend="AgsDrum"><returnvalue>AgsDrum</returnvalue></link> *           <link linkend="ags-drum-new">ags_drum_new</link>                        (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-drum-set-pattern">ags_drum_set_pattern</link>                (<parameter><link linkend="AgsDrum"><type>AgsDrum</type></link> *drum</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsDrum.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsDrum.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsDrum.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsDrumFlags">AgsDrumFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDrum.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkHandleBox">GtkHandleBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMachine">AgsMachine</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsDrum
+</screen>
+</refsect1>
+
+<refsect1 id="AgsDrum.includes"><title>Includes</title><synopsis>#include &lt;ags/X/machine/ags_drum.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsDrum.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsDrum"><type>AgsDrum</type></link> is a composite widget to act as drum sequencer.</para>
+
+</refsect1>
+<refsect1 id="AgsDrum.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-DRUM-PATTERN-CONTROLS:CAPS" role="macro">
 <title>AGS_DRUM_PATTERN_CONTROLS</title>
 <indexterm zone="AGS-DRUM-PATTERN-CONTROLS:CAPS"><primary>AGS_DRUM_PATTERN_CONTROLS</primary></indexterm>
-<programlisting>#define AGS_DRUM_PATTERN_CONTROLS (16)
+<programlisting language="C">#define AGS_DRUM_PATTERN_CONTROLS (16)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDrum" role="struct">
-<title>struct AgsDrum</title>
-<indexterm zone="AgsDrum"><primary>AgsDrum</primary></indexterm>
-<programlisting>struct AgsDrum {
-  AgsMachine machine;
+</refsect2>
+<refsect2 id="ags-drum-set-pattern" role="function">
+<title>ags_drum_set_pattern&#160;()</title>
+<indexterm zone="ags-drum-set-pattern"><primary>ags_drum_set_pattern</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_drum_set_pattern (<parameter><link linkend="AgsDrum"><type>AgsDrum</type></link> *drum</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-drum-new" role="function" condition="since:0.3">
+<title>ags_drum_new&#160;()</title>
+<indexterm zone="ags-drum-new" role="0.3"><primary>ags_drum_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsDrum"><returnvalue>AgsDrum</returnvalue></link>&#160;*
+ags_drum_new (<parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsDrum"><type>AgsDrum</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the assigned soundcard.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsDrum"><type>AgsDrum</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
 
-  guint flags;
-
-  gchar *name;
-  gchar *xml_type;
-
-  GtkButton *open;
-
-  GtkCheckButton *loop_button;
-  GtkSpinButton *length_spin;
-
-  GtkToggleButton *run;
-
-  GtkVBox *vbox;
-
-  GtkHBox *input_pad;
-  GtkVBox *output_pad;
-
-  GtkToggleButton *selected_edit_button;
-
-  AgsDrumInputPad *selected_pad;
-  AgsLine *selected_line;
-
-  GtkToggleButton *index0[4];
-  GtkToggleButton *selected0;
-
-  GtkToggleButton *index1[12];
-  GtkToggleButton *selected1;
-
-  guint active_led;
-  GtkHBox *led;
-  GtkHBox *pattern;
-
-  GtkVBox *offset;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDrumClass" role="struct">
-<title>struct AgsDrumClass</title>
-<indexterm zone="AgsDrumClass"><primary>AgsDrumClass</primary></indexterm>
-<programlisting>struct AgsDrumClass {
-  AgsMachineClass machine;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsDrum.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsDrumFlags" role="enum">
 <title>enum AgsDrumFlags</title>
 <indexterm zone="AgsDrumFlags"><primary>AgsDrumFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_DRUM_BLOCK_PATTERN    =  1,
-} AgsDrumFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-drum-new" role="function">
-<title>ags_drum_new ()</title>
-<indexterm zone="ags-drum-new"><primary>ags_drum_new</primary></indexterm>
-<programlisting><link linkend="AgsDrum"><returnvalue>AgsDrum</returnvalue></link> *           ags_drum_new                        (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-drum-set-pattern" role="function">
-<title>ags_drum_set_pattern ()</title>
-<indexterm zone="ags-drum-set-pattern"><primary>ags_drum_set_pattern</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_drum_set_pattern                (<parameter><link linkend="AgsDrum"><type>AgsDrum</type></link> *drum</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DRUM-BLOCK-PATTERN:CAPS">AGS_DRUM_BLOCK_PATTERN</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
 </refsect1>
 

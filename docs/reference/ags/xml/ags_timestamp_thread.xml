@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsTimestampThread">
+<refentry id="AgsTimestampThread">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsTimestampThread.top_of_page">AgsTimestampThread</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsTimestampThread.top_of_page">AgsTimestampThread</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,97 +17,85 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsTimestampThread.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsTimestampThread.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MICROSECONDS-PER-SECOND:CAPS">AGS_MICROSECONDS_PER_SECOND</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-BPM:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_BPM</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-SAMPLERATE:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-BUFFER-SIZE:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-JIFFIE:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-TIC:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_TIC</link></entry></row>
+<row><entry role="function_type"><link linkend="AgsTimestampThread"><returnvalue>AgsTimestampThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-timestamp-thread-new">ags_timestamp_thread_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-MICROSECONDS-PER-SECOND:CAPS">AGS_MICROSECONDS_PER_SECOND</link>
-#define             <link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-BPM:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_BPM</link>
-#define             <link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-BUFFER-SIZE:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE</link>
-#define             <link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-JIFFIE:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE</link>
-#define             <link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-SAMPLERATE:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE</link>
-#define             <link linkend="AGS-TIMESTAMP-THREAD-DEFAULT-TIC:CAPS">AGS_TIMESTAMP_THREAD_DEFAULT_TIC</link>
-struct              <link linkend="AgsTimestampThread">AgsTimestampThread</link>;
-struct              <link linkend="AgsTimestampThreadClass">AgsTimestampThreadClass</link>;
-<link linkend="AgsTimestampThread"><returnvalue>AgsTimestampThread</returnvalue></link> * <link linkend="ags-timestamp-thread-new">ags_timestamp_thread_new</link>           ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsTimestampThread.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsTimestampThread.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsTimestampThread.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsThread">AgsThread</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsTimestampThread
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsTimestampThread.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsTimestampThread.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-MICROSECONDS-PER-SECOND:CAPS" role="macro">
 <title>AGS_MICROSECONDS_PER_SECOND</title>
 <indexterm zone="AGS-MICROSECONDS-PER-SECOND:CAPS"><primary>AGS_MICROSECONDS_PER_SECOND</primary></indexterm>
-<programlisting>#define AGS_MICROSECONDS_PER_SECOND (1000000.0)
+<programlisting language="C">#define AGS_MICROSECONDS_PER_SECOND (1000000.0)
 </programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AGS-TIMESTAMP-THREAD-DEFAULT-BPM:CAPS" role="macro">
 <title>AGS_TIMESTAMP_THREAD_DEFAULT_BPM</title>
 <indexterm zone="AGS-TIMESTAMP-THREAD-DEFAULT-BPM:CAPS"><primary>AGS_TIMESTAMP_THREAD_DEFAULT_BPM</primary></indexterm>
-<programlisting>#define AGS_TIMESTAMP_THREAD_DEFAULT_BPM (120.0)
+<programlisting language="C">#define AGS_TIMESTAMP_THREAD_DEFAULT_BPM (120.0)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-TIMESTAMP-THREAD-DEFAULT-BUFFER-SIZE:CAPS" role="macro">
-<title>AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE</title>
-<indexterm zone="AGS-TIMESTAMP-THREAD-DEFAULT-BUFFER-SIZE:CAPS"><primary>AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE</primary></indexterm>
-<programlisting>#define AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE (256.0)
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-TIMESTAMP-THREAD-DEFAULT-JIFFIE:CAPS" role="macro">
-<title>AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE</title>
-<indexterm zone="AGS-TIMESTAMP-THREAD-DEFAULT-JIFFIE:CAPS"><primary>AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE</primary></indexterm>
-<programlisting>#define             AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AGS-TIMESTAMP-THREAD-DEFAULT-SAMPLERATE:CAPS" role="macro">
 <title>AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE</title>
 <indexterm zone="AGS-TIMESTAMP-THREAD-DEFAULT-SAMPLERATE:CAPS"><primary>AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE</primary></indexterm>
-<programlisting>#define AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE (44100.0)
+<programlisting language="C">#define AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE (44100.0)
 </programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+<refsect2 id="AGS-TIMESTAMP-THREAD-DEFAULT-BUFFER-SIZE:CAPS" role="macro">
+<title>AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE</title>
+<indexterm zone="AGS-TIMESTAMP-THREAD-DEFAULT-BUFFER-SIZE:CAPS"><primary>AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE</primary></indexterm>
+<programlisting language="C">#define AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE (256.0)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-TIMESTAMP-THREAD-DEFAULT-JIFFIE:CAPS" role="macro">
+<title>AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE</title>
+<indexterm zone="AGS-TIMESTAMP-THREAD-DEFAULT-JIFFIE:CAPS"><primary>AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE</primary></indexterm>
+<programlisting language="C">#define             AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE</programlisting>
+</refsect2>
 <refsect2 id="AGS-TIMESTAMP-THREAD-DEFAULT-TIC:CAPS" role="macro">
 <title>AGS_TIMESTAMP_THREAD_DEFAULT_TIC</title>
 <indexterm zone="AGS-TIMESTAMP-THREAD-DEFAULT-TIC:CAPS"><primary>AGS_TIMESTAMP_THREAD_DEFAULT_TIC</primary></indexterm>
-<programlisting>#define             AGS_TIMESTAMP_THREAD_DEFAULT_TIC</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsTimestampThread" role="struct">
-<title>struct AgsTimestampThread</title>
-<indexterm zone="AgsTimestampThread"><primary>AgsTimestampThread</primary></indexterm>
-<programlisting>struct AgsTimestampThread {
-  AgsThread thread;
-
-  GObject *current_timestamp;
-  GObject *current_latency;
-
-  GObject *timestamp;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsTimestampThreadClass" role="struct">
-<title>struct AgsTimestampThreadClass</title>
-<indexterm zone="AgsTimestampThreadClass"><primary>AgsTimestampThreadClass</primary></indexterm>
-<programlisting>struct AgsTimestampThreadClass {
-  AgsThreadClass thread;
-};
-</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C">#define             AGS_TIMESTAMP_THREAD_DEFAULT_TIC</programlisting>
+</refsect2>
 <refsect2 id="ags-timestamp-thread-new" role="function">
-<title>ags_timestamp_thread_new ()</title>
+<title>ags_timestamp_thread_new&#160;()</title>
 <indexterm zone="ags-timestamp-thread-new"><primary>ags_timestamp_thread_new</primary></indexterm>
-<programlisting><link linkend="AgsTimestampThread"><returnvalue>AgsTimestampThread</returnvalue></link> * ags_timestamp_thread_new           ();</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="AgsTimestampThread"><returnvalue>AgsTimestampThread</returnvalue></link>&#160;*
+ags_timestamp_thread_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsTimestampThread.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-soundset-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-soundset-callbacks.top_of_page">ags_soundset_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_soundset_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-ags-soundset-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundset-expose-event">ags_soundset_expose_event</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundset-configure-event">ags_soundset_configure_event</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-ags-soundset-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-ags-soundset-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-soundset-expose-event" role="function">
+<title>ags_soundset_expose_event&#160;()</title>
+<indexterm zone="ags-soundset-expose-event"><primary>ags_soundset_expose_event</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_soundset_expose_event (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                           <parameter><link linkend="GdkEventExpose"><type>GdkEventExpose</type></link> *event</parameter>,
+                           <parameter><link linkend="AgsSoundset"><type>AgsSoundset</type></link> *soundset</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-soundset-configure-event" role="function">
+<title>ags_soundset_configure_event&#160;()</title>
+<indexterm zone="ags-soundset-configure-event"><primary>ags_soundset_configure_event</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_soundset_configure_event (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                              <parameter><link linkend="GdkEventConfigure"><type>GdkEventConfigure</type></link> *event</parameter>,
+                              <parameter><link linkend="AgsSoundset"><type>AgsSoundset</type></link> *soundset</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-soundset-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

@@ -19,18 +19,22 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_line_member_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/thread/ags_audio_loop.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_devout.h>
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_effect_line.h>
 
@@ -763,15 +767,27 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   }
 
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
+    AgsWindow *window;
     AgsLine *line;
+    
+    AgsThread *main_loop;
     AgsTaskThread *task_thread;
     AgsTask *task;
+
+    AgsApplicationContext *application_context;
 
     //TODO:JK: add support for effect_line
     line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 					       AGS_TYPE_LINE);
+
+    window = gtk_widget_get_ancestor(line,
+				     AGS_TYPE_WINDOW);
+
+    application_context = window->application_context;
     
-    task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(line->channel->audio)->devout)->ags_main)->main_loop)->task_thread);
+    main_loop = application_context->main_loop;
+    task_thread = ags_thread_find_type(main_loop,
+				       AGS_TYPE_TASK_THREAD);
 
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,
@@ -835,7 +851,7 @@ ags_line_member_find_port(AgsLineMember *line_member)
       g_message("search port in %s\0", G_OBJECT_TYPE_NAME(recall->data));
 #endif
 
-      while(port != NULL){
+      while(port != NULL){	
 	if(!g_strcmp0(AGS_PORT(port->data)->specifier,
 		      specifier)){
 	  return(AGS_PORT(port->data));

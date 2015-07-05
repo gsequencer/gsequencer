@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsReturnableThread">
+<refentry id="AgsReturnableThread">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsReturnableThread.top_of_page">AgsReturnableThread</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsReturnableThread.top_of_page">AgsReturnableThread</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,116 +14,201 @@
 </refmeta>
 <refnamediv>
 <refname>AgsReturnableThread</refname>
-<refpurpose></refpurpose>
+<refpurpose>returnable thread</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsReturnableThread.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsReturnableThread.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-RETURNABLE-THREAD-DEFAULT-JIFFIE:CAPS">AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><phrase role="c_punctuation">(</phrase><link linkend="AgsReturnableThreadCallback">*AgsReturnableThreadCallback</link><phrase role="c_punctuation">)</phrase>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-returnable-thread-safe-run">ags_returnable_thread_safe_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-returnable-thread-connect-safe-run">ags_returnable_thread_connect_safe_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-returnable-thread-disconnect-safe-run">ags_returnable_thread_disconnect_safe_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsReturnableThread"><returnvalue>AgsReturnableThread</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-returnable-thread-new">ags_returnable_thread_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-RETURNABLE-THREAD-DEFAULT-JIFFIE:CAPS">AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE</link>
-struct              <link linkend="AgsReturnableThread">AgsReturnableThread</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                (<link linkend="AgsReturnableThreadCallback">*AgsReturnableThreadCallback</link>)      (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);
-struct              <link linkend="AgsReturnableThreadClass">AgsReturnableThreadClass</link>;
-enum                <link linkend="AgsReturnableThreadFlags">AgsReturnableThreadFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-returnable-thread-connect-safe-run">ags_returnable_thread_connect_safe_run</link>
-                                                        (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>,
-                                                         <parameter><link linkend="AgsReturnableThreadCallback"><type>AgsReturnableThreadCallback</type></link> callback</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-returnable-thread-disconnect-safe-run">ags_returnable_thread_disconnect_safe_run</link>
-                                                        (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>);
-<link linkend="AgsReturnableThread"><returnvalue>AgsReturnableThread</returnvalue></link> * <link linkend="ags-returnable-thread-new">ags_returnable_thread_new</link>         (<parameter><link linkend="GObject"><type>GObject</type></link> *thread_pool</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-returnable-thread-safe-run">ags_returnable_thread_safe_run</link>      (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsReturnableThread.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsReturnableThread.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsReturnableThread.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsReturnableThread-safe-run">safe-run</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsReturnableThread.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsReturnableThreadFlags">AgsReturnableThreadFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsReturnableThread.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsThread">AgsThread</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsReturnableThread
+</screen>
+</refsect1>
+
+<refsect1 id="AgsReturnableThread.includes"><title>Includes</title><synopsis>#include &lt;ags/thread/ags_returnable_thread.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsReturnableThread.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> acts as thread. It should return after a short
+while because of limited thread pool.</para>
+
+</refsect1>
+<refsect1 id="AgsReturnableThread.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-RETURNABLE-THREAD-DEFAULT-JIFFIE:CAPS" role="macro">
 <title>AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE</title>
 <indexterm zone="AGS-RETURNABLE-THREAD-DEFAULT-JIFFIE:CAPS"><primary>AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE</primary></indexterm>
-<programlisting>#define AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE (1000)
+<programlisting language="C">#define AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE (1000)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsReturnableThread" role="struct">
-<title>struct AgsReturnableThread</title>
-<indexterm zone="AgsReturnableThread"><primary>AgsReturnableThread</primary></indexterm>
-<programlisting>struct AgsReturnableThread {
-  AgsThread thread;
-
-  volatile guint flags;
-
-  GObject *thread_pool;
-
-  pthread_mutex_t reset_mutex;
-  volatile void *safe_data;
-
-  gulong handler;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AgsReturnableThreadCallback" role="function">
-<title>AgsReturnableThreadCallback ()</title>
+<title>AgsReturnableThreadCallback&#160;()</title>
 <indexterm zone="AgsReturnableThreadCallback"><primary>AgsReturnableThreadCallback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                (*AgsReturnableThreadCallback)      (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsReturnableThreadClass" role="struct">
-<title>struct AgsReturnableThreadClass</title>
-<indexterm zone="AgsReturnableThreadClass"><primary>AgsReturnableThreadClass</primary></indexterm>
-<programlisting>struct AgsReturnableThreadClass {
-  AgsThreadClass thread;
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+<phrase role="c_punctuation">(</phrase>*AgsReturnableThreadCallback<phrase role="c_punctuation">)</phrase> (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>,
+                                <parameter><link linkend="gpointer"><type>gpointer</type></link> data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-returnable-thread-safe-run" role="function">
+<title>ags_returnable_thread_safe_run&#160;()</title>
+<indexterm zone="ags-returnable-thread-safe-run"><primary>ags_returnable_thread_safe_run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_returnable_thread_safe_run (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-returnable-thread-connect-safe-run" role="function" condition="since:0.4">
+<title>ags_returnable_thread_connect_safe_run&#160;()</title>
+<indexterm zone="ags-returnable-thread-connect-safe-run" role="0.4"><primary>ags_returnable_thread_connect_safe_run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_returnable_thread_connect_safe_run
+                               (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>,
+                                <parameter><link linkend="AgsReturnableThreadCallback"><type>AgsReturnableThreadCallback</type></link> callback</parameter>);</programlisting>
+<para>Connects <parameter>callback</parameter>
+ to <parameter>thread</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>returnable_thread</para></entry>
+<entry role="parameter_description"><para>the thread to connect</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>callback</para></entry>
+<entry role="parameter_description"><para>the callback</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-returnable-thread-disconnect-safe-run" role="function" condition="since:0.4">
+<title>ags_returnable_thread_disconnect_safe_run&#160;()</title>
+<indexterm zone="ags-returnable-thread-disconnect-safe-run" role="0.4"><primary>ags_returnable_thread_disconnect_safe_run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_returnable_thread_disconnect_safe_run
+                               (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>);</programlisting>
+<para>Disconnects callback of <parameter>thread</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>returnable_thread</para></entry>
+<entry role="parameter_description"><para>the thread to disconnect</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-returnable-thread-new" role="function" condition="since:0.4">
+<title>ags_returnable_thread_new&#160;()</title>
+<indexterm zone="ags-returnable-thread-new" role="0.4"><primary>ags_returnable_thread_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsReturnableThread"><returnvalue>AgsReturnableThread</returnvalue></link>&#160;*
+ags_returnable_thread_new (<parameter><link linkend="GObject"><type>GObject</type></link> *thread_pool</parameter>);</programlisting>
+<para>Create a new <link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>thread_pool</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsThreadPool"><type>AgsThreadPool</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the new <link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  void (*safe_run)(AgsReturnableThread *returnable_thread);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsReturnableThread.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsReturnableThreadFlags" role="enum">
 <title>enum AgsReturnableThreadFlags</title>
 <indexterm zone="AgsReturnableThreadFlags"><primary>AgsReturnableThreadFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_RETURNABLE_THREAD_IN_USE              = 1,
-  AGS_RETURNABLE_THREAD_RESET               = 1 &lt;&lt; 1,
-} AgsReturnableThreadFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-returnable-thread-connect-safe-run" role="function">
-<title>ags_returnable_thread_connect_safe_run ()</title>
-<indexterm zone="ags-returnable-thread-connect-safe-run"><primary>ags_returnable_thread_connect_safe_run</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_returnable_thread_connect_safe_run
-                                                        (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>,
-                                                         <parameter><link linkend="AgsReturnableThreadCallback"><type>AgsReturnableThreadCallback</type></link> callback</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-returnable-thread-disconnect-safe-run" role="function">
-<title>ags_returnable_thread_disconnect_safe_run ()</title>
-<indexterm zone="ags-returnable-thread-disconnect-safe-run"><primary>ags_returnable_thread_disconnect_safe_run</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_returnable_thread_disconnect_safe_run
-                                                        (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-returnable-thread-new" role="function">
-<title>ags_returnable_thread_new ()</title>
-<indexterm zone="ags-returnable-thread-new"><primary>ags_returnable_thread_new</primary></indexterm>
-<programlisting><link linkend="AgsReturnableThread"><returnvalue>AgsReturnableThread</returnvalue></link> * ags_returnable_thread_new         (<parameter><link linkend="GObject"><type>GObject</type></link> *thread_pool</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-returnable-thread-safe-run" role="function">
-<title>ags_returnable_thread_safe_run ()</title>
-<indexterm zone="ags-returnable-thread-safe-run"><primary>ags_returnable_thread_safe_run</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_returnable_thread_safe_run      (<parameter><link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *returnable_thread</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RETURNABLE-THREAD-IN-USE:CAPS">AGS_RETURNABLE_THREAD_IN_USE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RETURNABLE-THREAD-RESET:CAPS">AGS_RETURNABLE_THREAD_RESET</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsReturnableThread.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsReturnableThread-safe-run" role="signal"><title>The <literal>“safe-run”</literal> signal</title>
+<indexterm zone="AgsReturnableThread-safe-run"><primary>AgsReturnableThread::safe-run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsReturnableThread"><type>AgsReturnableThread</type></link> *agsreturnablethread,
+               <link linkend="gpointer"><type>gpointer</type></link>             user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

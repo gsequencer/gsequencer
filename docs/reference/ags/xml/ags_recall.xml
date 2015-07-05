@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRecall">
+<refentry id="AgsRecall">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRecall.top_of_page">AgsRecall</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRecall.top_of_page">AgsRecall</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,544 +14,1554 @@
 </refmeta>
 <refnamediv>
 <refname>AgsRecall</refname>
-<refpurpose></refpurpose>
+<refpurpose>The recall base class</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRecall.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRecall.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-RECALL-HANDLER:CAPS">AGS_RECALL_HANDLER</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-set-flags">ags_recall_set_flags</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-resolve-dependencies">ags_recall_resolve_dependencies</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-child-added">ags_recall_child_added</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-run-init-pre">ags_recall_run_init_pre</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-run-init-inter">ags_recall_run_init_inter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-run-init-post">ags_recall_run_init_post</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-run-pre">ags_recall_run_pre</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-run-inter">ags_recall_run_inter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-run-post">ags_recall_run_post</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-stop-persistent">ags_recall_stop_persistent</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-done">ags_recall_done</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-cancel">ags_recall_cancel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-remove">ags_recall_remove</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-is-done">ags_recall_is_done</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-duplicate">ags_recall_duplicate</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-set-recall-id">ags_recall_set_recall_id</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-set-soundcard-recursive">ags_recall_set_soundcard_recursive</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-notify-dependency">ags_recall_notify_dependency</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-add-dependency">ags_recall_add_dependency</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-remove-dependency">ags_recall_remove_dependency</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-get-dependencies">ags_recall_get_dependencies</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-remove-child">ags_recall_remove_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-add-child">ags_recall_add_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-get-children">ags_recall_get_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-get-by-effect">ags_recall_get_by_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-find-recall-id-with-effect">ags_recall_find_recall_id_with_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-find-type">ags_recall_find_type</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-find-template">ags_recall_find_template</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-template-find-type">ags_recall_template_find_type</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-template-find-all-type">ags_recall_template_find_all_type</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-find-type-with-recycling-context">ags_recall_find_type_with_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-find-recycling-context">ags_recall_find_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-find-provider">ags_recall_find_provider</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-template-find-provider">ags_recall_template_find_provider</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-find-provider-with-recycling-context">ags_recall_find_provider_with_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-run-init">ags_recall_run_init</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecallHandler"><returnvalue>AgsRecallHandler</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-handler-alloc">ags_recall_handler_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-add-handler">ags_recall_add_handler</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-recall-remove-handler">ags_recall_remove_handler</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-new">ags_recall_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-RECALL-DEFAULT-BUILD-ID:CAPS">AGS_RECALL_DEFAULT_BUILD_ID</link>
-#define             <link linkend="AGS-RECALL-DEFAULT-VERSION:CAPS">AGS_RECALL_DEFAULT_VERSION</link>
-#define             <link linkend="AGS-RECALL-HANDLER:CAPS">AGS_RECALL_HANDLER</link>                  (handler)
-struct              <link linkend="AgsRecall">AgsRecall</link>;
-struct              <link linkend="AgsRecallClass">AgsRecallClass</link>;
-enum                <link linkend="AgsRecallFlags">AgsRecallFlags</link>;
-struct              <link linkend="AgsRecallHandler">AgsRecallHandler</link>;
-enum                <link linkend="AgsRecallNotifyDependencyMode">AgsRecallNotifyDependencyMode</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-add-child">ags_recall_add_child</link>                (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *child</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-add-dependency">ags_recall_add_dependency</link>           (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link> *dependency</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-add-handler">ags_recall_add_handler</link>              (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallHandler"><type>AgsRecallHandler</type></link> *recall_handler</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-cancel">ags_recall_cancel</link>                   (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-child-added">ags_recall_child_added</link>              (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *child</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-done">ags_recall_done</link>                     (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link> *         <link linkend="ags-recall-duplicate">ags_recall_duplicate</link>                (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-find-by-effect">ags_recall_find_by_effect</link>           (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *effect</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-find-provider">ags_recall_find_provider</link>            (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-find-provider-with-recycling-container">ags_recall_find_provider_with_recycling_container</link>
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-find-recycling-container">ags_recall_find_recycling_container</link> (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-find-template">ags_recall_find_template</link>            (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-find-type">ags_recall_find_type</link>                (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-find-type-with-recycling-container">ags_recall_find_type_with_recycling_container</link>
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-get-children">ags_recall_get_children</link>             (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-get-dependencies">ags_recall_get_dependencies</link>         (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="AgsRecallHandler"><returnvalue>AgsRecallHandler</returnvalue></link> *  <link linkend="ags-recall-handler-alloc">ags_recall_handler_alloc</link>            (<parameter>const <link linkend="gchar"><type>gchar</type></link> *signal_name</parameter>,
-                                                         <parameter><link linkend="GCallback"><type>GCallback</type></link> callback</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *data</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-recall-is-done">ags_recall_is_done</link>                  (<parameter><link linkend="GList"><type>GList</type></link> *recalls</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);
-<link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link> *         <link linkend="ags-recall-new">ags_recall_new</link>                      ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-notify-dependency">ags_recall_notify_dependency</link>        (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> dependency</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> count</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-remove">ags_recall_remove</link>                   (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-remove-child">ags_recall_remove_child</link>             (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *child</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-remove-dependency">ags_recall_remove_dependency</link>        (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *template</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-remove-handler">ags_recall_remove_handler</link>           (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallHandler"><type>AgsRecallHandler</type></link> *recall_handler</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-resolve-dependencies">ags_recall_resolve_dependencies</link>     (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *reall</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-run-init">ags_recall_run_init</link>                 (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> stage</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-run-init-inter">ags_recall_run_init_inter</link>           (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-run-init-post">ags_recall_run_init_post</link>            (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-run-init-pre">ags_recall_run_init_pre</link>             (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-run-inter">ags_recall_run_inter</link>                (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-run-post">ags_recall_run_post</link>                 (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-run-pre">ags_recall_run_pre</link>                  (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-set-devout-recursive">ags_recall_set_devout_recursive</link>     (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-set-effect">ags_recall_set_effect</link>               (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *effect</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-set-flags">ags_recall_set_flags</link>                (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-set-recall-id">ags_recall_set_recall_id</link>            (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-recall-stop-persistent">ags_recall_stop_persistent</link>          (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-template-find-provider">ags_recall_template_find_provider</link>   (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>);
-<link linkend="GList"><returnvalue>GList</returnvalue></link> *             <link linkend="ags-recall-template-find-type">ags_recall_template_find_type</link>       (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRecall.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRecall.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-RECALL-DEFAULT-BUILD-ID:CAPS" role="macro">
-<title>AGS_RECALL_DEFAULT_BUILD_ID</title>
-<indexterm zone="AGS-RECALL-DEFAULT-BUILD-ID:CAPS"><primary>AGS_RECALL_DEFAULT_BUILD_ID</primary></indexterm>
-<programlisting>#define AGS_RECALL_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-RECALL-DEFAULT-VERSION:CAPS" role="macro">
-<title>AGS_RECALL_DEFAULT_VERSION</title>
-<indexterm zone="AGS-RECALL-DEFAULT-VERSION:CAPS"><primary>AGS_RECALL_DEFAULT_VERSION</primary></indexterm>
-<programlisting>#define AGS_RECALL_DEFAULT_VERSION "0.4.2\0"
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsRecall.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecall--child">child</link></entry><entry role="property_flags">Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecall--dependency">dependency</link></entry><entry role="property_flags">Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecall--parent">parent</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecall--port">port</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecall--recall-container">recall-container</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecallID"><type>AgsRecallID</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecall--recall-id">recall-id</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsRecall--soundcard">soundcard</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecall.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-cancel">cancel</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-child-added">child-added</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-done">done</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>*</entry><entry role="signal_name"><link linkend="AgsRecall-duplicate">duplicate</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-notify-dependency">notify-dependency</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-remove">remove</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-resolve-dependencies">resolve-dependencies</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-run-init-inter">run-init-inter</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-run-init-post">run-init-post</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-run-init-pre">run-init-pre</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-run-inter">run-inter</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-run-post">run-post</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-run-pre">run-pre</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsRecall-stop-persistent">stop-persistent</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecall.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-RECALL-DEFAULT-VERSION:CAPS">AGS_RECALL_DEFAULT_VERSION</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-RECALL-DEFAULT-BUILD-ID:CAPS">AGS_RECALL_DEFAULT_BUILD_ID</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsRecallFlags">AgsRecallFlags</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsRecallNotifyDependencyMode">AgsRecallNotifyDependencyMode</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsRecallHandler">AgsRecallHandler</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsRecall.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecall
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudioSignal">AgsRecallAudioSignal</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannel">AgsRecallChannel</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallRecycling">AgsRecallRecycling</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudio">AgsRecallAudio</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayAudioFile">AgsPlayAudioFile</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayNote">AgsPlayNote</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPlayPattern">AgsPlayPattern</link>
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsRecall.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsRecall"><type>AgsRecall</type></link> acts as effect processor.</para>
+
+</refsect1>
+<refsect1 id="AgsRecall.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-RECALL-HANDLER:CAPS" role="macro">
 <title>AGS_RECALL_HANDLER()</title>
 <indexterm zone="AGS-RECALL-HANDLER:CAPS"><primary>AGS_RECALL_HANDLER</primary></indexterm>
-<programlisting>#define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
+<programlisting language="C">#define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecall" role="struct">
-<title>struct AgsRecall</title>
-<indexterm zone="AgsRecall"><primary>AgsRecall</primary></indexterm>
-<programlisting>struct AgsRecall {
-  GObject object;
+</refsect2>
+<refsect2 id="ags-recall-set-flags" role="function" condition="since:0.4">
+<title>ags_recall_set_flags&#160;()</title>
+<indexterm zone="ags-recall-set-flags" role="0.4"><primary>ags_recall_set_flags</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_set_flags (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                      <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
+<para>Set flags recursivly.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>flags</para></entry>
+<entry role="parameter_description"><para>the flags mask</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-resolve-dependencies" role="function" condition="since:0.4">
+<title>ags_recall_resolve_dependencies&#160;()</title>
+<indexterm zone="ags-recall-resolve-dependencies" role="0.4"><primary>ags_recall_resolve_dependencies</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_resolve_dependencies (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *reall</parameter>);</programlisting>
+<para>A signal indicating that the inheriting object should resolve
+it's dependencies.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-child-added" role="function">
+<title>ags_recall_child_added&#160;()</title>
+<indexterm zone="ags-recall-child-added"><primary>ags_recall_child_added</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_child_added (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *parent</parameter>,
+                        <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *child</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recall-run-init-pre" role="function" condition="since:0.4">
+<title>ags_recall_run_init_pre&#160;()</title>
+<indexterm zone="ags-recall-run-init-pre" role="0.4"><primary>ags_recall_run_init_pre</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_run_init_pre (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>Prepare for run, this is the pre stage within the preparation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-run-init-inter" role="function" condition="since:0.4">
+<title>ags_recall_run_init_inter&#160;()</title>
+<indexterm zone="ags-recall-run-init-inter" role="0.4"><primary>ags_recall_run_init_inter</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_run_init_inter (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>Prepare for run, this is the inter stage within the preparation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-run-init-post" role="function" condition="since:0.4">
+<title>ags_recall_run_init_post&#160;()</title>
+<indexterm zone="ags-recall-run-init-post" role="0.4"><primary>ags_recall_run_init_post</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_run_init_post (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>Prepare for run, this is the post stage within the preparation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-run-pre" role="function" condition="since:0.4">
+<title>ags_recall_run_pre&#160;()</title>
+<indexterm zone="ags-recall-run-pre" role="0.4"><primary>ags_recall_run_pre</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_run_pre (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>This is the pre stage within a run.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-run-inter" role="function" condition="since:0.4">
+<title>ags_recall_run_inter&#160;()</title>
+<indexterm zone="ags-recall-run-inter" role="0.4"><primary>ags_recall_run_inter</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_run_inter (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>This is the inter stage within a run.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-run-post" role="function" condition="since:0.4">
+<title>ags_recall_run_post&#160;()</title>
+<indexterm zone="ags-recall-run-post" role="0.4"><primary>ags_recall_run_post</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_run_post (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>This is the post stage within a run.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-stop-persistent" role="function" condition="since:0.4">
+<title>ags_recall_stop_persistent&#160;()</title>
+<indexterm zone="ags-recall-stop-persistent" role="0.4"><primary>ags_recall_stop_persistent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_stop_persistent (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>Unsets the <link linkend="AGS-RECALL-PERSISTENT:CAPS"><literal>AGS_RECALL_PERSISTENT</literal></link> flag set and invokes <link linkend="ags-recall-done"><function>ags_recall_done()</function></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-done" role="function" condition="since:0.4">
+<title>ags_recall_done&#160;()</title>
+<indexterm zone="ags-recall-done" role="0.4"><primary>ags_recall_done</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_done (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>The <link linkend="AgsRecall"><type>AgsRecall</type></link> doesn't want to run anymore, it has been done its
+work.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-cancel" role="function" condition="since:0.4">
+<title>ags_recall_cancel&#160;()</title>
+<indexterm zone="ags-recall-cancel" role="0.4"><primary>ags_recall_cancel</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_cancel (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>The <link linkend="AgsRecall"><type>AgsRecall</type></link> doesn't want to run anymore, it aborts further execution.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-remove" role="function" condition="since:0.4">
+<title>ags_recall_remove&#160;()</title>
+<indexterm zone="ags-recall-remove" role="0.4"><primary>ags_recall_remove</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_remove (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>The <link linkend="AgsRecall"><type>AgsRecall</type></link> will be removed immediately.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-is-done" role="function" condition="since:0.4">
+<title>ags_recall_is_done&#160;()</title>
+<indexterm zone="ags-recall-is-done" role="0.4"><primary>ags_recall_is_done</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_recall_is_done (<parameter><link linkend="GList"><type>GList</type></link> *recalls</parameter>,
+                    <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
+<para>Check if recall is over.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>an <link linkend="RecyclingContext"><type>RecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-duplicate" role="function" condition="since:0.4">
+<title>ags_recall_duplicate&#160;()</title>
+<indexterm zone="ags-recall-duplicate" role="0.4"><primary>ags_recall_duplicate</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link>&#160;*
+ags_recall_duplicate (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                      <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Should duplicate an <link linkend="AgsRecall"><type>AgsRecall</type></link>, so it can pass the runs. Mainly used for
+creating duplicates from templates, see <link linkend="AGS-RECALL-TEMPLATE:CAPS"><literal>AGS_RECALL_TEMPLATE</literal></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>n_params</para></entry>
+<entry role="parameter_description"><para>the count of <link linkend="parameter"><type>parameter</type></link> entries</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>parameter</para></entry>
+<entry role="parameter_description"><para>the properties to be passed for instantiating the <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-set-recall-id" role="function" condition="since:0.4">
+<title>ags_recall_set_recall_id&#160;()</title>
+<indexterm zone="ags-recall-set-recall-id" role="0.4"><primary>ags_recall_set_recall_id</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_set_recall_id (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                          <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
+<para>Sets the recall id recursively.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecallID"><type>AgsRecallID</type></link> to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-set-soundcard-recursive" role="function">
+<title>ags_recall_set_soundcard_recursive&#160;()</title>
+<indexterm zone="ags-recall-set-soundcard-recursive"><primary>ags_recall_set_soundcard_recursive</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_set_soundcard_recursive (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                                    <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recall-notify-dependency" role="function" condition="since:0.4">
+<title>ags_recall_notify_dependency&#160;()</title>
+<indexterm zone="ags-recall-notify-dependency" role="0.4"><primary>ags_recall_notify_dependency</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_notify_dependency (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> dependency</parameter>,
+                              <parameter><link linkend="gint"><type>gint</type></link> count</parameter>);</programlisting>
+<para>Notifies a recall that an other depends on it.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>flags</para></entry>
+<entry role="parameter_description"><para>see AgsRecallNotifyDependencyMode</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>count</para></entry>
+<entry role="parameter_description"><para>how many dependencies</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-add-dependency" role="function" condition="since:0.4">
+<title>ags_recall_add_dependency&#160;()</title>
+<indexterm zone="ags-recall-add-dependency" role="0.4"><primary>ags_recall_add_dependency</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_add_dependency (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                           <parameter><link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link> *dependency</parameter>);</programlisting>
+<para>Associate a new dependency for this recall.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_dependency</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-remove-dependency" role="function" condition="since:0.4">
+<title>ags_recall_remove_dependency&#160;()</title>
+<indexterm zone="ags-recall-remove-dependency" role="0.4"><primary>ags_recall_remove_dependency</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_remove_dependency (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                              <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *template</parameter>);</programlisting>
+<para>Remove a prior associated dependency.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>dependency</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-get-dependencies" role="function" condition="since:0.4">
+<title>ags_recall_get_dependencies&#160;()</title>
+<indexterm zone="ags-recall-get-dependencies" role="0.4"><primary>ags_recall_get_dependencies</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_get_dependencies (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>Retrieve dependencies.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> with all dependencies.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-remove-child" role="function" condition="since:0.4">
+<title>ags_recall_remove_child&#160;()</title>
+<indexterm zone="ags-recall-remove-child" role="0.4"><primary>ags_recall_remove_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_remove_child (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *child</parameter>);</programlisting>
+<para>An <link linkend="AgsRecall"><type>AgsRecall</type></link> may have children.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>child</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-add-child" role="function" condition="since:0.4">
+<title>ags_recall_add_child&#160;()</title>
+<indexterm zone="ags-recall-add-child" role="0.4"><primary>ags_recall_add_child</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_add_child (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                      <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *child</parameter>);</programlisting>
+<para>An <link linkend="AgsRecall"><type>AgsRecall</type></link> may have children.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>parent</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>child</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-get-children" role="function" condition="since:0.4">
+<title>ags_recall_get_children&#160;()</title>
+<indexterm zone="ags-recall-get-children" role="0.4"><primary>ags_recall_get_children</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_get_children (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>Retrieve children.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a GList with all children.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-get-by-effect" role="function" condition="since:0.4.3">
+<title>ags_recall_get_by_effect&#160;()</title>
+<indexterm zone="ags-recall-get-by-effect" role="0.4.3"><primary>ags_recall_get_by_effect</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_get_by_effect (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                          <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                          <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);</programlisting>
+<para>Finds all matching effect and filename.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>list</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> with recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename containing <parameter>effect</parameter>
+or <link linkend="NULL:CAPS"><literal>NULL</literal></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>effect</para></entry>
+<entry role="parameter_description"><para>the effect name</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a GList, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-recall-find-recall-id-with-effect" role="function">
+<title>ags_recall_find_recall_id_with_effect&#160;()</title>
+<indexterm zone="ags-recall-find-recall-id-with-effect"><primary>ags_recall_find_recall_id_with_effect</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_find_recall_id_with_effect (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
+                                       <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                                       <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                                       <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recall-find-type" role="function" condition="since:0.4">
+<title>ags_recall_find_type&#160;()</title>
+<indexterm zone="ags-recall-find-type" role="0.4"><primary>ags_recall_find_type</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_find_type (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                      <parameter><link linkend="GType"><type>GType</type></link> recall_type</parameter>);</programlisting>
+<para>Finds next matching recall for type. Intended to be used as
+iteration function.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_i</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_type</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GType"><type>GType</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-find-template" role="function" condition="since:0.4">
+<title>ags_recall_find_template&#160;()</title>
+<indexterm zone="ags-recall-find-template" role="0.4"><primary>ags_recall_find_template</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_find_template (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>);</programlisting>
+<para>Finds next template, see <link linkend="AGS-RECALL-TEMPLATE:CAPS"><type>AGS_RECALL_TEMPLATE</type></link> flag. Intended to be used as
+iteration function.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-template-find-type" role="function" condition="since:0.4.3">
+<title>ags_recall_template_find_type&#160;()</title>
+<indexterm zone="ags-recall-template-find-type" role="0.4.3"><primary>ags_recall_template_find_type</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_template_find_type (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                               <parameter><link linkend="GType"><type>GType</type></link> recall_type</parameter>);</programlisting>
+<para>Finds next matching recall for type which is a template, see <link linkend="AGS-RECALL-TEMPLATE:CAPS"><type>AGS_RECALL_TEMPLATE</type></link> flag.
+Intended to be used as iteration function.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_i</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_type</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GType"><type>GType</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-recall-template-find-all-type" role="function">
+<title>ags_recall_template_find_all_type&#160;()</title>
+<indexterm zone="ags-recall-template-find-all-type"><primary>ags_recall_template_find_all_type</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_template_find_all_type (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                                   <parameter>...</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recall-find-type-with-recycling-context" role="function" condition="since:0.4">
+<title>ags_recall_find_type_with_recycling_context&#160;()</title>
+<indexterm zone="ags-recall-find-type-with-recycling-context" role="0.4"><primary>ags_recall_find_type_with_recycling_context</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_find_type_with_recycling_context
+                               (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                                <parameter><link linkend="GType"><type>GType</type></link> recall_type</parameter>,
+                                <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
+<para>Finds next matching recall for type which has <parameter>recycling_context</parameter>
+, see <link linkend="AgsRecallId"><type>AgsRecallId</type></link> for further
+details about <link linkend="RecyclingContext"><type>RecyclingContext</type></link>. Intended to be used as iteration function.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_i</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>type</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GType"><type>GType</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>an <link linkend="RecyclingContext"><type>RecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-find-recycling-context" role="function" condition="since:0.4">
+<title>ags_recall_find_recycling_context&#160;()</title>
+<indexterm zone="ags-recall-find-recycling-context" role="0.4"><primary>ags_recall_find_recycling_context</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_find_recycling_context (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                                   <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
+<para>Finds next matching recall which has <parameter>recycling_context</parameter>
+, see <link linkend="AgsRecallId"><type>AgsRecallId</type></link> for further
+details about <link linkend="RecyclingContext"><type>RecyclingContext</type></link>. Intended to be used as iteration function.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_i</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>an <link linkend="RecyclingContext"><type>RecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-find-provider" role="function" condition="since:0.4">
+<title>ags_recall_find_provider&#160;()</title>
+<indexterm zone="ags-recall-find-provider" role="0.4"><primary>ags_recall_find_provider</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_find_provider (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                          <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>);</programlisting>
+<para>Finds provider eg. <link linkend="AgsAudio"><type>AgsAudio</type></link> or <link linkend="AgsChannel"><type>AgsChannel</type></link> within <link linkend="GList"><type>GList</type></link> containig <link linkend="AgsRecall"><type>AgsRecall</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>provider</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GObject"><type>GObject</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-template-find-provider" role="function">
+<title>ags_recall_template_find_provider&#160;()</title>
+<indexterm zone="ags-recall-template-find-provider"><primary>ags_recall_template_find_provider</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_template_find_provider (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                                   <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recall-find-provider-with-recycling-context" role="function" condition="since:0.4">
+<title>ags_recall_find_provider_with_recycling_context&#160;()</title>
+<indexterm zone="ags-recall-find-provider-with-recycling-context" role="0.4"><primary>ags_recall_find_provider_with_recycling_context</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_find_provider_with_recycling_context
+                               (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                                <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>,
+                                <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
+<para>Like <link linkend="ags-recall-template-find-provider"><function>ags_recall_template_find_provider()</function></link> but given additionally <parameter>recycling_context</parameter>
+ as search parameter.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_i</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>provider</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GObject"><type>GObject</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>an <link linkend="RecyclingContext"><type>RecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-run-init" role="function">
+<title>ags_recall_run_init&#160;()</title>
+<indexterm zone="ags-recall-run-init"><primary>ags_recall_run_init</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_run_init (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> stage</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recall-handler-alloc" role="function" condition="since:0.4">
+<title>ags_recall_handler_alloc&#160;()</title>
+<indexterm zone="ags-recall-handler-alloc" role="0.4"><primary>ags_recall_handler_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallHandler"><returnvalue>AgsRecallHandler</returnvalue></link>&#160;*
+ags_recall_handler_alloc (<parameter>const <link linkend="gchar"><type>gchar</type></link> *signal_name</parameter>,
+                          <parameter><link linkend="GCallback"><type>GCallback</type></link> callback</parameter>,
+                          <parameter><link linkend="GObject"><type>GObject</type></link> *data</parameter>);</programlisting>
+<para>Allocates <link linkend="AgsRecallHandler-struct"><type>AgsRecallHandler</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>signal_name</para></entry>
+<entry role="parameter_description"><para>signal's name to connect</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>callback</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GCallback"><type>GCallback</type></link> function</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>data</para></entry>
+<entry role="parameter_description"><para>the data to pass the callback</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-add-handler" role="function" condition="since:0.4">
+<title>ags_recall_add_handler&#160;()</title>
+<indexterm zone="ags-recall-add-handler" role="0.4"><primary>ags_recall_add_handler</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_add_handler (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                        <parameter><link linkend="AgsRecallHandler"><type>AgsRecallHandler</type></link> *recall_handler</parameter>);</programlisting>
+<para>Connect callback to <parameter>recall</parameter>
+ specified by <parameter>recall_handler</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecall"><type>AgsRecall</type></link> to connect</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_handler</para></entry>
+<entry role="parameter_description"><para>the signal specs</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-remove-handler" role="function" condition="since:0.4">
+<title>ags_recall_remove_handler&#160;()</title>
+<indexterm zone="ags-recall-remove-handler" role="0.4"><primary>ags_recall_remove_handler</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_recall_remove_handler (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
+                           <parameter><link linkend="AgsRecallHandler"><type>AgsRecallHandler</type></link> *recall_handler</parameter>);</programlisting>
+<para>Remove a <link linkend="AgsRecallHandler-struct"><type>AgsRecallHandler</type></link> from <parameter>recall</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecall"><type>AgsRecall</type></link> to connect</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_handler</para></entry>
+<entry role="parameter_description"><para>the signal specs</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-recall-new" role="function" condition="since:0.3">
+<title>ags_recall_new&#160;()</title>
+<indexterm zone="ags-recall-new" role="0.3"><primary>ags_recall_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link>&#160;*
+ags_recall_new ();</programlisting>
+<para>Creates an <link linkend="AgsRecall"><type>AgsRecall</type></link>.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsRecall"><type>AgsRecall</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
 
-  guint flags;
-
-  GObject *devout;
-  GObject *container; // see AgsRecallContainer
-
-  gchar *version;
-  gchar *build_id;
-
-  gchar *effect;
-  gchar *name;
-
-  gchar *xml_type;
-
-  GList *dependencies;
-
-  AgsRecallID *recall_id;
-
-  AgsRecall *parent;
-  GList *children;
-
-  GType child_type;
-  GParameter *child_parameters;
-  guint n_params;
-
-  GList *port;
-  
-  GList *handlers;
-};
+</refsect1>
+<refsect1 id="AgsRecall.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-RECALL-DEFAULT-VERSION:CAPS" role="macro">
+<title>AGS_RECALL_DEFAULT_VERSION</title>
+<indexterm zone="AGS-RECALL-DEFAULT-VERSION:CAPS"><primary>AGS_RECALL_DEFAULT_VERSION</primary></indexterm>
+<programlisting language="C">#define AGS_RECALL_DEFAULT_VERSION "0.4.2\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecallClass" role="struct">
-<title>struct AgsRecallClass</title>
-<indexterm zone="AgsRecallClass"><primary>AgsRecallClass</primary></indexterm>
-<programlisting>struct AgsRecallClass {
-  GObjectClass object;
-
-  void (*resolve_dependencies)(AgsRecall *recall);
-
-  void (*run_init_pre)(AgsRecall *recall);
-  void (*run_init_inter)(AgsRecall *recall);
-  void (*run_init_post)(AgsRecall *recall);
-
-  void (*run_pre)(AgsRecall *recall);
-  void (*run_inter)(AgsRecall *recall);
-  void (*run_post)(AgsRecall *recall);
-
-  void (*stop_persistent)(AgsRecall *recall);
-  void (*done)(AgsRecall *recall);
-
-  void (*cancel)(AgsRecall *recall);
-  void (*remove)(AgsRecall *recall);
-
-  AgsRecall* (*duplicate)(AgsRecall *recall,
-			  AgsRecallID *recall_id,
-			  guint *n_params, GParameter *params); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
-
-  void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
-
-  void (*child_added)(AgsRecall *recall, AgsRecall *child);
-};
+</refsect2>
+<refsect2 id="AGS-RECALL-DEFAULT-BUILD-ID:CAPS" role="macro">
+<title>AGS_RECALL_DEFAULT_BUILD_ID</title>
+<indexterm zone="AGS-RECALL-DEFAULT-BUILD-ID:CAPS"><primary>AGS_RECALL_DEFAULT_BUILD_ID</primary></indexterm>
+<programlisting language="C">#define AGS_RECALL_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
 </programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AgsRecallFlags" role="enum">
 <title>enum AgsRecallFlags</title>
 <indexterm zone="AgsRecallFlags"><primary>AgsRecallFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_RECALL_CONNECTED             = 1,
-  AGS_RECALL_RUN_INITIALIZED       = 1 &lt;&lt;  1, //TODO:JK: rename to AGS_RECALL_RUN_CONNECTED
-  AGS_RECALL_TEMPLATE              = 1 &lt;&lt;  2,
-  AGS_RECALL_PLAYBACK              = 1 &lt;&lt;  3,
-  AGS_RECALL_SEQUENCER             = 1 &lt;&lt;  4,
-  AGS_RECALL_NOTATION              = 1 &lt;&lt;  5,
-  AGS_RECALL_DEFAULT_TEMPLATE      = 1 &lt;&lt;  6,
-  //TODO:JK: remove because it's useless
-  //  AGS_RECALL_IS_REAL               = 1 &lt;&lt;  7,
-  AGS_RECALL_INPUT_ORIENTATED      = 1 &lt;&lt;  8,
-  AGS_RECALL_OUTPUT_ORIENTATED     = 1 &lt;&lt;  9,
-  AGS_RECALL_PERSISTENT            = 1 &lt;&lt; 10,
-  AGS_RECALL_INITIAL_RUN           = 1 &lt;&lt; 11,
-  AGS_RECALL_TERMINATING           = 1 &lt;&lt; 12,
-  AGS_RECALL_DONE                  = 1 &lt;&lt; 13,
-  AGS_RECALL_REMOVE                = 1 &lt;&lt; 14,
-  AGS_RECALL_HIDE                  = 1 &lt;&lt; 15,
-  AGS_RECALL_PROPAGATE_DONE        = 1 &lt;&lt; 16, // see ags_recall_real_remove
-  AGS_RECALL_PERSISTENT_PLAYBACK   = 1 &lt;&lt; 17,
-  AGS_RECALL_PERSISTENT_SEQUENCER  = 1 &lt;&lt; 18,
-  AGS_RECALL_PERSISTENT_NOTATION   = 1 &lt;&lt; 19,
-  AGS_RECALL_SKIP_DEPENDENCIES     = 1 &lt;&lt; 20,
-} AgsRecallFlags;
-</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-CONNECTED:CAPS">AGS_RECALL_CONNECTED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-RUN-INITIALIZED:CAPS">AGS_RECALL_RUN_INITIALIZED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-TEMPLATE:CAPS">AGS_RECALL_TEMPLATE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-PLAYBACK:CAPS">AGS_RECALL_PLAYBACK</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-SEQUENCER:CAPS">AGS_RECALL_SEQUENCER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-NOTATION:CAPS">AGS_RECALL_NOTATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-DEFAULT-TEMPLATE:CAPS">AGS_RECALL_DEFAULT_TEMPLATE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-DYNAMIC-CONNECTED:CAPS">AGS_RECALL_DYNAMIC_CONNECTED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-INPUT-ORIENTATED:CAPS">AGS_RECALL_INPUT_ORIENTATED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-OUTPUT-ORIENTATED:CAPS">AGS_RECALL_OUTPUT_ORIENTATED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-PERSISTENT:CAPS">AGS_RECALL_PERSISTENT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-INITIAL-RUN:CAPS">AGS_RECALL_INITIAL_RUN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-TERMINATING:CAPS">AGS_RECALL_TERMINATING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-DONE:CAPS">AGS_RECALL_DONE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-REMOVE:CAPS">AGS_RECALL_REMOVE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-HIDE:CAPS">AGS_RECALL_HIDE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-PROPAGATE-DONE:CAPS">AGS_RECALL_PROPAGATE_DONE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-PERSISTENT-PLAYBACK:CAPS">AGS_RECALL_PERSISTENT_PLAYBACK</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-PERSISTENT-SEQUENCER:CAPS">AGS_RECALL_PERSISTENT_SEQUENCER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-PERSISTENT-NOTATION:CAPS">AGS_RECALL_PERSISTENT_NOTATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-SKIP-DEPENDENCIES:CAPS">AGS_RECALL_SKIP_DEPENDENCIES</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-BULK-MODE:CAPS">AGS_RECALL_BULK_MODE</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="AgsRecallNotifyDependencyMode" role="enum">
+<title>enum AgsRecallNotifyDependencyMode</title>
+<indexterm zone="AgsRecallNotifyDependencyMode"><primary>AgsRecallNotifyDependencyMode</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-NOTIFY-RUN:CAPS">AGS_RECALL_NOTIFY_RUN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-NOTIFY-AUDIO:CAPS">AGS_RECALL_NOTIFY_AUDIO</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-NOTIFY-AUDIO-RUN:CAPS">AGS_RECALL_NOTIFY_AUDIO_RUN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-NOTIFY-CHANNEL:CAPS">AGS_RECALL_NOTIFY_CHANNEL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-NOTIFY-CHANNEL-RUN:CAPS">AGS_RECALL_NOTIFY_CHANNEL_RUN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-RECALL-NOTIFY-RECALL:CAPS">AGS_RECALL_NOTIFY_RECALL</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="AgsRecallHandler" role="struct">
 <title>struct AgsRecallHandler</title>
 <indexterm zone="AgsRecallHandler"><primary>AgsRecallHandler</primary></indexterm>
-<programlisting>struct AgsRecallHandler {
+<programlisting language="C">struct AgsRecallHandler {
   const gchar *signal_name;
   GCallback callback;
   GObject *data;
   gulong handler;
 };
 </programlisting>
-<para>
-A <link linkend="AgsRecallHandler-struct"><type>AgsRecallHandler</type></link> acts as a callback definition
-</para></refsect2>
-<refsect2 id="AgsRecallNotifyDependencyMode" role="enum">
-<title>enum AgsRecallNotifyDependencyMode</title>
-<indexterm zone="AgsRecallNotifyDependencyMode"><primary>AgsRecallNotifyDependencyMode</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_RECALL_NOTIFY_RUN,
-  AGS_RECALL_NOTIFY_AUDIO,
-  AGS_RECALL_NOTIFY_AUDIO_RUN,
-  AGS_RECALL_NOTIFY_CHANNEL,
-  AGS_RECALL_NOTIFY_CHANNEL_RUN,
-  AGS_RECALL_NOTIFY_RECALL,
-} AgsRecallNotifyDependencyMode;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-add-child" role="function">
-<title>ags_recall_add_child ()</title>
-<indexterm zone="ags-recall-add-child"><primary>ags_recall_add_child</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_add_child                (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *child</parameter>);</programlisting>
-<para>
-An <link linkend="AgsRecall"><type>AgsRecall</type></link> may have children.
-</para></refsect2>
-<refsect2 id="ags-recall-add-dependency" role="function">
-<title>ags_recall_add_dependency ()</title>
-<indexterm zone="ags-recall-add-dependency"><primary>ags_recall_add_dependency</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_add_dependency           (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link> *dependency</parameter>);</programlisting>
-<para>
-Associate a new dependency for this recall.
-</para></refsect2>
-<refsect2 id="ags-recall-add-handler" role="function">
-<title>ags_recall_add_handler ()</title>
-<indexterm zone="ags-recall-add-handler"><primary>ags_recall_add_handler</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_add_handler              (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallHandler"><type>AgsRecallHandler</type></link> *recall_handler</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-cancel" role="function">
-<title>ags_recall_cancel ()</title>
-<indexterm zone="ags-recall-cancel"><primary>ags_recall_cancel</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_cancel                   (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-The <link linkend="AgsRecall"><type>AgsRecall</type></link> doesn't want to run anymore, it aborts further execution.
-</para></refsect2>
-<refsect2 id="ags-recall-child-added" role="function">
-<title>ags_recall_child_added ()</title>
-<indexterm zone="ags-recall-child-added"><primary>ags_recall_child_added</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_child_added              (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *parent</parameter>,
-                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *child</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-done" role="function">
-<title>ags_recall_done ()</title>
-<indexterm zone="ags-recall-done"><primary>ags_recall_done</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_done                     (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-The <link linkend="AgsRecall"><type>AgsRecall</type></link> doesn't want to run anymore, it has been done its
-work.
-</para></refsect2>
-<refsect2 id="ags-recall-duplicate" role="function">
-<title>ags_recall_duplicate ()</title>
-<indexterm zone="ags-recall-duplicate"><primary>ags_recall_duplicate</primary></indexterm>
-<programlisting><link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link> *         ags_recall_duplicate                (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
-<para>
-Should duplicate an <link linkend="AgsRecall"><type>AgsRecall</type></link>, so it can pass the runs. Mainly used for
-creating duplicates from templates, see <link linkend="AGS-RECALL-TEMPLATE:CAPS"><type>AGS_RECALL_TEMPLATE</type></link>.
-</para></refsect2>
-<refsect2 id="ags-recall-find-by-effect" role="function">
-<title>ags_recall_find_by_effect ()</title>
-<indexterm zone="ags-recall-find-by-effect"><primary>ags_recall_find_by_effect</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_find_by_effect           (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *effect</parameter>);</programlisting>
-<para>
-Finds next matching effect name. Intended to be used as
-iteration function.
-</para></refsect2>
-<refsect2 id="ags-recall-find-provider" role="function">
-<title>ags_recall_find_provider ()</title>
-<indexterm zone="ags-recall-find-provider"><primary>ags_recall_find_provider</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_find_provider            (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-find-provider-with-recycling-container" role="function">
-<title>ags_recall_find_provider_with_recycling_container ()</title>
-<indexterm zone="ags-recall-find-provider-with-recycling-container"><primary>ags_recall_find_provider_with_recycling_container</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_find_provider_with_recycling_container
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-find-recycling-container" role="function">
-<title>ags_recall_find_recycling_container ()</title>
-<indexterm zone="ags-recall-find-recycling-container"><primary>ags_recall_find_recycling_container</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_find_recycling_container (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);</programlisting>
-<para>
-Finds next matching recall which has <parameter>recycling_container</parameter>, see <link linkend="AgsRecallId"><type>AgsRecallId</type></link> for further
-details about <link linkend="AgsRecyclingContainer"><type>AgsRecyclingContainer</type></link>. Intended to be used as iteration function.
-</para></refsect2>
-<refsect2 id="ags-recall-find-template" role="function">
-<title>ags_recall_find_template ()</title>
-<indexterm zone="ags-recall-find-template"><primary>ags_recall_find_template</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_find_template            (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>);</programlisting>
-<para>
-Finds next template, see <link linkend="AGS-RECALL-TEMPLATE:CAPS"><type>AGS_RECALL_TEMPLATE</type></link> flag. Intended to be used as
-iteration function.
-</para></refsect2>
-<refsect2 id="ags-recall-find-type" role="function">
-<title>ags_recall_find_type ()</title>
-<indexterm zone="ags-recall-find-type"><primary>ags_recall_find_type</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_find_type                (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>);</programlisting>
-<para>
-Like <link linkend="ags-recall-find-provider"><function>ags_recall_find_provider()</function></link> but given additionally <parameter>recycling_container</parameter> as search parameter.
-</para></refsect2>
-<refsect2 id="ags-recall-find-type-with-recycling-container" role="function">
-<title>ags_recall_find_type_with_recycling_container ()</title>
-<indexterm zone="ags-recall-find-type-with-recycling-container"><primary>ags_recall_find_type_with_recycling_container</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_find_type_with_recycling_container
-                                                        (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);</programlisting>
-<para>
-Finds next matching recall for type which has <parameter>recycling_container</parameter>, see <link linkend="AgsRecallId"><type>AgsRecallId</type></link> for further
-details about <link linkend="AgsRecyclingContainer"><type>AgsRecyclingContainer</type></link>. Intended to be used as iteration function.
-</para></refsect2>
-<refsect2 id="ags-recall-get-children" role="function">
-<title>ags_recall_get_children ()</title>
-<indexterm zone="ags-recall-get-children"><primary>ags_recall_get_children</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_get_children             (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
+<para>A <link linkend="AgsRecallHandler-struct"><type>AgsRecallHandler</type></link> acts as a callback definition</para>
 </refsect2>
-<refsect2 id="ags-recall-get-dependencies" role="function">
-<title>ags_recall_get_dependencies ()</title>
-<indexterm zone="ags-recall-get-dependencies"><primary>ags_recall_get_dependencies</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_get_dependencies         (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-recall-handler-alloc" role="function">
-<title>ags_recall_handler_alloc ()</title>
-<indexterm zone="ags-recall-handler-alloc"><primary>ags_recall_handler_alloc</primary></indexterm>
-<programlisting><link linkend="AgsRecallHandler"><returnvalue>AgsRecallHandler</returnvalue></link> *  ags_recall_handler_alloc            (<parameter>const <link linkend="gchar"><type>gchar</type></link> *signal_name</parameter>,
-                                                         <parameter><link linkend="GCallback"><type>GCallback</type></link> callback</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-is-done" role="function">
-<title>ags_recall_is_done ()</title>
-<indexterm zone="ags-recall-is-done"><primary>ags_recall_is_done</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_recall_is_done                  (<parameter><link linkend="GList"><type>GList</type></link> *recalls</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);</programlisting>
-<para>
-Check if recall is over.
-</para></refsect2>
-<refsect2 id="ags-recall-new" role="function">
-<title>ags_recall_new ()</title>
-<indexterm zone="ags-recall-new"><primary>ags_recall_new</primary></indexterm>
-<programlisting><link linkend="AgsRecall"><returnvalue>AgsRecall</returnvalue></link> *         ags_recall_new                      ();</programlisting>
-<para>
-Creates an <link linkend="AgsRecall"><type>AgsRecall</type></link>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsRecall"><type>AgsRecall</type></link>.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-recall-notify-dependency" role="function">
-<title>ags_recall_notify_dependency ()</title>
-<indexterm zone="ags-recall-notify-dependency"><primary>ags_recall_notify_dependency</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_notify_dependency        (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> dependency</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> count</parameter>);</programlisting>
-<para>
-Notifies a recall that an other depends on it.
-</para></refsect2>
-<refsect2 id="ags-recall-remove" role="function">
-<title>ags_recall_remove ()</title>
-<indexterm zone="ags-recall-remove"><primary>ags_recall_remove</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_remove                   (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-The <link linkend="AgsRecall"><type>AgsRecall</type></link> will be removed immediately.
-</para></refsect2>
-<refsect2 id="ags-recall-remove-child" role="function">
-<title>ags_recall_remove_child ()</title>
-<indexterm zone="ags-recall-remove-child"><primary>ags_recall_remove_child</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_remove_child             (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *child</parameter>);</programlisting>
-<para>
-An <link linkend="AgsRecall"><type>AgsRecall</type></link> may have children.
-</para></refsect2>
-<refsect2 id="ags-recall-remove-dependency" role="function">
-<title>ags_recall_remove_dependency ()</title>
-<indexterm zone="ags-recall-remove-dependency"><primary>ags_recall_remove_dependency</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_remove_dependency        (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *template</parameter>);</programlisting>
-<para>
-Remove a prior associated dependency.
-</para></refsect2>
-<refsect2 id="ags-recall-remove-handler" role="function">
-<title>ags_recall_remove_handler ()</title>
-<indexterm zone="ags-recall-remove-handler"><primary>ags_recall_remove_handler</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_remove_handler           (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallHandler"><type>AgsRecallHandler</type></link> *recall_handler</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-resolve-dependencies" role="function">
-<title>ags_recall_resolve_dependencies ()</title>
-<indexterm zone="ags-recall-resolve-dependencies"><primary>ags_recall_resolve_dependencies</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_resolve_dependencies     (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *reall</parameter>);</programlisting>
-<para>
-A signal indicating that the inheriting object should resolve
-it's dependencies.
-</para></refsect2>
-<refsect2 id="ags-recall-run-init" role="function">
-<title>ags_recall_run_init ()</title>
-<indexterm zone="ags-recall-run-init"><primary>ags_recall_run_init</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_run_init                 (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> stage</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-run-init-inter" role="function">
-<title>ags_recall_run_init_inter ()</title>
-<indexterm zone="ags-recall-run-init-inter"><primary>ags_recall_run_init_inter</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_run_init_inter           (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-This is the inter stage within a run.
-</para></refsect2>
-<refsect2 id="ags-recall-run-init-post" role="function">
-<title>ags_recall_run_init_post ()</title>
-<indexterm zone="ags-recall-run-init-post"><primary>ags_recall_run_init_post</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_run_init_post            (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-This is the post stage within a run.
-</para></refsect2>
-<refsect2 id="ags-recall-run-init-pre" role="function">
-<title>ags_recall_run_init_pre ()</title>
-<indexterm zone="ags-recall-run-init-pre"><primary>ags_recall_run_init_pre</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_run_init_pre             (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-This is the pre stage within a run.
-</para></refsect2>
-<refsect2 id="ags-recall-run-inter" role="function">
-<title>ags_recall_run_inter ()</title>
-<indexterm zone="ags-recall-run-inter"><primary>ags_recall_run_inter</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_run_inter                (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-run-post" role="function">
-<title>ags_recall_run_post ()</title>
-<indexterm zone="ags-recall-run-post"><primary>ags_recall_run_post</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_run_post                 (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-run-pre" role="function">
-<title>ags_recall_run_pre ()</title>
-<indexterm zone="ags-recall-run-pre"><primary>ags_recall_run_pre</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_run_pre                  (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-set-devout-recursive" role="function">
-<title>ags_recall_set_devout_recursive ()</title>
-<indexterm zone="ags-recall-set-devout-recursive"><primary>ags_recall_set_devout_recursive</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_set_devout_recursive     (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-set-effect" role="function">
-<title>ags_recall_set_effect ()</title>
-<indexterm zone="ags-recall-set-effect"><primary>ags_recall_set_effect</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_set_effect               (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *effect</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-set-flags" role="function">
-<title>ags_recall_set_flags ()</title>
-<indexterm zone="ags-recall-set-flags"><primary>ags_recall_set_flags</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_set_flags                (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> flags</parameter>);</programlisting>
-<para>
-Set flags recursivly.
-</para></refsect2>
-<refsect2 id="ags-recall-set-recall-id" role="function">
-<title>ags_recall_set_recall_id ()</title>
-<indexterm zone="ags-recall-set-recall-id"><primary>ags_recall_set_recall_id</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_set_recall_id            (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>);</programlisting>
-<para>
-Sets the recall id recursively.
-</para></refsect2>
-<refsect2 id="ags-recall-stop-persistent" role="function">
-<title>ags_recall_stop_persistent ()</title>
-<indexterm zone="ags-recall-stop-persistent"><primary>ags_recall_stop_persistent</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_recall_stop_persistent          (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>);</programlisting>
-<para>
-Unsets the <link linkend="AGS-RECALL-PERSISTENT:CAPS"><literal>AGS_RECALL_PERSISTENT</literal></link> flag set and invokes <link linkend="ags-recall-done"><function>ags_recall_done()</function></link>.
-</para></refsect2>
-<refsect2 id="ags-recall-template-find-provider" role="function">
-<title>ags_recall_template_find_provider ()</title>
-<indexterm zone="ags-recall-template-find-provider"><primary>ags_recall_template_find_provider</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_template_find_provider   (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-template-find-type" role="function">
-<title>ags_recall_template_find_type ()</title>
-<indexterm zone="ags-recall-template-find-type"><primary>ags_recall_template_find_type</primary></indexterm>
-<programlisting><link linkend="GList"><returnvalue>GList</returnvalue></link> *             ags_recall_template_find_type       (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> type</parameter>);</programlisting>
-<para>
-</para></refsect2>
 
+</refsect1>
+<refsect1 id="AgsRecall.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsRecall--child" role="property"><title>The <literal>“child”</literal> property</title>
+<indexterm zone="AgsRecall--child"><primary>AgsRecall:child</primary></indexterm>
+<programlisting>  “child”                    <link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</programlisting>
+<para>The child that can be added.</para><para>Flags: Write</para>
+</refsect2>
+<refsect2 id="AgsRecall--dependency" role="property"><title>The <literal>“dependency”</literal> property</title>
+<indexterm zone="AgsRecall--dependency" role="0.4"><primary>AgsRecall:dependency</primary></indexterm>
+<programlisting>  “dependency”               <link linkend="AgsRecallDependency"><type>AgsRecallDependency</type></link>&#160;*</programlisting>
+<para>The recall depending on.</para>
+<para>Flags: Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsRecall--parent" role="property"><title>The <literal>“parent”</literal> property</title>
+<indexterm zone="AgsRecall--parent"><primary>AgsRecall:parent</primary></indexterm>
+<programlisting>  “parent”                   <link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</programlisting>
+<para>The recall should be the parent instance of this recall.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsRecall--port" role="property"><title>The <literal>“port”</literal> property</title>
+<indexterm zone="AgsRecall--port" role="0.4.3"><primary>AgsRecall:port</primary></indexterm>
+<programlisting>  “port”                     <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsPort"><type>AgsPort</type></link></para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsRecall--recall-container" role="property"><title>The <literal>“recall-container”</literal> property</title>
+<indexterm zone="AgsRecall--recall-container" role="0.4"><primary>AgsRecall:recall-container</primary></indexterm>
+<programlisting>  “recall-container”         <link linkend="AgsRecallContainer"><type>AgsRecallContainer</type></link>&#160;*</programlisting>
+<para>The recall container packed into.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsRecall--recall-id" role="property"><title>The <literal>“recall-id”</literal> property</title>
+<indexterm zone="AgsRecall--recall-id" role="0.4"><primary>AgsRecall:recall-id</primary></indexterm>
+<programlisting>  “recall-id”                <link linkend="AgsRecallID"><type>AgsRecallID</type></link>&#160;*</programlisting>
+<para>The recall id running in.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsRecall--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
+<indexterm zone="AgsRecall--soundcard" role="0.4"><primary>AgsRecall:soundcard</primary></indexterm>
+<programlisting>  “soundcard”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned soundcard.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecall.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsRecall-cancel" role="signal"><title>The <literal>“cancel”</literal> signal</title>
+<indexterm zone="AgsRecall-cancel"><primary>AgsRecall::cancel</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::cancel signal notifies about cancelling playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to cancel playback</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-child-added" role="signal"><title>The <literal>“child-added”</literal> signal</title>
+<indexterm zone="AgsRecall-child-added"><primary>AgsRecall::child-added</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="GObject"><type>GObject</type></link>   *child,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::child-added signal notifies about children
+added.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to add the child</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>child</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecall"><type>AgsRecall</type></link> to add</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-done" role="signal"><title>The <literal>“done”</literal> signal</title>
+<indexterm zone="AgsRecall-done"><primary>AgsRecall::done</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::done signal notifies about stopping playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to finish playback</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-duplicate" role="signal"><title>The <literal>“duplicate”</literal> signal</title>
+<indexterm zone="AgsRecall-duplicate"><primary>AgsRecall::duplicate</primary></indexterm>
+<programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>*
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="GObject"><type>GObject</type></link>   *recall_id,
+               <link linkend="gpointer"><type>gpointer</type></link>   n_params,
+               <link linkend="gpointer"><type>gpointer</type></link>   parameter,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::duplicate signal notifies about instantiating.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to duplicate</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall_id</para></entry>
+<entry role="parameter_description"><para>the assigned <link linkend="AgsRecallID"><type>AgsRecallID</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>n_params</para></entry>
+<entry role="parameter_description"><para>pointer to array length</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>parameter</para></entry>
+<entry role="parameter_description"><para>parameter array</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-notify-dependency" role="signal"><title>The <literal>“notify-dependency”</literal> signal</title>
+<indexterm zone="AgsRecall-notify-dependency"><primary>AgsRecall::notify-dependency</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="guint"><type>guint</type></link>      dependency,
+               <link linkend="gint"><type>gint</type></link>       count,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::notify-dependency signal notifies about dependencies
+added.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to notify</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>dependency</para></entry>
+<entry role="parameter_description"><para>the kind of dependency</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>count</para></entry>
+<entry role="parameter_description"><para>the reference count</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-remove" role="signal"><title>The <literal>“remove”</literal> signal</title>
+<indexterm zone="AgsRecall-remove"><primary>AgsRecall::remove</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::remove signal notifies about removing.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to remove of audio loop</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-resolve-dependencies" role="signal"><title>The <literal>“resolve-dependencies”</literal> signal</title>
+<indexterm zone="AgsRecall-resolve-dependencies"><primary>AgsRecall::resolve-dependencies</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::resolve-dependencies signal notifies about resolving
+dependencies.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to resolve</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-run-init-inter" role="signal"><title>The <literal>“run-init-inter”</literal> signal</title>
+<indexterm zone="AgsRecall-run-init-inter"><primary>AgsRecall::run-init-inter</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::run-init-inter signal notifies about initializing
+stage 1.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to initialize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-run-init-post" role="signal"><title>The <literal>“run-init-post”</literal> signal</title>
+<indexterm zone="AgsRecall-run-init-post"><primary>AgsRecall::run-init-post</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::run-init-post signal notifies about initializing
+stage 2.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to initialize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-run-init-pre" role="signal"><title>The <literal>“run-init-pre”</literal> signal</title>
+<indexterm zone="AgsRecall-run-init-pre"><primary>AgsRecall::run-init-pre</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::run-init-pre signal notifies about initializing
+stage 0.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to initialize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-run-inter" role="signal"><title>The <literal>“run-inter”</literal> signal</title>
+<indexterm zone="AgsRecall-run-inter"><primary>AgsRecall::run-inter</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::run-inter signal notifies about running
+stage 1.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to play</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-run-post" role="signal"><title>The <literal>“run-post”</literal> signal</title>
+<indexterm zone="AgsRecall-run-post"><primary>AgsRecall::run-post</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::run-post signal notifies about running
+stage 2.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to play</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-run-pre" role="signal"><title>The <literal>“run-pre”</literal> signal</title>
+<indexterm zone="AgsRecall-run-pre"><primary>AgsRecall::run-pre</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::run-pre signal notifies about running
+stage 0.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object to play </para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsRecall-stop-persistent" role="signal"><title>The <literal>“stop-persistent”</literal> signal</title>
+<indexterm zone="AgsRecall-stop-persistent"><primary>AgsRecall::stop-persistent</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsRecall"><type>AgsRecall</type></link> *recall,
+               <link linkend="gpointer"><type>gpointer</type></link>   user_data)</programlisting>
+<para>The ::stop-persistent signal notifies about definitively
+stopping playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the object stop playback</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

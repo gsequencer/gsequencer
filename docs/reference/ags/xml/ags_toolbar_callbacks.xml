@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-toolbar-callbacks">
 <refmeta>
@@ -17,109 +17,120 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-toolbar-callbacks.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-toolbar-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-destroy-callback">ags_toolbar_destroy_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-show-callback">ags_toolbar_show_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-position-callback">ags_toolbar_position_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-edit-callback">ags_toolbar_edit_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-clear-callback">ags_toolbar_clear_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-select-callback">ags_toolbar_select_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-copy-or-cut-callback">ags_toolbar_copy_or_cut_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-paste-callback">ags_toolbar_paste_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-zoom-callback">ags_toolbar_zoom_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-toolbar-mode-callback">ags_toolbar_mode_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toolbar-clear-callback">ags_toolbar_clear_callback</link>          (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toolbar-copy-or-cut-callback">ags_toolbar_copy_or_cut_callback</link>    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-toolbar-destroy-callback">ags_toolbar_destroy_callback</link>        (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toolbar-edit-callback">ags_toolbar_edit_callback</link>           (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toolbar-mode-callback">ags_toolbar_mode_callback</link>           (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toolbar-paste-callback">ags_toolbar_paste_callback</link>          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toolbar-position-callback">ags_toolbar_position_callback</link>       (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toolbar-select-callback">ags_toolbar_select_callback</link>         (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toolbar-show-callback">ags_toolbar_show_callback</link>           (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-toolbar-zoom-callback">ags_toolbar_zoom_callback</link>           (<parameter><link linkend="GtkComboBox"><type>GtkComboBox</type></link> *combo_box</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-toolbar-callbacks.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-toolbar-callbacks.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-toolbar-clear-callback" role="function">
-<title>ags_toolbar_clear_callback ()</title>
-<indexterm zone="ags-toolbar-clear-callback"><primary>ags_toolbar_clear_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toolbar_clear_callback          (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-toolbar-copy-or-cut-callback" role="function">
-<title>ags_toolbar_copy_or_cut_callback ()</title>
-<indexterm zone="ags-toolbar-copy-or-cut-callback"><primary>ags_toolbar_copy_or_cut_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toolbar_copy_or_cut_callback    (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-ags-toolbar-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-toolbar-destroy-callback" role="function">
-<title>ags_toolbar_destroy_callback ()</title>
+<title>ags_toolbar_destroy_callback&#160;()</title>
 <indexterm zone="ags-toolbar-destroy-callback"><primary>ags_toolbar_destroy_callback</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_toolbar_destroy_callback        (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-toolbar-edit-callback" role="function">
-<title>ags_toolbar_edit_callback ()</title>
-<indexterm zone="ags-toolbar-edit-callback"><primary>ags_toolbar_edit_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toolbar_edit_callback           (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-toolbar-mode-callback" role="function">
-<title>ags_toolbar_mode_callback ()</title>
-<indexterm zone="ags-toolbar-mode-callback"><primary>ags_toolbar_mode_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toolbar_mode_callback           (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-toolbar-paste-callback" role="function">
-<title>ags_toolbar_paste_callback ()</title>
-<indexterm zone="ags-toolbar-paste-callback"><primary>ags_toolbar_paste_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toolbar_paste_callback          (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-toolbar-position-callback" role="function">
-<title>ags_toolbar_position_callback ()</title>
-<indexterm zone="ags-toolbar-position-callback"><primary>ags_toolbar_position_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toolbar_position_callback       (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-toolbar-select-callback" role="function">
-<title>ags_toolbar_select_callback ()</title>
-<indexterm zone="ags-toolbar-select-callback"><primary>ags_toolbar_select_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toolbar_select_callback         (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_toolbar_destroy_callback (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                              <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-toolbar-show-callback" role="function">
-<title>ags_toolbar_show_callback ()</title>
+<title>ags_toolbar_show_callback&#160;()</title>
 <indexterm zone="ags-toolbar-show-callback"><primary>ags_toolbar_show_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toolbar_show_callback           (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_toolbar_show_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                           <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-toolbar-position-callback" role="function">
+<title>ags_toolbar_position_callback&#160;()</title>
+<indexterm zone="ags-toolbar-position-callback"><primary>ags_toolbar_position_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_toolbar_position_callback (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
+                               <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-toolbar-edit-callback" role="function">
+<title>ags_toolbar_edit_callback&#160;()</title>
+<indexterm zone="ags-toolbar-edit-callback"><primary>ags_toolbar_edit_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_toolbar_edit_callback (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
+                           <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-toolbar-clear-callback" role="function">
+<title>ags_toolbar_clear_callback&#160;()</title>
+<indexterm zone="ags-toolbar-clear-callback"><primary>ags_toolbar_clear_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_toolbar_clear_callback (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
+                            <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-toolbar-select-callback" role="function">
+<title>ags_toolbar_select_callback&#160;()</title>
+<indexterm zone="ags-toolbar-select-callback"><primary>ags_toolbar_select_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_toolbar_select_callback (<parameter><link linkend="GtkToggleButton"><type>GtkToggleButton</type></link> *toggle_button</parameter>,
+                             <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-toolbar-copy-or-cut-callback" role="function">
+<title>ags_toolbar_copy_or_cut_callback&#160;()</title>
+<indexterm zone="ags-toolbar-copy-or-cut-callback"><primary>ags_toolbar_copy_or_cut_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_toolbar_copy_or_cut_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                  <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-toolbar-paste-callback" role="function">
+<title>ags_toolbar_paste_callback&#160;()</title>
+<indexterm zone="ags-toolbar-paste-callback"><primary>ags_toolbar_paste_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_toolbar_paste_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                            <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-toolbar-zoom-callback" role="function">
-<title>ags_toolbar_zoom_callback ()</title>
+<title>ags_toolbar_zoom_callback&#160;()</title>
 <indexterm zone="ags-toolbar-zoom-callback"><primary>ags_toolbar_zoom_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_toolbar_zoom_callback           (<parameter><link linkend="GtkComboBox"><type>GtkComboBox</type></link> *combo_box</parameter>,
-                                                         <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_toolbar_zoom_callback (<parameter><link linkend="GtkComboBox"><type>GtkComboBox</type></link> *combo_box</parameter>,
+                           <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-toolbar-mode-callback" role="function">
+<title>ags_toolbar_mode_callback&#160;()</title>
+<indexterm zone="ags-toolbar-mode-callback"><primary>ags_toolbar_mode_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_toolbar_mode_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                           <parameter><link linkend="AgsToolbar"><type>AgsToolbar</type></link> *toolbar</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-toolbar-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

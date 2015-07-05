@@ -19,8 +19,8 @@
 #ifndef __AGS_CHANNEL_H__
 #define __AGS_CHANNEL_H__
 
+#include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtk.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall.h>
@@ -40,7 +40,8 @@ typedef struct _AgsChannel AgsChannel;
 typedef struct _AgsChannelClass AgsChannelClass;
 
 typedef enum{
-  AGS_CHANNEL_RUNNING        = 1,
+  AGS_CHANNEL_CONNECTED      = 1,
+  AGS_CHANNEL_RUNNING        = 1 << 1,
 }AgsChannelFlags;
 
 typedef enum{
@@ -61,7 +62,7 @@ struct _AgsChannel
   guint flags;
 
   GObject *audio;
-  GObject *devout;
+  GObject *soundcard;
 
   AgsChannel *prev;
   AgsChannel *prev_pad;
@@ -74,12 +75,12 @@ struct _AgsChannel
 
   char *note;
 
-  gpointer devout_play;
+  GObject *playback;
 
-  // GObject *recycling_container; // contains child recycling
+  // GObject *recycling_context; // contains child recycling
   GList *recall_id; // there may be several recall's running
+  
   GList *container;
-
   GList *recall;
   GList *play;
 
@@ -89,9 +90,8 @@ struct _AgsChannel
   GObject *recycling_thread;
 
   GList *pattern;
-  AgsNotation *notation;
 
-  GtkWidget *line_widget;
+  GObject *line_widget;
   gpointer file_data;
 };
 
@@ -119,8 +119,6 @@ GType ags_channel_get_type();
 
 GQuark ags_channel_error_quark();
 
-AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);
-
 AgsChannel* ags_channel_first(AgsChannel *channel);
 AgsChannel* ags_channel_last(AgsChannel *channel);
 AgsChannel* ags_channel_nth(AgsChannel *channel, guint nth);
@@ -132,7 +130,7 @@ AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
 AgsChannel* ags_channel_first_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_last_with_recycling(AgsChannel *channel);
 
-void ags_channel_set_devout(AgsChannel *channel, GObject *devout);
+void ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard);
 
 void ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
 void ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
@@ -143,6 +141,10 @@ void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_co
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
 
+void ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern);
+void ags_channel_add_pattern(AgsChannel *channel, GObject *pattern);
+
+GList* ags_channel_get_recall_by_effect(AgsChannel *channel, gchar *filename, gchar *effect);
 GList* ags_channel_add_effect(AgsChannel *channel,
 			      char *filename,
 			      gchar *effect);
@@ -152,9 +154,9 @@ void ags_channel_remove_effect(AgsChannel *channel,
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			  GError **error);
 void ags_channel_set_recycling(AgsChannel *channel, AgsRecycling *first_recycling, AgsRecycling *last_recycling, gboolean update, gboolean destroy_old);
-void ags_channel_recursive_reset_recycling_container(AgsChannel *channel,
-						     AgsRecyclingContainer *old_recycling_container,
-						     AgsRecyclingContainer *recycling_container);
+void ags_channel_recursive_reset_recycling_context(AgsChannel *channel,
+						   AgsRecyclingContext *old_recycling_context,
+						   AgsRecyclingContext *recycling_context);
 void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 				   AgsRecycling *new_start_region, AgsRecycling *new_end_region,

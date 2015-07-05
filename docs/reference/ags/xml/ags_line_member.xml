@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsLineMember">
+<refentry id="AgsLineMember">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsLineMember.top_of_page">AgsLineMember</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsLineMember.top_of_page">AgsLineMember</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,122 +14,304 @@
 </refmeta>
 <refnamediv>
 <refname>AgsLineMember</refname>
-<refpurpose></refpurpose>
+<refpurpose>Modify assigned recall's port</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsLineMember.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsLineMember.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-line-member-get-widget">ags_line_member_get_widget</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-line-member-set-label">ags_line_member_set_label</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-line-member-change-port">ags_line_member_change_port</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-line-member-find-port">ags_line_member_find_port</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLineMember"><returnvalue>AgsLineMember</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-line-member-new">ags_line_member_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsLineMember">AgsLineMember</link>;
-struct              <link linkend="AgsLineMemberClass">AgsLineMemberClass</link>;
-enum                <link linkend="AgsLineMemberFlags">AgsLineMemberFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-line-member-change-port">ags_line_member_change_port</link>         (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> port_data</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-line-member-find-port">ags_line_member_find_port</link>           (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);
-<link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link> *         <link linkend="ags-line-member-get-widget">ags_line_member_get_widget</link>          (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);
-<link linkend="AgsLineMember"><returnvalue>AgsLineMember</returnvalue></link> *     <link linkend="ags-line-member-new">ags_line_member_new</link>                 ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-line-member-set-label">ags_line_member_set_label</link>           (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *label</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsLineMember.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsLineMember.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsLineMember" role="struct">
-<title>struct AgsLineMember</title>
-<indexterm zone="AgsLineMember"><primary>AgsLineMember</primary></indexterm>
-<programlisting>struct AgsLineMember {
-  GtkFrame frame;
+<refsect1 id="AgsLineMember.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsLineMember--control-port">control-port</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsLineMember--plugin-name">plugin-name</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsLineMember--port">port</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsLineMember--port-data">port-data</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsLineMember--recall-port">recall-port</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsLineMember--recall-port-data">recall-port-data</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsLineMember--specifier">specifier</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsLineMember--widget-label">widget-label</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gulong"><type>gulong</type></link></entry><entry role="property_name"><link linkend="AgsLineMember--widget-type">widget-type</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  guint flags;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLineMember.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsLineMember-change-port">change-port</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
-  GType widget_type;
-  gchar *widget_label;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLineMember.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsLineMemberFlags">AgsLineMemberFlags</link></entry></row>
 
-  gchar *plugin_name;
-  gchar *specifier;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLineMember.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkFrame">GtkFrame</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsLineMember
+</screen>
+</refsect1>
 
-  gchar *control_port;
-  
-  AgsPort *port;
-  gpointer port_data;
-  gboolean active;
+<refsect1 id="AgsLineMember.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_line_member.h&gt;
+</synopsis></refsect1>
 
-  AgsPort *recall_port;
-  gpointer recall_port_data;
-  gboolean recall_active;
+<refsect1 id="AgsLineMember.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsLineMember"><type>AgsLineMember</type></link> is a composite widget to modify ports of recalls. A line member
+controls only one specific port of a recall but distinguishes between simple/complex
+recall. It is generally packed into a <link linkend="AgsLine"><type>AgsLine</type></link>.</para>
 
-  GType task_type;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsLineMemberClass" role="struct">
-<title>struct AgsLineMemberClass</title>
-<indexterm zone="AgsLineMemberClass"><primary>AgsLineMemberClass</primary></indexterm>
-<programlisting>struct AgsLineMemberClass {
-  GtkFrameClass frame;
+</refsect1>
+<refsect1 id="AgsLineMember.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-line-member-get-widget" role="function">
+<title>ags_line_member_get_widget&#160;()</title>
+<indexterm zone="ags-line-member-get-widget"><primary>ags_line_member_get_widget</primary></indexterm>
+<programlisting language="C"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
+ags_line_member_get_widget (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-line-member-set-label" role="function">
+<title>ags_line_member_set_label&#160;()</title>
+<indexterm zone="ags-line-member-set-label"><primary>ags_line_member_set_label</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_line_member_set_label (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
+                           <parameter><link linkend="gchar"><type>gchar</type></link> *label</parameter>);</programlisting>
+<para>Modify the label of the line member.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>line_member</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsLineMember"><type>AgsLineMember</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>label</para></entry>
+<entry role="parameter_description"><para>the label of the control</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-line-member-change-port" role="function">
+<title>ags_line_member_change_port&#160;()</title>
+<indexterm zone="ags-line-member-change-port"><primary>ags_line_member_change_port</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_line_member_change_port (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
+                             <parameter><link linkend="gpointer"><type>gpointer</type></link> port_data</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-line-member-find-port" role="function" condition="since:0.4">
+<title>ags_line_member_find_port&#160;()</title>
+<indexterm zone="ags-line-member-find-port" role="0.4"><primary>ags_line_member_find_port</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_line_member_find_port (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);</programlisting>
+<para>Lookup ports of assigned recall.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>line_member</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsLineMember"><type>AgsLineMember</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-line-member-new" role="function" condition="since:0.4">
+<title>ags_line_member_new&#160;()</title>
+<indexterm zone="ags-line-member-new" role="0.4"><primary>ags_line_member_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLineMember"><returnvalue>AgsLineMember</returnvalue></link>&#160;*
+ags_line_member_new ();</programlisting>
+<para>Creates an <link linkend="AgsLineMember"><type>AgsLineMember</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsLineMember"><type>AgsLineMember</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  void (*change_port)(AgsLineMember *line_member,
-		      gpointer port_data);
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsLineMember.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsLineMemberFlags" role="enum">
 <title>enum AgsLineMemberFlags</title>
 <indexterm zone="AgsLineMemberFlags"><primary>AgsLineMemberFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_LINE_MEMBER_DEFAULT_TEMPLATE      = 1,
-  AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1 &lt;&lt; 1,
-  AGS_LINE_MEMBER_RESET_BY_TASK         = 1 &lt;&lt; 2,
-  AGS_LINE_MEMBER_APPLY_RECALL          = 1 &lt;&lt; 3,
-  AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE   = 1 &lt;&lt; 4,
-  AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE = 1 &lt;&lt; 5,
-  AGS_LINE_MEMBER_CALLBACK_READ_BLOCK   = 1 &lt;&lt; 6,
-  AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 &lt;&lt; 7,
-} AgsLineMemberFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-line-member-change-port" role="function">
-<title>ags_line_member_change_port ()</title>
-<indexterm zone="ags-line-member-change-port"><primary>ags_line_member_change_port</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_line_member_change_port         (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
-                                                         <parameter><link linkend="gpointer"><type>gpointer</type></link> port_data</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-line-member-find-port" role="function">
-<title>ags_line_member_find_port ()</title>
-<indexterm zone="ags-line-member-find-port"><primary>ags_line_member_find_port</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_line_member_find_port           (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-line-member-get-widget" role="function">
-<title>ags_line_member_get_widget ()</title>
-<indexterm zone="ags-line-member-get-widget"><primary>ags_line_member_get_widget</primary></indexterm>
-<programlisting><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link> *         ags_line_member_get_widget          (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-line-member-new" role="function">
-<title>ags_line_member_new ()</title>
-<indexterm zone="ags-line-member-new"><primary>ags_line_member_new</primary></indexterm>
-<programlisting><link linkend="AgsLineMember"><returnvalue>AgsLineMember</returnvalue></link> *     ags_line_member_new                 ();</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-line-member-set-label" role="function">
-<title>ags_line_member_set_label ()</title>
-<indexterm zone="ags-line-member-set-label"><primary>ags_line_member_set_label</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_line_member_set_label           (<parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *label</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LINE-MEMBER-DEFAULT-TEMPLATE:CAPS">AGS_LINE_MEMBER_DEFAULT_TEMPLATE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LINE-MEMBER-RESET-BY-ATOMIC:CAPS">AGS_LINE_MEMBER_RESET_BY_ATOMIC</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LINE-MEMBER-RESET-BY-TASK:CAPS">AGS_LINE_MEMBER_RESET_BY_TASK</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LINE-MEMBER-APPLY-RECALL:CAPS">AGS_LINE_MEMBER_APPLY_RECALL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LINE-MEMBER-PLAY-CALLBACK-WRITE:CAPS">AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LINE-MEMBER-RECALL-CALLBACK-WRITE:CAPS">AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LINE-MEMBER-CALLBACK-READ-BLOCK:CAPS">AGS_LINE_MEMBER_CALLBACK_READ_BLOCK</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LINE-MEMBER-CALLBACK-WRITE-BLOCK:CAPS">AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsLineMember.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsLineMember--control-port" role="property"><title>The <literal>“control-port”</literal> property</title>
+<indexterm zone="AgsLineMember--control-port" role="0.4"><primary>AgsLineMember:control-port</primary></indexterm>
+<programlisting>  “control-port”             <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The control port of the recall.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsLineMember--plugin-name" role="property"><title>The <literal>“plugin-name”</literal> property</title>
+<indexterm zone="AgsLineMember--plugin-name" role="0.4"><primary>AgsLineMember:plugin-name</primary></indexterm>
+<programlisting>  “plugin-name”              <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The plugin name of the recall to use.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsLineMember--port" role="property"><title>The <literal>“port”</literal> property</title>
+<indexterm zone="AgsLineMember--port"><primary>AgsLineMember:port</primary></indexterm>
+<programlisting>  “port”                     <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The port to apply.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsLineMember--port-data" role="property"><title>The <literal>“port-data”</literal> property</title>
+<indexterm zone="AgsLineMember--port-data" role="0.4"><primary>AgsLineMember:port-data</primary></indexterm>
+<programlisting>  “port-data”                <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The port data to apply.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsLineMember--recall-port" role="property"><title>The <literal>“recall-port”</literal> property</title>
+<indexterm zone="AgsLineMember--recall-port" role="0.4"><primary>AgsLineMember:recall-port</primary></indexterm>
+<programlisting>  “recall-port”              <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The matching complex port of plugin name and specifier.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsLineMember--recall-port-data" role="property"><title>The <literal>“recall-port-data”</literal> property</title>
+<indexterm zone="AgsLineMember--recall-port-data" role="0.4"><primary>AgsLineMember:recall-port-data</primary></indexterm>
+<programlisting>  “recall-port-data”         <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The complex port data to apply.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsLineMember--specifier" role="property"><title>The <literal>“specifier”</literal> property</title>
+<indexterm zone="AgsLineMember--specifier" role="0.4"><primary>AgsLineMember:specifier</primary></indexterm>
+<programlisting>  “specifier”                <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The plugin specifier of the recall to apply.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsLineMember--widget-label" role="property"><title>The <literal>“widget-label”</literal> property</title>
+<indexterm zone="AgsLineMember--widget-label" role="0.4"><primary>AgsLineMember:widget-label</primary></indexterm>
+<programlisting>  “widget-label”             <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The widget's label to use.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsLineMember--widget-type" role="property"><title>The <literal>“widget-type”</literal> property</title>
+<indexterm zone="AgsLineMember--widget-type" role="0.4"><primary>AgsLineMember:widget-type</primary></indexterm>
+<programlisting>  “widget-type”              <link linkend="gulong"><type>gulong</type></link></programlisting>
+<para>The widget type to instantiate and use as control.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsLineMember.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsLineMember-change-port" role="signal"><title>The <literal>“change-port”</literal> signal</title>
+<indexterm zone="AgsLineMember-change-port"><primary>AgsLineMember::change-port</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member,
+               <link linkend="gpointer"><type>gpointer</type></link>       port_data,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<para>The ::change-port signal notifies modified port.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>line_member</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsLineMember"><type>AgsLineMember</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>port_data</para></entry>
+<entry role="parameter_description"><para>the port's data</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

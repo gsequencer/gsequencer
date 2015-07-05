@@ -22,9 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_CANCEL_AUDIO                (ags_cancel_audio_get_type())

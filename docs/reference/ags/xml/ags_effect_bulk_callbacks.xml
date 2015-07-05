@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-effect-bulk-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-effect-bulk-callbacks.top_of_page">ags_effect_bulk_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_effect_bulk_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-ags-effect-bulk-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-effect-bulk-add-callback">ags_effect_bulk_add_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-effect-bulk-remove-callback">ags_effect_bulk_remove_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-effect-bulk-plugin-browser-response-callback">ags_effect_bulk_plugin_browser_response_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-effect-bulk-set-audio-channels-callback">ags_effect_bulk_set_audio_channels_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-effect-bulk-set-pads-callback">ags_effect_bulk_set_pads_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-effect-bulk-lv2ui-write-function">ags_effect_bulk_lv2ui_write_function</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-ags-effect-bulk-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-ags-effect-bulk-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-effect-bulk-add-callback" role="function">
+<title>ags_effect_bulk_add_callback&#160;()</title>
+<indexterm zone="ags-effect-bulk-add-callback"><primary>ags_effect_bulk_add_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_effect_bulk_add_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *button</parameter>,
+                              <parameter><link linkend="AgsEffectBulk"><type>AgsEffectBulk</type></link> *effect_bulk</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-effect-bulk-remove-callback" role="function">
+<title>ags_effect_bulk_remove_callback&#160;()</title>
+<indexterm zone="ags-effect-bulk-remove-callback"><primary>ags_effect_bulk_remove_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_effect_bulk_remove_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *button</parameter>,
+                                 <parameter><link linkend="AgsEffectBulk"><type>AgsEffectBulk</type></link> *effect_bulk</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-effect-bulk-plugin-browser-response-callback" role="function">
+<title>ags_effect_bulk_plugin_browser_response_callback&#160;()</title>
+<indexterm zone="ags-effect-bulk-plugin-browser-response-callback"><primary>ags_effect_bulk_plugin_browser_response_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_effect_bulk_plugin_browser_response_callback
+                               (<parameter><link linkend="GtkDialog"><type>GtkDialog</type></link> *dialog</parameter>,
+                                <parameter><link linkend="gint"><type>gint</type></link> response</parameter>,
+                                <parameter><link linkend="AgsEffectBulk"><type>AgsEffectBulk</type></link> *effect_bulk</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-effect-bulk-set-audio-channels-callback" role="function">
+<title>ags_effect_bulk_set_audio_channels_callback&#160;()</title>
+<indexterm zone="ags-effect-bulk-set-audio-channels-callback"><primary>ags_effect_bulk_set_audio_channels_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_effect_bulk_set_audio_channels_callback
+                               (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>,
+                                <parameter><link linkend="AgsEffectBulk"><type>AgsEffectBulk</type></link> *effect_bulk</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-effect-bulk-set-pads-callback" role="function">
+<title>ags_effect_bulk_set_pads_callback&#160;()</title>
+<indexterm zone="ags-effect-bulk-set-pads-callback"><primary>ags_effect_bulk_set_pads_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_effect_bulk_set_pads_callback (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                   <parameter><link linkend="GType"><type>GType</type></link> channel_type</parameter>,
+                                   <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>,
+                                   <parameter><link linkend="guint"><type>guint</type></link> pads_old</parameter>,
+                                   <parameter><link linkend="AgsEffectBulk"><type>AgsEffectBulk</type></link> *effect_bulk</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-effect-bulk-lv2ui-write-function" role="function">
+<title>ags_effect_bulk_lv2ui_write_function&#160;()</title>
+<indexterm zone="ags-effect-bulk-lv2ui-write-function"><primary>ags_effect_bulk_lv2ui_write_function</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_effect_bulk_lv2ui_write_function (<parameter><link linkend="LV2UI-Controller"><type>LV2UI_Controller</type></link> controller</parameter>,
+                                      <parameter><link linkend="uint32-t"><type>uint32_t</type></link> port_index</parameter>,
+                                      <parameter><link linkend="uint32-t"><type>uint32_t</type></link> buffer_size</parameter>,
+                                      <parameter><link linkend="uint32-t"><type>uint32_t</type></link> port_protocol</parameter>,
+                                      <parameter>const <link linkend="void"><type>void</type></link> *buffer</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-effect-bulk-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

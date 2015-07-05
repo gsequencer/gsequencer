@@ -22,8 +22,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_INIT_CHANNEL                (ags_init_channel_get_type())

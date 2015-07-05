@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-machine-callbacks">
 <refmeta>
@@ -17,180 +17,178 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-machine-callbacks.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-machine-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-parent-set-callback">ags_machine_parent_set_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-destroy-callback">ags_machine_destroy_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-button-press-callback">ags_machine_button_press_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-popup-move-up-activate-callback">ags_machine_popup_move_up_activate_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-popup-move-down-activate-callback">ags_machine_popup_move_down_activate_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-popup-hide-activate-callback">ags_machine_popup_hide_activate_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-popup-show-activate-callback">ags_machine_popup_show_activate_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-popup-destroy-activate-callback">ags_machine_popup_destroy_activate_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-popup-rename-activate-callback">ags_machine_popup_rename_activate_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-popup-properties-activate-callback">ags_machine_popup_properties_activate_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-open-response-callback">ags_machine_open_response_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-play-callback">ags_machine_play_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-tact-callback">ags_machine_tact_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-done-callback">ags_machine_done_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-start-failure-callback">ags_machine_start_failure_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-button-press-callback">ags_machine_button_press_callback</link>   (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *handle_box</parameter>,
-                                                         <parameter><link linkend="GdkEventButton"><type>GdkEventButton</type></link> *event</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-destroy-callback">ags_machine_destroy_callback</link>        (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-done-callback">ags_machine_done_callback</link>           (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-open-response-callback">ags_machine_open_response_callback</link>  (<parameter><link linkend="GtkDialog"><type>GtkDialog</type></link> *dialog</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> response</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-parent-set-callback">ags_machine_parent_set_callback</link>     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-play-callback">ags_machine_play_callback</link>           (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-popup-destroy-activate-callback">ags_machine_popup_destroy_activate_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-popup-hide-activate-callback">ags_machine_popup_hide_activate_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-popup-move-down-activate-callback">ags_machine_popup_move_down_activate_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-popup-move-up-activate-callback">ags_machine_popup_move_up_activate_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-popup-properties-activate-callback">ags_machine_popup_properties_activate_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-popup-rename-activate-callback">ags_machine_popup_rename_activate_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="int"><returnvalue>int</returnvalue></link>                 <link linkend="ags-machine-popup-show-activate-callback">ags_machine_popup_show_activate_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-start-failure-callback">ags_machine_start_failure_callback</link>  (<parameter><link linkend="AgsTask"><type>AgsTask</type></link> *task</parameter>,
-                                                         <parameter><link linkend="GError"><type>GError</type></link> *error</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-tact-callback">ags_machine_tact_callback</link>           (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-machine-callbacks.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-machine-callbacks.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-machine-button-press-callback" role="function">
-<title>ags_machine_button_press_callback ()</title>
-<indexterm zone="ags-machine-button-press-callback"><primary>ags_machine_button_press_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_button_press_callback   (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *handle_box</parameter>,
-                                                         <parameter><link linkend="GdkEventButton"><type>GdkEventButton</type></link> *event</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-destroy-callback" role="function">
-<title>ags_machine_destroy_callback ()</title>
-<indexterm zone="ags-machine-destroy-callback"><primary>ags_machine_destroy_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_destroy_callback        (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-done-callback" role="function">
-<title>ags_machine_done_callback ()</title>
-<indexterm zone="ags-machine-done-callback"><primary>ags_machine_done_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_done_callback           (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-open-response-callback" role="function">
-<title>ags_machine_open_response_callback ()</title>
-<indexterm zone="ags-machine-open-response-callback"><primary>ags_machine_open_response_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_open_response_callback  (<parameter><link linkend="GtkDialog"><type>GtkDialog</type></link> *dialog</parameter>,
-                                                         <parameter><link linkend="gint"><type>gint</type></link> response</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-ags-machine-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-machine-parent-set-callback" role="function">
-<title>ags_machine_parent_set_callback ()</title>
+<title>ags_machine_parent_set_callback&#160;()</title>
 <indexterm zone="ags-machine-parent-set-callback"><primary>ags_machine_parent_set_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_parent_set_callback     (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-play-callback" role="function">
-<title>ags_machine_play_callback ()</title>
-<indexterm zone="ags-machine-play-callback"><primary>ags_machine_play_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_play_callback           (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *toggle_button</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-popup-destroy-activate-callback" role="function">
-<title>ags_machine_popup_destroy_activate_callback ()</title>
-<indexterm zone="ags-machine-popup-destroy-activate-callback"><primary>ags_machine_popup_destroy_activate_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_popup_destroy_activate_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-popup-hide-activate-callback" role="function">
-<title>ags_machine_popup_hide_activate_callback ()</title>
-<indexterm zone="ags-machine-popup-hide-activate-callback"><primary>ags_machine_popup_hide_activate_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_popup_hide_activate_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-popup-move-down-activate-callback" role="function">
-<title>ags_machine_popup_move_down_activate_callback ()</title>
-<indexterm zone="ags-machine-popup-move-down-activate-callback"><primary>ags_machine_popup_move_down_activate_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_popup_move_down_activate_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_machine_parent_set_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                 <parameter><link linkend="GtkObject"><type>GtkObject</type></link> *old_parent</parameter>,
+                                 <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-destroy-callback" role="function">
+<title>ags_machine_destroy_callback&#160;()</title>
+<indexterm zone="ags-machine-destroy-callback"><primary>ags_machine_destroy_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_machine_destroy_callback (<parameter><link linkend="GtkObject"><type>GtkObject</type></link> *object</parameter>,
+                              <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-button-press-callback" role="function">
+<title>ags_machine_button_press_callback&#160;()</title>
+<indexterm zone="ags-machine-button-press-callback"><primary>ags_machine_button_press_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_machine_button_press_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *handle_box</parameter>,
+                                   <parameter><link linkend="GdkEventButton"><type>GdkEventButton</type></link> *event</parameter>,
+                                   <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-machine-popup-move-up-activate-callback" role="function">
-<title>ags_machine_popup_move_up_activate_callback ()</title>
+<title>ags_machine_popup_move_up_activate_callback&#160;()</title>
 <indexterm zone="ags-machine-popup-move-up-activate-callback"><primary>ags_machine_popup_move_up_activate_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_popup_move_up_activate_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-popup-properties-activate-callback" role="function">
-<title>ags_machine_popup_properties_activate_callback ()</title>
-<indexterm zone="ags-machine-popup-properties-activate-callback"><primary>ags_machine_popup_properties_activate_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_popup_properties_activate_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-popup-rename-activate-callback" role="function">
-<title>ags_machine_popup_rename_activate_callback ()</title>
-<indexterm zone="ags-machine-popup-rename-activate-callback"><primary>ags_machine_popup_rename_activate_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_popup_rename_activate_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_machine_popup_move_up_activate_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-popup-move-down-activate-callback" role="function">
+<title>ags_machine_popup_move_down_activate_callback&#160;()</title>
+<indexterm zone="ags-machine-popup-move-down-activate-callback"><primary>ags_machine_popup_move_down_activate_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_machine_popup_move_down_activate_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-popup-hide-activate-callback" role="function">
+<title>ags_machine_popup_hide_activate_callback&#160;()</title>
+<indexterm zone="ags-machine-popup-hide-activate-callback"><primary>ags_machine_popup_hide_activate_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_machine_popup_hide_activate_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-machine-popup-show-activate-callback" role="function">
-<title>ags_machine_popup_show_activate_callback ()</title>
+<title>ags_machine_popup_show_activate_callback&#160;()</title>
 <indexterm zone="ags-machine-popup-show-activate-callback"><primary>ags_machine_popup_show_activate_callback</primary></indexterm>
-<programlisting><link linkend="int"><returnvalue>int</returnvalue></link>                 ags_machine_popup_show_activate_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-start-failure-callback" role="function">
-<title>ags_machine_start_failure_callback ()</title>
-<indexterm zone="ags-machine-start-failure-callback"><primary>ags_machine_start_failure_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_start_failure_callback  (<parameter><link linkend="AgsTask"><type>AgsTask</type></link> *task</parameter>,
-                                                         <parameter><link linkend="GError"><type>GError</type></link> *error</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_machine_popup_show_activate_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-popup-destroy-activate-callback" role="function">
+<title>ags_machine_popup_destroy_activate_callback&#160;()</title>
+<indexterm zone="ags-machine-popup-destroy-activate-callback"><primary>ags_machine_popup_destroy_activate_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_popup_destroy_activate_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-popup-rename-activate-callback" role="function">
+<title>ags_machine_popup_rename_activate_callback&#160;()</title>
+<indexterm zone="ags-machine-popup-rename-activate-callback"><primary>ags_machine_popup_rename_activate_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_machine_popup_rename_activate_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-popup-properties-activate-callback" role="function">
+<title>ags_machine_popup_properties_activate_callback&#160;()</title>
+<indexterm zone="ags-machine-popup-properties-activate-callback"><primary>ags_machine_popup_properties_activate_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_machine_popup_properties_activate_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-open-response-callback" role="function">
+<title>ags_machine_open_response_callback&#160;()</title>
+<indexterm zone="ags-machine-open-response-callback"><primary>ags_machine_open_response_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_open_response_callback (<parameter><link linkend="GtkDialog"><type>GtkDialog</type></link> *dialog</parameter>,
+                                    <parameter><link linkend="gint"><type>gint</type></link> response</parameter>,
+                                    <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-play-callback" role="function">
+<title>ags_machine_play_callback&#160;()</title>
+<indexterm zone="ags-machine-play-callback"><primary>ags_machine_play_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_play_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *toggle_button</parameter>,
+                           <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-machine-tact-callback" role="function">
-<title>ags_machine_tact_callback ()</title>
+<title>ags_machine_tact_callback&#160;()</title>
 <indexterm zone="ags-machine-tact-callback"><primary>ags_machine_tact_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_tact_callback           (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
-                                                         <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                                                         <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_tact_callback (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                           <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                           <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-done-callback" role="function">
+<title>ags_machine_done_callback&#160;()</title>
+<indexterm zone="ags-machine-done-callback"><primary>ags_machine_done_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_done_callback (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                           <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
+                           <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-start-failure-callback" role="function">
+<title>ags_machine_start_failure_callback&#160;()</title>
+<indexterm zone="ags-machine-start-failure-callback"><primary>ags_machine_start_failure_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_start_failure_callback (<parameter><link linkend="AgsTask"><type>AgsTask</type></link> *task</parameter>,
+                                    <parameter><link linkend="GError"><type>GError</type></link> *error</parameter>,
+                                    <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-machine-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

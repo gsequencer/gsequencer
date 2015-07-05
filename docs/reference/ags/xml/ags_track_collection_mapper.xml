@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsTrackCollectionMapper">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsTrackCollectionMapper.top_of_page">AgsTrackCollectionMapper</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsTrackCollectionMapper</refname>
+<refpurpose>pack pad editors.</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsTrackCollectionMapper.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TRACK-COLLECTION-MAPPER-DEFAULT-BEATS:CAPS">AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MIDI-DEFAULT-BEATS:CAPS">AGS_MIDI_DEFAULT_BEATS</link></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-track-collection-mapper-find-instrument-with-sequence">ags_track_collection_mapper_find_instrument_with_sequence</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-track-collection-mapper-map">ags_track_collection_mapper_map</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsTrackCollectionMapper"><returnvalue>AgsTrackCollectionMapper</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-track-collection-mapper-new">ags_track_collection_mapper_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsTrackCollectionMapper.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsTrackCollectionMapper--instrument">instrument</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gchar"><type>gchar</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsTrackCollectionMapper--sequence">sequence</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsTrackCollectionMapper--track">track</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsTrackCollectionMapper.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkTable">GtkTable</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsTrackCollectionMapper
+</screen>
+</refsect1>
+
+<refsect1 id="AgsTrackCollectionMapper.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_track_collection_mapper.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsTrackCollectionMapper.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsTrackCollectionMapper"><type>AgsTrackCollectionMapper</type></link> is a wizard to import midi files and do track mapping..</para>
+
+</refsect1>
+<refsect1 id="AgsTrackCollectionMapper.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="AGS-TRACK-COLLECTION-MAPPER-DEFAULT-BEATS:CAPS" role="macro">
+<title>AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS</title>
+<indexterm zone="AGS-TRACK-COLLECTION-MAPPER-DEFAULT-BEATS:CAPS"><primary>AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS</primary></indexterm>
+<programlisting language="C">#define AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS (16.0)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-MIDI-DEFAULT-BEATS:CAPS" role="macro">
+<title>AGS_MIDI_DEFAULT_BEATS</title>
+<indexterm zone="AGS-MIDI-DEFAULT-BEATS:CAPS"><primary>AGS_MIDI_DEFAULT_BEATS</primary></indexterm>
+<programlisting language="C">#define AGS_MIDI_DEFAULT_BEATS (4.0)
+</programlisting>
+</refsect2>
+<refsect2 id="ags-track-collection-mapper-find-instrument-with-sequence" role="function" condition="since:0.4.3">
+<title>ags_track_collection_mapper_find_instrument_with_sequence&#160;()</title>
+<indexterm zone="ags-track-collection-mapper-find-instrument-with-sequence" role="0.4.3"><primary>ags_track_collection_mapper_find_instrument_with_sequence</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_track_collection_mapper_find_instrument_with_sequence
+                               (<parameter><link linkend="GList"><type>GList</type></link> *track_collection_mapper</parameter>,
+                                <parameter><link linkend="gchar"><type>gchar</type></link> *instrument</parameter>,
+                                <parameter><link linkend="gchar"><type>gchar</type></link> *sequence</parameter>);</programlisting>
+<para>Finds next matching track in a <link linkend="GList"><type>GList</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>track_collection_mapper</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing <link linkend="AgsTrackCollectionMapper"><type>AgsTrackCollectionMapper</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>instrument</para></entry>
+<entry role="parameter_description"><para>the instrument as string</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>sequence</para></entry>
+<entry role="parameter_description"><para>the sequence as string</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the next matching <link linkend="GList"><type>GList</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-track-collection-mapper-map" role="function" condition="since:0.4.3">
+<title>ags_track_collection_mapper_map&#160;()</title>
+<indexterm zone="ags-track-collection-mapper-map" role="0.4.3"><primary>ags_track_collection_mapper_map</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_track_collection_mapper_map (<parameter><link linkend="AgsTrackCollectionMapper"><type>AgsTrackCollectionMapper</type></link> *track_collection_mapper</parameter>);</programlisting>
+<para>Maps XML tracks to <link linkend="AgsNotation"><type>AgsNotation</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>track_collection_mapper</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsTrackCollectionMapper"><type>AgsTrackCollectionMapper</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-track-collection-mapper-new" role="function" condition="since:0.4.3">
+<title>ags_track_collection_mapper_new&#160;()</title>
+<indexterm zone="ags-track-collection-mapper-new" role="0.4.3"><primary>ags_track_collection_mapper_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsTrackCollectionMapper"><returnvalue>AgsTrackCollectionMapper</returnvalue></link>&#160;*
+ags_track_collection_mapper_new ();</programlisting>
+<para>Creates an <link linkend="AgsTrackCollectionMapper"><type>AgsTrackCollectionMapper</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsTrackCollectionMapper"><type>AgsTrackCollectionMapper</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsTrackCollectionMapper.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsTrackCollectionMapper.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsTrackCollectionMapper--instrument" role="property"><title>The <literal>“instrument”</literal> property</title>
+<indexterm zone="AgsTrackCollectionMapper--instrument" role="0.4.3"><primary>AgsTrackCollectionMapper:instrument</primary></indexterm>
+<programlisting>  “instrument”               <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The instruments as xmlNode to parse.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsTrackCollectionMapper--sequence" role="property"><title>The <literal>“sequence”</literal> property</title>
+<indexterm zone="AgsTrackCollectionMapper--sequence" role="0.4.3"><primary>AgsTrackCollectionMapper:sequence</primary></indexterm>
+<programlisting>  “sequence”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
+<para>The sequences as xmlNode to parse.</para>
+<para>Flags: Read / Write</para>
+<para>Default value: NULL</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsTrackCollectionMapper--track" role="property"><title>The <literal>“track”</literal> property</title>
+<indexterm zone="AgsTrackCollectionMapper--track" role="0.4.3"><primary>AgsTrackCollectionMapper:track</primary></indexterm>
+<programlisting>  “track”                    <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The tracks as xmlNode to parse.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+
+</refentry>

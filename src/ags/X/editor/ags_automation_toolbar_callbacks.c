@@ -18,53 +18,187 @@
 
 #include <ags/X/editor/ags_automation_toolbar_callbacks.h>
 
+#include <ags/X/ags_automation_editor.h>
+
 void
 ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_editor,
 						AgsMachine *machine,
 						AgsAutomationToolbar *toolbar)
 {
-  AgsAutomationEdit *automation_edit;
   AgsAutomation *automation;
-  GList *port;
-  GList *list, *list_start;
-
-  auto GList* ags_automation_toolbar_enabled_ports(GList *automation);
-
-  GList* ags_automation_toolbar_enabled_ports(GList *automation){
-    GList *list;
-
-    list = NULL;
-
-    while(automation != NULL){
-      list = g_list_prepend(list,
-			    AGS_AUTOMATION(automation->data)->port);
-
-      automation = automation->next;
-    }
-    
-    list = g_list_reverse(list);
-
-    return(list);
-  }
-
-  automation_edit = automation_editor->automation_edit;
-
-  /* destroy old and create new drawing area vbox */
-  gtk_widget_destroy(automation_edit->drawing_area);
-
-  automation_edit->drawing_area = gtk_vbox_new(FALSE, 0);
-  gtk_table_attach(GTK_TABLE(automation_edit), (GtkWidget *) automation_edit->drawing_area,
-		   0, 1, 1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-  gtk_widget_show(automation_edit->drawing_area);
 
   /* load ports */
-  ags_port_selection_load_ports(toolbar->port_selection);
+  ags_automation_toolbar_load_port(automation_editor->automation_toolbar);
+}
 
-  /* enable ports */
-  port = ags_automation_toolbar_enabled_ports(machine->audio->automation);
+void
+ags_automation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
+{
+  if(toggle_button == automation_toolbar->selected_edit_mode){
+    if(!gtk_toggle_button_get_active(toggle_button)){
+      gtk_toggle_button_set_active(toggle_button, TRUE);
+    }
 
-  ags_port_selection_enable_ports(toolbar->port_selection,
-				  port);
+    //TODO:JK: implement me
+  }else if(gtk_toggle_button_get_active(toggle_button)){
+    GtkToggleButton *old_selected_edit_mode;
+    
+    old_selected_edit_mode = automation_toolbar->selected_edit_mode;
+    automation_toolbar->selected_edit_mode = toggle_button;
+    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+
+    //TODO:JK: implement me
+  }
+}
+
+void
+ags_automation_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
+{
+  if(toggle_button == automation_toolbar->selected_edit_mode){
+    if(!gtk_toggle_button_get_active(toggle_button)){
+      gtk_toggle_button_set_active(toggle_button, TRUE);
+    }
+  }else if(gtk_toggle_button_get_active(toggle_button)){
+    GtkToggleButton *old_selected_edit_mode;
+    
+    old_selected_edit_mode = automation_toolbar->selected_edit_mode;
+    automation_toolbar->selected_edit_mode = toggle_button;
+    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+  }
+}
+
+void
+ags_automation_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
+{
+  if(toggle_button == automation_toolbar->selected_edit_mode){
+    if(!gtk_toggle_button_get_active(toggle_button)){
+      gtk_toggle_button_set_active(toggle_button, TRUE);
+    }
+  }else if(gtk_toggle_button_get_active(toggle_button)){
+    GtkToggleButton *old_selected_edit_mode;
+    
+    old_selected_edit_mode = automation_toolbar->selected_edit_mode;
+    automation_toolbar->selected_edit_mode = toggle_button;
+    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+  }
+}
+
+void
+ags_automation_toolbar_select_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
+{
+  if(toggle_button == automation_toolbar->selected_edit_mode){
+    if(!gtk_toggle_button_get_active(toggle_button)){
+      gtk_toggle_button_set_active(toggle_button, TRUE);
+    }
+  }else if(gtk_toggle_button_get_active(toggle_button)){
+    GtkToggleButton *old_selected_edit_mode;
+    
+    old_selected_edit_mode = automation_toolbar->selected_edit_mode;
+    automation_toolbar->selected_edit_mode = toggle_button;
+    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+  }
+}
+
+void
+ags_automation_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_automation_toolbar_paste_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+  GtkWidget *widget;
+  
+  GtkAdjustment *adjustment;
+  
+  double zoom, zoom_old;
+  guint history;
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  history = gtk_combo_box_get_active(combo_box);
+
+  zoom = exp2((double) history - 4.0);
+  zoom_old = exp2((double) automation_toolbar->zoom_history - 4.0);
+
+  automation_toolbar->zoom_history = history;
+
+  /* refresh automation edit */
+  if(automation_editor->audio_automation_edit != NULL){
+    automation_editor->audio_automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+    ags_automation_edit_reset_horizontally(automation_editor->audio_automation_edit,
+					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
+					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
+    automation_editor->audio_automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
+  }
+  
+  if(automation_editor->output_automation_edit != NULL){
+    automation_editor->output_automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+    ags_automation_edit_reset_horizontally(automation_editor->output_automation_edit,
+					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
+					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
+    automation_editor->output_automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
+  }
+
+  if(automation_editor->input_automation_edit != NULL){
+    automation_editor->input_automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+    ags_automation_edit_reset_horizontally(automation_editor->input_automation_edit,
+					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
+					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
+    automation_editor->input_automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
+  }
+}
+
+void
+ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
+					     AgsAutomationToolbar *automation_toolbar)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  gchar *control_name;
+  GValue value = {0,};
+
+  if((AGS_AUTOMATION_TOOLBAR_RESET_PORT & (automation_toolbar->flags)) != 0){
+    return;
+  }
+
+  automation_toolbar->flags |= AGS_AUTOMATION_TOOLBAR_RESET_PORT;
+    
+  model = gtk_combo_box_get_model(combo_box);
+  gtk_combo_box_get_active_iter(combo_box, &iter);
+
+  gtk_tree_model_get(model,
+		     &iter,
+		     1, &control_name,
+		     -1);
+  
+  gtk_tree_model_get_value(model,
+			   &iter,
+			   0,
+			   &value);
+
+  if(g_value_get_boolean(&value)){
+    g_value_set_boolean(&value, FALSE);
+  }else{
+    g_value_set_boolean(&value, TRUE);
+  }
+  
+  gtk_list_store_set_value(GTK_LIST_STORE(model),
+			   &iter,
+			   0,
+			   &value);
+
+  ags_automation_toolbar_apply_port(automation_toolbar,
+				    control_name);
+
+  automation_toolbar->flags &= (~AGS_AUTOMATION_TOOLBAR_RESET_PORT);
 }

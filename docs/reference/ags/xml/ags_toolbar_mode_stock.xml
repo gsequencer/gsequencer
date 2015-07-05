@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-toolbar-mode-stock">
 <refmeta>
@@ -17,43 +17,51 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-toolbar-mode-stock.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-toolbar-mode-stock.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TOOLBAR-MODE-SINGLE-CHANNEL:CAPS">AGS_TOOLBAR_MODE_SINGLE_CHANNEL</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TOOLBAR-MODE-MULTI-CHANNEL:CAPS">AGS_TOOLBAR_MODE_MULTI_CHANNEL</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-TOOLBAR-MODE-ALL-CHANNELS:CAPS">AGS_TOOLBAR_MODE_ALL_CHANNELS</link></entry></row>
 
-<synopsis>#define             <link linkend="AGS-TOOLBAR-MODE-ALL-CHANNELS:CAPS">AGS_TOOLBAR_MODE_ALL_CHANNELS</link>
-#define             <link linkend="AGS-TOOLBAR-MODE-MULTI-CHANNEL:CAPS">AGS_TOOLBAR_MODE_MULTI_CHANNEL</link>
-#define             <link linkend="AGS-TOOLBAR-MODE-SINGLE-CHANNEL:CAPS">AGS_TOOLBAR_MODE_SINGLE_CHANNEL</link>
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-toolbar-mode-stock.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-toolbar-mode-stock.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-TOOLBAR-MODE-ALL-CHANNELS:CAPS" role="macro">
-<title>AGS_TOOLBAR_MODE_ALL_CHANNELS</title>
-<indexterm zone="AGS-TOOLBAR-MODE-ALL-CHANNELS:CAPS"><primary>AGS_TOOLBAR_MODE_ALL_CHANNELS</primary></indexterm>
-<programlisting>#define AGS_TOOLBAR_MODE_ALL_CHANNELS "all channels\0"
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AGS-TOOLBAR-MODE-MULTI-CHANNEL:CAPS" role="macro">
-<title>AGS_TOOLBAR_MODE_MULTI_CHANNEL</title>
-<indexterm zone="AGS-TOOLBAR-MODE-MULTI-CHANNEL:CAPS"><primary>AGS_TOOLBAR_MODE_MULTI_CHANNEL</primary></indexterm>
-<programlisting>#define AGS_TOOLBAR_MODE_MULTI_CHANNEL "multi channel\0"
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-ags-toolbar-mode-stock.functions_details" role="details">
+<title role="details.title">Functions</title>
+
+</refsect1>
+<refsect1 id="ags-ags-toolbar-mode-stock.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AGS-TOOLBAR-MODE-SINGLE-CHANNEL:CAPS" role="macro">
 <title>AGS_TOOLBAR_MODE_SINGLE_CHANNEL</title>
 <indexterm zone="AGS-TOOLBAR-MODE-SINGLE-CHANNEL:CAPS"><primary>AGS_TOOLBAR_MODE_SINGLE_CHANNEL</primary></indexterm>
-<programlisting>#define AGS_TOOLBAR_MODE_SINGLE_CHANNEL "single channel\0"
+<programlisting language="C">#define AGS_TOOLBAR_MODE_SINGLE_CHANNEL "single channel\0"
 </programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+<refsect2 id="AGS-TOOLBAR-MODE-MULTI-CHANNEL:CAPS" role="macro">
+<title>AGS_TOOLBAR_MODE_MULTI_CHANNEL</title>
+<indexterm zone="AGS-TOOLBAR-MODE-MULTI-CHANNEL:CAPS"><primary>AGS_TOOLBAR_MODE_MULTI_CHANNEL</primary></indexterm>
+<programlisting language="C">#define AGS_TOOLBAR_MODE_MULTI_CHANNEL "multi channel\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-TOOLBAR-MODE-ALL-CHANNELS:CAPS" role="macro">
+<title>AGS_TOOLBAR_MODE_ALL_CHANNELS</title>
+<indexterm zone="AGS-TOOLBAR-MODE-ALL-CHANNELS:CAPS"><primary>AGS_TOOLBAR_MODE_ALL_CHANNELS</primary></indexterm>
+<programlisting language="C">#define AGS_TOOLBAR_MODE_ALL_CHANNELS "all channels\0"
+</programlisting>
+</refsect2>
 
 </refsect1>
 

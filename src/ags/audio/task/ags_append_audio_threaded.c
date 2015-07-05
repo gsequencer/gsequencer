@@ -18,7 +18,9 @@
 
 #include <ags/audio/task/ags_append_audio_threaded.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_append_audio_threaded_class_init(AgsAppendAudioThreadedClass *append_audio_threaded);
 void ags_append_audio_threaded_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -101,7 +103,7 @@ void
 ags_append_audio_threaded_init(AgsAppendAudioThreaded *append_audio_threaded)
 {
   append_audio_threaded->audio_loop = NULL;
-  append_audio_threaded->devout_play = NULL;
+  append_audio_threaded->playback = NULL;
 }
 
 void
@@ -139,16 +141,16 @@ ags_append_audio_threaded_launch(AgsTask *task)
   audio_loop = AGS_AUDIO_LOOP(append_audio_threaded->audio_loop);
 
   /* append to AgsDevout */
-  append_audio_threaded->devout_play->flags &= (~AGS_DEVOUT_PLAY_REMOVE);
-  append_audio_threaded->devout_play->flags |= AGS_DEVOUT_PLAY_SUPER_THREADED;
+  append_audio_threaded->playback->flags &= (~AGS_PLAYBACK_REMOVE);
+  append_audio_threaded->playback->flags |= AGS_PLAYBACK_SUPER_THREADED;
   audio_loop->play_audio = g_list_append(audio_loop->play_audio,
-					 append_audio_threaded->devout_play);
+					 append_audio_threaded->playback);
   audio_loop->play_audio_ref += 1;
 }
 
 AgsAppendAudioThreaded*
 ags_append_audio_threaded_new(GObject *audio_loop,
-			      AgsDevoutPlay *devout_play)
+			      AgsPlayback *playback)
 {
   AgsAppendAudioThreaded *append_audio_threaded;
 
@@ -156,7 +158,7 @@ ags_append_audio_threaded_new(GObject *audio_loop,
 								  NULL);
   
   append_audio_threaded->audio_loop = audio_loop;
-  append_audio_threaded->devout_play = devout_play;
+  append_audio_threaded->playback = playback;
 
   return(append_audio_threaded);
 }

@@ -28,8 +28,6 @@
 #include <ags/thread/ags_thread-posix.h>
 #endif 
 
-#include <ags/main.h>
-
 #define AGS_TYPE_AUTOSAVE_THREAD                (ags_autosave_thread_get_type())
 #define AGS_AUTOSAVE_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOSAVE_THREAD, AgsAutosaveThread))
 #define AGS_AUTOSAVE_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_AUTOSAVE_THREAD, AgsAutosaveThreadClass))
@@ -47,11 +45,10 @@ struct _AgsAutosaveThread
 {
   AgsThread thread;
 
-
   volatile guint tic;
   volatile guint last_sync;
 
-  AgsMain *ags_main;
+  GObject *application_context;
 
   guint delay;
   guint counter;
@@ -64,6 +61,6 @@ struct _AgsAutosaveThreadClass
 
 GType ags_autosave_thread_get_type();
 
-AgsAutosaveThread* ags_autosave_thread_new(GObject *devout, AgsMain *ags_main);
+AgsAutosaveThread* ags_autosave_thread_new(GObject *application_context);
 
 #endif /*__AGS_AUTOSAVE_THREAD_H__*/

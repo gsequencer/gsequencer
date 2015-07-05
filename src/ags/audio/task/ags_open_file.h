@@ -21,7 +21,7 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_OPEN_FILE                (ags_open_file_get_type())

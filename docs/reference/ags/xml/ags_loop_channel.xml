@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsLoopChannel">
+<refentry id="AgsLoopChannel">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsLoopChannel.top_of_page">AgsLoopChannel</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsLoopChannel.top_of_page">AgsLoopChannel</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,52 +14,92 @@
 </refmeta>
 <refnamediv>
 <refname>AgsLoopChannel</refname>
-<refpurpose></refpurpose>
+<refpurpose>loops channel</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsLoopChannel.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsLoopChannel.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsLoopChannel"><returnvalue>AgsLoopChannel</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-loop-channel-new">ags_loop_channel_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsLoopChannel">AgsLoopChannel</link>;
-struct              <link linkend="AgsLoopChannelClass">AgsLoopChannelClass</link>;
-<link linkend="AgsLoopChannel"><returnvalue>AgsLoopChannel</returnvalue></link> *    <link linkend="ags-loop-channel-new">ags_loop_channel_new</link>                ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsLoopChannel.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsLoopChannel.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsLoopChannel" role="struct">
-<title>struct AgsLoopChannel</title>
-<indexterm zone="AgsLoopChannel"><primary>AgsLoopChannel</primary></indexterm>
-<programlisting>struct AgsLoopChannel {
-  AgsRecallChannel recall_channel;
-  
-  AgsDelayAudio *delay_audio;
-  gulong sequencer_duration_changed_handler;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsLoopChannelClass" role="struct">
-<title>struct AgsLoopChannelClass</title>
-<indexterm zone="AgsLoopChannelClass"><primary>AgsLoopChannelClass</primary></indexterm>
-<programlisting>struct AgsLoopChannelClass {
-  AgsRecallChannelClass recall_channel;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-loop-channel-new" role="function">
-<title>ags_loop_channel_new ()</title>
-<indexterm zone="ags-loop-channel-new"><primary>ags_loop_channel_new</primary></indexterm>
-<programlisting><link linkend="AgsLoopChannel"><returnvalue>AgsLoopChannel</returnvalue></link> *    ags_loop_channel_new                ();</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsLoopChannel.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsLoopChannel--delay-audio">delay-audio</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLoopChannel.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannel">AgsRecallChannel</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsLoopChannel
+</screen>
+</refsect1>
+
+<refsect1 id="AgsLoopChannel.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/recall/ags_loop_channel.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsLoopChannel.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsLoopChannel"><type>AgsLoopChannel</type></link> class provides ports to the effect processor.</para>
+
+</refsect1>
+<refsect1 id="AgsLoopChannel.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-loop-channel-new" role="function" condition="since:0.4">
+<title>ags_loop_channel_new&#160;()</title>
+<indexterm zone="ags-loop-channel-new" role="0.4"><primary>ags_loop_channel_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLoopChannel"><returnvalue>AgsLoopChannel</returnvalue></link>&#160;*
+ags_loop_channel_new ();</programlisting>
+<para>Creates an <link linkend="AgsLoopChannel"><type>AgsLoopChannel</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>source</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> as source</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsLoopChannel"><type>AgsLoopChannel</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsLoopChannel.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsLoopChannel.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsLoopChannel--delay-audio" role="property"><title>The <literal>“delay-audio”</literal> property</title>
+<indexterm zone="AgsLoopChannel--delay-audio"><primary>AgsLoopChannel:delay-audio</primary></indexterm>
+<programlisting>  “delay-audio”              <link linkend="AgsDelayAudio"><type>AgsDelayAudio</type></link>&#160;*</programlisting>
+<para>The delay-audio it is assigned with.</para><para>Flags: Read / Write</para>
+</refsect2>
 
 </refsect1>
 

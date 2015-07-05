@@ -18,18 +18,14 @@
 
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/lib/ags_list.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
+
+#include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_returnable_thread.h>
-
-#include <ags/audio/ags_devout.h>
-
-#include <ags/audio/ags_config.h>
 
 #include <math.h>
 
@@ -46,8 +42,6 @@ void ags_task_thread_run(AgsThread *thread);
 void ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpointer data);
 void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpointer data);
 
-extern AgsConfig *config;
-
 /**
  * SECTION:ags_task_thread
  * @short_description: task thread
@@ -60,8 +54,6 @@ extern AgsConfig *config;
 
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
-
-static gboolean DEBUG;
 
 GType
 ags_task_thread_get_type()
@@ -141,11 +133,11 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread->freq = AGS_TASK_THREAD_DEFAULT_JIFFIE;
 
-  g_cond_init(&(task_thread->cond));
-  g_mutex_init(&(task_thread->mutex));
+  task_thread->read_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(task_thread->read_mutex, NULL);
 
-  pthread_mutex_init(&(task_thread->read_mutex), NULL);
-  pthread_mutex_init(&(task_thread->launch_mutex), NULL);
+  task_thread->launch_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(task_thread->launch_mutex, NULL);
 
   g_atomic_int_set(&(task_thread->queued),
 		   0);
@@ -155,20 +147,14 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   g_atomic_pointer_set(&(task_thread->exec), NULL);
   g_atomic_pointer_set(&(task_thread->queue),
 		       NULL);
-
-  task_thread->thread_pool = NULL;
 }
 
 void
 ags_task_thread_connect(AgsConnectable *connectable)
 {
-  AgsTaskThread *task_thread;
-
   ags_task_thread_parent_connectable_interface->connect(connectable);
 
-  task_thread = AGS_TASK_THREAD(connectable);
-  task_thread->thread_pool = AGS_MAIN(AGS_AUDIO_LOOP(AGS_THREAD(task_thread)->parent)->ags_main)->thread_pool;
-  task_thread->thread_pool->parent = task_thread;
+  /* empty */
 }
 
 void
@@ -187,8 +173,10 @@ ags_task_thread_finalize(GObject *gobject)
   task_thread = AGS_TASK_THREAD(gobject);
 
   /* free AgsTask lists */
-  ags_list_free_and_unref_link(g_atomic_pointer_get(&(task_thread->exec)));
-  ags_list_free_and_unref_link(g_atomic_pointer_get(&(task_thread->queue)));
+  g_list_free_full(g_atomic_pointer_get(&(task_thread->exec)),
+		   g_object_unref);
+  g_list_free_full(g_atomic_pointer_get(&(task_thread->queue)),
+		   g_object_unref);
 
   /*  */
   G_OBJECT_CLASS(ags_task_thread_parent_class)->finalize(gobject);
@@ -197,18 +185,24 @@ ags_task_thread_finalize(GObject *gobject)
 void
 ags_task_thread_start(AgsThread *thread)
 {
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
+  AgsThreadPool *thread_pool;
 
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+  
   task_thread = AGS_TASK_THREAD(thread);
 
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
-    ags_thread_pool_start(task_thread->thread_pool);
+  main_loop = ags_thread_get_toplevel(thread);
 
-    while((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
-      usleep(500000);
-    }
-  }
-
+  g_object_get(main_loop,
+	       "application-mutex\0", &application_mutex,
+	       NULL);
+  
+  application_context = ags_main_loop_get_application_context(main_loop);
+  
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }
@@ -217,40 +211,21 @@ ags_task_thread_start(AgsThread *thread)
 void
 ags_task_thread_run(AgsThread *thread)
 {
-  AgsDevout *devout;
   AgsTaskThread *task_thread;
+  AgsThread *main_loop;
+  
   GList *list;
-  guint buffer_size;
-  guint samplerate;
-  static struct timespec play_idle;
-  static useconds_t idle;
+
   guint prev_pending;
-  static gboolean initialized = FALSE;
 
-  task_thread = AGS_TASK_THREAD(thread);
-  devout = AGS_DEVOUT(thread->devout);
-
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
-				 NULL,
-				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
-				NULL,
-				10);
-
-  if(!initialized){
-    play_idle.tv_sec = 0;
-    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate);
-    //    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate / 8.0);
-
-    initialized = TRUE;
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    return;
   }
-
+  task_thread = AGS_TASK_THREAD(thread);
+  main_loop = ags_thread_get_toplevel(task_thread);
+  
   /*  */
-  pthread_mutex_lock(&(task_thread->read_mutex));
+  pthread_mutex_lock(task_thread->read_mutex);
 
   g_atomic_pointer_set(&(task_thread->exec),
 		       g_atomic_pointer_get(&(task_thread->queue)));
@@ -265,16 +240,15 @@ ags_task_thread_run(AgsThread *thread)
   g_atomic_int_set(&(task_thread->queued),
 		   g_atomic_int_get(&(task_thread->queued)) - prev_pending);
 
-  pthread_mutex_unlock(&(task_thread->read_mutex));
+  pthread_mutex_unlock(task_thread->read_mutex);
 
   /* launch tasks */
   if(list != NULL){
     AgsTask *task;
     int i;
 
-    pthread_mutex_lock(&(task_thread->launch_mutex));
-    pthread_mutex_lock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
-
+    pthread_mutex_lock(task_thread->launch_mutex);
+    
     for(i = 0; i < g_atomic_int_get(&(task_thread->pending)); i++){
       task = AGS_TASK(list->data);
 
@@ -287,18 +261,17 @@ ags_task_thread_run(AgsThread *thread)
       list = list->next;
     }
 
-    pthread_mutex_unlock(&(AGS_AUDIO_LOOP(thread->parent)->recall_mutex));
-    pthread_mutex_unlock(&(task_thread->launch_mutex));
+    pthread_mutex_unlock(task_thread->launch_mutex);
   }
 
-  pthread_mutex_lock(&(task_thread->read_mutex));
+  pthread_mutex_lock(task_thread->read_mutex);
 
   g_list_free_full(g_atomic_pointer_get(&(task_thread->exec)),
 		   g_object_unref);
   g_atomic_pointer_set(&(task_thread->exec),
 		       NULL);
 
-  pthread_mutex_unlock(&(task_thread->read_mutex));
+  pthread_mutex_unlock(task_thread->read_mutex);
 }
 
 void
@@ -322,7 +295,7 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   free(append);
 
   /* lock */
-  pthread_mutex_lock(&(task_thread->read_mutex));
+  pthread_mutex_lock(task_thread->read_mutex);
 
   /* append to queue */
   g_atomic_int_set(&(task_thread->queued),
@@ -333,10 +306,7 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
 		       g_list_append(tmplist, task));
 
   /* unlock */
-  pthread_mutex_unlock(&(task_thread->read_mutex));
-
-  /*  */
-  //  g_message("ags_task_thread_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
+  pthread_mutex_unlock(task_thread->read_mutex);
 }
 
 /**
@@ -351,13 +321,29 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
 void
 ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 {
+  AgsThread *main_loop;
   AgsTaskThreadAppend *append;
   AgsThread *thread;
+  AgsThreadPool *thread_pool;
+  
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
 
 #ifdef AGS_DEBUG
   g_message("append task\0");
 #endif
+  
+  main_loop = ags_thread_get_toplevel(task_thread);
 
+  g_object_get(main_loop,
+	       "application-mutex\0", &application_mutex,
+	       NULL);
+  
+  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
+
+  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
+  
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
   g_atomic_pointer_set(&(append->task_thread),
@@ -365,9 +351,9 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   g_atomic_pointer_set(&(append->data),
 		       task);
 
-  thread = ags_thread_pool_pull(task_thread->thread_pool);
+  thread = ags_thread_pool_pull(thread_pool);
   
-  pthread_mutex_lock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
+  pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread)->safe_data),
 		       append);
@@ -378,7 +364,7 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread)->flags),
 		  AGS_RETURNABLE_THREAD_IN_USE);
     
-  pthread_mutex_unlock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
+  pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 }
 
 void
@@ -387,6 +373,7 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
   AgsTask *task;
   AgsTaskThread *task_thread;
   AgsTaskThreadAppend *append;
+
   GList *list, *tmplist;
   gboolean initial_wait;
   int ret;
@@ -402,7 +389,7 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
   free(append);
 
   /* lock */
-  pthread_mutex_lock(&(task_thread->read_mutex));
+  pthread_mutex_lock(task_thread->read_mutex);
 
   /* append to queue */
   g_atomic_int_set(&(task_thread->queued),
@@ -413,7 +400,7 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
 		       g_list_concat(tmplist, list));
 
   /*  */
-  pthread_mutex_unlock(&(task_thread->read_mutex));
+  pthread_mutex_unlock(task_thread->read_mutex);
 }
 
 /**
@@ -429,12 +416,28 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
 void
 ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 {
+  AgsThread *main_loop;
   AgsTaskThreadAppend *append;
   AgsThread *thread;
+  AgsThreadPool *thread_pool;
+  
+  AgsApplicationContext *application_context;
 
+  pthread_mutex_t *application_mutex;
+    
 #ifdef AGS_DEBUG
   g_message("append tasks\0");
 #endif
+
+  main_loop = ags_thread_get_toplevel(task_thread);
+
+  g_object_get(main_loop,
+	       "application-mutex\0", &application_mutex,
+	       NULL);
+
+  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
+
+  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
 
   append = (AgsTaskThreadAppend *) malloc(sizeof(AgsTaskThreadAppend));
 
@@ -443,9 +446,9 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   g_atomic_pointer_set(&(append->data),
 		       list);
 
-  thread = ags_thread_pool_pull(task_thread->thread_pool);
+  thread = ags_thread_pool_pull(thread_pool);
 
-  pthread_mutex_lock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
+  pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread)->safe_data),
@@ -456,12 +459,11 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread)->flags),
 		  AGS_RETURNABLE_THREAD_IN_USE);
   
-  pthread_mutex_unlock(&(AGS_RETURNABLE_THREAD(thread)->reset_mutex));
+  pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 }
 
 /**
  * ags_task_thread_new:
- * @devout: the #AgsDevout
  *
  * Create a new #AgsTaskThread.
  *
@@ -470,12 +472,11 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
  * Since: 0.4
  */ 
 AgsTaskThread*
-ags_task_thread_new(GObject *devout)
+ags_task_thread_new()
 {
   AgsTaskThread *task_thread;
 
   task_thread = (AgsTaskThread *) g_object_new(AGS_TYPE_TASK_THREAD,
-					       "devout\0", devout,
 					       NULL);
 
 

@@ -19,16 +19,19 @@
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
@@ -36,13 +39,14 @@
 
 #include <ags/audio/recall/ags_peak_channel_run.h>
 
-#include <ags/audio/task/ags_add_line_member.h>
-
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
+
+#include <ags/X/task/ags_add_line_member.h>
 
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -63,6 +67,12 @@ void ags_line_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_line_get_build_id(AgsPlugin *plugin);
 void ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
+GList* ags_line_add_ladspa_effect(AgsLine *line,
+				  gchar *filename,
+				  gchar *effect);
+GList* ags_line_add_lv2_effect(AgsLine *line,
+			       gchar *filename,
+			       gchar *effect);
 GList* ags_line_real_add_effect(AgsLine *line,
 				gchar *filename,
 				gchar *effect);
@@ -446,7 +456,6 @@ ags_line_get_property(GObject *gobject,
 void
 ags_line_connect(AgsConnectable *connectable)
 {
-  AgsMachine *machine;
   AgsLine *line;
   GList *list, *list_start;
 
@@ -470,10 +479,10 @@ ags_line_connect(AgsConnectable *connectable)
     line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
   }
 
-  /* AgsMachine */
-  machine = AGS_MACHINE(gtk_widget_get_ancestor((GtkWidget *) AGS_LINE(line),
-						AGS_TYPE_MACHINE));
-
+  /* channel */
+  g_signal_connect_after((GObject *) line->channel, "add-effect\0",
+			 G_CALLBACK(ags_line_add_effect_callback), line);
+  
   /* connect group button */
   g_signal_connect_after((GObject *) line->group, "clicked\0",
 			 G_CALLBACK(ags_line_group_clicked_callback), (gpointer) line);
@@ -591,23 +600,19 @@ ags_line_group_changed(AgsLine *line)
 }
 
 GList*
-ags_line_real_add_effect(AgsLine *line,
-			 gchar *filename,
-			 gchar *effect)
+ags_line_add_ladspa_effect(AgsLine *line,
+			   gchar *filename,
+			   gchar *effect)
 {
-  AgsMachine *machine;
   AgsLineMember *line_member;
   AgsAddLineMember *add_line_member;
   GtkAdjustment *adjustment;
 
   AgsLadspaPlugin *ladspa_plugin;
 
-  AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
-
   GList *list;
-  GList *port;
-  GList *task;
+  GList *recall, *recall_start;
+  GList *port, *recall_port;
   gdouble step;
   guint x, y;
   
@@ -616,26 +621,12 @@ ags_line_real_add_effect(AgsLine *line,
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_Data lower_bound, upper_bound;
-  unsigned long index;
+  unsigned long effect_index;
   unsigned long i;
 
-  machine = gtk_widget_get_ancestor(line,
-				    AGS_TYPE_MACHINE);
-  
-  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop;
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+  effect_index = ags_ladspa_manager_effect_index(filename,
+						 effect);
 
-  if(ags_recall_ladpsa_find(line->channel->recall,
-			    filename, effect) != NULL){
-    /* return if duplicated */
-    return;
-  }
-
-  index = ags_ladspa_manager_effect_index(filename,
-					  effect);
-
-  task = NULL;
-  
   /* load plugin */
   ags_ladspa_manager_load_file(filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
@@ -657,23 +648,37 @@ ags_line_real_add_effect(AgsLine *line,
     list = list->next;
   }
 
-  /* add effect to channel */
-  port = ags_channel_add_effect(line->channel,
-				filename,
-				effect);
+  /* find ports */
+  recall_start =
+    recall = ags_recall_get_by_effect(line->channel->play,
+				      filename,
+				      effect);
+  recall = g_list_last(recall);
+  port = AGS_RECALL(recall->data)->port;
 
+  g_list_free(recall_start);
+
+  recall_start = 
+    recall = ags_recall_get_by_effect(line->channel->recall,
+				      filename,
+				      effect);
+  recall = g_list_last(recall);
+
+  recall_port = AGS_RECALL(recall->data)->port;
+  g_list_free(recall_start);
+  
   /* load ports */
-  if(index != -1 &&
+  if(effect_index != -1 &&
      plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
-      plugin_descriptor = ladspa_descriptor(index);
+      plugin_descriptor = ladspa_descriptor(effect_index);
 
       port_descriptor = plugin_descriptor->PortDescriptors;   
-
-      while(port != NULL){
+      
+      while(port != NULL && recall_port != NULL){
 	if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
 	    (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
@@ -726,16 +731,17 @@ ags_line_real_add_effect(AgsLine *line,
 	  gtk_adjustment_set_value(adjustment,
 				   lower_bound);
 
-	  /* create task */
-	  add_line_member = ags_add_line_member_new(line,
-						    line_member,
-						    x, y,
-						    1, 1);
-	  task = g_list_prepend(task,
-				add_line_member);
-	  
+	  ags_expander_add(line->expander,
+			   line_member,
+			   x, y,
+			   1, 1);
+
+	  ags_connectable_connect(AGS_CONNECTABLE(line_member));
+	  gtk_widget_show_all(line_member);
+
 	  x++;
 	  port = port->next;
+	  recall_port = recall_port->next;
 	}
 
 	i++;
@@ -743,11 +749,217 @@ ags_line_real_add_effect(AgsLine *line,
     }
   }
   
-  /* launch tasks */
-  task = g_list_reverse(task);      
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  return(port);
+}
 
+GList*
+ags_line_add_lv2_effect(AgsLine *line,
+			gchar *filename,
+			gchar *effect)
+{
+  AgsLineMember *line_member;
+  AgsAddLineMember *add_line_member;
+  GtkAdjustment *adjustment;
+
+  AgsLv2Plugin *lv2_plugin;
+
+  GList *list;
+  GList *recall, *recall_start;
+  GList *port, *recall_port;
+  GList *port_type_node, *port_name_node, *port_max_node, *port_min_node, *port_default_node;
+
+  gchar *port_type_0, *port_type_1;
+  gchar *str;
+  gdouble step;
+  float lower_bound, upper_bound, default_bound;
+  guint x, y;
+  
+  /* load plugin */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+
+  /* retrieve position within table  */
+  x = 0;
+  y = 0;
+
+  list = line->expander->children;
+
+  while(list != NULL){
+    if(y <= AGS_EXPANDER_CHILD(list->data)->y){
+      y = AGS_EXPANDER_CHILD(list->data)->y + 1;
+    }
+
+    list = list->next;
+  }
+
+  /* find ports */
+  recall_start =
+    recall = ags_recall_get_by_effect(line->channel->play,
+				      filename,
+				      effect);
+  recall = g_list_last(recall);
+  port = AGS_RECALL(recall->data)->port;
+
+  g_list_free(recall_start);
+
+  recall_start = 
+    recall = ags_recall_get_by_effect(line->channel->recall,
+				      filename,
+				      effect);
+  recall = g_list_last(recall);
+
+  recall_port = AGS_RECALL(recall->data)->port;
+  g_list_free(recall_start);
+
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0",
+			effect);
+  port_type_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					 str);
+
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value\0",
+			effect);
+  port_name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					 str);
+  free(str);
+
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:minimum\"]/rdf-list/rdf-value\0",
+			effect);
+  port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					str);
+  free(str);
+
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:maximum\"]/rdf-list/rdf-value\0",
+			effect);
+  port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					str);
+  free(str);
+
+  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0",
+			effect);
+  port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					    str);
+  free(str);
+
+  /* load ports */
+  while(port != NULL && recall_port != NULL){
+    port_type_0 = xmlGetProp(port_type_node->data,
+			     "value\0");
+    port_type_1 = xmlGetProp(port_type_node->next->data,
+			     "value\0");
+
+    if(!g_ascii_strncasecmp(port_type_0,
+			    "lv2:ControlPort\0",
+			    15) ||
+       !g_ascii_strncasecmp(port_type_1,
+			    "lv2:ControlPort\0",
+			    15)){
+      AgsDial *dial;
+      GtkAdjustment *adjustment;
+
+      if(x == 2){
+	x = 0;
+	y++;
+      }
+	  
+      g_message("line_add_effect - add line member\0");
+
+      /* add line member */
+      line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+						   "widget-type\0", AGS_TYPE_DIAL,
+						   "widget-label\0", xmlGetProp(port_name_node->data,
+										"value\0"),
+						   "plugin-name\0", AGS_PORT(port->data)->plugin_name,
+						   "specifier\0", AGS_PORT(port->data)->specifier,
+						   "control-port\0", AGS_PORT(port->data)->control_port,
+						   NULL);
+      dial = ags_line_member_get_widget(line_member);
+      gtk_widget_set_size_request(dial,
+				  2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
+				  2 * dial->radius + 2 * dial->outline_strength + 1);
+		
+      /* add controls of ports and apply range  */
+      lower_bound = (float) g_ascii_strtod(xmlGetProp(port_min_node->data,
+						      "value\0"),
+					   NULL);
+      upper_bound = (float) g_ascii_strtod(xmlGetProp(port_max_node->data,
+						      "value\0"),
+					   NULL);
+      default_bound = (float) g_ascii_strtod(xmlGetProp(port_default_node->data,
+							"value\0"),
+					     NULL);
+      adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+      g_object_set(dial,
+		   "adjustment", adjustment,
+		   NULL);
+
+      if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+      }else if(upper_bound < 0.0 && lower_bound < 0.0){
+	step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+      }else{
+	step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+      }
+
+      gtk_adjustment_set_step_increment(adjustment,
+					step);
+      gtk_adjustment_set_lower(adjustment,
+			       lower_bound);
+      gtk_adjustment_set_upper(adjustment,
+			       upper_bound);
+      gtk_adjustment_set_value(adjustment,
+			       default_bound);
+
+      ags_expander_add(line->expander,
+		       line_member,
+		       x, y,
+		       1, 1);
+
+      ags_connectable_connect(AGS_CONNECTABLE(line_member));
+      gtk_widget_show_all(line_member);
+
+      x++;
+      port = port->next;
+      recall_port = recall_port->next;
+
+      port_default_node = port_default_node->next;
+      port_min_node = port_min_node->next;
+      port_max_node = port_max_node->next;
+    }
+
+    port_name_node = port_name_node->next;
+    port_type_node = port_type_node->next->next;
+  }
+  
+  return(port);
+}
+
+GList*
+ags_line_real_add_effect(AgsLine *line,
+			 gchar *filename,
+			 gchar *effect)
+{
+  AgsLadspaPlugin *ladspa_plugin;
+  AgsLv2Plugin *lv2_plugin;
+  
+  GList *port;
+
+  /* load plugin */
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  port = NULL;
+  
+  if(ladspa_plugin != NULL){
+    port = ags_line_add_ladspa_effect(line,
+				      filename,
+				      effect);
+  }else{
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+    
+    if(lv2_plugin != NULL){
+      port = ags_line_add_lv2_effect(line,
+				     filename,
+				     effect);
+    }
+  }
+  
   return(port);
 }
 

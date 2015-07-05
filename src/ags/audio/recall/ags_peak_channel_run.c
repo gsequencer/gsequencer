@@ -18,7 +18,7 @@
 
 #include <ags/audio/recall/ags_peak_channel_run.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -28,7 +28,6 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -151,8 +150,8 @@ void
 ags_peak_channel_run_init(AgsPeakChannelRun *peak_channel_run)
 {
   AGS_RECALL(peak_channel_run)->name = "ags-peak\0";
-  AGS_RECALL(peak_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(peak_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(peak_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(peak_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(peak_channel_run)->xml_type = "ags-peak-channel-run\0";
   AGS_RECALL(peak_channel_run)->port = NULL;
 
@@ -232,7 +231,7 @@ ags_peak_channel_run_run_post(AgsRecall *recall)
   source = AGS_RECALL_CHANNEL_RUN(recall)->source;
   recall_channel = AGS_RECALL_CHANNEL_RUN(recall)->recall_channel;
 
-  if(AGS_RECYCLING_CONTAINER(AGS_RECALL_ID(recall->recall_id)->recycling_container)->parent == NULL){
+  if(AGS_RECYCLING_CONTEXT(AGS_RECALL_ID(recall->recall_id)->recycling_context)->parent == NULL){
     list = ags_recall_find_type(source->play,
 				AGS_TYPE_PEAK_CHANNEL_RUN);
 

@@ -19,7 +19,7 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -219,8 +219,8 @@ void
 ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
   AGS_RECALL(copy_pattern_audio_run)->name = "ags-copy-pattern\0";
-  AGS_RECALL(copy_pattern_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_pattern_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_pattern_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(copy_pattern_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(copy_pattern_audio_run)->xml_type = "ags-copy-pattern-audio-run\0";
   AGS_RECALL(copy_pattern_audio_run)->port = NULL;
 
@@ -571,12 +571,12 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
       
     if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency,
-									   recall_id->recycling_container->parent->recall_id);
+									   recall_id->recycling_context->parent->recall_id);
 
       i++;
     }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
       count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency,
-										      recall_id->recycling_container->parent->recall_id);
+										      recall_id->recycling_context->parent->recall_id);
 
       i++;
     }

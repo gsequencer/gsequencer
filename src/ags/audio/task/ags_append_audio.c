@@ -18,9 +18,13 @@
 
 #include <ags/audio/task/ags_append_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 
-#include <ags/main.h>
+#include <ags/server/ags_server_application_context.h>
+#include <ags/server/ags_server.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);
 void ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -143,20 +147,35 @@ ags_append_audio_finalize(GObject *gobject)
 void
 ags_append_audio_launch(AgsTask *task)
 {
+  AgsApplicationContext *application_context;
   AgsServer *server;
   AgsAppendAudio *append_audio;
   AgsAudioLoop *audio_loop;
 
+  GList *list;
+
   append_audio = AGS_APPEND_AUDIO(task);
 
   audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);
+
+  application_context = AGS_APPLICATION_CONTEXT(audio_loop->application_context);
 
   /* append to AgsDevout */
   ags_audio_loop_add_audio(audio_loop,
 			   append_audio->audio);
 
   /* add to server registry */
-  server = AGS_MAIN(audio_loop->ags_main)->server;
+  server = NULL;
+  list = application_context->sibling;
+
+  while(list != NULL){
+    if(AGS_IS_SERVER_APPLICATION_CONTEXT(list->data)){
+      server = AGS_SERVER_APPLICATION_CONTEXT(list->data)->server;
+      break;
+    }
+
+    list = list->next;
+  }
 
   if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
     ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->audio));

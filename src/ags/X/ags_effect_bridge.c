@@ -19,7 +19,7 @@
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bridge_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -67,7 +67,7 @@ void ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
  * @section_id:
  * @include: ags/X/ags_effect_bridge.h
  *
- * #AgsEffectBridge is a composite widget to visualize all #AgsChannel. It should be
+ * #AgsEffectBridge is a composite widget containing #AgsEffectBulk or #AgsEffectPad. It should be
  * packed by an #AgsMachine.
  */
 
@@ -151,7 +151,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The start of a bunch of #AgsAudio to visualize.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_object("audio\0",
 				   "assigned audio\0",
@@ -659,7 +659,6 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
   GtkTable *table;
   AgsAudio *audio;
   AgsChannel *start, *current;
-  GList *list, *list_next;
   guint i;
   
   audio = effect_bridge->audio;
@@ -705,18 +704,42 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 
       current = current->next_pad;
     }
+
+    /* connect and show */
+    if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
+      GList *list;
+      
+      list = gtk_container_get_children(((channel_type == AGS_TYPE_OUTPUT) ? effect_bridge->output: effect_bridge->input));
+      list = g_list_nth(list,
+			old_size);
+      
+      while(list != NULL){
+	ags_connectable_connect(AGS_CONNECTABLE(list->data));
+	gtk_widget_show_all(list->data);
+	
+	list = list->next;
+      }
+    }
   }else{
+    GList *list, *list_next;
+
+    list = NULL;
+    
     if(channel_type == AGS_TYPE_OUTPUT){
-      list = gtk_container_get_children(effect_bridge->output);
-      list = g_list_nth(list,
-			new_size);
+      if(effect_bridge->output != NULL){
+	list = gtk_container_get_children(effect_bridge->output);
+	list = g_list_nth(list,
+			  new_size);
+      }
     }else{
-      list = gtk_container_get_children(effect_bridge->input);
-      list = g_list_nth(list,
-			new_size);
+      if(effect_bridge->input != NULL){
+	list = gtk_container_get_children(effect_bridge->input);
+	list = g_list_nth(list,
+			  new_size);
+      }
     }
     
-    for(i = 0; i < new_size - old_size; i++){
+    for(i = 0; list != NULL && i < new_size - old_size; i++){
       list_next = list->next;
       
       gtk_widget_destroy(list->data);
@@ -752,7 +775,7 @@ ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
  *
  * Returns: a new #AgsEffectBridge
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsEffectBridge*
 ags_effect_bridge_new(AgsAudio *audio)

@@ -596,6 +596,7 @@ PACKAGE_BUGREPORT='weedlight@gmail.com'
 PACKAGE_URL=''
 
 ac_unique_file="config.h.in"
+enable_option_checking=no
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -632,11 +633,9 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-enable_option_checking=no
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
-subdirs
 LIBOBJS
 GTK_LIBS
 GTK_CFLAGS
@@ -744,6 +743,7 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+subdirs
 target_alias
 host_alias
 build_alias
@@ -2513,9 +2513,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 ac_config_headers="$ac_config_headers config.h"
 
-
-am__api_version='1.14'
-
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -2544,6 +2541,15 @@ ac_config_guess="$SHELL $ac_aux_dir/config.guess"  # Please don't use this var.
 ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
+
+
+
+subdirs="$subdirs po doc src/ags src/ags/X src/ags/X/editor src/ags/X/machine src/ags/audio src/ags/audio/file src/ags/audio/recall src/ags/audio/task src/ags/audio/task/recall src/ags/file src/ags/lib src/ags/object src/ags/plugin src/ags/server src/ags/thread src/ags/util src/ags/widget"
+
+ac_config_files="$ac_config_files Makefile po/Makefile doc/Makefile src/ags/Makefile src/ags/X/Makefile src/ags/X/editor/Makefile src/ags/X/machine/Makefile src/ags/audio/Makefile src/ags/audio/file/Makefile src/ags/audio/recall/Makefile src/ags/audio/task/Makefile src/ags/audio/task/recall/Makefile src/ags/file/Makefile src/ags/lib/Makefile src/ags/object/Makefile src/ags/plugin/Makefile src/ags/server/Makefile src/ags/thread/Makefile src/ags/util/Makefile src/ags/widget/Makefile"
+
+
+am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -2715,8 +2721,8 @@ test "$program_suffix" != NONE &&
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in
@@ -3122,6 +3128,7 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
+
 
 # Checks for programs.
 ac_ext=cpp
@@ -18775,12 +18782,6 @@ fi
 done
 
 
-
-
-subdirs="$subdirs po doc src/ags src/ags/X src/ags/X/editor src/ags/X/machine src/ags/audio src/ags/audio/file src/ags/audio/recall src/ags/audio/task src/ags/audio/task/recall src/ags/file src/ags/lib src/ags/object src/ags/plugin src/ags/server src/ags/thread src/ags/util src/ags/widget"
-
-ac_config_files="$ac_config_files Makefile po/Makefile doc/Makefile src/ags/Makefile src/ags/X/Makefile src/ags/X/editor/Makefile src/ags/X/machine/Makefile src/ags/audio/Makefile src/ags/audio/file/Makefile src/ags/audio/recall/Makefile src/ags/audio/task/Makefile src/ags/audio/task/recall/Makefile src/ags/file/Makefile src/ags/lib/Makefile src/ags/object/Makefile src/ags/plugin/Makefile src/ags/server/Makefile src/ags/thread/Makefile src/ags/util/Makefile src/ags/widget/Makefile"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -19895,8 +19896,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
-    "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "po/Makefile") CONFIG_FILES="$CONFIG_FILES po/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
@@ -19917,6 +19916,8 @@ do
     "src/ags/thread/Makefile") CONFIG_FILES="$CONFIG_FILES src/ags/thread/Makefile" ;;
     "src/ags/util/Makefile") CONFIG_FILES="$CONFIG_FILES src/ags/util/Makefile" ;;
     "src/ags/widget/Makefile") CONFIG_FILES="$CONFIG_FILES src/ags/widget/Makefile" ;;
+    "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
+    "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

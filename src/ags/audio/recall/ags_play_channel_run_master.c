@@ -18,14 +18,13 @@
 
 #include <ags/audio/recall/ags_play_channel_run_master.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -225,8 +224,8 @@ void
 ags_play_channel_run_master_init(AgsPlayChannelRunMaster *play_channel_run_master)
 {
   AGS_RECALL(play_channel_run_master)->name = "ags-play\0";
-  AGS_RECALL(play_channel_run_master)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(play_channel_run_master)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_channel_run_master)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(play_channel_run_master)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(play_channel_run_master)->xml_type = "ags-play-channel-run-master\0";
   AGS_RECALL(play_channel_run_master)->port = NULL;
 

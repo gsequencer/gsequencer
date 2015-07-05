@@ -18,7 +18,8 @@
 
 #include <ags/audio/ags_libao.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -55,7 +56,7 @@ void ags_libao_output_free(AgsLibao *libao);
 
 enum{
   PROP_0,
-  PROP_MAIN,
+  PROP_APPLICATION_CONTEXT,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -65,7 +66,6 @@ enum{
   PROP_BUFFER,
   PROP_BPM,
   PROP_ATTACK,
-  PROP_TASK,
 };
 
 enum{
@@ -135,13 +135,13 @@ ags_libao_class_init(AgsLibaoClass *libao)
   gobject->finalize = ags_libao_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("main\0",
-				   "the main object\0",
-				   "The main object\0",
-				   AGS_TYPE_MAIN,
+  param_spec = g_param_spec_object("application-context\0",
+				   "the application context object\0",
+				   "The application context object\0",
+				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
   param_spec = g_param_spec_string("device\0",
@@ -238,14 +238,6 @@ ags_libao_class_init(AgsLibaoClass *libao)
 				  PROP_ATTACK,
 				  param_spec);
 
-  param_spec = g_param_spec_object("task\0",
-				   "task to launch\0",
-				   "A task to launch\0",
-				   AGS_TYPE_TASK,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TASK,
-				  param_spec);
 
   /* AgsLibaoClass */
   libao->play_init = ags_libao_output_init;
@@ -268,7 +260,7 @@ ags_libao_class_init(AgsLibaoClass *libao)
 GQuark
 ags_libao_error_quark()
 {
-  return(g_quark_from_static_string("ags-libao-error-quark\0"));
+  return(g_quark_from_static_string("agsao-error-quark\0"));
 }
 
 void
@@ -335,7 +327,7 @@ ags_libao_init(AgsLibao *libao)
   libao->tic_counter = 0;
 
   /* parent */
-  libao->ags_main = NULL;
+  libao->application_context = NULL;
 
   /* all AgsAudio */
   libao->audio = NULL;
@@ -354,25 +346,25 @@ ags_libao_set_property(GObject *gobject,
   //TODO:JK: implement set functionality
   
   switch(prop_id){
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
-      AgsMain *ags_main;
+      AgsApplicationContext *application_context;
 
-      ags_main = g_value_get_object(value);
+      application_context = g_value_get_object(value);
 
-      if(libao->ags_main == ags_main){
+      if(libao->application_context == application_context){
 	return;
       }
 
-      if(libao->ags_main != NULL){
-	g_object_unref(G_OBJECT(libao->ags_main));
+      if(libao->application_context != NULL){
+	g_object_unref(G_OBJECT(libao->application_context));
       }
 
-      if(ags_main != NULL){
-	g_object_ref(G_OBJECT(ags_main));
+      if(application_context != NULL){
+	g_object_ref(G_OBJECT(application_context));
       }
 
-      libao->ags_main = ags_main;
+      libao->application_context = application_context;
     }
     break;
   case PROP_DEVICE:
@@ -469,11 +461,6 @@ ags_libao_set_property(GObject *gobject,
     }
     break;
   case PROP_BPM:
-    {
-	//TODO:JK: implement me
-    }
-    break;
-  case PROP_TASK:
     {
 	//TODO:JK: implement me
     }
@@ -785,7 +772,7 @@ ags_libao_output_play(AgsLibao *libao,
   */
 
   /* determine if attack should be switched */
-  libao->delay_counter += (AGS_DEVOUT_DEFAULT_DELAY *
+  libao->delay_counter += (AGS_LIBAO_DEFAULT_DELAY *
 			   AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   if(libao->delay_counter >= libao->delay[libao->tic_counter]){
@@ -813,16 +800,13 @@ ags_libao_output_free(AgsLibao *libao)
 }
 
 AgsLibao*
-ags_libao_new(GObject *ags_main)
+ags_libao_new(GObject *application_context)
 {
   AgsLibao *libao;
 
-  libao = (AgsLibao *) g_object_new(AGS_TYPE_LIBAO, NULL);
-  
-  if(ags_main != NULL){
-    g_object_ref(G_OBJECT(ags_main));
-    libao->ags_main = ags_main;
-  }
+  libao = (AgsLibao *) g_object_new(AGS_TYPE_LIBAO,
+				    "application-context", application_context,
+				    NULL);  
 
   return(libao);
 }

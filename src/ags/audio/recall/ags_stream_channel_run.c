@@ -19,14 +19,13 @@
 #include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_stream_recycling.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -167,8 +166,8 @@ void
 ags_stream_channel_run_init(AgsStreamChannelRun *stream_channel_run)
 {
   AGS_RECALL(stream_channel_run)->name = "ags-stream\0";
-  AGS_RECALL(stream_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(stream_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(stream_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(stream_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(stream_channel_run)->xml_type = "ags-stream-channel-run\0";
   AGS_RECALL(stream_channel_run)->port = NULL;
 

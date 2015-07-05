@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsFFPlayerInputPad">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsFFPlayerInputPad.top_of_page">AgsFFPlayerInputPad</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsFFPlayerInputPad</refname>
+<refpurpose>A composite widget to visualize a bunch of <link linkend="AgsChannel"><type>AgsChannel</type></link></refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsFFPlayerInputPad.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsFFPlayerInputPad"><returnvalue>AgsFFPlayerInputPad</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ffplayer-input-pad-new">ags_ffplayer_input_pad_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFFPlayerInputPad.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsEffectPad">AgsEffectPad</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsFFPlayerInputPad
+</screen>
+</refsect1>
+
+<refsect1 id="AgsFFPlayerInputPad.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_ffplayer_input_pad.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsFFPlayerInputPad.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsFFPlayerInputPad"><type>AgsFFPlayerInputPad</type></link> is a composite widget to visualize one <link linkend="AgsChannel"><type>AgsChannel</type></link>. It should be
+packed by an <link linkend="AgsFFPlayerInputPad"><type>AgsFFPlayerInputPad</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsFFPlayerInputPad.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-ffplayer-input-pad-new" role="function" condition="since:0.4">
+<title>ags_ffplayer_input_pad_new&#160;()</title>
+<indexterm zone="ags-ffplayer-input-pad-new" role="0.4"><primary>ags_ffplayer_input_pad_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsFFPlayerInputPad"><returnvalue>AgsFFPlayerInputPad</returnvalue></link>&#160;*
+ags_ffplayer_input_pad_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsFFPlayerInputPad"><type>AgsFFPlayerInputPad</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>ffplayer_input_pad</para></entry>
+<entry role="parameter_description"><para>the parent ffplayer_input_pad</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> to visualize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsFFPlayerInputPad"><type>AgsFFPlayerInputPad</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsFFPlayerInputPad.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

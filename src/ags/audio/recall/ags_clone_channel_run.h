@@ -22,7 +22,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
 #define AGS_TYPE_CLONE_CHANNEL_RUN                (ags_clone_channel_run_get_type())

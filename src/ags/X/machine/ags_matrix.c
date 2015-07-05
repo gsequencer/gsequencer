@@ -19,12 +19,10 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_plugin.h>
 
@@ -33,9 +31,6 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-
-#include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_audio_loop.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -65,6 +60,7 @@
 
 #include <ags/widget/ags_led.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
 
 #include <ags/X/machine/ags_matrix_bridge.h>
@@ -193,8 +189,6 @@ ags_matrix_class_init(AgsMatrixClass *matrix)
 void
 ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  AgsConnectableInterface *ags_matrix_connectable_parent_interface;
-
   ags_matrix_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_matrix_connect;
@@ -234,10 +228,11 @@ ags_matrix_init(AgsMatrix *matrix)
   audio = AGS_MACHINE(matrix)->audio;
   audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_HAS_NOTATION |
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_NOTATION_DEFAULT |
-		   AGS_AUDIO_HAS_NOTATION);
+		   AGS_AUDIO_NOTATION_DEFAULT);
+  
   //  audio->audio_channels = 1;
   AGS_MACHINE(matrix)->input_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->input_line_type = G_TYPE_NONE;
@@ -480,7 +475,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     return;
   }
   
-  matrix = (AgsMatrix *) audio->machine;
+  matrix = (AgsMatrix *) audio->machine_widget;
   machine = AGS_MACHINE(matrix);
 
   if(type == AGS_TYPE_INPUT){
@@ -536,18 +531,20 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       source = ags_channel_nth(audio->output, pads_old);
 
       if(source != NULL){
-	AgsDevout *devout;
 	AgsAudioSignal *audio_signal;
+	
+	AgsSoundcard *soundcard;
+
 	gdouble delay;
 	guint stop;
 	
-	devout = AGS_DEVOUT(AGS_AUDIO(source->audio)->devout);
+	soundcard = AGS_SOUNDCARD(AGS_AUDIO(source->audio)->soundcard);
 
-	delay = (1.0 / devout->frequency / devout->buffer_size) * (60.0 / AGS_DEVOUT_DEFAULT_BPM);
+	delay = ags_soundcard_get_delay(soundcard);
 
 	stop = (guint) ceil(16.0 * delay * exp2(8.0 - 4.0) + 1.0);
 
-	audio_signal = ags_audio_signal_new(devout,
+	audio_signal = ags_audio_signal_new(soundcard,
 					    source->first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -990,7 +987,7 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -1068,7 +1065,7 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "appliaction-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -1097,7 +1094,7 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
 /**
  * ags_matrix_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsMatrix
  *
@@ -1106,7 +1103,7 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  * Since: 0.3
  */
 AgsMatrix*
-ags_matrix_new(GObject *devout)
+ags_matrix_new(GObject *soundcard)
 {
   AgsMatrix *matrix;
   GValue value = {0,};
@@ -1114,11 +1111,11 @@ ags_matrix_new(GObject *devout)
   matrix = (AgsMatrix *) g_object_new(AGS_TYPE_MATRIX,
 				      NULL);
 
-  if(devout != NULL){
+  if(soundcard != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, devout);
+    g_value_set_object(&value, soundcard);
     g_object_set_property(G_OBJECT(AGS_MACHINE(matrix)->audio),
-			  "devout\0", &value);
+			  "soundcard\0", &value);
     g_value_unset(&value);
   }
 

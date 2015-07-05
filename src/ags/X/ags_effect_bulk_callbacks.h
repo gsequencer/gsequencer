@@ -23,6 +23,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <lv2.h>
+#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
+
 #include <ags/X/ags_effect_bulk.h>
 
 void ags_effect_bulk_add_callback(GtkWidget *button,
@@ -30,7 +33,7 @@ void ags_effect_bulk_add_callback(GtkWidget *button,
 void ags_effect_bulk_remove_callback(GtkWidget *button,
 				     AgsEffectBulk *effect_bulk);
 
-void ags_effect_bulk_ladspa_browser_response_callback(GtkDialog *dialog,
+void ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 						      gint response,
 						      AgsEffectBulk *effect_bulk);
 
@@ -43,5 +46,7 @@ void ags_effect_bulk_set_pads_callback(AgsAudio *audio,
 				       guint pads,
 				       guint pads_old,
 				       AgsEffectBulk *effect_bulk);
+
+void ags_effect_bulk_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer);
 
 #endif /*__AGS_EFFECT_BULK_CALLBACKS_H__*/

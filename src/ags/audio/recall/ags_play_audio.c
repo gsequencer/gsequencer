@@ -81,8 +81,8 @@ void
 ags_play_audio_init(AgsPlayAudio *play_audio)
 {
   AGS_RECALL(play_audio)->name = "ags-play\0";
-  AGS_RECALL(play_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(play_audio)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_audio)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(play_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(play_audio)->xml_type = "ags-play-audio\0";
 }
 

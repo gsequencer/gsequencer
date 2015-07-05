@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsLineMemberEditor">
+<refentry id="AgsLineMemberEditor">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsLineMemberEditor.top_of_page">AgsLineMemberEditor</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsLineMemberEditor.top_of_page">AgsLineMemberEditor</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,58 +14,63 @@
 </refmeta>
 <refnamediv>
 <refname>AgsLineMemberEditor</refname>
-<refpurpose></refpurpose>
+<refpurpose>Edit line member's aspects.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsLineMemberEditor.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsLineMemberEditor.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsLineMemberEditor"><returnvalue>AgsLineMemberEditor</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-line-member-editor-new">ags_line_member_editor_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsLineMemberEditor">AgsLineMemberEditor</link>;
-struct              <link linkend="AgsLineMemberEditorClass">AgsLineMemberEditorClass</link>;
-<link linkend="AgsLineMemberEditor"><returnvalue>AgsLineMemberEditor</returnvalue></link> * <link linkend="ags-line-member-editor-new">ags_line_member_editor_new</link>        ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsLineMemberEditor.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsLineMemberEditor.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsLineMemberEditor" role="struct">
-<title>struct AgsLineMemberEditor</title>
-<indexterm zone="AgsLineMemberEditor"><primary>AgsLineMemberEditor</primary></indexterm>
-<programlisting>struct AgsLineMemberEditor {
-  GtkVBox vbox;
+<refsect1 id="AgsLineMemberEditor.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsLineMemberEditor
+</screen>
+</refsect1>
 
-  GtkVBox *line_member;
+<refsect1 id="AgsLineMemberEditor.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_line_member_editor.h&gt;
+</synopsis></refsect1>
 
-  GtkButton *add;
-  GtkMenu *popup;
+<refsect1 id="AgsLineMemberEditor.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsLineMemberEditor"><type>AgsLineMemberEditor</type></link> is a composite widget to modify line member. A line member
+editor should be packed by a <link linkend="AgsLineEditor"><type>AgsLineEditor</type></link>. You may add/remove plugins with this
+editor.</para>
 
-  GtkButton *remove;
+</refsect1>
+<refsect1 id="AgsLineMemberEditor.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-line-member-editor-new" role="function" condition="since:0.4">
+<title>ags_line_member_editor_new&#160;()</title>
+<indexterm zone="ags-line-member-editor-new" role="0.4"><primary>ags_line_member_editor_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLineMemberEditor"><returnvalue>AgsLineMemberEditor</returnvalue></link>&#160;*
+ags_line_member_editor_new ();</programlisting>
+<para>Creates an <link linkend="AgsLineMemberEditor"><type>AgsLineMemberEditor</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsLineMemberEditor"><type>AgsLineMemberEditor</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  AgsLadspaBrowser *ladspa_browser;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsLineMemberEditorClass" role="struct">
-<title>struct AgsLineMemberEditorClass</title>
-<indexterm zone="AgsLineMemberEditorClass"><primary>AgsLineMemberEditorClass</primary></indexterm>
-<programlisting>struct AgsLineMemberEditorClass {
-  GtkVBoxClass vbox;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-line-member-editor-new" role="function">
-<title>ags_line_member_editor_new ()</title>
-<indexterm zone="ags-line-member-editor-new"><primary>ags_line_member_editor_new</primary></indexterm>
-<programlisting><link linkend="AgsLineMemberEditor"><returnvalue>AgsLineMemberEditor</returnvalue></link> * ags_line_member_editor_new        ();</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsLineMemberEditor.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

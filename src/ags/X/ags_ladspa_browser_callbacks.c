@@ -38,6 +38,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 					    AgsLadspaBrowser *ladspa_browser)
 {
   GtkComboBoxText *filename, *effect;
+
   AgsLadspaPlugin *ladspa_plugin;
   GList *list;
 
@@ -62,12 +63,11 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
-      unsigned long index;
+      unsigned long plugin_index;
 
-      /* We've successfully found a ladspa_descriptor function. Pass
-	 it to the callback function. */
+      /* We've successfully found a ladspa_descriptor function. Now load name and uuid member. */
 
-      for(index = 0; (plugin_descriptor = ladspa_descriptor(index)) != NULL; index++){
+      for(plugin_index = 0; (plugin_descriptor = ladspa_descriptor(plugin_index)) != NULL; plugin_index++){
 	gtk_combo_box_text_append_text(effect,
 				       g_strdup_printf("%s:%lu\0", plugin_descriptor->Name, plugin_descriptor->UniqueID));
       }
@@ -96,7 +96,7 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
-  unsigned long index;
+  unsigned long plugin_index;
 
   /* retrieve filename and effect */
   list_start = 
@@ -116,15 +116,15 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   
   plugin_so = ladspa_plugin->plugin_so;
 
-  index = (unsigned long) gtk_combo_box_get_active(effect);
+  plugin_index = (unsigned long) gtk_combo_box_get_active(effect);
 
-  if(index != -1 &&
+  if(plugin_index != -1 &&
      plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
     if(dlerror() == NULL && ladspa_descriptor){
-      plugin_descriptor = ladspa_descriptor(index);
+      plugin_descriptor = ladspa_descriptor(plugin_index);
 
       port_descriptor = plugin_descriptor->PortDescriptors;   
 
@@ -240,28 +240,3 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
   g_list_free(list_start);
 }
-
-void
-ags_ladspa_browser_preview_close_callback(GtkWidget *preview,
-					  AgsLadspaBrowser *ladspa_browser)
-{
-  ladspa_browser->preview = NULL;
-  gtk_widget_destroy(preview);
-}
-
-int
-ags_ladspa_browser_ok_callback(GtkWidget *widget, AgsLadspaBrowser *ladspa_browser)
-{
-  gtk_widget_hide((GtkWidget *) ladspa_browser);
-
-  return(0);
-}
-
-int
-ags_ladspa_browser_cancel_callback(GtkWidget *widget, AgsLadspaBrowser *ladspa_browser)
-{
-  gtk_widget_hide((GtkWidget *) ladspa_browser);
-
-  return(0);
-}
-

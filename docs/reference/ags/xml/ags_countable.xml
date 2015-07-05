@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsCountable">
+<refentry id="AgsCountable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsCountable.top_of_page">AgsCountable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsCountable.top_of_page">AgsCountable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,54 +17,52 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsCountable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsCountable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-countable-get-notation-counter">ags_countable_get_notation_counter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-countable-get-sequencer-counter">ags_countable_get_sequencer_counter</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsCountable">AgsCountable</link>;
-struct              <link linkend="AgsCountableInterface">AgsCountableInterface</link>;
-<link linkend="guint"><returnvalue>guint</returnvalue></link>               <link linkend="ags-countable-get-notation-counter">ags_countable_get_notation_counter</link>  (<parameter><link linkend="AgsCountable"><type>AgsCountable</type></link> *countable</parameter>);
-<link linkend="guint"><returnvalue>guint</returnvalue></link>               <link linkend="ags-countable-get-sequencer-counter">ags_countable_get_sequencer_counter</link> (<parameter><link linkend="AgsCountable"><type>AgsCountable</type></link> *countable</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsCountable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsCountable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsCountable" role="typedef">
-<title>AgsCountable</title>
-<indexterm zone="AgsCountable"><primary>AgsCountable</primary></indexterm>
-<programlisting>typedef void AgsCountable;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsCountableInterface" role="struct">
-<title>struct AgsCountableInterface</title>
-<indexterm zone="AgsCountableInterface"><primary>AgsCountableInterface</primary></indexterm>
-<programlisting>struct AgsCountableInterface {
-  GTypeInterface interface;
+<refsect1 id="AgsCountable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsCountable
+</screen>
+</refsect1>
 
-  guint (*get_notation_counter)(AgsCountable *countable);
-  guint (*get_sequencer_counter)(AgsCountable *countable);
-};
-</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsCountable.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsCountable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-countable-get-notation-counter" role="function">
-<title>ags_countable_get_notation_counter ()</title>
+<title>ags_countable_get_notation_counter&#160;()</title>
 <indexterm zone="ags-countable-get-notation-counter"><primary>ags_countable_get_notation_counter</primary></indexterm>
-<programlisting><link linkend="guint"><returnvalue>guint</returnvalue></link>               ags_countable_get_notation_counter  (<parameter><link linkend="AgsCountable"><type>AgsCountable</type></link> *countable</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+ags_countable_get_notation_counter (<parameter><link linkend="AgsCountable"><type>AgsCountable</type></link> *countable</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-countable-get-sequencer-counter" role="function">
-<title>ags_countable_get_sequencer_counter ()</title>
+<title>ags_countable_get_sequencer_counter&#160;()</title>
 <indexterm zone="ags-countable-get-sequencer-counter"><primary>ags_countable_get_sequencer_counter</primary></indexterm>
-<programlisting><link linkend="guint"><returnvalue>guint</returnvalue></link>               ags_countable_get_sequencer_counter (<parameter><link linkend="AgsCountable"><type>AgsCountable</type></link> *countable</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+ags_countable_get_sequencer_counter (<parameter><link linkend="AgsCountable"><type>AgsCountable</type></link> *countable</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsCountable.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

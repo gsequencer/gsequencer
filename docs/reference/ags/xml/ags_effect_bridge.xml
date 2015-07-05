@@ -1,0 +1,293 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsEffectBridge">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsEffectBridge.top_of_page">AgsEffectBridge</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsEffectBridge</refname>
+<refpurpose>A composite widget to visualize a bunch of <link linkend="AgsChannel"><type>AgsChannel</type></link></refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsEffectBridge.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-EFFECT-BRIDGE-MAX-COLUMNS:CAPS">AGS_EFFECT_BRIDGE_MAX_COLUMNS</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-effect-bridge-resize-audio-channels">ags_effect_bridge_resize_audio_channels</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-effect-bridge-resize-pads">ags_effect_bridge_resize_pads</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsEffectBridge"><returnvalue>AgsEffectBridge</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-effect-bridge-new">ags_effect_bridge_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsEffectBridge.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsAudio"><type>AgsAudio</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsEffectBridge--audio">audio</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsEffectBridge.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsEffectBridge-resize-audio-channels">resize-audio-channels</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsEffectBridge-resize-pads">resize-pads</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsEffectBridge.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-EFFECT-BRIDGE-DEFAULT-VERSION:CAPS">AGS_EFFECT_BRIDGE_DEFAULT_VERSION</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-EFFECT-BRIDGE-DEFAULT-BUILD-ID:CAPS">AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsEffectBridgeFlags">AgsEffectBridgeFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsEffectBridge.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsEffectBridge
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsFFPlayerBridge">AgsFFPlayerBridge</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMatrixBridge">AgsMatrixBridge</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsSynthBridge">AgsSynthBridge</link>
+</screen>
+</refsect1>
+
+<refsect1 id="AgsEffectBridge.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_effect_bridge.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsEffectBridge.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsEffectBridge"><type>AgsEffectBridge</type></link> is a composite widget to visualize all <link linkend="AgsChannel"><type>AgsChannel</type></link>. It should be
+packed by an <link linkend="AgsMachine"><type>AgsMachine</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsEffectBridge.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="AGS-EFFECT-BRIDGE-MAX-COLUMNS:CAPS" role="macro">
+<title>AGS_EFFECT_BRIDGE_MAX_COLUMNS</title>
+<indexterm zone="AGS-EFFECT-BRIDGE-MAX-COLUMNS:CAPS"><primary>AGS_EFFECT_BRIDGE_MAX_COLUMNS</primary></indexterm>
+<programlisting language="C">#define AGS_EFFECT_BRIDGE_MAX_COLUMNS (2)
+</programlisting>
+</refsect2>
+<refsect2 id="ags-effect-bridge-resize-audio-channels" role="function">
+<title>ags_effect_bridge_resize_audio_channels&#160;()</title>
+<indexterm zone="ags-effect-bridge-resize-audio-channels"><primary>ags_effect_bridge_resize_audio_channels</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_effect_bridge_resize_audio_channels
+                               (<parameter><link linkend="AgsEffectBridge"><type>AgsEffectBridge</type></link> *effect_bridge</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> new_size</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> old_size</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-effect-bridge-resize-pads" role="function">
+<title>ags_effect_bridge_resize_pads&#160;()</title>
+<indexterm zone="ags-effect-bridge-resize-pads"><primary>ags_effect_bridge_resize_pads</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_effect_bridge_resize_pads (<parameter><link linkend="AgsEffectBridge"><type>AgsEffectBridge</type></link> *effect_bridge</parameter>,
+                               <parameter><link linkend="GType"><type>GType</type></link> channel_type</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> new_size</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> old_size</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-effect-bridge-new" role="function" condition="since:0.4">
+<title>ags_effect_bridge_new&#160;()</title>
+<indexterm zone="ags-effect-bridge-new" role="0.4"><primary>ags_effect_bridge_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsEffectBridge"><returnvalue>AgsEffectBridge</returnvalue></link>&#160;*
+ags_effect_bridge_new (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsEffectBridge"><type>AgsEffectBridge</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>effect_bridge</para></entry>
+<entry role="parameter_description"><para>the parent effect_bridge</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudio"><type>AgsAudio</type></link> to visualize</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsEffectBridge"><type>AgsEffectBridge</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsEffectBridge.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-EFFECT-BRIDGE-DEFAULT-VERSION:CAPS" role="macro">
+<title>AGS_EFFECT_BRIDGE_DEFAULT_VERSION</title>
+<indexterm zone="AGS-EFFECT-BRIDGE-DEFAULT-VERSION:CAPS"><primary>AGS_EFFECT_BRIDGE_DEFAULT_VERSION</primary></indexterm>
+<programlisting language="C">#define AGS_EFFECT_BRIDGE_DEFAULT_VERSION "0.4.3\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-EFFECT-BRIDGE-DEFAULT-BUILD-ID:CAPS" role="macro">
+<title>AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID</title>
+<indexterm zone="AGS-EFFECT-BRIDGE-DEFAULT-BUILD-ID:CAPS"><primary>AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID</primary></indexterm>
+<programlisting language="C">#define AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID "CEST 15-03-2015 13:40\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AgsEffectBridgeFlags" role="enum">
+<title>enum AgsEffectBridgeFlags</title>
+<indexterm zone="AgsEffectBridgeFlags"><primary>AgsEffectBridgeFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-EFFECT-BRIDGE-CONNECTED:CAPS">AGS_EFFECT_BRIDGE_CONNECTED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-EFFECT-BRIDGE-DISPLAY-INPUT:CAPS">AGS_EFFECT_BRIDGE_DISPLAY_INPUT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-EFFECT-BRIDGE-BULK-OUTPUT:CAPS">AGS_EFFECT_BRIDGE_BULK_OUTPUT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-EFFECT-BRIDGE-DISPLAY-OUTPUT:CAPS">AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-EFFECT-BRIDGE-BULK-INPUT:CAPS">AGS_EFFECT_BRIDGE_BULK_INPUT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsEffectBridge.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsEffectBridge--audio" role="property"><title>The <literal>“audio”</literal> property</title>
+<indexterm zone="AgsEffectBridge--audio" role="0.4"><primary>AgsEffectBridge:audio</primary></indexterm>
+<programlisting>  “audio”                    <link linkend="AgsAudio"><type>AgsAudio</type></link>&#160;*</programlisting>
+<para>The start of a bunch of <link linkend="AgsAudio"><type>AgsAudio</type></link> to visualize.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsEffectBridge.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsEffectBridge-resize-audio-channels" role="signal"><title>The <literal>“resize-audio-channels”</literal> signal</title>
+<indexterm zone="AgsEffectBridge-resize-audio-channels"><primary>AgsEffectBridge::resize-audio-channels</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsEffectBridge"><type>AgsEffectBridge</type></link> *effect_bridge,
+               <link linkend="guint"><type>guint</type></link>            channel,
+               <link linkend="guint"><type>guint</type></link>            new_size,
+               <link linkend="gpointer"><type>gpointer</type></link>         user_data)</programlisting>
+<para>The ::resize-audio-channels signal notifies about changed channel allocation within
+audio.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>effect_bridge</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsEffectBridge"><type>AgsEffectBridge</type></link> to modify</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>new_size</para></entry>
+<entry role="parameter_description"><para>the new size</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>old_size</para></entry>
+<entry role="parameter_description"><para>the old size</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsEffectBridge-resize-pads" role="signal"><title>The <literal>“resize-pads”</literal> signal</title>
+<indexterm zone="AgsEffectBridge-resize-pads"><primary>AgsEffectBridge::resize-pads</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsEffectBridge"><type>AgsEffectBridge</type></link> *effect_bridge,
+               <link linkend="gulong"><type>gulong</type></link>           channel,
+               <link linkend="guint"><type>guint</type></link>            channel_type,
+               <link linkend="guint"><type>guint</type></link>            new_size,
+               <link linkend="gpointer"><type>gpointer</type></link>         user_data)</programlisting>
+<para>The ::resize-pads signal notifies about changed channel allocation within
+audio.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>effect_bridge</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsEffectBridge"><type>AgsEffectBridge</type></link> to modify</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel_type</para></entry>
+<entry role="parameter_description"><para>either <link linkend="AGS-TYPE-INPUT:CAPS"><literal>AGS_TYPE_INPUT</literal></link> or <link linkend="AGS-TYPE-OUTPUT:CAPS"><literal>AGS_TYPE_OUTPUT</literal></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>new_size</para></entry>
+<entry role="parameter_description"><para>the new size</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>old_size</para></entry>
+<entry role="parameter_description"><para>the old size</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
+</refsect1>
+
+</refentry>

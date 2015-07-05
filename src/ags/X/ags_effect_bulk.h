@@ -46,6 +46,9 @@ typedef struct _AgsEffectBulkPlugin AgsEffectBulkPlugin;
 
 typedef enum{
   AGS_EFFECT_BULK_CONNECTED        = 1,
+  AGS_EFFECT_BULK_HIDE_BUTTONS     = 1 << 1,
+  AGS_EFFECT_BULK_HIDE_ENTRIES     = 1 << 2,
+  AGS_EFFECT_BULK_SHOW_LABELS      = 1 << 3,
 }AgsEffectBulkFlags;
 
 struct _AgsEffectBulk
@@ -71,7 +74,7 @@ struct _AgsEffectBulk
   GtkTable *table;
 
   GList *plugin;
-  GtkDialog *ladspa_browser;
+  GtkDialog *plugin_browser;
 };
 
 struct _AgsEffectBulkClass

@@ -19,22 +19,25 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_countable.h>
 #include <ags/object/ags_seekable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/recall/ags_stream_channel_run.h>
 
@@ -444,8 +447,8 @@ void
 ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AGS_RECALL(count_beats_audio_run)->name = "ags-count-beats\0";
-  AGS_RECALL(count_beats_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(count_beats_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(count_beats_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(count_beats_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(count_beats_audio_run)->xml_type = "ags-count-beats-audio-run\0";
   AGS_RECALL(count_beats_audio_run)->port = NULL;
 
@@ -1205,28 +1208,28 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
     }else{
       if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
 	AgsAudio *audio;
-	GList *devout_play;
+	GList *playback;
 
 	count_beats_audio_run->sequencer_counter = 0;
 
 	audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
-	devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+	playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
 	/* emit stop signals */
 	ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
 						 run_order);
 
-	/* set done flag in devout play */
-	while(devout_play != NULL){
-	  if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL &&
-	     AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1]->recycling_container == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container){
+	/* set done flag in playback */
+	while(playback != NULL){
+	  if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL &&
+	     AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
 	    AgsChannel *channel;
 	    AgsStreamChannelRun *stream_channel_run;
 	    GList *list;
 	    GList *recall_recycling_list, *recall_audio_signal_list;
 	    gboolean found;
 
-	    AGS_DEVOUT_PLAY(devout_play->data)->flags |= AGS_DEVOUT_PLAY_DONE;
+	    AGS_PLAYBACK(playback->data)->flags |= AGS_PLAYBACK_DONE;
 
 	    /* check if to stop audio processing */
 	    channel = audio->output;
@@ -1234,9 +1237,9 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
 	    list = channel->play;
 
-	    list = ags_recall_find_type_with_recycling_container(list,
-								 AGS_TYPE_STREAM_CHANNEL_RUN,
-								 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container);
+	    list = ags_recall_find_type_with_recycling_context(list,
+							       AGS_TYPE_STREAM_CHANNEL_RUN,
+							       AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context);
 
 	    if(list != NULL){
 	      stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
@@ -1268,7 +1271,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	    break;
 	  }
 
-	  devout_play = devout_play->next;
+	  playback = playback->next;
 	}
 
 	return;
@@ -1331,9 +1334,9 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
   audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
   channel = audio->output;
 
-  while((list = ags_recall_find_type_with_recycling_container(channel->play,
-							      AGS_TYPE_STREAM_CHANNEL_RUN,
-							      recall->recall_id->recycling_container)) == NULL){
+  while((list = ags_recall_find_type_with_recycling_context(channel->play,
+							    AGS_TYPE_STREAM_CHANNEL_RUN,
+							    recall->recall_id->recycling_context)) == NULL){
     channel = channel->next;
   }
 
@@ -1366,46 +1369,49 @@ void
 ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 			       gboolean notation)
 {
-  AgsAudioLoop *audio_loop;
+  AgsThread *main_loop;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsRecallID *recall_id;
-  GList *devout_play;
+  AgsApplicationContext *application_context;
+  GList *playback;
   gboolean all_done;
 
   audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop);
+
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
+  main_loop = application_context->main_loop;
 
   channel = audio->output;
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
   g_object_ref(count_beats_audio_run);
 
   while(channel != NULL){
     if(!notation){
-      recall_id = AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1];
+      recall_id = AGS_PLAYBACK(playback->data)->recall_id[1];
 
       if(recall_id != NULL &&
 	 count_beats_audio_run != NULL &&
-	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container == recall_id->recycling_container){
-	AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
-	AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = NULL;
-	AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~(AGS_DEVOUT_PLAY_SEQUENCER |
-							   AGS_DEVOUT_PLAY_DONE));
+	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context == recall_id->recycling_context){
+	AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_DONE;
+	AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
+	AGS_PLAYBACK(channel->playback)->flags &= (~(AGS_PLAYBACK_SEQUENCER |
+						     AGS_PLAYBACK_DONE));
 
 	ags_channel_tillrecycling_cancel(channel,
 					 recall_id);
       }
     }else{
-      recall_id = AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2];
+      recall_id = AGS_PLAYBACK(playback->data)->recall_id[2];
 
       if(recall_id != NULL &&
 	 count_beats_audio_run != NULL &&
-	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container == recall_id->recycling_container){
-	AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_DONE;
-	AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = NULL;
-	AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~(AGS_DEVOUT_PLAY_NOTATION |
-							   AGS_DEVOUT_PLAY_DONE));
+	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context == recall_id->recycling_context){
+	AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_DONE;
+	AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
+	AGS_PLAYBACK(channel->playback)->flags &= (~(AGS_PLAYBACK_NOTATION |
+						     AGS_PLAYBACK_DONE));
 
 	ags_channel_tillrecycling_cancel(channel,
 					 recall_id);
@@ -1413,7 +1419,7 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
     }
 
     channel = channel->next;
-    devout_play = devout_play->next;
+    playback = playback->next;
   }
 
   ags_recall_done(count_beats_audio_run);
@@ -1421,28 +1427,28 @@ ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
   g_object_unref(count_beats_audio_run);
 
   channel = audio->output;
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
   all_done = TRUE;
 
   while(channel != NULL){
     if(!notation){
-      if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
+      if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL){
 	all_done = FALSE;
 	break;
       }
     }else{
-      if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2] != NULL){
+      if(AGS_PLAYBACK(playback->data)->recall_id[2] != NULL){
 	all_done = FALSE;
 	break;
       }
     }
 
     channel = channel->next;
-    devout_play = devout_play->next;
+    playback = playback->next;
   }
 
   if(all_done){
-    ags_audio_loop_remove_audio(audio_loop,
+    ags_audio_loop_remove_audio(AGS_AUDIO_LOOP(main_loop),
 				audio);
   }
 } 

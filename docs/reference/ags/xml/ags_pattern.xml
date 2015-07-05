@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsPattern">
+<refentry id="AgsPattern">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsPattern.top_of_page">AgsPattern</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsPattern.top_of_page">AgsPattern</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,116 +14,246 @@
 </refmeta>
 <refnamediv>
 <refname>AgsPattern</refname>
-<refpurpose></refpurpose>
+<refpurpose>Pattern representing tones</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsPattern.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsPattern.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-pattern-get-by-timestamp">ags_pattern_get_by_timestamp</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-pattern-set-dim">ags_pattern_set_dim</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-pattern-get-bit">ags_pattern_get_bit</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-pattern-toggle-bit">ags_pattern_toggle_bit</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-pattern-new">ags_pattern_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsPattern">AgsPattern</link>;
-struct              <link linkend="AgsPatternClass">AgsPatternClass</link>;
-<link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            <link linkend="ags-pattern-get-bit">ags_pattern_get_bit</link>                 (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);
-<link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link> *        <link linkend="ags-pattern-get-by-timestamp">ags_pattern_get_by_timestamp</link>        (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *timestamp</parameter>);
-<link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link> *        <link linkend="ags-pattern-new">ags_pattern_new</link>                     ();
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-pattern-set-dim">ags_pattern_set_dim</link>                 (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> dim0</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> dim1</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> lenght</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-pattern-toggle-bit">ags_pattern_toggle_bit</link>              (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsPattern.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsPattern.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsPattern" role="struct">
-<title>struct AgsPattern</title>
-<indexterm zone="AgsPattern"><primary>AgsPattern</primary></indexterm>
-<programlisting>struct AgsPattern {
-  GObject object;
+<refsect1 id="AgsPattern.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="gboolean"><type>gboolean</type></link></entry><entry role="property_name"><link linkend="AgsPattern--current-bit">current-bit</link></entry><entry role="property_flags">Read</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsPattern--first-index">first-index</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsPattern--offset">offset</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsPattern--port">port</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="guint"><type>guint</type></link></entry><entry role="property_name"><link linkend="AgsPattern--second-index">second-index</link></entry><entry role="property_flags">Read / Write</entry></row>
 
-  GObject *timestamp;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsPattern.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsPattern
+</screen>
+</refsect1>
 
-  guint dim[3];
-  guint ***pattern;
+<refsect1 id="AgsPattern.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_pattern.h&gt;
+</synopsis></refsect1>
 
-  GObject *port;
+<refsect1 id="AgsPattern.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsPattern"><type>AgsPattern</type></link> represents an audio pattern of tones.</para>
 
-  guint i;
-  guint j;
-  guint bit;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsPatternClass" role="struct">
-<title>struct AgsPatternClass</title>
-<indexterm zone="AgsPatternClass"><primary>AgsPatternClass</primary></indexterm>
-<programlisting>struct AgsPatternClass {
-  GObjectClass object;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-pattern-get-bit" role="function">
-<title>ags_pattern_get_bit ()</title>
-<indexterm zone="ags-pattern-get-bit"><primary>ags_pattern_get_bit</primary></indexterm>
-<programlisting><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>            ags_pattern_get_bit                 (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);</programlisting>
-<para>
-Check for tic to be played.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara><link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if tone is enabled.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-pattern-get-by-timestamp" role="function">
-<title>ags_pattern_get_by_timestamp ()</title>
-<indexterm zone="ags-pattern-get-by-timestamp"><primary>ags_pattern_get_by_timestamp</primary></indexterm>
-<programlisting><link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link> *        ags_pattern_get_by_timestamp        (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *timestamp</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-pattern-new" role="function">
-<title>ags_pattern_new ()</title>
-<indexterm zone="ags-pattern-new"><primary>ags_pattern_new</primary></indexterm>
-<programlisting><link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link> *        ags_pattern_new                     ();</programlisting>
-<para>
-Creates an <link linkend="AgsPattern"><type>AgsPattern</type></link>
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsPattern"><type>AgsPattern</type></link></simpara></listitem></varlistentry>
-</variablelist></refsect2>
-<refsect2 id="ags-pattern-set-dim" role="function">
-<title>ags_pattern_set_dim ()</title>
-<indexterm zone="ags-pattern-set-dim"><primary>ags_pattern_set_dim</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_pattern_set_dim                 (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> dim0</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> dim1</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> lenght</parameter>);</programlisting>
-<para>
-Reallocates the pattern's dimensions.
-</para></refsect2>
-<refsect2 id="ags-pattern-toggle-bit" role="function">
-<title>ags_pattern_toggle_bit ()</title>
-<indexterm zone="ags-pattern-toggle-bit"><primary>ags_pattern_toggle_bit</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_pattern_toggle_bit              (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);</programlisting>
-<para>
-Toggle tone.
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsPattern.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-pattern-get-by-timestamp" role="function" condition="since:0.4">
+<title>ags_pattern_get_by_timestamp&#160;()</title>
+<indexterm zone="ags-pattern-get-by-timestamp" role="0.4"><primary>ags_pattern_get_by_timestamp</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link>&#160;*
+ags_pattern_get_by_timestamp (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
+                              <parameter><link linkend="GObject"><type>GObject</type></link> *timestamp</parameter>);</programlisting>
+<para>Retrieve appropriate pattern for timestamp.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pattern</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing <link linkend="AgsPattern"><type>AgsPattern</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>timestamp</para></entry>
+<entry role="parameter_description"><para>the matching timestamp</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the matching pattern.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-pattern-set-dim" role="function" condition="since:0.3">
+<title>ags_pattern_set_dim&#160;()</title>
+<indexterm zone="ags-pattern-set-dim" role="0.3"><primary>ags_pattern_set_dim</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_pattern_set_dim (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> dim0</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> dim1</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> lenght</parameter>);</programlisting>
+<para>Reallocates the pattern's dimensions.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pattern</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPattern"><type>AgsPattern</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>dim0</para></entry>
+<entry role="parameter_description"><para>bank 0 size</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>dim1</para></entry>
+<entry role="parameter_description"><para>bank 1 size</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>length</para></entry>
+<entry role="parameter_description"><para>amount of beats</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-pattern-get-bit" role="function" condition="since:0.3">
+<title>ags_pattern_get_bit&#160;()</title>
+<indexterm zone="ags-pattern-get-bit" role="0.3"><primary>ags_pattern_get_bit</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_pattern_get_bit (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);</programlisting>
+<para>Check for tic to be played.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pattern</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPattern"><type>AgsPattern</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>i</para></entry>
+<entry role="parameter_description"><para>bank index 0</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>j</para></entry>
+<entry role="parameter_description"><para>bank index 1</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>bit</para></entry>
+<entry role="parameter_description"><para>the tic to check</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if tone is enabled.</para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-pattern-toggle-bit" role="function" condition="since:0.3">
+<title>ags_pattern_toggle_bit&#160;()</title>
+<indexterm zone="ags-pattern-toggle-bit" role="0.3"><primary>ags_pattern_toggle_bit</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_pattern_toggle_bit (<parameter><link linkend="AgsPattern"><type>AgsPattern</type></link> *pattern</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> i</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> j</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> bit</parameter>);</programlisting>
+<para>Toggle tone.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>pattern</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsPattern"><type>AgsPattern</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>i</para></entry>
+<entry role="parameter_description"><para>bank index 0</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>j</para></entry>
+<entry role="parameter_description"><para>bank index 1</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>bit</para></entry>
+<entry role="parameter_description"><para>the tic to toggle</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-pattern-new" role="function" condition="since:0.3">
+<title>ags_pattern_new&#160;()</title>
+<indexterm zone="ags-pattern-new" role="0.3"><primary>ags_pattern_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsPattern"><returnvalue>AgsPattern</returnvalue></link>&#160;*
+ags_pattern_new ();</programlisting>
+<para>Creates an <link linkend="AgsPattern"><type>AgsPattern</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsPattern"><type>AgsPattern</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsPattern.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsPattern.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsPattern--current-bit" role="property"><title>The <literal>“current-bit”</literal> property</title>
+<indexterm zone="AgsPattern--current-bit" role="0.4.0"><primary>AgsPattern:current-bit</primary></indexterm>
+<programlisting>  “current-bit”              <link linkend="gboolean"><type>gboolean</type></link></programlisting>
+<para>Offset of current position.</para>
+<para>Flags: Read</para>
+<para>Default value: FALSE</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsPattern--first-index" role="property"><title>The <literal>“first-index”</literal> property</title>
+<indexterm zone="AgsPattern--first-index" role="0.4.0"><primary>AgsPattern:first-index</primary></indexterm>
+<programlisting>  “first-index”              <link linkend="guint"><type>guint</type></link></programlisting>
+<para>Selected bank 0.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 256</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsPattern--offset" role="property"><title>The <literal>“offset”</literal> property</title>
+<indexterm zone="AgsPattern--offset" role="0.4.0"><primary>AgsPattern:offset</primary></indexterm>
+<programlisting>  “offset”                   <link linkend="guint"><type>guint</type></link></programlisting>
+<para>Position of pattern.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsPattern--port" role="property"><title>The <literal>“port”</literal> property</title>
+<indexterm zone="AgsPattern--port" role="0.4.0"><primary>AgsPattern:port</primary></indexterm>
+<programlisting>  “port”                     <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The pattern's port.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.0</para></refsect2>
+<refsect2 id="AgsPattern--second-index" role="property"><title>The <literal>“second-index”</literal> property</title>
+<indexterm zone="AgsPattern--second-index" role="0.4.0"><primary>AgsPattern:second-index</primary></indexterm>
+<programlisting>  “second-index”             <link linkend="guint"><type>guint</type></link></programlisting>
+<para>Selected bank 1.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 256</para>
+<para>Default value: 0</para>
+<para role="since">Since 0.4.0</para></refsect2>
 
 </refsect1>
 

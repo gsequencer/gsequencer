@@ -19,7 +19,7 @@
 #include <ags/audio/ags_recall_audio_run.h>
 
 #include <ags/object/ags_marshal.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
@@ -340,7 +340,7 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   if(AGS_RECALL(packable)->recall_id != NULL){
     recall_id = AGS_RECALL(packable)->recall_id;
 
-    while((list = ags_recall_find_recycling_container(list, recall_id->recycling_container)) != NULL){
+    while((list = ags_recall_find_recycling_context(list, recall_id->recycling_context)) != NULL){
       g_object_set(G_OBJECT(list->data),
 		   "recall-audio-run\0", AGS_RECALL_AUDIO_RUN(packable),
 		   NULL);
@@ -400,7 +400,7 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
   if(AGS_RECALL(packable)->recall_id != NULL){
     recall_id = AGS_RECALL(packable)->recall_id;
 
-    while((list = ags_recall_find_recycling_container(list, recall_id->recycling_container)) != NULL){
+    while((list = ags_recall_find_recycling_context(list, recall_id->recycling_context)) != NULL){
       g_object_set(G_OBJECT(list->data),
 		   "recall_audio_run\0", NULL,
 		   NULL);

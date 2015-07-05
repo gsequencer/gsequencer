@@ -18,10 +18,10 @@
 
 #include <ags/audio/recall/ags_play_audio_signal.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
@@ -211,7 +211,7 @@ ags_play_audio_signal_run_init_pre(AgsRecall *recall)
 void
 ags_play_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsRecycling *recycling;
   AgsAudioSignal *source;
   AgsRecallChannelRun *play_channel_run;
@@ -220,6 +220,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   GList *stream;
   signed short *buffer0, *buffer1;
   guint audio_channel;
+  guint pcm_channels;
   guint buffer_size;
   gboolean muted;
   GValue muted_value = {0,};
@@ -227,12 +228,12 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
 
-  devout = AGS_DEVOUT(AGS_RECALL(play_audio_signal)->devout);
+  soundcard = AGS_SOUNDCARD(AGS_RECALL(play_audio_signal)->soundcard);
   source = AGS_AUDIO_SIGNAL(AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source);
   stream = source->stream_current;
 
-  if(devout == NULL){
-    g_warning("no devout\0");
+  if(soundcard == NULL){
+    g_warning("no soundcard\0");
     return;
   }
 
@@ -242,19 +243,16 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  if((AGS_DEVOUT_BUFFER0 & devout->flags) != 0){
-    buffer0 = devout->buffer[1];
-    buffer1 = devout->buffer[2];
-  }else if((AGS_DEVOUT_BUFFER1 & devout->flags) != 0){
-    buffer0 = devout->buffer[2];
-    buffer1 = devout->buffer[3];
-  }else if((AGS_DEVOUT_BUFFER2 & devout->flags) != 0){
-    buffer0 = devout->buffer[3];
-    buffer1 = devout->buffer[0];
-  }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-    buffer0 = devout->buffer[0];
-    buffer1 = devout->buffer[1];
-  }else{
+  buffer0 = ags_soundcard_get_buffer(soundcard);
+  buffer1 = ags_soundcard_get_next_buffer(soundcard);
+
+  ags_soundcard_get_presets(soundcard,
+			    &pcm_channels,
+			    NULL,
+			    NULL,
+			    NULL);
+  
+  if(buffer0 == NULL){
     g_warning("no output buffer\0");
     return;
   }
@@ -290,12 +288,12 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
-    ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel + source->attack * devout->pcm_channels]),
-					   devout->pcm_channels,
+    ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel + source->attack * pcm_channels]),
+					   pcm_channels,
 					   (signed short *) stream->data, 1,
 					   buffer_size - source->attack);
   }else{
-    ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), devout->pcm_channels,
+    ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), pcm_channels,
 					   (signed short *) stream->data, 1,
 					   buffer_size);
   }
@@ -320,7 +318,7 @@ ags_play_audio_signal_duplicate(AgsRecall *recall,
 /**
  * ags_play_audio_signal_new:
  * @source: the source #AgsAudioSignal
- * @devout: the #AgsDevout outputting to
+ * @soundcard: the #AgsSoundcard outputting to
  * @attack: the attack
  *
  * Creates an #AgsPlayAudioSignal
@@ -331,14 +329,14 @@ ags_play_audio_signal_duplicate(AgsRecall *recall,
  */
 AgsPlayAudioSignal*
 ags_play_audio_signal_new(AgsAudioSignal *source,
-			  AgsDevout *devout,
+			  GObject *soundcard,
 			  guint audio_channel)
 {
   AgsPlayAudioSignal *play_audio_signal;
 
   play_audio_signal = (AgsPlayAudioSignal *) g_object_new(AGS_TYPE_PLAY_AUDIO_SIGNAL,
 							  "source\0", source,
-							  "devout\0", devout,
+							  "soundcard\0", soundcard,
 							  "audio_channel\0", audio_channel,
 							  NULL);
 

@@ -21,24 +21,22 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
 
-#include <ags/widget/ags_led.h>
-
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
-#include <ags/audio/task/ags_toggle_led.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
@@ -56,17 +54,19 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/widget/ags_led.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_navigation.h>
+
+#include <ags/X/task/ags_toggle_led.h>
 
 #include <stdlib.h>
 #include <math.h>
 
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
-
-extern const char *AGS_DRUM_INDEX;
 
 void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
@@ -152,17 +152,31 @@ void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsWindow *window;
+  
   AgsApplySequencerLength *apply_sequencer_length;
-  gdouble length;
 
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
+  gdouble length;
+  
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
   apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(drum)->audio),
 							  length);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(apply_sequencer_length));
 }
 
@@ -187,8 +201,8 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       if(list != NULL){
 	GValue value = {0,};
 
-	g_value_init(&value, G_TYPE_UINT);
-	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+	g_value_init(&value, G_TYPE_UINT64);
+	g_value_set_uint64(&value, ((guint) drum->selected0->button.label_text[0] - 'a'));
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	ags_port_safe_write(copy_pattern_audio->bank_index_0, &value);
@@ -202,8 +216,8 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       if(list != NULL){
 	GValue value = {0,};
 
-	g_value_init(&value, G_TYPE_UINT);
-	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+	g_value_init(&value, G_TYPE_UINT64);
+	g_value_set_uint64(&value, ((guint) drum->selected0->button.label_text[0] - 'a'));
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	ags_port_safe_write(copy_pattern_audio->bank_index_0, &value);
@@ -242,8 +256,8 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       if(list != NULL){
 	GValue value = {0,};
 
-	g_value_init(&value, G_TYPE_UINT);
-	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+	g_value_init(&value, G_TYPE_UINT64);
+	g_value_set_uint64(&value, ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1);
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	ags_port_safe_write(copy_pattern_audio->bank_index_1, &value);
@@ -257,8 +271,8 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       if(list != NULL){
 	GValue value = {0,};
 
-	g_value_init(&value, G_TYPE_UINT);
-	g_value_set_uint(&value, GPOINTER_TO_UINT(g_object_get_data((GObject *) widget, AGS_DRUM_INDEX)));
+	g_value_init(&value, G_TYPE_UINT64);
+	g_value_set_uint64(&value, ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1);
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	ags_port_safe_write(copy_pattern_audio->bank_index_1, &value);
@@ -279,9 +293,16 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 void
 ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 {
+  AgsWindow *window;
   AgsLine *selected_line;
   AgsPattern *pattern;
   AgsTogglePatternBit *toggle_pattern_bit;
+
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
   GList *list, *list_start;
   GList *line, *line_start;
   GList *tasks;
@@ -298,6 +319,15 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
 
     return;
   }
+    
+  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
+
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   /* calculate offset */
   list_start = 
@@ -310,14 +340,10 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   g_list_free(list_start);
 
   /* calculate index 0 */
-  for(i = 0; i < 4 && drum->selected0 != drum->index0[i]; i++);
-
-  index0 = i;
+  index0 = ((guint) drum->selected0->button.label_text[0] - 'a');
 
   /* calculate index 1 */
-  for(i = 0; i < 12 && drum->selected1 != drum->index1[i]; i++);
-  
-  index1 = i;
+  index1 = ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1;
 
   /* calculate offset / page */
   list_start = 
@@ -353,7 +379,7 @@ ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
   g_list_free(line_start);
 
   /* append AgsTogglePatternBit */
-  ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(drum)->audio->devout)->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_tasks(task_thread,
 			       tasks);
 }
 
@@ -369,15 +395,30 @@ ags_drum_tact_callback(AgsAudio *audio,
 		       AgsDrum *drum)
 {
   AgsWindow *window;
+  AgsToggleLed *toggle_led;
+
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsToggleLed *toggle_led;
+
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
   GList *list, *tmp;
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
   GValue value = {0,};
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum,
+						 AGS_TYPE_WINDOW);
+
+  application_context = window->application_context;
   
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
+  main_loop = application_context->main_loop;
+  
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play,
@@ -387,9 +428,9 @@ ags_drum_tact_callback(AgsAudio *audio,
     play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
   }
 
-  list = ags_recall_find_type_with_recycling_container(audio->play,
-						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-						       (GObject *) recall_id->recycling_container);
+  list = ags_recall_find_type_with_recycling_context(audio->play,
+						     AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+						     (GObject *) recall_id->recycling_context);
   
   if(list != NULL){
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
@@ -414,7 +455,7 @@ ags_drum_tact_callback(AgsAudio *audio,
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(toggle_led));
 }
 
@@ -423,21 +464,21 @@ ags_drum_done_callback(AgsAudio *audio,
 		       AgsRecallID *recall_id,
 		       AgsDrum *drum)
 {
-  GList *devout_play;
+  GList *playback;
   gboolean all_done;
 
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
   /* check unset */
   all_done = TRUE;
 
-  while(devout_play != NULL){
-    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
+  while(playback != NULL){
+    if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL){
       all_done = FALSE;
       break;
     }
 
-    devout_play = devout_play->next;
+    playback = playback->next;
   }
 
   if(all_done){

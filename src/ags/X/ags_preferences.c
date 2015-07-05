@@ -19,13 +19,11 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_config.h>
 
 #include <ags/X/ags_window.h>
 
@@ -147,7 +145,7 @@ ags_preferences_init(AgsPreferences *preferences)
 
   preferences->flags = 0;
 
-  preferences->window = NULL;
+  preferences->parent = NULL;
 
   gtk_window_set_title(GTK_WINDOW(preferences),
 		       g_strdup("preferences\0"));
@@ -232,7 +230,9 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_preferences_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsPreferences *preferences;
+  AgsApplicationContext *application_context;
   AgsConfig *config;
   AgsFile *file;
   struct passwd *pw;
@@ -242,9 +242,12 @@ ags_preferences_apply(AgsApplicable *applicable)
   GError *error;
 
   preferences = AGS_PREFERENCES(applicable);
+  window = preferences->parent;
 
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
+  application_context = window->application_context;
 
+  config = application_context->config;
+  
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
@@ -261,7 +264,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 			     AGS_PREFERENCES_DEFAULT_FILENAME);
     
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main),
+				  "application-context\0", application_context,
 				  "filename\0", filename,
 				  NULL);
   ags_file_write_concurrent(file);
@@ -273,7 +276,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 					     filename),
 			     &error);
 
-  ags_main_quit(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main));
+  ags_main_quit(application_context);
 }
 
 void

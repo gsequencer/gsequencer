@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsAutomation">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsAutomation.top_of_page">AgsAutomation</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAutomation</refname>
+<refpurpose>Automation class supporting selection and clipboard.</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsAutomation.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-automation-find-near-timestamp">ags_automation_find_near_timestamp</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-add-acceleration">ags_automation_add_acceleration</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-remove-acceleration-at-position">ags_automation_remove_acceleration_at_position</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-automation-get-selection">ags_automation_get_selection</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-is-acceleration-selected">ags_automation_is_acceleration_selected</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsAcceleration"><returnvalue>AgsAcceleration</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-automation-find-point">ags_automation_find_point</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-automation-find-region">ags_automation_find_region</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-free-selection">ags_automation_free_selection</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-add-point-to-selection">ags_automation_add_point_to_selection</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-remove-point-from-selection">ags_automation_remove_point_from_selection</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-add-region-to-selection">ags_automation_add_region_to_selection</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-remove-region-from-selection">ags_automation_remove_region_from_selection</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-copy-selection">ags_automation_copy_selection</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-cut-selection">ags_automation_cut_selection</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-automation-insert-from-clipboard">ags_automation_insert_from_clipboard</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-automation-get-current">ags_automation_get_current</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsAutomation"><returnvalue>AgsAutomation</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-automation-new">ags_automation_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAutomation.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsAudio"><type>AgsAudio</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAutomation--audio">audio</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsAutomation--current-accelerations">current-accelerations</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gulong"><type>gulong</type></link></entry><entry role="property_name"><link linkend="AgsAutomation--line">line</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsAutomation--next-accelerations">next-accelerations</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAutomation--port">port</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAutomation.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAutomation
+</screen>
+</refsect1>
+
+<refsect1 id="AgsAutomation.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_automation.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsAutomation.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsAutomation"><type>AgsAutomation</type></link> acts as a container of <link linkend="AgsNote"><type>AgsNote</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsAutomation.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-automation-find-near-timestamp" role="function">
+<title>ags_automation_find_near_timestamp&#160;()</title>
+<indexterm zone="ags-automation-find-near-timestamp"><primary>ags_automation_find_near_timestamp</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_automation_find_near_timestamp (<parameter><link linkend="GList"><type>GList</type></link> *automation</parameter>,
+                                    <parameter><link linkend="guint"><type>guint</type></link> line</parameter>,
+                                    <parameter><link linkend="GObject"><type>GObject</type></link> *timestamp</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-add-acceleration" role="function">
+<title>ags_automation_add_acceleration&#160;()</title>
+<indexterm zone="ags-automation-add-acceleration"><primary>ags_automation_add_acceleration</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_add_acceleration (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                                 <parameter><link linkend="AgsAcceleration"><type>AgsAcceleration</type></link> *acceleration</parameter>,
+                                 <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-remove-acceleration-at-position" role="function">
+<title>ags_automation_remove_acceleration_at_position&#160;()</title>
+<indexterm zone="ags-automation-remove-acceleration-at-position"><primary>ags_automation_remove_acceleration_at_position</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_automation_remove_acceleration_at_position
+                               (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-get-selection" role="function">
+<title>ags_automation_get_selection&#160;()</title>
+<indexterm zone="ags-automation-get-selection"><primary>ags_automation_get_selection</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_automation_get_selection (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-is-acceleration-selected" role="function">
+<title>ags_automation_is_acceleration_selected&#160;()</title>
+<indexterm zone="ags-automation-is-acceleration-selected"><primary>ags_automation_is_acceleration_selected</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_automation_is_acceleration_selected
+                               (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                                <parameter><link linkend="AgsAcceleration"><type>AgsAcceleration</type></link> *acceleration</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-find-point" role="function">
+<title>ags_automation_find_point&#160;()</title>
+<indexterm zone="ags-automation-find-point"><primary>ags_automation_find_point</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAcceleration"><returnvalue>AgsAcceleration</returnvalue></link>&#160;*
+ags_automation_find_point (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                           <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-find-region" role="function">
+<title>ags_automation_find_region&#160;()</title>
+<indexterm zone="ags-automation-find-region"><primary>ags_automation_find_region</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_automation_find_region (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                            <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                            <parameter><link linkend="guint"><type>guint</type></link> y0</parameter>,
+                            <parameter><link linkend="guint"><type>guint</type></link> x1</parameter>,
+                            <parameter><link linkend="guint"><type>guint</type></link> y1</parameter>,
+                            <parameter><link linkend="gboolean"><type>gboolean</type></link> use_selection_list</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-free-selection" role="function">
+<title>ags_automation_free_selection&#160;()</title>
+<indexterm zone="ags-automation-free-selection"><primary>ags_automation_free_selection</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_free_selection (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-add-point-to-selection" role="function">
+<title>ags_automation_add_point_to_selection&#160;()</title>
+<indexterm zone="ags-automation-add-point-to-selection"><primary>ags_automation_add_point_to_selection</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_add_point_to_selection (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                                       <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                       <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                                       <parameter><link linkend="gboolean"><type>gboolean</type></link> replace_current_selection</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-remove-point-from-selection" role="function">
+<title>ags_automation_remove_point_from_selection&#160;()</title>
+<indexterm zone="ags-automation-remove-point-from-selection"><primary>ags_automation_remove_point_from_selection</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_remove_point_from_selection
+                               (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> y</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-add-region-to-selection" role="function">
+<title>ags_automation_add_region_to_selection&#160;()</title>
+<indexterm zone="ags-automation-add-region-to-selection"><primary>ags_automation_add_region_to_selection</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_add_region_to_selection
+                               (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> y0</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> x1</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> y1</parameter>,
+                                <parameter><link linkend="gboolean"><type>gboolean</type></link> replace_current_selection</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-remove-region-from-selection" role="function">
+<title>ags_automation_remove_region_from_selection&#160;()</title>
+<indexterm zone="ags-automation-remove-region-from-selection"><primary>ags_automation_remove_region_from_selection</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_remove_region_from_selection
+                               (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> x0</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> y0</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> x1</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> y1</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-copy-selection" role="function">
+<title>ags_automation_copy_selection&#160;()</title>
+<indexterm zone="ags-automation-copy-selection"><primary>ags_automation_copy_selection</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>
+ags_automation_copy_selection (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-cut-selection" role="function">
+<title>ags_automation_cut_selection&#160;()</title>
+<indexterm zone="ags-automation-cut-selection"><primary>ags_automation_cut_selection</primary></indexterm>
+<programlisting language="C"><link linkend="xmlNodePtr"><returnvalue>xmlNodePtr</returnvalue></link>
+ags_automation_cut_selection (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-insert-from-clipboard" role="function">
+<title>ags_automation_insert_from_clipboard&#160;()</title>
+<indexterm zone="ags-automation-insert-from-clipboard"><primary>ags_automation_insert_from_clipboard</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_automation_insert_from_clipboard (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>,
+                                      <parameter><link linkend="xmlNodePtr"><type>xmlNodePtr</type></link> content</parameter>,
+                                      <parameter><link linkend="gboolean"><type>gboolean</type></link> reset_x_offset</parameter>,
+                                      <parameter><link linkend="guint"><type>guint</type></link> x_offset</parameter>,
+                                      <parameter><link linkend="gboolean"><type>gboolean</type></link> reset_y_offset</parameter>,
+                                      <parameter><link linkend="guint"><type>guint</type></link> y_offset</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-get-current" role="function">
+<title>ags_automation_get_current&#160;()</title>
+<indexterm zone="ags-automation-get-current"><primary>ags_automation_get_current</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_automation_get_current (<parameter><link linkend="AgsAutomation"><type>AgsAutomation</type></link> *automation</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-automation-new" role="function" condition="since:0.4.2">
+<title>ags_automation_new&#160;()</title>
+<indexterm zone="ags-automation-new" role="0.4.2"><primary>ags_automation_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAutomation"><returnvalue>AgsAutomation</returnvalue></link>&#160;*
+ags_automation_new (<parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>,
+                    <parameter><link linkend="guint"><type>guint</type></link> line</parameter>,
+                    <parameter><link linkend="GType"><type>GType</type></link> channel_type</parameter>,
+                    <parameter><link linkend="gchar"><type>gchar</type></link> *control_name</parameter>);</programlisting>
+<para>Creates a <link linkend="AgsAutomation"><type>AgsAutomation</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>line</para></entry>
+<entry role="parameter_description"><para>the line to apply</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsAutomation"><type>AgsAutomation</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsAutomation.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsAutomation.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsAutomation--audio" role="property"><title>The <literal>“audio”</literal> property</title>
+<indexterm zone="AgsAutomation--audio" role="0.4.3"><primary>AgsAutomation:audio</primary></indexterm>
+<programlisting>  “audio”                    <link linkend="AgsAudio"><type>AgsAudio</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsAudio"><type>AgsAudio</type></link></para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAutomation--current-accelerations" role="property"><title>The <literal>“current-accelerations”</literal> property</title>
+<indexterm zone="AgsAutomation--current-accelerations" role="0.4.2"><primary>AgsAutomation:current-accelerations</primary></indexterm>
+<programlisting>  “current-accelerations”    <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>Offset of current position.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="AgsAutomation--line" role="property"><title>The <literal>“line”</literal> property</title>
+<indexterm zone="AgsAutomation--line" role="0.4.3"><primary>AgsAutomation:line</primary></indexterm>
+<programlisting>  “line”                     <link linkend="gulong"><type>gulong</type></link></programlisting>
+<para>The effect's line.</para>
+<para>Flags: Read / Write</para>
+<para>Allowed values: &lt;= 65535</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="AgsAutomation--next-accelerations" role="property"><title>The <literal>“next-accelerations”</literal> property</title>
+<indexterm zone="AgsAutomation--next-accelerations" role="0.4.2"><primary>AgsAutomation:next-accelerations</primary></indexterm>
+<programlisting>  “next-accelerations”       <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>Offset of next position.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="AgsAutomation--port" role="property"><title>The <literal>“port”</literal> property</title>
+<indexterm zone="AgsAutomation--port" role="0.4.2"><primary>AgsAutomation:port</primary></indexterm>
+<programlisting>  “port”                     <link linkend="AgsPort"><type>AgsPort</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsPort"><type>AgsPort</type></link></para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.4.2</para></refsect2>
+
+</refsect1>
+
+</refentry>

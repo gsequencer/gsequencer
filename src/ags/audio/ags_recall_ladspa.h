@@ -44,7 +44,7 @@ struct _AgsRecallLadspa
 
   gchar *filename;
   gchar *effect;
-  unsigned long index;
+  unsigned long effect_index;
 
   LADSPA_Descriptor *plugin_descriptor;
 
@@ -71,12 +71,12 @@ void ags_recall_ladspa_float_to_short(float *buffer,
 				      signed short *destination,
 				      guint buffer_size, guint lines);
 
-GList* ags_recall_ladpsa_find(GList *recall,
+GList* ags_recall_ladspa_find(GList *recall,
 			      gchar *filename, gchar *effect);
 
 AgsRecallLadspa* ags_recall_ladspa_new(AgsChannel *source,
 				       gchar *filename,
 				       gchar *effect,
-				       unsigned long index);
+				       unsigned long effect_index);
 
 #endif /*__AGS_RECALL_LADSPA_H__*/

@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<indexdiv>
+<indexdiv><title>A</title>
+<indexentry><primaryie linkends="ags-audio-file-close"><link linkend="ags-audio-file-close">ags_audio_file_close</link>, function in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-file-new"><link linkend="ags-audio-file-new">ags_audio_file_new</link>, function in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-file-open"><link linkend="ags-audio-file-open">ags_audio_file_open</link>, function in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-file-read-audio-signal"><link linkend="ags-audio-file-read-audio-signal">ags_audio_file_read_audio_signal</link>, function in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-new"><link linkend="ags-audio-new">ags_audio_new</link>, function in <link linkend="AgsAudio">AgsAudio</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-set-audio-channels"><link linkend="ags-audio-set-audio-channels">ags_audio_set_audio_channels</link>, function in <link linkend="AgsAudio">AgsAudio</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-set-pads"><link linkend="ags-audio-set-pads">ags_audio_set_pads</link>, function in <link linkend="AgsAudio">AgsAudio</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-signal-add-stream"><link linkend="ags-audio-signal-add-stream">ags_audio_signal_add_stream</link>, function in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-signal-copy-buffer-to-buffer"><link linkend="ags-audio-signal-copy-buffer-to-buffer">ags_audio_signal_copy_buffer_to_buffer</link>, function in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-signal-duplicate-stream"><link linkend="ags-audio-signal-duplicate-stream">ags_audio_signal_duplicate_stream</link>, function in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-signal-get-by-recall-id"><link linkend="ags-audio-signal-get-by-recall-id">ags_audio_signal_get_by_recall_id</link>, function in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-signal-get-template"><link linkend="ags-audio-signal-get-template">ags_audio_signal_get_template</link>, function in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-signal-new"><link linkend="ags-audio-signal-new">ags_audio_signal_new</link>, function in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-signal-stream-resize"><link linkend="ags-audio-signal-stream-resize">ags_audio_signal_stream_resize</link>, function in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>C</title>
+<indexentry><primaryie linkends="ags-channel-cancel"><link linkend="ags-channel-cancel">ags_channel_cancel</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-duplicate-recall"><link linkend="ags-channel-duplicate-recall">ags_channel_duplicate_recall</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-first"><link linkend="ags-channel-first">ags_channel_first</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-first-with-recycling"><link linkend="ags-channel-first-with-recycling">ags_channel_first_with_recycling</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-init-recall"><link linkend="ags-channel-init-recall">ags_channel_init_recall</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-last"><link linkend="ags-channel-last">ags_channel_last</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-last-with-recycling"><link linkend="ags-channel-last-with-recycling">ags_channel_last_with_recycling</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-new"><link linkend="ags-channel-new">ags_channel_new</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-nth"><link linkend="ags-channel-nth">ags_channel_nth</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-pad-first"><link linkend="ags-channel-pad-first">ags_channel_pad_first</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-pad-last"><link linkend="ags-channel-pad-last">ags_channel_pad_last</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-pad-nth"><link linkend="ags-channel-pad-nth">ags_channel_pad_nth</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-play"><link linkend="ags-channel-play">ags_channel_play</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-recursive-play"><link linkend="ags-channel-recursive-play">ags_channel_recursive_play</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-recursive-play-init"><link linkend="ags-channel-recursive-play-init">ags_channel_recursive_play_init</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-recycling-changed"><link linkend="ags-channel-recycling-changed">ags_channel_recycling_changed</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-remove"><link linkend="ags-channel-remove">ags_channel_remove</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-set-link"><link linkend="ags-channel-set-link">ags_channel_set_link</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-set-recycling"><link linkend="ags-channel-set-recycling">ags_channel_set_recycling</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>D</title>
+<indexentry><primaryie linkends="ags-devout-new"><link linkend="ags-devout-new">ags_devout_new</link>, function in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-drum-new"><link linkend="ags-drum-new">ags_drum_new</link>, function in <link linkend="AgsDrum">AgsDrum</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>E</title>
+<indexentry><primaryie linkends="ags-editor-new"><link linkend="ags-editor-new">ags_editor_new</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>F</title>
+<indexentry><primaryie linkends="ags-ffplayer-new"><link linkend="ags-ffplayer-new">ags_ffplayer_new</link>, function in <link linkend="AgsFFPlayer">AgsFFPlayer</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-file-new"><link linkend="ags-file-new">ags_file_new</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>I</title>
+<indexentry><primaryie linkends="ags-input-new"><link linkend="ags-input-new">ags_input_new</link>, function in <link linkend="AgsInput">AgsInput</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>L</title>
+<indexentry><primaryie linkends="AgsLineEditor--channel"><link linkend="AgsLineEditor--channel">AgsLineEditor:channel</link>, object property in <link linkend="AgsLineEditor">AgsLineEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-line-editor-new"><link linkend="ags-line-editor-new">ags_line_editor_new</link>, function in <link linkend="AgsLineEditor">AgsLineEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-line-editor-set-channel"><link linkend="ags-line-editor-set-channel">ags_line_editor_set_channel</link>, function in <link linkend="AgsLineEditor">AgsLineEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-line-new"><link linkend="ags-line-new">ags_line_new</link>, function in <link linkend="AgsLine">AgsLine</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-line-set-channel"><link linkend="ags-line-set-channel">ags_line_set_channel</link>, function in <link linkend="AgsLine">AgsLine</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsLinkCollectionEditor--channel-type"><link linkend="AgsLinkCollectionEditor--channel-type">AgsLinkCollectionEditor:channel-type</link>, object property in <link linkend="AgsLinkCollectionEditor">AgsLinkCollectionEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-link-collection-editor-new"><link linkend="ags-link-collection-editor-new">ags_link_collection_editor_new</link>, function in <link linkend="AgsLinkCollectionEditor">AgsLinkCollectionEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-link-editor-new"><link linkend="ags-link-editor-new">ags_link_editor_new</link>, function in <link linkend="AgsLinkEditor">AgsLinkEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-listing-editor-new"><link linkend="ags-listing-editor-new">ags_listing_editor_new</link>, function in <link linkend="AgsListingEditor">AgsListingEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-list-free-and-free-link"><link linkend="ags-list-free-and-free-link">ags_list_free_and_free_link</link>, function in <link linkend="ags-AgsList">AgsList</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-list-free-and-unref-link"><link linkend="ags-list-free-and-unref-link">ags_list_free_and_unref_link</link>, function in <link linkend="ags-AgsList">AgsList</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>M</title>
+<indexentry><primaryie linkends="AgsMachine--audio"><link linkend="AgsMachine--audio">AgsMachine:audio</link>, object property in <link linkend="AgsMachine">AgsMachine</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsMachineEditor--machine"><link linkend="AgsMachineEditor--machine">AgsMachineEditor:machine</link>, object property in <link linkend="AgsMachineEditor">AgsMachineEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-machine-editor-add-children"><link linkend="ags-machine-editor-add-children">ags_machine_editor_add_children</link>, function in <link linkend="AgsMachineEditor">AgsMachineEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-machine-editor-new"><link linkend="ags-machine-editor-new">ags_machine_editor_new</link>, function in <link linkend="AgsMachineEditor">AgsMachineEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-machine-editor-set-machine"><link linkend="ags-machine-editor-set-machine">ags_machine_editor_set_machine</link>, function in <link linkend="AgsMachineEditor">AgsMachineEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-machine-find-by-name"><link linkend="ags-machine-find-by-name">ags_machine_find_by_name</link>, function in <link linkend="AgsMachine">AgsMachine</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-machine-new"><link linkend="ags-machine-new">ags_machine_new</link>, function in <link linkend="AgsMachine">AgsMachine</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-matrix-new"><link linkend="ags-matrix-new">ags_matrix_new</link>, function in <link linkend="AgsMatrix">AgsMatrix</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-menu-bar-new"><link linkend="ags-menu-bar-new">ags_menu_bar_new</link>, function in <link linkend="AgsMenuBar">AgsMenuBar</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-mixer-new"><link linkend="ags-mixer-new">ags_mixer_new</link>, function in <link linkend="AgsMixer">AgsMixer</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>O</title>
+<indexentry><primaryie linkends="ags-oscillator-new"><link linkend="ags-oscillator-new">ags_oscillator_new</link>, function in <link linkend="AgsOscillator">AgsOscillator</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-output-new"><link linkend="ags-output-new">ags_output_new</link>, function in <link linkend="AgsOutput">AgsOutput</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>P</title>
+<indexentry><primaryie linkends="ags-pad-editor-new"><link linkend="ags-pad-editor-new">ags_pad_editor_new</link>, function in <link linkend="AgsPadEditor">AgsPadEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pad-editor-set-channel"><link linkend="ags-pad-editor-set-channel">ags_pad_editor_set_channel</link>, function in <link linkend="AgsPadEditor">AgsPadEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pad-new"><link linkend="ags-pad-new">ags_pad_new</link>, function in <link linkend="AgsPad">AgsPad</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pad-resize-lines"><link linkend="ags-pad-resize-lines">ags_pad_resize_lines</link>, function in <link linkend="AgsPad">AgsPad</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pad-set-channel"><link linkend="ags-pad-set-channel">ags_pad_set_channel</link>, function in <link linkend="AgsPad">AgsPad</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-panel-new"><link linkend="ags-panel-new">ags_panel_new</link>, function in <link linkend="AgsPanel">AgsPanel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-parameter-grow"><link linkend="ags-parameter-grow">ags_parameter_grow</link>, function in <link linkend="ags-AgsParameter">AgsParameter</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-get-bit"><link linkend="ags-pattern-get-bit">ags_pattern_get_bit</link>, function in <link linkend="AgsPattern">AgsPattern</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-new"><link linkend="ags-pattern-new">ags_pattern_new</link>, function in <link linkend="AgsPattern">AgsPattern</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-set-dim"><link linkend="ags-pattern-set-dim">ags_pattern_set_dim</link>, function in <link linkend="AgsPattern">AgsPattern</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-toggle-bit"><link linkend="ags-pattern-toggle-bit">ags_pattern_toggle_bit</link>, function in <link linkend="AgsPattern">AgsPattern</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-property-collection-editor-new"><link linkend="ags-property-collection-editor-new">ags_property_collection_editor_new</link>, function in <link linkend="AgsPropertyCollectionEditor">AgsPropertyCollectionEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-property-editor-new"><link linkend="ags-property-editor-new">ags_property_editor_new</link>, function in <link linkend="AgsPropertyEditor">AgsPropertyEditor</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>R</title>
+<indexentry><primaryie linkends="ags-recall-id-get-run-stage"><link linkend="ags-recall-id-get-run-stage">ags_recall_id_get_run_stage</link>, function in <link linkend="AgsRecallID">AgsRecallID</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-id-new"><link linkend="ags-recall-id-new">ags_recall_id_new</link>, function in <link linkend="AgsRecallID">AgsRecallID</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-id-set-run-stage"><link linkend="ags-recall-id-set-run-stage">ags_recall_id_set_run_stage</link>, function in <link linkend="AgsRecallID">AgsRecallID</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-id-unset-run-stage"><link linkend="ags-recall-id-unset-run-stage">ags_recall_id_unset_run_stage</link>, function in <link linkend="AgsRecallID">AgsRecallID</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-new"><link linkend="ags-recall-new">ags_recall_new</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recycling-add-audio-signal"><link linkend="ags-recycling-add-audio-signal">ags_recycling_add_audio_signal</link>, function in <link linkend="AgsRecycling">AgsRecycling</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recycling-new"><link linkend="ags-recycling-new">ags_recycling_new</link>, function in <link linkend="AgsRecycling">AgsRecycling</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recycling-remove-audio-signal"><link linkend="ags-recycling-remove-audio-signal">ags_recycling_remove_audio_signal</link>, function in <link linkend="AgsRecycling">AgsRecycling</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recycling-set-soundcard"><link linkend="ags-recycling-set-soundcard">ags_recycling_set_soundcard</link>, function in <link linkend="AgsRecycling">AgsRecycling</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-resize-editor-new"><link linkend="ags-resize-editor-new">ags_resize_editor_new</link>, function in <link linkend="ags-AgsResizeEditor">AgsResizeEditor</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>S</title>
+<indexentry><primaryie linkends="ags-sndfile-new"><link linkend="ags-sndfile-new">ags_sndfile_new</link>, function in <link linkend="AgsSndfile">AgsSndfile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-stream-alloc"><link linkend="ags-stream-alloc">ags_stream_alloc</link>, function in <link linkend="AgsAudioSignal">AgsAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-synth-new"><link linkend="ags-synth-new">ags_synth_new</link>, function in <link linkend="AgsSynth">AgsSynth</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>T</title>
+<indexentry><primaryie linkends="ags-toolbar-new"><link linkend="ags-toolbar-new">ags_toolbar_new</link>, function in <link linkend="AgsToolbar">AgsToolbar</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>W</title>
+<indexentry><primaryie linkends="ags-window-new"><link linkend="ags-window-new">ags_window_new</link>, function in <link linkend="AgsWindow">AgsWindow</link></primaryie></indexentry>
+</indexdiv>
+</indexdiv>

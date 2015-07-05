@@ -54,10 +54,10 @@ struct _AgsThreadPool
   volatile guint max_unused_threads;
   volatile guint max_threads;
 
-  pthread_t thread;
+  pthread_t *thread;
 
-  pthread_mutex_t creation_mutex;
-  pthread_cond_t creation_cond;
+  pthread_mutex_t *creation_mutex;
+  pthread_cond_t *creation_cond;
 
   volatile guint n_threads;
   volatile guint newly_pulled;
@@ -67,10 +67,10 @@ struct _AgsThreadPool
   volatile GList *returnable_thread;
   volatile GList *running_thread;
 
-  pthread_mutex_t pull_mutex;
+  pthread_mutex_t *pull_mutex;
 
-  pthread_mutex_t return_mutex;
-  pthread_cond_t return_cond;
+  pthread_mutex_t *return_mutex;
+  pthread_cond_t *return_cond;
 };
 
 struct _AgsThreadPoolClass

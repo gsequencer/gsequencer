@@ -19,20 +19,22 @@
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_bulk_member_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_connectable.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/thread/ags_audio_loop.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
-#include <ags/audio/ags_devout.h>
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bulk.h>
 
 void ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member);
@@ -611,6 +613,23 @@ void
 ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				 gpointer port_data)
 {
+  AgsWindow *window;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+  
+  AgsApplicationContext *application_context;
+  
+  window = gtk_widget_get_ancestor(bulk_member,
+				   AGS_TYPE_WINDOW);
+  
+  application_context = window->application_context;
+
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
   if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
     AgsPort *port;
     GList *list;
@@ -695,8 +714,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
     effect_bulk = (AgsEffectBulk *) gtk_widget_get_ancestor(GTK_WIDGET(bulk_member),
 							    AGS_TYPE_EFFECT_BULK);
     
-    task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(effect_bulk->audio->devout)->ags_main)->main_loop)->task_thread);
-
     task = (AgsTask *) g_object_new(bulk_member->task_type,
 				    bulk_member->control_port, port_data,
 				    NULL);

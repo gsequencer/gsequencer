@@ -34,6 +34,9 @@
 #define AGS_IS_OSCILLATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_OSCILLATOR))
 #define AGS_OSCILLATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OSCILLATOR, AgsOscillatorClass))
 
+#define AGS_OSCILLATOR_DEFAULT_STEPS (15.0)
+#define AGS_OSCILLATOR_BASE_FREQUENCY (440.0 / (AGS_OSCILLATOR_DEFAULT_STEPS * exp((1.0 / 12.0) * log(2.0))))
+
 typedef struct _AgsOscillator AgsOscillator;
 typedef struct _AgsOscillatorClass AgsOscillatorClass;
 

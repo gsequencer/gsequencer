@@ -19,9 +19,10 @@
 #include <ags/X/ags_line_member_editor.h>
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_ladspa.h>
 
 #include <ags/X/ags_machine.h>
@@ -147,7 +148,7 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 		     FALSE, FALSE,
 		     0);
 
-  line_member_editor->ladspa_browser = ags_ladspa_browser_new(line_member_editor);
+  line_member_editor->plugin_browser = ags_plugin_browser_new(line_member_editor);
 }
 
 void
@@ -163,10 +164,10 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(line_member_editor->remove), "clicked\0",
 		   G_CALLBACK(ags_line_member_editor_remove_callback), line_member_editor);
 
-  ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->ladspa_browser));
+  ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
 
-  g_signal_connect(G_OBJECT(line_member_editor->ladspa_browser), "response\0",
-		   G_CALLBACK(ags_line_member_editor_ladspa_browser_response_callback), line_member_editor);
+  g_signal_connect(G_OBJECT(line_member_editor->plugin_browser), "response\0",
+		   G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback), line_member_editor);
 }
 
 void
@@ -204,7 +205,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   GtkHBox *hbox;
   GtkCheckButton *check_button;
   GtkLabel *label;
-  GList *recall_ladspa;
+  GList *recall;
   gchar *filename, *effect;
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
@@ -214,15 +215,26 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
-  recall_ladspa = line_editor->channel->recall;
+  recall = line_editor->channel->recall;
 
-  while((recall_ladspa = ags_recall_template_find_type(recall_ladspa,
-						       AGS_TYPE_RECALL_LADSPA)) != NULL){
-    g_object_get(G_OBJECT(recall_ladspa->data),
+  while((recall = ags_recall_template_find_all_type(recall,
+						    AGS_TYPE_RECALL_LADSPA,
+						    AGS_TYPE_RECALL_LV2,
+						    G_TYPE_NONE)) != NULL){
+    g_object_get(G_OBJECT(recall->data),
 		 "filename\0", &filename,
-		 "effect\0", &effect,
 		 NULL);
 
+    if(AGS_IS_RECALL_LADSPA(recall->data)){
+      g_object_get(G_OBJECT(recall->data),
+		   "effect\0", &effect,
+		   NULL);
+    }else if(AGS_IS_RECALL_LV2(recall->data)){
+      g_object_get(G_OBJECT(recall->data),
+		   "uri\0", &effect,
+		   NULL);
+    }
+    
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
 		       GTK_WIDGET(hbox),
@@ -244,7 +256,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 		       0);
     gtk_widget_show_all((GtkWidget *) hbox);
 
-    recall_ladspa = recall_ladspa->next;
+    recall = recall->next;
   }
 }
 

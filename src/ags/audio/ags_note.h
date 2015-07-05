@@ -52,6 +52,8 @@ struct _AgsNote
 
   gchar *name;
   gdouble frequency;
+
+  gdouble velocity[2];
 };
 
 struct _AgsNoteClass
@@ -60,6 +62,11 @@ struct _AgsNoteClass
 };
 
 GType ags_note_get_type();
+
+GList* ags_note_find_prev(GList *note,
+			  guint x0, guint y);
+GList* ags_note_find_next(GList *note,
+			  guint x0, guint y);
 
 AgsNote* ags_note_duplicate(AgsNote *note);
 

@@ -18,7 +18,7 @@
 
 #include <ags/audio/task/ags_add_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_add_audio_class_init(AgsAddAudioClass *add_audio);
 void ags_add_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -31,12 +31,12 @@ void ags_add_audio_launch(AgsTask *task);
 
 /**
  * SECTION:ags_add_audio
- * @short_description: add audio object to devout
+ * @short_description: add audio object to soundcard
  * @title: AgsAddAudio
  * @section_id:
  * @include: ags/audio/task/ags_add_audio.h
  *
- * The #AgsAddAudio task adds #AgsAudio to #AgsDevout.
+ * The #AgsAddAudio task adds #AgsAudio to #AgsSoundcard.
  */
 
 static gpointer ags_add_audio_parent_class = NULL;
@@ -110,7 +110,7 @@ ags_add_audio_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_add_audio_init(AgsAddAudio *add_audio)
 {
-  add_audio->devout = NULL;
+  add_audio->soundcard = NULL;
   add_audio->audio = NULL;
 }
 
@@ -142,20 +142,28 @@ void
 ags_add_audio_launch(AgsTask *task)
 {
   AgsAddAudio *add_audio;
-
+  GList *list;
+  
   add_audio = AGS_ADD_AUDIO(task);
 
+  //TODO:JK: use AgsSoundcard
+  
   /* add audio */
-  ags_devout_add_audio(add_audio->devout,
-		       G_OBJECT(add_audio->audio));
-
+  g_object_ref(G_OBJECT(add_audio->audio));
+  
+  list = ags_soundcard_get_audio(add_audio->soundcard);
+  list = g_list_prepend(list,
+			add_audio->audio);
+  ags_soundcard_set_audio(add_audio->soundcard,
+			  list);
+  
   /* AgsAudio */
   ags_connectable_connect(AGS_CONNECTABLE(add_audio->audio));
 }
 
 /**
  * ags_add_audio_new:
- * @devout: the #AgsDevout
+ * @soundcard: the #AgsSoundcard
  * @audio: the #AgsAudio to add
  *
  * Creates an #AgsAddAudio.
@@ -165,7 +173,7 @@ ags_add_audio_launch(AgsTask *task)
  * Since: 0.4
  */
 AgsAddAudio*
-ags_add_audio_new(AgsDevout *devout,
+ags_add_audio_new(GObject *soundcard,
 		  AgsAudio *audio)
 {
   AgsAddAudio *add_audio;
@@ -173,7 +181,7 @@ ags_add_audio_new(AgsDevout *devout,
   add_audio = (AgsAddAudio *) g_object_new(AGS_TYPE_ADD_AUDIO,
 					   NULL);
 
-  add_audio->devout = devout;
+  add_audio->soundcard = soundcard;
   add_audio->audio = audio;
 
   return(add_audio);

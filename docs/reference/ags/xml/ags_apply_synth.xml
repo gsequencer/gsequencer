@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsApplySynth">
+<refentry id="AgsApplySynth">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsApplySynth.top_of_page">AgsApplySynth</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsApplySynth.top_of_page">AgsApplySynth</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,99 +14,107 @@
 </refmeta>
 <refnamediv>
 <refname>AgsApplySynth</refname>
-<refpurpose></refpurpose>
+<refpurpose>apply synth to channel</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsApplySynth.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsApplySynth.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsApplySynth"><returnvalue>AgsApplySynth</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-apply-synth-new">ags_apply_synth_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsApplySynth">AgsApplySynth</link>;
-struct              <link linkend="AgsApplySynthClass">AgsApplySynthClass</link>;
-enum                <link linkend="AgsApplySynthWave">AgsApplySynthWave</link>;
-<link linkend="AgsApplySynth"><returnvalue>AgsApplySynth</returnvalue></link> *     <link linkend="ags-apply-synth-new">ags_apply_synth_new</link>                 (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *start_channel</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> count</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> wave</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> frame_count</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> frequency</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> start</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> volume</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> loop_start</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> loop_end</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsApplySynth.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsApplySynth.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsApplySynth" role="struct">
-<title>struct AgsApplySynth</title>
-<indexterm zone="AgsApplySynth"><primary>AgsApplySynth</primary></indexterm>
-<programlisting>struct AgsApplySynth {
-  AgsTask task;
+<refsect1 id="AgsApplySynth.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsApplySynthWave">AgsApplySynthWave</link></entry></row>
 
-  AgsChannel *start_channel;
-  guint count;
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsApplySynth.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsApplySynth
+</screen>
+</refsect1>
 
-  guint wave;
+<refsect1 id="AgsApplySynth.includes"><title>Includes</title><synopsis>#include &lt;ags/synth/task/ags_apply_synth.h&gt;
+</synopsis></refsect1>
 
-  guint attack;
-  guint frame_count;
-  guint frequency;
-  guint phase;
-  guint start;
+<refsect1 id="AgsApplySynth.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsApplySynth"><type>AgsApplySynth</type></link> task apply the specified synth to channel.</para>
 
-  gdouble volume;
+</refsect1>
+<refsect1 id="AgsApplySynth.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-apply-synth-new" role="function" condition="since:0.4">
+<title>ags_apply_synth_new&#160;()</title>
+<indexterm zone="ags-apply-synth-new" role="0.4"><primary>ags_apply_synth_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsApplySynth"><returnvalue>AgsApplySynth</returnvalue></link>&#160;*
+ags_apply_synth_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *start_channel</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> count</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> wave</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> frame_count</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> frequency</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> start</parameter>,
+                     <parameter><link linkend="gdouble"><type>gdouble</type></link> volume</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> loop_start</parameter>,
+                     <parameter><link linkend="guint"><type>guint</type></link> loop_end</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsApplySynth"><type>AgsApplySynth</type></link>.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> an new <link linkend="AgsApplySynth"><type>AgsApplySynth</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  guint loop_start;
-  guint loop_end;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsApplySynthClass" role="struct">
-<title>struct AgsApplySynthClass</title>
-<indexterm zone="AgsApplySynthClass"><primary>AgsApplySynthClass</primary></indexterm>
-<programlisting>struct AgsApplySynthClass {
-  AgsTaskClass task;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsApplySynth.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsApplySynthWave" role="enum">
 <title>enum AgsApplySynthWave</title>
 <indexterm zone="AgsApplySynthWave"><primary>AgsApplySynthWave</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_APPLY_SYNTH_INVALID,
-  AGS_APPLY_SYNTH_SIN,
-  AGS_APPLY_SYNTH_SAW,
-  AGS_APPLY_SYNTH_SQUARE,
-  AGS_APPLY_SYNTH_TRIANGLE,
-} AgsApplySynthWave;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-apply-synth-new" role="function">
-<title>ags_apply_synth_new ()</title>
-<indexterm zone="ags-apply-synth-new"><primary>ags_apply_synth_new</primary></indexterm>
-<programlisting><link linkend="AgsApplySynth"><returnvalue>AgsApplySynth</returnvalue></link> *     ags_apply_synth_new                 (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *start_channel</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> count</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> wave</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> attack</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> frame_count</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> frequency</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> phase</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> start</parameter>,
-                                                         <parameter><link linkend="gdouble"><type>gdouble</type></link> volume</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> loop_start</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> loop_end</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-APPLY-SYNTH-INVALID:CAPS">AGS_APPLY_SYNTH_INVALID</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-APPLY-SYNTH-SIN:CAPS">AGS_APPLY_SYNTH_SIN</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-APPLY-SYNTH-SAW:CAPS">AGS_APPLY_SYNTH_SAW</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-APPLY-SYNTH-SQUARE:CAPS">AGS_APPLY_SYNTH_SQUARE</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-APPLY-SYNTH-TRIANGLE:CAPS">AGS_APPLY_SYNTH_TRIANGLE</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
 </refsect1>
 

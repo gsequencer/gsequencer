@@ -18,10 +18,10 @@
 
 #include <ags/audio/recall/ags_play_recycling.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -236,7 +236,7 @@ ags_play_recycling_duplicate(AgsRecall *recall,
 /**
  * ags_play_recycling_new:
  * @source: the source #AgsRecycling
- * @devout: the #AgsDevout outputting to
+ * @soundcard: the #AgsSoundcard outputting to
  * @audio_channel: the audio channel to use
  *
  * Creates an #AgsPlayRecycling
@@ -247,14 +247,14 @@ ags_play_recycling_duplicate(AgsRecall *recall,
  */
 AgsPlayRecycling*
 ags_play_recycling_new(AgsRecycling *source,
-		       AgsDevout *devout,
+		       GObject *soundcard,
 		       guint audio_channel)
 {
   AgsPlayRecycling *play_recycling;
 
   play_recycling = (AgsPlayRecycling *) g_object_new(AGS_TYPE_PLAY_RECYCLING,
 						     "source\0", source,
-						     "devout\0", devout,
+						     "soundcard\0", soundcard,
 						     "audio_channel\0", audio_channel,
 						     NULL);
 

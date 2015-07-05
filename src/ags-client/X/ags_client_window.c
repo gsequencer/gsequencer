@@ -19,7 +19,7 @@
 #include <ags-client/X/ags_client_window.h>
 #include <ags-client/X/ags_client_window_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_client_window_class_init(AgsClientWindowClass *client_window);
 void ags_client_window_connectable_interface_init(AgsConnectableInterface *connectable);

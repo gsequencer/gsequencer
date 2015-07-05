@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsDrumOutputPad">
+<refentry id="AgsDrumOutputPad">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsDrumOutputPad.top_of_page">AgsDrumOutputPad</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsDrumOutputPad.top_of_page">AgsDrumOutputPad</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,61 +14,103 @@
 </refmeta>
 <refnamediv>
 <refname>AgsDrumOutputPad</refname>
-<refpurpose></refpurpose>
+<refpurpose>drum sequencer output pad</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsDrumOutputPad.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsDrumOutputPad.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsDrumOutputPad"><returnvalue>AgsDrumOutputPad</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-drum-output-pad-new">ags_drum_output_pad_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsDrumOutputPad">AgsDrumOutputPad</link>;
-struct              <link linkend="AgsDrumOutputPadClass">AgsDrumOutputPadClass</link>;
-enum                <link linkend="AgsDrumOutputPadFlags">AgsDrumOutputPadFlags</link>;
-<link linkend="AgsDrumOutputPad"><returnvalue>AgsDrumOutputPad</returnvalue></link> *  <link linkend="ags-drum-output-pad-new">ags_drum_output_pad_new</link>             (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsDrumOutputPad.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsDrumOutputPad.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsDrumOutputPad" role="struct">
-<title>struct AgsDrumOutputPad</title>
-<indexterm zone="AgsDrumOutputPad"><primary>AgsDrumOutputPad</primary></indexterm>
-<programlisting>struct AgsDrumOutputPad {
-  AgsPad pad;
+<refsect1 id="AgsDrumOutputPad.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsDrumOutputPadFlags">AgsDrumOutputPadFlags</link></entry></row>
 
-  guint flags;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsDrumOutputPadClass" role="struct">
-<title>struct AgsDrumOutputPadClass</title>
-<indexterm zone="AgsDrumOutputPadClass"><primary>AgsDrumOutputPadClass</primary></indexterm>
-<programlisting>struct AgsDrumOutputPadClass {
-  AgsPadClass pad;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDrumOutputPad.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPad">AgsPad</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsDrumOutputPad
+</screen>
+</refsect1>
+
+<refsect1 id="AgsDrumOutputPad.includes"><title>Includes</title><synopsis>#include &lt;ags/X/machine/ags_drum_output_pad.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsDrumOutputPad.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsDrumOutputPad"><type>AgsDrumOutputPad</type></link> is a composite widget to act as drum sequencer output pad.</para>
+
+</refsect1>
+<refsect1 id="AgsDrumOutputPad.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-drum-output-pad-new" role="function" condition="since:0.4">
+<title>ags_drum_output_pad_new&#160;()</title>
+<indexterm zone="ags-drum-output-pad-new" role="0.4"><primary>ags_drum_output_pad_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsDrumOutputPad"><returnvalue>AgsDrumOutputPad</returnvalue></link>&#160;*
+ags_drum_output_pad_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsDrumOutputPad"><type>AgsDrumOutputPad</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the assigned channel</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsDrumOutputPad"><type>AgsDrumOutputPad</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsDrumOutputPad.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsDrumOutputPadFlags" role="enum">
 <title>enum AgsDrumOutputPadFlags</title>
 <indexterm zone="AgsDrumOutputPadFlags"><primary>AgsDrumOutputPadFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_DRUM_OUTPUT_PAD_PLAY_DONE  = 1,
-} AgsDrumOutputPadFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-drum-output-pad-new" role="function">
-<title>ags_drum_output_pad_new ()</title>
-<indexterm zone="ags-drum-output-pad-new"><primary>ags_drum_output_pad_new</primary></indexterm>
-<programlisting><link linkend="AgsDrumOutputPad"><returnvalue>AgsDrumOutputPad</returnvalue></link> *  ags_drum_output_pad_new             (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DRUM-OUTPUT-PAD-PLAY-DONE:CAPS">AGS_DRUM_OUTPUT_PAD_PLAY_DONE</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
 </refsect1>
 

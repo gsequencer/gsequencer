@@ -20,8 +20,6 @@
 
 #include <ags/object/ags_marshal.h>
 
-#include <ags/plugin/ags_ladspa_manager.h>
-
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -243,6 +241,10 @@ ags_ladspa_manager_load_file(gchar *filename)
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+  if(filename == NULL){
+    return;
+  }
+
   ladspa_manager = ags_ladspa_manager_get_instance();
 
   pthread_mutex_lock(&(mutex));
@@ -328,7 +330,6 @@ ags_ladspa_manager_effect_index(gchar *filename,
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
-  LADSPA_PortDescriptor *port_descriptor;
 
   unsigned long index;
   unsigned long i;
@@ -396,7 +397,6 @@ ags_ladspa_manager_get_instance()
 
 /**
  * ags_ladspa_manager_new:
- * @devout: an #AgsDevout
  *
  * Creates an #AgsLadspaManager
  *

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsAudioLoop">
+<refentry id="AgsAudioLoop">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsAudioLoop.top_of_page">AgsAudioLoop</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsAudioLoop.top_of_page">AgsAudioLoop</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,169 +14,397 @@
 </refmeta>
 <refnamediv>
 <refname>AgsAudioLoop</refname>
-<refpurpose></refpurpose>
+<refpurpose>audio loop</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsAudioLoop.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsAudioLoop.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-AUDIO-LOOP-DEFAULT-JIFFIE:CAPS">AGS_AUDIO_LOOP_DEFAULT_JIFFIE</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-loop-add-audio">ags_audio_loop_add_audio</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-loop-remove-audio">ags_audio_loop_remove_audio</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-loop-add-channel">ags_audio_loop_add_channel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-loop-remove-channel">ags_audio_loop_remove_channel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-loop-add-recall">ags_audio_loop_add_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-loop-remove-recall">ags_audio_loop_remove_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-audio-loop-stopped-all">ags_audio_loop_stopped_all</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsAudioLoop"><returnvalue>AgsAudioLoop</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-audio-loop-new">ags_audio_loop_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-AUDIO-LOOP-DEFAULT-JIFFIE:CAPS">AGS_AUDIO_LOOP_DEFAULT_JIFFIE</link>
-struct              <link linkend="AgsAudioLoop">AgsAudioLoop</link>;
-struct              <link linkend="AgsAudioLoopClass">AgsAudioLoopClass</link>;
-enum                <link linkend="AgsAudioLoopFlags">AgsAudioLoopFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-loop-add-audio">ags_audio_loop_add_audio</link>            (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-loop-add-channel">ags_audio_loop_add_channel</link>          (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-loop-add-recall">ags_audio_loop_add_recall</link>           (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>);
-<link linkend="AgsAudioLoop"><returnvalue>AgsAudioLoop</returnvalue></link> *      <link linkend="ags-audio-loop-new">ags_audio_loop_new</link>                  (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *ags_main</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-loop-remove-audio">ags_audio_loop_remove_audio</link>         (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-loop-remove-channel">ags_audio_loop_remove_channel</link>       (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-audio-loop-remove-recall">ags_audio_loop_remove_recall</link>        (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsAudioLoop.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsAudioLoop.details" role="details">
-<title role="details.title">Details</title>
+<refsect1 id="AgsAudioLoop.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudioLoop--application-context">application-context</link></entry><entry role="property_flags">Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsAudioLoop--application-mutex">application-mutex</link></entry><entry role="property_flags">Read</entry></row>
+<row><entry role="property_type"><link linkend="AgsAudio"><type>AgsAudio</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudioLoop--play-audio">play-audio</link></entry><entry role="property_flags">Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsChannel"><type>AgsChannel</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudioLoop--play-channel">play-channel</link></entry><entry role="property_flags">Write</entry></row>
+<row><entry role="property_type"><link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudioLoop--play-recall">play-recall</link></entry><entry role="property_flags">Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudioLoop--soundcard">soundcard</link></entry><entry role="property_flags">Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAudioLoop.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsAudioLoop-stopped-all">stopped-all</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAudioLoop.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsAudioLoopFlags">AgsAudioLoopFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAudioLoop.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsThread">AgsThread</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAudioLoop
+</screen>
+</refsect1>
+
+<refsect1 id="AgsAudioLoop.includes"><title>Includes</title><synopsis>#include &lt;ags/thread/ags_audio_loop.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsAudioLoop.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> is suitable as <link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> and does
+audio processing.</para>
+
+</refsect1>
+<refsect1 id="AgsAudioLoop.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="AGS-AUDIO-LOOP-DEFAULT-JIFFIE:CAPS" role="macro">
 <title>AGS_AUDIO_LOOP_DEFAULT_JIFFIE</title>
 <indexterm zone="AGS-AUDIO-LOOP-DEFAULT-JIFFIE:CAPS"><primary>AGS_AUDIO_LOOP_DEFAULT_JIFFIE</primary></indexterm>
-<programlisting>#define AGS_AUDIO_LOOP_DEFAULT_JIFFIE (48.0)
+<programlisting language="C">#define AGS_AUDIO_LOOP_DEFAULT_JIFFIE (48.0)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsAudioLoop" role="struct">
-<title>struct AgsAudioLoop</title>
-<indexterm zone="AgsAudioLoop"><primary>AgsAudioLoop</primary></indexterm>
-<programlisting>struct AgsAudioLoop {
-  AgsThread thread;
+</refsect2>
+<refsect2 id="ags-audio-loop-add-audio" role="function" condition="since:0.4">
+<title>ags_audio_loop_add_audio&#160;()</title>
+<indexterm zone="ags-audio-loop-add-audio" role="0.4"><primary>ags_audio_loop_add_audio</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_loop_add_audio (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
+                          <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
+<para>Add audio for playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-loop-remove-audio" role="function" condition="since:0.4">
+<title>ags_audio_loop_remove_audio&#160;()</title>
+<indexterm zone="ags-audio-loop-remove-audio" role="0.4"><primary>ags_audio_loop_remove_audio</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_loop_remove_audio (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
+                             <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
+<para>Remove audio of playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsAudio"><type>AgsAudio</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-loop-add-channel" role="function" condition="since:0.4">
+<title>ags_audio_loop_add_channel&#160;()</title>
+<indexterm zone="ags-audio-loop-add-channel" role="0.4"><primary>ags_audio_loop_add_channel</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_loop_add_channel (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
+                            <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>);</programlisting>
+<para>Add channel for playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsChannel"><type>AgsChannel</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-loop-remove-channel" role="function" condition="since:0.4">
+<title>ags_audio_loop_remove_channel&#160;()</title>
+<indexterm zone="ags-audio-loop-remove-channel" role="0.4"><primary>ags_audio_loop_remove_channel</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_loop_remove_channel (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
+                               <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>);</programlisting>
+<para>Remove channel of playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsChannel"><type>AgsChannel</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-loop-add-recall" role="function" condition="since:0.4">
+<title>ags_audio_loop_add_recall&#160;()</title>
+<indexterm zone="ags-audio-loop-add-recall" role="0.4"><primary>ags_audio_loop_add_recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_loop_add_recall (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
+                           <parameter><link linkend="GObject"><type>GObject</type></link> *playback</parameter>);</programlisting>
+<para>Add recall for playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-audio-loop-remove-recall" role="function" condition="since:0.4.3">
+<title>ags_audio_loop_remove_recall&#160;()</title>
+<indexterm zone="ags-audio-loop-remove-recall" role="0.4.3"><primary>ags_audio_loop_remove_recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_loop_remove_recall (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
+                              <parameter><link linkend="GObject"><type>GObject</type></link> *playback</parameter>);</programlisting>
+<para>Remove recall of playback.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecall"><type>AgsRecall</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-audio-loop-stopped-all" role="function">
+<title>ags_audio_loop_stopped_all&#160;()</title>
+<indexterm zone="ags-audio-loop-stopped-all"><primary>ags_audio_loop_stopped_all</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_audio_loop_stopped_all (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-audio-loop-new" role="function" condition="since:0.4">
+<title>ags_audio_loop_new&#160;()</title>
+<indexterm zone="ags-audio-loop-new" role="0.4"><primary>ags_audio_loop_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAudioLoop"><returnvalue>AgsAudioLoop</returnvalue></link>&#160;*
+ags_audio_loop_new (<parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>,
+                    <parameter><link linkend="GObject"><type>GObject</type></link> *application_context</parameter>);</programlisting>
+<para>Create a new <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the <link linkend="GObject"><type>GObject</type></link> implementing <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>application_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMain"><type>AgsMain</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the new <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
 
-  guint flags;
-
-  volatile guint tic;
-  volatile guint last_sync;
-
-  GCond cond;
-  GMutex mutex;
-
-  gdouble frequency;
-
-  GObject *ags_main;
-
-  AgsAsyncQueue *async_queue;
-  
-  AgsThread *task_thread;
-  AgsThread *gui_thread;
-  AgsThread *devout_thread;
-  AgsThread *export_thread;
-
-  pthread_mutex_t recall_mutex;
-
-  guint play_recall_ref;
-  GList *play_recall; // play AgsRecall
-
-  guint play_channel_ref;
-  GList *play_channel; // play AgsChannel
-
-  guint play_audio_ref;
-  GList *play_audio; // play AgsAudio
-
-  guint play_notation_ref;
-  GList *play_notation;
-
-  GList *tree_sanity;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsAudioLoopClass" role="struct">
-<title>struct AgsAudioLoopClass</title>
-<indexterm zone="AgsAudioLoopClass"><primary>AgsAudioLoopClass</primary></indexterm>
-<programlisting>struct AgsAudioLoopClass {
-  AgsThreadClass thread;
-};
-</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsAudioLoop.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AgsAudioLoopFlags" role="enum">
 <title>enum AgsAudioLoopFlags</title>
 <indexterm zone="AgsAudioLoopFlags"><primary>AgsAudioLoopFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_AUDIO_LOOP_PLAY_RECALL                    = 1,
-  AGS_AUDIO_LOOP_PLAYING_RECALL                 = 1 &lt;&lt; 1,
-  AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING        = 1 &lt;&lt; 2,
-  AGS_AUDIO_LOOP_PLAY_CHANNEL                   = 1 &lt;&lt; 3,
-  AGS_AUDIO_LOOP_PLAYING_CHANNEL                = 1 &lt;&lt; 4,
-  AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING       = 1 &lt;&lt; 5,
-  AGS_AUDIO_LOOP_PLAY_AUDIO                     = 1 &lt;&lt; 6,
-  AGS_AUDIO_LOOP_PLAYING_AUDIO                  = 1 &lt;&lt; 7,
-  AGS_AUDIO_LOOP_PLAY_NOTATION                  = 1 &lt;&lt; 8,
-  AGS_AUDIO_LOOP_PLAYING_NOTATION               = 1 &lt;&lt; 9,
-  AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 &lt;&lt; 10,
-} AgsAudioLoopFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-loop-add-audio" role="function">
-<title>ags_audio_loop_add_audio ()</title>
-<indexterm zone="ags-audio-loop-add-audio"><primary>ags_audio_loop_add_audio</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_loop_add_audio            (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-loop-add-channel" role="function">
-<title>ags_audio_loop_add_channel ()</title>
-<indexterm zone="ags-audio-loop-add-channel"><primary>ags_audio_loop_add_channel</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_loop_add_channel          (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-loop-add-recall" role="function">
-<title>ags_audio_loop_add_recall ()</title>
-<indexterm zone="ags-audio-loop-add-recall"><primary>ags_audio_loop_add_recall</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_loop_add_recall           (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-loop-new" role="function">
-<title>ags_audio_loop_new ()</title>
-<indexterm zone="ags-audio-loop-new"><primary>ags_audio_loop_new</primary></indexterm>
-<programlisting><link linkend="AgsAudioLoop"><returnvalue>AgsAudioLoop</returnvalue></link> *      ags_audio_loop_new                  (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *ags_main</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-loop-remove-audio" role="function">
-<title>ags_audio_loop_remove_audio ()</title>
-<indexterm zone="ags-audio-loop-remove-audio"><primary>ags_audio_loop_remove_audio</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_loop_remove_audio         (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *audio</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-loop-remove-channel" role="function">
-<title>ags_audio_loop_remove_channel ()</title>
-<indexterm zone="ags-audio-loop-remove-channel"><primary>ags_audio_loop_remove_channel</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_loop_remove_channel       (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *channel</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-audio-loop-remove-recall" role="function">
-<title>ags_audio_loop_remove_recall ()</title>
-<indexterm zone="ags-audio-loop-remove-recall"><primary>ags_audio_loop_remove_recall</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_audio_loop_remove_recall        (<parameter><link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop</parameter>,
-                                                         <parameter><link linkend="GObject"><type>GObject</type></link> *recall</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAY-RECALL:CAPS">AGS_AUDIO_LOOP_PLAY_RECALL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAYING-RECALL:CAPS">AGS_AUDIO_LOOP_PLAYING_RECALL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAY-RECALL-TERMINATING:CAPS">AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAY-CHANNEL:CAPS">AGS_AUDIO_LOOP_PLAY_CHANNEL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAYING-CHANNEL:CAPS">AGS_AUDIO_LOOP_PLAYING_CHANNEL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAY-CHANNEL-TERMINATING:CAPS">AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAY-AUDIO:CAPS">AGS_AUDIO_LOOP_PLAY_AUDIO</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAYING-AUDIO:CAPS">AGS_AUDIO_LOOP_PLAYING_AUDIO</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAY-NOTATION:CAPS">AGS_AUDIO_LOOP_PLAY_NOTATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAYING-NOTATION:CAPS">AGS_AUDIO_LOOP_PLAYING_NOTATION</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-AUDIO-LOOP-PLAY-AUDIO-TERMINATING:CAPS">AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsAudioLoop.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsAudioLoop--application-context" role="property"><title>The <literal>“application-context”</literal> property</title>
+<indexterm zone="AgsAudioLoop--application-context" role="0.4"><primary>AgsAudioLoop:application-context</primary></indexterm>
+<programlisting>  “application-context”      <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>.</para>
+<para>Flags: Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsAudioLoop--application-mutex" role="property"><title>The <literal>“application-mutex”</literal> property</title>
+<indexterm zone="AgsAudioLoop--application-mutex" role="0.4"><primary>AgsAudioLoop:application-mutex</primary></indexterm>
+<programlisting>  “application-mutex”        <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The assigned <link linkend="AgsApplicationMutex"><type>AgsApplicationMutex</type></link>.</para>
+<para>Flags: Read</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsAudioLoop--play-audio" role="property"><title>The <literal>“play-audio”</literal> property</title>
+<indexterm zone="AgsAudioLoop--play-audio" role="0.4"><primary>AgsAudioLoop:play-audio</primary></indexterm>
+<programlisting>  “play-audio”               <link linkend="AgsAudio"><type>AgsAudio</type></link>&#160;*</programlisting>
+<para>An <link linkend="AgsAudio"><type>AgsAudio</type></link> to add for playback.</para>
+<para>Flags: Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsAudioLoop--play-channel" role="property"><title>The <literal>“play-channel”</literal> property</title>
+<indexterm zone="AgsAudioLoop--play-channel" role="0.4"><primary>AgsAudioLoop:play-channel</primary></indexterm>
+<programlisting>  “play-channel”             <link linkend="AgsChannel"><type>AgsChannel</type></link>&#160;*</programlisting>
+<para>An <link linkend="AgsChannel"><type>AgsChannel</type></link> to add for playback.</para>
+<para>Flags: Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsAudioLoop--play-recall" role="property"><title>The <literal>“play-recall”</literal> property</title>
+<indexterm zone="AgsAudioLoop--play-recall" role="0.4"><primary>AgsAudioLoop:play-recall</primary></indexterm>
+<programlisting>  “play-recall”              <link linkend="AgsRecall"><type>AgsRecall</type></link>&#160;*</programlisting>
+<para>An <link linkend="AgsRecall"><type>AgsRecall</type></link> to add for playback.</para>
+<para>Flags: Write</para>
+<para role="since">Since 0.4</para></refsect2>
+<refsect2 id="AgsAudioLoop--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
+<indexterm zone="AgsAudioLoop--soundcard" role="0.4"><primary>AgsAudioLoop:soundcard</primary></indexterm>
+<programlisting>  “soundcard”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link>.</para>
+<para>Flags: Write</para>
+<para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsAudioLoop.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsAudioLoop-stopped-all" role="signal"><title>The <literal>“stopped-all”</literal> signal</title>
+<indexterm zone="AgsAudioLoop-stopped-all"><primary>AgsAudioLoop::stopped-all</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link> *audio_loop,
+               <link linkend="gpointer"><type>gpointer</type></link>      user_data)</programlisting>
+<para>The ::stopped-all signal notifies about stopped playback..</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_loop</para></entry>
+<entry role="parameter_description"><para>the object that stopped</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

@@ -18,7 +18,9 @@
 
 #include <ags/audio/task/ags_cancel_channel.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
+
+#include <ags/audio/ags_playback.h>
 
 void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);
 void ags_cancel_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -113,7 +115,7 @@ ags_cancel_channel_init(AgsCancelChannel *cancel_channel)
   cancel_channel->channel = NULL;
   cancel_channel->recall_id = NULL;
 
-  cancel_channel->play = NULL;
+  cancel_channel->playback = NULL;
 }
 
 void
@@ -151,17 +153,17 @@ ags_cancel_channel_launch(AgsTask *task)
   channel = cancel_channel->channel;
 
   /* cancel playback */
-  if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){
+  if(AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){
     return;
   }
 
-  g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+  g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
   ags_channel_tillrecycling_cancel(channel,
-				   AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+				   AGS_PLAYBACK(channel->playback)->recall_id[0]);
 
   /* set remove flag */
-  AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
-  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+  AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
+  AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
 }
 
 /**
@@ -178,7 +180,7 @@ ags_cancel_channel_launch(AgsTask *task)
  */
 AgsCancelChannel*
 ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
-		       AgsDevoutPlay *play)
+		       GObject *playback)
 {
   AgsCancelChannel *cancel_channel;
 
@@ -188,7 +190,7 @@ ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
   cancel_channel->channel = channel;
   cancel_channel->recall_id = recall_id;
 
-  cancel_channel->play = play;
+  cancel_channel->playback = playback;
 
   return(cancel_channel);
 }

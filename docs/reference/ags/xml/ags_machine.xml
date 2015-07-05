@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsMachine">
+<refentry id="AgsMachine">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsMachine.top_of_page">AgsMachine</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsMachine.top_of_page">AgsMachine</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,187 +14,474 @@
 </refmeta>
 <refnamediv>
 <refname>AgsMachine</refname>
-<refpurpose></refpurpose>
+<refpurpose>visualize audio object.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsMachine.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsMachine.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-set-audio-channels">ags_machine_set_audio_channels</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-set-pads">ags_machine_set_pads</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-add-default-recalls">ags_machine_add_default_recalls</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-map-recall">ags_machine_map_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GtkListStore"><returnvalue>GtkListStore</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-machine-get-possible-links">ags_machine_get_possible_links</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-machine-find-by-name">ags_machine_find_by_name</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-machine-find-port">ags_machine_find_port</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-set-run">ags_machine_set_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GtkFileChooserDialog"><returnvalue>GtkFileChooserDialog</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-machine-file-chooser-dialog-new">ags_machine_file_chooser_dialog_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-open-files">ags_machine_open_files</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-machine-new">ags_machine_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>#define             <link linkend="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS">AGS_MACHINE_DEFAULT_BUILD_ID</link>
-#define             <link linkend="AGS-MACHINE-DEFAULT-VERSION:CAPS">AGS_MACHINE_DEFAULT_VERSION</link>
-struct              <link linkend="AgsMachine">AgsMachine</link>;
-struct              <link linkend="AgsMachineClass">AgsMachineClass</link>;
-enum                <link linkend="AgsMachineFileInputFlags">AgsMachineFileInputFlags</link>;
-enum                <link linkend="AgsMachineFlags">AgsMachineFlags</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-add-default-recalls">ags_machine_add_default_recalls</link>     (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="GtkFileChooserDialog"><returnvalue>GtkFileChooserDialog</returnvalue></link> * <link linkend="ags-machine-file-chooser-dialog-new">ags_machine_file_chooser_dialog_new</link>
-                                                        (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link> *        <link linkend="ags-machine-find-by-name">ags_machine_find_by_name</link>            (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *name</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-find-port">ags_machine_find_port</link>               (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="GtkListStore"><returnvalue>GtkListStore</returnvalue></link> *      <link linkend="ags-machine-get-possible-links">ags_machine_get_possible_links</link>      (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);
-<link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link> *        <link linkend="ags-machine-new">ags_machine_new</link>                     (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-open-files">ags_machine_open_files</link>              (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
-                                                         <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-set-run">ags_machine_set_run</link>                 (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> run</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsMachine.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsMachine.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS" role="macro">
-<title>AGS_MACHINE_DEFAULT_BUILD_ID</title>
-<indexterm zone="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS"><primary>AGS_MACHINE_DEFAULT_BUILD_ID</primary></indexterm>
-<programlisting>#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
-</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsMachine.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsAudio"><type>AgsAudio</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsMachine--audio">audio</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMachine.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMachine-find-port">find-port</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsMachine-map-recall">map-recall</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMachine.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MACHINE-DEFAULT-VERSION:CAPS">AGS_MACHINE_DEFAULT_VERSION</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS">AGS_MACHINE_DEFAULT_BUILD_ID</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsMachineFlags">AgsMachineFlags</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsMachineFileInputFlags">AgsMachineFileInputFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMachine.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkHandleBox">GtkHandleBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMachine
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDrum">AgsDrum</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsFFPlayer">AgsFFPlayer</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLadspaBridge">AgsLadspaBridge</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLv2Bridge">AgsLv2Bridge</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMatrix">AgsMatrix</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMixer">AgsMixer</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPanel">AgsPanel</link>
+                                <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsReplicatorBridge">AgsReplicatorBridge</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsSynth">AgsSynth</link>
+</screen>
+</refsect1>
+
+<refsect1 id="AgsMachine.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_machine.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsMachine.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsMachine"><type>AgsMachine</type></link> is a composite widget to act as base class to visualize <link linkend="AgsAudio"><type>AgsAudio</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsMachine.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-machine-set-audio-channels" role="function">
+<title>ags_machine_set_audio_channels&#160;()</title>
+<indexterm zone="ags-machine-set-audio-channels"><primary>ags_machine_set_audio_channels</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_set_audio_channels (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> audio_channels</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> audio_channels_old</parameter>,
+                                <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-set-pads" role="function">
+<title>ags_machine_set_pads&#160;()</title>
+<indexterm zone="ags-machine-set-pads"><primary>ags_machine_set_pads</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_set_pads (<parameter><link linkend="AgsAudio"><type>AgsAudio</type></link> *audio</parameter>,
+                      <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
+                      <parameter><link linkend="guint"><type>guint</type></link> pads</parameter>,
+                      <parameter><link linkend="guint"><type>guint</type></link> pads_old</parameter>,
+                      <parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-add-default-recalls" role="function" condition="deprecated:">
+<title>ags_machine_add_default_recalls&#160;()</title>
+<indexterm zone="ags-machine-add-default-recalls" role="deprecated"><primary>ags_machine_add_default_recalls</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_add_default_recalls (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<warning><para><literal>ags_machine_add_default_recalls</literal> is deprecated and should not be used in newly-written code.</para></warning>
+</refsect2>
+<refsect2 id="ags-machine-map-recall" role="function">
+<title>ags_machine_map_recall&#160;()</title>
+<indexterm zone="ags-machine-map-recall"><primary>ags_machine_map_recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_map_recall (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>You may want the <parameter>machine</parameter>
+ to add its default recall.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMachine"><type>AgsMachine</type></link> to add its default recall.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-machine-get-possible-links" role="function" condition="since:0.4">
+<title>ags_machine_get_possible_links&#160;()</title>
+<indexterm zone="ags-machine-get-possible-links" role="0.4"><primary>ags_machine_get_possible_links</primary></indexterm>
+<programlisting language="C"><link linkend="GtkListStore"><returnvalue>GtkListStore</returnvalue></link>&#160;*
+ags_machine_get_possible_links (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>Find links suitable for <parameter>machine</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMachine"><type>AgsMachine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GtkListStore"><type>GtkListStore</type></link> containing one column with a string representing
+machines by its type and name.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-machine-find-by-name" role="function" condition="since:0.3">
+<title>ags_machine_find_by_name&#160;()</title>
+<indexterm zone="ags-machine-find-by-name" role="0.3"><primary>ags_machine_find_by_name</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link>&#160;*
+ags_machine_find_by_name (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
+                          <parameter><link linkend="char"><type>char</type></link> *name</parameter>);</programlisting>
+<para>Find the specified by <parameter>name</parameter>
+ machine.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>list</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> of <link linkend="AgsMachine"><type>AgsMachine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>name</para></entry>
+<entry role="parameter_description"><para>the name of machine</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+<refsect2 id="ags-machine-find-port" role="function" condition="since:0.4">
+<title>ags_machine_find_port&#160;()</title>
+<indexterm zone="ags-machine-find-port" role="0.4"><primary>ags_machine_find_port</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_machine_find_port (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>Lookup ports of associated recalls.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMachine"><type>AgsMachine</type></link>
+Returns: an <link linkend="GList"><type>GList</type></link> containing all related <link linkend="AgsPort"><type>AgsPort</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-machine-set-run" role="function" condition="since:0.4">
+<title>ags_machine_set_run&#160;()</title>
+<indexterm zone="ags-machine-set-run" role="0.4"><primary>ags_machine_set_run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_set_run (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
+                     <parameter><link linkend="gboolean"><type>gboolean</type></link> run</parameter>);</programlisting>
+<para>Start/stop playback of <parameter>machine</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMachine"><type>AgsMachine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>run</para></entry>
+<entry role="parameter_description"><para>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> playback is started, otherwise stopped</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-machine-file-chooser-dialog-new" role="function" condition="since:0.4">
+<title>ags_machine_file_chooser_dialog_new&#160;()</title>
+<indexterm zone="ags-machine-file-chooser-dialog-new" role="0.4"><primary>ags_machine_file_chooser_dialog_new</primary></indexterm>
+<programlisting language="C"><link linkend="GtkFileChooserDialog"><returnvalue>GtkFileChooserDialog</returnvalue></link>&#160;*
+ags_machine_file_chooser_dialog_new (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>Creates a new machine file chooser dialog in order to
+open audio files.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMachine"><type>AgsMachine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-machine-open-files" role="function" condition="since:0.4">
+<title>ags_machine_open_files&#160;()</title>
+<indexterm zone="ags-machine-open-files" role="0.4"><primary>ags_machine_open_files</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_open_files (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
+                        <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
+                        <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
+                        <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);</programlisting>
+<para>Opens audio files and modifies or creates new channels if wished.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMachine"><type>AgsMachine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>filenames</para></entry>
+<entry role="parameter_description"><para>the filenames</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>overwrite_channels</para></entry>
+<entry role="parameter_description"><para>reset channels</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>create_channels</para></entry>
+<entry role="parameter_description"><para>instantiate new channels</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+<refsect2 id="ags-machine-new" role="function" condition="since:0.3">
+<title>ags_machine_new&#160;()</title>
+<indexterm zone="ags-machine-new" role="0.3"><primary>ags_machine_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link>&#160;*
+ags_machine_new (<parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsMachine"><type>AgsMachine</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the assigned soundcard.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsMachine"><type>AgsMachine</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMachine.other_details" role="details">
+<title role="details.title">Types and Values</title>
 <refsect2 id="AGS-MACHINE-DEFAULT-VERSION:CAPS" role="macro">
 <title>AGS_MACHINE_DEFAULT_VERSION</title>
 <indexterm zone="AGS-MACHINE-DEFAULT-VERSION:CAPS"><primary>AGS_MACHINE_DEFAULT_VERSION</primary></indexterm>
-<programlisting>#define AGS_MACHINE_DEFAULT_VERSION "0.4.2\0"
+<programlisting language="C">#define AGS_MACHINE_DEFAULT_VERSION "0.4.2\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMachine" role="struct">
-<title>struct AgsMachine</title>
-<indexterm zone="AgsMachine"><primary>AgsMachine</primary></indexterm>
-<programlisting>struct AgsMachine {
-  GtkHandleBox handle_box;
-
-  GObject *ags_main;
-
-  char *name;
-
-  gchar *version;
-  gchar *build_id;
-
-  guint flags;
-  guint file_input_flags;
-
-  AgsAudio *audio;
-
-  GtkToggleButton *play;
-
-  GType output_pad_type;
-  GType output_line_type;
-  GtkContainer *output;
-
-  GType input_pad_type;
-  GType input_line_type;
-  GtkContainer *input;
-
-  GList *port;
-
-  GtkMenu *popup;
-  GtkDialog *properties;
-  GtkDialog *rename;
-};
+</refsect2>
+<refsect2 id="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS" role="macro">
+<title>AGS_MACHINE_DEFAULT_BUILD_ID</title>
+<indexterm zone="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS"><primary>AGS_MACHINE_DEFAULT_BUILD_ID</primary></indexterm>
+<programlisting language="C">#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMachineClass" role="struct">
-<title>struct AgsMachineClass</title>
-<indexterm zone="AgsMachineClass"><primary>AgsMachineClass</primary></indexterm>
-<programlisting>struct AgsMachineClass {
-  GtkHandleBoxClass handle_box;
-
-  void (*add_default_recalls)(AgsMachine *machine);
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMachineFileInputFlags" role="enum">
-<title>enum AgsMachineFileInputFlags</title>
-<indexterm zone="AgsMachineFileInputFlags"><primary>AgsMachineFileInputFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_MACHINE_ACCEPT_WAV          = 1,
-  AGS_MACHINE_ACCEPT_OGG          = 1 &lt;&lt;  1,
-  AGS_MACHINE_ACCEPT_SOUNDFONT2   = 1 &lt;&lt;  2,
-} AgsMachineFileInputFlags;
-</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
 <refsect2 id="AgsMachineFlags" role="enum">
 <title>enum AgsMachineFlags</title>
 <indexterm zone="AgsMachineFlags"><primary>AgsMachineFlags</primary></indexterm>
-<programlisting>typedef enum {
-  AGS_MACHINE_SOLO              = 1,
-  AGS_MACHINE_IS_EFFECT         = 1 &lt;&lt;  1,
-  AGS_MACHINE_IS_SEQUENCER      = 1 &lt;&lt;  2,
-  AGS_MACHINE_IS_SYNTHESIZER    = 1 &lt;&lt;  3,
-  AGS_MACHINE_TAKES_FILE_INPUT  = 1 &lt;&lt;  4,
-  AGS_MACHINE_MAPPED_RECALL     = 1 &lt;&lt;  5,
-  AGS_MACHINE_PREMAPPED_RECALL  = 1 &lt;&lt;  6,
-  AGS_MACHINE_BLOCK_PLAY        = 1 &lt;&lt;  7,
-  AGS_MACHINE_BLOCK_STOP        = 1 &lt;&lt;  8,
-} AgsMachineFlags;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-add-default-recalls" role="function">
-<title>ags_machine_add_default_recalls ()</title>
-<indexterm zone="ags-machine-add-default-recalls"><primary>ags_machine_add_default_recalls</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_add_default_recalls     (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-file-chooser-dialog-new" role="function">
-<title>ags_machine_file_chooser_dialog_new ()</title>
-<indexterm zone="ags-machine-file-chooser-dialog-new"><primary>ags_machine_file_chooser_dialog_new</primary></indexterm>
-<programlisting><link linkend="GtkFileChooserDialog"><returnvalue>GtkFileChooserDialog</returnvalue></link> * ags_machine_file_chooser_dialog_new
-                                                        (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-find-by-name" role="function">
-<title>ags_machine_find_by_name ()</title>
-<indexterm zone="ags-machine-find-by-name"><primary>ags_machine_find_by_name</primary></indexterm>
-<programlisting><link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link> *        ags_machine_find_by_name            (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
-                                                         <parameter><link linkend="char"><type>char</type></link> *name</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-find-port" role="function">
-<title>ags_machine_find_port ()</title>
-<indexterm zone="ags-machine-find-port"><primary>ags_machine_find_port</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_find_port               (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-get-possible-links" role="function">
-<title>ags_machine_get_possible_links ()</title>
-<indexterm zone="ags-machine-get-possible-links"><primary>ags_machine_get_possible_links</primary></indexterm>
-<programlisting><link linkend="GtkListStore"><returnvalue>GtkListStore</returnvalue></link> *      ags_machine_get_possible_links      (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-new" role="function">
-<title>ags_machine_new ()</title>
-<indexterm zone="ags-machine-new"><primary>ags_machine_new</primary></indexterm>
-<programlisting><link linkend="AgsMachine"><returnvalue>AgsMachine</returnvalue></link> *        ags_machine_new                     (<parameter><link linkend="GObject"><type>GObject</type></link> *devout</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-open-files" role="function">
-<title>ags_machine_open_files ()</title>
-<indexterm zone="ags-machine-open-files"><primary>ags_machine_open_files</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_open_files              (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
-                                                         <parameter><link linkend="GSList"><type>GSList</type></link> *filenames</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> overwrite_channels</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> create_channels</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-set-run" role="function">
-<title>ags_machine_set_run ()</title>
-<indexterm zone="ags-machine-set-run"><primary>ags_machine_set_run</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_set_run                 (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> run</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-SOLO:CAPS">AGS_MACHINE_SOLO</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-IS-EFFECT:CAPS">AGS_MACHINE_IS_EFFECT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-IS-SEQUENCER:CAPS">AGS_MACHINE_IS_SEQUENCER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-IS-SYNTHESIZER:CAPS">AGS_MACHINE_IS_SYNTHESIZER</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-TAKES-FILE-INPUT:CAPS">AGS_MACHINE_TAKES_FILE_INPUT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-MAPPED-RECALL:CAPS">AGS_MACHINE_MAPPED_RECALL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-PREMAPPED-RECALL:CAPS">AGS_MACHINE_PREMAPPED_RECALL</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-BLOCK-PLAY:CAPS">AGS_MACHINE_BLOCK_PLAY</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-BLOCK-STOP:CAPS">AGS_MACHINE_BLOCK_STOP</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-CONNECTED:CAPS">AGS_MACHINE_CONNECTED</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="AgsMachineFileInputFlags" role="enum">
+<title>enum AgsMachineFileInputFlags</title>
+<indexterm zone="AgsMachineFileInputFlags"><primary>AgsMachineFileInputFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-ACCEPT-WAV:CAPS">AGS_MACHINE_ACCEPT_WAV</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-ACCEPT-OGG:CAPS">AGS_MACHINE_ACCEPT_OGG</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MACHINE-ACCEPT-SOUNDFONT2:CAPS">AGS_MACHINE_ACCEPT_SOUNDFONT2</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 
+</refsect1>
+<refsect1 id="AgsMachine.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsMachine--audio" role="property"><title>The <literal>“audio”</literal> property</title>
+<indexterm zone="AgsMachine--audio" role="0.3"><primary>AgsMachine:audio</primary></indexterm>
+<programlisting>  “audio”                    <link linkend="AgsAudio"><type>AgsAudio</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsAudio"><type>AgsAudio</type></link> to visualize.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since 0.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMachine.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsMachine-find-port" role="signal"><title>The <literal>“find-port”</literal> signal</title>
+<indexterm zone="AgsMachine-find-port"><primary>AgsMachine::find-port</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsMachine"><type>AgsMachine</type></link> *machine,
+               <link linkend="gpointer"><type>gpointer</type></link>    user_data)</programlisting>
+<para>The ::find-port as recall should be mapped</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMachine"><type>AgsMachine</type></link> to resize
+Returns: a <link linkend="GList"><type>GList</type></link> with associated ports</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsMachine-map-recall" role="signal"><title>The <literal>“map-recall”</literal> signal</title>
+<indexterm zone="AgsMachine-map-recall"><primary>AgsMachine::map-recall</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsMachine"><type>AgsMachine</type></link> *machine,
+               <link linkend="gpointer"><type>gpointer</type></link>    user_data)</programlisting>
+<para>The ::map-recall should be used to add the machine's default recall.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMachine"><type>AgsMachine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

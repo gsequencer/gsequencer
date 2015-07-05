@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsSoundcard">
+<refentry id="AgsSoundcard">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsSoundcard.top_of_page">AgsSoundcard</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsSoundcard.top_of_page">AgsSoundcard</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,106 +17,871 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsSoundcard.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsSoundcard.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-DSP-CHANNELS:CAPS">AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-PCM-CHANNELS:CAPS">AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-SAMPLERATE:CAPS">AGS_SOUNDCARD_DEFAULT_SAMPLERATE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-FORMAT:CAPS">AGS_SOUNDCARD_DEFAULT_FORMAT</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-BUFFER-SIZE:CAPS">AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-BPM:CAPS">AGS_SOUNDCARD_DEFAULT_BPM</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-JIFFIE:CAPS">AGS_SOUNDCARD_DEFAULT_JIFFIE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-TACT:CAPS">AGS_SOUNDCARD_DEFAULT_TACT</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-TACT-JIFFIE:CAPS">AGS_SOUNDCARD_DEFAULT_TACT_JIFFIE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-TACTRATE:CAPS">AGS_SOUNDCARD_DEFAULT_TACTRATE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-SCALE:CAPS">AGS_SOUNDCARD_DEFAULT_SCALE</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-DELAY:CAPS">AGS_SOUNDCARD_DEFAULT_DELAY</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-PERIOD:CAPS">AGS_SOUNDCARD_DEFAULT_PERIOD</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-set-application-context">ags_soundcard_set_application_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsApplicationContext"><returnvalue>AgsApplicationContext</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-application-context">ags_soundcard_get_application_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-set-device">ags_soundcard_set_device</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-device">ags_soundcard_get_device</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-set-presets">ags_soundcard_set_presets</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-presets">ags_soundcard_get_presets</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-list-cards">ags_soundcard_list_cards</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-pcm-info">ags_soundcard_pcm_info</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-is-starting">ags_soundcard_is_starting</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-is-playing">ags_soundcard_is_playing</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-play-init">ags_soundcard_play_init</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-play">ags_soundcard_play</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-stop">ags_soundcard_stop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-tic">ags_soundcard_tic</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-offset-changed">ags_soundcard_offset_changed</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type">signed <link linkend="short"><returnvalue>short</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-buffer">ags_soundcard_get_buffer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type">signed <link linkend="short"><returnvalue>short</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-next-buffer">ags_soundcard_get_next_buffer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-set-bpm">ags_soundcard_set_bpm</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gdouble"><returnvalue>gdouble</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-bpm">ags_soundcard_get_bpm</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gdouble"><returnvalue>gdouble</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-delay">ags_soundcard_get_delay</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-attack">ags_soundcard_get_attack</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-set-note-offset">ags_soundcard_set_note_offset</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-note-offset">ags_soundcard_get_note_offset</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-set-audio">ags_soundcard_set_audio</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-soundcard-get-audio">ags_soundcard_get_audio</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsSoundcard">AgsSoundcard</link>;
-struct              <link linkend="AgsSoundcardInterface">AgsSoundcardInterface</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-soundcard-list-cards">ags_soundcard_list_cards</link>            (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> **card_id</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> **card_name</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-soundcard-offset-changed">ags_soundcard_offset_changed</link>        (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> note_offset</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-soundcard-pcm-info">ags_soundcard_pcm_info</link>              (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *card_id</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_max</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_max</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_max</parameter>,
-                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-soundcard-tic">ags_soundcard_tic</link>                   (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsSoundcard.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsSoundcard.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsSoundcard" role="typedef">
-<title>AgsSoundcard</title>
-<indexterm zone="AgsSoundcard"><primary>AgsSoundcard</primary></indexterm>
-<programlisting>typedef void AgsSoundcard;
+<refsect1 id="AgsSoundcard.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsSoundcard-offset-changed">offset-changed</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsSoundcard-tic">tic</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsSoundcard.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SOUNDCARD-DEFAULT-DEVICE:CAPS">AGS_SOUNDCARD_DEFAULT_DEVICE</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsSoundcardResolutionMode">AgsSoundcardResolutionMode</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsSoundcard.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsSoundcard
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsSoundcard.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsSoundcard.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-DSP-CHANNELS:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-DSP-CHANNELS:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS (2)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsSoundcardInterface" role="struct">
-<title>struct AgsSoundcardInterface</title>
-<indexterm zone="AgsSoundcardInterface"><primary>AgsSoundcardInterface</primary></indexterm>
-<programlisting>struct AgsSoundcardInterface {
-  GTypeInterface interface;
-
-  void (*list_cards)(AgsSoundcard *soundcard,
-		     GList **card_id, GList **card_name);
-  void (*pcm_info)(AgsSoundcard *soundcard, gchar *card_id,
-		   guint *channels_min, guint *channels_max,
-		   guint *rate_min, guint *rate_max,
-		   guint *buffer_size_min, guint *buffer_size_max,
-		   GError **error);
-
-  void (*play_init)(AgsSoundcard *soundcard,
-		    GError **error);
-  void (*play)(AgsSoundcard *soundcard,
-	       GError **error);
-  void (*stop)(AgsSoundcard *soundcard);
-
-  void (*tic)(AgsSoundcard *soundcard);
-  void (*offset_changed)(AgsSoundcard *soundcard, guint note_offset);
-};
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-PCM-CHANNELS:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-PCM-CHANNELS:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS (2)
 </programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-soundcard-list-cards" role="function">
-<title>ags_soundcard_list_cards ()</title>
-<indexterm zone="ags-soundcard-list-cards"><primary>ags_soundcard_list_cards</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_soundcard_list_cards            (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> **card_id</parameter>,
-                                                         <parameter><link linkend="GList"><type>GList</type></link> **card_name</parameter>);</programlisting>
-<para>
-</para></refsect2>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-SAMPLERATE:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_SAMPLERATE</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-SAMPLERATE:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_SAMPLERATE</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_SAMPLERATE (44100.0)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-FORMAT:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_FORMAT</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-FORMAT:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_FORMAT</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_FORMAT (AGS_SOUNDCARD_RESOLUTION_16_BIT)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-BUFFER-SIZE:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-BUFFER-SIZE:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE (944)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-BPM:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_BPM</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-BPM:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_BPM</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_BPM (120.0)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-JIFFIE:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_JIFFIE</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-JIFFIE:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_JIFFIE</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_JIFFIE ((double) AGS_SOUNDCARD_DEFAULT_SAMPLERATE / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-TACT:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_TACT</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-TACT:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_TACT</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_TACT (1.0 / 1.0)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-TACT-JIFFIE:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_TACT_JIFFIE</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-TACT-JIFFIE:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_TACT_JIFFIE</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_TACT_JIFFIE (60.0 / AGS_SOUNDCARD_DEFAULT_BPM * AGS_SOUNDCARD_DEFAULT_TACT)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-TACTRATE:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_TACTRATE</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-TACTRATE:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_TACTRATE</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_TACTRATE (1.0 / AGS_SOUNDCARD_DEFAULT_TACT_JIFFIE)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-SCALE:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_SCALE</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-SCALE:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_SCALE</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_SCALE (1.0)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-DELAY:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_DELAY</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-DELAY:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_DELAY</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_DELAY (AGS_SOUNDCARD_DEFAULT_JIFFIE * (60.0 / AGS_SOUNDCARD_DEFAULT_BPM))
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-PERIOD:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_PERIOD</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-PERIOD:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_PERIOD</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_PERIOD (64.0)
+</programlisting>
+</refsect2>
+<refsect2 id="ags-soundcard-set-application-context" role="function" condition="since:0.4.3">
+<title>ags_soundcard_set_application_context&#160;()</title>
+<indexterm zone="ags-soundcard-set-application-context" role="0.4.3"><primary>ags_soundcard_set_application_context</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_set_application_context (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                                       <parameter><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link> *application_context</parameter>);</programlisting>
+<para>Set application context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>application_context</para></entry>
+<entry role="parameter_description"><para>the application context to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-soundcard-get-application-context" role="function" condition="since:0.4.3">
+<title>ags_soundcard_get_application_context&#160;()</title>
+<indexterm zone="ags-soundcard-get-application-context" role="0.4.3"><primary>ags_soundcard_get_application_context</primary></indexterm>
+<programlisting language="C"><link linkend="AgsApplicationContext"><returnvalue>AgsApplicationContext</returnvalue></link>&#160;*
+ags_soundcard_get_application_context (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get application context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-soundcard-set-device" role="function" condition="since:0.4.3">
+<title>ags_soundcard_set_device&#160;()</title>
+<indexterm zone="ags-soundcard-set-device" role="0.4.3"><primary>ags_soundcard_set_device</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_set_device (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                          <parameter><link linkend="gchar"><type>gchar</type></link> *device_id</parameter>);</programlisting>
+<para>Set application context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>device_id</para></entry>
+<entry role="parameter_description"><para>the device to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-soundcard-get-device" role="function" condition="since:0.4.3">
+<title>ags_soundcard_get_device&#160;()</title>
+<indexterm zone="ags-soundcard-get-device" role="0.4.3"><primary>ags_soundcard_get_device</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_soundcard_get_device (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get application context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the device's identifier</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-soundcard-set-presets" role="function" condition="since:0.4.2">
+<title>ags_soundcard_set_presets&#160;()</title>
+<indexterm zone="ags-soundcard-set-presets" role="0.4.2"><primary>ags_soundcard_set_presets</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_set_presets (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> channels</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> rate</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> buffer_size</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> format</parameter>);</programlisting>
+<para>Set presets.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>presets</para></entry>
+<entry role="parameter_description"><para>the presets to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-get-presets" role="function" condition="since:0.4.2">
+<title>ags_soundcard_get_presets&#160;()</title>
+<indexterm zone="ags-soundcard-get-presets" role="0.4.2"><primary>ags_soundcard_get_presets</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_get_presets (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> *channels</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> *rate</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> *buffer_size</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> *format</parameter>);</programlisting>
+<para>Get presets.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-list-cards" role="function" condition="since:0.4.2">
+<title>ags_soundcard_list_cards&#160;()</title>
+<indexterm zone="ags-soundcard-list-cards" role="0.4.2"><primary>ags_soundcard_list_cards</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_list_cards (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                          <parameter><link linkend="GList"><type>GList</type></link> **card_id</parameter>,
+                          <parameter><link linkend="GList"><type>GList</type></link> **card_name</parameter>);</programlisting>
+<para>Retrieve <parameter>card_id</parameter>
+ and <parameter>card_name</parameter>
+ as a list of strings.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>card_id</para></entry>
+<entry role="parameter_description"><para>a list containing card ids</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>card_name</para></entry>
+<entry role="parameter_description"><para>a list containing card names</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>error</para></entry>
+<entry role="parameter_description"><para>an error that may occure</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-pcm-info" role="function" condition="since:0.4.2">
+<title>ags_soundcard_pcm_info&#160;()</title>
+<indexterm zone="ags-soundcard-pcm-info" role="0.4.2"><primary>ags_soundcard_pcm_info</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_pcm_info (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                        <parameter><link linkend="gchar"><type>gchar</type></link> *card_id</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> *channels_min</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> *channels_max</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> *rate_min</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> *rate_max</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_min</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_max</parameter>,
+                        <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+<para>Retrieve detailed information of <parameter>card_id</parameter>
+ soundcard.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>card_id</para></entry>
+<entry role="parameter_description"><para>the selected soundcard by its string identifier</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channels_min</para></entry>
+<entry role="parameter_description"><para>min channels supported</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>channels_max</para></entry>
+<entry role="parameter_description"><para>max channels supported</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>rate_min</para></entry>
+<entry role="parameter_description"><para>min samplerate supported</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>rate_max</para></entry>
+<entry role="parameter_description"><para>max samplerate supported</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>buffer_size_min</para></entry>
+<entry role="parameter_description"><para>min buffer size supported by soundcard</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>buffer_size_max</para></entry>
+<entry role="parameter_description"><para>max buffer size supported by soundcard</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>error</para></entry>
+<entry role="parameter_description"><para>an error that may occure</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-is-starting" role="function" condition="since:0.4.3">
+<title>ags_soundcard_is_starting&#160;()</title>
+<indexterm zone="ags-soundcard-is-starting" role="0.4.3"><primary>ags_soundcard_is_starting</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_soundcard_is_starting (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get starting.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if starting, else <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-soundcard-is-playing" role="function" condition="since:0.4.3">
+<title>ags_soundcard_is_playing&#160;()</title>
+<indexterm zone="ags-soundcard-is-playing" role="0.4.3"><primary>ags_soundcard_is_playing</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_soundcard_is_playing (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get playing.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if playing, else <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-soundcard-play-init" role="function">
+<title>ags_soundcard_play_init&#160;()</title>
+<indexterm zone="ags-soundcard-play-init"><primary>ags_soundcard_play_init</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_play_init (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-soundcard-play" role="function" condition="since:0.4.2">
+<title>ags_soundcard_play&#160;()</title>
+<indexterm zone="ags-soundcard-play" role="0.4.2"><primary>ags_soundcard_play</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_play (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                    <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+<para>Plays the current buffer of soundcard.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>error</para></entry>
+<entry role="parameter_description"><para>an error that may occure</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-stop" role="function" condition="since:0.4.2">
+<title>ags_soundcard_stop&#160;()</title>
+<indexterm zone="ags-soundcard-stop" role="0.4.2"><primary>ags_soundcard_stop</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_stop (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Stops the soundcard from playing to it.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-tic" role="function" condition="since:0.4.2">
+<title>ags_soundcard_tic&#160;()</title>
+<indexterm zone="ags-soundcard-tic" role="0.4.2"><primary>ags_soundcard_tic</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_tic (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Callback when counter expires minor note offset.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
 <refsect2 id="ags-soundcard-offset-changed" role="function">
-<title>ags_soundcard_offset_changed ()</title>
+<title>ags_soundcard_offset_changed&#160;()</title>
 <indexterm zone="ags-soundcard-offset-changed"><primary>ags_soundcard_offset_changed</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_soundcard_offset_changed        (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> note_offset</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-soundcard-pcm-info" role="function">
-<title>ags_soundcard_pcm_info ()</title>
-<indexterm zone="ags-soundcard-pcm-info"><primary>ags_soundcard_pcm_info</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_soundcard_pcm_info              (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
-                                                         <parameter><link linkend="gchar"><type>gchar</type></link> *card_id</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *channels_max</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *rate_max</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_min</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> *buffer_size_max</parameter>,
-                                                         <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-soundcard-tic" role="function">
-<title>ags_soundcard_tic ()</title>
-<indexterm zone="ags-soundcard-tic"><primary>ags_soundcard_tic</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_soundcard_tic                   (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
-<para>
-Callback when counter expires minor note offset.
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_offset_changed (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                              <parameter><link linkend="guint"><type>guint</type></link> note_offset</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-soundcard-get-buffer" role="function" condition="since:0.4.2">
+<title>ags_soundcard_get_buffer&#160;()</title>
+<indexterm zone="ags-soundcard-get-buffer" role="0.4.2"><primary>ags_soundcard_get_buffer</primary></indexterm>
+<programlisting language="C">signed <link linkend="short"><returnvalue>short</returnvalue></link>&#160;*
+ags_soundcard_get_buffer (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get current playback buffer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> current playback buffer</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-get-next-buffer" role="function" condition="since:0.4.2">
+<title>ags_soundcard_get_next_buffer&#160;()</title>
+<indexterm zone="ags-soundcard-get-next-buffer" role="0.4.2"><primary>ags_soundcard_get_next_buffer</primary></indexterm>
+<programlisting language="C">signed <link linkend="short"><returnvalue>short</returnvalue></link>&#160;*
+ags_soundcard_get_next_buffer (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get future playback buffer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> next playback buffer</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-set-bpm" role="function" condition="since:0.4.3">
+<title>ags_soundcard_set_bpm&#160;()</title>
+<indexterm zone="ags-soundcard-set-bpm" role="0.4.3"><primary>ags_soundcard_set_bpm</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_set_bpm (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                       <parameter><link linkend="gdouble"><type>gdouble</type></link> bpm</parameter>);</programlisting>
+<para>Set current playback bpm.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>bpm</para></entry>
+<entry role="parameter_description"><para>the bpm to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-soundcard-get-bpm" role="function" condition="since:0.4.3">
+<title>ags_soundcard_get_bpm&#160;()</title>
+<indexterm zone="ags-soundcard-get-bpm" role="0.4.3"><primary>ags_soundcard_get_bpm</primary></indexterm>
+<programlisting language="C"><link linkend="gdouble"><returnvalue>gdouble</returnvalue></link>
+ags_soundcard_get_bpm (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get current playback bpm.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> bpm</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-soundcard-get-delay" role="function" condition="since:0.4.2">
+<title>ags_soundcard_get_delay&#160;()</title>
+<indexterm zone="ags-soundcard-get-delay" role="0.4.2"><primary>ags_soundcard_get_delay</primary></indexterm>
+<programlisting language="C"><link linkend="gdouble"><returnvalue>gdouble</returnvalue></link>
+ags_soundcard_get_delay (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get current playback delay.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> delay</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-get-attack" role="function" condition="since:0.4.2">
+<title>ags_soundcard_get_attack&#160;()</title>
+<indexterm zone="ags-soundcard-get-attack" role="0.4.2"><primary>ags_soundcard_get_attack</primary></indexterm>
+<programlisting language="C"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+ags_soundcard_get_attack (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get current playback attack.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> attack</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-set-note-offset" role="function" condition="since:0.4.2">
+<title>ags_soundcard_set_note_offset&#160;()</title>
+<indexterm zone="ags-soundcard-set-note-offset" role="0.4.2"><primary>ags_soundcard_set_note_offset</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_set_note_offset (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                               <parameter><link linkend="guint"><type>guint</type></link> note_offset</parameter>);</programlisting>
+<para>Set current playback note offset.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>note_offset</para></entry>
+<entry role="parameter_description"><para>the note offset to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-get-note-offset" role="function" condition="since:0.4.2">
+<title>ags_soundcard_get_note_offset&#160;()</title>
+<indexterm zone="ags-soundcard-get-note-offset" role="0.4.2"><primary>ags_soundcard_get_note_offset</primary></indexterm>
+<programlisting language="C"><link linkend="guint"><returnvalue>guint</returnvalue></link>
+ags_soundcard_get_note_offset (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get current playback note offset.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> offset</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.2</para></refsect2>
+<refsect2 id="ags-soundcard-set-audio" role="function" condition="since:0.4.3">
+<title>ags_soundcard_set_audio&#160;()</title>
+<indexterm zone="ags-soundcard-set-audio" role="0.4.3"><primary>ags_soundcard_set_audio</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_set_audio (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                         <parameter><link linkend="GList"><type>GList</type></link> *audio</parameter>);</programlisting>
+<para>Set audio.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>audio</para></entry>
+<entry role="parameter_description"><para>the audio to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-soundcard-get-audio" role="function" condition="since:0.4.3">
+<title>ags_soundcard_get_audio&#160;()</title>
+<indexterm zone="ags-soundcard-get-audio" role="0.4.3"><primary>ags_soundcard_get_audio</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_soundcard_get_audio (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get audio.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> container <link linkend="AgsAudio"><type>AgsAudio</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
 
+</refsect1>
+<refsect1 id="AgsSoundcard.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-SOUNDCARD-DEFAULT-DEVICE:CAPS" role="macro">
+<title>AGS_SOUNDCARD_DEFAULT_DEVICE</title>
+<indexterm zone="AGS-SOUNDCARD-DEFAULT-DEVICE:CAPS"><primary>AGS_SOUNDCARD_DEFAULT_DEVICE</primary></indexterm>
+<programlisting language="C">#define AGS_SOUNDCARD_DEFAULT_DEVICE "hw:0"
+</programlisting>
+</refsect2>
+<refsect2 id="AgsSoundcardResolutionMode" role="enum">
+<title>enum AgsSoundcardResolutionMode</title>
+<indexterm zone="AgsSoundcardResolutionMode"><primary>AgsSoundcardResolutionMode</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SOUNDCARD-RESOLUTION-8-BIT:CAPS">AGS_SOUNDCARD_RESOLUTION_8_BIT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SOUNDCARD-RESOLUTION-16-BIT:CAPS">AGS_SOUNDCARD_RESOLUTION_16_BIT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SOUNDCARD-RESOLUTION-24-BIT:CAPS">AGS_SOUNDCARD_RESOLUTION_24_BIT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SOUNDCARD-RESOLUTION-32-BIT:CAPS">AGS_SOUNDCARD_RESOLUTION_32_BIT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-SOUNDCARD-RESOLUTION-64-BIT:CAPS">AGS_SOUNDCARD_RESOLUTION_64_BIT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsSoundcard.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsSoundcard-offset-changed" role="signal"><title>The <literal>“offset-changed”</literal> signal</title>
+<indexterm zone="AgsSoundcard-offset-changed"><primary>AgsSoundcard::offset-changed</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard,
+               <link linkend="guint"><type>guint</type></link>         note_offset,
+               <link linkend="gpointer"><type>gpointer</type></link>      user_data)</programlisting>
+<para>The ::offset-changed signal notifies about changed position within
+notation.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>note_offset</para></entry>
+<entry role="parameter_description"><para>new notation offset</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsSoundcard-tic" role="signal"><title>The <literal>“tic”</literal> signal</title>
+<indexterm zone="AgsSoundcard-tic"><primary>AgsSoundcard::tic</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard,
+               <link linkend="gpointer"><type>gpointer</type></link>      user_data)</programlisting>
+<para>The ::tic signal is emitted every tic of the soundcard. This notifies
+about a newly played buffer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the object</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
 </refsect1>
 
 </refentry>

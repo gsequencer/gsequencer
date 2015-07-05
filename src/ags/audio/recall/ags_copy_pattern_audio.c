@@ -23,9 +23,11 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 void ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio);
+void ags_copy_pattern_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio);
 void ags_copy_pattern_audio_set_property(GObject *gobject,
@@ -36,8 +38,17 @@ void ags_copy_pattern_audio_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
+void ags_copy_pattern_audio_connect(AgsConnectable *connectable);
+void ags_copy_pattern_audio_disconnect(AgsConnectable *connectable);
 void ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_copy_pattern_audio_finalize(GObject *gobject);
+
+void ags_copy_pattern_audio_bank_index_0_safe_write_callback(AgsPort *pattern,
+							     GValue *value,
+							     AgsCopyPatternAudio *copy_pattern_audio);
+void ags_copy_pattern_audio_bank_index_1_safe_write_callback(AgsPort *pattern,
+							     GValue *value,
+							     AgsCopyPatternAudio *copy_pattern_audio);
 
 /**
  * SECTION:ags_copy_pattern_audio
@@ -56,6 +67,7 @@ enum{
 };
 
 static gpointer ags_copy_pattern_audio_parent_class = NULL;
+static AgsConnectableInterface* ags_copy_pattern_audio_parent_connectable_interface;
 
 static const gchar *ags_copy_pattern_audio_plugin_name = "ags-copy-pattern\0";
 static const gchar *ags_copy_pattern_audio_specifier[] = {
@@ -64,7 +76,7 @@ static const gchar *ags_copy_pattern_audio_specifier[] = {
 };
 static const gchar *ags_copy_pattern_audio_control_port[] = {
   "1/2\0",
-  "2/2\0"
+  "2/2\0",
 };
 
 GType
@@ -85,6 +97,13 @@ ags_copy_pattern_audio_get_type()
       (GInstanceInitFunc) ags_copy_pattern_audio_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_pattern_audio_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_copy_pattern_audio_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -97,11 +116,24 @@ ags_copy_pattern_audio_get_type()
 							 0);
 
     g_type_add_interface_static(ags_type_copy_pattern_audio,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_copy_pattern_audio,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
   }
 
   return(ags_type_copy_pattern_audio);
+}
+
+void
+ags_copy_pattern_audio_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_copy_pattern_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+
+  connectable->connect = ags_copy_pattern_audio_connect;
+  connectable->disconnect = ags_copy_pattern_audio_disconnect;
 }
 
 void
@@ -152,8 +184,8 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
   GList *port;
 
   AGS_RECALL(copy_pattern_audio)->name = "ags-copy-pattern\0";
-  AGS_RECALL(copy_pattern_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_pattern_audio)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_pattern_audio)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(copy_pattern_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(copy_pattern_audio)->xml_type = "ags-copy-pattern-audio\0";
 
   port = NULL;
@@ -164,7 +196,7 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 						  "control-port\0", ags_copy_pattern_audio_control_port[0],
 						  "port-value-is-pointer\0", FALSE,
 						  "port-value-type\0", G_TYPE_UINT64,
-						  "port-value-size\0", sizeof(guint),
+						  "port-value-size\0", sizeof(guint64),
 						  "port-value-length\0", 1,
 						  NULL);
   copy_pattern_audio->bank_index_0->port_value.ags_port_uint = 0;
@@ -177,7 +209,7 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 						  "control-port\0", ags_copy_pattern_audio_control_port[1],
 						  "port-value-is-pointer\0", FALSE,
 						  "port-value-type\0", G_TYPE_UINT64,
-						  "port-value-size\0", sizeof(guint),
+						  "port-value-size\0", sizeof(guint64),
 						  "port-value-length\0", 1,
 						  NULL);
   copy_pattern_audio->bank_index_1->port_value.ags_port_uint = 0;
@@ -274,6 +306,42 @@ ags_copy_pattern_audio_get_property(GObject *gobject,
 }
 
 void
+ags_copy_pattern_audio_connect(AgsConnectable *connectable)
+{
+  AgsCopyPatternAudio *copy_pattern_audio;
+
+  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(connectable);
+
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(copy_pattern_audio)->flags)) != 0){
+    return;
+  }
+
+  ags_copy_pattern_audio_parent_connectable_interface->connect(connectable);
+  
+  g_signal_connect(G_OBJECT(copy_pattern_audio->bank_index_0), "safe-write\0", 
+		   G_CALLBACK(ags_copy_pattern_audio_bank_index_0_safe_write_callback), copy_pattern_audio);
+
+  g_signal_connect(G_OBJECT(copy_pattern_audio->bank_index_1), "safe-write\0", 
+		   G_CALLBACK(ags_copy_pattern_audio_bank_index_1_safe_write_callback), copy_pattern_audio);
+}
+
+void
+ags_copy_pattern_audio_disconnect(AgsConnectable *connectable)
+{
+  AgsCopyPatternAudio *copy_pattern_audio;
+
+  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(connectable);
+
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(copy_pattern_audio)->flags)) == 0){
+    return;
+  }
+
+  //TODO:JK: implement me
+
+  ags_copy_pattern_audio_parent_connectable_interface->disconnect(connectable);
+}
+
+void
 ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
@@ -302,13 +370,37 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
   
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(gobject);
 
+  if(copy_pattern_audio->bank_index_0 != NULL){
+    g_object_unref(copy_pattern_audio->bank_index_0);
+  }
+
+  if(copy_pattern_audio->bank_index_1 != NULL){
+    g_object_unref(copy_pattern_audio->bank_index_1);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_copy_pattern_audio_parent_class)->finalize(gobject);
 }
 
+void
+ags_copy_pattern_audio_bank_index_0_safe_write_callback(AgsPort *pattern,
+							GValue *value,
+							AgsCopyPatternAudio *copy_pattern_audio)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_copy_pattern_audio_bank_index_1_safe_write_callback(AgsPort *pattern,
+							GValue *value,
+							AgsCopyPatternAudio *copy_pattern_audio)
+{
+  //TODO:JK: implement me
+}
+
 /**
  * ags_copy_pattern_audio_new:
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #GObject implementing #AgsSoundcard defaulting to
  * @tact: the offset
  * @i: bank index 0
  * @j: bank index 1
@@ -320,14 +412,14 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
  * Since: 0.4
  */
 AgsCopyPatternAudio*
-ags_copy_pattern_audio_new(AgsDevout *devout,
+ags_copy_pattern_audio_new(GObject *soundcard,
 			   gdouble tact,
 			   guint i, guint j)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							    "devout\0", devout,
+							    "soundcard\0", soundcard,
 							    "tact\0", tact,
 							    "bank_index_0\0", i,
 							    "bank_index_1\0", j,

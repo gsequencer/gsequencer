@@ -18,7 +18,7 @@
 
 #include <ags/audio/recall/ags_copy_recycling.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -156,8 +156,8 @@ void
 ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 {
   AGS_RECALL(copy_recycling)->name = "ags-copy\0";
-  AGS_RECALL(copy_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(copy_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(copy_recycling)->xml_type = "ags-copy-recycling\0";
   AGS_RECALL(copy_recycling)->port = NULL;
 
@@ -261,7 +261,7 @@ ags_copy_recycling_duplicate(AgsRecall *recall,
  * ags_copy_recycling_new:
  * @destination: the destination #AgsRecycling
  * @source: the source #AgsRecycling
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #GObject implementing #AgsSoundcard
  *
  * Creates an #AgsCopyRecycling
  *
@@ -272,12 +272,12 @@ ags_copy_recycling_duplicate(AgsRecall *recall,
 AgsCopyRecycling*
 ags_copy_recycling_new(AgsRecycling *destination,
 		       AgsRecycling *source,
-		       AgsDevout *devout)
+		       GObject *soundcard)
 {
   AgsCopyRecycling *copy_recycling;
 
   copy_recycling = (AgsCopyRecycling *) g_object_new(AGS_TYPE_COPY_RECYCLING,
-						     "devout\0", devout,
+						     "soundcard\0", soundcard,
 						     "destination\0", destination,
 						     "source\0", source,
 						     NULL);

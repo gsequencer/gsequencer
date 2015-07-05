@@ -52,6 +52,6 @@ struct _AgsMixerClass
 
 GType ags_mixer_get_type(void);
 
-AgsMixer* ags_mixer_new(GObject *devout);
+AgsMixer* ags_mixer_new(GObject *soundcard);
 
 #endif /*__AGS_MIXER_H__*/

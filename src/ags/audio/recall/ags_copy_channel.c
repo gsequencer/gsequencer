@@ -18,7 +18,7 @@
 
 #include <ags/audio/recall/ags_copy_channel.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -188,8 +188,8 @@ ags_copy_channel_init(AgsCopyChannel *copy_channel)
   GList *port;
 
   AGS_RECALL(copy_channel)->name = "ags-copy\0";
-  AGS_RECALL(copy_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(copy_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(copy_channel)->xml_type = "ags-copy-channel\0";
 
   port = NULL;

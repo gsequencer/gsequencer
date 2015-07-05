@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsMutable">
+<refentry id="AgsMutable">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsMutable.top_of_page">AgsMutable</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsMutable.top_of_page">AgsMutable</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -17,48 +17,45 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsMutable.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsMutable.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-mutable-set-muted">ags_mutable_set_muted</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>typedef             <link linkend="AgsMutable">AgsMutable</link>;
-struct              <link linkend="AgsMutableInterface">AgsMutableInterface</link>;
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-mutable-set-muted">ags_mutable_set_muted</link>               (<parameter><link linkend="AgsMutable"><type>AgsMutable</type></link> *mutable</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> muted</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsMutable.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsMutable.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsMutable" role="typedef">
-<title>AgsMutable</title>
-<indexterm zone="AgsMutable"><primary>AgsMutable</primary></indexterm>
-<programlisting>typedef void AgsMutable;
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsMutableInterface" role="struct">
-<title>struct AgsMutableInterface</title>
-<indexterm zone="AgsMutableInterface"><primary>AgsMutableInterface</primary></indexterm>
-<programlisting>struct AgsMutableInterface {
-  GTypeInterface interface;
+<refsect1 id="AgsMutable.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMutable
+</screen>
+</refsect1>
 
-  void (*set_muted)(AgsMutable *mutable, gboolean muted);
-};
-</programlisting>
-<para>
-</para></refsect2>
+
+<refsect1 id="AgsMutable.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsMutable.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-mutable-set-muted" role="function">
-<title>ags_mutable_set_muted ()</title>
+<title>ags_mutable_set_muted&#160;()</title>
 <indexterm zone="ags-mutable-set-muted"><primary>ags_mutable_set_muted</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_mutable_set_muted               (<parameter><link linkend="AgsMutable"><type>AgsMutable</type></link> *mutable</parameter>,
-                                                         <parameter><link linkend="gboolean"><type>gboolean</type></link> muted</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_mutable_set_muted (<parameter><link linkend="AgsMutable"><type>AgsMutable</type></link> *mutable</parameter>,
+                       <parameter><link linkend="gboolean"><type>gboolean</type></link> muted</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsMutable.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

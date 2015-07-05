@@ -18,7 +18,7 @@
 
 #include <ags/audio/recall/ags_mute_recycling.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
@@ -156,8 +156,8 @@ void
 ags_mute_recycling_init(AgsMuteRecycling *mute_recycling)
 {
   AGS_RECALL(mute_recycling)->name = "ags-mute\0";
-  AGS_RECALL(mute_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(mute_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(mute_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(mute_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(mute_recycling)->xml_type = "ags-mute-recycling\0";
   AGS_RECALL(mute_recycling)->port = NULL;
 

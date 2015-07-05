@@ -19,19 +19,16 @@
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_mixer_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -39,8 +36,11 @@
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
+
+#include <ags/X/file/ags_gsequencer_file_xml.h>
 
 #include <ags/X/machine/ags_mixer_input_pad.h>
 #include <ags/X/machine/ags_mixer_input_line.h>
@@ -293,7 +293,7 @@ ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -357,7 +357,7 @@ ags_mixer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -388,7 +388,7 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
 
 /**
  * ags_mixer_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsMixer
  *
@@ -397,16 +397,21 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
  * Since: 0.3
  */
 AgsMixer*
-ags_mixer_new(GObject *devout)
+ags_mixer_new(GObject *soundcard)
 {
   AgsMixer *mixer;
+  GValue value = {0,};
 
   mixer = (AgsMixer *) g_object_new(AGS_TYPE_MIXER,
 				    NULL);
 
-  g_object_set(G_OBJECT(AGS_MACHINE(mixer)->audio),
-	       "devout\0", devout,
-	       NULL);
+  if(soundcard != NULL){
+    g_value_init(&value, G_TYPE_OBJECT);
+    g_value_set_object(&value, soundcard);
+    g_object_set_property(G_OBJECT(AGS_MACHINE(mixer)->audio),
+			  "soundcard\0", &value);
+    g_value_unset(&value);
+  }
 
   return(mixer);
 }

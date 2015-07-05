@@ -18,9 +18,10 @@
 
 #include <ags/audio/file/ags_ipatch.h>
 
-#include <ags-lib/object/ags_connectable.h>
-#include <ags/object/ags_playable.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/file/ags_playable.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 void ags_ipatch_class_init(AgsIpatchClass *ipatch);
@@ -57,7 +58,7 @@ signed short* ags_ipatch_read(AgsPlayable *playable, guint channel,
 			      GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
 GList* ags_ipatch_read_audio_signal(AgsPlayable *playable,
-				    AgsDevout *devout,
+				    AgsSoundcard *soundcard,
 				    guint start_channel, guint channels);
 
 /**
@@ -144,10 +145,11 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
   gobject->finalize = ags_ipatch_finalize;
 
   /* properties */
-  param_spec = g_param_spec_pointer("filename\0",
+  param_spec = g_param_spec_string("filename\0",
 				   "the filename\0",
 				   "The filename to open\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
 				  param_spec);
@@ -196,7 +198,7 @@ ags_ipatch_init(AgsIpatch *ipatch)
 {
   ipatch->flags = 0;
 
-  ipatch->devout = NULL;
+  ipatch->soundcard = NULL;
   ipatch->audio_signal= NULL;
 
   ipatch->file = NULL;
@@ -231,7 +233,7 @@ ags_ipatch_set_property(GObject *gobject,
     {
       gchar *filename;
 
-      filename = (gchar *) g_value_get_pointer(value);
+      filename = (gchar *) g_value_get_string(value);
 
       ags_playable_open(AGS_PLAYABLE(ipatch), filename);
     }
@@ -318,7 +320,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
 
   ipatch = AGS_IPATCH(playable);
 
-  ipatch->filename = filename;
+  ipatch->filename = g_strdup(filename);
 
   error = NULL;
   ipatch->handle = ipatch_file_identify_open(ipatch->filename,
@@ -337,27 +339,27 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
     ipatch->flags |= AGS_IPATCH_SF2;
 
     /*  */
-    ipatch->reader = ags_ipatch_sf2_reader_new();
+    ipatch->reader = (GObject *) ags_ipatch_sf2_reader_new();
     AGS_IPATCH_SF2_READER(ipatch->reader)->ipatch = ipatch;
 
     AGS_IPATCH_SF2_READER(ipatch->reader)->reader = ipatch_sf2_reader_new(ipatch->handle);
 
     error = NULL;
-    ipatch->base = ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
-					  &error);
+    ipatch->base = (IpatchBase *) ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
+							 &error);
 
     error = NULL;
-    AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = ipatch_convert_object_to_type(ipatch->handle->file,
-									       IPATCH_TYPE_SF2,
-									       &error);
+    AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
+											     IPATCH_TYPE_SF2,
+											     &error);
 
     if(error != NULL){
       g_warning("%s\0", error->message);
     }
 
     /* load samples */
-    ipatch->samples = ipatch_container_get_children(IPATCH_CONTAINER(ipatch->base),
-						    IPATCH_TYPE_SF2_SAMPLE);
+    ipatch->samples = (IpatchList *) ipatch_container_get_children(IPATCH_CONTAINER(ipatch->base),
+								  IPATCH_TYPE_SF2_SAMPLE);
   }else if(IPATCH_IS_GIG_FILE(ipatch->handle->file)){
     ipatch->flags |= AGS_IPATCH_GIG;
 
@@ -435,7 +437,7 @@ ags_ipatch_sublevel_names(AgsPlayable *playable)
       }
     case AGS_SF2_PHDR:
       {
-	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->sf2,
+	ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
 						    IPATCH_TYPE_SF2_PRESET);
 
 	if(ipatch_list != NULL){
@@ -563,7 +565,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	ipatch_sf2_reader->selected[1] = sublevel_name;
 
 	/* preset */
-	ipatch_list = ipatch_container_get_children(ipatch_sf2_reader->sf2,
+	ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
 						    IPATCH_TYPE_SF2_PRESET);
 	list = ipatch_list->items;
 	
@@ -577,7 +579,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	    //	    g_message("bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
 
 	    this_error = NULL;
-	    ipatch_sf2_reader->preset = IPATCH_SF2_PRESET(list->data);
+	    ipatch_sf2_reader->preset = (IpatchContainer *) IPATCH_SF2_PRESET(list->data);
 
 	    break;
 	  }
@@ -606,7 +608,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	    list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
 
 	    if(!g_strcmp0(IPATCH_SF2_INST(list->data)->name, sublevel_name)){
-	      ipatch_sf2_reader->instrument = IPATCH_SF2_INST(list->data);
+	      ipatch_sf2_reader->instrument = (IpatchContainer *) IPATCH_SF2_INST(list->data);
 	    }
 
 	    tmp = tmp->next;
@@ -628,7 +630,7 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	    list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
 
 	    if(!strncmp(IPATCH_SF2_SAMPLE(list->data)->name, sublevel_name, 20)){
-	      ipatch_sf2_reader->sample = IPATCH_SF2_SAMPLE(list->data);
+	      ipatch_sf2_reader->sample = (IpatchContainer *) IPATCH_SF2_SAMPLE(list->data);
 	    }
 
 	    tmp = tmp->next;
@@ -790,9 +792,9 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
       reader = AGS_IPATCH_SF2_READER(ipatch->reader);
 
       this_error = NULL;
-      sample = ipatch_sf2_find_sample(reader->sf2,
-				      reader->selected[3],
-				      NULL);
+      sample = (IpatchSample *) ipatch_sf2_find_sample(reader->sf2,
+						       reader->selected[3],
+						       NULL);
     }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
       //TODO:JK: implement me
     }
@@ -843,7 +845,7 @@ ags_ipatch_finalize(GObject *gobject)
  */
 GList*
 ags_ipatch_read_audio_signal(AgsPlayable *playable,
-			     AgsDevout *devout,
+			     AgsSoundcard *soundcard,
 			     guint start_channel, guint channels)
 {
   AgsIpatch *ipatch;
@@ -852,7 +854,7 @@ ags_ipatch_read_audio_signal(AgsPlayable *playable,
   ipatch = AGS_IPATCH(playable);
 
   list = ags_playable_read_audio_signal(AGS_PLAYABLE(ipatch->reader),
-					ipatch->devout,
+					ipatch->soundcard,
 					0, 2);
 
   ipatch->audio_signal = list;

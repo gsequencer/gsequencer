@@ -18,14 +18,14 @@
 
 #include <ags/audio/recall/ags_play_channel.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/main.h>
 
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 
 #include <stdlib.h>
@@ -207,8 +207,8 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
   GList *port;
 
   AGS_RECALL(play_channel)->name = "ags-play\0";
-  AGS_RECALL(play_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(play_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(play_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(play_channel)->xml_type = "ags-play-channel\0";
 
   port = NULL;
@@ -401,7 +401,7 @@ ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted)
 
 /**
  * ags_play_channel_new:
- * @devout: the #AgsDevout outputting to
+ * @soundcard: the #GObject implementing #AgsSoundcard outputting to
  * @audio_channel: the audio channel to use
  *
  * Creates an #AgsPlayChannel
@@ -411,13 +411,13 @@ ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted)
  * Since: 0.4
  */
 AgsPlayChannel*
-ags_play_channel_new(AgsDevout *devout,
+ags_play_channel_new(GObject *soundcard,
 		     guint audio_channel)
 {
   AgsPlayChannel *play_channel;
 
   play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						 "devout\0", devout,
+						 "soundcard\0", soundcard,
 						 NULL);
   
   play_channel->audio_channel->port_value.ags_port_uint = audio_channel;

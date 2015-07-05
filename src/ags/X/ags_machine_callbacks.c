@@ -18,16 +18,21 @@
 
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
+#include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_remove_audio.h>
 
 #include <ags/X/ags_window.h>
@@ -35,10 +40,10 @@
 
 #include <ags/X/editor/ags_file_selection.h>
 
+#define AGS_RENAME_ENTRY "AgsRenameEntry\0"
+
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 void ags_machine_start_failure_response(GtkWidget *dialog, AgsMachine *machine);
-
-#define AGS_RENAME_ENTRY "AgsRenameEntry"
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
@@ -119,13 +124,25 @@ void
 ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsWindow *window;
+  
   AgsRemoveAudio *remove_audio;
+  
+  AgsThread *main_loop, *current;
+  AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  remove_audio = ags_remove_audio_new(window->devout,
+  application_context = window->application_context;
+  
+  main_loop = application_context->main_loop;
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  remove_audio = ags_remove_audio_new(window->soundcard,
 				      machine->audio);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(remove_audio));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
@@ -416,23 +433,23 @@ ags_machine_done_callback(AgsAudio *audio,
   channel = audio->output;
   
   while(channel != NULL){
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == recall_id){
+    if(AGS_PLAYBACK(channel->playback)->recall_id[0] == recall_id){
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+				       AGS_PLAYBACK(channel->playback)->recall_id[0]);
     }
 
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == recall_id){
+    if(AGS_PLAYBACK(channel->playback)->recall_id[1] == recall_id){
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+				       AGS_PLAYBACK(channel->playback)->recall_id[1]);
     }
 
-    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] == recall_id){
+    if(AGS_PLAYBACK(channel->playback)->recall_id[2] == recall_id){
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+				       AGS_PLAYBACK(channel->playback)->recall_id[2]);
     }
     
     /* set remove flag */
-    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
+    AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
     
     channel = channel->next;
   }
@@ -446,13 +463,13 @@ ags_machine_start_failure_callback(AgsTask *task, GError *error,
 {
   AgsWindow *window;
   GtkMessageDialog *dialog;
-  AgsAudioLoop *audio_loop;
 
   /* show error message */
-  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_MACHINE);
   
   dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-						       GTK_DIALOG_MODAL,
+						       GTK_DIALOG_DESTROY_WITH_PARENT,
 						       GTK_MESSAGE_ERROR,
 						       GTK_BUTTONS_CLOSE,
 						       error->message);

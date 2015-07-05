@@ -18,7 +18,7 @@
 
 #include <ags/X/machine/ags_panel_input_line.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_plugin.h>
 
@@ -288,7 +288,7 @@ ags_panel_input_line_map_recall(AgsLine *line,
 
   audio = AGS_AUDIO(line->channel->audio);
 
-  panel = AGS_PANEL(audio->machine);
+  panel = AGS_PANEL(audio->machine_widget);
 
   source = line->channel;
 

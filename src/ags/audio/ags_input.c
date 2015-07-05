@@ -18,7 +18,7 @@
 
 #include <ags/audio/ags_input.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/file/ags_file_link.h>
 

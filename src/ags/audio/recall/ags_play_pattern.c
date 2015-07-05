@@ -18,7 +18,6 @@
 
 #include <ags/audio/recall/ags_play_pattern.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
@@ -166,10 +165,10 @@ void
 ags_play_pattern_stop(AgsRecall *recall)
 {
   /*
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   GList *list, *list_next;
 
-  devout = AGS_DEVOUT(AGS_AUDIO(AGS_RECALL(recall->parent)->parent)->devout);
+  soundcard = AGS_SOUNDCARD(AGS_AUDIO(AGS_RECALL(recall->parent)->parent)->soundcard);
 
   list = recall->recall;
   recall->recall = NULL;

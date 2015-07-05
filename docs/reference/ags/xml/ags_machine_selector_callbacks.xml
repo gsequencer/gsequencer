@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-machine-selector-callbacks">
 <refmeta>
@@ -17,83 +17,89 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-ags-machine-selector-callbacks.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="ags-ags-machine-selector-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-selector-popup-add-tab-callback">ags_machine_selector_popup_add_tab_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-selector-popup-remove-tab-callback">ags_machine_selector_popup_remove_tab_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-selector-popup-add-index-callback">ags_machine_selector_popup_add_index_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-selector-popup-remove-index-callback">ags_machine_selector_popup_remove_index_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-selector-popup-link-index-callback">ags_machine_selector_popup_link_index_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-machine-selector-radio-changed">ags_machine_selector_radio_changed</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis><link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-selector-popup-add-index-callback">ags_machine_selector_popup_add_index_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-selector-popup-add-tab-callback">ags_machine_selector_popup_add_tab_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-selector-popup-link-index-callback">ags_machine_selector_popup_link_index_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-selector-popup-remove-index-callback">ags_machine_selector_popup_remove_index_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-selector-popup-remove-tab-callback">ags_machine_selector_popup_remove_tab_callback</link>
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);
-<link linkend="void"><returnvalue>void</returnvalue></link>                <link linkend="ags-machine-selector-radio-changed">ags_machine_selector_radio_changed</link>  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *radio_button</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);
-</synopsis>
-</refsynopsisdiv>
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
 
 <refsect1 id="ags-ags-machine-selector-callbacks.description" role="desc">
 <title role="desc.title">Description</title>
-<para>
-</para>
+
 </refsect1>
-<refsect1 id="ags-ags-machine-selector-callbacks.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="ags-machine-selector-popup-add-index-callback" role="function">
-<title>ags_machine_selector_popup_add_index_callback ()</title>
-<indexterm zone="ags-machine-selector-popup-add-index-callback"><primary>ags_machine_selector_popup_add_index_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_selector_popup_add_index_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="ags-ags-machine-selector-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
 <refsect2 id="ags-machine-selector-popup-add-tab-callback" role="function">
-<title>ags_machine_selector_popup_add_tab_callback ()</title>
+<title>ags_machine_selector_popup_add_tab_callback&#160;()</title>
 <indexterm zone="ags-machine-selector-popup-add-tab-callback"><primary>ags_machine_selector_popup_add_tab_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_selector_popup_add_tab_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-selector-popup-link-index-callback" role="function">
-<title>ags_machine_selector_popup_link_index_callback ()</title>
-<indexterm zone="ags-machine-selector-popup-link-index-callback"><primary>ags_machine_selector_popup_link_index_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_selector_popup_link_index_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-machine-selector-popup-remove-index-callback" role="function">
-<title>ags_machine_selector_popup_remove_index_callback ()</title>
-<indexterm zone="ags-machine-selector-popup-remove-index-callback"><primary>ags_machine_selector_popup_remove_index_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_selector_popup_remove_index_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_selector_popup_add_tab_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-machine-selector-popup-remove-tab-callback" role="function">
-<title>ags_machine_selector_popup_remove_tab_callback ()</title>
+<title>ags_machine_selector_popup_remove_tab_callback&#160;()</title>
 <indexterm zone="ags-machine-selector-popup-remove-tab-callback"><primary>ags_machine_selector_popup_remove_tab_callback</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_selector_popup_remove_tab_callback
-                                                        (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_selector_popup_remove_tab_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-selector-popup-add-index-callback" role="function">
+<title>ags_machine_selector_popup_add_index_callback&#160;()</title>
+<indexterm zone="ags-machine-selector-popup-add-index-callback"><primary>ags_machine_selector_popup_add_index_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_selector_popup_add_index_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-selector-popup-remove-index-callback" role="function">
+<title>ags_machine_selector_popup_remove_index_callback&#160;()</title>
+<indexterm zone="ags-machine-selector-popup-remove-index-callback"><primary>ags_machine_selector_popup_remove_index_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_selector_popup_remove_index_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-machine-selector-popup-link-index-callback" role="function">
+<title>ags_machine_selector_popup_link_index_callback&#160;()</title>
+<indexterm zone="ags-machine-selector-popup-link-index-callback"><primary>ags_machine_selector_popup_link_index_callback</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_selector_popup_link_index_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *menu_item</parameter>,
+                                <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-machine-selector-radio-changed" role="function">
-<title>ags_machine_selector_radio_changed ()</title>
+<title>ags_machine_selector_radio_changed&#160;()</title>
 <indexterm zone="ags-machine-selector-radio-changed"><primary>ags_machine_selector_radio_changed</primary></indexterm>
-<programlisting><link linkend="void"><returnvalue>void</returnvalue></link>                ags_machine_selector_radio_changed  (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *radio_button</parameter>,
-                                                         <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_machine_selector_radio_changed (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *radio_button</parameter>,
+                                    <parameter><link linkend="AgsMachineSelector"><type>AgsMachineSelector</type></link> *machine_selector</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-machine-selector-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

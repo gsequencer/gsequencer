@@ -24,8 +24,9 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_automation.h>
+#include <cairo.h>
+
+#include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_AUTOMATION_AREA                (ags_automation_area_get_type())
 #define AGS_AUTOMATION_AREA(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOMATION_AREA, AgsAutomationArea))
@@ -41,25 +42,54 @@ typedef struct _AgsAutomationAreaClass AgsAutomationAreaClass;
 
 struct _AgsAutomationArea
 {
-  GtkDrawingArea drawing_area;
+  GObject gobject;
 
-  AgsAutomation *automation;
+  guint y;
+  guint height;
+  
+  GtkDrawingArea *drawing_area;
+
+  AgsAudio *audio;
+  GType channel_type;
+  gchar *control_name;
 };
 
 struct _AgsAutomationAreaClass
 {
-  GtkDrawingAreaClass drawing_area;
+  GObjectClass gobject;
 };
 
 GType ags_automation_area_get_type(void);
 
-void ags_automation_area_draw_strip(AgsAutomationArea *automation_area, cairo_t *cr);
-void ags_automation_area_draw_scale(AgsAutomationArea *automation_area, cairo_t *cr);
-void ags_automation_area_draw_automation(AgsAutomationArea *automation_area, cairo_t *cr);
-void ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr,
+GList* ags_automation_area_find_specifier(GList *automation_area,
+					  gchar *specifier);
+
+void ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
+				    cairo_t *cr,
+				    gdouble x_offset, gdouble y_offset);
+void ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
+				      cairo_t *cr,
+				      gdouble x_offset, gdouble y_offset);
+void ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
+				    cairo_t *cr,
+				    gdouble x_offset, gdouble y_offset);
+
+void ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
+					 cairo_t *cr,
+					 gdouble x_offset, gdouble y_offset);
+void ags_automation_area_draw_surface(AgsAutomationArea *automation_area,
+				      cairo_t *cr,
+				      gdouble x_offset, gdouble y_offset,
 				      gdouble x0, gdouble y0,
 				      gdouble x1, gdouble y1);
 
-AgsAutomationArea* ags_automation_area_new();
+void ags_automation_area_paint(AgsAutomationArea *automation_area,
+			       cairo_t *cr,
+			       gdouble x_offset, gdouble y_offset);
+
+AgsAutomationArea* ags_automation_area_new(GtkDrawingArea *drawing_area,
+					   AgsAudio *audio,
+					   GType channel_type,
+					   gchar *control_name);
 
 #endif /*__AGS_AUTOMATION_AREA_H__*/

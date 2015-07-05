@@ -19,19 +19,16 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_delay_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
 
@@ -341,8 +338,8 @@ ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
   AGS_RECALL(delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
 
   AGS_RECALL(delay_audio_run)->name = "ags-delay\0";
-  AGS_RECALL(delay_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(delay_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(delay_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(delay_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(delay_audio_run)->xml_type = "ags-delay-audio-run\0";
   AGS_RECALL(delay_audio_run)->port = NULL;
 
@@ -413,7 +410,6 @@ ags_delay_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 void
 ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 {
-  AgsDevout *devout;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
 
@@ -423,8 +419,6 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
   /* AgsDelayAudioRun */
   delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
-
-  devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
   /* run order */
   delay_audio_run->hide_ref_counter = 0;
@@ -490,25 +484,16 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   if(delay_audio_run->notation_counter == 0 &&
      delay_audio_run->hide_ref_counter == 0){
-    AgsDevout *devout;
     guint run_order;
     gdouble delay;
     guint attack;
 
-    devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
-
     run_order = delay_audio_run->hide_ref_counter;
 
     /* delay and attack */
-    //TODO:JK: unclear
-    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //	     0:
-      //		     devout->tic_counter + 1)];
-      
-    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //		   0:
-      //		   devout->tic_counter + 1)];
-
+    attack = 0;      
+    delay = 0.0;
+    
     //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
     //	      delay_audio_run,
     //	      run_order);
@@ -527,21 +512,13 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   if(delay_audio_run->sequencer_counter == 0 &&
      delay_audio_run->hide_ref_counter == 0){
-    AgsDevout *devout;
     guint run_order;
     gdouble delay;
     guint attack;
 
-    devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
-
     /* delay and attack */
-    //TODO:JK: unclear
-    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //	     0:
-      //		     devout->tic_counter + 1)];
-    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
-      //		   0:
-      //		   devout->tic_counter + 1)];
+    attack = 0;
+    delay = 0.0;
 
     run_order = delay_audio_run->hide_ref_counter;
 

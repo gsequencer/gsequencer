@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsToolbar">
+<refentry id="AgsToolbar">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsToolbar.top_of_page">AgsToolbar</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsToolbar.top_of_page">AgsToolbar</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,64 +14,56 @@
 </refmeta>
 <refnamediv>
 <refname>AgsToolbar</refname>
-<refpurpose></refpurpose>
+<refpurpose>edit tool</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsToolbar.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsToolbar.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsToolbar"><returnvalue>AgsToolbar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-toolbar-new">ags_toolbar_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsToolbar">AgsToolbar</link>;
-struct              <link linkend="AgsToolbarClass">AgsToolbarClass</link>;
-<link linkend="AgsToolbar"><returnvalue>AgsToolbar</returnvalue></link> *        <link linkend="ags-toolbar-new">ags_toolbar_new</link>                     ();
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsToolbar.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsToolbar.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsToolbar" role="struct">
-<title>struct AgsToolbar</title>
-<indexterm zone="AgsToolbar"><primary>AgsToolbar</primary></indexterm>
-<programlisting>struct AgsToolbar {
-  GtkToolbar toolbar;
+<refsect1 id="AgsToolbar.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkToolbar">GtkToolbar</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsToolbar
+</screen>
+</refsect1>
 
-  GtkToggleButton *selected_edit_mode;
-  GtkToggleButton *position;
-  GtkToggleButton *edit;
-  GtkToggleButton *clear;
-  GtkToggleButton *select;
+<refsect1 id="AgsToolbar.includes"><title>Includes</title><synopsis>#include &lt;ags/X/editor/ags_note_edit.h&gt;
+</synopsis></refsect1>
 
-  GtkButton *copy;
-  GtkButton *cut;
-  GtkButton *paste;
+<refsect1 id="AgsToolbar.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsToolbar"><type>AgsToolbar</type></link> lets you choose edit tool.</para>
 
-  guint zoom_history;
-  GtkComboBoxText *zoom;
+</refsect1>
+<refsect1 id="AgsToolbar.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-toolbar-new" role="function" condition="since:0.3">
+<title>ags_toolbar_new&#160;()</title>
+<indexterm zone="ags-toolbar-new" role="0.3"><primary>ags_toolbar_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsToolbar"><returnvalue>AgsToolbar</returnvalue></link>&#160;*
+ags_toolbar_new ();</programlisting>
+<para>Create a new <link linkend="AgsToolbar"><type>AgsToolbar</type></link>.</para>
+<para role="since">Since 0.3</para></refsect2>
 
-  GtkComboBoxText *mode;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsToolbarClass" role="struct">
-<title>struct AgsToolbarClass</title>
-<indexterm zone="AgsToolbarClass"><primary>AgsToolbarClass</primary></indexterm>
-<programlisting>struct AgsToolbarClass {
-  GtkToolbarClass toolbar;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-toolbar-new" role="function">
-<title>ags_toolbar_new ()</title>
-<indexterm zone="ags-toolbar-new"><primary>ags_toolbar_new</primary></indexterm>
-<programlisting><link linkend="AgsToolbar"><returnvalue>AgsToolbar</returnvalue></link> *        ags_toolbar_new                     ();</programlisting>
-<para>
-</para></refsect2>
+</refsect1>
+<refsect1 id="AgsToolbar.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

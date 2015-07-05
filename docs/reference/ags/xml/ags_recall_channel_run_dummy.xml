@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsRecallChannelRunDummy">
+<refentry id="AgsRecallChannelRunDummy">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsRecallChannelRunDummy.top_of_page">AgsRecallChannelRunDummy</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsRecallChannelRunDummy.top_of_page">AgsRecallChannelRunDummy</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,60 +14,77 @@
 </refmeta>
 <refnamediv>
 <refname>AgsRecallChannelRunDummy</refname>
-<refpurpose></refpurpose>
+<refpurpose>channel dummy dynamic context of recall</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsRecallChannelRunDummy.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsRecallChannelRunDummy.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsRecallChannelRunDummy"><returnvalue>AgsRecallChannelRunDummy</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-channel-run-dummy-new">ags_recall_channel_run_dummy_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsRecallChannelRunDummy">AgsRecallChannelRunDummy</link>;
-struct              <link linkend="AgsRecallChannelRunDummyClass">AgsRecallChannelRunDummyClass</link>;
-<link linkend="AgsRecallChannelRunDummy"><returnvalue>AgsRecallChannelRunDummy</returnvalue></link> * <link linkend="ags-recall-channel-run-dummy-new">ags_recall_channel_run_dummy_new</link>
-                                                        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> child_type</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> recycling_dummy_child_type</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsRecallChannelRunDummy.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsRecallChannelRunDummy.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsRecallChannelRunDummy" role="struct">
-<title>struct AgsRecallChannelRunDummy</title>
-<indexterm zone="AgsRecallChannelRunDummy"><primary>AgsRecallChannelRunDummy</primary></indexterm>
-<programlisting>struct AgsRecallChannelRunDummy {
-  AgsRecallChannelRun recall_channel_run;
+<refsect1 id="AgsRecallChannelRunDummy.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecall">AgsRecall</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsRecallChannelRunDummy
+</screen>
+</refsect1>
 
-  GType recycling_dummy_child_type;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsRecallChannelRunDummyClass" role="struct">
-<title>struct AgsRecallChannelRunDummyClass</title>
-<indexterm zone="AgsRecallChannelRunDummyClass"><primary>AgsRecallChannelRunDummyClass</primary></indexterm>
-<programlisting>struct AgsRecallChannelRunDummyClass {
-  AgsRecallChannelRunClass recall_channel_run;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-recall-channel-run-dummy-new" role="function">
-<title>ags_recall_channel_run_dummy_new ()</title>
-<indexterm zone="ags-recall-channel-run-dummy-new"><primary>ags_recall_channel_run_dummy_new</primary></indexterm>
-<programlisting><link linkend="AgsRecallChannelRunDummy"><returnvalue>AgsRecallChannelRunDummy</returnvalue></link> * ags_recall_channel_run_dummy_new
-                                                        (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> child_type</parameter>,
-                                                         <parameter><link linkend="GType"><type>GType</type></link> recycling_dummy_child_type</parameter>);</programlisting>
-<para>
-Creates an <link linkend="AgsRecallChannelRunDummy"><type>AgsRecallChannelRunDummy</type></link>.
-</para><variablelist role="params">
-<varlistentry><term><emphasis>Returns</emphasis>&#160;:</term><listitem><simpara>a new <link linkend="AgsRecallChannelRunDummy"><type>AgsRecallChannelRunDummy</type></link>.</simpara></listitem></varlistentry>
-</variablelist></refsect2>
+<refsect1 id="AgsRecallChannelRunDummy.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/ags_recall_channel_run_dummy.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsRecallChannelRunDummy.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsRecallChannelRunDummy"><type>AgsRecallChannelRunDummy</type></link> acts as channel dummy dynamic recall.</para>
+
+</refsect1>
+<refsect1 id="AgsRecallChannelRunDummy.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-recall-channel-run-dummy-new" role="function" condition="since:0.4">
+<title>ags_recall_channel_run_dummy_new&#160;()</title>
+<indexterm zone="ags-recall-channel-run-dummy-new" role="0.4"><primary>ags_recall_channel_run_dummy_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsRecallChannelRunDummy"><returnvalue>AgsRecallChannelRunDummy</returnvalue></link>&#160;*
+ags_recall_channel_run_dummy_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *source</parameter>,
+                                  <parameter><link linkend="GType"><type>GType</type></link> child_type</parameter>,
+                                  <parameter><link linkend="GType"><type>GType</type></link> recycling_dummy_child_type</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsRecallChannelRunDummy"><type>AgsRecallChannelRunDummy</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>source</para></entry>
+<entry role="parameter_description"><para>the source <link linkend="AgsChannel"><type>AgsChannel</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>child_type</para></entry>
+<entry role="parameter_description"><para>child type</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_dummy_child_type</para></entry>
+<entry role="parameter_description"><para>recycling child type</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsRecallChannelRunDummy"><type>AgsRecallChannelRunDummy</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsRecallChannelRunDummy.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

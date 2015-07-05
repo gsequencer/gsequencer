@@ -19,12 +19,10 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_drum_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_plugin.h>
 
@@ -33,23 +31,6 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
-
-#include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_audio_loop.h>
-
-#include <ags/widget/ags_led.h>
-
-#include <ags/X/machine/ags_drum_input_pad.h>
-#include <ags/X/machine/ags_drum_input_line.h>
-#include <ags/X/machine/ags_drum_output_pad.h>
-#include <ags/X/machine/ags_drum_output_line.h>
-#include <ags/X/machine/ags_drum_input_line_callbacks.h>
-
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_menu_bar.h>
-#include <ags/X/ags_pad.h>
-#include <ags/X/ags_line.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -72,6 +53,21 @@
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
+
+#include <ags/widget/ags_led.h>
+
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
+
+#include <ags/X/machine/ags_drum_input_pad.h>
+#include <ags/X/machine/ags_drum_input_line.h>
+#include <ags/X/machine/ags_drum_output_pad.h>
+#include <ags/X/machine/ags_drum_output_line.h>
+#include <ags/X/machine/ags_drum_input_line_callbacks.h>
+
+#include <ags/X/file/ags_gsequencer_file_xml.h>
 
 #include <math.h>
 
@@ -115,8 +111,6 @@ void ags_drum_set_pads(AgsAudio *audio, GType type,
 static gpointer ags_drum_parent_class = NULL;
 
 static AgsConnectableInterface *ags_drum_parent_connectable_interface;
-
-const char *AGS_DRUM_INDEX = "AgsDrumIndex";
 
 GType
 ags_drum_get_type(void)
@@ -234,8 +228,10 @@ ags_drum_init(AgsDrum *drum)
   audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_TAKES_FILE |
+		   AGS_AUDIO_HAS_NOTATION |
 		   AGS_AUDIO_SYNC |
-		   AGS_AUDIO_ASYNC);
+		   AGS_AUDIO_ASYNC |
+		   AGS_AUDIO_NOTATION_DEFAULT);
 
   AGS_MACHINE(drum)->flags |= AGS_MACHINE_IS_SEQUENCER;
   AGS_MACHINE(drum)->input_pad_type = AGS_TYPE_DRUM_INPUT_PAD;
@@ -305,7 +301,7 @@ ags_drum_init(AgsDrum *drum)
     drum->run = (GtkToggleButton *) gtk_toggle_button_new_with_label("run\0");
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->run,
-			    1, 2, 2, 3);
+			    1, 2, 0, 3);
 
   /* bank */
   table1 = (GtkTable *) gtk_table_new(3, 5, TRUE);
@@ -317,10 +313,12 @@ ags_drum_init(AgsDrum *drum)
 
   for(i = 0; i < 3; i++)
     for(j = 0; j < 4; j++){
+      drum->index1[i * 4 + j] = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%d\0",
+												     (4 * i) + (j + 1)));
+      
       gtk_table_attach_defaults(table1,
-				(GtkWidget *) (drum->index1[i * 4 + j] = (GtkToggleButton *) gtk_toggle_button_new()),
+				(GtkWidget *) (drum->index1[i * 4 + j]),
 				j, j +1, i, i +1);
-      g_object_set_data((GObject *) drum->index1[i * 4 + j], AGS_DRUM_INDEX, GUINT_TO_POINTER(i * 4 + j));
     }
 
   drum->selected1 = drum->index1[0];
@@ -329,10 +327,12 @@ ags_drum_init(AgsDrum *drum)
   drum->selected0 = NULL;
 
   for(j = 0; j < 4; j++){
+    drum->index0[j] = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%c\0",
+											   'a' + j));
+    
     gtk_table_attach_defaults(table1,
-			      (GtkWidget *) (drum->index0[j] = (GtkToggleButton *) gtk_toggle_button_new()),
+			      (GtkWidget *) (drum->index0[j]),
 			      j, j +1, 4, 5);
-    g_object_set_data((GObject *) drum->index0[j], AGS_DRUM_INDEX, GUINT_TO_POINTER(j));
   }
 
   drum->selected0 = drum->index0[0];
@@ -355,7 +355,12 @@ ags_drum_init(AgsDrum *drum)
 
   drum->led =
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 16);
-  gtk_table_attach_defaults(table0, (GtkWidget *) hbox, 3, 15, 1, 2);
+  gtk_table_attach(table0,
+		   (GtkWidget *) hbox,
+		   3, 15,
+		   1, 2,
+		   0, 0,
+		   0, 0);
 
   for(i = 0; i < 16; i++){
     toggle_button = (GtkToggleButton *) ags_led_new();
@@ -366,7 +371,12 @@ ags_drum_init(AgsDrum *drum)
   /* pattern */
   drum->pattern =
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach_defaults(table0, (GtkWidget *) hbox, 3, 15, 2, 3);
+  gtk_table_attach(table0,
+		   (GtkWidget *) hbox,
+		   3, 15,
+		   2, 3,
+		   0, 0,
+		   0, 0);
 
   for(i = 0; i < 16; i++){
     toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
@@ -632,7 +642,7 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -777,7 +787,7 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -916,7 +926,7 @@ ags_drum_set_pattern(AgsDrum *drum)
 
 /**
  * ags_drum_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsDrum
  *
@@ -925,7 +935,7 @@ ags_drum_set_pattern(AgsDrum *drum)
  * Since: 0.3
  */
 AgsDrum*
-ags_drum_new(GObject *devout)
+ags_drum_new(GObject *soundcard)
 {
   AgsDrum *drum;
   GValue value = {0,};
@@ -933,12 +943,11 @@ ags_drum_new(GObject *devout)
   drum = (AgsDrum *) g_object_new(AGS_TYPE_DRUM,
 				  NULL);
 
-  if(devout != NULL){
+    if(soundcard != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, devout);
-
-    g_object_set_property(G_OBJECT(drum->machine.audio),
-			  "devout\0", &value);
+    g_value_set_object(&value, soundcard);
+    g_object_set_property(G_OBJECT(AGS_MACHINE(drum)->audio),
+			  "soundcard\0", &value);
     g_value_unset(&value);
   }
 

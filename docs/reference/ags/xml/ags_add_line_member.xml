@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-AgsAddLineMember">
+<refentry id="AgsAddLineMember">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-AgsAddLineMember.top_of_page">AgsAddLineMember</refentrytitle>
+<refentrytitle role="top_of_page" id="AgsAddLineMember.top_of_page">AgsAddLineMember</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>
   AGS Library
@@ -14,67 +14,88 @@
 </refmeta>
 <refnamediv>
 <refname>AgsAddLineMember</refname>
-<refpurpose></refpurpose>
+<refpurpose>add line_member object to line</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="ags-AgsAddLineMember.synopsis" role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsect1 id="AgsAddLineMember.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsAddLineMember"><returnvalue>AgsAddLineMember</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-add-line-member-new">ags_add_line_member_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
-<synopsis>struct              <link linkend="AgsAddLineMember">AgsAddLineMember</link>;
-struct              <link linkend="AgsAddLineMemberClass">AgsAddLineMemberClass</link>;
-<link linkend="AgsAddLineMember"><returnvalue>AgsAddLineMember</returnvalue></link> *  <link linkend="ags-add-line-member-new">ags_add_line_member_new</link>             (<parameter><link linkend="AgsLine"><type>AgsLine</type></link> *line</parameter>,
-                                                         <parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> width</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> height</parameter>);
-</synopsis>
-</refsynopsisdiv>
-
-<refsect1 id="ags-AgsAddLineMember.description" role="desc">
-<title role="desc.title">Description</title>
-<para>
-</para>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
-<refsect1 id="ags-AgsAddLineMember.details" role="details">
-<title role="details.title">Details</title>
-<refsect2 id="AgsAddLineMember" role="struct">
-<title>struct AgsAddLineMember</title>
-<indexterm zone="AgsAddLineMember"><primary>AgsAddLineMember</primary></indexterm>
-<programlisting>struct AgsAddLineMember {
-  AgsTask task;
+<refsect1 id="AgsAddLineMember.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAddLineMember
+</screen>
+</refsect1>
 
-  AgsLine *line;
-  AgsLineMember *line_member;
+<refsect1 id="AgsAddLineMember.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/task/ags_add_line_member.h&gt;
+</synopsis></refsect1>
 
-  guint x;
-  guint y;
-  guint width;
-  guint height;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="AgsAddLineMemberClass" role="struct">
-<title>struct AgsAddLineMemberClass</title>
-<indexterm zone="AgsAddLineMemberClass"><primary>AgsAddLineMemberClass</primary></indexterm>
-<programlisting>struct AgsAddLineMemberClass {
-  AgsTaskClass task;
-};
-</programlisting>
-<para>
-</para></refsect2>
-<refsect2 id="ags-add-line-member-new" role="function">
-<title>ags_add_line_member_new ()</title>
-<indexterm zone="ags-add-line-member-new"><primary>ags_add_line_member_new</primary></indexterm>
-<programlisting><link linkend="AgsAddLineMember"><returnvalue>AgsAddLineMember</returnvalue></link> *  ags_add_line_member_new             (<parameter><link linkend="AgsLine"><type>AgsLine</type></link> *line</parameter>,
-                                                         <parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> width</parameter>,
-                                                         <parameter><link linkend="guint"><type>guint</type></link> height</parameter>);</programlisting>
-<para>
-</para></refsect2>
+<refsect1 id="AgsAddLineMember.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsAddLineMember"><type>AgsAddLineMember</type></link> task addspacks <link linkend="AgsLineMember"><type>AgsLineMember</type></link> to <link linkend="AgsLine"><type>AgsLine</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsAddLineMember.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-add-line-member-new" role="function" condition="since:0.4">
+<title>ags_add_line_member_new&#160;()</title>
+<indexterm zone="ags-add-line-member-new" role="0.4"><primary>ags_add_line_member_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAddLineMember"><returnvalue>AgsAddLineMember</returnvalue></link>&#160;*
+ags_add_line_member_new (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *line</parameter>,
+                         <parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
+                         <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
+                         <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,
+                         <parameter><link linkend="guint"><type>guint</type></link> width</parameter>,
+                         <parameter><link linkend="guint"><type>guint</type></link> height</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsAddLineMember"><type>AgsAddLineMember</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>line</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsLine"><type>AgsLine</type></link> or <link linkend="AgsEffectLine"><type>AgsEffectLine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>line_member</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsLineMember"><type>AgsLineMember</type></link> to add</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>x</para></entry>
+<entry role="parameter_description"><para>pack start x</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>y</para></entry>
+<entry role="parameter_description"><para>pack start y</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>width</para></entry>
+<entry role="parameter_description"><para>pack width</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>height</para></entry>
+<entry role="parameter_description"><para>pack height</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> an new <link linkend="AgsAddLineMember"><type>AgsAddLineMember</type></link>.</para>
+<para></para>
+</refsect3><para role="since">Since 0.4</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsAddLineMember.other_details" role="details">
+<title role="details.title">Types and Values</title>
 
 </refsect1>
 

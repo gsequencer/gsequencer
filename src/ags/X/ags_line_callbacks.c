@@ -18,27 +18,35 @@
 
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
 
-#include <ags/audio/ags_devout.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_recycling_container.h>
+#include <ags/audio/ags_recycling_context.h>
 
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/audio/task/ags_change_indicator.h>
-
 #include <ags/widget/ags_vindicator.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
+
+#include <ags/X/task/ags_change_indicator.h>
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
@@ -48,10 +56,19 @@ ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *
   }
 }
 
+GList*
+ags_line_add_effect_callback(AgsChannel *channel,
+			     gchar *filename, gchar *effect,
+			     AgsLine *line)
+{
+  return(ags_line_add_effect(line,
+			     filename, effect));
+}
+
 void
 ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
 {
-  if(recall->recall_id != NULL && recall->recall_id->recycling_container->parent != NULL){
+  if(recall->recall_id != NULL && recall->recall_id->recycling_context->parent != NULL){
     if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
       ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), (GObject *) recall, FALSE);
     }else{
@@ -159,15 +176,30 @@ void
 ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 				AgsLine *line)
 {
-  AgsTaskThread *task_thread;
-  AgsChangeIndicator *change_indicator;
+  AgsWindow *window;
   AgsMachine *machine;
+  AgsChangeIndicator *change_indicator;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
   GList *list, *list_start;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor(line,
 						   AGS_TYPE_MACHINE);
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread;
 
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  application_context = window->application_context;
+
+  main_loop = application_context->main_loop;
+  
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
   list_start = 
     list = gtk_container_get_children(AGS_LINE(line)->expander->table);
 
@@ -181,7 +213,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 
       child = gtk_bin_get_child(AGS_LINE_MEMBER(list->data));
 
-      if(AGS_RECYCLING_CONTAINER(peak_channel->recall_id->recycling_container)->parent == NULL){
+      if(AGS_RECYCLING_CONTEXT(peak_channel->recall_id->recycling_context)->parent == NULL){
 	port = AGS_LINE_MEMBER(list->data)->port;
       }else{
 	port = AGS_LINE_MEMBER(list->data)->recall_port;
@@ -212,7 +244,7 @@ void
 ags_line_channel_done_callback(AgsChannel *source, AgsLine *line)
 {
   AgsChannel *channel;
-  AgsDevoutPlay *devout_play;
+  AgsPlayback *playback;
   AgsChannel *next_pad;
   GList *current_recall;
   gboolean all_done;
@@ -226,9 +258,9 @@ ags_line_channel_done_callback(AgsChannel *source, AgsLine *line)
 
   while(channel != next_pad){
     current_recall = channel->play;
-    devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
+    playback = AGS_PLAYBACK(channel->playback);
     
-    if(devout_play->recall_id[0] != NULL){
+    if(playback->recall_id[0] != NULL){
       all_done = FALSE;
       break;
     }

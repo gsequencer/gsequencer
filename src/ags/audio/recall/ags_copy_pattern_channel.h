@@ -41,6 +41,11 @@ struct _AgsCopyPatternChannel
   AgsRecallChannel recall_channel;
 
   AgsPort *pattern;
+
+  AgsPort *bank_index_0;
+  AgsPort *bank_index_1;
+
+  AgsPort *current_bit;
 };
 
 struct _AgsCopyPatternChannelClass

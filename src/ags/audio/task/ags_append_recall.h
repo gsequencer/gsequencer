@@ -22,9 +22,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_playback.h>
 
 #define AGS_TYPE_APPEND_RECALL                (ags_append_recall_get_type())
 #define AGS_APPEND_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPEND_RECALL, AgsAppendRecall))
@@ -41,7 +41,7 @@ struct _AgsAppendRecall
   AgsTask task;
 
   GObject *audio_loop;
-  AgsDevoutPlay *devout_play;
+  AgsPlayback *playback;
 };
 
 struct _AgsAppendRecallClass
@@ -52,6 +52,6 @@ struct _AgsAppendRecallClass
 GType ags_append_recall_get_type();
 
 AgsAppendRecall* ags_append_recall_new(GObject *audio_loop,
-				       AgsDevoutPlay *devout_play);
+				       AgsPlayback *playback);
 
 #endif /*__AGS_APPEND_RECALL_H__*/

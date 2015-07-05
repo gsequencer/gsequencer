@@ -18,7 +18,7 @@
 
 #include <ags-client/scripting/mapping/ags_script_tostring.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_script_tostring_class_init(AgsScriptTostringClass *script_tostring);
 void ags_script_tostring_connectable_interface_init(AgsConnectableInterface *connectable);

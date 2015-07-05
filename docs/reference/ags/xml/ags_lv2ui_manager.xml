@@ -1,0 +1,267 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsLv2uiManager">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsLv2uiManager.top_of_page">AgsLv2uiManager</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>
+  AGS Library
+</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsLv2uiManager</refname>
+<refpurpose>Singleton pattern to organize LV2UI</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsLv2uiManager.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-LV2UI-PLUGIN:CAPS">AGS_LV2UI_PLUGIN</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLv2uiPlugin"><returnvalue>AgsLv2uiPlugin</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-lv2ui-plugin-alloc">ags_lv2ui_plugin_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-lv2ui-plugin-free">ags_lv2ui_plugin_free</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;**
+</entry><entry role="function_name"><link linkend="ags-lv2ui-manager-get-filenames">ags_lv2ui_manager_get_filenames</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLv2uiPlugin"><returnvalue>AgsLv2uiPlugin</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-lv2ui-manager-find-lv2ui-plugin">ags_lv2ui_manager_find_lv2ui_plugin</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-lv2ui-manager-load-file">ags_lv2ui_manager_load_file</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-lv2ui-manager-load-default-directory">ags_lv2ui_manager_load_default_directory</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="uint32-t"><returnvalue>uint32_t</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-lv2ui-manager-uri-index">ags_lv2ui_manager_uri_index</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLv2uiManager"><returnvalue>AgsLv2uiManager</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-lv2ui-manager-get-instance">ags_lv2ui_manager_get_instance</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsLv2uiManager"><returnvalue>AgsLv2uiManager</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-lv2ui-manager-new">ags_lv2ui_manager_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLv2uiManager.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsLv2uiPluginFlags">AgsLv2uiPluginFlags</link></entry></row>
+<row><entry role="datatype_keyword">struct</entry><entry role="function_name"><link linkend="AgsLv2uiPlugin">AgsLv2uiPlugin</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsLv2uiManager.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsLv2uiManager
+</screen>
+</refsect1>
+
+<refsect1 id="AgsLv2uiManager.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_lv2ui_manager.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsLv2uiManager.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsLv2uiManager"><type>AgsLv2uiManager</type></link> loads/unloads LV2UI plugins.</para>
+
+</refsect1>
+<refsect1 id="AgsLv2uiManager.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="AGS-LV2UI-PLUGIN:CAPS" role="macro">
+<title>AGS_LV2UI_PLUGIN()</title>
+<indexterm zone="AGS-LV2UI-PLUGIN:CAPS"><primary>AGS_LV2UI_PLUGIN</primary></indexterm>
+<programlisting language="C">#define AGS_LV2UI_PLUGIN(ptr) ((AgsLv2uiPlugin *)(ptr))
+</programlisting>
+</refsect2>
+<refsect2 id="ags-lv2ui-plugin-alloc" role="function" condition="since:0.4.3">
+<title>ags_lv2ui_plugin_alloc&#160;()</title>
+<indexterm zone="ags-lv2ui-plugin-alloc" role="0.4.3"><primary>ags_lv2ui_plugin_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLv2uiPlugin"><returnvalue>AgsLv2uiPlugin</returnvalue></link>&#160;*
+ags_lv2ui_plugin_alloc ();</programlisting>
+<para>Alloc the <link linkend="AgsLv2uiPlugin-struct"><type>AgsLv2uiPlugin</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> the <link linkend="AgsLv2uiPlugin-struct"><type>AgsLv2uiPlugin</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-lv2ui-plugin-free" role="function" condition="since:0.4.3">
+<title>ags_lv2ui_plugin_free&#160;()</title>
+<indexterm zone="ags-lv2ui-plugin-free" role="0.4.3"><primary>ags_lv2ui_plugin_free</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_lv2ui_plugin_free (<parameter><link linkend="AgsLv2uiPlugin"><type>AgsLv2uiPlugin</type></link> *lv2ui_plugin</parameter>);</programlisting>
+<para>Free the <link linkend="AgsLv2uiPlugin-struct"><type>AgsLv2uiPlugin</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>lv2ui_plugin</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsLv2uiPlugin-struct"><type>AgsLv2uiPlugin</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-lv2ui-manager-get-filenames" role="function" condition="since:0.4.3">
+<title>ags_lv2ui_manager_get_filenames&#160;()</title>
+<indexterm zone="ags-lv2ui-manager-get-filenames" role="0.4.3"><primary>ags_lv2ui_manager_get_filenames</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;**
+ags_lv2ui_manager_get_filenames ();</programlisting>
+<para>Retrieve all filenames</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="NULL:CAPS"><literal>NULL</literal></link>-terminated array of filenames</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-lv2ui-manager-find-lv2ui-plugin" role="function" condition="since:0.4.3">
+<title>ags_lv2ui_manager_find_lv2ui_plugin&#160;()</title>
+<indexterm zone="ags-lv2ui-manager-find-lv2ui-plugin" role="0.4.3"><primary>ags_lv2ui_manager_find_lv2ui_plugin</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLv2uiPlugin"><returnvalue>AgsLv2uiPlugin</returnvalue></link>&#160;*
+ags_lv2ui_manager_find_lv2ui_plugin (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+<para>Lookup filename in loaded plugins.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename of the plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the <link linkend="AgsLv2uiPlugin-struct"><type>AgsLv2uiPlugin</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-lv2ui-manager-load-file" role="function" condition="since:0.4.3">
+<title>ags_lv2ui_manager_load_file&#160;()</title>
+<indexterm zone="ags-lv2ui-manager-load-file" role="0.4.3"><primary>ags_lv2ui_manager_load_file</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_lv2ui_manager_load_file (<parameter><link linkend="AgsTurtle"><type>AgsTurtle</type></link> *turtle</parameter>,
+                             <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+<para>Load <parameter>filename</parameter>
+ specified plugin.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename of the plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-lv2ui-manager-load-default-directory" role="function" condition="since:0.4.3">
+<title>ags_lv2ui_manager_load_default_directory&#160;()</title>
+<indexterm zone="ags-lv2ui-manager-load-default-directory" role="0.4.3"><primary>ags_lv2ui_manager_load_default_directory</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_lv2ui_manager_load_default_directory
+                               ();</programlisting>
+<para>Loads all available plugins.</para>
+<para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-lv2ui-manager-uri-index" role="function" condition="since:0.4.3">
+<title>ags_lv2ui_manager_uri_index&#160;()</title>
+<indexterm zone="ags-lv2ui-manager-uri-index" role="0.4.3"><primary>ags_lv2ui_manager_uri_index</primary></indexterm>
+<programlisting language="C"><link linkend="uint32-t"><returnvalue>uint32_t</returnvalue></link>
+ags_lv2ui_manager_uri_index (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                             <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>);</programlisting>
+<para>Retrieve the uri's index within <parameter>filename</parameter>
+</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the plugin.so filename</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>uri</para></entry>
+<entry role="parameter_description"><para>the uri's name within plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the index, G_MAXULONG if not found</para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-lv2ui-manager-get-instance" role="function" condition="since:0.4.3">
+<title>ags_lv2ui_manager_get_instance&#160;()</title>
+<indexterm zone="ags-lv2ui-manager-get-instance" role="0.4.3"><primary>ags_lv2ui_manager_get_instance</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLv2uiManager"><returnvalue>AgsLv2uiManager</returnvalue></link>&#160;*
+ags_lv2ui_manager_get_instance ();</programlisting>
+<para>Get instance.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> the <link linkend="AgsLv2uiManager"><type>AgsLv2uiManager</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+<refsect2 id="ags-lv2ui-manager-new" role="function" condition="since:0.4.3">
+<title>ags_lv2ui_manager_new&#160;()</title>
+<indexterm zone="ags-lv2ui-manager-new" role="0.4.3"><primary>ags_lv2ui_manager_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsLv2uiManager"><returnvalue>AgsLv2uiManager</returnvalue></link>&#160;*
+ags_lv2ui_manager_new ();</programlisting>
+<para>Creates an <link linkend="AgsLv2uiManager"><type>AgsLv2uiManager</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsLv2uiManager"><type>AgsLv2uiManager</type></link></para>
+<para></para>
+</refsect3><para role="since">Since 0.4.3</para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsLv2uiManager.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsLv2uiPluginFlags" role="enum">
+<title>enum AgsLv2uiPluginFlags</title>
+<indexterm zone="AgsLv2uiPluginFlags"><primary>AgsLv2uiPluginFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-LV2UI-PLUGIN-IS-LOADED:CAPS">AGS_LV2UI_PLUGIN_IS_LOADED</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="AgsLv2uiPlugin" role="struct">
+<title>struct AgsLv2uiPlugin</title>
+<indexterm zone="AgsLv2uiPlugin"><primary>AgsLv2uiPlugin</primary></indexterm>
+<programlisting language="C">struct AgsLv2uiPlugin {
+  guint flags;
+
+  AgsTurtle *turtle;
+
+  gchar *filename;
+  void *plugin_so;
+};
+</programlisting>
+</refsect2>
+
+</refsect1>
+
+</refentry>

@@ -18,13 +18,10 @@
 
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
@@ -159,8 +156,8 @@ void
 ags_copy_audio_signal_init(AgsCopyAudioSignal *copy_audio_signal)
 {
   AGS_RECALL(copy_audio_signal)->name = "ags-copy\0";
-  AGS_RECALL(copy_audio_signal)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_audio_signal)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(copy_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(copy_audio_signal)->xml_type = "ags-copy-audio-signal\0";
   AGS_RECALL(copy_audio_signal)->port = NULL;
 
@@ -215,11 +212,9 @@ ags_copy_audio_signal_finalize(GObject *gobject)
 void
 ags_copy_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsDevout *devout;
   AgsCopyChannel *copy_channel;
   AgsCopyAudioSignal *copy_audio_signal;
   AgsAudioSignal *source, *destination;
-  //  AgsAttack *attack;
   GList *stream_source, *stream_destination;
   gboolean muted;
   GValue value = {0,};
@@ -228,7 +223,6 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
-  devout = AGS_DEVOUT(AGS_RECALL(copy_audio_signal)->devout);
   source = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->source;
   stream_source = source->stream_current;
 
@@ -297,7 +291,7 @@ ags_copy_audio_signal_duplicate(AgsRecall *recall,
  * ags_copy_audio_signal_new:
  * @destination: the destination #AgsAudioSignal
  * @source: the source #AgsAudioSignal
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #AgsSoundcard defaulting to
  * @attack: the attack
  *
  * Creates an #AgsCopyAudioSignal
@@ -309,15 +303,15 @@ ags_copy_audio_signal_duplicate(AgsRecall *recall,
 AgsCopyAudioSignal*
 ags_copy_audio_signal_new(AgsAudioSignal *destination,
 			  AgsAudioSignal *source,
-			  AgsDevout *devout,
-			  AgsAttack *attack)
+			  GObject *soundcard,
+			  guint attack)
 {
   AgsCopyAudioSignal *copy_audio_signal;
 
   copy_audio_signal = (AgsCopyAudioSignal *) g_object_new(AGS_TYPE_COPY_AUDIO_SIGNAL,
 							  "destination\0", destination,
 							  "source\0", source,
-							  "devout\0", devout,
+							  "soundcard\0", soundcard,
 							  "attack\0", attack,
 							  NULL);
 

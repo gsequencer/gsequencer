@@ -19,9 +19,9 @@
 #include <ags/X/ags_performance_preferences.h>
 #include <ags/X/ags_performance_preferences_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_applicable.h>
 
@@ -175,8 +175,10 @@ ags_performance_preferences_set_update(AgsApplicable *applicable, gboolean updat
 void
 ags_performance_preferences_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsPreferences *preferences;
-  AgsPerformancePreferences *performance_preferences; 
+  AgsPerformancePreferences *performance_preferences;
+  AgsApplicationContext *application_context;
   AgsConfig *config;
   gchar *str;
   
@@ -184,14 +186,19 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
 							   AGS_TYPE_PREFERENCES);
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
 
+  window = preferences->parent;
+
+  application_context = window->application_context;
+
+  config = application_context->config;
+  
   /* auto-sense */
   str = g_strdup(((gtk_toggle_button_get_active(performance_preferences->stream_auto_sense)) ? "true\0": "false\0"));
-  ags_config_set(config,
-		 AGS_CONFIG_RECALL,
-		 "auto-sense\0",
-		 str);
+  ags_config_set_value(config,
+		       AGS_CONFIG_RECALL,
+		       "auto-sense\0",
+		       str);
   g_free(str);
 
   //TODO:JK: implement me
@@ -203,20 +210,25 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   AgsWindow *window;
   AgsPreferences *preferences;
   AgsPerformancePreferences *performance_preferences;
+  AgsApplicationContext *application_context;
   AgsConfig *config;
   gchar *str;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
-  /*  */
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->window);
-  config = AGS_CONFIG(AGS_MAIN(window->ags_main)->config);
+  window = AGS_WINDOW(preferences->parent);
 
-  str = ags_config_get(config,
-		       AGS_CONFIG_RECALL,
-		       "auto-sense\0");
+  
+  application_context = window->application_context;
+
+  config = application_context->config;
+
+  /*  */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_RECALL,
+			     "auto-sense\0");
   gtk_toggle_button_set_active(performance_preferences->stream_auto_sense,
 			       !g_strcmp0("true\0",
 					  str));

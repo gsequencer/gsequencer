@@ -23,9 +23,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_automation_window.h>
 
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>
@@ -60,11 +60,12 @@ struct _AgsWindow
 
   guint flags;
 
-  GObject *ags_main;
-
-  AgsDevout *devout;
-
   char *name;
+
+  GObject *application_context;
+  pthread_mutex_t *application_mutex;
+  
+  GObject *soundcard;
 
   AgsMenuBar *menu_bar;
 
@@ -77,9 +78,11 @@ struct _AgsWindow
   AgsEditor *editor;
   AgsNavigation *navigation;
 
-  AgsAutomationEditor *automation_editor;
+  AgsAutomationWindow *automation_window;
 
   AgsExportWindow *export_window;
+  GtkWidget *import_window;
+
   AgsPreferences *preferences;
 };
 
@@ -110,6 +113,6 @@ void ags_window_decrement_machine_counter(AgsWindow *window,
 AgsMachineCounter* ags_machine_counter_alloc(gchar *version, gchar *build_id,
 					     GType machine_type, guint initial_value);
 
-AgsWindow* ags_window_new(GObject *ags_main);
+AgsWindow* ags_window_new(GObject *application_context);
 
 #endif /*__AGS_WINDOW_H__*/
