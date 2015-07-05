@@ -305,8 +305,8 @@ ags_channel_init(AgsChannel *channel)
 					   "super-threaded-scope\0"),
 			    "channel\0",
 			    8)){
-      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->thread_scope),
-		      AGS_DEVOUT_PLAY_THREAD_SCOPE_SUPER_THREADED_CHANNEL);
+      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+		      AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL);
 
       AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[1] = ags_channel_thread_new(NULL,
 											channel);
@@ -4779,17 +4779,20 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   if(stage == 0){
     if(playback){
       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id;
-      AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_PLAYBACK;
+      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+		      AGS_DEVOUT_PLAY_PLAYBACK);
     }
 
     if(sequencer){
       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = recall_id;
-      AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_SEQUENCER;
+      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+		      AGS_DEVOUT_PLAY_SEQUENCER);
     }
 
     if(notation){
       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = recall_id;
-      AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_NOTATION;
+      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+		      AGS_DEVOUT_PLAY_NOTATION);
     }
   }
 
@@ -5354,7 +5357,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	/* playback */
 	if(devout_play_list != NULL){
 	  devout_play = AGS_DEVOUT_PLAY(devout_play_list->data);
-	  playback = ((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0) ? TRUE: FALSE;
+	  playback = ((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(devout_play->flags)))) != 0) ? TRUE: FALSE;
 	}else{
 	  playback = (((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0) ? TRUE: FALSE);
 	}
@@ -5403,7 +5406,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	
 	if(devout_play_list != NULL){
 	  devout_play = AGS_DEVOUT_PLAY(devout_play_list->data);
-	  sequencer = ((AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0) ? TRUE: FALSE;
+	  sequencer = ((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(devout_play->flags)))) != 0) ? TRUE: FALSE;
 	}else{
 	  sequencer = (((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0) ? TRUE: FALSE);
 	}
@@ -5438,7 +5441,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	/* notation */
 	if(devout_play_list != NULL){
 	  devout_play = AGS_DEVOUT_PLAY(devout_play_list->data);
-	  notation = ((AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0) ? TRUE: FALSE;
+	  notation = ((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(devout_play->flags)))) != 0) ? TRUE: FALSE;
 	}else{
 	  notation = (((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0) ? TRUE: FALSE);
 	}
@@ -5537,7 +5540,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       /* playback */
       if(devout_play_list != NULL){
 	devout_play = AGS_DEVOUT_PLAY(devout_play_list->data);
-	playback = (((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0) ? TRUE: FALSE);
+	playback = (((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(devout_play->flags)))) != 0) ? TRUE: FALSE);
       }else{
 	playback = (((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0) ? TRUE: FALSE);
       }
@@ -5573,7 +5576,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       /* sequencer */
       if(devout_play_list != NULL){
 	devout_play = AGS_DEVOUT_PLAY(devout_play_list->data);
-	sequencer = (((AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0) ? TRUE: FALSE);
+	sequencer = (((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(devout_play->flags)))) != 0) ? TRUE: FALSE);
       }else{
 	sequencer = (((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0) ? TRUE: FALSE);
       }
@@ -5609,7 +5612,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       /* notation */
       if(devout_play_list != NULL){
 	devout_play = AGS_DEVOUT_PLAY(devout_play_list->data);
-	notation = (((AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0) ? TRUE: FALSE);
+	notation = (((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(devout_play->flags)))) != 0) ? TRUE: FALSE);
       }else{
 	notation = (((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0) ? TRUE: FALSE);
       }
@@ -5776,7 +5779,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       while(current != NULL){
 	/* collect recall id and the recalls purpose */
 	if(current->devout_play != NULL){
-	  if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	  if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	     AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
 #ifdef AGS_DEBUG
 	    g_message("recall id collect: play\0");
@@ -5786,7 +5789,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				  (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
 	  }
 
-	  if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	  if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	     AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
 #ifdef AGS_DEBUG
 	    g_message("recall id collect: sequencer\0");
@@ -5796,7 +5799,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				  (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
 	  }
 
-	  if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	  if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	     AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
 #ifdef AGS_DEBUG
 	    g_message("recall id collect: notation\0");
@@ -5818,7 +5821,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       
       /* collect recall id and the recalls purpose */
       if(current->devout_play != NULL){
-	if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: play\0");
@@ -5828,7 +5831,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
 	}
 
-	if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: sequencer\0");
@@ -5838,7 +5841,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
 	}
 
-	if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: notation\0");
@@ -5869,7 +5872,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
     /* collect devout play */
     if(current->devout_play != NULL){
-      if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+      if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	 AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
 #ifdef AGS_DEBUG
 	g_message("recall id collect: play\0");
@@ -5879,7 +5882,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 			      (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
       }
 
-      if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+      if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	 AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
 #ifdef AGS_DEBUG
 	g_message("recall id collect: sequencer\0");
@@ -5889,7 +5892,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 			      (collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
       }
 
-      if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+      if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	 AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
 #ifdef AGS_DEBUG
 	g_message("recall id collect: notation\0");
@@ -5934,7 +5937,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
       /* input */
       if(current->devout_play != NULL){
-	if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: play\0");
@@ -5944,7 +5947,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
 	}
 
-	if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: sequencer\0");
@@ -5954,7 +5957,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
 	}
 
-	if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: notation\0");
@@ -5981,7 +5984,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 
     ags_channel_recursive_collect_devout_play_up_OUTPUT:
       if(current->devout_play != NULL){
-	if((AGS_DEVOUT_PLAY_PLAYBACK & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: play\0");
@@ -5991,7 +5994,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[0]: current->devout_play));
 	}
 
-	if((AGS_DEVOUT_PLAY_SEQUENCER & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: sequencer\0");
@@ -6001,7 +6004,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 				(collect_recall_id ? AGS_DEVOUT_PLAY(current->devout_play)->recall_id[1]: current->devout_play));
 	}
 
-	if((AGS_DEVOUT_PLAY_NOTATION & (AGS_DEVOUT_PLAY(current->devout_play)->flags)) != 0 &&
+	if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(current->devout_play)->flags)))) != 0 &&
 	   AGS_DEVOUT_PLAY(current->devout_play)->recall_id[2] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: notation\0");

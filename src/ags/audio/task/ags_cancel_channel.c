@@ -163,14 +163,9 @@ ags_cancel_channel_launch(AgsTask *task)
   ags_channel_tillrecycling_cancel(channel,
 				   recall_id);
 
-  /* set remove flag */
-  
-  if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == NULL &&
-     AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] == NULL){
-    AGS_DEVOUT_PLAY(channel->devout_play)->flags |= (AGS_DEVOUT_PLAY_DONE | AGS_DEVOUT_PLAY_REMOVE);
-    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
-  }
-  
+  /* set recall id to NULL */
+  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+    
   /* emit done */
   ags_channel_done(channel,
 		   recall_id);

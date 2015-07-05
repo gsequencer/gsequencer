@@ -916,8 +916,7 @@ ags_devout_play_alloc()
 
   play = (AgsDevoutPlay *) malloc(sizeof(AgsDevoutPlay));
 
-  play->flags = 0;
-  g_atomic_int_set(&(play->thread_scope),
+  g_atomic_int_set(&(play->flags),
 		   0);
 
   /* super threaded channel */

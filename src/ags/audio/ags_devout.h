@@ -91,14 +91,17 @@ typedef enum
 
 typedef enum
 {
-  AGS_DEVOUT_PLAY_DONE              = 1,
-  AGS_DEVOUT_PLAY_REMOVE            = 1 <<  1,
-  AGS_DEVOUT_PLAY_CHANNEL           = 1 <<  2,
-  AGS_DEVOUT_PLAY_PAD               = 1 <<  3,
-  AGS_DEVOUT_PLAY_AUDIO             = 1 <<  4,
-  AGS_DEVOUT_PLAY_PLAYBACK          = 1 <<  5,
-  AGS_DEVOUT_PLAY_SEQUENCER         = 1 <<  6,
-  AGS_DEVOUT_PLAY_NOTATION          = 1 <<  7,
+  AGS_DEVOUT_PLAY_DONE                     = 1,
+  AGS_DEVOUT_PLAY_REMOVE                   = 1 <<  1,
+  AGS_DEVOUT_PLAY_CHANNEL                  = 1 <<  2,
+  AGS_DEVOUT_PLAY_PAD                      = 1 <<  3,
+  AGS_DEVOUT_PLAY_AUDIO                    = 1 <<  4,
+  AGS_DEVOUT_PLAY_PLAYBACK                 = 1 <<  5,
+  AGS_DEVOUT_PLAY_SEQUENCER                = 1 <<  6,
+  AGS_DEVOUT_PLAY_NOTATION                 = 1 <<  7,
+  AGS_DEVOUT_PLAY_SINGLE_THREADED          = 1 <<  8,
+  AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL   = 1 <<  9,
+  AGS_DEVOUT_PLAY_SUPER_THREADED_RECYCLING = 1 << 10,
 }AgsDevoutPlayFlags;
 
 typedef enum{
@@ -108,13 +111,6 @@ typedef enum{
   AGS_DEVOUT_PLAY_DOMAIN_SINGLE_THREADED            = 1 <<  3,
   AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  4,
 }AgsDevoutPlayDomainFlags;
-
-typedef enum
-{
-  AGS_DEVOUT_PLAY_THREAD_SCOPE_MULTI_THREADED             = 1,
-  AGS_DEVOUT_PLAY_THREAD_SCOPE_SUPER_THREADED_CHANNEL     = 1 <<  1,
-  AGS_DEVOUT_PLAY_THREAD_SCOPE_SUPER_THREADED_RECYCLING   = 1 <<  2,
-}AgsDevoutPlayThreadScope;
 
 typedef enum{
   AGS_DEVOUT_RESOLUTION_8_BIT    = 8,
@@ -222,8 +218,7 @@ struct _AgsDevoutPlayDomain
  */
 struct _AgsDevoutPlay
 {
-  guint flags;
-  volatile guint thread_scope;
+  volatile guint flags;
   
   AgsThread **channel_thread;
   AgsIteratorThread **iterator_thread;
