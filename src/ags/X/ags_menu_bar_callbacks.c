@@ -85,8 +85,6 @@ ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
-  response = gtk_dialog_run(GTK_DIALOG(file_chooser));
-
   g_signal_connect((GObject *) file_chooser, "response\0",
 		   G_CALLBACK(ags_menu_bar_open_response_callback), menu_bar);
 }
