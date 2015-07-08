@@ -1,7 +1,15 @@
-ags (0.4.2.93)
+ags (0.5.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemnted first super-threaded context for AgsAudio
+	* fixed ags.xsl removed wrong division, note use segmentation to adjust appropriate playback rate
+	* fixed file open dialog callback
+
+
+ags (0.5.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemnted first super-threaded context for AgsAudio and AgsChannel
+	* fixed replace deprecated GtkFileSelector for opening files
 
 ags (0.4.2.92)
 
