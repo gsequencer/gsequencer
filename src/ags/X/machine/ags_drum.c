@@ -239,8 +239,9 @@ ags_drum_init(AgsDrum *drum)
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_HAS_NOTATION | 
-		   AGS_AUDIO_NOTATION_DEFAULT);
-
+		   AGS_AUDIO_NOTATION_DEFAULT |
+		   AGS_AUDIO_PATTERN_MODE);
+  
   AGS_MACHINE(drum)->flags |= AGS_MACHINE_IS_SEQUENCER;
   AGS_MACHINE(drum)->input_pad_type = AGS_TYPE_DRUM_INPUT_PAD;
   AGS_MACHINE(drum)->input_line_type = AGS_TYPE_DRUM_INPUT_LINE;
@@ -864,32 +865,6 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			    guint audio_channels, guint audio_channels_old,
 			    AgsDrum *drum)
 {
-  gboolean grow;
-
-  drum = AGS_DRUM(audio->machine);
-
-  if(audio_channels_old == audio_channels){
-    return;
-  }
-
-  if(audio_channels_old < audio_channels){
-    grow = TRUE;
-  }else{
-    grow = FALSE;
-  }
-
-  if(grow){
-    /* ags-play-notation */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-play-notation\0",
-			      audio_channels_old, audio_channels,
-			      0, 0,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_REMAP |
-			       AGS_RECALL_FACTORY_RECALL),
-			      0);
-  }
 }
 
 void
@@ -905,34 +880,9 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
       if(pads_old == 0){
 	GtkToggleButton *selected_edit_button;
 
-	AgsPlayNotationAudio  *play_notation;
-
-	GList *list;
-
 	drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
 	drum->selected_edit_button = drum->selected_pad->edit;
 	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
-
-	/* set notation for AgsPlayNotationAudioRun recall */
-	list = audio->recall;
-
-	while((list = ags_recall_find_type(list,
-					   AGS_TYPE_PLAY_NOTATION_AUDIO)) != NULL){
-  
-	  GValue value = {0,};
-
-	  play_notation = AGS_PLAY_NOTATION_AUDIO(list->data);
-
-	  g_value_init(&value, G_TYPE_POINTER);
-	  g_value_set_pointer(&value,
-			      audio->notation);
-
-	  ags_port_safe_write(play_notation->notation,
-			      &value);
-	  
-	  list = list->next;
-	}
-
       }
     }else{
       /* destroy AgsPad's */

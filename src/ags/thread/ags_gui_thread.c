@@ -281,6 +281,8 @@ ags_gui_thread_run(AgsThread *thread)
   ags_gui_thread_do_gtk_iteration();
 
   ags_gui_thread_complete_task();  
+
+  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
 }
 
 void

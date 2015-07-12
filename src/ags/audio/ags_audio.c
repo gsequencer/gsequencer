@@ -301,6 +301,8 @@ ags_audio_init(AgsAudio *audio)
 {
   AgsMutexManager *mutex_manager;
 
+  gchar *str0, *str1;
+  
   pthread_mutex_t *mutex;
   pthread_mutexattr_t attr;
 
@@ -342,15 +344,18 @@ ags_audio_init(AgsAudio *audio)
   audio->devout_play_domain = ags_devout_play_domain_alloc();
   AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->domain = (GObject *) audio;
 
+  /**/
+  str0 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"model\0");
+  str1 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"super-threaded-scope\0");
   
-  if(!g_ascii_strncasecmp(ags_config_get(config,
-					 AGS_CONFIG_THREAD,
-					 "model\0"),
+  if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",
 			  15)){
-    if(!g_ascii_strncasecmp(ags_config_get(config,
-					   AGS_CONFIG_THREAD,
-					   "super-threaded-scope\0"),
+    if(!g_ascii_strncasecmp(str1,
 			    "audio\0",
 			    6) ||
        !g_ascii_strncasecmp(ags_config_get(config,
@@ -369,6 +374,9 @@ ags_audio_init(AgsAudio *audio)
 												audio);
     }
   }
+
+  free(str0);
+  free(str1);
   
   audio->notation = NULL;
 
@@ -3470,7 +3478,8 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
   AgsChannel *channel;
   GList *list;
   AgsMutexManager *mutex_manager;
-
+  gchar *str0, *str1;
+  
   pthread_mutex_t *mutex;
   
   pthread_mutex_lock(&(ags_application_mutex));
@@ -3484,16 +3493,19 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
 
   pthread_mutex_lock(mutex);
 
-  /**/  
-  if(!g_ascii_strncasecmp(ags_config_get(config,
-					 AGS_CONFIG_THREAD,
-					 "model\0"),
+  /**/
+  str0 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"model\0");
+  str1 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"super-threaded-scope\0");
+  
+  if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",
 			  15)){
     /* super threaed setup */
-    if(!g_ascii_strncasecmp(ags_config_get(config,
-					   AGS_CONFIG_THREAD,
-					   "super-threaded-scope\0"),
+    if(!g_ascii_strncasecmp(str1,
 			    "audio\0",
 			    6) ||
        !g_ascii_strncasecmp(ags_config_get(config,
@@ -3512,6 +3524,9 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
 		   NULL);
     }
   }
+
+  free(str0);
+  free(str1);
   
   /* audio */
   if(audio->devout == devout){

@@ -191,10 +191,12 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
   AgsAudioSignal *audio_signal;
+
   unsigned long samplerate;
   unsigned long buffer_size;
   unsigned long i;
-
+  gchar *str;
+  
   LADSPA_PortDescriptor *port_descriptor;
 
   /* call parent */
@@ -203,18 +205,23 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
   recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
 
-  /* set up buffer */ 
-  samplerate = (unsigned long) g_ascii_strtoull(ags_config_get(config,
-							       AGS_CONFIG_DEVOUT,
-							       "samplerate\0"),
+  /* set up buffer */
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = (unsigned long) g_ascii_strtoull(str,
 						NULL,
 						10);
-  buffer_size = (unsigned long) g_ascii_strtoull(ags_config_get(config,
-								AGS_CONFIG_DEVOUT,
-								"buffer-size\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = (unsigned long) g_ascii_strtoull(str,
 						 NULL,
 						 10);
-
+  free(str);
+  
   recall_ladspa_run->input = (LADSPA_Data *) malloc(recall_ladspa->input_lines *
 						    buffer_size *
 						    sizeof(LADSPA_Data));

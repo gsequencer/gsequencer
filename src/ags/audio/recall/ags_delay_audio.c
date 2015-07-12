@@ -597,22 +597,29 @@ ags_delay_audio_notify_devout_callback(GObject *gobject,
   AgsDevout *devout;
   gdouble bpm;
   gdouble delay;
-
+  gchar *str;
+  
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
   devout = AGS_RECALL(delay_audio)->devout;
   port = NULL;
 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
+  free(str);
+  
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
+  free(str);
+  
   bpm = devout->bpm;
   delay = devout->delay[devout->tic_counter];
 
@@ -879,22 +886,30 @@ void
 ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration)
 {
   AgsDelayAudio *delay_audio;
+
   guint buffer_size;
   guint samplerate;
   gdouble delay;
-  GValue value = {0,};
+  gchar *str;
   
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
+  GValue value = {0,};
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
-
+  free(str);
+  
   delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / AGS_DEVOUT_DEFAULT_BPM);
 
   delay_audio = AGS_DELAY_AUDIO(tactable);
@@ -909,24 +924,32 @@ void
 ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration)
 {
   AgsDelayAudio *delay_audio;
+
   guint buffer_size;
   guint samplerate;
   gdouble delay;
+  gchar *str;
+  
   GValue value = {0,};
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
-
+  free(str);
+  
   delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / AGS_DEVOUT_DEFAULT_BPM);
 
   //  g_message("%f\0", duration * delay * AGS_DEVOUT_DEFAULT_SCALE);

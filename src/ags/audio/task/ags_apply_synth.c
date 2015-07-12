@@ -163,10 +163,13 @@ void
 ags_apply_synth_launch(AgsTask *task)
 {
   AgsDevout *devout;
-  AgsApplySynth *apply_synth;
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
+
+  AgsApplySynth *apply_synth;
+
   GList *stream;
+
   gint wave;
   guint attack, frame_count, stop, phase, frequency;
   double volume;
@@ -176,7 +179,8 @@ ags_apply_synth_launch(AgsTask *task)
   double factor;
   guint buffer_size;
   guint samplerate;
-
+  gchar *str;
+  
   double ags_apply_synth_calculate_factor(guint base_frequency, guint wished_frequency, guint wave){
     double factor;
 
@@ -212,16 +216,22 @@ ags_apply_synth_launch(AgsTask *task)
   apply_synth = AGS_APPLY_SYNTH(task);
   channel = apply_synth->start_channel;
   devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
+  free(str);
   
   wave = (gint) apply_synth->wave;
   g_message("wave = %d\n\0", wave);

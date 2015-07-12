@@ -1,9 +1,18 @@
+ags (0.5.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory leaks accessing AgsConfig
+	* fixed dead-lock while stop playback
+	* improved drawing of animations
+
 ags (0.5.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags.xsl removed wrong division, note use segmentation to adjust appropriate playback rate
 	* fixed file open dialog callback
-
+	* fxied calculate time by segmentation
+	* fixed pattern mode hint for notation
+	* fixed reading bpm setting from ags.xsl generated files
 
 ags (0.5.0)
 

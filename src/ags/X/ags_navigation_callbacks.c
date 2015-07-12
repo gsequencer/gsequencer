@@ -235,6 +235,9 @@ ags_navigation_stop_callback(GtkWidget *widget,
   gtk_label_set_text(navigation->duration_time, timestr);
   
   g_free(timestr);
+
+  /* reset editor */
+  window->editor->current_tact = 0.0;
 }
 
 void

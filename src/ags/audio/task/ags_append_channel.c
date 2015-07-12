@@ -152,9 +152,14 @@ void
 ags_append_channel_launch(AgsTask *task)
 {
   AgsChannel *channel;
-  AgsServer *server;
+  
   AgsAppendChannel *append_channel;
+
   AgsAudioLoop *audio_loop;
+
+  AgsServer *server;
+
+  gchar *str0, *str1;
   
   append_channel = AGS_APPEND_CHANNEL(task);
 
@@ -165,17 +170,21 @@ ags_append_channel_launch(AgsTask *task)
   ags_audio_loop_add_channel(audio_loop,
 			    channel);
 
-  /**/  
-  if(!g_ascii_strncasecmp(ags_config_get(config,
-					 AGS_CONFIG_THREAD,
-					 "model\0"),
+  /**/
+  str0 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"model\0");
+
+  str1 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"super-threaded-scope\0");
+  
+  if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",
 			  15)){
     /* super threaed setup */
-    if(!g_ascii_strncasecmp(ags_config_get(config,
-					   AGS_CONFIG_THREAD,
-					   "super-threaded-scope\0"),
-				  "channel\0",
+    if(!g_ascii_strncasecmp(str1,
+			    "channel\0",
 			    8)){
       if(AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[0]->parent == NULL &&
 	 (AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) != 0){
@@ -186,6 +195,9 @@ ags_append_channel_launch(AgsTask *task)
       }
     }
   }
+
+  free(str0);
+  free(str1);
   
   /* add to server registry */
   server = AGS_MAIN(audio_loop->ags_main)->server;

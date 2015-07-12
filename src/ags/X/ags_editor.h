@@ -79,6 +79,7 @@ struct _AgsEditor
   GtkWidget *current_edit_widget;
 
   guint tact_counter;
+  gdouble current_tact;
 };
 
 struct _AgsEditorClass

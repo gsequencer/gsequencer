@@ -380,7 +380,8 @@ ags_channel_thread_stop(AgsThread *thread)
   pthread_mutex_lock(channel_thread->wakeup_mutex);
   
   g_atomic_int_or(&(channel_thread->flags),
-		  AGS_CHANNEL_THREAD_WAKEUP);
+		  (AGS_CHANNEL_THREAD_WAKEUP |
+		   AGS_CHANNEL_THREAD_DONE));
 
   if((AGS_CHANNEL_THREAD_WAITING & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
     pthread_cond_signal(channel_thread->wakeup_cond);

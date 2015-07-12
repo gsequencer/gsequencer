@@ -55,6 +55,8 @@ struct _AgsPlayNotationAudioRun
   gulong notation_alloc_input_handler;
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  AgsNotation *notation;
 };
 
 struct _AgsPlayNotationAudioRunClass

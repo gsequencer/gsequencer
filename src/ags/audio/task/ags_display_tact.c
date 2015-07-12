@@ -150,7 +150,7 @@ ags_display_tact_launch(AgsTask *task)
   AgsNavigation *navigation;
   gchar *timestr;
   gdouble tact;
-
+  
   display_tact = AGS_DISPLAY_TACT(task);
   
   navigation = AGS_NAVIGATION(display_tact->navigation);
@@ -159,15 +159,13 @@ ags_display_tact_launch(AgsTask *task)
   
   tact = window->devout->tact_counter - navigation->start_tact;
 
+  gdk_window_flush(GTK_WIDGET(navigation->duration_time)->window);
   timestr = ags_navigation_relative_tact_to_time_string(navigation->duration_time->label,
 							1.0 * window->devout->bpm / 60.0, //window->devout->delay[window->devout->tic_counter],
 							window->devout->bpm,
 							window->devout->delay_factor);
   
-  gtk_label_set_text(navigation->duration_time, timestr);
-  gtk_widget_queue_draw(navigation->duration_time);
-  
-  g_free(timestr);
+  gtk_label_set_label(navigation->duration_time, timestr);
 }
 
 /**

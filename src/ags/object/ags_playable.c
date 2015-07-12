@@ -451,6 +451,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   guint buffer_size;
   guint samplerate;
   guint i, j, k, i_stop, j_stop;
+  gchar *str;
   GError *error;
 
   g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
@@ -461,16 +462,22 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 		    &loop_start, &loop_end,
 		    &error);
 
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
+  free(str);
+  
   length = (guint) ceil((double)(frames) / (double)(buffer_size));
 
 #ifdef AGS_DEBUG

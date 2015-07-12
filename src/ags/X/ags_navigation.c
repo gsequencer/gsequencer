@@ -542,21 +542,16 @@ ags_navigation_tact_to_time_string(gdouble tact,
 				   gdouble bpm,
 				   gdouble delay_factor)
 {
-  static gdouble delay_min, delay_sec, delay_hsec;
-  static gboolean initialized = FALSE;
+  gdouble delay_min, delay_sec, delay_hsec;
   gchar *timestr;
   gdouble tact_redux;
   guint min, sec, hsec;
 
-  if(!initialized){
-    delay_min = bpm * (60.0 / bpm) * (60.0 / bpm) * delay_factor;
-    delay_sec = delay_min / 60.0;
-    delay_hsec = delay_sec / 100.0;
+  delay_min = bpm;
+  delay_sec = delay_min / 60.0;
+  delay_hsec = delay_sec / 100.0;
 
-    initialized = TRUE;
-  }
-
-  tact_redux = tact;
+  tact_redux = tact * (16.0 * delay_factor * delay_factor);
 
   min = (guint) floor(tact_redux / delay_min);
 

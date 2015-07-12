@@ -232,6 +232,8 @@ ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_audio_signal_init(AgsAudioSignal *audio_signal)
 {
+  gchar *str;
+  
   audio_signal->flags = 0;
 
   audio_signal->devout = NULL;
@@ -239,16 +241,22 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->recycling = NULL;
   audio_signal->recall_id = NULL;
 
-  audio_signal->samplerate = g_ascii_strtoull(ags_config_get(config,
-							     AGS_CONFIG_DEVOUT,
-							     "samplerate\0"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  audio_signal->samplerate = g_ascii_strtoull(str,
 					      NULL,
 					      10);
-  audio_signal->buffer_size = g_ascii_strtoull(ags_config_get(config,
-							      AGS_CONFIG_DEVOUT,
-							      "buffer-size\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  audio_signal->buffer_size = g_ascii_strtoull(str,
 					       NULL,
 					       10);
+  free(str);
+  
   audio_signal->resolution = AGS_DEVOUT_RESOLUTION_16_BIT;
 
   audio_signal->length = 0;
