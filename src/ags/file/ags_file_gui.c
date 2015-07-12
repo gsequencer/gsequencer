@@ -87,6 +87,9 @@ void ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 void ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
 						      AgsMachineSelector *machine_selector);
 
+void ags_file_read_navigation_resolve_devout(AgsFileLookup *file_lookup,
+					     AgsNavigation *navigation);
+
 void
 ags_file_read_widget(AgsFile *file, xmlNode *node, GtkWidget *widget)
 {
@@ -3091,6 +3094,7 @@ void
 ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigation)
 {
   AgsNavigation *gobject;
+  AgsFileLookup *file_lookup;
   xmlNode *child;
   xmlChar *str;
 
@@ -3146,6 +3150,36 @@ ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigatio
   gtk_spin_button_set_value(gobject->loop_right_tact,
 			    g_strtod(str,
 				     NULL));
+
+  /* devout */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_navigation_resolve_devout), gobject);
+}
+
+void
+ags_file_read_navigation_resolve_devout(AgsFileLookup *file_lookup,
+					AgsNavigation *navigation)
+{
+  AgsFileIdRef *id_ref;
+  gchar *xpath;
+
+  xpath = "xpath=//ags-devout";
+  
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(id_ref != NULL){
+    g_object_set(G_OBJECT(navigation),
+		 "devout\0", id_ref->ref,
+		 NULL);
+    gtk_spin_button_set_value(navigation->bpm,
+			      AGS_DEVOUT(id_ref->ref)->bpm);
+  }
 }
 
 xmlNode*

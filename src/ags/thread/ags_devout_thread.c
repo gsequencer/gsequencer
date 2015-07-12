@@ -128,20 +128,26 @@ ags_devout_thread_init(AgsDevoutThread *devout_thread)
   AgsThread *thread;
   guint buffer_size;
   guint samplerate;
-
+  gchar *str;
+  
   thread = AGS_THREAD(devout_thread);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size");
+  buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate");
+  samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
-
+  free(str);
+  
   thread->freq = samplerate / buffer_size;
   devout_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
   ags_thread_add_child(thread, devout_thread->timestamp_thread);

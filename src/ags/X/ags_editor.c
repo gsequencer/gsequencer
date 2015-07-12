@@ -233,32 +233,12 @@ ags_editor_init(AgsEditor *editor)
   editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) editor->table, TRUE, FALSE);
   
-  editor->current_notebook = NULL;
-  
+  editor->current_notebook = NULL;  
   editor->current_meter = NULL;
   editor->current_edit_widget = NULL;
 
-  //TODO:JK: remove me
-  /*
-  editor->current_meter = g_object_new(AGS_TYPE_METER,
-			       NULL);
-  gtk_table_attach(table, (GtkWidget *) editor->current_meter,
-		   0, 1, 1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  editor->note_edit = g_object_new(AGS_TYPE_NOTE_EDIT,
-				   "n-rows\0", 3,
-				   "n-columns\0", 3,
-				   "homogeneous", FALSE,
-				   NULL);
-  gtk_table_attach(table, (GtkWidget *) editor->note_edit,
-		   1, 2, 1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);
-  */
-  
   editor->tact_counter = 0;
+  editor->current_tact = 0.0;
 }
 
 void

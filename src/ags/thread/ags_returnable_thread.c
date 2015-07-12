@@ -38,6 +38,7 @@ void ags_returnable_thread_finalize(GObject *gobject);
 
 void ags_returnable_thread_start(AgsThread *thread);
 void ags_returnable_thread_run(AgsThread *thread);
+void ags_returnable_thread_stop(AgsThread *thread);
 void ags_returnable_thread_resume(AgsThread *thread);
 
 /**
@@ -115,6 +116,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
 
   thread->start = ags_returnable_thread_start;
   thread->run = ags_returnable_thread_run;
+  thread->stop = ags_returnable_thread_stop;
   thread->resume = ags_returnable_thread_resume;
 
   /* AgsReturnableThreadClass */
@@ -185,8 +187,9 @@ ags_returnable_thread_disconnect(AgsConnectable *connectable)
 void
 ags_returnable_thread_finalize(GObject *gobject)
 {
-  pthread_mutex_destroy(&(AGS_RETURNABLE_THREAD(gobject)->reset_mutex));
-
+  //  pthread_mutex_destroy(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
+  free(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_returnable_thread_parent_class)->finalize(gobject);
 }
@@ -269,6 +272,12 @@ ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread)
   g_signal_emit(G_OBJECT(returnable_thread),
 		returnable_thread_signals[SAFE_RUN], 0);
   g_object_unref(G_OBJECT(returnable_thread));
+}
+
+void
+ags_returnable_thread_stop(AgsThread *thread)
+{
+  AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->stop(thread);
 }
 
 void

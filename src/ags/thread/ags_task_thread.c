@@ -237,6 +237,7 @@ ags_task_thread_run(AgsThread *thread)
   task_thread = AGS_TASK_THREAD(thread);
   devout = AGS_DEVOUT(thread->devout);
 
+  /*
   buffer_size = g_ascii_strtoull(ags_config_get(config,
 						AGS_CONFIG_DEVOUT,
 						"buffer-size\0"),
@@ -247,10 +248,11 @@ ags_task_thread_run(AgsThread *thread)
 					       "samplerate\0"),
 				NULL,
 				10);
-
+  */
+  
   if(!initialized){
-    play_idle.tv_sec = 0;
-    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate);
+    //    play_idle.tv_sec = 0;
+    //    play_idle.tv_nsec = 10 * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate);
     //    idle = sysconf(_SC_CLK_TCK) * round(sysconf(_SC_CLK_TCK) * (double) buffer_size  / (double) samplerate / 8.0);
 
     initialized = TRUE;
@@ -292,7 +294,7 @@ ags_task_thread_run(AgsThread *thread)
 #endif
 
       ags_task_launch(task);
-
+      
       list = list->next;
     }
 
@@ -343,7 +345,6 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
 
   /* unlock */
   pthread_mutex_unlock(task_thread->read_mutex);
-
   /*  */
   //  g_message("ags_task_thread_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
 }

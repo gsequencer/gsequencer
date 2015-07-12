@@ -420,7 +420,8 @@ ags_audio_thread_stop(AgsThread *thread)
   pthread_mutex_lock(audio_thread->wakeup_mutex);
   
   g_atomic_int_or(&(audio_thread->flags),
-		  AGS_AUDIO_THREAD_WAKEUP);
+		  (AGS_AUDIO_THREAD_WAKEUP |
+		   AGS_AUDIO_THREAD_DONE));
 
   if((AGS_AUDIO_THREAD_WAITING & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
     pthread_cond_signal(audio_thread->wakeup_cond);

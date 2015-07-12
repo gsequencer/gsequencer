@@ -276,6 +276,8 @@
 	    </xsl:apply-templates>
     	    
 	  </ags-machine-list>
+
+	  <ags-navigation/>
 	</ags-window>
       </ags-main>
     </ags>

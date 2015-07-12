@@ -424,7 +424,7 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
       AgsDevout *devout;
       guint discriminante, nominante;
       gdouble factor;
-      
+
       if(ags_main == NULL ||
 	 ags_main->devout == NULL){
 	return;
@@ -436,7 +436,7 @@ ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 	     &nominante);
       
       factor = 1.0 / nominante * (nominante / discriminante);
-      
+
       g_object_set(devout,
 		   "delay-factor\0", factor,
 		   NULL);

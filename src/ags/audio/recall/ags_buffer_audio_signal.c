@@ -239,23 +239,29 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   guint buffer_size;
   guint samplerate;
   guint length;
-
+  gchar *str;
+  
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
 
   devout = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->devout);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
-
+  free(str);
+  
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
   recycling_container = recall->recall_id->recycling_container;

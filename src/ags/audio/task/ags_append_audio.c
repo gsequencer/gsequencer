@@ -160,6 +160,8 @@ ags_append_audio_launch(AgsTask *task)
   
   AgsServer *server;
 
+  gchar *str0, *str1;
+
   append_audio = AGS_APPEND_AUDIO(task);
 
   audio = append_audio->audio;
@@ -169,22 +171,24 @@ ags_append_audio_launch(AgsTask *task)
   ags_audio_loop_add_audio(audio_loop,
 			   audio);
 
-  /**/  
-  if(!g_ascii_strncasecmp(ags_config_get(config,
-					 AGS_CONFIG_THREAD,
-					 "model\0"),
+  /**/
+  str0 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"model\0");
+  
+  str1 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"super-threaded-scope\0");
+  
+  if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",
 			  15)){
-    if(!g_ascii_strncasecmp(ags_config_get(config,
-					   AGS_CONFIG_THREAD,
-					   "super-threaded-scope\0"),
+    if(!g_ascii_strncasecmp(str1,
 			    "audio\0",
 			    6) ||
-       !g_ascii_strncasecmp(ags_config_get(config,
-						 AGS_CONFIG_THREAD,
-						 "super-threaded-scope\0"),
-				  "channel\0",
-				  8)){
+       !g_ascii_strncasecmp(str1,
+			    "channel\0",
+			    8)){
       /* super threaded setup - audio */
       if(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1]->parent == NULL &&
 	 (AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER & (g_atomic_int_get(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags)))) != 0){
@@ -201,9 +205,7 @@ ags_append_audio_launch(AgsTask *task)
       }
 
       /* super threaed setup - channel */
-      if(!g_ascii_strncasecmp(ags_config_get(config,
-					     AGS_CONFIG_THREAD,
-					     "super-threaded-scope\0"),
+      if(!g_ascii_strncasecmp(str1,
 			      "channel\0",
 			      8)){
 	AgsChannel *output;
@@ -232,6 +234,9 @@ ags_append_audio_launch(AgsTask *task)
       }
     }
   }
+
+  free(str0);
+  free(str1);
   
   /* add to server registry */
   server = AGS_MAIN(audio_loop->ags_main)->server;

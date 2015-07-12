@@ -168,7 +168,8 @@ void
 ags_stream_channel_init(AgsStreamChannel *stream_channel)
 {
   GList *port;
-
+  gchar *str;
+  
   AGS_RECALL(stream_channel)->name = "ags-stream\0";
   AGS_RECALL(stream_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
   AGS_RECALL(stream_channel)->build_id = AGS_BUILD_ID;
@@ -185,10 +186,13 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
 				     "port-value-size\0", sizeof(gboolean),
 				     "port-value-length\0", 1,
 				     NULL);
-  stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(ags_config_get(config,
-											AGS_CONFIG_RECALL,
-											"auto-sense\0"), "true\0")
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_RECALL,
+		       "auto-sense\0");
+  stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(str, "true\0")
 							      ) ? TRUE: FALSE);
+  free(str);
   
   port = g_list_prepend(port, stream_channel->auto_sense);
 

@@ -76,7 +76,9 @@ ags_editor_tic_callback(AgsDevout *devout,
     tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) window->editor->toolbar->zoom));
     tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) window->editor->toolbar->zoom) - 2.0);
 
-    if((guint) (32 * devout->tact_counter) % 16 == 0){
+    if(devout->tact_counter > editor->current_tact){
+      editor->current_tact = devout->tact_counter;
+      
       scroll_on_play = ags_scroll_on_play_new(editor, 64.0);
       ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
 				  AGS_TASK(scroll_on_play));

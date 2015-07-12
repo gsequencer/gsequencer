@@ -254,6 +254,8 @@ ags_channel_init(AgsChannel *channel)
 {
   AgsMutexManager *mutex_manager;
 
+  gchar *str0, *str1;
+  
   pthread_mutex_t *mutex;
   pthread_mutexattr_t attr;
 
@@ -295,14 +297,17 @@ ags_channel_init(AgsChannel *channel)
   channel->devout_play = ags_devout_play_alloc();
   AGS_DEVOUT_PLAY(channel->devout_play)->source = (GObject *) channel;
 
-  if(!g_ascii_strncasecmp(ags_config_get(config,
-					 AGS_CONFIG_THREAD,
-					 "model\0"),
+  str0 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"model\0");
+  str1 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"super-threaded-scope\0");
+  
+  if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",
 			  15)){
-    if(!g_ascii_strncasecmp(ags_config_get(config,
-					   AGS_CONFIG_THREAD,
-					   "super-threaded-scope\0"),
+    if(!g_ascii_strncasecmp(str1,
 			    "channel\0",
 			    8)){
       g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
@@ -316,6 +321,9 @@ ags_channel_init(AgsChannel *channel)
 											channel);
     }
   }
+
+  free(str0);
+  free(str1);
   
   channel->recall_id = NULL;
   channel->container = NULL;
@@ -814,7 +822,8 @@ void
 ags_channel_set_devout(AgsChannel *channel, GObject *devout)
 {
   GList *list;
-
+  gchar *str0, *str1;
+  
   /* channel */
   if(channel->devout == devout){
     return;
@@ -831,15 +840,18 @@ ags_channel_set_devout(AgsChannel *channel, GObject *devout)
   channel->devout = (GObject *) devout;
 
   /**/
-  if(!g_ascii_strncasecmp(ags_config_get(config,
-					 AGS_CONFIG_THREAD,
-					 "model\0"),
+  str0 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"model\0");
+  str1 = ags_config_get(config,
+			AGS_CONFIG_THREAD,
+			"super-threaded-scope\0");
+  
+  if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",
 			  15)){
     /* super threaed setup */
-    if(!g_ascii_strncasecmp(ags_config_get(config,
-					   AGS_CONFIG_THREAD,
-					   "super-threaded-scope\0"),
+    if(!g_ascii_strncasecmp(str1,
 			    "channel\0",
 			    8)){
       /* playback */
@@ -858,6 +870,9 @@ ags_channel_set_devout(AgsChannel *channel, GObject *devout)
 		   NULL);
     }
   }
+
+  free(str0);
+  free(str1);
   
   /* recall */
   list = channel->play;

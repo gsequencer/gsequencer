@@ -244,6 +244,8 @@ ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_ru
 
   play_notation_audio_run->delay_audio_run = NULL;
   play_notation_audio_run->count_beats_audio_run = NULL;
+
+  play_notation_audio_run->notation = NULL;
 }
 
 void
@@ -666,7 +668,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   guint samplerate;
   guint buffer_size;
   guint i;
-
+  gchar *str;
+  
   GValue value = {0,};
 
   pthread_mutex_t *audio_mutex;
@@ -676,21 +679,21 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
   devout = AGS_DEVOUT(audio->devout);
 
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
-
-  g_value_init(&value, G_TYPE_POINTER);
-  ags_port_safe_read(play_notation_audio->notation,
-		     &value);
-
+  free(str);
   
   pthread_mutex_lock(&(ags_application_mutex));
   
@@ -756,10 +759,17 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
 					      (GObject *) recycling,
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
-	  ags_recycling_create_audio_signal_with_frame_count(recycling,
-							     audio_signal,
-							     samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
-							     delay, attack);
+
+	  if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
+	    ags_recycling_create_audio_signal_with_defaults(recycling,
+							    audio_signal,
+							    delay, attack);
+	  }else{
+	    ags_recycling_create_audio_signal_with_frame_count(recycling,
+							       audio_signal,
+							       samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
+							       delay, attack);
+	  }
 	  ags_audio_signal_connect(audio_signal);
 
 	  audio_signal->stream_current = audio_signal->stream_beginning;

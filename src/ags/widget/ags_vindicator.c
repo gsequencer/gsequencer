@@ -130,7 +130,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   if(cr == NULL){
     return;
   }
-
+  
   width = 16;
   height = 100;
 
@@ -139,6 +139,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
 
   padding = 3;
 
+  cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
   for(i = 0; i < height / (segment_height + padding); i++){
@@ -166,6 +167,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 
+  cairo_surface_mark_dirty(cairo_get_target(cr));
   cairo_destroy(cr);
 }
 

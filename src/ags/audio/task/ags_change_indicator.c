@@ -67,9 +67,9 @@ ags_change_indicator_get_type()
     };
 
     ags_type_change_indicator = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsChangeIndicator\0",
-						 &ags_change_indicator_info,
-						 0);
+						       "AgsChangeIndicator\0",
+						       &ags_change_indicator_info,
+						       0);
 
     g_type_add_interface_static(ags_type_change_indicator,
 				AGS_TYPE_CONNECTABLE,

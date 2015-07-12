@@ -53,7 +53,7 @@ typedef struct _AgsNotationClass AgsNotationClass;
 
 typedef enum{
   AGS_NOTATION_STICKY              =  1,
-  AGS_NOTATION_INDICATED_LENGTH    =  1 <<  1,
+  AGS_NOTATION_PATTERN_MODE        =  1 <<  1,
 }AgsNotationFlags;
 
 struct _AgsNotation

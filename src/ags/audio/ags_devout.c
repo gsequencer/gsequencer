@@ -332,7 +332,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_double("delay-factor\0",
 				   "delay factor\0",
 				   "The delay factor\0",
-				   1.0,
+				   0.0,
 				   16.0,
 				   1.0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -401,11 +401,13 @@ ags_devout_init(AgsDevout *devout)
 {
   AgsMutexManager *mutex_manager;
 
+  gchar *segmentation;
   gdouble delay;
   guint default_tact_frames;
   guint default_period;
   guint i;
-
+  gchar *str;
+  
   pthread_mutex_t *mutex;
   pthread_mutexattr_t attr;
 
@@ -432,27 +434,38 @@ ags_devout_init(AgsDevout *devout)
   devout->flags = (AGS_DEVOUT_ALSA);
 
   /* quality */
-  devout->dsp_channels = g_ascii_strtoull(ags_config_get(config,
-							 AGS_CONFIG_DEVOUT,
-							 "dsp-channels\0"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "dsp-channels\0");
+  devout->dsp_channels = g_ascii_strtoull(str,
 					  NULL,
 					  10);
-  devout->pcm_channels = g_ascii_strtoull(ags_config_get(config,
-							 AGS_CONFIG_DEVOUT,
-							 "pcm-channels\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "pcm-channels\0");
+  devout->pcm_channels = g_ascii_strtoull(str,
 					  NULL,
 					  10);
+  free(str);
+  
   devout->bits = AGS_DEVOUT_DEFAULT_FORMAT;
-  devout->buffer_size = g_ascii_strtoull(ags_config_get(config,
-							AGS_CONFIG_DEVOUT,
-							"buffer-size\0"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  devout->buffer_size = g_ascii_strtoull(str,
 					 NULL,
 					 10);
-  devout->frequency = g_ascii_strtoull(ags_config_get(config,
-						      AGS_CONFIG_DEVOUT,
-						      "samplerate\0"),
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  devout->frequency = g_ascii_strtoull(str,
 				       NULL,
 				       10);
+  free(str);
 
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;
@@ -471,7 +484,22 @@ ags_devout_init(AgsDevout *devout)
   devout->bpm = AGS_DEVOUT_DEFAULT_BPM;
 
   /* delay factor */
-  devout->delay_factor = 1.0 / 4.0;
+  segmentation = ags_config_get(config,
+				AGS_CONFIG_DEVOUT,
+				"segmentation\0");
+
+  if(segmentation != NULL){
+    guint discriminante, nominante;
+
+    sscanf(segmentation, "%d/%d\0",
+	   &discriminante,
+	   &nominante);
+    
+    devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
+    free(segmentation);
+  }else{
+    devout->delay_factor = 1.0 / 4.0;
+  }
 
   /* delay and attack */
   devout->delay = (gdouble *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *

@@ -312,6 +312,9 @@ void
 ags_ruler_draw(AgsRuler *ruler)
 {
   GtkWidget *widget;
+
+  PangoLayout *layout;
+  PangoFontDescription *desc;
   cairo_t *cr;
   
   gchar *str;
@@ -322,14 +325,17 @@ ags_ruler_draw(AgsRuler *ruler)
   guint i, j, j_set;
   guint z;
   gboolean omit_scales;
-
+  
   widget = GTK_WIDGET(ruler);
 
   cr = gdk_cairo_create(widget->window);
-
-  cairo_select_font_face(cr, "Georgia\0",
-			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  cairo_set_font_size(cr, (gdouble) ruler->font_size);
+  
+  cairo_surface_flush(cairo_get_target(cr));
+  cairo_push_group(cr);
+  
+  //  cairo_select_font_face(cr, "Georgia\0",
+  //			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  //  cairo_set_font_size(cr, (gdouble) ruler->font_size);
 
   /* draw ruler and scale */
   zoom_factor = 0.25;
@@ -392,7 +398,7 @@ ags_ruler_draw(AgsRuler *ruler)
     /* draw scale */
     cairo_move_to(cr,
 		  (double) (i),
-		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
+		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - 14));
 
     if(ruler->scale_precision <= 1.0){
       str = g_strdup_printf("%.0f\0",
@@ -401,9 +407,20 @@ ags_ruler_draw(AgsRuler *ruler)
       str = g_strdup_printf("%.0f\0",
 			    floor(offset + z) * ruler->scale_precision + ((i % (guint) step != 0) ? 1 * ruler->scale_precision: 0));
     }
-    
-    cairo_show_text(cr,
-		    str);
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout, str, -1);
+    desc = pango_font_description_copy_static(NULL); //pango_font_description_from_string("Georgia Bold 11");
+    pango_layout_set_font_description(layout, desc);
+    pango_font_description_free(desc);
+
+    pango_cairo_update_layout(cr, layout);
+    pango_cairo_show_layout(cr, layout);
+    //    cairo_show_text(cr,
+    //		    str);
+
+    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+    g_object_unref(layout);
     g_free(str);
 
 
@@ -433,6 +450,10 @@ ags_ruler_draw(AgsRuler *ruler)
     }
   }
 
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+
+  cairo_surface_mark_dirty(cairo_get_target(cr));
   cairo_destroy(cr);
 }
 

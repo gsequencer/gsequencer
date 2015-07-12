@@ -494,26 +494,38 @@ ags_thread_finalize(GObject *gobject)
 			&stackaddr, &stacksize);
 
   pthread_attr_destroy(&(thread->thread_attr));
-
+  
   pthread_mutexattr_destroy(&(thread->mutexattr));
   pthread_mutex_destroy(thread->mutex);
+  free(thread->mutex);
+
   pthread_cond_destroy(thread->cond);
+  free(thread->cond);
 
   pthread_mutex_destroy(thread->start_mutex);
   pthread_cond_destroy(thread->start_cond);
-
+  free(thread->start_cond);
+  
   pthread_mutex_destroy(thread->timelock_mutex);
+  free(thread->timelock_mutex);
+  
   pthread_cond_destroy(thread->timelock_cond);
-
+  free(thread->timelock_cond);
+  
   pthread_mutex_destroy(thread->greedy_mutex);
+  free(thread->greedy_mutex);
+  
   pthread_cond_destroy(thread->greedy_cond);
-
+  free(thread->greedy_cond);
+  
   pthread_mutex_destroy(thread->suspend_mutex);
-
+  free(thread->suspend_mutex);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
 
   free(stackaddr);
+  free(thread->thread);
 }
 
 void
@@ -1977,7 +1989,7 @@ ags_thread_loop(void *ptr)
 
   ags_thread_self =
     thread = AGS_THREAD(ptr);
-
+  
   main_loop = ags_thread_get_toplevel(thread);
 
   /*  */
@@ -2364,6 +2376,7 @@ ags_thread_loop(void *ptr)
   if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
     ags_thread_remove_child(thread->parent,
     			    thread);
+    g_object_unref(thread);
   }
 
   if(ags_thread_is_tree_ready(main_loop,

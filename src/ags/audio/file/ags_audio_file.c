@@ -122,15 +122,20 @@ ags_audio_file_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_audio_file_init(AgsAudioFile *audio_file)
 {
+  gchar *str;
+  
   audio_file->devout = NULL;
 
   audio_file->name = NULL;
 
-  audio_file->samplerate = g_ascii_strtoull(ags_config_get(config,
-							   AGS_CONFIG_DEVOUT,
-							   "samplerate\0"),
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  audio_file->samplerate = g_ascii_strtoull(str,
 					    NULL,
 					    10);
+  free(str);
+  
   audio_file->frames = 0;
   audio_file->channels = 2;
   audio_file->format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;

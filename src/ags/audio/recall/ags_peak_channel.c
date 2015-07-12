@@ -324,6 +324,8 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   guint buffer_size;
   static const double scale_precision = 10.0;
   guint i;
+  gchar *str;
+  
   GValue value = {0,};
 
   if(peak_channel == NULL){
@@ -331,11 +333,14 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   recall = (AgsRecall *) peak_channel;
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
+  
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
+  free(str);
 
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;
