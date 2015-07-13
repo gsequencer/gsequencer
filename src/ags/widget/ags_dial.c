@@ -491,21 +491,39 @@ ags_dial_motion_notify(GtkWidget *widget,
   auto void ags_dial_motion_notify_do_dial();
   void ags_dial_motion_notify_do_dial(){
     GtkAdjustment *adjustment;
+
+    guint i;
+    gint sign_one;
     gboolean gravity_up;
+    
+    static const gboolean movement_matrix[] = {
+      FALSE,
+      TRUE,
+      FALSE,
+      FALSE,
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+    };      
 
     adjustment = dial->adjustment;
 
-    if(dial->gravity_y < dial->current_y){
-      if(dial->gravity_x < dial->current_x){
-	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
+    gravity_up = FALSE;
+
+    for(i = 0; i < 8 ; i++){
+      if(!movement_matrix[i]){
+	sign_one = -1;
       }else{
-	gravity_up = (-1 * (dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
+	sign_one = 1;
       }
-    }else{
-      if(dial->gravity_x < dial->current_x){
-	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < -1 * (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
-      }else{
-	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
+      
+      if((movement_matrix[i] &&
+	  (sign_one * (dial->gravity_x - dial->current_x) < sign_one * (dial->gravity_y - dial->current_y))) ||
+	 (!movement_matrix[i] &&
+	  (sign_one * (dial->gravity_x - dial->current_x) > sign_one * (dial->gravity_y - dial->current_y)))){
+	gravity_up = TRUE;
+	break;
       }
     }
 
