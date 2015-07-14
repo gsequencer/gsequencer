@@ -1,3 +1,15 @@
+ags (0.5.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO implement ags.conf per file base
+
+ags (0.5.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed export duration
+	* fixed improved AgsDial
+	* fixed dead-lock for to many calls to AgsChannelThread
+
 ags (0.5.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -53,7 +53,7 @@
 	  >
 
 <!-- root node -->
-<!ELEMENT ags (ags-clip-board?, ags-script-list?, ags-cluster?, ags-client?, ags-server?, ags-main?, ags-embedded-audio-list?, ags-file-link-list?, ags-history?)>
+<!ELEMENT ags (ags-config?, ags-clip-board?, ags-script-list?, ags-cluster?, ags-client?, ags-server?, ags-main?, ags-embedded-audio-list?, ags-file-link-list?, ags-history?)>
 <!ATTLIST ags
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
@@ -67,6 +67,14 @@
 	  >
 
 <!ELEMENT ags-tic (#NMTOKEN)>
+
+<!-- program configuration GKeyFile - the same as $(HOME)/.gsequener/ags.conf -->
+<!ELEMENT ags-config (#CDATA)>
+<!ATTLIST ags-config
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  >
 
 <!-- clipboard -->
 <!ELEMENT ags-clip-board (#CDATA)>

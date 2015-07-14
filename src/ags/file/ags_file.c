@@ -1357,6 +1357,41 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 			AGS_MAIN(ags_main)->window);
 }
 
+void
+ags_file_read_config(AgsFile *file, xmlNode *node, GObject **ags_config)
+{
+  AgsConfig *gobject;
+
+  xmlChar *buffer;
+  int buffer_length;
+
+  buffer = xmlNodeGetContent(node);
+  buffer_length = xmlStrlen(buffer);
+  
+  ags_config_load_from_data(gobject,
+			    buffer, buffer_length);
+}
+
+void
+ags_file_write_config(AgsFile *file, xmlNode *parent, GObject *ags_config)
+{
+  xmlNode *node;
+  
+  xmlChar *buffer;
+  int buffer_length;
+
+  ags_config_to_data(ags_config,
+		     &buffer,
+		     &buffer_length);
+
+  node = xmlNewCDataBlock(file->doc,
+			  buffer,
+			  buffer_length);
+  
+  xmlAddChild(parent,
+	      node);
+}
+
 /**
  * ags_file_new:
  *
