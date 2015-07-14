@@ -49,6 +49,8 @@
 
 #include <ags/thread/ags_audio_loop.h>
 
+#include <ags/audio/ags_config.h>
+
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
@@ -118,6 +120,8 @@ enum{
 
 static gpointer ags_file_parent_class = NULL;
 static guint file_signals[LAST_SIGNAL] = { 0 };
+
+extern AgsConfig *config;
 
 GType
 ags_file_get_type (void)
@@ -1242,7 +1246,15 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("ags-thread\0",
+      if(!xmlStrncmp("ags-config\0",
+		     child->name,
+		     10)){
+	ags_file_read_config(file,
+			     child,
+			     (GObject *) &config);
+	
+	AGS_AUDIO_LOOP(gobject->main_loop)->ags_main = (GObject *) gobject;
+      }else if(!xmlStrncmp("ags-thread\0",
 		     child->name,
 		     11)){
 	read_thread = TRUE;
@@ -1340,6 +1352,11 @@ ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main)
 	      node);
 
   /* child elements */
+  ags_file_write_config(file,
+			node,
+			config);
+
+  /* child elements */
   ags_file_write_thread(file,
 			node,
 			AGS_THREAD(AGS_MAIN(ags_main)->main_loop));
@@ -1362,8 +1379,16 @@ ags_file_read_config(AgsFile *file, xmlNode *node, GObject **ags_config)
 {
   AgsConfig *gobject;
 
+  gchar *id;
+  
   xmlChar *buffer;
   int buffer_length;
+  
+  gobject->version = xmlGetProp(node,
+				AGS_FILE_VERSION_PROP);
+
+  gobject->build_id = xmlGetProp(node,
+				 AGS_FILE_BUILD_ID_PROP);
 
   buffer = xmlNodeGetContent(node);
   buffer_length = xmlStrlen(buffer);
@@ -1376,20 +1401,52 @@ void
 ags_file_write_config(AgsFile *file, xmlNode *parent, GObject *ags_config)
 {
   xmlNode *node;
+  xmlNode *cdata;
   
+  gchar *id;
   xmlChar *buffer;
   int buffer_length;
 
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-config\0");
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->ags_main,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", ags_config,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_CONFIG(ags_config)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_CONFIG(ags_config)->build_id);
+
+  xmlAddChild(parent,
+	      node);
+
+  /* cdata */
   ags_config_to_data(ags_config,
 		     &buffer,
 		     &buffer_length);
 
-  node = xmlNewCDataBlock(file->doc,
-			  buffer,
-			  buffer_length);
+  cdata = xmlNewCDataBlock(file->doc,
+			   buffer,
+			   buffer_length);
   
-  xmlAddChild(parent,
-	      node);
+  xmlAddChild(node,
+	      cdata);
 }
 
 /**
