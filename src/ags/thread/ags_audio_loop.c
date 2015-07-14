@@ -1411,13 +1411,14 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsDevoutPlay
   /* sequencer */
   if((AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER & (g_atomic_int_get(&(devout_play_domain->flags)))) != 0){
     sequencer = TRUE;
-  
+
+    pthread_mutex_lock(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->done_mutex);
+
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play_domain->audio_thread[1]->flags)))) != 0 &&
        (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(devout_play_domain->audio_thread[1]->flags)))) == 0 &&
        (AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(devout_play_domain->audio_thread[1]->flags)))) == 0 &&
        (AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(devout_play_domain->audio_thread[1]->flags)))) == 0 &&
        (AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(devout_play_domain->audio_thread[1]->flags)))) == 0){
-      pthread_mutex_lock(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->done_mutex);
 
       if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->flags)))) == 0){
 	g_atomic_int_or(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->flags),
@@ -1428,27 +1429,28 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsDevoutPlay
 			    AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->done_mutex);
 	}
       }
-
-      g_atomic_int_and(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->flags),
-		       (~AGS_AUDIO_THREAD_NOTIFY));
-      g_atomic_int_and(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->flags),
-			 (~AGS_AUDIO_THREAD_DONE));
-      	  
-      pthread_mutex_unlock(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->done_mutex);
     }
+    
+    g_atomic_int_and(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->flags),
+		     (~AGS_AUDIO_THREAD_NOTIFY));
+    g_atomic_int_and(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->flags),
+		     (~AGS_AUDIO_THREAD_DONE));
+      	  
+    pthread_mutex_unlock(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[1])->done_mutex);
   }
 
   /* notation */
   if((AGS_DEVOUT_PLAY_DOMAIN_NOTATION & (g_atomic_int_get(&(devout_play_domain->flags)))) != 0){
     notation = TRUE;
 
+    pthread_mutex_lock(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->done_mutex);
+
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play_domain->audio_thread[2]->flags)))) != 0 &&
        (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(devout_play_domain->audio_thread[2]->flags)))) == 0 &&
        (AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(devout_play_domain->audio_thread[2]->flags)))) == 0 &&
        (AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(devout_play_domain->audio_thread[2]->flags)))) == 0 &&
        (AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(devout_play_domain->audio_thread[2]->flags)))) == 0){
-      pthread_mutex_lock(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->done_mutex);
-
+      
       if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->flags)))) == 0){
 	g_atomic_int_or(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->flags),
 			AGS_AUDIO_THREAD_NOTIFY);
@@ -1458,14 +1460,14 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsDevoutPlay
 			    AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->done_mutex);
 	}
       }
-      
-      g_atomic_int_and(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->flags),
-			 (~AGS_AUDIO_THREAD_NOTIFY));
-      g_atomic_int_and(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->flags),
-			 (~AGS_AUDIO_THREAD_DONE));
-      
-      pthread_mutex_unlock(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->done_mutex);
     }
+      
+    g_atomic_int_and(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->flags),
+		     (~AGS_AUDIO_THREAD_NOTIFY));
+    g_atomic_int_and(&(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->flags),
+		     (~AGS_AUDIO_THREAD_DONE));
+      
+    pthread_mutex_unlock(AGS_AUDIO_THREAD(devout_play_domain->audio_thread[2])->done_mutex);
   }
 
   /* check if flags are still valid */

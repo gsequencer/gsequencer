@@ -148,8 +148,11 @@ void ags_file_read_server(AgsFile *file, xmlNode *node, GObject **server);
 void ags_file_write_server(AgsFile *file, xmlNode *parent, GObject *server);
 
 /*  */
-void ags_file_read_main(AgsFile *file, xmlNode *node, GObject **main);
-void ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *main);
+void ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main);
+void ags_file_write_main(AgsFile *file, xmlNode *parent, GObject *ags_main);
+
+void ags_file_read_config(AgsFile *file, xmlNode *node, GObject **ags_config);
+void ags_file_write_config(AgsFile *file, xmlNode *parent, GObject *ags_config);
 
 /* */
 AgsFile* ags_file_new();

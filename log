@@ -1,604 +1,143 @@
-** Message: AgsStreamChannelRun play channel 6008e2b0:0 @600d25c0 -> 600d8160
-** Message: AgsStreamChannelRun play channel 6001c970:0 @70111a20 -> 60103f80
-** Message: AgsVolumeChannelRun play channel 6001c970:0 @70111840 -> 60103f80
-** Message: AgsCopyPatternChannelRun play channel 6001c970:0 @7010f6a0 -> 60103f80
-** Message: AgsPeakChannelRun play channel 6001c970:0 @7010f4c0 -> 60103f80
-** Message: AgsBufferChannelRun play channel 6001c970:0 @7010f2e0 -> 60103f80
-** Message: AgsBufferChannelRun play channel 6001c970:0 @7010f100 -> 60103f80
-
-** Message: AgsStreamChannelRun play channel 6001cb30:2 @701144f0 -> 600faf00
-** Message: AgsVolumeChannelRun play channel 6001cb30:2 @70114310 -> 600faf00
-** Message: AgsCopyPatternChannelRun play channel 6001cb30:2 @70114220 -> 600faf00
-** Message: AgsPeakChannelRun play channel 6001cb30:2 @70114040 -> 600faf00
-** Message: AgsBufferChannelRun play channel 6001cb30:2 @70111de0 -> 600faf00
-** Message: AgsBufferChannelRun play channel 6001cb30:2 @70111c00 -> 600faf00
-** Message: AgsStreamChannelRun play channel 6001ccf0:4 @70117000 -> 600faf30
-** Message: AgsVolumeChannelRun play channel 6001ccf0:4 @701155a0 -> 600faf30
-** Message: AgsCopyPatternChannelRun play channel 6001ccf0:4 @701154b0 -> 600faf30
-** Message: AgsPeakChannelRun play channel 6001ccf0:4 @701152d0 -> 600faf30
-** Message: AgsBufferChannelRun play channel 6001ccf0:4 @701150f0 -> 600faf30
-** Message: AgsBufferChannelRun play channel 6001ccf0:4 @701146d0 -> 600faf30
-** Message: AgsStreamChannelRun play channel 6001ceb0:6 @701192d0 -> 60104790
-** Message: AgsVolumeChannelRun play channel 6001ceb0:6 @701190f0 -> 60104790
-** Message: AgsCopyPatternChannelRun play channel 6001ceb0:6 @70119000 -> 60104790
-** Message: AgsPeakChannelRun play channel 6001ceb0:6 @701175a0 -> 60104790
-** Message: AgsBufferChannelRun play channel 6001ceb0:6 @701173c0 -> 60104790
-** Message: AgsBufferChannelRun play channel 6001ceb0:6 @701171e0 -> 60104790
-** Message: AgsStreamChannelRun play channel 6004e1a0:8 @7011a5b0 -> 8f388410
-** Message: AgsVolumeChannelRun play channel 6004e1a0:8 @7011a3d0 -> 8f388410
-** Message: AgsCopyPatternChannelRun play channel 6004e1a0:8 @7011a2e0 -> 8f388410
-** Message: AgsPeakChannelRun play channel 6004e1a0:8 @7011a100 -> 8f388410
-** Message: AgsBufferChannelRun play channel 6004e1a0:8 @70119690 -> 8f388410
-** Message: AgsBufferChannelRun play channel 6004e1a0:8 @701194b0 -> 8f388410
-** Message: AgsStreamChannelRun play channel 6004e360:10 @701228f0 -> 60103ec0
-** Message: AgsVolumeChannelRun play channel 6004e360:10 @70120ea0 -> 60103ec0
-** Message: AgsCopyPatternChannelRun play channel 6004e360:10 @70120db0 -> 60103ec0
-** Message: AgsPeakChannelRun play channel 6004e360:10 @70120bd0 -> 60103ec0
-** Message: AgsBufferChannelRun play channel 6004e360:10 @701209f0 -> 60103ec0
-** Message: AgsBufferChannelRun play channel 6004e360:10 @70120810 -> 60103ec0
-** Message: AgsStreamChannelRun play channel 6004e520:12 @70123bd0 -> 600d5410
-** Message: AgsVolumeChannelRun play channel 6004e520:12 @701239f0 -> 600d5410
-** Message: AgsCopyPatternChannelRun play channel 6004e520:12 @70123900 -> 600d5410
-** Message: AgsPeakChannelRun play channel 6004e520:12 @70122e90 -> 600d5410
-** Message: AgsBufferChannelRun play channel 6004e520:12 @70122cb0 -> 600d5410
-** Message: AgsBufferChannelRun play channel 6004e520:12 @70122ad0 -> 600d5410
-** Message: AgsStreamChannelRun play channel 6004e6e0:14 @70125ea0 -> 60103e60
-** Message: AgsVolumeChannelRun play channel 6004e6e0:14 @70125cc0 -> 60103e60
-** Message: AgsCopyPatternChannelRun play channel 6004e6e0:14 @70125bd0 -> 60103e60
-** Message: AgsPeakChannelRun play channel 6004e6e0:14 @701259f0 -> 60103e60
-** Message: AgsBufferChannelRun play channel 6004e6e0:14 @70125810 -> 60103e60
-** Message: AgsBufferChannelRun play channel 6004e6e0:14 @70123db0 -> 60103e60
-
-
-
-** Message: AgsStreamChannelRun play channel 6008e2b0:0 @7013dbe0 -> 701430a0
-** Message: AgsStreamChannelRun play channel 6001c970:0 @70144e90 -> 70143100
-** Message: AgsVolumeChannelRun play channel 6001c970:0 @70144cb0 -> 70143100
-** Message: AgsPeakChannelRun play channel 6001c970:0 @70144ad0 -> 70143100
-** Message: AgsBufferChannelRun play channel 6001c970:0 @701448f0 -> 70143100
-** Message: AgsBufferChannelRun play channel 6001c970:0 @7013deb0 -> 70143100
-** Message: AgsStreamChannelRun play channel 6001cb30:2 @701470f0 -> 70143130
-** Message: AgsVolumeChannelRun play channel 6001cb30:2 @701466d0 -> 70143130
-** Message: AgsPeakChannelRun play channel 6001cb30:2 @701464f0 -> 70143130
-** Message: AgsBufferChannelRun play channel 6001cb30:2 @70146310 -> 70143130
-** Message: AgsBufferChannelRun play channel 6001cb30:2 @70146130 -> 70143130
-** Message: AgsStreamChannelRun play channel 6001ccf0:4 @7014a310 -> 70143160
-** Message: AgsVolumeChannelRun play channel 6001ccf0:4 @7014a130 -> 70143160
-** Message: AgsPeakChannelRun play channel 6001ccf0:4 @70147690 -> 70143160
-** Message: AgsBufferChannelRun play channel 6001ccf0:4 @701474b0 -> 70143160
-** Message: AgsBufferChannelRun play channel 6001ccf0:4 @701472d0 -> 70143160
-** Message: AgsStreamChannelRun play channel 6001ceb0:6 @7014bcf0 -> 70143190
-** Message: AgsVolumeChannelRun play channel 6001ceb0:6 @7014bb10 -> 70143190
-** Message: AgsPeakChannelRun play channel 6001ceb0:6 @7014b930 -> 70143190
-** Message: AgsBufferChannelRun play channel 6001ceb0:6 @7014a6d0 -> 70143190
-** Message: AgsBufferChannelRun play channel 6001ceb0:6 @7014a4f0 -> 70143190
-** Message: AgsStreamChannelRun play channel 6004e1a0:8 @7014ce90 -> 70143200
-** Message: AgsVolumeChannelRun play channel 6004e1a0:8 @7014ccb0 -> 70143200
-** Message: AgsPeakChannelRun play channel 6004e1a0:8 @7014cad0 -> 70143200
-** Message: AgsBufferChannelRun play channel 6004e1a0:8 @7014c8f0 -> 70143200
-** Message: AgsBufferChannelRun play channel 6004e1a0:8 @7014bed0 -> 70143200
-** Message: AgsStreamChannelRun play channel 6004e360:10 @70150920 -> 70143230
-** Message: AgsVolumeChannelRun play channel 6004e360:10 @7014ee90 -> 70143230
-** Message: AgsPeakChannelRun play channel 6004e360:10 @7014ecb0 -> 70143230
-** Message: AgsBufferChannelRun play channel 6004e360:10 @7014ead0 -> 70143230
-** Message: AgsBufferChannelRun play channel 6004e360:10 @7014e8f0 -> 70143230
-** Message: AgsStreamChannelRun play channel 6004e520:12 @70151b10 -> 70143260
-** Message: AgsVolumeChannelRun play channel 6004e520:12 @70151930 -> 70143260
-** Message: AgsPeakChannelRun play channel 6004e520:12 @70150ec0 -> 70143260
-** Message: AgsBufferChannelRun play channel 6004e520:12 @70150ce0 -> 70143260
-** Message: AgsBufferChannelRun play channel 6004e520:12 @70150b00 -> 70143260
-** Message: AgsStreamChannelRun play channel 6004e6e0:14 @70153cf0 -> 70143290
-** Message: AgsVolumeChannelRun play channel 6004e6e0:14 @70153b10 -> 70143290
-** Message: AgsPeakChannelRun play channel 6004e6e0:14 @70153930 -> 70143290
-** Message: AgsBufferChannelRun play channel 6004e6e0:14 @70151ed0 -> 70143290
-** Message: AgsBufferChannelRun play channel 6004e6e0:14 @70151cf0 -> 70143290
-
-
-
-** Message: AgsStreamChannelRun play channel 6008e380:1 @70127110 -> 7012bea0
-** Message: AgsStreamChannelRun play channel 6001ca50:1 @7012dcd0 -> 7012bf00
-** Message: AgsVolumeChannelRun play channel 6001ca50:1 @7012daf0 -> 7012bf00
-** Message: AgsCopyPatternChannelRun play channel 6001ca50:1 @7012da00 -> 7012bf00
-** Message: AgsPeakChannelRun play channel 6001ca50:1 @7012d820 -> 7012bf00
-** Message: AgsBufferChannelRun play channel 6001ca50:1 @701275c0 -> 7012bf00
-** Message: AgsBufferChannelRun play channel 6001ca50:1 @701273e0 -> 7012bf00
-** Message: AgsStreamChannelRun play channel 6001cc10:3 @70131020 -> 7012bf30
-** Message: AgsVolumeChannelRun play channel 6001cc10:3 @7012f5c0 -> 7012bf30
-** Message: AgsCopyPatternChannelRun play channel 6001cc10:3 @7012f4d0 -> 7012bf30
-** Message: AgsPeakChannelRun play channel 6001cc10:3 @7012f2f0 -> 7012bf30
-** Message: AgsBufferChannelRun play channel 6001cc10:3 @7012f110 -> 7012bf30
-** Message: AgsBufferChannelRun play channel 6001cc10:3 @7012deb0 -> 7012bf30
-** Message: AgsStreamChannelRun play channel 6001cdd0:5 @70132300 -> 7012bf60
-** Message: AgsVolumeChannelRun play channel 6001cdd0:5 @70132120 -> 7012bf60
-** Message: AgsCopyPatternChannelRun play channel 6001cdd0:5 @70132030 -> 7012bf60
-** Message: AgsPeakChannelRun play channel 6001cdd0:5 @701315c0 -> 7012bf60
-** Message: AgsBufferChannelRun play channel 6001cdd0:5 @701313e0 -> 7012bf60
-** Message: AgsBufferChannelRun play channel 6001cdd0:5 @70131200 -> 7012bf60
-** Message: AgsStreamChannelRun play channel 6004e0c0:7 @701335e0 -> 7012bf90
-** Message: AgsVolumeChannelRun play channel 6004e0c0:7 @70133400 -> 7012bf90
-** Message: AgsCopyPatternChannelRun play channel 6004e0c0:7 @70133310 -> 7012bf90
-** Message: AgsPeakChannelRun play channel 6004e0c0:7 @70133130 -> 7012bf90
-** Message: AgsBufferChannelRun play channel 6004e0c0:7 @701326c0 -> 7012bf90
-** Message: AgsBufferChannelRun play channel 6004e0c0:7 @701324e0 -> 7012bf90
-** Message: AgsStreamChannelRun play channel 6004e280:9 @70137100 -> 7012c000
-** Message: AgsVolumeChannelRun play channel 6004e280:9 @70135ea0 -> 7012c000
-** Message: AgsCopyPatternChannelRun play channel 6004e280:9 @70135db0 -> 7012c000
-** Message: AgsPeakChannelRun play channel 6004e280:9 @70135bd0 -> 7012c000
-** Message: AgsBufferChannelRun play channel 6004e280:9 @701359f0 -> 7012c000
-** Message: AgsBufferChannelRun play channel 6004e280:9 @70135810 -> 7012c000
-** Message: AgsStreamChannelRun play channel 6004e440:11 @701383e0 -> 7012c030
-** Message: AgsVolumeChannelRun play channel 6004e440:11 @70138200 -> 7012c030
-** Message: AgsCopyPatternChannelRun play channel 6004e440:11 @70138110 -> 7012c030
-** Message: AgsPeakChannelRun play channel 6004e440:11 @701376a0 -> 7012c030
-** Message: AgsBufferChannelRun play channel 6004e440:11 @701374c0 -> 7012c030
-** Message: AgsBufferChannelRun play channel 6004e440:11 @701372e0 -> 7012c030
-** Message: AgsStreamChannelRun play channel 6004e600:13 @7013b6a0 -> 7012c060
-** Message: AgsVolumeChannelRun play channel 6004e600:13 @7013b4c0 -> 7012c060
-** Message: AgsCopyPatternChannelRun play channel 6004e600:13 @7013b3d0 -> 7012c060
-** Message: AgsPeakChannelRun play channel 6004e600:13 @7013b1f0 -> 7012c060
-** Message: AgsBufferChannelRun play channel 6004e600:13 @7013b010 -> 7012c060
-** Message: AgsBufferChannelRun play channel 6004e600:13 @701385c0 -> 7012c060
-** Message: AgsStreamChannelRun play channel 60055820:15 @7013da00 -> 7012c090
-** Message: AgsVolumeChannelRun play channel 60055820:15 @7013d820 -> 7012c090
-** Message: AgsCopyPatternChannelRun play channel 60055820:15 @7013cea0 -> 7012c090
-** Message: AgsPeakChannelRun play channel 60055820:15 @7013ccc0 -> 7012c090
-** Message: AgsBufferChannelRun play channel 60055820:15 @7013cae0 -> 7012c090
-** Message: AgsBufferChannelRun play channel 60055820:15 @7013c900 -> 7012c090
-** Message: AgsStreamChannelRun play channel 6008e380:1 @70153ed0 -> 70159100
-** Message: AgsStreamChannelRun play channel 6001ca50:1 @7015c220 -> 70159160
-** Message: AgsVolumeChannelRun play channel 6001ca50:1 @7015c040 -> 70159160
-** Message: AgsPeakChannelRun play channel 6001ca50:1 @70154da0 -> 70159160
-** Message: AgsBufferChannelRun play channel 6001ca50:1 @70154bc0 -> 70159160
-** Message: AgsBufferChannelRun play channel 6001ca50:1 @701549e0 -> 70159160
-** Message: AgsStreamChannelRun play channel 6001cc10:3 @7015e400 -> 70159190
-** Message: AgsVolumeChannelRun play channel 6001cc10:3 @7015e220 -> 70159190
-** Message: AgsPeakChannelRun play channel 6001cc10:3 @7015e040 -> 70159190
-** Message: AgsBufferChannelRun play channel 6001cc10:3 @7015c5e0 -> 70159190
-** Message: AgsBufferChannelRun play channel 6001cc10:3 @7015c400 -> 70159190
-** Message: AgsStreamChannelRun play channel 6001cdd0:5 @7015f5a0 -> 70159c00
-** Message: AgsVolumeChannelRun play channel 6001cdd0:5 @7015f3c0 -> 70159c00
-** Message: AgsPeakChannelRun play channel 6001cdd0:5 @7015f1e0 -> 70159c00
-** Message: AgsBufferChannelRun play channel 6001cdd0:5 @7015f000 -> 70159c00
-** Message: AgsBufferChannelRun play channel 6001cdd0:5 @7015e5e0 -> 70159c00
-** Message: AgsStreamChannelRun play channel 6004e0c0:7 @70163030 -> 70159c30
-** Message: AgsVolumeChannelRun play channel 6004e0c0:7 @701615e0 -> 70159c30
-** Message: AgsPeakChannelRun play channel 6004e0c0:7 @70161400 -> 70159c30
-** Message: AgsBufferChannelRun play channel 6004e0c0:7 @70161220 -> 70159c30
-** Message: AgsBufferChannelRun play channel 6004e0c0:7 @70161040 -> 70159c30
-** Message: AgsStreamChannelRun play channel 6004e280:9 @70164220 -> 70159c60
-** Message: AgsVolumeChannelRun play channel 6004e280:9 @70164040 -> 70159c60
-** Message: AgsPeakChannelRun play channel 6004e280:9 @701635d0 -> 70159c60
-** Message: AgsBufferChannelRun play channel 6004e280:9 @701633f0 -> 70159c60
-** Message: AgsBufferChannelRun play channel 6004e280:9 @70163210 -> 70159c60
-** Message: AgsStreamChannelRun play channel 6004e440:11 @70165c00 -> 70159c90
-** Message: AgsVolumeChannelRun play channel 6004e440:11 @70165a20 -> 70159c90
-** Message: AgsPeakChannelRun play channel 6004e440:11 @70165840 -> 70159c90
-** Message: AgsBufferChannelRun play channel 6004e440:11 @701645e0 -> 70159c90
-** Message: AgsBufferChannelRun play channel 6004e440:11 @70164400 -> 70159c90
-** Message: AgsStreamChannelRun play channel 6004e600:13 @70168dd0 -> 70159cc0
-** Message: AgsVolumeChannelRun play channel 6004e600:13 @70168bf0 -> 70159cc0
-** Message: AgsPeakChannelRun play channel 6004e600:13 @70168a10 -> 70159cc0
-** Message: AgsBufferChannelRun play channel 6004e600:13 @70168830 -> 70159cc0
-** Message: AgsBufferChannelRun play channel 6004e600:13 @70165de0 -> 70159cc0
-** Message: AgsStreamChannelRun play channel 60055820:15 @7016b040 -> 70159cf0
-** Message: AgsVolumeChannelRun play channel 60055820:15 @70169de0 -> 70159cf0
-** Message: AgsPeakChannelRun play channel 60055820:15 @70169c00 -> 70159cf0
-** Message: AgsBufferChannelRun play channel 60055820:15 @70169a20 -> 70159cf0
-** Message: AgsBufferChannelRun play channel 60055820:15 @70169840 -> 70159cf0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-** Message: add AgsBufferRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fcc94840]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[2]
-
-** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-
-** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-
-** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-
-** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsBufferRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fcc94a20]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[2]
-** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsPeakRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc94c00]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[2]
-** Message: add AgsVolumeRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc94ed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[2]
-** Message: add AgsStreamRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc96120]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[2]
-** Message: add AgsStreamRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc96120]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[2]
-** Message: add AgsVolumeRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc94ed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[2]
-** Message: add AgsPeakRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc94c00]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[2]
-** Message: add AgsBufferRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fcc94a20]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[2]
-** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsBufferRecycling:fcc7e4f0 -> fcc7e4f0 @ fcc28a40
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fcc94840]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[2]
-** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsStreamRecycling:fcc7e300 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fcc909f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsVolumeRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fcc6dda0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsMuteRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fcc6dbc0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsPeakRecycling:fcc7e330 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fcc6d9e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsPlayRecycling:fcc7e400 -> fcc7e400 @ fcc28a00
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fcc6de90]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[0]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsBufferRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fccbd2d0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[3]
-** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsBufferRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fccbd4b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[3]
-** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsPeakRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccbd690]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[3]
-** Message: add AgsVolumeRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccbf1e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[3]
-** Message: add AgsStreamRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccbf3c0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[3]
-** Message: add AgsStreamRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccbf3c0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[3]
-** Message: add AgsVolumeRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccbf1e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[3]
-** Message: add AgsPeakRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccbd690]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[3]
-** Message: add AgsBufferRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fccbd4b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[3]
-** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-
-** Message: add AgsBufferRecycling:fccb6c60 -> fccb6c60 @ fcc28ac0
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsBufferRecycling[7f14fccbd2d0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsBufferRecycling[3]
-** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
-** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsStreamRecycling:fccb6a70 -> fccb6b30 @ fcc28a80
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsStreamRecycling[7f14fccb94b0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsStreamRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsStreamRecycling]
-** Message: add AgsVolumeRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-
-
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsVolumeRecycling[7f14fccb90f0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsVolumeRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsVolumeRecycling]
-** Message: add AgsMuteRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsMuteRecycling[7f14fccaeed0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsMuteRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsMuteRecycling]
-** Message: add AgsPeakRecycling:fccb6aa0 -> fccb6b30 @ fcc28a80
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPeakRecycling[7f14fccaecf0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPeakRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPeakRecycling]
-** Message: add AgsPlayRecycling:fccb6b30 -> fccb6b30 @ fcc28a80
-
-
-
-** Message: ags_recall_recycling_source_add_audio_signal_callback AgsPlayRecycling[7f14fccb91e0]
-** Message: ags_recall_recycling_source_add_audio_signal - channel: AgsPlayRecycling[1]
-** Message: ags_recall_recycling_source_add_audio_signal_callback[AgsPlayRecycling]
+mkdir -p html/
+xsltproc --output html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl ./doc/usersBook.xml
+Note: namesp. cut : stripped namespace before processing           Advanced Gtk+ Sequencer
+Note: namesp. cut : processing stripped document                   Advanced Gtk+ Sequencer
+Writing pr01.html for preface
+Writing ch01s02.html for sect1
+Writing ch01.html for chapter
+Writing ch02s02.html for sect1
+Writing ch02s03.html for sect1
+Writing ch02s04.html for sect1
+Writing ch02s05.html for sect1
+Writing ch02s06.html for sect1
+Writing ch02s07.html for sect1
+Writing ch02.html for chapter
+Writing ch03s02.html for sect1
+Writing ch03.html for chapter
+Writing ch04s02.html for sect1
+Writing ch04.html for chapter
+Writing apa.html for appendix(fdl)
+Writing apb.html for appendix
+Writing index.html for book
+Writing htmlhelp.hhp
+Writing toc.hhc
+make  all-am
+make[1]: Entering directory '/home/joelkraehemann/gsequencer'
+gcc -DHAVE_CONFIG_H -I.  -I./src -DDESTDIR=\"/usr/local/share\" -DPACKAGE_VERSION=\"0.5.3\" -D_FORTIFY_SOURCE=2  -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -I/usr/include/uuid  -I/usr/include/alsa   -I/usr/include/libxml2    -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2        -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -MT gsequencer-ags_config.o -MD -MP -MF .deps/gsequencer-ags_config.Tpo -c -o gsequencer-ags_config.o `test -f 'src/ags/audio/ags_config.c' || echo './'`src/ags/audio/ags_config.c
+src/ags/audio/ags_config.c: In function ‘ags_config_load_defaults’:
+src/ags/audio/ags_config.c:217:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_generic, "autosave-thread\0", "false\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:218:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_generic, "segmentation\0", "4/4\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:220:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_thread, "model\0", "super-threaded\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:221:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_thread, "super-threaded-scope\0", "channel\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:222:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_thread, "lock-global\0", "ags-thread\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:223:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_thread, "lock-parent\0", "ags-recycling-thread\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:225:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_devout, "samplerate\0", "44100\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:226:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_devout, "buffer-size\0", "940\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:227:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_devout, "pcm-channels\0", "2\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:228:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_devout, "dsp-channels\0", "2\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:229:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_devout, "alsa-handle\0", "hw:0,0\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c:231:26: warning: passing argument 2 of ‘ags_config_set’ discards ‘const’ qualifier from pointer target type
+   ags_config_set(config, ags_config_recall, "auto-sense\0", "true\0");
+                          ^
+In file included from src/ags/audio/ags_config.c:20:0:
+./src/ags/audio/ags_config.h:72:6: note: expected ‘gchar *’ but argument is of type ‘const gchar *’
+ void ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+      ^
+src/ags/audio/ags_config.c: In function ‘ags_config_load_from_file’:
+src/ags/audio/ags_config.c:250:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+   g_message("loading preferences for: %s\0", filename);
+   ^
+src/ags/audio/ags_config.c: In function ‘ags_config_load_from_data’:
+src/ags/audio/ags_config.c:323:3: warning: format ‘%x’ expects argument of type ‘unsigned int’, but argument 4 has type ‘char *’ [-Wformat=]
+   g_message("loading preferences from data[0x%x]\0", buffer);
+   ^
+src/ags/audio/ags_config.c:323:3: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+src/ags/audio/ags_config.c:378:18: error: ‘file’ undeclared (first use in this function)
+   g_object_unref(file);
+                  ^
+src/ags/audio/ags_config.c:378:18: note: each undeclared identifier is reported only once for each function it appears in
+src/ags/audio/ags_config.c: In function ‘ags_config_save’:
+src/ags/audio/ags_config.c:442:5: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+     AGS_DEFAULT_DIRECTORY);
+     ^
+src/ags/audio/ags_config.c:458:7: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+       g_warning("%s\0", error->message);
+       ^
+src/ags/audio/ags_config.c: In function ‘ags_config_set’:
+src/ags/audio/ags_config.c:545:7: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+       &nominante);
+       ^
+src/ags/audio/ags_config.c:636:6: warning: embedded ‘\0’ in format [-Wformat-contains-nul]
+      "device\0", g_strdup_printf("%s\0", alsa_handle),
+      ^
+Makefile:1897: recipe for target 'gsequencer-ags_config.o' failed
+make[1]: *** [gsequencer-ags_config.o] Error 1
+make[1]: Leaving directory '/home/joelkraehemann/gsequencer'
+Makefile:1383: recipe for target 'all' failed
+make: *** [all] Error 2

@@ -307,6 +307,113 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 }
 
 /**
+ * ags_config_load_from_data:
+ * @config: the #AgsConfig
+ * @buffer: the data buffer
+ * @buffer_length: the size of the buffer
+ *
+ * Read configuration in memory.
+ *
+ * Since: 0.5.4
+ */
+void
+ags_config_load_from_data(AgsConfig *config,
+			  char *buffer, gsize buffer_length)
+{
+  g_message("loading preferences from data[0x%x]\0", buffer);
+
+  if(buffer == NULL){
+    ags_config_load_defaults(config);
+  }else{
+    GKeyFile *key_file;
+    gchar **groups, **groups_start;
+    gchar **keys, **keys_start;
+    gchar *value;
+
+    GError *error;
+
+    error = NULL;
+
+    key_file = g_key_file_new();
+    g_key_file_load_from_data(key_file,
+			      buffer,
+			      buffer_length,
+			      G_KEY_FILE_NONE,
+			      &error);
+
+    groups =
+      groups_start = g_key_file_get_groups(key_file,
+					   NULL);
+
+    while(*groups != NULL){
+      keys =
+	keys_start = g_key_file_get_keys(key_file,
+					 *groups,
+					 NULL,
+					 NULL);
+
+      while(*keys != NULL){
+	value = g_key_file_get_value(key_file,
+				     *groups,
+				     *keys,
+				     NULL);
+
+	ags_config_set(config,
+		       *groups,
+		       *keys,
+		       value);
+	
+	keys++;
+      }
+
+      g_strfreev(keys_start);
+
+      groups++;
+    }
+
+    g_strfreev(groups_start);
+    g_key_file_unref(key_file);
+  }
+}
+
+/**
+ * ags_config_to_data:
+ * @config: the #AgsConfig
+ * @buffer: the data buffer
+ * @buffer_length: the size of the buffer
+ *
+ * Save configuration.
+ *
+ * Since: 0.5.4
+ */
+void
+ags_config_to_data(AgsConfig *config,
+		   char **buffer, gsize *buffer_length)
+{
+  char *data;
+  gsize length;
+
+  GError *error;
+
+  error = NULL;
+  data = g_key_file_to_data(config->key_file,
+			    &length,
+			    &error);
+
+  if(error != NULL){
+    g_warning("%s", error->message);
+  }
+  
+  if(buffer != NULL){
+    *buffer = data;
+  }
+
+  if(buffer_length != NULL){
+    *buffer_length = length;
+  }
+}
+
+/**
  * ags_config_save:
  * @config: the #AgsConfig
  *

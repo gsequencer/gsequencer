@@ -311,7 +311,7 @@ ags_channel_thread_run(AgsThread *thread)
   channel = channel_thread->channel;
   devout_play = channel->devout_play;
   
-  //  g_message(" --- a");
+  //  g_message("----a\0");
   
   /* start - wait until signaled */
   pthread_mutex_lock(channel_thread->wakeup_mutex);
@@ -344,15 +344,15 @@ ags_channel_thread_run(AgsThread *thread)
   
   /* do channel processing */
   for(stage = 0; stage < 3; stage++){
-    if((AGS_DEVOUT_PLAY_PLAYBACK & (devout_play->flags)) != 0){
+    if(thread == devout_play->channel_thread[0]){
       ags_channel_recursive_play(channel, devout_play->recall_id[0], stage);
     }
 
-    if((AGS_DEVOUT_PLAY_SEQUENCER & (devout_play->flags)) != 0){
+    if(thread == devout_play->channel_thread[1]){
       ags_channel_recursive_play(channel, devout_play->recall_id[1], stage);
     }
 
-    if((AGS_DEVOUT_PLAY_NOTATION & (devout_play->flags)) != 0){
+    if(thread == devout_play->channel_thread[2]){
       ags_channel_recursive_play(channel, devout_play->recall_id[2], stage);
     }
   }
@@ -368,6 +368,8 @@ ags_channel_thread_run(AgsThread *thread)
   }
 	    
   pthread_mutex_unlock(channel_thread->done_mutex);
+
+  //  g_message("----b\0");
 }
 
 void

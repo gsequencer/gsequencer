@@ -180,7 +180,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       /* create task */
       delay = (window->devout->delay[window->devout->tic_counter]);
 
-      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * delay;
+      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * delay / window->devout->delay_factor;
 
       export_output = ags_export_output_new(export_thread,
 					    window->devout,
