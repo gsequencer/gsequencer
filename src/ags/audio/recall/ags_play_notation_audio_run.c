@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
@@ -272,7 +273,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 	  ags_recall_remove_dependency(AGS_RECALL(play_notation_audio_run),
 				       (AgsRecall *) play_notation_audio_run->delay_audio_run);
 	}else{
-	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_notation_audio_run)->flags)) != 0){
+	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(play_notation_audio_run)->flags)) != 0){
 	    g_signal_handler_disconnect(G_OBJECT(play_notation_audio_run),
 					play_notation_audio_run->notation_alloc_input_handler);
 	  }
@@ -288,7 +289,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 	  ags_recall_add_dependency(AGS_RECALL(play_notation_audio_run),
 				    ags_recall_dependency_new((GObject *) delay_audio_run));
 	}else{
-	  if((AGS_RECALL_RUN_INITIALIZED & (AGS_RECALL(play_notation_audio_run)->flags)) != 0){
+	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(play_notation_audio_run)->flags)) != 0){
 	    play_notation_audio_run->notation_alloc_input_handler =
 	      g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input\0",
 			       G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback), play_notation_audio_run);
@@ -394,6 +395,10 @@ ags_play_notation_audio_run_connect(AgsConnectable *connectable)
 {
   AgsPlayNotationAudioRun *play_notation_audio_run;
 
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_play_notation_audio_run_parent_connectable_interface->connect(connectable);
 
@@ -411,6 +416,10 @@ void
 ags_play_notation_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsPlayNotationAudioRun *play_notation_audio_run;
+
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
 
   play_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(dynamic_connectable);
 
@@ -632,15 +641,21 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsAudio *audio;
   AgsChannel *selected_channel, *channel, *next_pad;
   AgsAudioSignal *audio_signal;
+  AgsRecycling *recycling;
   AgsNotation *notation;
+  AgsNote *note;
+
   AgsPlayNotationAudio *play_notation_audio;
+
   AgsThread *main_loop;
   AgsTimestampThread *timestamp_thread;
+
   AgsApplicationContext *application_context;
+  AgsMutexManager *mutex_manager;
+
   AgsSoundcard *soundcard;
+
   GList *current_position;
-  AgsNote *note;
-  AgsRecycling *recycling;
   GList *list;
   guint audio_channel;
   guint samplerate;
@@ -659,32 +674,39 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			    &buffer_size,
 			    NULL);
 
-  g_value_init(&value, G_TYPE_POINTER);
-  ags_port_safe_read(play_notation_audio->notation,
-		     &value);
+  /*  */
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  pthread_mutex_lock(application_context->mutex);
 
-  list = (GList *) g_value_get_pointer(&value);
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_context->mutex);
 
-  if(list == NULL)
+  /*  */
+  pthread_mutex_lock(audio_mutex);
+
+  list = audio->notation;//(GList *) g_value_get_pointer(&value);
+  
+  if(list == NULL){
+    pthread_mutex_unlock(audio_mutex);
+
     return;
+  }
 
   //FIXME:JK: nth_run isn't best joice
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    audio_channel = nth_run;
+    audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
     channel = ags_channel_nth(audio->input,
 			      audio_channel);
   }else{
-    audio_channel = nth_run;
+    audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
     channel = ags_channel_nth(audio->output,
 			      audio_channel);
   }
 
-  application_context = ags_soundcard_get_application_context(soundcard);
-
-  main_loop = application_context->main_loop;
-  
-  timestamp_thread = ags_thread_find_type(main_loop,
-					  AGS_TYPE_TIMESTAMP_THREAD);
+  timestamp_thread = (AgsTimestampThread *) AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
   
   //TODO:JK: make it advanced
   notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
@@ -693,11 +715,19 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   current_position = notation->notes; // start_loop
   
   while(current_position != NULL){
-    note = AGS_NOTE(current_position->data);
-    
     if(current_position != NULL){
+      note = AGS_NOTE(current_position->data);
+    
       if(note->x[0] == play_notation_audio_run->count_beats_audio_run->notation_counter){
-	selected_channel = ags_channel_pad_nth(channel, note->y);
+	if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+	  selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
+	}else{
+	  selected_channel = ags_channel_pad_nth(channel, note->y);
+	}
+
+	if(selected_channel == NULL){
+	  continue;
+	}
 	
 	/* recycling */
 	recycling = selected_channel->first_recycling;
@@ -707,13 +737,20 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	//#endif
 
 	while(recycling != selected_channel->last_recycling->next){
-	  audio_signal = ags_audio_signal_new((GObject *) audio->soundcard,
+	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
 					      (GObject *) recycling,
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
-	  ags_recycling_create_audio_signal_with_frame_count(recycling,
-							     audio_signal,
-							     samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
-							     delay, attack);
+
+	  if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
+	    ags_recycling_create_audio_signal_with_defaults(recycling,
+							    audio_signal,
+							    delay, attack);
+	  }else{
+	    ags_recycling_create_audio_signal_with_frame_count(recycling,
+							       audio_signal,
+							       samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
+							       delay, attack);
+	  }
 	  ags_audio_signal_connect(audio_signal);
 
 	  audio_signal->stream_current = audio_signal->stream_beginning;
@@ -730,6 +767,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     
     current_position = current_position->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

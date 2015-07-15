@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/ags_devout.h>
@@ -496,6 +497,7 @@ ags_devout_init(AgsDevout *devout)
   }
 
   /*  */
+  devout->tact_counter = 0.0;
   devout->delay_counter = 0;
   devout->tic_counter = 0;
 
@@ -1088,6 +1090,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 		     GError **error)
 {
   AgsDevout *devout;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
   
   int rc;
   snd_pcm_t *handle;
@@ -1103,12 +1109,26 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   snd_pcm_sw_params_t *swparams;
   int period_event = 0;
   int err, dir;
-
+  pthread_mutex_t *mutex;
+  
   static unsigned int period_time = 100000;
   static snd_pcm_format_t format = SND_PCM_FORMAT_S16;
 
   devout = AGS_DEVOUT(soundcard);
+
+  application_context = ags_soundcard_get_application_context(soundcard);
   
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  pthread_mutex_lock(mutex);
+
   /*  */
   devout->flags |= (AGS_DEVOUT_BUFFER3 |
 		    AGS_DEVOUT_START_PLAY |
@@ -1124,6 +1144,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Playback open error: %s\n", snd_strerror(err));
     g_set_error(error,
 		AGS_DEVOUT_ERROR,
@@ -1139,6 +1160,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* choose all parameters */
   err = snd_pcm_hw_params_any(handle, hwparams);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
     return;
   }
@@ -1146,6 +1168,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* set hardware resampling */
   err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 1);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Resampling setup failed for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1153,6 +1176,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* set the interleaved read/write format */
   err = snd_pcm_hw_params_set_access(handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Access type not available for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1160,6 +1184,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* set the sample format */
   err = snd_pcm_hw_params_set_format(handle, hwparams, format);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Sample format not available for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1168,6 +1193,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   channels = devout->dsp_channels;
   err = snd_pcm_hw_params_set_channels(handle, hwparams, channels);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Channels count (%i) not available for playbacks: %s\n", channels, snd_strerror(err));
     return;
   }
@@ -1177,11 +1203,13 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   rrate = rate;
   err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
     return;
   }
 
   if (rrate != rate) {
+    pthread_mutex_unlock(mutex);
     printf("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
     //    exit(-EINVAL);
     return;
@@ -1191,6 +1219,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   size = devout->buffer_size;
   err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, size);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Unable to set buffer size %i for playback: %s\n", size, snd_strerror(err));
     return;
   }
@@ -1202,12 +1231,14 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   dir = -1;
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
     return;
   }
 
   err = snd_pcm_hw_params_get_period_size(hwparams, &size, &dir);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Unable to get period size for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1216,6 +1247,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* write the parameters to device */
   err = snd_pcm_hw_params(handle, hwparams);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Unable to set hw params for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1223,6 +1255,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* get the current swparams */
   err = snd_pcm_sw_params_current(handle, swparams);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Unable to determine current swparams for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1231,6 +1264,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* (buffer_size / avail_min) * avail_min */
   err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1239,6 +1273,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* or disable this mechanism when period event is enabled (aka interrupt like style processing) */
   err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Unable to set avail min for playback: %s\n", snd_strerror(err));
     return;
   }
@@ -1246,14 +1281,20 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /* write the parameters to the playback device */
   err = snd_pcm_sw_params(handle, swparams);
   if (err < 0) {
+    pthread_mutex_unlock(mutex);
     printf("Unable to set sw params for playback: %s\n", snd_strerror(err));
     return;
   }
 
   /*  */
   devout->out.alsa.handle = handle;
+  devout->tact_counter = 0.0;
   devout->delay_counter = 0.0;
   devout->tic_counter = 0;
+
+  devout->flags |= AGS_DEVOUT_INITIALIZED;
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
@@ -1261,12 +1302,40 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 		     GError **error)
 {
   AgsDevout *devout;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
   gdouble delay;
 
+  pthread_mutex_t *mutex;
+  
   devout = AGS_DEVOUT(soundcard);
 
+  /*  */
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  pthread_mutex_lock(mutex);
+
+  /*  */
   devout->flags &= (~AGS_DEVOUT_START_PLAY);
 
+  if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
+  
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
@@ -1416,12 +1485,35 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   ags_devout_switch_buffer_flag(devout);
 
   snd_pcm_prepare(devout->out.alsa.handle);
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
 ags_devout_alsa_free(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *mutex;
+  
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
+    return;
+  }
 
   devout = AGS_DEVOUT(soundcard);
   
@@ -1454,6 +1546,7 @@ ags_devout_tic(AgsSoundcard *soundcard)
     
     /* reset - delay counter */
     devout->delay_counter = 0.0;
+    devout->tact_counter += 1.0;
   } 
 }
 

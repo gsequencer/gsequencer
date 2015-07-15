@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
@@ -203,6 +204,10 @@ ags_count_beats_audio_run_get_type()
     g_type_add_interface_static(ags_type_count_beats_audio_run,
 				AGS_TYPE_COUNTABLE,
 				&ags_countable_interface_info);
+
+    g_type_add_interface_static(ags_type_count_beats_audio_run,
+				AGS_TYPE_SEEKABLE,
+				&ags_seekable_interface_info);
 
     g_type_add_interface_static(ags_type_count_beats_audio_run,
 				AGS_TYPE_PLUGIN,
@@ -497,11 +502,19 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 	  ags_recall_remove_dependency(AGS_RECALL(count_beats_audio_run),
 				       (AgsRecall *) count_beats_audio_run->delay_audio_run);
 	}else{
-	  g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
-				      count_beats_audio_run->sequencer_alloc_output_handler);
+	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+	    g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
+					count_beats_audio_run->sequencer_alloc_output_handler);
 
-	  g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
-				      count_beats_audio_run->sequencer_count_handler);
+	    g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
+					count_beats_audio_run->sequencer_count_handler);
+
+	    g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
+					count_beats_audio_run->notation_alloc_output_handler);
+
+	    g_signal_handler_disconnect(G_OBJECT(count_beats_audio_run),
+					count_beats_audio_run->notation_count_handler);
+	  }
 	}
 	
 	g_object_unref(G_OBJECT(count_beats_audio_run->delay_audio_run));
@@ -514,21 +527,23 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 	  ags_recall_add_dependency(AGS_RECALL(count_beats_audio_run),
 				    ags_recall_dependency_new((GObject *) delay_audio_run));
 	}else{
-	  count_beats_audio_run->sequencer_count_handler =
-	    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-output\0",
-			     G_CALLBACK(ags_count_beats_audio_run_sequencer_alloc_output_callback), count_beats_audio_run);
+	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+	    count_beats_audio_run->sequencer_count_handler =
+	      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-output\0",
+			       G_CALLBACK(ags_count_beats_audio_run_sequencer_alloc_output_callback), count_beats_audio_run);
 
-	  count_beats_audio_run->sequencer_count_handler =
-	    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-count\0",
-			     G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback), count_beats_audio_run);
+	    count_beats_audio_run->sequencer_count_handler =
+	      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-count\0",
+			       G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback), count_beats_audio_run);
 
-	  count_beats_audio_run->notation_count_handler =
-	    g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-output\0",
-			     G_CALLBACK(ags_count_beats_audio_run_notation_alloc_output_callback), count_beats_audio_run);
+	    count_beats_audio_run->notation_count_handler =
+	      g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-output\0",
+			       G_CALLBACK(ags_count_beats_audio_run_notation_alloc_output_callback), count_beats_audio_run);
 
-	  count_beats_audio_run->notation_count_handler =
-	    g_signal_connect(G_OBJECT(delay_audio_run), "notation-count\0",
-			     G_CALLBACK(ags_count_beats_audio_run_notation_count_callback), count_beats_audio_run);
+	    count_beats_audio_run->notation_count_handler =
+	      g_signal_connect(G_OBJECT(delay_audio_run), "notation-count\0",
+			       G_CALLBACK(ags_count_beats_audio_run_notation_count_callback), count_beats_audio_run);
+	  }
 	}
       }
 
@@ -607,19 +622,29 @@ ags_count_beats_audio_run_finalize(GObject *gobject)
 void
 ags_count_beats_audio_run_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
+  /* call parent */
+  ags_count_beats_audio_run_parent_connectable_interface->connect(connectable);
 }
 
 void
 ags_count_beats_audio_run_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  /* call parent */
+  ags_count_beats_audio_run_parent_connectable_interface->connect(connectable);
 }
 
 void
 ags_count_beats_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
 
   ags_count_beats_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
@@ -663,9 +688,41 @@ ags_count_beats_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_conn
 void
 ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 			       guint steps,
-			       gboolean forward)
+			       gboolean move_forward)
 {
-  //TODO:JK: implement this function
+  AgsDevout *devout;
+  AgsDelayAudio *delay_audio;
+  AgsDelayAudioRun *delay_audio_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  gdouble delay;
+  guint seq_steps;
+  
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(seekable);
+  delay_audio_run = count_beats_audio_run->delay_audio_run;
+  delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
+
+  devout = AGS_DEVOUT(AGS_RECALL(count_beats_audio_run)->devout);
+  
+  delay = devout->delay[devout->tic_counter];
+  seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
+  
+  if(move_forward){
+    count_beats_audio_run->notation_counter += steps;
+
+    if(delay * count_beats_audio_run->sequencer_counter + seq_steps < (guint) delay_audio->sequencer_duration->port_value.ags_port_double){
+      count_beats_audio_run->sequencer_counter += seq_steps / delay;
+    }else{
+      count_beats_audio_run->sequencer_counter = (guint) (seq_steps / delay + count_beats_audio_run->sequencer_counter) % (guint) (delay_audio->sequencer_duration->port_value.ags_port_double / delay);
+    }
+  }else{
+    count_beats_audio_run->notation_counter -= steps;
+
+    if(delay * count_beats_audio_run->sequencer_counter - seq_steps >= 0){
+      count_beats_audio_run->sequencer_counter -= seq_steps / delay;
+    }else{
+      count_beats_audio_run->sequencer_counter = (guint) (delay_audio->sequencer_duration->port_value.ags_port_double / delay) - (seq_steps / delay - count_beats_audio_run->sequencer_counter);
+    }
+  }
 }
 
 guint
@@ -832,7 +889,7 @@ ags_count_beats_audio_run_duplicate(AgsRecall *recall,
 												       recall_id,
 												       n_params, parameter));
 
-  g_message("ags_count_beats_audio_run_duplicate\n\0");
+  //  g_message("ags_count_beats_audio_run_duplicate\n\0");
 
   return((AgsRecall *) copy);
 }
@@ -849,7 +906,7 @@ ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
     count_beats_audio_run->hide_ref += count;
-    g_message("count_beats_audio_run->hide_ref: %u\n\0", count_beats_audio_run->hide_ref);
+    //    g_message("count_beats_audio_run->hide_ref: %u\n\0", count_beats_audio_run->hide_ref);
     break;
   case AGS_RECALL_NOTIFY_AUDIO:
     break;
@@ -886,16 +943,46 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 void
 ags_count_beats_audio_run_done(AgsRecall *recall)
 {
+  AgsDevout *devout;
+
   AgsCountBeatsAudio *count_beats_audio;
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
+  AgsCancelAudio *cancel_audio;
+
+  AgsThread *task_thread;
+
+  gboolean sequencer, notation;
+  
   AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done(recall);
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
+  devout = AGS_RECALL_AUDIO(count_beats_audio)->audio->devout;
+  task_thread = (AgsThread *) AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread;
+
+  ags_recall_done(count_beats_audio_run->delay_audio_run);
   ags_audio_done(AGS_RECALL_AUDIO(count_beats_audio)->audio,
 		 AGS_RECALL(count_beats_audio_run)->recall_id);
+
+  if((AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
+    sequencer = TRUE;
+  }
+
+  notation = FALSE;
+  
+  if((AGS_RECALL_ID_NOTATION & (recall->recall_id->flags)) != 0){
+    //  notation = TRUE;
+  }
+  
+  /* create cancel task */
+  cancel_audio = ags_cancel_audio_new(AGS_RECALL_AUDIO(count_beats_audio)->audio,
+				      FALSE, sequencer, notation);
+  
+  /* append AgsCancelAudio */
+  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+			      (AgsTask *) cancel_audio);  
 }
 
 /**
@@ -1039,10 +1126,14 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
   gboolean loop;
   GValue value = {0,};  
 
+  if((AGS_RECALL_ID_NOTATION & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
+    return;
+  }
+  
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->loop, &value);
+  ags_port_safe_read(count_beats_audio->notation_loop, &value);
 
   loop = g_value_get_boolean(&value);
 
@@ -1074,11 +1165,15 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
   gdouble loop_end;
   gboolean loop;
   GValue value = {0,};
+  
+  if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
+    return;
+  }
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->loop, &value);
+  ags_port_safe_read(count_beats_audio->sequencer_loop, &value);
 
   loop = g_value_get_boolean(&value);
   g_value_unset(&value);
@@ -1113,49 +1208,42 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
 						  AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
+  gdouble loop_end;
   gboolean loop;
-  GValue value = {0,};  
+  GValue value = {0,};
+  GValue loop_end_value = {0,};  
 
+  if((AGS_RECALL_ID_NOTATION & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
+    return;
+  }
+  
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->loop, &value);
+  ags_port_safe_read(count_beats_audio->notation_loop, &value);
 
   loop = g_value_get_boolean(&value);
-
-  if(count_beats_audio_run->hide_ref != 0){
-    count_beats_audio_run->notation_hide_ref_counter += 1;
-  }
-
+  
   //  g_message("notation %d\0", count_beats_audio_run->notation_counter);
+  ags_audio_tact(AGS_RECALL_AUDIO(count_beats_audio)->audio,
+		 AGS_RECALL(count_beats_audio_run)->recall_id);
 
   /* 
    * Block counter for sequencer and notation counter
    */
-  if(count_beats_audio_run->notation_hide_ref_counter == count_beats_audio_run->hide_ref){
-    gdouble loop_end;
-    GValue value = {0,};
+  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
+  ags_port_safe_read(count_beats_audio->notation_loop_end, &loop_end_value);
 
-    g_value_init(&value, G_TYPE_DOUBLE);
-    ags_port_safe_read(count_beats_audio->notation_loop_end, &value);
+  loop_end = g_value_get_double(&loop_end_value);
 
-    loop_end = g_value_get_double(&value);
-
-    if(loop){
-      if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
-	count_beats_audio_run->notation_counter = 0;
-      }else{
- 	count_beats_audio_run->notation_counter += 1;
-      }
+  if(loop){
+    if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
+      count_beats_audio_run->notation_counter = 0;
     }else{
-      if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
-	return;
-      }
-
       count_beats_audio_run->notation_counter += 1;
     }
-
-    count_beats_audio_run->notation_hide_ref_counter = 0;
+  }else{
+    count_beats_audio_run->notation_counter += 1;
   }
 }
 
@@ -1165,122 +1253,117 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 						   AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCountBeatsAudio *count_beats_audio;
+  gdouble loop_end;
   gboolean loop;
   GValue value = {0,};  
+  GValue loop_end_value = {0,};
+  
+  if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
+    return;
+  }
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->loop, &value);
+  ags_port_safe_read(count_beats_audio->sequencer_loop, &value);
 
   loop = g_value_get_boolean(&value);
-
-  if(count_beats_audio_run->hide_ref != 0){
-    count_beats_audio_run->sequencer_hide_ref_counter += 1;
-  }
-
+  
   ags_audio_tact(AGS_RECALL_AUDIO(count_beats_audio)->audio,
 		 AGS_RECALL(count_beats_audio_run)->recall_id);
 
   /* 
    * Block counter for sequencer and notation counter
    */
-  if(count_beats_audio_run->sequencer_hide_ref_counter == count_beats_audio_run->hide_ref){
-    gdouble loop_end;
-    GValue value = {0,};
+  g_value_init(&loop_end_value, G_TYPE_DOUBLE);
+  ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_value);
 
-    g_value_init(&value, G_TYPE_DOUBLE);
-    ags_port_safe_read(count_beats_audio->sequencer_loop_end, &value);
+  loop_end = g_value_get_double(&loop_end_value);
 
-    loop_end = g_value_get_double(&value);
+  //    g_message("sequencer: tic\0");
+  if(count_beats_audio_run->first_run){
+    count_beats_audio_run->first_run = FALSE;
+  }
 
-    //    g_message("sequencer: tic\0");
-    if(count_beats_audio_run->first_run){
-      count_beats_audio_run->first_run = FALSE;
-    }
-
-    if(loop){
-      if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
-	count_beats_audio_run->sequencer_counter = 0;
-      }else{
-	count_beats_audio_run->sequencer_counter += 1;
-      }
+  if(loop){
+    if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
+      count_beats_audio_run->sequencer_counter = 0;
     }else{
-      if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
-	AgsAudio *audio;
-	GList *playback;
-
-	count_beats_audio_run->sequencer_counter = 0;
-
-	audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
-	playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
-
-	/* emit stop signals */
-	ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
-						 run_order);
-
-	/* set done flag in playback */
-	while(playback != NULL){
-	  if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL &&
-	     AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
-	    AgsChannel *channel;
-	    AgsStreamChannelRun *stream_channel_run;
-	    GList *list;
-	    GList *recall_recycling_list, *recall_audio_signal_list;
-	    gboolean found;
-
-	    AGS_PLAYBACK(playback->data)->flags |= AGS_PLAYBACK_DONE;
-
-	    /* check if to stop audio processing */
-	    channel = audio->output;
-	    found = FALSE;
-
-	    list = channel->play;
-
-	    list = ags_recall_find_type_with_recycling_context(list,
-							       AGS_TYPE_STREAM_CHANNEL_RUN,
-							       AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context);
-
-	    if(list != NULL){
-	      stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
-
-	      recall_recycling_list = AGS_RECALL(stream_channel_run)->children;
-  
-	      while(recall_recycling_list != NULL){
-		recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
-
-		while(recall_audio_signal_list != NULL){
-		  found = TRUE;
-
-		  g_signal_connect_after(G_OBJECT(recall_audio_signal_list->data), "done\0",
-					 G_CALLBACK(ags_count_beats_audio_run_stream_audio_signal_done_callback), AGS_RECALL(count_beats_audio_run));
-
-		  recall_audio_signal_list = recall_audio_signal_list->next;
-		}
-
-		recall_recycling_list = recall_recycling_list->next;
-	      }
-	    }
-
-	    /* stop audio processing*/
-	    if(!found){
-	      ags_count_beats_audio_run_stop(count_beats_audio_run,
-					     FALSE);
-	    }
-
-	    break;
-	  }
-
-	  playback = playback->next;
-	}
-
-	return;
-      }
-
       count_beats_audio_run->sequencer_counter += 1;
     }
+  }else{      
+    if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
+      AgsAudio *audio;
+      GList *devout_play;
 
-    count_beats_audio_run->sequencer_hide_ref_counter = 0;
+      count_beats_audio_run->sequencer_counter = 0;
+
+      audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
+      devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+
+      /* emit stop signals */
+      ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
+					       FALSE);
+
+      /* set done flag in devout play */
+      while(devout_play != NULL){
+	if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL &&
+	   AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1]->recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
+	  AgsChannel *channel;
+	  AgsStreamChannelRun *stream_channel_run;
+	  GList *list;
+	  GList *recall_recycling_list, *recall_audio_signal_list;
+	  gboolean found;
+
+	  //	    AGS_DEVOUT_PLAY(devout_play->data)->flags |= AGS_DEVOUT_PLAY_DONE;
+
+	  /* check if to stop audio processing */
+	  channel = audio->output;
+	  found = FALSE;
+
+	  list = channel->play;
+
+	  list = ags_recall_find_type_with_recycling_context(list,
+							     AGS_TYPE_STREAM_CHANNEL_RUN,
+							     (GObject *) AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context);
+
+	  if(list != NULL){
+	    stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
+
+	    recall_recycling_list = AGS_RECALL(stream_channel_run)->children;
+  
+	    while(recall_recycling_list != NULL){
+	      recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
+
+	      while(recall_audio_signal_list != NULL){
+		found = TRUE;
+
+		g_signal_connect_after(G_OBJECT(recall_audio_signal_list->data), "done\0",
+				       G_CALLBACK(ags_count_beats_audio_run_stream_audio_signal_done_callback), AGS_RECALL(count_beats_audio_run));
+
+		recall_audio_signal_list = recall_audio_signal_list->next;
+	      }
+
+	      recall_recycling_list = recall_recycling_list->next;
+	    }
+	  }
+
+	  /* stop audio processing*/
+	  if(!found){
+	    ags_count_beats_audio_run_stop(count_beats_audio_run,
+					   FALSE);
+	  }
+
+	  break;
+	}
+
+	devout_play = devout_play->next;
+      }
+
+      return;
+    }
+
+    count_beats_audio_run->sequencer_counter += 1;
   }
 }
 
@@ -1324,44 +1407,38 @@ void
 ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
 							    AgsCountBeatsAudioRun *count_beats_audio_run)
 {
-  AgsAudio *audio;
-  AgsChannel *channel;
-  AgsStreamChannelRun *stream_channel_run;
-  GList *list;
-  GList *recall_recycling_list, *recall_audio_signal_list;
-  gboolean found;
+  AgsCountBeatsAudio *count_beats_audio;
+  GValue loop_sequencer = {0,};
+  GValue loop_end_sequencer = {0,};
+  GValue loop_notation = {0,};
 
-  audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
-  channel = audio->output;
+  count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
 
-  while((list = ags_recall_find_type_with_recycling_context(channel->play,
-							    AGS_TYPE_STREAM_CHANNEL_RUN,
-							    recall->recall_id->recycling_context)) == NULL){
-    channel = channel->next;
-  }
+  /* check for loop or notation */
+  g_value_init(&loop_sequencer,
+	       G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->sequencer_loop,
+		     &loop_sequencer);
 
-  stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
-  found = FALSE;
+  g_value_init(&loop_notation,
+	       G_TYPE_BOOLEAN);
+  ags_port_safe_read(count_beats_audio->notation_loop,
+		     &loop_notation);
 
-  recall_recycling_list = AGS_RECALL(count_beats_audio_run)->children;
-  
-  while(recall_recycling_list != NULL){
-    recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
-
-    while(recall_audio_signal_list != NULL){
-      found = TRUE;
-      recall_audio_signal_list = recall_audio_signal_list->next;
-
-      break;
+  g_value_init(&loop_end_sequencer, G_TYPE_DOUBLE);
+  ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_sequencer);
+    
+  if((AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
+    if(g_value_get_boolean(&loop_sequencer)){
+      return;
     }
 
-    recall_recycling_list = recall_recycling_list->next;
-  }
-
-  /* stop audio processing*/
-  if(!found){
-    ags_count_beats_audio_run_stop(count_beats_audio_run,
-				   FALSE);
+    if(count_beats_audio_run->sequencer_counter < (guint) g_value_get_double(&loop_end_sequencer) - 1.0){
+      return;
+    }
+  
+    /* you're done */
+    ags_count_beats_audio_run_done(count_beats_audio_run);
   }
 }
 
@@ -1369,87 +1446,13 @@ void
 ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
 			       gboolean notation)
 {
-  AgsThread *main_loop;
-  AgsAudio *audio;
-  AgsChannel *channel;
-  AgsRecallID *recall_id;
-  AgsApplicationContext *application_context;
-  GList *playback;
-  gboolean all_done;
-
-  audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
-
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  main_loop = application_context->main_loop;
-
-  channel = audio->output;
-  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
-
-  g_object_ref(count_beats_audio_run);
-
-  while(channel != NULL){
-    if(!notation){
-      recall_id = AGS_PLAYBACK(playback->data)->recall_id[1];
-
-      if(recall_id != NULL &&
-	 count_beats_audio_run != NULL &&
-	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context == recall_id->recycling_context){
-	AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_DONE;
-	AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
-	AGS_PLAYBACK(channel->playback)->flags &= (~(AGS_PLAYBACK_SEQUENCER |
-						     AGS_PLAYBACK_DONE));
-
-	ags_channel_tillrecycling_cancel(channel,
-					 recall_id);
-      }
-    }else{
-      recall_id = AGS_PLAYBACK(playback->data)->recall_id[2];
-
-      if(recall_id != NULL &&
-	 count_beats_audio_run != NULL &&
-	 AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context == recall_id->recycling_context){
-	AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_DONE;
-	AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
-	AGS_PLAYBACK(channel->playback)->flags &= (~(AGS_PLAYBACK_NOTATION |
-						     AGS_PLAYBACK_DONE));
-
-	ags_channel_tillrecycling_cancel(channel,
-					 recall_id);
-      }
+  if(!notation){
+    if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) != 0){
+      //TODO:JK: enhance me
+      ags_count_beats_audio_run_done(count_beats_audio_run);
     }
-
-    channel = channel->next;
-    playback = playback->next;
-  }
-
-  ags_recall_done(count_beats_audio_run);
-
-  g_object_unref(count_beats_audio_run);
-
-  channel = audio->output;
-  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
-  all_done = TRUE;
-
-  while(channel != NULL){
-    if(!notation){
-      if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL){
-	all_done = FALSE;
-	break;
-      }
-    }else{
-      if(AGS_PLAYBACK(playback->data)->recall_id[2] != NULL){
-	all_done = FALSE;
-	break;
-      }
-    }
-
-    channel = channel->next;
-    playback = playback->next;
-  }
-
-  if(all_done){
-    ags_audio_loop_remove_audio(AGS_AUDIO_LOOP(main_loop),
-				audio);
+  }else{
+    //    ags_count_beats_audio_run_done(count_beats_audio_run);
   }
 } 
 

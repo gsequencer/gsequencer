@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/ags_notation.h>
@@ -71,10 +72,6 @@ void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
  *
  * #AgsNotation acts as a container of #AgsNote.
  */
-
-#define AGS_NOTATION_CLIPBOARD_VERSION "0.3.12\0"
-#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml\0"
-#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano\0"
 
 enum{
   PROP_0,
@@ -296,6 +293,7 @@ ags_notation_init(AgsNotation *notation)
   notation->audio = NULL;
 
   notation->key = g_strdup("violine\0");
+  notation->base_note = g_strdup("A");
   notation->base_frequency = 440.0;
 
   notation->tact = AGS_NOTATION_MINIMUM_NOTE_LENGTH;
@@ -976,6 +974,22 @@ ags_notation_find_region(AgsNotation *notation,
   GList *notes;
   GList *region;
 
+  if(x0 > x1){
+    guint tmp;
+
+    tmp = x1;
+    x1 = x0;
+    x0 = x1;
+  }
+  
+  if(y0 > y1){
+    guint tmp;
+
+    tmp = y1;
+    y1 = y0;
+    y0 = y1;
+  }
+  
   if(use_selection_list){
     notes = notation->selection;
   }else{
@@ -1234,6 +1248,7 @@ ags_notation_copy_selection(AgsNotation *notation)
   xmlNewProp(notation_node, BAD_CAST "version\0", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
   xmlNewProp(notation_node, BAD_CAST "format\0", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
   xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup_printf("%u\0", notation->base_frequency));
+  xmlNewProp(notation_node, BAD_CAST "audio-channel\0", BAD_CAST g_strdup_printf("%u\0", notation->audio_channel));
 
   selection = notation->selection;
 
@@ -1528,6 +1543,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
   /* entry point */
   if(!xmlStrncmp("0.3.12\0", version, 7)){
+    ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
+  }else if(!xmlStrncmp("0.4.2\0", version, 7)){
+    /* changes contain only for UI relevant new informations */
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }
 }

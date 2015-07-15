@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/task/ags_cancel_channel.h>
@@ -145,25 +146,63 @@ ags_cancel_channel_finalize(GObject *gobject)
 void
 ags_cancel_channel_launch(AgsTask *task)
 {
-  AgsCancelChannel *cancel_channel;
+  AgsDevoutPlay *playback;
   AgsChannel *channel;
+
+  AgsCancelChannel *cancel_channel;
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
   channel = cancel_channel->channel;
-
+  playback = AGS_PLAYBACK(channel->playback);
+  
   /* cancel playback */
-  if(AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){
-    return;
+  if(cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[0]){
+    g_atomic_int_and(&(playback->flags),
+		     (~AGS_PLAYBACK_PLAYBACK));
+
+    g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
+    ags_channel_tillrecycling_cancel(channel,
+				     AGS_PLAYBACK(channel->playback)->recall_id[0]);
+    AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
+
+    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+      ags_thread_stop(playback->channel_thread[0]);
+    }
   }
 
-  g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
-  ags_channel_tillrecycling_cancel(channel,
-				   AGS_PLAYBACK(channel->playback)->recall_id[0]);
+  /* cancel sequencer */
+  if(cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[1]){
+    g_atomic_int_and(&(playback->flags),
+		     (~AGS_PLAYBACK_SEQUENCER));
 
-  /* set remove flag */
-  AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
-  AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
+    g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[1]);
+    ags_channel_tillrecycling_cancel(channel,
+				     AGS_PLAYBACK(channel->playback)->recall_id[1]);
+    AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
+
+    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+      ags_thread_stop(playback->channel_thread[1]);
+    }
+  }
+
+  /* cancel notation */
+  if(cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[2]){
+    g_atomic_int_and(&(playback->flags),
+		     (~AGS_PLAYBACK_NOTATION));
+
+    g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[2]);
+    ags_channel_tillrecycling_cancel(channel,
+				     AGS_PLAYBACK(channel->playback)->recall_id[2]);
+    AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
+
+    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+      ags_thread_stop(playback->channel_thread[2]);
+    }
+  }
+
+  ags_channel_done(channel,
+		   cancel_channel->recall_id);		   
 }
 
 /**

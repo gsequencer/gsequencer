@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -355,6 +356,10 @@ ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
 void
 ags_delay_audio_run_connect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_delay_audio_run_parent_connectable_interface->connect(connectable);
 }
 
@@ -367,6 +372,10 @@ ags_delay_audio_run_disconnect(AgsConnectable *connectable)
 void
 ags_delay_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
+
   ags_delay_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 }
 
@@ -462,38 +471,38 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   sequencer_delay = g_value_get_double(&value);
 
-  if(delay_audio_run->hide_ref != 0){
-    delay_audio_run->hide_ref_counter += 1;
-
-    if(delay_audio_run->hide_ref_counter == delay_audio_run->hide_ref){
-      delay_audio_run->hide_ref_counter = 0;
-
-      if(delay_audio_run->notation_counter + 1 >= (guint) notation_delay){
-	delay_audio_run->notation_counter = 0;
-      }else{
-	delay_audio_run->notation_counter += 1;
-      }
-
-      if(delay_audio_run->sequencer_counter + 1 >= (guint) sequencer_delay){
-	delay_audio_run->sequencer_counter = 0;
-      }else{
-	delay_audio_run->sequencer_counter += 1;
-      }
-    }
+  if(delay_audio_run->notation_counter + 1 >= (guint) notation_delay){
+    delay_audio_run->notation_counter = 0;
+  }else{
+    delay_audio_run->notation_counter += 1;
   }
 
-  if(delay_audio_run->notation_counter == 0 &&
-     delay_audio_run->hide_ref_counter == 0){
+  if(delay_audio_run->sequencer_counter + 1 >= (guint) sequencer_delay){
+    delay_audio_run->sequencer_counter = 0;
+  }else{
+    delay_audio_run->sequencer_counter += 1;
+  }
+
+  if(delay_audio_run->notation_counter == 0){
+    AgsDevout *devout;
     guint run_order;
     gdouble delay;
     guint attack;
 
-    run_order = delay_audio_run->hide_ref_counter;
+    devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
+
+    run_order = 0; //NOTE:JK: old hide_ref style
 
     /* delay and attack */
-    attack = 0;      
-    delay = 0.0;
-    
+    //TODO:JK: unclear
+    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+      //	     0:
+      //		     devout->tic_counter + 1)];
+      
+    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+      //		   0:
+      //		   devout->tic_counter + 1)];
+
     //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
     //	      delay_audio_run,
     //	      run_order);
@@ -510,17 +519,24 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 				       delay, attack);
   }
 
-  if(delay_audio_run->sequencer_counter == 0 &&
-     delay_audio_run->hide_ref_counter == 0){
+  if(delay_audio_run->sequencer_counter == 0){
+    AgsDevout *devout;
     guint run_order;
     gdouble delay;
     guint attack;
 
-    /* delay and attack */
-    attack = 0;
-    delay = 0.0;
+    devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
 
-    run_order = delay_audio_run->hide_ref_counter;
+    /* delay and attack */
+    //TODO:JK: unclear
+    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+      //	     0:
+      //		     devout->tic_counter + 1)];
+    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+      //		   0:
+      //		   devout->tic_counter + 1)];
+
+    run_order = 0;
 
     //    g_message("ags_delay_audio_run_run_pre@%llu: alloc sequencer[%u]\0",
     //	      delay_audio_run,
@@ -579,7 +595,7 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
   copy->dependency_ref = delay_audio_run->dependency_ref;
 
   copy->hide_ref = delay_audio_run->hide_ref;
-  copy->hide_ref_counter = delay_audio_run->hide_ref_counter;
+  //  copy->hide_ref_counter = delay_audio_run->hide_ref_counter;
 
   //TODO:JK: may be you want to make a AgsRecallDependency, but a AgsCountable isn't a AgsRecall at all
   copy->notation_counter = delay_audio_run->notation_counter;
@@ -598,7 +614,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
   switch(notify_mode){
   case AGS_RECALL_NOTIFY_RUN:
     delay_audio_run->hide_ref += count;
-    g_message("delay_audio_run->hide_ref: %u\n\0", delay_audio_run->hide_ref);
+    //  g_message("delay_audio_run->hide_ref: %u\n\0", delay_audio_run->hide_ref);
     break;
   case AGS_RECALL_NOTIFY_AUDIO:
     break;

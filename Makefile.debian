@@ -1,0 +1,5 @@
+CC = gcc
+CFLAGS = -O2 -g -Wall # sane warning options vary between programs
+LDFLAGS = # none
+INSTALL = install -s # (or use strip on the files in debian/tmp)
+

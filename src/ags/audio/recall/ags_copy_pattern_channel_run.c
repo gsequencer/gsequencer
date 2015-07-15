@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
@@ -201,6 +202,10 @@ ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
 {
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_copy_pattern_channel_run_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -221,6 +226,10 @@ ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conn
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
 
   ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
@@ -363,17 +372,21 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 						      AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
   AgsChannel *output, *source;
+  AgsPattern *pattern;
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
   gboolean current_bit;
   GValue offset_value = { 0, };
+  GValue i_value = { 0, };
+  GValue j_value = { 0, };
   GValue current_bit_value = { 0, };  
 
-  if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
-    g_message("blocked %d %d\0", AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order, run_order);
-    return;
-  }
+  //  g_message("pattern\0");
+  //  if(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order != run_order){
+  //    g_message("blocked %d %d\0", AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->run_order, run_order);
+  //    return;
+  //  }
 
   /* get AgsCopyPatternAudio */
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run->recall_audio);
@@ -384,14 +397,26 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   /* get AgsCopyPatternChannel */
   copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);
 
+  g_value_init(&i_value, G_TYPE_UINT64);
+  ags_port_safe_read(copy_pattern_audio->bank_index_0, &i_value);
+
+  g_value_init(&j_value, G_TYPE_UINT64);
+  ags_port_safe_read(copy_pattern_audio->bank_index_1, &j_value);
+  
   /* write pattern port - current offset */
   g_value_init(&offset_value, G_TYPE_UINT);
   g_value_set_uint(&offset_value,
 		   copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
-
+  
   ags_port_safe_set_property(copy_pattern_channel->pattern,
 			     "offset\0", &offset_value);
 
+  ags_port_safe_set_property(copy_pattern_channel->pattern,
+			     "first-index\0", &i_value);
+  
+  ags_port_safe_set_property(copy_pattern_channel->pattern,
+			     "second-index\0", &j_value);
+  
   /* read pattern port - current bit */
   g_value_init(&current_bit_value, G_TYPE_BOOLEAN);
   ags_port_safe_get_property(copy_pattern_channel->pattern,
@@ -399,6 +424,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   current_bit = g_value_get_boolean(&current_bit_value);
 
+  /*  */
   if(current_bit){
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;

@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/task/ags_init_channel.h>
@@ -183,7 +184,8 @@ ags_init_channel_launch(AgsTask *task)
       while(channel != next_pad){
 	if(stage == 0){
 	  if(init_channel->playback){
-	    AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_PLAYBACK;
+	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			    AGS_PLAYBACK_PLAYBACK);
 
 	    recall_id = ags_channel_recursive_play_init(channel, stage,
 							arrange_recall_id, duplicate_templates,
@@ -194,7 +196,8 @@ ags_init_channel_launch(AgsTask *task)
 	  }
 	  
 	  if(init_channel->sequencer){
-	    AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_SEQUENCER;
+	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			    AGS_PLAYBACK_SEQUENCER);
 
 	    recall_id = ags_channel_recursive_play_init(channel, stage,
 							arrange_recall_id, duplicate_templates,
@@ -205,7 +208,8 @@ ags_init_channel_launch(AgsTask *task)
 	  }
 	  
 	  if(init_channel->notation){
-	    AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_NOTATION;
+	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			    AGS_PLAYBACK_NOTATION);
 
 	    recall_id = ags_channel_recursive_play_init(channel, stage,
 							arrange_recall_id, duplicate_templates,
@@ -261,7 +265,8 @@ ags_init_channel_launch(AgsTask *task)
 						  TRUE,
 						  NULL);
     
-      AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_PLAYBACK;
+      g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+		      AGS_PLAYBACK_PLAYBACK);
       AGS_PLAYBACK(channel->playback)->recall_id[0] = recall_id;
     }
 
@@ -272,7 +277,8 @@ ags_init_channel_launch(AgsTask *task)
 						  TRUE,
 						  NULL);
     
-      AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_SEQUENCER;
+      g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+		      AGS_PLAYBACK_SEQUENCER);
       AGS_PLAYBACK(channel->playback)->recall_id[1] = recall_id;
     }
 
@@ -283,7 +289,8 @@ ags_init_channel_launch(AgsTask *task)
 						  TRUE,
 						  NULL);
     
-      AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_NOTATION;
+      g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+		      AGS_PLAYBACK_NOTATION);
       AGS_PLAYBACK(channel->playback)->recall_id[2] = recall_id;
     }
   }

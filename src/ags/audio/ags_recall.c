@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/ags_recall.h>
@@ -934,6 +935,10 @@ ags_recall_connect(AgsConnectable *connectable)
 
   recall = AGS_RECALL(connectable);
 
+  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
+    return;
+  }
+  
   list = recall->children;
 
   while(list != NULL){
@@ -1024,6 +1029,10 @@ ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
   GList *list;
 
   recall = AGS_RECALL(dynamic_connectable);
+
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) != 0){
+    return;
+  }
 
 #ifdef AGS_DEBUG
       g_message("dynamic connect: %s\0", G_OBJECT_TYPE_NAME(recall));
@@ -1146,7 +1155,7 @@ ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall,
@@ -1172,7 +1181,7 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-contex\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", recall,
@@ -1568,6 +1577,10 @@ ags_recall_real_stop_persistent(AgsRecall *recall)
 void
 ags_recall_stop_persistent(AgsRecall *recall)
 {
+  if((AGS_RECALL_DONE & (recall->flags)) != 0){
+    return;
+  }
+
   recall->flags &= (~(AGS_RECALL_PERSISTENT |
 		      AGS_RECALL_PERSISTENT_PLAYBACK |
 		      AGS_RECALL_PERSISTENT_SEQUENCER |
@@ -1579,6 +1592,10 @@ ags_recall_stop_persistent(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
+  if((AGS_RECALL_DONE & (recall->flags)) != 0){
+    return;
+  }
+  
   recall->flags |= AGS_RECALL_DONE;
 
   ags_recall_remove(recall);
@@ -1622,13 +1639,13 @@ ags_recall_real_cancel(AgsRecall *recall)
   }
 
   /* call cancel for children */
-  list = recall->children;
+  //  list = recall->children;
 
-  while(list != NULL){
-    ags_recall_cancel(AGS_RECALL(list->data));
+  //  while(list != NULL){
+  //    ags_recall_cancel(AGS_RECALL(list->data));
 
-    list = list->next;
-  }
+  //    list = list->next;
+  //  }
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
      (AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) != 0){
@@ -1675,9 +1692,11 @@ ags_recall_real_remove(AgsRecall *recall)
   }else{
     parent = AGS_RECALL(recall->parent);
 
-    parent->children = g_list_remove(parent->children, recall);
+    ags_recall_remove_child(parent,
+			    recall);
   }
 
+  /* propagate done */
   if(parent != NULL &&
      (AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 &&
      (AGS_RECALL_PERSISTENT & (parent->flags)) == 0 &&
@@ -1703,7 +1722,7 @@ ags_recall_remove(AgsRecall *recall)
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[REMOVE], 0);
   g_object_unref(G_OBJECT(recall));
-  g_object_unref(recall);
+  //  g_object_unref(recall);
 }
 
 /**
@@ -1957,9 +1976,16 @@ ags_recall_get_dependencies(AgsRecall *recall)
 void
 ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
 {
+  if(recall == NULL ||
+     child == NULL ||
+     child->parent != recall){
+    return;
+  }
+  
   recall->children = g_list_remove(recall->children,
 				   child);
-
+  child->parent = NULL;
+  
   g_object_unref(recall);
   g_object_unref(child);
 }
@@ -2613,6 +2639,11 @@ void
 ags_recall_child_done(AgsRecall *child,
 		      AgsRecall *parent)
 {
+  if(child == NULL ||
+     parent == NULL){
+    return;
+  }
+  
   ags_recall_remove_child(parent,
 			  child);
 }

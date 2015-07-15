@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
@@ -211,6 +212,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 {
   AgsRecycling *recycling;
   AgsAudioSignal *destination;
+  AgsRecyclingContext *recycling_context;
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
   AgsSoundcard *soundcard;
@@ -231,20 +233,25 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
+  recycling_context = recall->recall_id->recycling_context;
+
+  parent_recall_id = ags_recall_id_find_recycling_context(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->destination->recall_id,
+							  recycling_context->parent);
+
+  //TODO:JK: unclear
+  attack = 0;
+  delay = 0.0;
 
   /* create new audio signal */
   destination = ags_audio_signal_new((GObject *) soundcard,
 				     (GObject *) recycling,
-				     (GObject *) recall->recall_id->recycling_context->parent->recall_id);
-  length =  (guint) (2.0 * ags_soundcard_get_delay(soundcard)) + 1;
+				     (GObject *) parent_recall_id);
+  ags_recycling_create_audio_signal_with_defaults(recycling,
+						  destination,
+						  delay, attack);
+  length = 3; //(guint) (2.0 * devout->delay[devout->tic_counter]) + 1;
   ags_audio_signal_stream_resize(destination,
 				 length);
-  stream = destination->stream_beginning;
-
-  while(stream != NULL){
-    memset(stream->data, 0, buffer_size * sizeof(signed short));
-    stream = stream->next;
-  }
 
   ags_audio_signal_connect(destination);
   
@@ -253,8 +260,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 				 destination);
   AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination = destination;
 
-#ifdef AGS_DEBUG	
-  g_message("buffer to %x\0", destination->recall_id);
+#ifdef AGS_DEBUG
+  g_message("buffer %x to %x\0", destination, parent_recall_id);
   g_message("creating destination\0");
 #endif
   g_object_unref(destination);

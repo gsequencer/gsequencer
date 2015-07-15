@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_stream_channel.h>
@@ -176,6 +177,10 @@ ags_stream_audio_signal_finalize(GObject *gobject)
 void
 ags_stream_audio_signal_connect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_stream_audio_signal_parent_connectable_interface->connect(connectable);
 
@@ -194,6 +199,10 @@ ags_stream_audio_signal_disconnect(AgsConnectable *connectable)
 void
 ags_stream_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_stream_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
@@ -229,8 +238,8 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
   
   if(recall->parent != NULL &&
      recall->parent->parent != NULL){
-    stream_channel_run = recall->parent->parent;
-    stream_channel = AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel;
+    stream_channel_run = (AgsStreamChannelRun *) recall->parent->parent;
+    stream_channel = (AgsStreamChannel *) AGS_RECALL_CHANNEL_RUN(stream_channel_run)->recall_channel;
   }else{
     stream_channel_run = NULL;
     stream_channel = NULL;

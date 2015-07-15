@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2013 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_play_notation_audio.h>
@@ -48,7 +49,6 @@ void ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 enum{
   PROP_0,
-  PROP_NOTATION,
   PROP_MONOTONIC,
 };
 
@@ -57,10 +57,8 @@ static AgsPluginInterface *ags_play_notation_parent_plugin_interface;
 
 static const gchar *ags_play_notation_audio_plugin_name = "ags-play-notation\0";
 static const gchar *ags_play_notation_audio_specifier[] = {
-  "./notation[0]\0"
 };
 static const gchar *ags_play_notation_audio_control_port[] = {
-  "1/1\0",
 };
 
 GType
@@ -115,16 +113,6 @@ ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audi
   gobject->get_property = ags_play_notation_audio_get_property;
 
   gobject->finalize = ags_play_notation_audio_finalize;
-
-  /* properties */
-  param_spec = g_param_spec_object("notation\0",
-				   "assigned notation\0",
-				   "The notation this recall does play\0",
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NOTATION,
-				  param_spec);
 }
 
 void
@@ -141,24 +129,11 @@ ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio)
   GList *port;
 
   AGS_RECALL(play_notation_audio)->name = "ags-play-notation\0";
-  AGS_RECALL(play_notation_audio)->version = AGS_RECALL_DEFAULT_VERSION;
-  AGS_RECALL(play_notation_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
+  AGS_RECALL(play_notation_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
+  AGS_RECALL(play_notation_audio)->build_id = AGS_BUILD_ID;
   AGS_RECALL(play_notation_audio)->xml_type = "ags-play-notation-audio\0";
 
   port = NULL;
-
-  play_notation_audio->notation = g_object_new(AGS_TYPE_PORT,
-					       "plugin-name\0", ags_play_notation_audio_plugin_name,
-					       "specifier\0", ags_play_notation_audio_specifier[0],
-					       "control-port\0", ags_play_notation_audio_control_port[0],
-					       "port-value-is-pointer\0", TRUE,
-					       "port-value-type\0", G_TYPE_POINTER,
-					       "port-value-size\0", sizeof(gpointer),
-					       "port-value-length\0", 1,
-						    NULL);
-  play_notation_audio->notation->port_value.ags_port_pointer = NULL;
-
-  port = g_list_prepend(port, play_notation_audio->notation);
 
   /* set port */
   AGS_RECALL(play_notation_audio)->port = port;
@@ -175,27 +150,6 @@ ags_play_notation_audio_set_property(GObject *gobject,
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_NOTATION:
-    {
-      AgsPort *port;
-
-      port = (AgsPort *) g_value_get_object(value);
-
-      if(port == play_notation_audio->notation){
-	return;
-      }
-
-      if(play_notation_audio->notation != NULL){
-	g_object_unref(G_OBJECT(play_notation_audio->notation));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      play_notation_audio->notation = port;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -213,11 +167,6 @@ ags_play_notation_audio_get_property(GObject *gobject,
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_NOTATION:
-    {
-      g_value_set_object(value, play_notation_audio->notation);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -239,14 +188,6 @@ void
 ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./notation[0]\0",
-		16)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation\0", AGS_PORT(port->data),
-		   NULL);
-    }
-
     port = port->next;
   }
 }

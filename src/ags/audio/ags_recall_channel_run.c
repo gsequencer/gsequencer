@@ -781,6 +781,12 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
+  if(recall_channel_run->destination != NULL &&
+     ags_recall_id_find_recycling_container(recall_channel_run->destination->recall_id,
+					    recall_id->recycling_container->parent) == NULL){
+    return(NULL);
+  }
+  
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
 				 "soundcard\0", AGS_RECALL(recall_channel_run)->soundcard,
@@ -922,12 +928,13 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 {
   AgsRecycling *destination_recycling, *source_recycling;
   AgsRecallRecycling *recall_recycling;
-  GList *list;
+  GList *list, *list_next;
 
   if(recall_channel_run->source == NULL ||
      AGS_RECALL(recall_channel_run)->child_type == G_TYPE_NONE ||
-     (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_channel_run)->flags)) != 0)
+     (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_channel_run)->flags)) != 0){
     return;
+  }
 
   /* remove old */
   if(old_start_changed_region != NULL){
@@ -952,6 +959,8 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
       list = ags_recall_get_children(AGS_RECALL(recall_channel_run));
 
       while(list != NULL){
+	list_next = list->next;
+	
 	if(AGS_RECALL_RECYCLING(list->data)->source == source_recycling){
 	  recall = AGS_RECALL(list->data);
 
@@ -963,7 +972,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 				      (AgsTask *) cancel_recall);
 	}
 
-	list = list->next;
+	list = list_next;
       }
 
       source_recycling = source_recycling->next;
@@ -980,11 +989,11 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 				      "recall_id\0", AGS_RECALL(recall_channel_run)->recall_id,
 				      "audio_channel\0", recall_channel_run->audio_channel,
 				      "source\0", source_recycling,
-				      "destination\0", NULL,
+				      "destination\0", ((recall_channel_run->destination != NULL) ? recall_channel_run->destination->first_recycling: NULL),
 				      NULL);
 	
       ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
-
+      
       source_recycling = source_recycling->next;
     }
   }
@@ -1049,8 +1058,9 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
   /* add new */
   if(new_start_changed_region != NULL){
     if(recall_channel_run->source != NULL){
-      if(recall_channel_run->source->first_recycling == NULL)
+      if(recall_channel_run->source->first_recycling == NULL){
 	return;
+      }
       
       destination_recycling = new_start_changed_region;
       
@@ -1084,10 +1094,20 @@ ags_recall_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 							 AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 							 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 							 AgsRecallChannelRun *recall_channel_run)
-{
-  /* empty */
+{  
+  if(recall_channel_run->destination != NULL){
+    ags_recall_channel_run_remap_child_source(recall_channel_run,
+					      NULL, NULL,
+					      NULL, NULL);
+    ags_recall_channel_run_remap_child_destination(recall_channel_run,
+						   NULL, NULL,
+						   recall_channel_run->destination->first_recycling, recall_channel_run->destination->last_recycling);
+  }else{
+    ags_recall_channel_run_remap_child_source(recall_channel_run,
+					      old_start_changed_region, old_end_changed_region,
+					      new_start_changed_region, new_end_changed_region);
+  }
 }
-
 
 void
 ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *channel,

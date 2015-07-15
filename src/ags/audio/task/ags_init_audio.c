@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/task/ags_init_audio.h>
@@ -159,13 +160,17 @@ ags_init_audio_launch(AgsTask *task)
 
   /* init audio */
   if(init_audio->playback){
+    g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+		    AGS_PLAYBACK_DOMAIN_PLAYBACK);
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
-
+    
     list = ags_audio_recursive_play_init(audio,
 					 TRUE, FALSE, FALSE);
 
     while(list != NULL){
-      AGS_PLAYBACK(playback->data)->recall_id[0] = list->data;
+      //      AGS_PLAYBACK(playback->data)->recall_id[0] = list->data;
+      g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
+		      AGS_PLAYBACK_PLAYBACK);
 
       playback = playback->next;
       list = list->next;
@@ -173,27 +178,35 @@ ags_init_audio_launch(AgsTask *task)
   }
 
   if(init_audio->sequencer){
+    g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+		    AGS_PLAYBACK_DOMAIN_SEQUENCER);
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
     list = ags_audio_recursive_play_init(audio,
 					 FALSE, TRUE, FALSE);
 
     while(list != NULL){
-      AGS_PLAYBACK(playback->data)->recall_id[1] = list->data;
-
+      //      AGS_PLAYBACK(playback->data)->recall_id[1] = list->data;
+      g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
+		      AGS_PLAYBACK_SEQUENCER);
+      
       playback = playback->next;
       list = list->next;
     }
   }
 
   if(init_audio->notation){
+    g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+		    AGS_PLAYBACK_DOMAIN_NOTATION);
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
     list = ags_audio_recursive_play_init(audio,
 					 FALSE, FALSE, TRUE);
 
     while(list != NULL){
-      AGS_PLAYBACK(playback->data)->recall_id[2] = list->data;
+      //      AGS_PLAYBACK(playback->data)->recall_id[2] = list->data;
+      g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
+		      AGS_PLAYBACK_NOTATION);
 
       playback = playback->next;
       list = list->next;

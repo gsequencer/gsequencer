@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/recall/ags_peak_channel.h>
@@ -270,6 +271,10 @@ ags_peak_channel_finalize(GObject *gobject)
 void
 ags_peak_channel_connect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_peak_channel_parent_connectable_interface->connect(connectable);
 
   /* empty */
@@ -332,19 +337,32 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 			    NULL);
   
   /* initialize buffer */
-  buffer = (double *) malloc(buffer_size * sizeof(double));
-  
-  for(i = 0; i < buffer_size; i++) buffer[i] = 0.0;
+  buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
+  for(i = 0; i < buffer_size; i++) buffer[i] = 0;
 
   while(recycling != source->last_recycling->next){
     audio_signal = recycling->audio_signal;
 
     while(audio_signal != NULL){
-      if(AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
-	/* copy buffer 1:1 */
-	ags_audio_signal_copy_buffer_to_double_buffer(buffer, 1,
-						      (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
-						      buffer_size);
+      if((AGS_IS_INPUT(source) &&
+	  (AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(source->audio)->flags)) != 0) ||
+	 (AGS_IS_OUTPUT(source) &&
+	  (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(source->audio)->flags)) != 0)){
+	if((AGS_AUDIO_SIGNAL_TEMPLATE & (AGS_AUDIO_SIGNAL(audio_signal->data)->flags)) == 0 &&
+	   AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
+	  /* copy buffer 1:1 */
+	  ags_audio_signal_copy_buffer_to_buffer(buffer, 1,
+						 (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
+						 buffer_size);
+	}
+      }else{
+	if((AGS_AUDIO_SIGNAL_TEMPLATE & (AGS_AUDIO_SIGNAL(audio_signal->data)->flags)) == 0 &&
+	   AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
+	  /* copy buffer 1:1 */
+	  ags_audio_signal_copy_buffer_to_buffer(buffer, 1,
+						 (signed short *) AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current->data, 1,
+						 buffer_size);
+	}
       }
 
       audio_signal = audio_signal->next;
@@ -352,24 +370,24 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
     recycling = recycling->next;
   }
-    
-  /* 
-   * The idea is that accoustics has it's highest pressure at 440 Hz that's why it is called harmonic oscillation in air pressure.
-   * The trigonemetric functions sin and atan are combined as alike average value. They should have many common points or at least
-   * near points what equals pressure = 1.0 and if not then rather = 0.0. Then you can scale using factor.
-   */
 
   /* calculate average value */
   current_value = 0.0;
 
   for(i = 0; i < buffer_size; i++){
-    current_value +=  (1.0 / (1.0 / G_MAXUINT16 * buffer[i]));
-  }
+    if(buffer[i] == 0){
+      continue;
+    }
 
+    current_value +=  (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
+  }
+  
   /* break down to scale */
   //TODO:JK: verify me
-  current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 440.0));
-
+  if(current_value != 0.0){
+    current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 22000.0));
+  }
+  
   g_value_init(&value, G_TYPE_DOUBLE);
 
   if(current_value < 0.0){

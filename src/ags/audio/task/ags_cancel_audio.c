@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/task/ags_cancel_audio.h>
@@ -148,16 +149,22 @@ ags_cancel_audio_finalize(GObject *gobject)
 void
 ags_cancel_audio_launch(AgsTask *task)
 {
-  AgsCancelAudio *cancel_audio;
+  AgsDevoutPlayDomain *playback_domain;
   AgsAudio *audio;
   AgsChannel *channel;
+
+  AgsCancelAudio *cancel_audio;
 
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
   audio = cancel_audio->audio;
-
+  playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
+  
   /* cancel playback */
   if(cancel_audio->playback){
+    g_atomic_int_and(&(playback_domain->flags),
+		     (~AGS_PLAYBACK_DOMAIN_PLAYBACK));
+
     channel = audio->output;
 
     while(channel != NULL){
@@ -170,17 +177,21 @@ ags_cancel_audio_launch(AgsTask *task)
       g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_PLAYBACK(channel->playback)->recall_id[0]);
-
-      /* set remove flag */
-      AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
       AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
 
       channel = channel->next;
+    }
+
+    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+      ags_thread_stop(playback_domain->audio_thread[0]);
     }
   }
 
   /* cancel sequencer */
   if(cancel_audio->sequencer){
+    g_atomic_int_and(&(playback_domain->flags),
+		     (~AGS_PLAYBACK_DOMAIN_SEQUENCER));
+
     channel = audio->output;
 
     while(channel != NULL){
@@ -194,16 +205,20 @@ ags_cancel_audio_launch(AgsTask *task)
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_PLAYBACK(channel->playback)->recall_id[1]);
       AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
-
-      /* set remove flag */
-      AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
-
+      
       channel = channel->next;
+    }
+
+    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+      ags_thread_stop(playback_domain->audio_thread[1]);
     }
   }
 
   /* cancel notation */
   if(cancel_audio->notation){
+    g_atomic_int_and(&(playback_domain->flags),
+		     (~AGS_PLAYBACK_DOMAIN_NOTATION));
+
     channel = audio->output;
 
     while(channel != NULL){
@@ -217,11 +232,12 @@ ags_cancel_audio_launch(AgsTask *task)
       ags_channel_tillrecycling_cancel(channel,
 				       AGS_PLAYBACK(channel->playback)->recall_id[2]);
       AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
-
-      /* set remove flag */
-      AGS_PLAYBACK(channel->playback)->flags |= (AGS_PLAYBACK_DONE | AGS_PLAYBACK_REMOVE);
       
       channel = channel->next;
+    }
+
+    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+      ags_thread_stop(playback_domain->audio_thread[2]);
     }
   }
 }
