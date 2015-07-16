@@ -27,6 +27,7 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/server/ags_server_application_context.h>
@@ -1880,8 +1881,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     pads = audio->output_pads;
     first_run = TRUE;
 
-    error = NULL;
-
   ags_audio_set_audio_channel_shrink0:
 
     for(i = 0; i < pads; i++){
@@ -1913,7 +1912,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	
 	for(; j < audio->audio_channels; j++){
 	  channel1 = channel0->next;
-
+      
 	  g_object_unref((GObject *) channel0);
 
 	  channel0 = channel1;
@@ -3123,6 +3122,25 @@ void
 ags_audio_add_automation(AgsAudio *audio,
 			 GObject *automation)
 {
+  AgsApplicationContext *application_context;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  pthread_mutex_lock(mutex);
+
   g_object_ref(automation);
   audio->automation = g_list_prepend(audio->automation,
 				     automation);
@@ -4180,7 +4198,8 @@ void
 ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
 {
   AgsChannel *channel;
-  
+
+  AgsConfig *config;
   AgsApplicationContext *application_context;
   
   AgsMutexManager *mutex_manager;
@@ -4189,7 +4208,8 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
 
   gchar *str0, *str1;
 
-  application_context = AGS_DEVOUT(audio->devout)->application_context;
+  application_context = ags_soundcard_get_application_context(soundcard);
+  config = application_context->config;
   
   /* create mutex if necessary */
   pthread_mutex_lock(application_context->mutex);

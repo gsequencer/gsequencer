@@ -102,12 +102,17 @@ ags_playback_domain_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 {
+  g_atomic_int_set(&(playback_domain->flags),
+		   0);
+
+  /* super threaded audio */
+  playback_domain->audio_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
+
+  playback_domain->audio_thread[0] = NULL;
+  playback_domain->audio_thread[1] = NULL;
+  playback_domain->audio_thread[2] = NULL;
+
   playback_domain->domain = NULL;
-
-  playback_domain->do_playback = FALSE;
-  playback_domain->do_sequencer = FALSE;
-  playback_domain->do_notation = FALSE;
-
   playback_domain->playback = NULL;
 }
 
@@ -118,6 +123,8 @@ ags_playback_domain_finalize(GObject *gobject)
 
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
 
+  free(playback_domain->audio_thread);
+  
   g_list_free_full(playback_domain->playback,
 		   g_object_unref);
 

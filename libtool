@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # Generated automatically by config.status (gsequencer) 0.4.3
 # Libtool was configured on host debian:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
@@ -63,7 +63,7 @@ fast_install=yes
 shared_archive_member_spec=
 
 # Shell to use when invoking shell scripts.
-SHELL="/bin/sh"
+SHELL="/bin/bash"
 
 # An echo program that protects backslashes.
 ECHO="printf %s\\n"

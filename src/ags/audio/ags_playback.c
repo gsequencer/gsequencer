@@ -105,17 +105,28 @@ ags_playback_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_playback_init(AgsPlayback *playback)
 {
-  playback->flags = 0;
+  g_atomic_int_set(&(playback->flags),
+		   0);
 
+  /* super threaded channel */
+  playback->channel_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
+
+  playback->channel_thread[0] = NULL;
+  playback->channel_thread[1] = NULL;
+  playback->channel_thread[2] = NULL;
+
+  /* iterator thread */
   playback->iterator_thread = (AgsIteratorThread **) malloc(3 * sizeof(AgsIteratorThread *));
 
   playback->iterator_thread[0] = ags_iterator_thread_new();
   playback->iterator_thread[1] = ags_iterator_thread_new();
   playback->iterator_thread[2] = ags_iterator_thread_new();
 
+  /*  */
   playback->source = NULL;
   playback->audio_channel = 0;
 
+  /*  */
   playback->recall_id = (AgsRecallID **) malloc(3 * sizeof(AgsRecallID *));
 
   playback->recall_id[0] = NULL;

@@ -83,8 +83,9 @@ bin_PROGRAMS = gsequencer$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in depcomp compile config.guess config.sub \
-	install-sh missing ltmain.sh
+	$(srcdir)/config.h.in depcomp AUTHORS COPYING ChangeLog \
+	INSTALL NEWS README compile config.guess config.rpath \
+	config.sub install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
@@ -752,20 +753,20 @@ OBJEXT = o
 OTOOL = 
 OTOOL64 = 
 PACKAGE = gsequencer
-PACKAGE_BUGREPORT = weedlight@gmail.com
+PACKAGE_BUGREPORT = jkraehemann-guest@users.alioth.debian.org
 PACKAGE_NAME = gsequencer
-PACKAGE_STRING = gsequencer 0.4.3
+PACKAGE_STRING = gsequencer 0.5.3
 PACKAGE_TARNAME = gsequencer
 PACKAGE_URL = 
-PACKAGE_VERSION = 0.4.3
+PACKAGE_VERSION = 0.5.3
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = /usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11/share/pkgconfig:/usr/local/lib/pkgconfig
+PKG_CONFIG_PATH = 
 RANLIB = ranlib
 SED = /bin/sed
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 SNDFILE_CFLAGS = 
 SNDFILE_LIBS = -lsndfile 
 STRIP = strip

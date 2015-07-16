@@ -58,6 +58,7 @@ typedef enum
   AGS_DEVOUT_START_PLAY                     = 1 << 9,
 
   AGS_DEVOUT_NONBLOCKING                    = 1 << 10,
+  AGS_DEVOUT_INITIALIZED                    = 1 << 11,
 }AgsDevoutFlags;
 
 #define AGS_DEVOUT_ERROR (ags_devout_error_quark())

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2015 Joël Krähemann
  *
@@ -18,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
->>>>>>> 0.5.0
+
 #ifndef __AGS_ID_GENERATOR_H__
 #define __AGS_ID_GENERATOR_H__
 

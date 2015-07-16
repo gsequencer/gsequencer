@@ -22,6 +22,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+
 #define AGS_TYPE_PLAYBACK_DOMAIN                (ags_playback_domain_get_type())
 #define AGS_PLAYBACK_DOMAIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAYBACK_DOMAIN, AgsPlaybackDomain))
 #define AGS_PLAYBACK_DOMAIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PLAYBACK_DOMAIN, AgsPlaybackDomain))
@@ -32,16 +38,23 @@
 typedef struct _AgsPlaybackDomain AgsPlaybackDomain;
 typedef struct _AgsPlaybackDomainClass AgsPlaybackDomainClass;
 
+typedef enum{
+  AGS_PLAYBACK_DOMAIN_PLAYBACK                   = 1,
+  AGS_PLAYBACK_DOMAIN_SEQUENCER                  = 1 <<  1,
+  AGS_PLAYBACK_DOMAIN_NOTATION                   = 1 <<  2,
+  AGS_PLAYBACK_DOMAIN_SINGLE_THREADED            = 1 <<  3,
+  AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  4,
+}AgsPlaybackDomainFlags;
+
 struct _AgsPlaybackDomain
 {
   GObject gobject;
 
-  GObject *domain;
-  
-  gboolean do_playback;
-  gboolean do_sequencer;
-  gboolean do_notation;
+  volatile guint flags;
 
+  AgsThread **audio_thread;
+
+  GObject *domain;
   GList *playback;
 };
 
