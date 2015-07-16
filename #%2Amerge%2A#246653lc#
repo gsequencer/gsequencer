@@ -1,4 +1,0 @@
-./ags
-./gsequencer
-*.o
-libags*.a
