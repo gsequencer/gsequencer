@@ -401,9 +401,9 @@ ags_config_to_data(AgsConfig *config,
 			    &error);
 
   if(error != NULL){
-    g_warning("%s", error->message);
+    g_warning("%s\0", error->message);
   }
-  
+
   if(buffer != NULL){
     *buffer = data;
   }

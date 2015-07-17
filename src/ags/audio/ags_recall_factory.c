@@ -813,8 +813,6 @@ ags_recall_factory_create_stream(AgsAudio *audio,
 				start_audio_channel);
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
-	g_message("%d %d\0", i + start_pad, j + start_audio_channel);
-
 	ags_channel_add_recall_container(channel, (GObject *) play_container);
 
 	/* AgsStreamChannel */

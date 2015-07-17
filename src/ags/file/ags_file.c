@@ -1251,9 +1251,7 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 		     10)){
 	ags_file_read_config(file,
 			     child,
-			     (GObject *) &config);
-	
-	AGS_AUDIO_LOOP(gobject->main_loop)->ags_main = (GObject *) gobject;
+			     NULL);
       }else if(!xmlStrncmp("ags-thread\0",
 		     child->name,
 		     11)){
@@ -1381,9 +1379,10 @@ ags_file_read_config(AgsFile *file, xmlNode *node, GObject **ags_config)
 
   gchar *id;
   
-  xmlChar *buffer;
-  int buffer_length;
-  
+  char *buffer;
+  gsize buffer_length;
+
+  gobject = config;
   gobject->version = xmlGetProp(node,
 				AGS_FILE_VERSION_PROP);
 
@@ -1392,6 +1391,8 @@ ags_file_read_config(AgsFile *file, xmlNode *node, GObject **ags_config)
 
   buffer = xmlNodeGetContent(node);
   buffer_length = xmlStrlen(buffer);
+
+  g_message("%s\0", buffer);
   
   ags_config_load_from_data(gobject,
 			    buffer, buffer_length);
@@ -1404,8 +1405,8 @@ ags_file_write_config(AgsFile *file, xmlNode *parent, GObject *ags_config)
   xmlNode *cdata;
   
   gchar *id;
-  xmlChar *buffer;
-  int buffer_length;
+  char *buffer;
+  gsize buffer_length;
 
   id = ags_id_generator_create_uuid();
 
