@@ -990,51 +990,40 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 void
 ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop, AgsDevoutPlay *devout_play)
 {
-  gboolean playback, sequencer, notation;
-	
-  /* super threaded audio level */
-  playback = FALSE;
-  sequencer = FALSE;
-  notation = FALSE;
-	
   /* playback */
-  if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(devout_play->flags)))) != 0){
-    playback = TRUE;
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play->channel_thread[0]->flags)))) == 0){
+    guint val;
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play->channel_thread[0]->flags)))) == 0){
-      guint val;
+    ags_thread_start(devout_play->channel_thread[0]);
+  
+    /* wait child */
+    pthread_mutex_lock(devout_play->channel_thread[0]->start_mutex);
 
-      ags_thread_start(devout_play->channel_thread[0]);
+    val = g_atomic_int_get(&(devout_play->channel_thread[0]->flags));
 
-      /* wait child */
-      pthread_mutex_lock(devout_play->channel_thread[0]->start_mutex);
+    if((AGS_THREAD_INITIAL_RUN & val) != 0){
+      while((AGS_THREAD_INITIAL_RUN & val) != 0){
+	pthread_cond_wait(devout_play->channel_thread[0]->start_cond,
+			  devout_play->channel_thread[0]->start_mutex);
 
-      val = g_atomic_int_get(&(devout_play->channel_thread[0]->flags));
-
-      if((AGS_THREAD_INITIAL_RUN & val) != 0){
-	while((AGS_THREAD_INITIAL_RUN & val) != 0){
-	  pthread_cond_wait(devout_play->channel_thread[0]->start_cond,
-			    devout_play->channel_thread[0]->start_mutex);
-
-	  val = g_atomic_int_get(&(devout_play->channel_thread[0]->flags));
-	}
+	val = g_atomic_int_get(&(devout_play->channel_thread[0]->flags));
       }
-
-      pthread_mutex_unlock(devout_play->channel_thread[0]->start_mutex);
     }
 
-    /* wakeup wait */
-    pthread_mutex_lock(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->wakeup_mutex);
-
-    g_atomic_int_or(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->flags),
-		    AGS_CHANNEL_THREAD_WAKEUP);
-	    
-    if((AGS_CHANNEL_THREAD_WAITING & (g_atomic_int_get(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->flags)))) != 0){
-      pthread_cond_signal(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->wakeup_cond);
-    }
-	    
-    pthread_mutex_unlock(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->wakeup_mutex);
+    pthread_mutex_unlock(devout_play->channel_thread[0]->start_mutex);
   }
+
+  /* wakeup wait */
+  pthread_mutex_lock(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->wakeup_mutex);
+
+  g_atomic_int_or(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->flags),
+		  AGS_CHANNEL_THREAD_WAKEUP);
+	    
+  if((AGS_CHANNEL_THREAD_WAITING & (g_atomic_int_get(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->flags)))) != 0){
+    pthread_cond_signal(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->wakeup_cond);
+  }
+	    
+  pthread_mutex_unlock(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->wakeup_mutex);
 }
 
 void
@@ -1048,31 +1037,31 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop, AgsDevoutPl
   if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(devout_play->flags)))) != 0){
     playback = TRUE;
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play->channel_thread[0]->flags)))) != 0 &&
-       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(devout_play->channel_thread[0]->flags)))) == 0 &&
-       (AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(devout_play->channel_thread[0]->flags)))) == 0 &&
-       (AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(devout_play->channel_thread[0]->flags)))) == 0 &&
-       (AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(devout_play->channel_thread[0]->flags)))) == 0){
+    pthread_mutex_lock(AGS_CHANNEL_THREAD(devout_play->channel_thread[1])->done_mutex);
+  
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play->channel_thread[1]->flags)))) != 0 &&
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(devout_play->channel_thread[1]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(devout_play->channel_thread[1]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(devout_play->channel_thread[1]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(devout_play->channel_thread[1]->flags)))) == 0){
 
-      pthread_mutex_lock(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->done_mutex);
-
-      if((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->flags)))) == 0){
-	g_atomic_int_or(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->flags),
+      if((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[1])->flags)))) == 0){
+	g_atomic_int_or(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[1])->flags),
 			AGS_CHANNEL_THREAD_NOTIFY);
     
-	while((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->flags)))) == 0){
-	  pthread_cond_wait(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->done_cond,
-			    AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->done_mutex);
+	while((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[1])->flags)))) == 0){
+	  pthread_cond_wait(AGS_CHANNEL_THREAD(devout_play->channel_thread[1])->done_cond,
+			    AGS_CHANNEL_THREAD(devout_play->channel_thread[1])->done_mutex);
 	}
       }
-
-      g_atomic_int_and(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->flags),
-		       (~AGS_CHANNEL_THREAD_NOTIFY));
-      g_atomic_int_and(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->flags),
-			 (~AGS_CHANNEL_THREAD_DONE));
-      
-      pthread_mutex_unlock(AGS_CHANNEL_THREAD(devout_play->channel_thread[0])->done_mutex);
     }
+
+    g_atomic_int_and(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[1])->flags),
+		     (~AGS_CHANNEL_THREAD_NOTIFY));
+    g_atomic_int_and(&(AGS_CHANNEL_THREAD(devout_play->channel_thread[1])->flags),
+		     (~AGS_CHANNEL_THREAD_DONE));
+
+    pthread_mutex_unlock(AGS_CHANNEL_THREAD(devout_play->channel_thread[1])->done_mutex);
   }
 
   /*  */

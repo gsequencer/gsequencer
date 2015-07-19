@@ -2025,26 +2025,33 @@ ags_thread_loop(void *ptr)
 
   /*  */
   if(thread->freq >= 1.0){
-    delay =  AGS_THREAD_MAX_PRECISION / thread->freq;
+    delay = AGS_THREAD_MAX_PRECISION / thread->freq;
 
     i_stop = 1;
   }else{
-    delay = 1.0 / thread->freq * AGS_THREAD_MAX_PRECISION;
+    if(AGS_THREAD_MAX_PRECISION > thread->freq){
+      delay = 1.0 / thread->freq * AGS_THREAD_MAX_PRECISION;
 
-    i_stop = 1;
+      i_stop = 1;
+    }else{
+      i_stop = floor(thread->freq / AGS_THREAD_MAX_PRECISION);
+    }
   }
 
   counter = 0;
   
   /*  */
+#ifndef AGS_USE_TIMER
   if(thread->parent == NULL){
-    //    clock_gettime(CLOCK_MONOTONIC, &time_prev);
+    clock_gettime(CLOCK_MONOTONIC, &time_prev);
   }
+#endif
   
   while((AGS_THREAD_RUNNING & running) != 0){
     running = g_atomic_int_get(&(thread->flags));
 
     if(thread->parent == NULL){
+#ifdef AGS_USE_TIMER
       pthread_mutex_lock(thread->timer_mutex);
 
       if(!g_atomic_int_get(&(thread->timer_expired))){
@@ -2063,18 +2070,17 @@ ags_thread_loop(void *ptr)
 			 FALSE);
 	
       pthread_mutex_unlock(thread->timer_mutex);
-      
-      /*
+#else
       long time_spent;
 
       static const long time_unit = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
 
-      //      clock_gettime(CLOCK_MONOTONIC, &time_now);
+      clock_gettime(CLOCK_MONOTONIC, &time_now);
 
       if(time_now.tv_sec > time_prev.tv_sec){
-	//	time_spent = (time_now.tv_nsec + (NSEC_PER_SEC - time_prev.tv_nsec));
+	time_spent = (time_now.tv_nsec + (NSEC_PER_SEC - time_prev.tv_nsec));
       }else{
-	//	time_spent = time_now.tv_nsec - time_prev.tv_nsec;
+	time_spent = time_now.tv_nsec - time_prev.tv_nsec;
       }
 
       if(time_spent < time_unit){
@@ -2084,15 +2090,14 @@ ags_thread_loop(void *ptr)
 	};
 
 	if(time_spent < time_unit){
-	  //	  timed_sleep.tv_nsec = time_unit - time_spent;
+	  timed_sleep.tv_nsec = time_unit - time_spent;
 
-	  //	  nanosleep(&timed_sleep, NULL);
-	  // ndelay(timed_sleep.tv_nsec);
+	  nanosleep(&timed_sleep, NULL);
 	}
       }
 
-      //      clock_gettime(CLOCK_MONOTONIC, &time_prev);
-      */
+      clock_gettime(CLOCK_MONOTONIC, &time_prev);
+#endif
     }
 
     if(delay >= 1.0){

@@ -7,7 +7,7 @@ autosave-thread=false
 
 [thread]
 model=super-threaded
-super-threaded-scope=channel
+super-threaded-scope=audio
 lock-global=ags-thread
 lock-parent=ags-recycling-thread
 

@@ -825,7 +825,6 @@ main(int argc, char **argv)
   }
 
   /* Ignore interactive and job-control signals.  */
-  /*
   signal(SIGINT, SIG_IGN);
   signal(SIGQUIT, SIG_IGN);
   signal(SIGTSTP, SIG_IGN);
@@ -838,7 +837,7 @@ main(int argc, char **argv)
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
-  */
+
   /**/
   pthread_mutexattr_init(&attr);
   pthread_mutexattr_settype(&attr,
@@ -846,6 +845,7 @@ main(int argc, char **argv)
   pthread_mutex_init(&ags_application_mutex,
 		     &attr);
 
+#ifdef AGS_USE_TIMER
   /* create timer */
   ags_sigact_timer.sa_flags = SA_SIGINFO;
   ags_sigact_timer.sa_sigaction = ags_signal_handler_timer;
@@ -855,7 +855,7 @@ main(int argc, char **argv)
     perror("sigaction\0");
     exit(EXIT_FAILURE);
   }
-
+  
   /* Block timer signal temporarily */
   sigemptyset(&ags_timer_mask);
   sigaddset(&ags_timer_mask, SIGRTMIN);
@@ -874,6 +874,7 @@ main(int argc, char **argv)
     perror("timer_create\0");
     exit(EXIT_FAILURE);
   }
+#endif
 
   /**/
   LIBXML_TEST_VERSION;
@@ -960,6 +961,7 @@ main(int argc, char **argv)
     its.it_interval.tv_sec = its.it_value.tv_sec;
     its.it_interval.tv_nsec = its.it_value.tv_nsec;
 
+#ifdef AGS_USE_TIMER
     if(timer_settime(timerid, 0, &its, NULL) == -1){
       perror("timer_settime\0");
       exit(EXIT_FAILURE);
@@ -970,7 +972,8 @@ main(int argc, char **argv)
       perror("sigprocmask\0");
       exit(EXIT_FAILURE);
     }
-
+#endif
+    
 #ifdef _USE_PTH
     pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
 	     NULL);
@@ -1081,10 +1084,11 @@ main(int argc, char **argv)
 
     /* Start the timer */
     its.it_value.tv_sec = 0;
-    its.it_value.tv_nsec = NSEC_PER_SEC / 1000; // / AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
+    its.it_value.tv_nsec = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION; // / AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
     its.it_interval.tv_sec = its.it_value.tv_sec;
     its.it_interval.tv_nsec = its.it_value.tv_nsec;
 
+#ifdef AGS_USE_TIMER
     if(timer_settime(timerid, 0, &its, NULL) == -1){
       perror("timer_settime\0");
       exit(EXIT_FAILURE);
@@ -1095,6 +1099,7 @@ main(int argc, char **argv)
       perror("sigprocmask\0");
       exit(EXIT_FAILURE);
     }
+#endif
     
     if(!single_thread){
       /* join gui thread */
