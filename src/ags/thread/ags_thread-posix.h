@@ -133,6 +133,11 @@ struct _AgsThread
   pthread_mutex_t *suspend_mutex;
   volatile gboolean critical_region;
 
+  volatile gboolean timer_wait;
+  volatile gboolean timer_expired;
+  pthread_mutex_t *timer_mutex;
+  pthread_cond_t *timer_cond;
+  
   AgsThread *parent;
 
   AgsThread *next;

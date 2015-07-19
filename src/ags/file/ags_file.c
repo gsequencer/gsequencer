@@ -560,7 +560,7 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
   xpath_context = xmlXPathNewContext(file->doc);
 
   if(xpath_context == NULL) {
-    fprintf(stderr,"Error: unable to create new XPath context\n");
+    fprintf(stderr,"Error: unable to create new XPath context\n\0");
 
     return(NULL);
   }
@@ -569,7 +569,7 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
   xpath_object = xmlXPathEval(xpath, xpath_context);
 
   if(xpath_object == NULL) {
-    g_message("Error: unable to evaluate xpath expression \"%s\"", xpath);
+    g_message("Error: unable to evaluate xpath expression \"%s\"\0", xpath);
     xmlXPathFreeContext(xpath_context); 
 
     return(NULL);

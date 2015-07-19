@@ -163,8 +163,8 @@ void ags_channel_play(AgsChannel *channel,
 		      AgsRecallID *recall_id, gint stage);
 void ags_channel_recursive_play_threaded(AgsChannel *channel,
 					 AgsRecallID *recall_id, gint stage);
-void ags_channel_recursive_play(AgsChannel *channel,
-				AgsRecallID *recall_id, gint stage);
+extern inline void ags_channel_recursive_play(AgsChannel *channel,
+					      AgsRecallID *recall_id, gint stage);
 void ags_channel_duplicate_recall(AgsChannel *channel,
 				  AgsRecallID *recall_id);
 void ags_channel_init_recall(AgsChannel *channel, gint stage,

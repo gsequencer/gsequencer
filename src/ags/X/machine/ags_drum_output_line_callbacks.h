@@ -22,6 +22,12 @@
 
 #include <ags/X/machine/ags_drum_output_line.h>
 
+#include <ags/audio/ags_audio.h>
+
 int ags_drum_output_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, gpointer data);
+
+void ags_drum_output_line_set_pads_callback(AgsAudio *audio, GType channel_type,
+					    guint pads_new, guint pads_old,
+					    AgsDrumOutputLine *output_line);
 
 #endif /*__AGS_DRUM_OUTPUT_LINE_CALLBACKS_H__*/

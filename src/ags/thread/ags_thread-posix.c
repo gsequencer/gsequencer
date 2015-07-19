@@ -53,6 +53,7 @@ void ags_thread_resume_handler(int sig);
 void ags_thread_suspend_handler(int sig);
 
 void ags_thread_real_start(AgsThread *thread);
+void* ags_thread_timer(void *ptr);
 void* ags_thread_loop(void *ptr);
 void ags_thread_real_timelock(AgsThread *thread);
 void* ags_thread_timelock_loop(void *ptr);
@@ -351,8 +352,19 @@ ags_thread_init(AgsThread *thread)
 
   thread->greedy_locks = NULL;
 
+  g_atomic_int_set(&(thread->timer_wait),
+		   FALSE);
+  g_atomic_int_set(&(thread->timer_expired),
+		   FALSE);
+  
   thread->suspend_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(thread->suspend_mutex, NULL);
+
+  thread->timer_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(thread->timer_mutex, NULL);
+
+  thread->timer_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(thread->timer_cond, NULL);
 
   thread->parent = NULL;
   thread->next = NULL;
@@ -520,6 +532,10 @@ ags_thread_finalize(GObject *gobject)
   
   pthread_mutex_destroy(thread->suspend_mutex);
   free(thread->suspend_mutex);
+
+  pthread_mutex_destroy(thread->timer_mutex);
+  pthread_cond_destroy(thread->timer_cond);
+  free(thread->timer_cond);
   
   /* call parent */
   G_OBJECT_CLASS(ags_thread_parent_class)->finalize(gobject);
@@ -1906,6 +1922,12 @@ ags_thread_start(AgsThread *thread)
 }
 
 void*
+ags_thread_timer(void *ptr)
+{
+  
+}
+
+void*
 ags_thread_loop(void *ptr)
 {
   AgsThread *thread, *main_loop;
@@ -2001,6 +2023,7 @@ ags_thread_loop(void *ptr)
 
   running = g_atomic_int_get(&(thread->flags));
 
+  /*  */
   if(thread->freq >= 1.0){
     delay =  AGS_THREAD_MAX_PRECISION / thread->freq;
 
@@ -2012,23 +2035,46 @@ ags_thread_loop(void *ptr)
   }
 
   counter = 0;
-
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_prev);
-
+  
+  /*  */
+  if(thread->parent == NULL){
+    //    clock_gettime(CLOCK_MONOTONIC, &time_prev);
+  }
+  
   while((AGS_THREAD_RUNNING & running) != 0){
     running = g_atomic_int_get(&(thread->flags));
 
     if(thread->parent == NULL){
+      pthread_mutex_lock(thread->timer_mutex);
+
+      if(!g_atomic_int_get(&(thread->timer_expired))){
+	g_atomic_int_set(&(thread->timer_wait),
+			 TRUE);
+	
+	while(!g_atomic_int_get(&(thread->timer_expired))){
+	  pthread_cond_wait(thread->timer_cond,
+			    thread->timer_mutex);
+	}
+      }
+
+      g_atomic_int_set(&(thread->timer_wait),
+			 FALSE);
+      g_atomic_int_set(&(thread->timer_expired),
+			 FALSE);
+	
+      pthread_mutex_unlock(thread->timer_mutex);
+      
+      /*
       long time_spent;
 
       static const long time_unit = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
 
-      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_now);
+      //      clock_gettime(CLOCK_MONOTONIC, &time_now);
 
       if(time_now.tv_sec > time_prev.tv_sec){
-	time_spent = (time_now.tv_nsec);
+	//	time_spent = (time_now.tv_nsec + (NSEC_PER_SEC - time_prev.tv_nsec));
       }else{
-	time_spent = time_now.tv_nsec - time_prev.tv_nsec;
+	//	time_spent = time_now.tv_nsec - time_prev.tv_nsec;
       }
 
       if(time_spent < time_unit){
@@ -2038,13 +2084,15 @@ ags_thread_loop(void *ptr)
 	};
 
 	if(time_spent < time_unit){
-	  timed_sleep.tv_nsec = time_unit - time_spent;
+	  //	  timed_sleep.tv_nsec = time_unit - time_spent;
 
-	  nanosleep(&timed_sleep, NULL);
+	  //	  nanosleep(&timed_sleep, NULL);
+	  // ndelay(timed_sleep.tv_nsec);
 	}
       }
 
-      clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_prev);
+      //      clock_gettime(CLOCK_MONOTONIC, &time_prev);
+      */
     }
 
     if(delay >= 1.0){
@@ -2474,6 +2522,7 @@ ags_thread_timelock_loop(void *ptr)
     }
 
     nanosleep(&(thread->timelock), NULL);
+    // ndelay(thread->timelock.tv_nsec);
 
     val = g_atomic_int_get(&(thread->flags));
 
