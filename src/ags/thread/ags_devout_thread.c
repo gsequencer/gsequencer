@@ -148,7 +148,7 @@ ags_devout_thread_init(AgsDevoutThread *devout_thread)
 				10);
   free(str);
   
-  thread->freq = samplerate / buffer_size;
+  thread->freq = AGS_DEVOUT_THREAD_DEFAULT_JIFFIE;
   devout_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
   ags_thread_add_child(thread, devout_thread->timestamp_thread);
 
