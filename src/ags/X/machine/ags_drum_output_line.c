@@ -31,6 +31,7 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_factory.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -184,6 +185,9 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
   }
   
   ags_drum_output_line_parent_connectable_interface->connect(connectable);
+
+  g_signal_connect_after((GObject *) AGS_LINE(drum_output_line)->channel->audio, "set-pads\0",
+			 G_CALLBACK(ags_drum_output_line_set_pads_callback), NULL);
 
   /* empty */
 }

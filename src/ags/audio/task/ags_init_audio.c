@@ -157,6 +157,8 @@ ags_init_audio_launch(AgsTask *task)
 
   audio = init_audio->audio;
 
+  g_message("init\0");
+  
   /* init audio */
   if(init_audio->playback){
     g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),

@@ -21,7 +21,10 @@
 
 #include <ags/X/machine/ags_drum.h>
 
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall_factory.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 
@@ -63,4 +66,34 @@ ags_drum_output_line_parent_set_callback(GtkWidget *widget, GtkObject *old_paren
   }
 
   return(0);
+}
+
+void
+ags_drum_output_line_set_pads_callback(AgsAudio *audio, GType channel_type,
+				       guint pads_new, guint pads_old,
+				       AgsDrumOutputLine *output_line)
+{
+  if(channel_type == AGS_TYPE_INPUT){
+    if(pads_new > pads_old){
+      AgsChannel *input;
+      
+      input = ags_channel_pad_nth(audio->input,
+				  pads_old);
+
+      while(input != NULL){
+	/* ags-buffer */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-buffer\0",
+				  0, audio->audio_channels, 
+				  input->pad, input->pad + 1,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+
+	input = input->next_pad;
+      }
+    }
+  }
 }

@@ -742,10 +742,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 {
   AgsAudio *audio;
   AgsChannel *source, *current;
-
-  AgsBufferChannel *buffer_channel;
-  AgsBufferChannelRun *buffer_channel_run;
-
+  
   GList *list;
 
   audio = AGS_MACHINE(matrix)->audio;
@@ -757,6 +754,25 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   source = ags_channel_nth(audio->input,
 			   input_pad_start * audio->audio_channels);
 
+  /* map dependending on output */
+  current = source;
+
+  while(current != NULL){
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      0, audio->audio_channels, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
+
+  /*  */
   current = source;
 
   while(current != NULL){

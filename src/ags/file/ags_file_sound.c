@@ -42,6 +42,8 @@
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
+#include <ags/audio/recall/ags_buffer_channel_run.h>
+
 #define AGS_FILE_READ_PORT_LIST_PORT_RESOLVED_COUNTER "ags-file-read-port-list-port-resolved-counter\0"
 
 void ags_file_read_audio_resolve_devout(AgsFileLookup *file_lookup,
@@ -1929,18 +1931,112 @@ ags_file_read_recall_resolve_channel(AgsFileLookup *file_lookup,
 		 "source\0", source,
 		 NULL);
 
+    destination = NULL;
+    
     if(AGS_IS_INPUT(source)){
       if((AGS_AUDIO_ASYNC & (AGS_AUDIO(source->audio)->flags)) != 0){
-	destination = ags_channel_nth(AGS_AUDIO(source->audio)->output,
-				      source->audio_channel);
-      }else{
-	destination = ags_channel_nth(AGS_AUDIO(source->audio)->output,
-				      source->line);
-      }
+	if(AGS_IS_BUFFER_CHANNEL(recall)){
+	  xmlXPathContext *xpath_context; 
+	  xmlXPathObject *xpath_object;
+	  xmlChar *xpath;
+	  guint position;
+	  guint i;
 
-      g_object_set(G_OBJECT(recall),
-		   "destination\0", AGS_CHANNEL(destination),
-		   NULL);
+	  /* Create xpath evaluation context */
+	  xpath_context = xmlXPathNewContext(file_lookup->file->doc);
+
+	  if(xpath_context == NULL) {
+	    fprintf(stderr,"Error: unable to create new XPath context\n\0");
+
+	    return;
+	  }
+
+	  xpath_context->node = file_lookup->node->parent;
+
+	  /* Evaluate xpath expression */
+	  xpath = "./ags-recall[@type='AgsBufferChannel']\0";
+	  
+	  xpath_object = xmlXPathEval(xpath, xpath_context);
+
+	  if(xpath_object == NULL) {
+	    g_message("Error: unable to evaluate xpath expression \"%s\"\0", xpath);
+	    xmlXPathFreeContext(xpath_context); 
+
+	    return;
+	  }
+
+	  position = 0;
+
+	  for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+	    if(xpath_object->nodesetval->nodeTab[i] == file_lookup->node){
+	      break;
+	    }
+
+	    if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+	      position++;
+	    }
+	  }
+
+	  destination = ags_channel_nth(AGS_AUDIO(source->audio)->output,
+					position * AGS_AUDIO(source->audio)->audio_channels + source->audio_channel);
+
+	  g_object_set(G_OBJECT(recall),
+		       "destination\0", AGS_CHANNEL(destination),
+		       NULL);
+
+	  //	  g_message("dest[%d]\0", destination->line);
+	}else if(AGS_IS_BUFFER_CHANNEL_RUN(recall)){
+	  xmlXPathContext *xpath_context; 
+	  xmlXPathObject *xpath_object;
+	  xmlChar *xpath;
+	  guint position;
+	  guint i;
+
+	    /* Create xpath evaluation context */
+	  xpath_context = xmlXPathNewContext(file_lookup->file->doc);
+
+	  if(xpath_context == NULL) {
+	    fprintf(stderr,"Error: unable to create new XPath context\n\0");
+
+	    return;
+	  }
+
+	  xpath_context->node = file_lookup->node->parent;
+
+	  /* Evaluate xpath expression */
+	  xpath = "./ags-recall[@type='AgsBufferChannelRun']\0";
+	  
+	  xpath_object = xmlXPathEval(xpath, xpath_context);
+
+	  if(xpath_object == NULL) {
+	    g_message("Error: unable to evaluate xpath expression \"%s\"\0", xpath);
+	    xmlXPathFreeContext(xpath_context); 
+
+	    return;
+	  }
+
+	  position = 0;
+
+	  for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+	    if(xpath_object->nodesetval->nodeTab[i] == file_lookup->node){
+	      break;
+	    }
+
+	    if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+	      position++;
+	    }
+	  }
+
+	  destination = ags_channel_nth(AGS_AUDIO(source->audio)->output,
+					position * AGS_AUDIO(source->audio)->audio_channels + source->audio_channel);
+
+	  g_object_set(G_OBJECT(recall),
+		       "destination\0", AGS_CHANNEL(destination),
+		       NULL);
+	  
+	  //	  g_message("dest[%d]\0", destination->line);
+	}
+      }
     }
   }
 }

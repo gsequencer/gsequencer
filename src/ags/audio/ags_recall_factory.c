@@ -972,7 +972,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 	  }
       
 	  if(found_buffer){
-	    output = output->next;
+	    output = output->next_pad;
 	    continue;
 	  }
 	
@@ -1060,7 +1060,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 	  }
 	
 	  if(found_buffer){
-	    output = output->next;
+	    output = output->next_pad;
 	    continue;
 	  }
 

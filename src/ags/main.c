@@ -46,14 +46,16 @@
 #include <sys/mman.h>
 
 #include <gtk/gtk.h>
+
+#include <stdlib.h>
 #include <libintl.h>
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
 #include <sys/resource.h>
 #include <mcheck.h>
-
-#include <X11/Xlib.h>
+#include <signal.h>
+#include <time.h>
 
 #include <gdk/gdk.h>
 
@@ -73,11 +75,15 @@ void ags_colors_alloc();
 
 static void ags_signal_cleanup();
 void ags_signal_handler(int signr);
+void ags_signal_handler_timer(int sig, siginfo_t *si, void *uc);
 
 static gpointer ags_main_parent_class = NULL;
 static sigset_t ags_wait_mask;
+static sigset_t ags_timer_mask;
 
 pthread_mutex_t ags_application_mutex;
+AgsMain *ags_main;
+
 static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
 static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
 
@@ -96,6 +102,10 @@ extern GtkStyle *note_edit_style;
 extern AgsLadspaManager *ags_ladspa_manager;
 
 struct sigaction ags_sigact;
+struct sigaction ags_sigact_timer;
+
+struct sigevent ags_sev_timer;
+struct itimerspec its;
 
 GType
 ags_main_get_type()
@@ -749,6 +759,24 @@ ags_signal_handler(int signr)
   }
 }
 
+void
+ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
+{
+  pthread_mutex_lock(ags_main->main_loop->timer_mutex);
+
+  g_atomic_int_set(&(ags_main->main_loop->timer_expired),
+		   TRUE);
+  
+  if(ags_main->main_loop->timer_wait){
+    pthread_cond_signal(ags_main->main_loop->timer_cond);
+  }
+  
+  pthread_mutex_unlock(ags_main->main_loop->timer_mutex);
+
+  //  g_message("sig\0");
+  //  signal(sig, SIG_IGN);
+}
+
 static void
 ags_signal_cleanup()
 {
@@ -758,13 +786,13 @@ ags_signal_cleanup()
 int
 main(int argc, char **argv)
 {
-  AgsMain *ags_main;
   AgsDevout *devout;
   AgsWindow *window;
   AgsGuiThread *gui_thread;
   GFile *autosave_file;
   struct sched_param param;
   struct rlimit rl;
+  timer_t timerid;
   gchar *filename, *autosave_filename;
 
   struct passwd *pw;
@@ -797,6 +825,7 @@ main(int argc, char **argv)
   }
 
   /* Ignore interactive and job-control signals.  */
+  /*
   signal(SIGINT, SIG_IGN);
   signal(SIGQUIT, SIG_IGN);
   signal(SIGTSTP, SIG_IGN);
@@ -809,7 +838,7 @@ main(int argc, char **argv)
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
-
+  */
   /**/
   pthread_mutexattr_init(&attr);
   pthread_mutexattr_settype(&attr,
@@ -817,10 +846,37 @@ main(int argc, char **argv)
   pthread_mutex_init(&ags_application_mutex,
 		     &attr);
 
+  /* create timer */
+  ags_sigact_timer.sa_flags = SA_SIGINFO;
+  ags_sigact_timer.sa_sigaction = ags_signal_handler_timer;
+  sigemptyset(&ags_sigact_timer.sa_mask);
+  
+  if(sigaction(SIGRTMIN, &ags_sigact_timer, NULL) == -1){
+    perror("sigaction\0");
+    exit(EXIT_FAILURE);
+  }
+
+  /* Block timer signal temporarily */
+  sigemptyset(&ags_timer_mask);
+  sigaddset(&ags_timer_mask, SIGRTMIN);
+  
+  if(sigprocmask(SIG_SETMASK, &ags_timer_mask, NULL) == -1){
+    perror("sigprocmask\0");
+    exit(EXIT_FAILURE);
+  }
+
+  /* Create the timer */
+  ags_sev_timer.sigev_notify = SIGEV_SIGNAL;
+  ags_sev_timer.sigev_signo = SIGRTMIN;
+  ags_sev_timer.sigev_value.sival_ptr = &timerid;
+  
+  if(timer_create(CLOCK_MONOTONIC, &ags_sev_timer, &timerid) == -1){
+    perror("timer_create\0");
+    exit(EXIT_FAILURE);
+  }
+
   /**/
   LIBXML_TEST_VERSION;
-
-  XInitThreads();
 
   g_thread_init(NULL);
   gdk_threads_init();
@@ -897,6 +953,23 @@ main(int argc, char **argv)
     /* complete thread pool */
     ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
     ags_thread_pool_start(ags_main->thread_pool);
+
+    /* Start the timer */
+    its.it_value.tv_sec = 0;
+    its.it_value.tv_nsec = NSEC_PER_SEC / 1000;
+    its.it_interval.tv_sec = its.it_value.tv_sec;
+    its.it_interval.tv_nsec = its.it_value.tv_nsec;
+
+    if(timer_settime(timerid, 0, &its, NULL) == -1){
+      perror("timer_settime\0");
+      exit(EXIT_FAILURE);
+    
+    }
+    
+    if(sigprocmask(SIG_UNBLOCK, &ags_timer_mask, NULL) == -1){
+      perror("sigprocmask\0");
+      exit(EXIT_FAILURE);
+    }
 
 #ifdef _USE_PTH
     pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
@@ -1006,6 +1079,23 @@ main(int argc, char **argv)
       ags_thread_start((AgsThread *) single_thread);
     }
 
+    /* Start the timer */
+    its.it_value.tv_sec = 0;
+    its.it_value.tv_nsec = NSEC_PER_SEC / 1000; // / AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
+    its.it_interval.tv_sec = its.it_value.tv_sec;
+    its.it_interval.tv_nsec = its.it_value.tv_nsec;
+
+    if(timer_settime(timerid, 0, &its, NULL) == -1){
+      perror("timer_settime\0");
+      exit(EXIT_FAILURE);
+    
+    }
+    
+    if(sigprocmask(SIG_UNBLOCK, &ags_timer_mask, NULL) == -1){
+      perror("sigprocmask\0");
+      exit(EXIT_FAILURE);
+    }
+    
     if(!single_thread){
       /* join gui thread */
 #ifdef _USE_PTH
