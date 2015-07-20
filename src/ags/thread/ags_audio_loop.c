@@ -647,10 +647,12 @@ ags_audio_loop_run(AgsThread *thread)
 
     thread->rt_setup = TRUE;
   }
+
   
+  //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
   audio_loop = AGS_AUDIO_LOOP(thread);
 
-  //  pthread_mutex_lock(audio_loop->recall_mutex);
+  pthread_mutex_lock(audio_loop->recall_mutex);
 
   /* play recall */
   if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) != 0){
@@ -678,6 +680,8 @@ ags_audio_loop_run(AgsThread *thread)
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO);
     }
   }
+  
+  pthread_mutex_unlock(audio_loop->recall_mutex);
 
   /* decide if we stop */
   if(audio_loop->play_recall_ref == 0 &&
@@ -692,8 +696,6 @@ ags_audio_loop_run(AgsThread *thread)
       }
     }
   }
-
-  //  pthread_mutex_unlock(audio_loop->recall_mutex);
 
   /* wait for task thread */
   pthread_mutex_lock(audio_loop->task_thread->start_mutex);
@@ -710,7 +712,7 @@ ags_audio_loop_run(AgsThread *thread)
   }
 
   pthread_mutex_unlock(audio_loop->task_thread->start_mutex);
-  
+
   /* wait for gui thread */
   pthread_mutex_lock(audio_loop->gui_thread->start_mutex);
 
@@ -941,17 +943,20 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 	for(stage = 0; stage < 3; stage++){
 
 
-	  if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(play->flags)))) != 0){
+	  if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(play->flags)))) != 0 &&
+	     play->recall_id[0] != NULL){
 	    remove_play = FALSE;
 	    ags_channel_recursive_play(channel, play->recall_id[0], stage);
 	  }
 
-	  if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(play->flags)))) != 0){
+	  if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(play->flags)))) != 0 &&
+	     play->recall_id[1] != NULL){
 	    remove_play = FALSE;
 	    ags_channel_recursive_play(channel, play->recall_id[1], stage);
 	  }
 
-	  if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(play->flags)))) != 0){
+	  if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(play->flags)))) != 0 &&
+	     play->recall_id[2] != NULL){
 	    remove_play = FALSE;
 	    ags_channel_recursive_play(channel, play->recall_id[2], stage);
 	  }
@@ -1181,25 +1186,33 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	  gboolean remove_domain;
 
 	  /* not super threaded */
-	  pthread_mutex_lock(audio_mutex);
-	  pthread_mutex_lock(devout_mutex);    
+	  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+						  (GObject *) audio->devout);
+	  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) audio);
+	  
+	  //	  pthread_mutex_lock(audio_mutex);
+	  //	  pthread_mutex_lock(devout_mutex);    
 
 	  remove_domain = TRUE;
 	
 	  /* run the 3 stages */
 	  for(stage = 0; stage < 3; stage++){
 	    if((AGS_DEVOUT_PLAY_REMOVE & (g_atomic_int_get(&(play->flags)))) == 0){
-	      if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(play->flags)))) != 0){
+	      if((AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(play->flags)))) != 0 &&
+		 play->recall_id[0] != NULL){
 		remove_domain = FALSE;
 		ags_channel_recursive_play(output, play->recall_id[0], stage);
 	      }
 
-	      if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(play->flags)))) != 0){
+	      if((AGS_DEVOUT_PLAY_SEQUENCER & (g_atomic_int_get(&(play->flags)))) != 0 &&
+		 play->recall_id[1] != NULL){
 		remove_domain = FALSE;
 		ags_channel_recursive_play(output, play->recall_id[1], stage);
 	      }
 
-	      if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(play->flags)))) != 0){
+	      if((AGS_DEVOUT_PLAY_NOTATION & (g_atomic_int_get(&(play->flags)))) != 0 &&
+		 play->recall_id[2] != NULL){
 		remove_domain = FALSE;
 		ags_channel_recursive_play(output, play->recall_id[2], stage);
 	      }
@@ -1210,9 +1223,8 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	  if(remove_domain){
 	    AgsChannel *channel;
 
-	    audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
-	    audio_loop->play_audio = g_list_remove(audio_loop->play_audio, (gpointer) play_domain);
-
+	    ags_audio_loop_remove_audio(audio_loop,
+					audio);
 	    channel = audio->output;
 	
 	    while(channel != NULL){
@@ -1231,8 +1243,8 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	    }
 	  }
 		  
-	  pthread_mutex_unlock(devout_mutex);
-	  pthread_mutex_unlock(audio_mutex);
+	  //	  pthread_mutex_unlock(devout_mutex);
+	  //	  pthread_mutex_unlock(audio_mutex);
 	}
 
 	output = output->next;

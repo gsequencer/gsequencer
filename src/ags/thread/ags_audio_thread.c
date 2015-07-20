@@ -313,6 +313,8 @@ ags_audio_thread_run(AgsThread *thread)
 
     thread->rt_setup = TRUE;
   }
+
+  //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
   
   audio_thread = AGS_AUDIO_THREAD(thread);
   audio = audio_thread->audio;

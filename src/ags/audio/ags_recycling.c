@@ -24,6 +24,8 @@
 #include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -78,10 +80,7 @@ enum{
 static gpointer ags_recycling_parent_class = NULL;
 static guint recycling_signals[LAST_SIGNAL];
 
-//extern void ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels,
-//						   signed short *source, guint schannels, guint size)
-//  __attribute__ ((hot))
-//  __attribute__ ((fastcall));
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_recycling_get_type (void)
@@ -219,6 +218,30 @@ ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_recycling_init(AgsRecycling *recycling)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) recycling,
+			   mutex);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
   recycling->flags = 0;
 
   recycling->devout = NULL;
@@ -316,10 +339,22 @@ ags_recycling_disconnect(AgsConnectable *connectable)
 void
 ags_recycling_finalize(GObject *gobject)
 {
-  AgsRecycling *recycling;
+  AgsRecycling *recycling;  
+
+  AgsMutexManager *mutex_manager;
+  
   GList *list, *list_next;
 
-  g_warning("ags_recycling_finalize\0");
+  //  g_warning("ags_recycling_finalize\0");
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
 
   recycling = AGS_RECYCLING(gobject);
 

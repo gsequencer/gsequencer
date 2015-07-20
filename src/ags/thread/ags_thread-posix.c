@@ -23,9 +23,13 @@
 
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_export_thread.h>
+#include <ags/thread/ags_devout_thread.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
 #include <ags/thread/ags_audio_thread.h>
+#include <ags/thread/ags_channel_thread.h>
 
 #include <ags/audio/ags_devout.h>
 
@@ -2023,21 +2027,6 @@ ags_thread_loop(void *ptr)
 
   running = g_atomic_int_get(&(thread->flags));
 
-  /*  */
-  if(thread->freq >= 1.0){
-    delay = AGS_THREAD_MAX_PRECISION / thread->freq;
-
-    i_stop = 1;
-  }else{
-    if(AGS_THREAD_MAX_PRECISION > thread->freq){
-      delay = 1.0 / thread->freq * AGS_THREAD_MAX_PRECISION;
-
-      i_stop = 1;
-    }else{
-      i_stop = floor(thread->freq / AGS_THREAD_MAX_PRECISION);
-    }
-  }
-
   counter = 0;
   
   /*  */
@@ -2048,8 +2037,29 @@ ags_thread_loop(void *ptr)
 #endif
   
   while((AGS_THREAD_RUNNING & running) != 0){
+    /* adjust frequency */
+    if(AGS_IS_AUDIO_LOOP(thread) ||
+       AGS_IS_DEVOUT_THREAD(thread) ||
+       AGS_IS_EXPORT_THREAD(thread) ||
+       AGS_IS_AUDIO_THREAD(thread) ||
+       AGS_IS_CHANNEL_THREAD(thread)){
+      thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
+    }
+
+    if(thread->freq >= 1.0){
+      delay = AGS_THREAD_MAX_PRECISION / thread->freq / (1000.0 / AGS_THREAD_MAX_PRECISION);
+
+      i_stop = 1;
+    }else{
+      delay = AGS_THREAD_MAX_PRECISION / thread->freq / (1000.0 / AGS_THREAD_MAX_PRECISION);
+      
+      i_stop = 1;
+    }
+
+    /* if still running */    
     running = g_atomic_int_get(&(thread->flags));
 
+    /* idle */
     if(thread->parent == NULL){
 #ifdef AGS_USE_TIMER
       pthread_mutex_lock(thread->timer_mutex);

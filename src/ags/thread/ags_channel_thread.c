@@ -306,7 +306,9 @@ ags_channel_thread_run(AgsThread *thread)
 
     thread->rt_setup = TRUE;
   }
-  
+
+  //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
+
   channel_thread = AGS_CHANNEL_THREAD(thread);
   channel = channel_thread->channel;
   devout_play = channel->devout_play;

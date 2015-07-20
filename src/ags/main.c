@@ -717,6 +717,9 @@ ags_main_register_thread_type()
   ags_audio_loop_get_type();
   ags_task_thread_get_type();
   ags_devout_thread_get_type();
+  ags_export_thread_get_type();
+  ags_audio_thread_get_type();
+  ags_channel_thread_get_type();
   ags_iterator_thread_get_type();
   ags_recycling_thread_get_type();
   ags_timestamp_thread_get_type();
@@ -955,13 +958,13 @@ main(int argc, char **argv)
     ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
     ags_thread_pool_start(ags_main->thread_pool);
 
+#ifdef AGS_USE_TIMER
     /* Start the timer */
     its.it_value.tv_sec = 0;
-    its.it_value.tv_nsec = NSEC_PER_SEC / 1000;
+    its.it_value.tv_nsec = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
     its.it_interval.tv_sec = its.it_value.tv_sec;
     its.it_interval.tv_nsec = its.it_value.tv_nsec;
 
-#ifdef AGS_USE_TIMER
     if(timer_settime(timerid, 0, &its, NULL) == -1){
       perror("timer_settime\0");
       exit(EXIT_FAILURE);
@@ -1082,13 +1085,13 @@ main(int argc, char **argv)
       ags_thread_start((AgsThread *) single_thread);
     }
 
+#ifdef AGS_USE_TIMER
     /* Start the timer */
     its.it_value.tv_sec = 0;
     its.it_value.tv_nsec = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION; // / AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
     its.it_interval.tv_sec = its.it_value.tv_sec;
     its.it_interval.tv_nsec = its.it_value.tv_nsec;
 
-#ifdef AGS_USE_TIMER
     if(timer_settime(timerid, 0, &its, NULL) == -1){
       perror("timer_settime\0");
       exit(EXIT_FAILURE);

@@ -263,6 +263,8 @@ ags_export_thread_run(AgsThread *thread)
   signed short *devout_buffer;
   guint buffer_length;
 
+  //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
+
   export_thread = AGS_EXPORT_THREAD(thread);
 
   if(export_thread->counter == export_thread->tic){
