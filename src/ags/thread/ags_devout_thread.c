@@ -241,6 +241,8 @@ ags_devout_thread_run(AgsThread *thread)
   long delay;
   GError *error;
 
+  //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
+
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
   devout = AGS_DEVOUT(thread->devout);

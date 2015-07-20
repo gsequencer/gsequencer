@@ -1,7 +1,14 @@
+ags (0.5.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* enhanced thread-safety
+	* fixed ags.conf per file base
+	* reducing thread-cycles per second in order to target performance problems
+
 ags (0.5.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO implement ags.conf per file base
+	* implemented ags.conf per file base
 
 ags (0.5.3)
 

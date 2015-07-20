@@ -317,8 +317,10 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   AgsBufferChannel *buffer_channel;
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
+  
   GList *stream_source, *stream_destination;
   gboolean muted;
+
   GValue value = {0,};
 
   /* call parent */

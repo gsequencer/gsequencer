@@ -22,6 +22,8 @@
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recycling.h>
@@ -65,6 +67,8 @@ AgsRecall* ags_play_audio_signal_duplicate(AgsRecall *recall,
 static gpointer ags_play_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_play_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_play_audio_signal_parent_dynamic_connectable_interface;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_play_audio_signal_get_type()
@@ -218,11 +222,18 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   AgsRecallChannelRun *play_channel_run;
   AgsPlayChannel *play_channel;
   AgsPlayAudioSignal *play_audio_signal;
+  
+  AgsMutexManager *mutex_manager;
+
   GList *stream;
   signed short *buffer0, *buffer1;
   guint audio_channel;
   guint buffer_size;
   gboolean muted;
+
+  pthread_mutex_t *devout_mutex;
+  pthread_mutex_t *recycling_mutex;
+  
   GValue muted_value = {0,};
   GValue audio_channel_value = {0,};
 
@@ -237,7 +248,19 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(devout_mutex);
+
   if(stream == NULL){
+    pthread_mutex_unlock(devout_mutex);
     ags_recall_done(recall);
 
     return;
@@ -276,6 +299,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     muted = g_value_get_boolean(&muted_value);
 
     if(muted){
+      pthread_mutex_unlock(devout_mutex);
       return;
     }
 
@@ -300,6 +324,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 					   buffer_size);
   }
 
+  pthread_mutex_unlock(devout_mutex);
+  
   /* call parent */
   AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_inter(recall);
 }

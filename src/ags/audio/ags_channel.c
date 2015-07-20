@@ -3073,10 +3073,31 @@ ags_channel_recursive_play(AgsChannel *channel,
 
   /* entry point */
   if(AGS_IS_OUTPUT(channel)){
+    AgsMutexManager *mutex_manager;
+    
+    pthread_mutex_t *recycling_mutex;
+
     ags_channel_recursive_play_down(channel,
 				    recall_id);
+
+    /* lock recycling */
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel->first_recycling);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+      
+    pthread_mutex_lock(recycling_mutex);
+
+    /*  */
     ags_channel_recursive_play_up(channel->link,
 				  recall_id);
+
+    /*  */
+    pthread_mutex_lock(recycling_mutex);
   }else{
     AgsAudio *audio;
     AgsRecallID *audio_recall_id, *default_recall_id;
@@ -3084,6 +3105,7 @@ ags_channel_recursive_play(AgsChannel *channel,
     AgsMutexManager *mutex_manager;
     
     pthread_mutex_t *mutex;
+    pthread_mutex_t *recycling_mutex;
 
     audio = (AgsAudio *) channel->audio;
 
@@ -3118,8 +3140,24 @@ ags_channel_recursive_play(AgsChannel *channel,
 				      default_recall_id);
     }
 
+    /* lock recycling */
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel->first_recycling);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+      
+    pthread_mutex_lock(recycling_mutex);
+
+    /*  */
     ags_channel_recursive_play_up(channel,
 				  recall_id);
+
+    /*  */
+    pthread_mutex_lock(recycling_mutex);
   }
 }
 

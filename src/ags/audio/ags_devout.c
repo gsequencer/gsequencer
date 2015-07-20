@@ -723,7 +723,7 @@ ags_devout_set_property(GObject *gobject,
       devout->attack = (guint *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
 					sizeof(guint));
   
-      delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm);
+      delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm) * devout->delay_factor;
       default_tact_frames = (guint) (delay * devout->buffer_size);
       default_period = (1.0 / AGS_DEVOUT_DEFAULT_PERIOD) * (default_tact_frames);
 
