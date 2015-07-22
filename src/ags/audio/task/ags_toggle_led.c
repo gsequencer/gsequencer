@@ -165,6 +165,8 @@ ags_toggle_led_launch(AgsTask *task)
   }
 
   ags_led_set_active(AGS_LED(active->data));
+
+  g_list_free(toggle_led->led);
 }
 
 /**

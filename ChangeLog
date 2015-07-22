@@ -1,14 +1,25 @@
+ags (0.5.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory leaks related to GValue in recalls
+	* fixed memory leaks in ags_display_tact_launch() as well for ags_toggle_led_launch() and in some GUI callbacks of them
+	* fixed memory leak AgsReturnableThread to clean disconnect handler
+	* fixed thread frequencies and delays
+	* implemented code alter macro AGS_USE_TIMER
+
 ags (0.5.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* enhanced thread-safety
 	* fixed ags.conf per file base
 	* reducing thread-cycles per second in order to target performance problems
+	* fixed allocation of ags-buffer
 
 ags (0.5.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags.conf per file base
+	* cleaned-up recalls allocation
 
 ags (0.5.3)
 

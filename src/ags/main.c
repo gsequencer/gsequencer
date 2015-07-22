@@ -29,6 +29,8 @@
 #include <ags/file/ags_file.h>
 
 #include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_audio_thread.h>
+#include <ags/thread/ags_channel_thread.h>
 #include <ags/thread/ags_gui_thread.h>
 #include <ags/thread/ags_autosave_thread.h>
 #include <ags/thread/ags_single_thread.h>
@@ -168,6 +170,7 @@ void
 ags_main_init(AgsMain *ags_main)
 {
   GFile *file;
+  FILE *log_file;
   struct sigaction sa;
   struct passwd *pw;
   uid_t uid;
@@ -191,8 +194,9 @@ ags_main_init(AgsMain *ags_main)
   ags_main->version = AGS_VERSION;
   ags_main->build_id = AGS_BUILD_ID;
 
+  log_file = fopen("/dev/stdout\0", "a\0");
   ags_main->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
-					  "file\0", stdout,
+					  "file\0", log_file,
 					  NULL);
   ags_colors_alloc();
 

@@ -41,6 +41,8 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <fontconfig/fontconfig.h>
+
 void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
 void ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop);
@@ -728,6 +730,11 @@ ags_audio_loop_run(AgsThread *thread)
   }
 
   pthread_mutex_unlock(audio_loop->gui_thread->start_mutex);
+
+  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  pango_cairo_font_map_set_default(NULL);
+  //  cairo_debug_reset_static_data();
+  //  FcFini();
 }
 
 /**

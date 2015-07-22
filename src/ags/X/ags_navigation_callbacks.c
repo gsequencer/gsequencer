@@ -470,7 +470,6 @@ ags_navigation_tic_callback(AgsDevout *devout,
   AgsTaskThread *task_thread;
   AgsChangeTact *change_tact;
   AgsDisplayTact *display_tact;
-  GList *list;
 
   if((AGS_NAVIGATION_BLOCK_TIC & (navigation->flags)) != 0){
     navigation->flags &= (~AGS_NAVIGATION_BLOCK_TIC);
@@ -482,20 +481,9 @@ ags_navigation_tic_callback(AgsDevout *devout,
   if(window->devout->delay_counter == 0.0){
     task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread;
 
-    list = NULL;
-
-    //  change_tact = ags_change_tact_new(navigation);
-    //  list = g_list_prepend(list,
-    //			change_tact);
-
     display_tact = ags_display_tact_new((GtkWidget *) navigation);
-    list = g_list_prepend(list,
-			  display_tact);
-
-    list = g_list_reverse(list);
-
-    ags_task_thread_append_tasks(task_thread,
-				 list);
+    ags_task_thread_append_task(task_thread,
+				display_tact);
   }
 }
 

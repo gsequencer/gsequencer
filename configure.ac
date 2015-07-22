@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.5.5],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.5.6],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -65,6 +65,10 @@ AC_SUBST(LIBINSTPATCH_LIBS)
 PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
+
+PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.11.0])
+AC_SUBST(FONTCONFIG_CFLAGS)
+AC_SUBST(FONTCONFIG_LIBS)
 
 PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.26.1])
 AC_SUBST(GDKPIXBUF_CFLAGS)

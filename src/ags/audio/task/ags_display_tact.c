@@ -166,6 +166,7 @@ ags_display_tact_launch(AgsTask *task)
 							window->devout->delay_factor);
   
   gtk_label_set_label(navigation->duration_time, timestr);
+  g_free(timestr);
 }
 
 /**

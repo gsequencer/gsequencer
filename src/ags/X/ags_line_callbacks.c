@@ -165,7 +165,14 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   AgsTaskThread *task_thread;
   AgsChangeIndicator *change_indicator;
   AgsMachine *machine;
+  GtkWidget *child;
+  AgsPort *port;
+
   GList *list, *list_start;
+
+  gdouble peak;
+
+  GValue value = {0,};
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
@@ -177,12 +184,8 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data) &&
        AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
-      GtkWidget *child;
-      AgsPort *port;
-      gdouble peak;
-      GValue value = {0,};
 
-      child = gtk_bin_get_child(GTK_BIN(list->data));
+      child = GTK_BIN(list->data)->child;
 
       port = AGS_PEAK_CHANNEL(AGS_RECALL_CHANNEL_RUN(peak_channel_run)->recall_channel)->peak;
 	
@@ -191,7 +194,8 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 			 &value);
 
       peak = g_value_get_double(&value);
-
+      g_value_unset(&value);
+      
       //      if(peak_channel_run->recall_id->recycling_container->parent == NULL)
 	//	g_message("%f\0", peak);
       
