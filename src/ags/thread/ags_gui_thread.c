@@ -27,6 +27,7 @@
 
 #include <ags/thread/ags_task_completion.h>
 
+#include <fontconfig/fontconfig.h>
 #include <math.h>
 
 void ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread);
@@ -283,6 +284,9 @@ ags_gui_thread_run(AgsThread *thread)
   ags_gui_thread_complete_task();  
 
   pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  pango_cairo_font_map_set_default(NULL);
+  //  cairo_debug_reset_static_data();
+  //  FcFini();
 }
 
 void

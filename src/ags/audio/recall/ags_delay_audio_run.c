@@ -476,7 +476,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   ags_port_safe_read(delay_audio->sequencer_delay, &value);
 
   sequencer_delay = g_value_get_double(&value);
-
+  g_value_unset(&value);
+  
   if(delay_audio_run->notation_counter + 1 >= (guint) notation_delay){
     delay_audio_run->notation_counter = 0;
   }else{

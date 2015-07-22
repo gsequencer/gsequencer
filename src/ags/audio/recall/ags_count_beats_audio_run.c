@@ -1140,7 +1140,8 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
   ags_port_safe_read(count_beats_audio->notation_loop, &value);
 
   loop = g_value_get_boolean(&value);
-
+  g_value_unset(&value);
+  
   if(count_beats_audio_run->first_run){
     //    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
     ags_count_beats_audio_run_notation_start(count_beats_audio_run,
@@ -1186,7 +1187,8 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
   ags_port_safe_read(count_beats_audio->sequencer_loop_end, &value);
 
   loop_end = g_value_get_double(&value);
-
+  g_value_unset(&value);
+  
   if(count_beats_audio_run->first_run){
     //    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
     ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
@@ -1239,7 +1241,8 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   ags_port_safe_read(count_beats_audio->notation_loop_end, &loop_end_value);
 
   loop_end = g_value_get_double(&loop_end_value);
-
+  g_value_unset(&value);
+  
   if(loop){
     if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
       count_beats_audio_run->notation_counter = 0;
@@ -1283,7 +1286,8 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_value);
 
   loop_end = g_value_get_double(&loop_end_value);
-
+  g_value_unset(&value);
+  
   //    g_message("sequencer: tic\0");
   if(count_beats_audio_run->first_run){
     count_beats_audio_run->first_run = FALSE;
@@ -1414,7 +1418,6 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
   AgsCountBeatsAudio *count_beats_audio;
   GValue loop_sequencer = {0,};
   GValue loop_end_sequencer = {0,};
-  GValue loop_notation = {0,};
 
   count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
 
@@ -1423,22 +1426,23 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
 	       G_TYPE_BOOLEAN);
   ags_port_safe_read(count_beats_audio->sequencer_loop,
 		     &loop_sequencer);
-
-  g_value_init(&loop_notation,
-	       G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->notation_loop,
-		     &loop_notation);
-
-  g_value_init(&loop_end_sequencer, G_TYPE_DOUBLE);
-  ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_sequencer);
-    
+  
   if((AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
     if(g_value_get_boolean(&loop_sequencer)){
+      g_value_unset(&loop_sequencer);
       return;
+    }else{
+      g_value_unset(&loop_sequencer);
     }
 
+    g_value_init(&loop_end_sequencer, G_TYPE_DOUBLE);
+    ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_sequencer);
+  
     if(count_beats_audio_run->sequencer_counter < (guint) g_value_get_double(&loop_end_sequencer) - 1.0){
+      g_value_unset(&loop_end_sequencer);
       return;
+    }else{
+      g_value_unset(&loop_end_sequencer);
     }
   
     /* you're done */

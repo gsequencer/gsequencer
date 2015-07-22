@@ -32,6 +32,7 @@
 
 #include <ags/audio/ags_config.h>
 
+#include <fontconfig/fontconfig.h>
 #include <math.h>
 
 void ags_task_thread_class_init(AgsTaskThreadClass *task_thread);
@@ -310,6 +311,11 @@ ags_task_thread_run(AgsThread *thread)
 		       NULL);
 
   pthread_mutex_unlock(task_thread->read_mutex);
+
+  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  pango_cairo_font_map_set_default(NULL);
+  //  cairo_debug_reset_static_data();
+  //  FcFini();
 }
 
 void

@@ -84,8 +84,9 @@ ags_log_get_type (void)
     };
 
     ags_type_log = g_type_register_static(G_TYPE_OBJECT,
-					    "AgsLog\0", &ags_log_info,
-					    0);
+					  "AgsLog\0",
+					  &ags_log_info,
+					  0);
   }
 
   return(ags_type_log);

@@ -503,11 +503,12 @@ ags_drum_tact_callback(AgsAudio *audio,
 
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
+
   AgsToggleLed *toggle_led;
 
   AgsMutexManager *mutex_manager;
 
-  GList *list, *tmp;
+  GList *list;
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
 
@@ -557,14 +558,14 @@ ags_drum_tact_callback(AgsAudio *audio,
     g_value_init(&value, G_TYPE_DOUBLE);
     ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
 		       &value);
-
+    
     active_led_old = (guint) (g_value_get_double(&value) - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
+    g_value_unset(&value);
   }else{
     active_led_old = (guint) (drum->active_led - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
   }
 
-  tmp = gtk_container_get_children(GTK_CONTAINER(drum->led));
-  toggle_led = ags_toggle_led_new(tmp,
+  toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(drum->led)),
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 

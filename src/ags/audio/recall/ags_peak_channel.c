@@ -347,7 +347,9 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   
   /* initialize buffer */
   buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
-  for(i = 0; i < buffer_size; i++) buffer[i] = 0;
+  memset(buffer,
+	 0,
+	 buffer_size * sizeof(signed short));
 
   while(recycling != source->last_recycling->next){
     audio_signal = recycling->audio_signal;

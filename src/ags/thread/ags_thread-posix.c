@@ -28,8 +28,6 @@
 #include <ags/thread/ags_devout_thread.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
-#include <ags/thread/ags_audio_thread.h>
-#include <ags/thread/ags_channel_thread.h>
 
 #include <ags/audio/ags_devout.h>
 
@@ -2037,15 +2035,6 @@ ags_thread_loop(void *ptr)
 #endif
   
   while((AGS_THREAD_RUNNING & running) != 0){
-    /* adjust frequency */
-    if(AGS_IS_AUDIO_LOOP(thread) ||
-       AGS_IS_DEVOUT_THREAD(thread) ||
-       AGS_IS_EXPORT_THREAD(thread) ||
-       AGS_IS_AUDIO_THREAD(thread) ||
-       AGS_IS_CHANNEL_THREAD(thread)){
-      thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
-    }
-
     if(thread->freq >= 1.0){
       delay = AGS_THREAD_MAX_PRECISION / thread->freq / (1000.0 / AGS_THREAD_MAX_PRECISION);
 
@@ -2088,7 +2077,7 @@ ags_thread_loop(void *ptr)
       clock_gettime(CLOCK_MONOTONIC, &time_now);
 
       if(time_now.tv_sec > time_prev.tv_sec){
-	time_spent = (time_now.tv_nsec + (NSEC_PER_SEC - time_prev.tv_nsec));
+	time_spent = (time_now.tv_nsec); // + (NSEC_PER_SEC - time_prev.tv_nsec)
       }else{
 	time_spent = time_now.tv_nsec - time_prev.tv_nsec;
       }

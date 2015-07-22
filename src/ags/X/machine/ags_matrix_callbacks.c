@@ -311,6 +311,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
 		       &value);
 
     active_led_old = g_value_get_double(&value) - 1.0;
+    g_value_unset(&value);
   }else{
     active_led_old = (gdouble) matrix->active_led - 1.0;
   }
