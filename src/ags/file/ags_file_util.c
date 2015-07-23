@@ -1135,6 +1135,10 @@ ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
     audio_signal = g_list_nth(audio_file->audio_signal,
 			      input->audio_channel);
 
+    if(audio_signal == NULL){
+      return;
+    }
+    
     AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 
     if(input->link != NULL){
@@ -1214,6 +1218,11 @@ ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
 	ags_audio_file_read_audio_signal(audio_file);
 
 	audio_signal = audio_file->audio_signal;
+
+	if(audio_signal == NULL){
+	  return;
+	}
+    
 	ags_recycling_add_audio_signal(input->first_recycling,
 				       AGS_AUDIO_SIGNAL(audio_signal->data));
       }
