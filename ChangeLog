@@ -1,3 +1,9 @@
+ags (0.5.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash during unavailable audio file
+	* fixed buffer size preference for thread frequencies
+
 ags (0.5.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -19,7 +19,6 @@
 #include <ags/main.h>
 
 #include <ags-lib/object/ags_connectable.h>
-
 #include <ags/lib/ags_log.h>
 
 #include <ags/object/ags_main_loop.h>
@@ -35,15 +34,7 @@
 #include <ags/thread/ags_autosave_thread.h>
 #include <ags/thread/ags_single_thread.h>
 
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recycling.h>
-
-#include <ags/X/machine/ags_matrix.h>
-#include <ags/X/machine/ags_synth.h>
-
-#include <ags/audio/ags_synths.h>
+#include <ags/audio/ags_config.h>
 
 #include <sys/mman.h>
 

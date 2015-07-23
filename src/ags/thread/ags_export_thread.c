@@ -21,6 +21,7 @@
 
 #include <ags-lib/object/ags_connectable.h>
 
+#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 
 void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
@@ -59,6 +60,7 @@ enum{
 
 static gpointer ags_export_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_export_thread_parent_connectable_interface;
+extern AgsConfig *config;
 
 GType
 ags_export_thread_get_type()
@@ -146,8 +148,35 @@ ags_export_thread_init(AgsExportThread *export_thread)
 {
   AgsThread *thread;
 
-  thread = AGS_THREAD(export_thread);
-  thread->freq = AGS_EXPORT_THREAD_DEFAULT_JIFFIE;
+  gchar *str0, *str1;
+  
+  thread = (AgsThread *) export_thread;
+
+  str0 = ags_config_get(config,
+			AGS_CONFIG_DEVOUT,
+			"samplerate\0");
+  str0 = ags_config_get(config,
+			AGS_CONFIG_DEVOUT,
+			"buffer_size\0");
+
+  if(str0 == NULL || str1 == NULL){
+    thread->freq = AGS_EXPORT_THREAD_DEFAULT_JIFFIE;
+  }else{
+    guint samplerate;
+    guint buffer_size;
+
+    samplerate = g_ascii_strtoull(str0,
+				  NULL,
+				  10);
+    buffer_size = g_ascii_strtoull(str0,
+				   NULL,
+				   10);
+
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + 1.0;
+  }
+
+  g_free(str0);
+  g_free(str1);
 
   export_thread->flags = 0;
 

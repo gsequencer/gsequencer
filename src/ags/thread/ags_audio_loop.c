@@ -32,6 +32,7 @@
 #include <ags/thread/ags_audio_thread.h>
 #include <ags/thread/ags_channel_thread.h>
 
+#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -102,6 +103,7 @@ static gpointer ags_audio_loop_parent_class = NULL;
 static AgsConnectableInterface *ags_audio_loop_parent_connectable_interface;
 
 extern pthread_mutex_t ags_application_mutex;
+extern AgsConfig *config;
 
 GType
 ags_audio_loop_get_type()
@@ -315,12 +317,38 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   AgsThread *thread;
   AgsGuiThread *gui_thread;
 
+  gchar *str0, *str1;
+  
   thread = (AgsThread *) audio_loop;
 
   //  thread->flags |= AGS_THREAD_WAIT_FOR_CHILDREN;
 
-  thread->freq = AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
+  str0 = ags_config_get(config,
+			AGS_CONFIG_DEVOUT,
+			"samplerate\0");
+  str0 = ags_config_get(config,
+			AGS_CONFIG_DEVOUT,
+			"buffer_size\0");
 
+  if(str0 == NULL || str1 == NULL){
+    thread->freq = AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
+  }else{
+    guint samplerate;
+    guint buffer_size;
+
+    samplerate = g_ascii_strtoull(str0,
+				  NULL,
+				  10);
+    buffer_size = g_ascii_strtoull(str0,
+				   NULL,
+				   10);
+
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + 1.0;
+  }
+
+  g_free(str0);
+  g_free(str1);
+  
   audio_loop->flags = 0;
 
   g_atomic_int_set(&(audio_loop->tic), 0);

@@ -25,9 +25,8 @@
 
 #include <ags/thread/ags_timestamp_thread.h>
 
-#include <ags/audio/ags_devout.h>
-
 #include <ags/audio/ags_config.h>
+#include <ags/audio/ags_devout.h>
 
 void ags_devout_thread_class_init(AgsDevoutThreadClass *devout_thread);
 void ags_devout_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -39,8 +38,6 @@ void ags_devout_thread_finalize(GObject *gobject);
 void ags_devout_thread_start(AgsThread *thread);
 void ags_devout_thread_run(AgsThread *thread);
 void ags_devout_thread_stop(AgsThread *thread);
-
-extern AgsConfig *config;
 
 /**
  * SECTION:ags_devout_thread
@@ -54,6 +51,8 @@ extern AgsConfig *config;
 
 static gpointer ags_devout_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_devout_thread_parent_connectable_interface;
+
+extern AgsConfig *config;
 
 GType
 ags_devout_thread_get_type()
@@ -126,29 +125,37 @@ void
 ags_devout_thread_init(AgsDevoutThread *devout_thread)
 {
   AgsThread *thread;
-  guint buffer_size;
-  guint samplerate;
-  gchar *str;
-  
-  thread = AGS_THREAD(devout_thread);
 
-  str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
-		       "buffer-size");
-  buffer_size = g_ascii_strtoull(str,
-				 NULL,
-				 10);
-  free(str);
-
-  str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
-		       "samplerate");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
+  gchar *str0, *str1;
   
-  thread->freq = AGS_DEVOUT_THREAD_DEFAULT_JIFFIE;
+  thread = (AgsThread *) devout_thread;
+
+  str0 = ags_config_get(config,
+			AGS_CONFIG_DEVOUT,
+			"samplerate\0");
+  str0 = ags_config_get(config,
+			AGS_CONFIG_DEVOUT,
+			"buffer_size\0");
+
+  if(str0 == NULL || str1 == NULL){
+    thread->freq = AGS_DEVOUT_THREAD_DEFAULT_JIFFIE;
+  }else{
+    guint samplerate;
+    guint buffer_size;
+
+    samplerate = g_ascii_strtoull(str0,
+				  NULL,
+				  10);
+    buffer_size = g_ascii_strtoull(str0,
+				   NULL,
+				   10);
+
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + 1.0;
+  }
+
+  g_free(str0);
+  g_free(str1);
+  
   devout_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
   ags_thread_add_child(thread, devout_thread->timestamp_thread);
 
