@@ -154,7 +154,7 @@ ags_notebook_tab_index(AgsNotebook *notebook,
 
   list = notebook->tabs;
 
-  for(i = 0; list != NULL; i++){
+  for(i = g_list_length(notebook->tabs) - 1; list != NULL; i--){
     if(AGS_NOTEBOOK_TAB(list->data)->notation == notation){
       return(i);
     }
@@ -192,21 +192,27 @@ gint
 ags_notebook_next_active_tab(AgsNotebook *notebook,
 			     gint position)
 {
-  GList *list;
-  gint length;
+  GList *list, *list_start;
   gint i;
 
-  list = notebook->tabs;
-  length = g_list_length(notebook->tabs);
+  list_start = g_list_copy(notebook->tabs);
+  list_start = 
+    list = g_list_reverse(list_start);
 
-  for(i = 0; i < length - position && list != NULL; i++){
+  list = g_list_nth(list,
+		    position);
+
+  for(i = 0; list != NULL; i++){
     if(gtk_toggle_button_get_active(AGS_NOTEBOOK_TAB(list->data)->toggle)){
+      g_list_free(list_start);
       return(position + i);
     }
 
     list = list->next;
   }
 
+  g_list_free(list_start);
+  
   return(-1);
 }
 

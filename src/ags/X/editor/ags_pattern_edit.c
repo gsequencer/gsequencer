@@ -337,6 +337,8 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
     /* refresh display */
     if(GTK_WIDGET_VISIBLE(editor)){
       cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
+
+      cairo_surface_flush(cairo_get_target(cr));
       cairo_push_group(cr);
 
       ags_pattern_edit_draw_segment(pattern_edit, cr);
@@ -349,6 +351,7 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
 
+      cairo_surface_mark_dirty(cairo_get_target(cr));
       cairo_destroy(cr);
     }
 
@@ -483,6 +486,8 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
       gdouble position;
       
       cr = gdk_cairo_create(GTK_WIDGET(pattern_edit->drawing_area)->window);
+
+      cairo_surface_flush(cairo_get_target(cr));
       cairo_push_group(cr);
 
       ags_pattern_edit_draw_segment(pattern_edit, cr);
@@ -498,34 +503,38 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
       //      ags_pattern_edit_draw_scroll(pattern_edit, cr,
       //				position);
 
-      cairo_pop_group_to_source(cr);
-      cairo_paint(cr);
-    }
-
-    if((AGS_PATTERN_EDIT_DRAW_FADER & (pattern_edit->flags)) != 0){
-      AgsCountBeatsAudioRun *count_beats_audio_run;
-      GList *recall;
-      gdouble position;
+      /* fader */
+      if((AGS_PATTERN_EDIT_DRAW_FADER & (pattern_edit->flags)) != 0){
+	AgsCountBeatsAudioRun *count_beats_audio_run;
+	GList *recall;
+	gdouble position;
 	
-      recall = editor->selected_machine->audio->play;
+	recall = editor->selected_machine->audio->play;
 
-      while((recall = ags_recall_find_type(recall,
-					   AGS_TYPE_COUNT_BEATS_AUDIO_RUN)) != NULL){
-	if(AGS_RECALL(recall->data)->recall_id != NULL && (AGS_RECALL_NOTATION & (AGS_RECALL(recall->data)->recall_id->flags)) != 0){
-	  break;
+	while((recall = ags_recall_find_type(recall,
+					     AGS_TYPE_COUNT_BEATS_AUDIO_RUN)) != NULL){
+	  if(AGS_RECALL(recall->data)->recall_id != NULL && (AGS_RECALL_NOTATION & (AGS_RECALL(recall->data)->recall_id->flags)) != 0){
+	    break;
+	  }
+
+	  recall = recall->next;
 	}
 
-	recall = recall->next;
-      }
+	if(recall != NULL){
+	  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
 
-      if(recall != NULL){
-	count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
-
-	position = count_beats_audio_run->notation_counter * pattern_edit->control_unit.control_width;
+	  position = count_beats_audio_run->notation_counter * pattern_edit->control_unit.control_width;
 	
-	ags_pattern_edit_draw_scroll(pattern_edit, cr,
-				     position);
+	  ags_pattern_edit_draw_scroll(pattern_edit, cr,
+				       position);
+	}
       }
+      
+      cairo_pop_group_to_source(cr);
+      cairo_paint(cr);
+
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }
   }
 }

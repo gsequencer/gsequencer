@@ -172,7 +172,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
 				   NULL,
 				   10);
 
-    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + 1.0;
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size);
   }
 
   g_free(str0);

@@ -700,7 +700,7 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
   new_buffer = destination;
 
   for(i = 0; i < buffer_size; i++){
-    new_buffer[lines * i] += (float) buffer[i] * (1.0f / 32767.5f);
+    new_buffer[lines * i] += (gdouble) buffer[i] * (1.0f / 32767.5f);
   }
 }
 

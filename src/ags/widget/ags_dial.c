@@ -141,7 +141,7 @@ ags_dial_init(AgsDial *dial)
   	       "app-paintable\0", TRUE,
   	       NULL);
 
-  dial->flags = 0; //AGS_DIAL_WITH_BUTTONS;
+  dial->flags = AGS_DIAL_WITH_BUTTONS;
 
   dial->adjustment = NULL;
 
@@ -149,7 +149,7 @@ ags_dial_init(AgsDial *dial)
   dial->scale_precision = AGS_DIAL_DEFAULT_PRECISION;
   dial->outline_strength = 4;
 
-  dial->font_size = 14;
+  dial->font_size = 6;
   dial->button_width = 0;
   dial->button_height = 0;
   dial->margin_left = 4.0;

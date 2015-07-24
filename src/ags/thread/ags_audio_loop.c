@@ -343,7 +343,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 				   NULL,
 				   10);
 
-    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + 1.0;
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size);
   }
 
   g_free(str0);

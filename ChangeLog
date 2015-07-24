@@ -1,3 +1,13 @@
+ags (0.5.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed auto-scroll
+	* fixed time calculation
+	* fixed copy & paste
+	* fixed ruler
+	* fixed crash during extensive scrolling
+	* fixed export duration and difference to playback time
+
 ags (0.5.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

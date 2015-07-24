@@ -20,16 +20,12 @@
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_ladspa_run.h>
 
-#include <ags/main.h>
-
 #include <ags-lib/object/ags_connectable.h>
-
 #include <ags/object/ags_plugin.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
 #include <ags/audio/ags_config.h>
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_port.h>
 
 #include <dlfcn.h>
@@ -61,9 +57,9 @@ void ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run);
  * #AgsRecallLadspaRun provides LADSPA support.
  */
 
-extern AgsConfig *config;
 static gpointer ags_recall_ladspa_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_run_parent_connectable_interface;
+extern AgsConfig *config;
 
 GType
 ags_recall_ladspa_run_get_type (void)
@@ -191,37 +187,24 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
   AgsAudioSignal *audio_signal;
-
+  AgsConfig *config;
   unsigned long samplerate;
   unsigned long buffer_size;
   unsigned long i;
-  gchar *str;
-  
-  LADSPA_PortDescriptor *port_descriptor;
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_init_pre(recall);
 
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
   recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
-
-  /* set up buffer */
-  str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
-		       "samplerate\0");
-  samplerate = (unsigned long) g_ascii_strtoull(str,
-						NULL,
-						10);
-  free(str);
-
-  str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
-		       "buffer-size\0");
-  buffer_size = (unsigned long) g_ascii_strtoull(str,
-						 NULL,
-						 10);
-  free(str);
   
+  /* set up buffer */
+  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_ladspa_run)->source;
+  
+  /* set up buffer */ 
+  samplerate = audio_signal->samplerate;
+  buffer_size = audio_signal->buffer_size;
+
   recall_ladspa_run->input = (LADSPA_Data *) malloc(recall_ladspa->input_lines *
 						    buffer_size *
 						    sizeof(LADSPA_Data));
@@ -248,8 +231,6 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
 
   /* can't be done in ags_recall_ladspa_run_run_init_inter since possebility of overlapping buffers */
   /* connect audio port */
-  port_descriptor = recall_ladspa->plugin_descriptor->PortDescriptors;
-
   for(i = 0; i < recall_ladspa->input_lines; i++){
     recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle[i],
 						   recall_ladspa->input_port[i],
@@ -286,6 +267,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_ladspa_run)->source;
+  buffer_size = audio_signal->buffer_size;
 
   memset(recall_ladspa_run->output, 0, recall_ladspa->output_lines * buffer_size * sizeof(LADSPA_Data));
   memset(recall_ladspa_run->input, 0, recall_ladspa->input_lines * buffer_size * sizeof(LADSPA_Data));
@@ -307,10 +289,6 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 				   audio_signal->buffer_size, recall_ladspa->input_lines);
 
   /* process data */
-  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-
-  buffer_size = audio_signal->buffer_size;
-
   for(i = 0; i < recall_ladspa->input_lines; i++){
     recall_ladspa->plugin_descriptor->run(recall_ladspa_run->ladspa_handle[i],
 					  buffer_size);
@@ -331,7 +309,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
  *
  * Set up LADSPA ports.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
@@ -383,7 +361,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 	}
 
 	for(j = 0; j < recall_ladspa->input_lines; j++){
-	  //	  g_message("connecting port[%d]: %d/%d\0", j, i, port_count);
+	  g_message("connecting port[%d]: %d/%d\0", j, i, port_count);
 	  port_data = &(current->port_value.ags_port_float);
 	  recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle[j],
 							 i,
@@ -401,6 +379,8 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
  * Creates a #AgsRecallLadspaRun
  *
  * Returns: a new #AgsRecallLadspaRun
+ *
+ * Since: 0.4.2
  */
 AgsRecallLadspaRun*
 ags_recall_ladspa_run_new(AgsAudioSignal *audio_signal)

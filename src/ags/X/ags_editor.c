@@ -651,7 +651,8 @@ ags_editor_paste(AgsEditor *editor)
 	//					 10);
 	notation_list = g_list_nth(machine->audio->notation,
 				   j);
-
+	j++;
+	
 	if(notation_list == NULL){
 	  break;
 	}
