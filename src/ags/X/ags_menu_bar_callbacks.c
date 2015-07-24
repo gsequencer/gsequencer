@@ -103,7 +103,7 @@ ags_menu_bar_open_response_callback(GtkFileChooserDialog *file_chooser, gint res
 
     error = NULL;
 
-    g_spawn_command_line_async(g_strdup_printf("./gsequencer --filename %s\0",
+    g_spawn_command_line_async(g_strdup_printf("gsequencer --filename %s\0",
 					       filename),
 			       &error);
     g_free(filename);

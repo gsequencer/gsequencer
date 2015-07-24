@@ -362,7 +362,7 @@ ags_ruler_draw(AgsRuler *ruler)
 
   offset = ruler->adjustment->value;
 
-  i = ((guint) round((double) offset * step)) % (guint) round(step);
+  i = ((guint) floor((double) offset * step)) % (guint) floor(step);
 
   if(i != 0){
     i = step - i;
@@ -400,9 +400,11 @@ ags_ruler_draw(AgsRuler *ruler)
 		  (double) (i),
 		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - 14));
 
-    if(ruler->scale_precision <= 1.0){
+    if(ruler->scale_precision < 1.0){
+      guint val;
+      
       str = g_strdup_printf("%.0f\0",
-			    floor(offset + z) * ruler->scale_precision + ((i % (guint) step != 0) ? 1: 0));
+			    floor(offset + z) * ruler->scale_precision + (((val = i % (guint) step) > 0 && val < 2) ? 1: 0));
     }else{
       str = g_strdup_printf("%.0f\0",
 			    floor(offset + z) * ruler->scale_precision + ((i % (guint) step != 0) ? 1 * ruler->scale_precision: 0));

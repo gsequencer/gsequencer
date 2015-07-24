@@ -355,6 +355,8 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
     /* refresh display */
     if(GTK_WIDGET_VISIBLE(editor)){
       cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
+
+      cairo_surface_flush(cairo_get_target(cr));
       cairo_push_group(cr);
 
       ags_note_edit_draw_segment(note_edit, cr);
@@ -392,6 +394,9 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
       
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }
   }
 }
@@ -520,6 +525,8 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
       gdouble position;
       
       cr = gdk_cairo_create(GTK_WIDGET(note_edit->drawing_area)->window);
+
+      cairo_surface_flush(cairo_get_target(cr));
       cairo_push_group(cr);
 
       ags_note_edit_draw_segment(note_edit, cr);
@@ -535,9 +542,37 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
       //      ags_note_edit_draw_scroll(note_edit, cr,
       //				position);
 
+      /* fader */
+      if((AGS_NOTE_EDIT_DRAW_FADER & (note_edit->flags)) != 0){
+	AgsCountBeatsAudioRun *count_beats_audio_run;
+	GList *recall;
+	gdouble position;
+	
+	recall = editor->selected_machine->audio->play;
+
+	while((recall = ags_recall_find_type(recall,
+					     AGS_TYPE_COUNT_BEATS_AUDIO_RUN)) != NULL){
+	  if(AGS_RECALL(recall->data)->recall_id != NULL && (AGS_RECALL_NOTATION & (AGS_RECALL(recall->data)->recall_id->flags)) != 0){
+	    break;
+	  }
+
+	  recall = recall->next;
+	}
+
+	if(recall != NULL){
+	  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+
+	  position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width;
+	
+	  ags_note_edit_draw_scroll(note_edit, cr,
+				    position);
+	}
+      }
+
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
-
+	
+      cairo_surface_mark_dirty(cairo_get_target(cr));
       cairo_destroy(cr);
     }
   }

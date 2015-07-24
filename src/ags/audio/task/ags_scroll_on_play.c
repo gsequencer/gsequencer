@@ -223,7 +223,7 @@ ags_scroll_on_play_launch(AgsTask *task)
       width = GTK_WIDGET(note_edit->drawing_area)->allocation.width;
       control_width = note_edit->control_unit.control_width;
       
-      position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width / window->devout->delay_factor;
+      position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width;
 
       /* scroll */
       note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
@@ -300,7 +300,7 @@ ags_scroll_on_play_launch(AgsTask *task)
 
       pattern_edit = AGS_PATTERN_EDIT(AGS_EDITOR_CHILD(editor_child->data)->edit_widget);
 
-      position = (count_beats_audio_run->notation_counter) * (pattern_edit->control_unit.control_width) / window->devout->delay_factor;
+      position = (count_beats_audio_run->notation_counter) * (pattern_edit->control_unit.control_width);
 
       width = GTK_WIDGET(pattern_edit->drawing_area)->allocation.width;
       control_width = pattern_edit->control_unit.control_width;

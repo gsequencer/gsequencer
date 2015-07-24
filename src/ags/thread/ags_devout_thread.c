@@ -150,7 +150,7 @@ ags_devout_thread_init(AgsDevoutThread *devout_thread)
 				   NULL,
 				   10);
 
-    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + 1.0;
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size);
   }
 
   g_free(str0);

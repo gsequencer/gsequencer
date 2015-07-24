@@ -547,11 +547,11 @@ ags_navigation_tact_to_time_string(gdouble tact,
   gdouble tact_redux;
   guint min, sec, hsec;
 
-  delay_min = bpm;
+  delay_min = bpm / delay_factor;
   delay_sec = delay_min / 60.0;
   delay_hsec = delay_sec / 100.0;
 
-  tact_redux = tact * (16.0 * delay_factor * delay_factor);
+  tact_redux = tact * 16.0;
 
   min = (guint) floor(tact_redux / delay_min);
 

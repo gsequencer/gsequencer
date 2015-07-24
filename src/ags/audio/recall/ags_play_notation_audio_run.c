@@ -715,12 +715,12 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   }
 
   //FIXME:JK: nth_run isn't best joice
+  audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
+  
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
     channel = ags_channel_nth(audio->input,
 			      audio_channel);
   }else{
-    audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
     channel = ags_channel_nth(audio->output,
 			      audio_channel);
   }
@@ -752,7 +752,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	recycling = selected_channel->first_recycling;
 
 	//#ifdef AGS_DEBUG	
-	g_message("playing: %u | %u\n\0", note->x[0], note->y);
+	g_message("playing[%u]: %u | %u\n\0", audio_channel, note->x[0], note->y);
 	//#endif
 
 	while(recycling != selected_channel->last_recycling->next){
