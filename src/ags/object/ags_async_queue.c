@@ -78,7 +78,8 @@ ags_async_queue_get_run_mutex(AgsAsyncQueue *async_queue)
   g_return_val_if_fail(AGS_IS_ASYNC_QUEUE(async_queue), NULL);
   async_queue_interface = AGS_ASYNC_QUEUE_GET_INTERFACE(async_queue);
   g_return_val_if_fail(async_queue_interface->get_run_mutex, NULL);
-  async_queue_interface->get_run_mutex(async_queue);
+  
+  return(async_queue_interface->get_run_mutex(async_queue));
 }
 
 void
@@ -100,7 +101,19 @@ ags_async_queue_get_run_cond(AgsAsyncQueue *async_queue)
   g_return_val_if_fail(AGS_IS_ASYNC_QUEUE(async_queue), NULL);
   async_queue_interface = AGS_ASYNC_QUEUE_GET_INTERFACE(async_queue);
   g_return_val_if_fail(async_queue_interface->get_run_cond, NULL);
-  async_queue_interface->get_run_cond(async_queue);
+
+  return(async_queue_interface->get_run_cond(async_queue));
+}
+
+void
+ags_async_queue_set_run(AgsAsyncQueue *async_queue, gboolean is_run)
+{
+  AgsAsyncQueueInterface *async_queue_interface;
+
+  g_return_if_fail(AGS_IS_ASYNC_QUEUE(async_queue));
+  async_queue_interface = AGS_ASYNC_QUEUE_GET_INTERFACE(async_queue);
+  g_return_if_fail(async_queue_interface->set_run);
+  async_queue_interface->set_run(async_queue, is_run);
 }
 
 gboolean
@@ -111,6 +124,7 @@ ags_async_queue_is_run(AgsAsyncQueue *async_queue)
   g_return_val_if_fail(AGS_IS_ASYNC_QUEUE(async_queue), FALSE);
   async_queue_interface = AGS_ASYNC_QUEUE_GET_INTERFACE(async_queue);
   g_return_val_if_fail(async_queue_interface->is_run, FALSE);
-  async_queue_interface->is_run(async_queue);
+
+  return(async_queue_interface->is_run(async_queue));
 }
 

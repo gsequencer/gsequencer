@@ -22,6 +22,7 @@
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/object/ags_main_loop.h>
+#include <ags/object/ags_async_queue.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_export_thread.h>
@@ -1933,6 +1934,11 @@ void*
 ags_thread_loop(void *ptr)
 {
   AgsThread *thread, *main_loop;
+  GObject *async_queue;
+
+  pthread_mutex_t *run_mutex;
+  pthread_cond_t *run_cond;
+
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
   guint current_tic, next_tic;
@@ -1943,8 +1949,10 @@ ags_thread_loop(void *ptr)
   struct timespec time_prev, time_now;
 
   auto void ags_thread_loop_sync(AgsThread *thread);
-
-  void ags_thread_loop_sync(AgsThread *thread){
+  auto void ags_thread_loop_wait_async();
+  
+  void ags_thread_loop_sync(AgsThread *thread){    
+    /* sync */
     if(current_tic = 2){
       next_tic = 0;
     }else if(current_tic = 0){
@@ -2001,20 +2009,56 @@ ags_thread_loop(void *ptr)
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
     }else{
+      /* async-queue */
+      ags_async_queue_set_run(AGS_ASYNC_QUEUE(async_queue),
+			      FALSE);
+
+      /* thread tree */
       ags_thread_set_sync_all(main_loop, current_tic);
       pthread_mutex_unlock(main_loop->mutex);
-
+      
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
    }
 
     current_tic = next_tic;
   }
-
+  void ags_thread_loop_wait_async(){
+      /* async-queue */
+    if(!AGS_IS_ASYNC_QUEUE(thread)){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) != 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) == 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	pthread_mutex_lock(run_mutex);
+	
+	//	g_message("blocked\0");
+	
+	if(!ags_async_queue_is_run(AGS_ASYNC_QUEUE(async_queue))){
+	  //	  g_message("wait\0");
+	
+	  while(!ags_async_queue_is_run(AGS_ASYNC_QUEUE(async_queue))){
+	    pthread_cond_wait(run_cond,
+			      run_mutex);
+	  }
+	}
+      
+	pthread_mutex_unlock(run_mutex);
+      }
+    }else{
+      //      g_message("not blocked\0");
+    }
+  }
+  
   ags_thread_self =
     thread = AGS_THREAD(ptr);
   
   main_loop = ags_thread_get_toplevel(thread);
+
+  /* async-queue */
+  async_queue = ags_main_loop_get_async_queue(main_loop);
+
+  run_mutex = ags_async_queue_get_run_mutex(AGS_ASYNC_QUEUE(async_queue));
+  run_cond = ags_async_queue_get_run_cond(AGS_ASYNC_QUEUE(async_queue));
 
   /*  */
   current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
@@ -2123,6 +2167,8 @@ ags_thread_loop(void *ptr)
 	  ags_thread_loop_sync(thread);
 
 	  pthread_mutex_unlock(thread->mutex);
+
+	  ags_thread_loop_wait_async();
 	}
 
 	//	pthread_yield();
@@ -2150,6 +2196,8 @@ ags_thread_loop(void *ptr)
 	  ags_thread_loop_sync(thread);
 
 	  pthread_mutex_unlock(thread->mutex);
+	  
+	  ags_thread_loop_wait_async();
 	}
 
 	//	pthread_yield();
@@ -2199,6 +2247,8 @@ ags_thread_loop(void *ptr)
 	ags_thread_loop_sync(thread);
 	
 	pthread_mutex_unlock(thread->mutex);
+
+	ags_thread_loop_wait_async();
       }
 
       /* */

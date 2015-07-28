@@ -98,7 +98,8 @@ ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
   g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), NULL);
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
   g_return_val_if_fail(main_loop_interface->get_async_queue, NULL);
-  main_loop_interface->get_async_queue(main_loop);
+
+  return(main_loop_interface->get_async_queue(main_loop));
 }
 
 /**
@@ -139,7 +140,8 @@ ags_main_loop_get_tic(AgsMainLoop *main_loop)
   g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
   g_return_val_if_fail(main_loop_interface->get_tic, G_MAXUINT);
-  main_loop_interface->get_tic(main_loop);
+
+  return(main_loop_interface->get_tic(main_loop));
 }
 
 /**
@@ -180,5 +182,6 @@ ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
   g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
   g_return_val_if_fail(main_loop_interface->get_last_sync, G_MAXUINT);
-  main_loop_interface->get_last_sync(main_loop);
+
+  return(main_loop_interface->get_last_sync(main_loop));
 }

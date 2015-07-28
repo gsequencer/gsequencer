@@ -165,7 +165,7 @@ ags_open_single_file_launch(AgsTask *task)
   channel = open_single_file->channel;
   audio_signal = audio_file->audio_signal;
 
-  for(i = 0; i < open_single_file->audio_channels; i++){
+  for(i = 0; i < open_single_file->audio_channels && audio_signal != NULL; i++){
     /* unset link */
     if(channel->link != NULL){
       error = NULL;
