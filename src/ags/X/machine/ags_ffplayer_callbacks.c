@@ -171,6 +171,10 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
   playable = AGS_PLAYABLE(ffplayer->ipatch);
   ipatch = ffplayer->ipatch;
 
+  if(ipatch == NULL){
+    return;
+  }
+  
   preset_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(preset));
 
   /* load presets */

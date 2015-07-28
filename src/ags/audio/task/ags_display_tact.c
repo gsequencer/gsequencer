@@ -161,7 +161,7 @@ ags_display_tact_launch(AgsTask *task)
 
   gdk_window_flush(GTK_WIDGET(navigation->duration_time)->window);
   timestr = ags_navigation_relative_tact_to_time_string(navigation->duration_time->label,
-							1.0 * window->devout->bpm / 60.0, //window->devout->delay[window->devout->tic_counter],
+							window->devout->delay[window->devout->tic_counter],
 							window->devout->bpm,
 							window->devout->delay_factor);
   

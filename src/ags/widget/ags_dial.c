@@ -150,7 +150,7 @@ ags_dial_init(AgsDial *dial)
   dial->outline_strength = 4;
 
   dial->font_size = 6;
-  dial->button_width = 0;
+  dial->button_width = 10;
   dial->button_height = 0;
   dial->margin_left = 4.0;
   dial->margin_right = 4.0;
@@ -731,7 +731,7 @@ ags_dial_draw(AgsDial *dial)
   }else if(dial->adjustment->upper < 0.0 && dial->adjustment->lower < 0.0){
     range = -1.0 * (dial->adjustment->lower - dial->adjustment->upper);
   }else{
-    range = (dial->adjustment->upper + dial->adjustment->lower);
+    range = (dial->adjustment->upper - dial->adjustment->lower);
   }
 
   if(range == 0.0){

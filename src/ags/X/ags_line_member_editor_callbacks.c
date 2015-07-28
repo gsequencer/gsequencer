@@ -376,7 +376,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 
 		child_widget = ags_line_member_get_widget(line_member);
 		
-		if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor)){
+		if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor) ||
+		   plugin_descriptor->PortRangeHints[i].LowerBound == plugin_descriptor->PortRangeHints[i].UpperBound){
 		  //nothing
 		}else{
 		  lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;

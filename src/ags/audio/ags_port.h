@@ -59,6 +59,7 @@ struct _AgsPort
     gint64 ags_port_int;
     guint64 ags_port_uint;
     gfloat ags_port_float;
+    LADSPA_Data ags_port_ladspa;
     gdouble ags_port_double;
     gboolean *ags_port_boolean_ptr;
     gint64 *ags_port_int_ptr;

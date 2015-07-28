@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = foreign
 AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2 # -DAGS_USE_TIMER
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security
+CFLAGS = -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -ftrapv
 LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
@@ -240,6 +240,7 @@ gsequencerheaders = \
 	src/ags/lib/ags_parameter.h \
 	src/ags/main.h \
 	src/ags/object/ags_applicable.h \
+	src/ags/object/ags_async_queue.h \
 	src/ags/object/ags_countable.h \
 	src/ags/object/ags_dynamic_connectable.h \
 	src/ags/object/ags_effect.h \
@@ -263,7 +264,6 @@ gsequencerheaders = \
 	src/ags/server/ags_registry.h \
 	src/ags/server/ags_remote_task.h \
 	src/ags/server/ags_server.h \
-	src/ags/thread/ags_async_queue.h \
 	src/ags/thread/ags_audio_loop.h \
 	src/ags/thread/ags_audio_thread.h \
 	src/ags/thread/ags_autosave_thread.h \
@@ -571,6 +571,7 @@ gsequencer_SOURCES = \
 	src/ags/lib/ags_parameter.c \
 	src/ags/main.c \
 	src/ags/object/ags_applicable.c \
+	src/ags/object/ags_async_queue.c \
 	src/ags/object/ags_countable.c \
 	src/ags/object/ags_dynamic_connectable.c \
 	src/ags/object/ags_effect.c \
@@ -593,7 +594,6 @@ gsequencer_SOURCES = \
 	src/ags/server/ags_registry.c \
 	src/ags/server/ags_remote_task.c \
 	src/ags/server/ags_server.c \
-	src/ags/thread/ags_async_queue.c \
 	src/ags/thread/ags_audio_loop.c \
 	src/ags/thread/ags_audio_thread.c \
 	src/ags/thread/ags_autosave_thread.c \

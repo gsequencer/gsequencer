@@ -1,3 +1,16 @@
+ags (0.5.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed grained control range
+	* fixed more precise time calculation
+	* fixed AgsDial wrong arithmetic expression
+	* fixed time calculation
+
+ags (0.5.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed cliped LADSPA data
+
 ags (0.5.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

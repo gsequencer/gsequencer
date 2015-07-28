@@ -1934,8 +1934,12 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 				2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
 				2 * dial->radius + 2 * dial->outline_strength + 1);
   }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+    gtk_spin_button_set_digits(GTK_SPIN_BUTTON(child_widget),
+			       3);
     adjustment = GTK_SPIN_BUTTON(child_widget)->adjustment;
   }else if(GTK_IS_RANGE(child_widget)){
+    gtk_range_set_round_digits(GTK_RANGE(child_widget),
+			       3);
     adjustment = GTK_RANGE(child_widget)->adjustment;
     
     if(!xmlStrncmp(AGS_FILE_TRUE,
