@@ -5,6 +5,9 @@ ags (0.5.10)
 	* fixed more precise time calculation
 	* fixed AgsDial wrong arithmetic expression
 	* fixed time calculation
+	* fixed crash while open unsupported files
+	* implemented AgsAsyncQueue interface in ags_task_thread.c to avoid race-conditions
+	* fixed AgsDrumInputPad playback
 
 ags (0.5.9)
 

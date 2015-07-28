@@ -20,6 +20,8 @@
 #ifndef __AGS_ASYNC_QUEUE_H__
 #define __AGS_ASYNC_QUEUE_H__
 
+#include <pthread.h>
+
 #include <glib-object.h>
 
 #define AGS_TYPE_ASYNC_QUEUE                    (ags_async_queue_get_type())
@@ -42,6 +44,7 @@ struct _AgsAsyncQueueInterface
   void (*set_run_cond)(AgsAsyncQueue *async_queue, pthread_cond_t *run_cond);
   pthread_cond_t* (*get_run_cond)(AgsAsyncQueue *async_queue);
 
+  void (*set_run)(AgsAsyncQueue *async_queue, gboolean is_run);
   gboolean (*is_run)(AgsAsyncQueue *async_queue);
 };
 
@@ -53,6 +56,7 @@ pthread_mutex_t* ags_async_queue_get_run_mutex(AgsAsyncQueue *async_queue);
 void ags_async_queue_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_cond);
 pthread_cond_t* ags_async_queue_get_run_cond(AgsAsyncQueue *async_queue);
 
+void ags_async_queue_set_run(AgsAsyncQueue *async_queue, gboolean is_run);
 gboolean ags_async_queue_is_run(AgsAsyncQueue *async_queue);
 
 #endif /*__AGS_ASYNC_QUEUE_H__*/

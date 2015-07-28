@@ -34,7 +34,8 @@
     <listitem>
       <para>
 	To open properties dialog open context menu and activate "properties"
-	entry.
+	entry. There you might link, resize or asign LADSPA effects to channels.
+	NOTE for LADSPA sink or generators aren't supported, yet.
       </para>
     </listitem>
   </itemizedlist>

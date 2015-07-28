@@ -576,6 +576,8 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
     //    g_list_free(tmp);
 
     if(recall != NULL){
+      AgsAudioSignal *audio_signal;
+      
       g_signal_connect_after(channel, "done\0",
 			     G_CALLBACK(ags_line_channel_done_callback), AGS_LINE(list->data));
       
@@ -583,12 +585,21 @@ ags_drum_input_pad_init_channel_launch_callback(AgsTask *task,
       recycling = channel->first_recycling;
 
       while(recycling != channel->last_recycling->next){
-	add_audio_signal = ags_add_audio_signal_new(recycling,
-						    NULL,
-						    devout,
-						    AGS_RECALL(recall->data)->recall_id,
-						    0);
-	ags_task_thread_append_task(task_thread, (AgsTask *) add_audio_signal);
+	audio_signal = ags_audio_signal_new((GObject *) devout,
+					    (GObject *) recycling,
+					    (GObject *) AGS_RECALL(recall->data)->recall_id);
+	/* add audio signal */
+	ags_recycling_create_audio_signal_with_defaults(recycling,
+							audio_signal,
+							0.0, 0);
+	audio_signal->stream_current = audio_signal->stream_beginning;
+	ags_audio_signal_connect(audio_signal);
+  
+	/*
+	 * emit add_audio_signal on AgsRecycling
+	 */
+	ags_recycling_add_audio_signal(recycling,
+				       audio_signal);
 
 	recycling = recycling->next;
       }    

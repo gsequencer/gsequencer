@@ -8,6 +8,7 @@
 <!ENTITY copyIcon "/usr/share/icons/Adwaita/32x32/actions/edit-copy.png">
 <!ENTITY cutIcon "/usr/share/icons/Adwaita/32x32/actions/edit-cut.png">
 <!ENTITY pasteIcon "/usr/share/icons/Adwaita/32x32/actions/edit-paste.png">
+<!ENTITY invertIcon "/usr/share/icons/Adwaita/32x32/actions/gtk-convert.png">
 ]>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>Editor</title>
@@ -15,6 +16,8 @@
     The editor features a piano roll. After linking an editor index with an enginge
     You may perform tasks like adding notes or copy, cut and paste them. You may
     change view segmentation, too.
+    Further you might shift the displayed piano on the left or reverse the channel
+    mapping.
   </para>
 
   <sect1>
@@ -24,6 +27,7 @@
       by adding an index. Then you should link it with an engine. That can all be
       done by using the menu button <imagedata fileref="&indexMenuIcon;" /> of the
       index list.
+      The corresponding editor appears as you click appropriate link.
     </para>
   </sect1>
 
@@ -94,6 +98,13 @@
 	    <entry>
 	      Paste the previously copied or cutted notes at the cursor position or
 	      just insert them where they are/were located. 
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&invertIcon;" /></entry>
+	    <entry>paste</entry>
+	    <entry>
+	      Invert entire notation in conjunction with reverse mapping or MIDI import.
 	    </entry>
 	  </row>
 	</tbody>
