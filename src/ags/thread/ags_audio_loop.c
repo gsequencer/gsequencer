@@ -28,7 +28,6 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_export_thread.h>
 #include <ags/thread/ags_gui_thread.h>
-#include <ags/thread/ags_async_queue.h>
 #include <ags/thread/ags_audio_thread.h>
 #include <ags/thread/ags_channel_thread.h>
 
@@ -58,8 +57,8 @@ void ags_audio_loop_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_audio_loop_connect(AgsConnectable *connectable);
 void ags_audio_loop_disconnect(AgsConnectable *connectable);
-void ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, AgsAsyncQueue *async_queue);
-AgsAsyncQueue* ags_audio_loop_get_async_queue(AgsMainLoop *main_loop);
+void ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
+GObject* ags_audio_loop_get_async_queue(AgsMainLoop *main_loop);
 void ags_audio_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_audio_loop_get_tic(AgsMainLoop *main_loop);
 void ags_audio_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
@@ -356,11 +355,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->ags_main = NULL;
 
-  /* AgsAsyncQueue */
-  audio_loop->async_queue = ags_async_queue_new();
-
   /* AgsTaskThread */  
-  audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
+  audio_loop->async_queue = 
+    audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
   ags_thread_add_child(AGS_THREAD(audio_loop), audio_loop->task_thread);
 
   /* AgsGuiThread */
@@ -584,12 +581,12 @@ ags_audio_loop_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, AgsAsyncQueue *async_queue)
+ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
 {
   AGS_AUDIO_LOOP(main_loop)->async_queue = async_queue;
 }
 
-AgsAsyncQueue*
+GObject*
 ags_audio_loop_get_async_queue(AgsMainLoop *main_loop)
 {
   return(AGS_AUDIO_LOOP(main_loop)->async_queue);

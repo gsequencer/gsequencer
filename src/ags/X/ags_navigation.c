@@ -250,7 +250,7 @@ ags_navigation_init(AgsNavigation *navigation)
   label = (GtkLabel *) gtk_label_new("position\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->position_time = (GtkLabel *) gtk_label_new(g_strdup("00:00.00\0"));
+  navigation->position_time = (GtkLabel *) gtk_label_new(g_strdup("00:00.000\0"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_time, FALSE, FALSE, 2);
 
   navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
@@ -262,7 +262,7 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->duration_time = (GtkLabel *) gtk_label_new(NULL);
   g_object_set(navigation->duration_time,
-	       "label\0", g_strdup("0000:00.00\0"),
+	       "label\0", g_strdup("0000:00.000\0"),
 	       NULL);
   gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
@@ -542,16 +542,16 @@ ags_navigation_tact_to_time_string(gdouble tact,
 				   gdouble bpm,
 				   gdouble delay_factor)
 {
-  gdouble delay_min, delay_sec, delay_hsec;
+  gdouble delay_min, delay_sec, delay_msec;
   gchar *timestr;
   gdouble tact_redux;
-  guint min, sec, hsec;
+  guint min, sec, msec;
 
   delay_min = bpm / delay_factor;
   delay_sec = delay_min / 60.0;
-  delay_hsec = delay_sec / 100.0;
+  delay_msec = delay_sec / 1000.0;
 
-  tact_redux = tact * 16.0;
+  tact_redux = (tact + (tact / 16.0)) * 16.0;
 
   min = (guint) floor(tact_redux / delay_min);
 
@@ -565,9 +565,9 @@ ags_navigation_tact_to_time_string(gdouble tact,
     tact_redux = tact_redux - (sec * delay_sec);
   }
 
-  hsec = (guint) floor(tact_redux / delay_hsec);
+  msec = (guint) floor(tact_redux / delay_msec);
 
-  timestr = g_strdup_printf("%.4d:%.2d.%.2d\0", min, sec, hsec);
+  timestr = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
 
   return(timestr);
 }
@@ -587,14 +587,14 @@ ags_navigation_update_time_string(double tact,
 				  gdouble delay_factor,
 				  gchar *time_string)
 {
-  gdouble delay_min, delay_sec, delay_hsec;
+  gdouble delay_min, delay_sec, delay_msec;
   gchar *timestr;
   gdouble tact_redux;
-  guint min, sec, hsec;
+  guint min, sec, msec;
 
   delay_min = bpm * (60.0 / bpm) * (60.0 / bpm) * delay_factor;
   delay_sec = delay_min / 60.0;
-  delay_hsec = delay_sec / 100.0;
+  delay_msec = delay_sec / 1000.0;
 
   tact_redux = 1.0 / 16.0;
 
@@ -610,9 +610,9 @@ ags_navigation_update_time_string(double tact,
     tact_redux = tact_redux - (sec * delay_sec);
   }
 
-  hsec = (guint) floor(tact_redux / delay_hsec);
+  msec = (guint) floor(tact_redux / delay_msec);
 
-  sprintf(time_string, "%.4d:%.2d.%.2d\0", min, sec, hsec);
+  sprintf(time_string, "%.4d:%.2d.%.3d\0", min, sec, msec);
 }
 
 gchar*
@@ -622,28 +622,29 @@ ags_navigation_relative_tact_to_time_string(gchar *timestr,
 					    gdouble delay_factor)
 {
   gchar *tmp;
-  guint min, sec, hsec;
-  guint prev_min, prev_sec, prev_hsec;
+  guint min, sec, msec;
+  guint prev_min, prev_sec, prev_msec;
 
   gdouble sec_value;
 
-  tmp = sscanf(timestr, "%d:%d.%d", &prev_min, &prev_sec, &prev_hsec);
+  tmp = sscanf(timestr, "%d:%d.%d", &prev_min, &prev_sec, &prev_msec);
   sec_value = prev_min * 60.0;
   sec_value += prev_sec;
-
-  if(prev_hsec != 0){
-    sec_value += (prev_hsec / 100.0);
+  sec_value += (1.0 / (16.0 * delay_factor) * (60.0 / bpm) + (1.0 / delay)) / 2.0;
+  
+  if(prev_msec != 0){
+    sec_value += (prev_msec / 1000.0);
   }
   
-  sec_value += (1.0 / delay * delay_factor);
+  //  sec_value += (1.0 / delay);
 
-  min = (guint) floor(sec_value / 60);
+  min = (guint) floor(sec_value / 60.0);
 
   sec = sec_value - 60 * min;
 
-  hsec = (sec_value - sec - min * 60) * 100;
-
-  timestr = g_strdup_printf("%.4d:%.2d.%.2d\0", min, sec, hsec);
+  msec = (sec_value - sec - min * 60) * 1000;
+  
+  timestr = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
   
   return(timestr);
 }

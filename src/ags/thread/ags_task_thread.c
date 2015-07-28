@@ -23,6 +23,8 @@
 
 #include <ags/main.h>
 
+#include <ags/object/ags_async_queue.h>
+
 #include <ags/lib/ags_list.h>
 
 #include <ags/thread/ags_audio_loop.h>
@@ -37,10 +39,16 @@
 
 void ags_task_thread_class_init(AgsTaskThreadClass *task_thread);
 void ags_task_thread_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_task_thread_async_queue_interface_init(AgsAsyncQueueInterface *async_queue);
 void ags_task_thread_init(AgsTaskThread *task_thread);
 void ags_task_thread_connect(AgsConnectable *connectable);
 void ags_task_thread_disconnect(AgsConnectable *connectable);
 void ags_task_thread_finalize(GObject *gobject);
+void ags_task_thread_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex);
+pthread_mutex_t* ags_task_thread_get_run_mutex(AgsAsyncQueue *async_queue);
+void ags_task_thread_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_cond);
+pthread_cond_t* ags_task_thread_get_run_cond(AgsAsyncQueue *async_queue);
+gboolean ags_task_thread_is_run(AgsAsyncQueue *async_queue);
 
 void ags_task_thread_start(AgsThread *thread);
 void ags_task_thread_run(AgsThread *thread);
@@ -89,6 +97,12 @@ ags_task_thread_get_type()
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
+    
+    static const GInterfaceInfo ags_async_queue_interface_info = {
+      (GInterfaceInitFunc) ags_task_thread_async_queue_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
 
     ags_type_task_thread = g_type_register_static(AGS_TYPE_THREAD,
 						  "AgsTaskThread\0",
@@ -98,6 +112,10 @@ ags_task_thread_get_type()
     g_type_add_interface_static(ags_type_task_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_task_thread,
+				AGS_TYPE_ASYNC_QUEUE,
+				&ags_async_queue_interface_info);
   }
   
   return (ags_type_task_thread);
@@ -133,6 +151,18 @@ ags_task_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
+ags_task_thread_async_queue_interface_init(AgsAsyncQueueInterface *async_queue)
+{
+  async_queue->set_run_mutex = ags_task_thread_set_run_mutex;
+  async_queue->get_run_mutex = ags_task_thread_get_run_mutex;
+
+  async_queue->set_run_cond = ags_task_thread_set_run_cond;
+  async_queue->get_run_cond = ags_task_thread_get_run_cond;
+
+  async_queue->is_run = ags_task_thread_is_run;
+}
+
+void
 ags_task_thread_init(AgsTaskThread *task_thread)
 {
   AgsThread *thread;
@@ -144,9 +174,17 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread->freq = AGS_TASK_THREAD_DEFAULT_JIFFIE;
 
-  g_cond_init(&(task_thread->cond));
-  g_mutex_init(&(task_thread->mutex));
+  /* async queue */
+  g_atomic_int_set(&(task_thread->is_run),
+		   FALSE);
 
+  task_thread->run_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(task_thread->run_mutex, NULL);
+
+  task_thread->run_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(task_thread->run_cond, NULL);
+  
+  /*  */
   task_thread->read_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(task_thread->read_mutex, NULL);
 
@@ -198,6 +236,36 @@ ags_task_thread_finalize(GObject *gobject)
 
   /*  */
   G_OBJECT_CLASS(ags_task_thread_parent_class)->finalize(gobject);
+}
+
+void
+ags_task_thread_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex)
+{
+  AGS_TASK_THREAD(async_queue)->run_mutex = run_mutex;
+}
+
+pthread_mutex_t*
+ags_task_thread_get_run_mutex(AgsAsyncQueue *async_queue)
+{
+  return(AGS_TASK_THREAD(async_queue)->run_mutex);
+}
+
+void
+ags_task_thread_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_cond)
+{
+  AGS_TASK_THREAD(async_queue)->run_cond = run_cond;
+}
+
+pthread_cond_t*
+ags_task_thread_get_run_cond(AgsAsyncQueue *async_queue)
+{
+  return(AGS_TASK_THREAD(async_queue)->run_cond);
+}
+
+gboolean
+ags_task_thread_is_run(AgsAsyncQueue *async_queue)
+{
+  return(g_atomic_int_get(&(AGS_TASK_THREAD(async_queue)->is_run)));
 }
 
 void

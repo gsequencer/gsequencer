@@ -52,9 +52,11 @@ struct _AgsTaskThread
 
   guint flags;
 
-  GMutex mutex;
-  GCond cond;
-
+  volatile gboolean is_run;
+  
+  pthread_mutex_t *run_mutex;
+  pthread_cond_t *run_cond;
+  
   pthread_mutex_t *read_mutex;
   pthread_mutex_t *launch_mutex;
 

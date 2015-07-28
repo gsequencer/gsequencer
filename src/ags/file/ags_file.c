@@ -647,7 +647,21 @@ ags_file_real_open(AgsFile *file)
   file->doc = xmlReadFile(file->filename, NULL, 0);
 
   if(file->doc == NULL){
-    printf("error: could not parse file %s\n", file->filename);
+    GtkDialog *dialog;
+    
+    g_warning("could not parse file %s\n", file->filename);
+
+    dialog = gtk_message_dialog_new(NULL,
+				    0,
+				    GTK_MESSAGE_WARNING,
+				    GTK_BUTTONS_OK,
+				    "Failed to open '%s'\0",
+				    file->filename);
+    gtk_widget_show_all(dialog);
+    g_signal_connect(dialog, "response\0",
+		     G_CALLBACK(gtk_main_quit), NULL);
+    gtk_main();
+    exit(-1);
   }
 
   /*Get the root element node */
@@ -676,7 +690,21 @@ ags_file_real_open_from_data(AgsFile *file,
   file->doc = xmlReadMemory(data, length, file->filename, NULL, 0);
 
   if(file->doc == NULL) {
-    printf("error: could not parse file %s\n", file->filename);
+    GtkDialog *dialog;
+    
+    g_warning("could not parse file %s\n", file->filename);
+
+    dialog = gtk_message_dialog_new(NULL,
+				    0,
+				    GTK_MESSAGE_WARNING,
+				    GTK_BUTTONS_OK,
+				    "Failed to open '%s'\0",
+				    file->filename);
+    gtk_widget_show_all(dialog);
+    g_signal_connect(dialog, "response\0",
+		     G_CALLBACK(gtk_main_quit), NULL);
+    gtk_main();
+    exit(-1);
   }
 
   /*Get the root element node */

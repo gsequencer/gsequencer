@@ -691,16 +691,16 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
  */
 void
 ags_recall_ladspa_short_to_float(signed short *buffer,
-				 float *destination,
+				 LADSPA_Data *destination,
 				 guint buffer_size, guint lines)
 {
-  float *new_buffer;
+  LADSPA_Data *new_buffer;
   guint i;
 
   new_buffer = destination;
 
   for(i = 0; i < buffer_size; i++){
-    new_buffer[lines * i] += (gdouble) buffer[i] * (1.0f / 32767.5f);
+    new_buffer[lines * i] = (LADSPA_Data) (buffer[i] * (1.0f / 32767.5f));
   }
 }
 
@@ -715,7 +715,7 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
  * Since: 0.4
  */
 void
-ags_recall_ladspa_float_to_short(float *buffer,
+ags_recall_ladspa_float_to_short(LADSPA_Data *buffer,
 				 signed short *destination,
 				 guint buffer_size, guint lines)
 {
@@ -725,7 +725,7 @@ ags_recall_ladspa_float_to_short(float *buffer,
   new_buffer = destination;
 
   for(i = 0; i < buffer_size; i++){
-    new_buffer[i] = (signed short) buffer[lines * i] * 32767.5f;
+    new_buffer[i] = (signed short) (buffer[lines * i] * 32767.5f);
   }
 }
 

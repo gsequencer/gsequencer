@@ -193,7 +193,8 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 				  0, 1,
 				  y, y + 1);
 
-	if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor)){
+	if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor) ||
+	   plugin_descriptor->PortRangeHints[i].LowerBound == plugin_descriptor->PortRangeHints[i].UpperBound){
 	  gtk_table_attach_defaults(table,
 				    GTK_WIDGET(ags_ladspa_browser_combo_box_boolean_controls_new()),
 				    1, 2,
