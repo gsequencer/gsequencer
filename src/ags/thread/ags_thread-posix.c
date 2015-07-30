@@ -1,26 +1,27 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/thread/ags_thread-posix.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_main_loop.h>
+#include <ags/object/ags_async_queue.h>
 
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
@@ -1795,6 +1796,8 @@ void*
 ags_thread_loop(void *ptr)
 {
   AgsThread *thread, *main_loop;
+  AgsThread *async_queue;
+  
   gboolean is_in_sync;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
   guint current_tic, next_tic;
@@ -1802,9 +1805,13 @@ ags_thread_loop(void *ptr)
   guint val, running, locked_greedy;
   guint counter, delay;
   guint i, i_stop;
+
   struct timespec time_prev, time_now;
+  pthread_mutex_t *run_mutex;
+  pthread_cond_t *run_cond;
 
   auto void ags_thread_loop_sync(AgsThread *thread);
+  auto void ags_thread_loop_wait_async();
 
   void ags_thread_loop_sync(AgsThread *thread){
     if(current_tic = 2){
@@ -1873,12 +1880,44 @@ ags_thread_loop(void *ptr)
     current_tic = next_tic;
   }
 
+  void ags_thread_loop_wait_async(){
+      /* async-queue */
+    if(!AGS_IS_ASYNC_QUEUE(thread)){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) != 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) == 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	pthread_mutex_lock(run_mutex);
+	
+	//	g_message("blocked\0");
+	
+	if(!ags_async_queue_is_run(AGS_ASYNC_QUEUE(async_queue))){
+	  //	  g_message("wait\0");
+	
+	  while(!ags_async_queue_is_run(AGS_ASYNC_QUEUE(async_queue))){
+	    pthread_cond_wait(run_cond,
+			      run_mutex);
+	  }
+	}
+      
+	pthread_mutex_unlock(run_mutex);
+      }
+    }else{
+      //      g_message("not blocked\0");
+    }
+  }
+
   ags_thread_self =
     thread = AGS_THREAD(ptr);
 
   main_loop = ags_thread_get_toplevel(thread);
 
-  /*  */
+  /* async-queue */
+  async_queue = ags_main_loop_get_async_queue(main_loop);
+
+  run_mutex = ags_async_queue_get_run_mutex(AGS_ASYNC_QUEUE(async_queue));
+  run_cond = ags_async_queue_get_run_cond(AGS_ASYNC_QUEUE(async_queue));
+
+  /* synchronization and timing */
   current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
   g_atomic_int_or(&(thread->flags),
@@ -1899,12 +1938,37 @@ ags_thread_loop(void *ptr)
 
   counter = 0;
 
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_prev);
+#ifndef AGS_USE_TIMER
+  if(thread->parent == NULL){
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_prev);
+  }
+#endif
 
   while((AGS_THREAD_RUNNING & running) != 0){
     running = g_atomic_int_get(&(thread->flags));
 
+    /* timing */
     if(thread->parent == NULL){
+#ifdef AGS_USE_TIMER
+      pthread_mutex_lock(thread->timer_mutex);
+
+      if(!g_atomic_int_get(&(thread->timer_expired))){
+	g_atomic_int_set(&(thread->timer_wait),
+			 TRUE);
+	
+	while(!g_atomic_int_get(&(thread->timer_expired))){
+	  pthread_cond_wait(thread->timer_cond,
+			    thread->timer_mutex);
+	}
+      }
+
+      g_atomic_int_set(&(thread->timer_wait),
+			 FALSE);
+      g_atomic_int_set(&(thread->timer_expired),
+			 FALSE);
+	
+      pthread_mutex_unlock(thread->timer_mutex);
+#else
       long time_spent;
 
       static const long time_unit = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
@@ -1931,8 +1995,10 @@ ags_thread_loop(void *ptr)
       }
 
       clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_prev);
+#endif
     }
 
+    /* iteration */
     if(delay >= 1.0){
       counter++;
 
@@ -1957,6 +2023,9 @@ ags_thread_loop(void *ptr)
 	  ags_thread_loop_sync(thread);
 
 	  pthread_mutex_unlock(thread->mutex);
+
+	  /* wait for async-queue */
+	  ags_thread_loop_wait_async();
 	}
 
 	//	pthread_yield();
@@ -1985,6 +2054,9 @@ ags_thread_loop(void *ptr)
 	  ags_thread_loop_sync(thread);
 
 	  pthread_mutex_unlock(thread->mutex);
+
+	  /* wait for async-queue */
+	  ags_thread_loop_wait_async();
 	}
 
 	//	pthread_yield();
@@ -2034,6 +2106,9 @@ ags_thread_loop(void *ptr)
 	ags_thread_loop_sync(thread);
 	
 	pthread_mutex_unlock(thread->mutex);
+
+	/* wait for async-queue */
+	ags_thread_loop_wait_async();
       }
 
       /* */
@@ -2674,6 +2749,15 @@ ags_thread_find_type(AgsThread *thread, GType type)
   return(NULL);
 }
 
+//TODO:JK: use me
+void
+ags_thread_cleanup(AgsThread *thread)
+{
+  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  pango_cairo_font_map_set_default(NULL);
+  //  cairo_debug_reset_static_data();
+  //  FcFini();
+}
 
 /**
  * ags_thread_new:

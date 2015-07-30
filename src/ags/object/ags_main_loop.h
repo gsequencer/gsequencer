@@ -39,7 +39,10 @@ struct _AgsMainLoopInterface
 
   void (*set_application_context)(AgsMainLoop *main_loop, AgsApplicationContext *application_context);
   AgsApplicationContext* (*get_application_context)(AgsMainLoop *main_loop);
-  
+
+  void (*set_async_queue)(AgsMainLoop *main_loop, GObject *async_queue);
+  GObject* (*get_application_context)(AgsMainLoop *main_loop);
+
   void (*set_tic)(AgsMainLoop *main_loop, guint tic);
   guint (*get_tic)(AgsMainLoop *main_loop);
 

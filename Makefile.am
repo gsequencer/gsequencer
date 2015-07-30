@@ -128,6 +128,7 @@ ags_object_h_sources = \
 	$(deprecated_ags_object_h_sources) \
 	src/ags/object/ags_init.h			\
 	src/ags/object/ags_application_context.h	\
+	src/ags/object/ags_async_queue.h		\
 	src/ags/object/ags_config.h			\
 	src/ags/object/ags_applicable.h			\
 	src/ags/object/ags_countable.h			\
@@ -154,6 +155,7 @@ ags_object_c_sources = \
 	$(deprecated_ags_object_c_sources) \
 	src/ags/object/ags_init.c			\
 	src/ags/object/ags_application_context.c	\
+	src/ags/object/ags_async_queue.c		\
 	src/ags/object/ags_config.c			\
 	src/ags/object/ags_applicable.c			\
 	src/ags/object/ags_countable.c			\

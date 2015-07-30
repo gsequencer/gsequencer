@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/thread/ags_task_thread.h>
@@ -23,6 +24,7 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_async_queue.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_returnable_thread.h>
@@ -31,10 +33,17 @@
 
 void ags_task_thread_class_init(AgsTaskThreadClass *task_thread);
 void ags_task_thread_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_task_thread_async_queue_interface_init(AgsAsyncQueueInterface *async_queue);
 void ags_task_thread_init(AgsTaskThread *task_thread);
 void ags_task_thread_connect(AgsConnectable *connectable);
 void ags_task_thread_disconnect(AgsConnectable *connectable);
 void ags_task_thread_finalize(GObject *gobject);
+void ags_task_thread_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex);
+pthread_mutex_t* ags_task_thread_get_run_mutex(AgsAsyncQueue *async_queue);
+void ags_task_thread_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_cond);
+pthread_cond_t* ags_task_thread_get_run_cond(AgsAsyncQueue *async_queue);
+void ags_task_thread_set_run(AgsAsyncQueue *async_queue, gboolean is_run);
+gboolean ags_task_thread_is_run(AgsAsyncQueue *async_queue);
 
 void ags_task_thread_start(AgsThread *thread);
 void ags_task_thread_run(AgsThread *thread);
@@ -79,6 +88,12 @@ ags_task_thread_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_async_queue_interface_info = {
+      (GInterfaceInitFunc) ags_task_thread_async_queue_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_task_thread = g_type_register_static(AGS_TYPE_THREAD,
 						  "AgsTaskThread\0",
 						  &ags_task_thread_info,
@@ -87,6 +102,10 @@ ags_task_thread_get_type()
     g_type_add_interface_static(ags_type_task_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_task_thread,
+				AGS_TYPE_ASYNC_QUEUE,
+				&ags_async_queue_interface_info);
   }
   
   return (ags_type_task_thread);
@@ -122,6 +141,19 @@ ags_task_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
+ags_task_thread_async_queue_interface_init(AgsAsyncQueueInterface *async_queue)
+{
+  async_queue->set_run_mutex = ags_task_thread_set_run_mutex;
+  async_queue->get_run_mutex = ags_task_thread_get_run_mutex;
+
+  async_queue->set_run_cond = ags_task_thread_set_run_cond;
+  async_queue->get_run_cond = ags_task_thread_get_run_cond;
+
+  async_queue->set_run = ags_task_thread_set_run;
+  async_queue->is_run = ags_task_thread_is_run;
+}
+
+void
 ags_task_thread_init(AgsTaskThread *task_thread)
 {
   AgsThread *thread;
@@ -132,7 +164,21 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   //		  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX);
 
   thread->freq = AGS_TASK_THREAD_DEFAULT_JIFFIE;
+  
+  /* async queue */
+  g_atomic_int_set(&(task_thread->is_run),
+		   FALSE);
 
+  pthread_mutexattr_init(&(mutexattr));
+  pthread_mutexattr_settype(&(mutexattr), PTHREAD_MUTEX_RECURSIVE);
+
+  task_thread->run_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(task_thread->run_mutex, &mutexattr);
+
+  task_thread->run_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(task_thread->run_cond, NULL);
+
+  /*  */
   task_thread->read_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(task_thread->read_mutex, NULL);
 
@@ -180,6 +226,44 @@ ags_task_thread_finalize(GObject *gobject)
 
   /*  */
   G_OBJECT_CLASS(ags_task_thread_parent_class)->finalize(gobject);
+}
+
+
+void
+ags_task_thread_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex)
+{
+  AGS_TASK_THREAD(async_queue)->run_mutex = run_mutex;
+}
+
+pthread_mutex_t*
+ags_task_thread_get_run_mutex(AgsAsyncQueue *async_queue)
+{
+  return(AGS_TASK_THREAD(async_queue)->run_mutex);
+}
+
+void
+ags_task_thread_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_cond)
+{
+  AGS_TASK_THREAD(async_queue)->run_cond = run_cond;
+}
+
+pthread_cond_t*
+ags_task_thread_get_run_cond(AgsAsyncQueue *async_queue)
+{
+  return(AGS_TASK_THREAD(async_queue)->run_cond);
+}
+
+void
+ags_task_thread_set_run(AgsAsyncQueue *async_queue, gboolean is_run)
+{
+  g_atomic_int_set(&(AGS_TASK_THREAD(async_queue)->is_run),
+		   is_run);
+}
+
+gboolean
+ags_task_thread_is_run(AgsAsyncQueue *async_queue)
+{
+  return(g_atomic_int_get(&(AGS_TASK_THREAD(async_queue)->is_run)));
 }
 
 void
@@ -272,6 +356,16 @@ ags_task_thread_run(AgsThread *thread)
 		       NULL);
 
   pthread_mutex_unlock(task_thread->read_mutex);
+
+  /* async queue */
+  pthread_mutex_lock(task_thread->run_mutex);
+  
+  ags_async_queue_set_run(AGS_ASYNC_QUEUE(task_thread),
+			  TRUE);
+	
+  pthread_cond_broadcast(task_thread->run_cond);
+  
+  pthread_mutex_unlock(task_thread->run_mutex);
 }
 
 void
