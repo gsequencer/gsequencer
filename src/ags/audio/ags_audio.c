@@ -3194,7 +3194,7 @@ ags_audio_remove_automation(AgsAudio *audio,
  *
  * Adds a recall id.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
@@ -3218,9 +3218,6 @@ ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
 
   pthread_mutex_lock(mutex);
 
-  /*
-   * TODO:JK: thread synchronisation
-   */
   g_object_ref(recall_id);
   audio->recall_id = g_list_prepend(audio->recall_id, recall_id);
   
@@ -3234,7 +3231,7 @@ ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
  *
  * Removes a recall id.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
@@ -3258,12 +3255,82 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
 
   pthread_mutex_lock(mutex);
 
-  /*
-   * TODO:JK: thread synchronisation
-   */
-
   audio->recall_id = g_list_remove(audio->recall_id, recall_id);
   g_object_unref(recall_id);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_add_recycling_context:
+ * @audio: an #AgsAudio
+ * @recycling_context: the #AgsRecyclingContext
+ *
+ * Adds a recycling context.
+ *
+ * Since: 0.4.3
+ */
+void
+ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context)
+{
+  AgsApplicationContext *application_context;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+  
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  pthread_mutex_lock(mutex);
+
+  g_object_ref(recycling_context);
+  audio->recycling_context = g_list_prepend(audio->recycling_context, recycling_context);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_remove_recycling_context:
+ * @audio: an #AgsAudio
+ * @recycling_context: the #AgsRecyclingContext
+ *
+ * Removes a recycling context.
+ *
+ * Since: 0.4.3
+ */
+void
+ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context)
+{
+  AgsApplicationContext *application_context;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+  
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  pthread_mutex_lock(mutex);
+
+  audio->recycling_context = g_list_remove(audio->recycling_context, recycling_context);
+  g_object_unref(recycling_context);
   
   pthread_mutex_unlock(mutex);
 }

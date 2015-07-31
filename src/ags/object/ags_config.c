@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/object/ags_config.h>
@@ -383,7 +384,7 @@ ags_config_real_load_defaults(AgsConfig *config)
  *
  * Load configuration from default values.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_config_load_defaults(AgsConfig *config)
@@ -403,7 +404,7 @@ ags_config_load_defaults(AgsConfig *config)
  *
  * Load configuration from @filename.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_config_load_from_file(AgsConfig *config, gchar *filename)
@@ -477,7 +478,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
  *
  * Save configuration.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_config_save(AgsConfig *config)
@@ -549,7 +550,7 @@ ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *va
  *
  * Set config by @group and @key, applying @value.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_config_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
@@ -592,7 +593,7 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
  *
  * Returns: the property's value
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 gchar*
 ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
@@ -618,7 +619,7 @@ ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
  *
  * Returns: a new #AgsConfig.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsConfig*
 ags_config_new(GObject *application_context)

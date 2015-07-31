@@ -66,8 +66,6 @@ enum{
 static gpointer ags_channel_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_channel_thread_parent_connectable_interface;
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_channel_thread_get_type()
 {
@@ -289,7 +287,10 @@ ags_channel_thread_run(AgsThread *thread)
   AgsPlayback *playback;
 
   AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
   AgsChannelThread *channel_thread;
+
+  AgsApplicationContext *application_context;
 
   gint stage;
   
@@ -311,7 +312,10 @@ ags_channel_thread_run(AgsThread *thread)
   channel_thread = AGS_CHANNEL_THREAD(thread);
   channel = channel_thread->channel;
   playback = channel->playback;
-  
+
+  main_loop = ags_thread_get_toplevel(thread);
+  application_context = ags_main_loop_get_application_context(main_loop);
+
   //  g_message("----a\0");
   
   /* start - wait until signaled */
@@ -335,13 +339,13 @@ ags_channel_thread_run(AgsThread *thread)
   pthread_mutex_unlock(channel_thread->wakeup_mutex);
 
   /* channel mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_context->mutex);
 
   mutex_manager = ags_mutex_manager_get_instance();
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) channel);
       
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_context->mutex);
   
   /* do channel processing */
   for(stage = 0; stage < 3; stage++){

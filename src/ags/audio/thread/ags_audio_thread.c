@@ -73,8 +73,6 @@ enum{
 static gpointer ags_audio_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_audio_thread_parent_connectable_interface;
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_audio_thread_get_type()
 {
@@ -298,10 +296,13 @@ ags_audio_thread_run(AgsThread *thread)
   AgsPlayback *playback;
   
   AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
   AgsAudioThread *audio_thread;
 
-  gint stage;
+  AgsApplicationContext *application_context;
   
+  gint stage;
+
   pthread_mutex_t *audio_mutex;
 
   if(!thread->rt_setup){
@@ -320,7 +321,9 @@ ags_audio_thread_run(AgsThread *thread)
   audio_thread = AGS_AUDIO_THREAD(thread);
   audio = audio_thread->audio;
   playback_domain = audio->playback_domain;
-  
+
+  main_loop = ags_thread_get_toplevel(thread);
+  application_context = ags_main_loop_get_application_context(main_loop);
   //  g_message(" --- a");
   
   /* start - wait until signaled */
@@ -344,13 +347,13 @@ ags_audio_thread_run(AgsThread *thread)
   pthread_mutex_unlock(audio_thread->wakeup_mutex);
 
   /* audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_context->mutex);
 
   mutex_manager = ags_mutex_manager_get_instance();
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
       
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_context->mutex);
 
   /* do audio processing */
   output = audio->output;

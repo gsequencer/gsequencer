@@ -1358,6 +1358,25 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 }
 
 /**
+ * ags_audio_loop_stopped_all:
+ * @audio_loop: the #AgsAudioLoop
+ *
+ * Notifies about stopped playback for all contices.
+ *
+ * Since: 0.4.3
+ */
+void
+ags_audio_loop_stopped_all(AgsAudioLoop *audio_loop)
+{
+  g_return_if_fail(AGS_IS_AUDIO_LOOP(audio_loop));
+
+  g_object_ref(G_OBJECT(audio_loop));
+  g_signal_emit(G_OBJECT(audio_loop),
+		audio_loop_signals[STOPPED_ALL], 0);
+  g_object_unref(G_OBJECT(audio_loop));
+}
+
+/**
  * ags_audio_loop_add_audio:
  * @audio_loop: the #AgsAudioLoop
  * @audio: an #AgsAudio
