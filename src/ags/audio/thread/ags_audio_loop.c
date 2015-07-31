@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/thread/ags_audio_loop.h>
@@ -24,12 +25,16 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall.h>
+
+#include <ags/audio/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
 
 void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
 void ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -47,6 +52,8 @@ void ags_audio_loop_connect(AgsConnectable *connectable);
 void ags_audio_loop_disconnect(AgsConnectable *connectable);
 void ags_audio_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context);
 AgsApplicationContext* ags_audio_loop_get_application_context(AgsMainLoop *main_loop);
+void ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
+GObject* ags_audio_loop_get_async_queue(AgsMainLoop *main_loop);
 void ags_audio_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_audio_loop_get_tic(AgsMainLoop *main_loop);
 void ags_audio_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
@@ -58,7 +65,11 @@ void ags_audio_loop_run(AgsThread *thread);
 
 void ags_audio_loop_play_recall(AgsAudioLoop *audio_loop);
 void ags_audio_loop_play_channel(AgsAudioLoop *audio_loop);
+void ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback *playback);
+void ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback *playback);
 void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
+void ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDomain *playback_domain);
+void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDomain *playback_domain);
 
 /**
  * SECTION:ags_audio_loop
@@ -291,6 +302,8 @@ ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 {
   main_loop->set_application_context = ags_audio_loop_set_application_context;
   main_loop->get_application_context = ags_audio_loop_get_application_context;
+  main_loop->set_async_queue = ags_audio_loop_set_async_queue;
+  main_loop->get_async_queue = ags_audio_loop_get_async_queue;
   main_loop->set_tic = ags_audio_loop_set_tic;
   main_loop->get_tic = ags_audio_loop_get_tic;
   main_loop->set_last_sync = ags_audio_loop_set_last_sync;
@@ -316,6 +329,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   /* AgsApplicationContext */
   audio_loop->application_context = NULL;
   audio_loop->application_mutex = NULL;
+  audio_loop->async_queue = NULL;
   
   audio_loop->soundcard = NULL;
 
@@ -499,6 +513,18 @@ AgsApplicationContext*
 ags_audio_loop_get_application_context(AgsMainLoop *main_loop)
 {
   return(AGS_AUDIO_LOOP(main_loop)->application_context);
+}
+
+void
+ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
+{
+  AGS_AUDIO_LOOP(main_loop)->async_queue = async_queue;
+}
+
+GObject*
+ags_audio_loop_get_async_queue(AgsMainLoop *main_loop)
+{
+  return(AGS_AUDIO_LOOP(main_loop)->async_queue);
 }
 
 void
@@ -708,10 +734,15 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
 void
 ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 {
-  AgsPlayback *play;
+  AgsPlayback *playback;
   AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list_play, *list_next_play;
   gint stage;
+
+  pthread_mutex_t *soundcard_mutex, *audio_mutex;
 
   if(audio_loop->play_channel == NULL){
     if((AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING & (audio_loop->flags)) != 0){
@@ -728,66 +759,187 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
   audio_loop->flags |= AGS_AUDIO_LOOP_PLAYING_CHANNEL;
 
   /* run the 3 stages */
-  for(stage = 0; stage < 3; stage++){
-    list_play = audio_loop->play_channel;
+  list_play = audio_loop->play_channel;
+  
+  while(list_play != NULL){
+    list_next_play = list_play->next;
+    
+    playback = (AgsPlayback *) list_play->data;
+    channel = AGS_CHANNEL(playback->source);
+    
+    /*  */
+    pthread_mutex_lock(audio_loop->application_mutex);
+    
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    (GObject *) AGS_AUDIO(channel->audio)->soundcard);
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel->audio);
+      
+    pthread_mutex_unlock(audio_loop->application_mutex);
+      
+    //      pthread_mutex_lock(soundcard_mutex);
+    //      pthread_mutex_lock(audio_mutex);
+      
+    /*  */
+    if((AGS_PLAYBACK_REMOVE & (g_atomic_int_get(&(playback->flags)))) == 0){
+      if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+	/* super threaded */
+	ags_audio_loop_play_channel_super_threaded(audio_loop, playback);
+      }else{
+	gboolean remove_play;
 
-    while(list_play != NULL){
-      gboolean remove_play;
+	/* not super threaded */
+	remove_play = TRUE;
+	    
+	for(stage = 0; stage < 3; stage++){
 
-      list_next_play = list_play->next;
 
-      play = (AgsPlayback *) list_play->data;
-      channel = AGS_CHANNEL(play->source);
-
-      if((AGS_PLAYBACK_REMOVE & (play->flags)) == 0){
-	remove_play = FALSE;
-	if((AGS_PLAYBACK_SUPER_THREADED & (play->flags)) == 0){
-	  /* not super threaded */
-	  if((AGS_PLAYBACK_PLAYBACK & (play->flags)) != 0){
-	    ags_channel_recursive_play(channel, play->recall_id[0], stage);
+	  if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0){
+	    remove_play = FALSE;
+	    ags_channel_recursive_play(channel, playback->recall_id[0], stage);
 	  }
 
-	  if((AGS_PLAYBACK_SEQUENCER & (play->flags)) != 0){
-	    ags_channel_recursive_play(channel, play->recall_id[1], stage);
+	  if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) != 0){
+	    remove_play = FALSE;
+	    ags_channel_recursive_play(channel, playback->recall_id[1], stage);
 	  }
 
-	  if((AGS_PLAYBACK_NOTATION & (play->flags)) != 0){
-	    ags_channel_recursive_play(channel, play->recall_id[2], stage);
+	  if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(playback->flags)))) != 0){
+	    remove_play = FALSE;
+	    ags_channel_recursive_play(channel, playback->recall_id[2], stage);
 	  }
+	}
 
-	}else{
-	  /* super threaded */
-	  if((AGS_PLAYBACK_PLAYBACK & (play->flags)) != 0){
-	    play->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(play->iterator_thread[0]->tic_cond);
-	  }
+	if(remove_play){
+	  ags_audio_loop_remove_channel(audio_loop, channel);
+	}	  
+      }
+    }
 
-	  if((AGS_PLAYBACK_SEQUENCER & (play->flags)) != 0){
-	    play->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(play->iterator_thread[1]->tic_cond);
-	  }
+    //      pthread_mutex_unlock(audio_mutex);
+    //      pthread_mutex_unlock(soundcard_mutex);
 
-	  if((AGS_PLAYBACK_NOTATION & (play->flags)) != 0){
-	    play->iterator_thread[2]->flags |= AGS_ITERATOR_THREAD_DONE;
-	    pthread_cond_signal(play->iterator_thread[2]->tic_cond);
-	  }
+    list_play = list_next_play;
+  }
+
+  /* sync the 3 stages */
+  list_play = audio_loop->play_channel;
+  
+  while(list_play != NULL){
+    list_next_play = list_play->next;
+    
+    playback = (AgsPlayback *) list_play->data;
+    channel = AGS_CHANNEL(playback->source);
+
+    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+      /* super threaded */
+      ags_audio_loop_sync_channel_super_threaded(audio_loop, playback);
+    }
+
+    list_play = list_next_play;
+  }
+}
+
+void
+ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback *playback)
+{
+  gboolean do_playback, do_sequencer, do_notation;
+	
+  /* super threaded audio level */
+  do_playback = FALSE;
+  do_sequencer = FALSE;
+  do_notation = FALSE;
+	
+  /* playback */
+  if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0){
+    do_playback = TRUE;
+
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback->channel_thread[0]->flags)))) == 0){
+      guint val;
+
+      ags_thread_start(playback->channel_thread[0]);
+
+      /* wait child */
+      pthread_mutex_lock(playback->channel_thread[0]->start_mutex);
+
+      val = g_atomic_int_get(&(playback->channel_thread[0]->flags));
+
+      if((AGS_THREAD_INITIAL_RUN & val) != 0){
+	while((AGS_THREAD_INITIAL_RUN & val) != 0){
+	  pthread_cond_wait(playback->channel_thread[0]->start_cond,
+			    playback->channel_thread[0]->start_mutex);
+
+	  val = g_atomic_int_get(&(playback->channel_thread[0]->flags));
 	}
       }
 
-      if(remove_play){
-	audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
-	audio_loop->play_channel = g_list_remove(audio_loop->play_channel, (gpointer) play);
+      pthread_mutex_unlock(playback->channel_thread[0]->start_mutex);
+    }
 
-	ags_channel_done(play->source,
-			 play->recall_id[0]);
+    /* wakeup wait */
+    pthread_mutex_lock(AGS_CHANNEL_THREAD(playback->channel_thread[0])->wakeup_mutex);
 
-	play->flags &= (~(AGS_PLAYBACK_REMOVE));
-	play->recall_id[0] = NULL;
-	//TODO:JK: verify g_object_unref() missing
+    g_atomic_int_or(&(AGS_CHANNEL_THREAD(playback->channel_thread[0])->flags),
+		    AGS_CHANNEL_THREAD_WAKEUP);
+	    
+    if((AGS_CHANNEL_THREAD_WAITING & (g_atomic_int_get(&(AGS_CHANNEL_THREAD(playback->channel_thread[0])->flags)))) != 0){
+      pthread_cond_signal(AGS_CHANNEL_THREAD(playback->channel_thread[0])->wakeup_cond);
+    }
+	    
+    pthread_mutex_unlock(AGS_CHANNEL_THREAD(playback->channel_thread[0])->wakeup_mutex);
+  }
+}
+
+void
+ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback *playback)
+{
+  gboolean do_playback;
+  
+  do_playback = FALSE;
+	
+  /* playback */
+  if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0){
+    do_playback = TRUE;
+
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback->channel_thread[0]->flags)))) != 0 &&
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(playback->channel_thread[0]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(playback->channel_thread[0]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(playback->channel_thread[0]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(playback->channel_thread[0]->flags)))) == 0){
+
+      pthread_mutex_lock(AGS_CHANNEL_THREAD(playback->channel_thread[0])->done_mutex);
+
+      if((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(AGS_CHANNEL_THREAD(playback->channel_thread[0])->flags)))) == 0){
+	g_atomic_int_or(&(AGS_CHANNEL_THREAD(playback->channel_thread[0])->flags),
+			AGS_CHANNEL_THREAD_NOTIFY);
+    
+	while((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(AGS_CHANNEL_THREAD(playback->channel_thread[0])->flags)))) == 0){
+	  pthread_cond_wait(AGS_CHANNEL_THREAD(playback->channel_thread[0])->done_cond,
+			    AGS_CHANNEL_THREAD(playback->channel_thread[0])->done_mutex);
+	}
       }
 
-      list_play = list_next_play;
+      g_atomic_int_and(&(AGS_CHANNEL_THREAD(playback->channel_thread[0])->flags),
+		       (~AGS_CHANNEL_THREAD_NOTIFY));
+      g_atomic_int_and(&(AGS_CHANNEL_THREAD(playback->channel_thread[0])->flags),
+		       (~AGS_CHANNEL_THREAD_DONE));
+      
+      pthread_mutex_unlock(AGS_CHANNEL_THREAD(playback->channel_thread[0])->done_mutex);
     }
+  }
+
+  /*  */
+  if(do_playback && playback->recall_id[0] == NULL){
+    ags_thread_stop(playback->channel_thread[0]);
+    g_atomic_int_and(&(playback->flags),
+		     (~AGS_PLAYBACK_PLAYBACK));
+  }
+
+  /* remove from playback */
+  if(!do_playback){
+    ags_thread_stop(playback->channel_thread[0]);
+    ags_audio_loop_remove_channel(audio_loop,
+				  playback->source);
   }
 }
 
@@ -804,12 +956,18 @@ void
 ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 {
   AgsPlaybackDomain *play_domain;
-  AgsPlayback *play;
+  AgsPlayback *playback;
   AgsAudio *audio;
   AgsChannel *output;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list_play_domain, *list_next_play_domain;
   GList *list_play;
   gint stage;
+  gboolean remove_domain;
+  
+  pthread_mutex_t *soundcard_mutex, *audio_mutex;
 
   if(audio_loop->play_audio == NULL){
     if((AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING & (audio_loop->flags)) != 0){
@@ -822,97 +980,380 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 
   audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING);
 
+  /*  */
+  pthread_mutex_lock(audio_loop->application_mutex);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  pthread_mutex_unlock(audio_loop->application_mutex);
+
   /* entry point */
   audio_loop->flags |= AGS_AUDIO_LOOP_PLAYING_AUDIO;
 
-  /* run the 3 stages */
-  for(stage = 0; stage < 3; stage++){
-    list_play_domain = audio_loop->play_audio;
+  list_play_domain = audio_loop->play_audio;
 
-    while(list_play_domain != NULL){
-      gboolean remove_domain;
+  while(list_play_domain != NULL){
+    list_next_play_domain = list_play_domain->next;
+    
+    play_domain = (AgsPlaybackDomain *) list_play_domain->data;
+    audio = AGS_AUDIO(play_domain->domain);
+    
+    /*  */
+    pthread_mutex_lock(audio_loop->application_mutex);
+    
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    (GObject *) audio->soundcard);
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) audio);
+    
+    pthread_mutex_unlock(audio_loop->application_mutex);
 
-      list_next_play_domain = list_play_domain->next;
-
-      play_domain = (AgsPlaybackDomain *) list_play_domain->data;
-      audio = AGS_AUDIO(play_domain->domain);
-
+    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(play_domain->flags)))) != 0){
+      ags_audio_loop_play_audio_super_threaded(audio_loop, play_domain);
+    }else{
+      /*  */
       output = audio->output;
-      remove_domain = TRUE;
 
       while(output != NULL){
-	play = ags_playback_find_source(play_domain->playback,
-					output);
-
-	if(play == NULL){
+	playback = output->playback; // ags_playback_find_source(play_domain->playback,
+	//			   (GObject *) output);
+      
+	if(playback == NULL){
 	  output = output->next;
 	  continue;
 	}
+            
+	if((AGS_PLAYBACK_SUPER_THREADED_RECYCLING & (g_atomic_int_get(&(playback->flags)))) != 0){
+	  //TODO:JK: implement me
 
-	if((AGS_PLAYBACK_REMOVE & (play->flags)) == 0){
-	  remove_domain = FALSE;
+	  /* super threaded recycling level */
+	  if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0){
+	    playback->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
+	    pthread_cond_signal(&(playback->iterator_thread[0]->tic_cond));
+	  }
 
-	  if((AGS_PLAYBACK_SUPER_THREADED & (play->flags)) == 0){
-	    /* not super threaded */
-	    if((AGS_PLAYBACK_PLAYBACK & (play->flags)) != 0){
-	      ags_channel_recursive_play(output, play->recall_id[0], stage);
+	  if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) != 0){
+	    playback->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
+	    pthread_cond_signal(&(playback->iterator_thread[1]->tic_cond));
+	  }
+
+	    if((AGS_PLAYBACK_SEQUENCER & (playback->flags)) != 0){
+	      ags_channel_recursive_play(output, playback->recall_id[1], stage);
 	    }
 
-	    if((AGS_PLAYBACK_SEQUENCER & (play->flags)) != 0){
-	      ags_channel_recursive_play(output, play->recall_id[1], stage);
-	    }
+	  /* not super threaded */
+	  pthread_mutex_lock(audio_mutex);
+	  pthread_mutex_lock(soundcard_mutex);    
 
-	    if((AGS_PLAYBACK_NOTATION & (play->flags)) != 0){
-	      ags_channel_recursive_play(output, play->recall_id[2], stage);
-	    }
+	  remove_domain = TRUE;
+	
+	  /* run the 3 stages */
+	  for(stage = 0; stage < 3; stage++){
+	    if((AGS_PLAYBACK_REMOVE & (g_atomic_int_get(&(playback->flags)))) == 0){
+	      if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0){
+		remove_domain = FALSE;
+		ags_channel_recursive_play(output, playback->recall_id[0], stage);
+	      }
 
-	  }else{
-	    /* super threaded */
-	    if((AGS_PLAYBACK_PLAYBACK & (play->flags)) != 0){
-	      play->iterator_thread[0]->flags |= AGS_ITERATOR_THREAD_DONE;
-	      pthread_cond_signal(play->iterator_thread[0]->tic_cond);
-	    }
+	      if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) != 0){
+		remove_domain = FALSE;
+		ags_channel_recursive_play(output, playback->recall_id[1], stage);
+	      }
 
-	    if((AGS_PLAYBACK_SEQUENCER & (play->flags)) != 0){
-	      play->iterator_thread[1]->flags |= AGS_ITERATOR_THREAD_DONE;
-	      pthread_cond_signal(play->iterator_thread[1]->tic_cond);
-	    }
-
-	    if((AGS_PLAYBACK_NOTATION & (play->flags)) != 0){
-	      play->iterator_thread[2]->flags |= AGS_ITERATOR_THREAD_DONE;
-	      pthread_cond_signal(play->iterator_thread[2]->tic_cond);
+	      if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(playback->flags)))) != 0){
+		remove_domain = FALSE;
+		ags_channel_recursive_play(output, playback->recall_id[2], stage);
+	      }
 	    }
 	  }
+
+	  /* check for removal */
+	  if(remove_domain){
+	    AgsChannel *channel;
+
+	    audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
+	    audio_loop->play_audio = g_list_remove(audio_loop->play_audio, (gpointer) play_domain);
+
+	    channel = audio->output;
+	
+	    while(channel != NULL){
+	      playback = AGS_PLAYBACK(channel->playback);	  
+	      g_atomic_int_and(&(playback->flags),
+			       (~(AGS_PLAYBACK_REMOVE | AGS_PLAYBACK_DONE)));
+
+	      //	  ags_audio_done(audio);
+
+	      //TODO:JK: verify g_object_unref() missing
+	      playback->recall_id[0] = NULL;
+	      playback->recall_id[1] = NULL;
+	      playback->recall_id[2] = NULL;
+
+	      channel = channel->next;
+	    }
+	  }
+		  
+	  pthread_mutex_unlock(soundcard_mutex);
+	  pthread_mutex_unlock(audio_mutex);
 	}
 
 	output = output->next;
       }
+    }
+    
+    /* iterate */
+    list_play_domain = list_next_play_domain;
+  }
+  
+  /* sync - wait the 3 stages */
+  list_play_domain = audio_loop->play_audio;
 
-      if(remove_domain){
-	AgsChannel *channel;
+  while(list_play_domain != NULL){
+    list_next_play_domain = list_play_domain->next;
+        
+    play_domain = (AgsPlaybackDomain *) list_play_domain->data;
+    audio = AGS_AUDIO(play_domain->domain);
+    
+    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(play_domain->flags)))) != 0){
+      ags_audio_loop_sync_audio_super_threaded(audio_loop, play_domain);
+    }else{
+      /*  */
+      output = audio->output;
 
-	audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
-	audio_loop->play_audio = g_list_remove(audio_loop->play_audio, (gpointer) play_domain);
+      while(output != NULL){
+	playback = output->playback; // ags_playback_find_source(play_domain->playback,
 
-	channel = audio->output;
+	if(playback == NULL){
+	  output = output->next;
+	  continue;
+	}      
+
+	if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+	  ags_audio_loop_sync_channel_super_threaded(audio_loop, playback);
+	}else if((AGS_PLAYBACK_SUPER_THREADED_RECYCLING & (g_atomic_int_get(&(playback->flags)))) != 0){
+	  //TODO:JK: implement me
+	}
+
+	output = output->next;
+      }
+    }
+    
+    /* iterate */
+    list_play_domain = list_next_play_domain;
+  }
+}
+ 
+/**
+ * ags_audio_loop_play_audio_super_threaded:
+ * @audio_loop: the #AgsAudioLoop
+ * @playback_domain: an #AgsPlaybackDomain
+ *
+ * Play audio super-threaded.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDomain *playback_domain)
+{
+  gboolean do_sequencer, do_notation;
 	
-	while(channel != NULL){
-	  play = AGS_PLAYBACK(channel->playback);	  
-	  play->flags &= (~(AGS_PLAYBACK_REMOVE));
+  /* super threaded audio level */
+  do_sequencer = FALSE;
+  do_notation = FALSE;	
 
-	  //	  ags_audio_done(audio);
+  /* sequencer */
+  if((AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+    do_sequencer = TRUE;
 
-	  //TODO:JK: verify g_object_unref() missing
-	  //play->recall_id[0] = NULL;
-	  play->recall_id[1] = NULL;
-	  play->recall_id[2] = NULL;
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[1]->flags)))) == 0){
+      guint val;
+	  
+      ags_thread_start(playback_domain->audio_thread[1]);
+  
+      /* wait child */
+      pthread_mutex_lock(playback_domain->audio_thread[1]->start_mutex);
 
-	  channel = channel->next;
+      val = g_atomic_int_get(&(playback_domain->audio_thread[1]->flags));
+
+      if((AGS_THREAD_INITIAL_RUN & val) != 0){
+	while((AGS_THREAD_INITIAL_RUN & val) != 0){
+	  pthread_cond_wait(playback_domain->audio_thread[1]->start_cond,
+			    playback_domain->audio_thread[1]->start_mutex);
+
+	  val = g_atomic_int_get(&(playback_domain->audio_thread[1]->flags));
 	}
       }
 
-      list_play_domain = list_next_play_domain;
+      pthread_mutex_unlock(playback_domain->audio_thread[1]->start_mutex);
     }
+
+    /* wakeup wait */
+    pthread_mutex_lock(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->wakeup_mutex);
+
+    g_atomic_int_or(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->flags),
+		    AGS_AUDIO_THREAD_WAKEUP);
+	    
+    if((AGS_AUDIO_THREAD_WAITING & (g_atomic_int_get(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->flags)))) != 0){
+      pthread_cond_signal(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->wakeup_cond);
+    }
+	    
+    pthread_mutex_unlock(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->wakeup_mutex);
+  }
+
+  /* notation */
+  if((AGS_PLAYBACK_DOMAIN_NOTATION & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+    do_notation = TRUE;
+
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) == 0){
+      guint val;
+
+      ags_thread_start(playback_domain->audio_thread[2]);
+
+      /* wait child */
+      pthread_mutex_lock(playback_domain->audio_thread[2]->start_mutex);
+
+      val = g_atomic_int_get(&(playback_domain->audio_thread[2]->flags));
+
+      if((AGS_THREAD_INITIAL_RUN & val) != 0){
+	while((AGS_THREAD_INITIAL_RUN & val) != 0){
+	  pthread_cond_wait(playback_domain->audio_thread[2]->start_cond,
+			    playback_domain->audio_thread[2]->start_mutex);
+
+	  val = g_atomic_int_get(&(playback_domain->audio_thread[2]->flags));
+	}
+      }
+
+      pthread_mutex_unlock(playback_domain->audio_thread[2]->start_mutex);
+    }
+
+    /* wakeup wait */
+    pthread_mutex_lock(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->wakeup_mutex);
+	  
+    g_atomic_int_or(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->flags),
+		    AGS_AUDIO_THREAD_WAKEUP);
+	  
+    if((AGS_AUDIO_THREAD_WAITING & (g_atomic_int_get(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->flags)))) != 0){
+      pthread_cond_signal(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->wakeup_cond);
+    }
+	  
+    pthread_mutex_unlock(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->wakeup_mutex);
+  }
+}
+
+/**
+ * ags_audio_loop_sync_audio_super_threaded:
+ * @audio_loop: the #AgsAudioLoop
+ * @playback_domain: an #AgsPlaybackDomain
+ *
+ * Sync audio super-threaded.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDomain *playback_domain)
+{
+  GList *playback;
+  gboolean do_sequencer, do_notation;
+  gboolean found_sequencer, found_notation;
+  
+  do_sequencer = FALSE;
+  do_notation = FALSE;
+  
+  /* sequencer */
+  if((AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+    do_sequencer = TRUE;
+
+    pthread_mutex_lock(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->done_mutex);
+
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[1]->flags)))) != 0 &&
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(playback_domain->audio_thread[1]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(playback_domain->audio_thread[1]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(playback_domain->audio_thread[1]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(playback_domain->audio_thread[1]->flags)))) == 0){
+
+      if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->flags)))) == 0){
+	g_atomic_int_or(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->flags),
+			AGS_AUDIO_THREAD_NOTIFY);
+    
+	while((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->flags)))) == 0){
+	  pthread_cond_wait(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->done_cond,
+			    AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->done_mutex);
+	}
+      }
+    }
+    
+    g_atomic_int_and(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->flags),
+		     (~AGS_AUDIO_THREAD_NOTIFY));
+    g_atomic_int_and(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->flags),
+		     (~AGS_AUDIO_THREAD_DONE));
+      	  
+    pthread_mutex_unlock(AGS_AUDIO_THREAD(playback_domain->audio_thread[1])->done_mutex);
+  }
+
+  /* notation */
+  if((AGS_PLAYBACK_DOMAIN_NOTATION & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+    do_notation = TRUE;
+
+    pthread_mutex_lock(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->done_mutex);
+
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) != 0 &&
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) == 0 &&
+       (AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) == 0){
+      
+      if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->flags)))) == 0){
+	g_atomic_int_or(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->flags),
+			AGS_AUDIO_THREAD_NOTIFY);
+    
+	while((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->flags)))) == 0){
+	  pthread_cond_wait(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->done_cond,
+			    AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->done_mutex);
+	}
+      }
+    }
+      
+    g_atomic_int_and(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->flags),
+		     (~AGS_AUDIO_THREAD_NOTIFY));
+    g_atomic_int_and(&(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->flags),
+		     (~AGS_AUDIO_THREAD_DONE));
+      
+    pthread_mutex_unlock(AGS_AUDIO_THREAD(playback_domain->audio_thread[2])->done_mutex);
+  }
+
+  /* check if flags are still valid */
+  found_sequencer = FALSE;
+  found_notation = FALSE;
+	
+  playback = playback_domain->playback;
+
+  while(playback != NULL){
+    if(do_sequencer && AGS_PLAYBACK(playback->data)->recall_id[1] != NULL){
+      found_sequencer = TRUE;
+    }
+    
+    if(do_notation && AGS_PLAYBACK(playback->data)->recall_id[2] != NULL){
+      found_notation = TRUE;
+    }
+
+    playback = playback->next;
+  }
+
+  if(do_sequencer && !found_sequencer){
+    ags_thread_stop(playback_domain->audio_thread[1]);
+    g_atomic_int_and(&(playback_domain->flags),
+		     (~AGS_PLAYBACK_DOMAIN_SEQUENCER));
+  }
+
+  if(do_notation && !found_notation){
+    ags_thread_stop(playback_domain->audio_thread[2]);
+    g_atomic_int_and(&(playback_domain->flags),
+		     (~AGS_PLAYBACK_DOMAIN_NOTATION));
+  }
+
+  /* remove domain from playback */
+  if(!found_sequencer && !found_notation){
+    ags_audio_loop_remove_audio(audio_loop,
+				playback_domain->domain);
   }
 }
 
@@ -928,11 +1369,14 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 void
 ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
 {
-  g_object_ref(G_OBJECT(audio));
-  audio_loop->play_audio = g_list_prepend(audio_loop->play_audio,
-					  AGS_AUDIO(audio)->playback_domain);
+  if(g_list_find(audio_loop->play_audio,
+		 AGS_AUDIO(audio)->playback_domain) == NULL){
+    audio_loop->play_audio_ref = audio_loop->play_audio_ref + 1;
+    g_object_ref(G_OBJECT(audio));
 
-  audio_loop->play_audio_ref = audio_loop->play_audio_ref + 1;
+    audio_loop->play_audio = g_list_prepend(audio_loop->play_audio,
+					    AGS_AUDIO(audio)->playback_domain);
+  }
 }
 
 /**
@@ -946,12 +1390,15 @@ ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
  */
 void
 ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
-{
-  audio_loop->play_audio = g_list_remove(audio_loop->play_audio,
-					 AGS_AUDIO(audio)->playback_domain);
-  audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
-
-  g_object_unref(audio);
+{  
+  if(g_list_find(audio_loop->play_audio,
+		 AGS_AUDIO(audio)->playback_domain) != NULL){
+    audio_loop->play_audio = g_list_remove(audio_loop->play_audio,
+					   AGS_AUDIO(audio)->playback_domain);
+    audio_loop->play_audio_ref = audio_loop->play_audio_ref - 1;
+    
+    g_object_unref(audio);
+  }
 }
 
 /**
@@ -966,11 +1413,14 @@ ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
 void
 ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
 {
-  g_object_ref(G_OBJECT(channel));
-  audio_loop->play_channel = g_list_prepend(audio_loop->play_channel,
-					    AGS_CHANNEL(channel)->playback);
+  if(g_list_find(audio_loop->play_channel,
+		 AGS_CHANNEL(channel)->playback) == NULL){
+    g_object_ref(G_OBJECT(channel));
+    audio_loop->play_channel = g_list_prepend(audio_loop->play_channel,
+					      AGS_CHANNEL(channel)->playback);
 
-  audio_loop->play_channel_ref = audio_loop->play_channel_ref + 1;
+    audio_loop->play_channel_ref = audio_loop->play_channel_ref + 1;
+  }
 }
 
 /**
@@ -985,11 +1435,14 @@ ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
 void
 ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 {
-  audio_loop->play_channel = g_list_remove(audio_loop->play_channel,
-					   AGS_CHANNEL(channel)->playback);
-  audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
+  if(g_list_find(audio_loop->play_channel,
+		 AGS_CHANNEL(channel)->playback) != NULL){
+    audio_loop->play_channel = g_list_remove(audio_loop->play_channel,
+					     AGS_CHANNEL(channel)->playback);
+    audio_loop->play_channel_ref = audio_loop->play_channel_ref - 1;
 
-  g_object_unref(channel);
+    g_object_unref(channel);
+  }
 }
 
 /**
@@ -1004,11 +1457,13 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 void
 ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *playback)
 {
-  /* append to AgsSoundcard */
-  AGS_PLAYBACK(playback)->flags &= (~AGS_PLAYBACK_REMOVE);
-  audio_loop->play_recall = g_list_append(audio_loop->play_recall,
-					  playback);
-  audio_loop->play_recall_ref += 1;
+  if(g_list_find(audio_loop->play_recall,
+		 playback) == NULL){
+    AGS_PLAYBACK(playback)->flags &= (~AGS_PLAYBACK_REMOVE);
+    audio_loop->play_recall = g_list_append(audio_loop->play_recall,
+					    playback);
+    audio_loop->play_recall_ref += 1;
+  }
 }
 
 /**
@@ -1023,28 +1478,12 @@ ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, GObject *playback)
 void
 ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *playback)
 {
-  audio_loop->play_recall = g_list_remove(audio_loop->play_recall,
-					  playback);
-  audio_loop->play_recall_ref = audio_loop->play_recall_ref - 1;
-}
-
-/**
- * ags_audio_loop_remove_recall:
- * @audio_loop: the #AgsAudioLoop
- * @recall: an #AgsRecall
- *
- * Remove recall of playback.
- *
- * Since: 0.4.3
- */
-void
-ags_audio_loop_stopped_all(AgsAudioLoop *audio_loop)
-{
-  g_return_if_fail(AGS_IS_AUDIO_LOOP(audio_loop));
-  g_object_ref(G_OBJECT(audio_loop));
-  g_signal_emit(G_OBJECT(audio_loop),
-		audio_loop_signals[STOPPED_ALL], 0);
-  g_object_unref(G_OBJECT(audio_loop));
+  if(g_list_find(audio_loop->play_recall,
+		 playback) != NULL){
+    audio_loop->play_recall = g_list_remove(audio_loop->play_recall,
+					    playback);
+    audio_loop->play_recall_ref = audio_loop->play_recall_ref - 1;
+  }
 }
 
 /**

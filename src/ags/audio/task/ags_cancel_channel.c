@@ -146,7 +146,7 @@ ags_cancel_channel_finalize(GObject *gobject)
 void
 ags_cancel_channel_launch(AgsTask *task)
 {
-  AgsDevoutPlay *playback;
+  AgsPlayback *playback;
   AgsChannel *channel;
 
   AgsCancelChannel *cancel_channel;
@@ -209,7 +209,7 @@ ags_cancel_channel_launch(AgsTask *task)
  * ags_cancel_channel_new:
  * @channel: the #AgsChannel to cancel
  * @recall_id: the #AgsRecallID to cancel
- * @play: the #AgsDevoutPlay-struct
+ * @play: the #AgsPlayback object
  *
  * Creates an #AgsCancelChannel.
  *

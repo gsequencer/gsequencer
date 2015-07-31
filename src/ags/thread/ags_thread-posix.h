@@ -100,8 +100,9 @@ struct _AgsThread
   pthread_t *thread;
   pthread_attr_t thread_attr;
 
+  gboolean rt_setup;
   gdouble freq;
-
+  
   pthread_mutex_t *mutex;
   pthread_mutexattr_t mutexattr;
   pthread_cond_t *cond;

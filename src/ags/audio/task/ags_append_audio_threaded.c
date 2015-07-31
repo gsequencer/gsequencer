@@ -21,6 +21,9 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_append_audio_threaded_class_init(AgsAppendAudioThreadedClass *append_audio_threaded);
@@ -142,8 +145,9 @@ ags_append_audio_threaded_launch(AgsTask *task)
   audio_loop = AGS_AUDIO_LOOP(append_audio_threaded->audio_loop);
 
   /* append to AgsDevout */
+  //FIXME:JK: volatile
   append_audio_threaded->playback->flags &= (~AGS_PLAYBACK_REMOVE);
-  append_audio_threaded->playback->flags |= AGS_PLAYBACK_SUPER_THREADED;
+  append_audio_threaded->playback->flags |= AGS_PLAYBACK_SUPER_THREADED_CHANNEL;
   audio_loop->play_audio = g_list_append(audio_loop->play_audio,
 					 append_audio_threaded->playback);
   audio_loop->play_audio_ref += 1;

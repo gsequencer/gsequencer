@@ -782,8 +782,8 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
   if(recall_channel_run->destination != NULL &&
-     ags_recall_id_find_recycling_container(recall_channel_run->destination->recall_id,
-					    recall_id->recycling_container->parent) == NULL){
+     ags_recall_id_find_recycling_context(recall_channel_run->destination->recall_id,
+					  recall_id->recycling_context->parent) == NULL){
     return(NULL);
   }
   

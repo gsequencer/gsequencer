@@ -442,24 +442,28 @@ deprecated_ags_audio_thread_h_sources =
 ags_audio_thread_h_sources = \
 	$(deprecated_ags_audio_thread_h_sources) \
 	src/ags/audio/thread/ags_audio_loop.h			\
-	src/ags/audio/thread/ags_soundcard_thread.h		\
+	src/ags/audio/thread/ags_audio_thread.h			\
+	src/ags/audio/thread/ags_channel_thread.h		\
 	src/ags/audio/thread/ags_export_thread.h		\
 	src/ags/audio/thread/ags_iterator_thread.h		\
 	src/ags/audio/thread/ags_record_thread.h		\
-	src/ags/audio/thread/ags_recycling_thread_callbacks.h \
-	src/ags/audio/thread/ags_recycling_thread.h
+	src/ags/audio/thread/ags_recycling_thread_callbacks.h	\
+	src/ags/audio/thread/ags_recycling_thread.h		\
+	src/ags/audio/thread/ags_soundcard_thread.h
 
 deprecated_ags_audio_thread_c_sources =
 
 ags_audio_thread_c_sources = \
 	$(deprecated_ags_audio_thread_c_sources) \
 	src/ags/audio/thread/ags_audio_loop.c			\
-	src/ags/audio/thread/ags_soundcard_thread.c		\
+	src/ags/audio/thread/ags_audio_thread.c			\
+	src/ags/audio/thread/ags_channel_thread.c		\
 	src/ags/audio/thread/ags_export_thread.c		\
 	src/ags/audio/thread/ags_iterator_thread.c		\
 	src/ags/audio/thread/ags_record_thread.c		\
-	src/ags/audio/thread/ags_recycling_thread_callbacks.c \
-	src/ags/audio/thread/ags_recycling_thread.c
+	src/ags/audio/thread/ags_recycling_thread_callbacks.c	\
+	src/ags/audio/thread/ags_recycling_thread.c		\
+	src/ags/audio/thread/ags_soundcard_thread.c
 
 deprecated_ags_audio_file_h_sources =
 

@@ -22,6 +22,7 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
 void ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio);
@@ -149,7 +150,7 @@ ags_cancel_audio_finalize(GObject *gobject)
 void
 ags_cancel_audio_launch(AgsTask *task)
 {
-  AgsDevoutPlayDomain *playback_domain;
+  AgsPlaybackDomain *playback_domain;
   AgsAudio *audio;
   AgsChannel *channel;
 

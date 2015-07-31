@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/thread/ags_channel_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
 
 #include <ags-lib/object/ags_connectable.h>
 
@@ -27,6 +27,7 @@
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback.h>
 
 void ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread);
 void ags_channel_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -285,7 +286,7 @@ void
 ags_channel_thread_run(AgsThread *thread)
 {
   AgsChannel *channel;
-  AgsDevoutPlay *devout_play;
+  AgsPlayback *playback;
 
   AgsMutexManager *mutex_manager;
   AgsChannelThread *channel_thread;
@@ -309,7 +310,7 @@ ags_channel_thread_run(AgsThread *thread)
   
   channel_thread = AGS_CHANNEL_THREAD(thread);
   channel = channel_thread->channel;
-  devout_play = channel->devout_play;
+  playback = channel->playback;
   
   //  g_message("----a\0");
   
@@ -344,16 +345,16 @@ ags_channel_thread_run(AgsThread *thread)
   
   /* do channel processing */
   for(stage = 0; stage < 3; stage++){
-    if(thread == devout_play->channel_thread[0]){
-      ags_channel_recursive_play(channel, devout_play->recall_id[0], stage);
+    if(thread == playback->channel_thread[0]){
+      ags_channel_recursive_play(channel, playback->recall_id[0], stage);
     }
 
-    if(thread == devout_play->channel_thread[1]){
-      ags_channel_recursive_play(channel, devout_play->recall_id[1], stage);
+    if(thread == playback->channel_thread[1]){
+      ags_channel_recursive_play(channel, playback->recall_id[1], stage);
     }
 
-    if(thread == devout_play->channel_thread[2]){
-      ags_channel_recursive_play(channel, devout_play->recall_id[2], stage);
+    if(thread == playback->channel_thread[2]){
+      ags_channel_recursive_play(channel, playback->recall_id[2], stage);
     }
   }
 

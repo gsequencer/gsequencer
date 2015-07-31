@@ -25,6 +25,9 @@
 #include <ags/server/ags_server_application_context.h>
 #include <ags/server/ags_server.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);

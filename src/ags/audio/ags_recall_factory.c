@@ -2147,7 +2147,6 @@ ags_recall_factory_create_mute(AgsAudio *audio,
       channel = ags_channel_nth(audio->input,
 				start_pad * audio->audio_channels);
   }
-^^^^^^^^^^^^^^^^^^^^
 
   list = NULL;
 
@@ -2163,7 +2162,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 
       /* AgsMuteAudio */
       mute_audio = (AgsMuteAudio *) g_object_new(AGS_TYPE_MUTE_AUDIO,
-						 "devout\0", audio->devout,
+						 "soundcard\0", audio->soundcard,
 						 "audio\0", audio,
 						 "recall_container\0", play_container,
 						 NULL);
@@ -2179,7 +2178,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
       
       /* AgsMuteAudioRun */
       mute_audio_run = (AgsMuteAudioRun *) g_object_new(AGS_TYPE_MUTE_AUDIO_RUN,
-							"devout\0", audio->devout,
+							"soundcard\0", audio->soundcard,
 							// "recall_audio\0", mute_audio,
 							"recall_container\0", play_container,
 							//TODO:JK: add missing dependency "count_beats_audio_run\0"
@@ -2231,7 +2230,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 
 	/* AgsMuteChannel */
 	mute_channel = (AgsMuteChannel *) g_object_new(AGS_TYPE_MUTE_CHANNEL,
-						       "devout\0", audio->devout,
+						       "soundcard\0", audio->soundcard,
 						       "source\0", channel,
 						       "recall_container\0", play_container,
 						       NULL);
@@ -2249,7 +2248,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 	
 	/* AgsMuteChannelRun */
 	mute_channel_run = (AgsMuteChannelRun *) g_object_new(AGS_TYPE_MUTE_CHANNEL_RUN,
-							      "devout\0", audio->devout,
+							      "soundcard\0", audio->soundcard,
 							      "recall-channel\0", mute_channel,
 							      "source\0", channel,
 							      "recall_container\0", play_container,
@@ -2287,7 +2286,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 
       /* AgsMuteAudio */
       mute_audio = (AgsMuteAudio *) g_object_new(AGS_TYPE_MUTE_AUDIO,
-						 "devout\0", audio->devout,
+						 "soundcard\0", audio->soundcard,
 						 "audio\0", audio,
 						 "recall_container\0", recall_container,
 						 NULL);
@@ -2301,7 +2300,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
       
       /* AgsMuteAudioRun */
       mute_audio_run = (AgsMuteAudioRun *) g_object_new(AGS_TYPE_MUTE_AUDIO_RUN,
-							"devout\0", audio->devout,
+							"soundcard\0", audio->soundcard,
 							// "recall_audio\0", mute_audio,
 							"recall_container\0", recall_container,
 							//TODO:JK: add missing dependency "count_beats_audio_run\0"
@@ -2349,7 +2348,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 
 	/* AgsMuteChannel */
 	mute_channel = (AgsMuteChannel *) g_object_new(AGS_TYPE_MUTE_CHANNEL,
-						       "devout\0", audio->devout,
+						       "soundcard\0", audio->soundcard,
 						       "source\0", channel,
 						       "recall_container\0", recall_container,
 						       NULL);
@@ -2367,7 +2366,7 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 	
 	/* AgsMuteChannelRun */
 	mute_channel_run = (AgsMuteChannelRun *) g_object_new(AGS_TYPE_MUTE_CHANNEL_RUN,
-							      "devout\0", audio->devout,
+							      "soundcard\0", audio->soundcard,
 							      "recall_channel\0", mute_channel,
 							      "source\0", channel,
 							      "recall_container\0", recall_container,
@@ -2894,24 +2893,9 @@ ags_recall_factory_create(AgsAudio *audio,
 			  guint create_flags, guint recall_flags)
 {
   AgsAutomation *automation;
-
-  AgsMutexManager *mutex_manager;
   
   GList *recall_start, *recall, *port;
-
-  pthread_mutex_t *audio_mutex;
   
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(&(ags_application_mutex));
-
-  pthread_mutex_lock(audio_mutex);
-
   /*  */
   recall_start = NULL;
 
@@ -3093,8 +3077,6 @@ ags_recall_factory_create(AgsAudio *audio,
     
     recall = recall->next;
   }
-
-  pthread_mutex_unlock(audio_mutex);
 
   return(recall_start);
 }

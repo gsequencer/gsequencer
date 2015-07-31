@@ -1,8 +1,8 @@
-m4trace:aclocal.m4:1394: -1- m4_include([m4/libtool.m4])
-m4trace:aclocal.m4:1395: -1- m4_include([m4/ltoptions.m4])
-m4trace:aclocal.m4:1396: -1- m4_include([m4/ltsugar.m4])
-m4trace:aclocal.m4:1397: -1- m4_include([m4/ltversion.m4])
-m4trace:aclocal.m4:1398: -1- m4_include([m4/lt~obsolete.m4])
+m4trace:aclocal.m4:1397: -1- m4_include([m4/libtool.m4])
+m4trace:aclocal.m4:1398: -1- m4_include([m4/ltoptions.m4])
+m4trace:aclocal.m4:1399: -1- m4_include([m4/ltsugar.m4])
+m4trace:aclocal.m4:1400: -1- m4_include([m4/ltversion.m4])
+m4trace:aclocal.m4:1401: -1- m4_include([m4/lt~obsolete.m4])
 m4trace:configure.ac:5: -1- AC_INIT([gsequencer], [0.5.3], [jkraehemann-guest@users.alioth.debian.org])
 m4trace:configure.ac:5: -1- m4_pattern_forbid([^_?A[CHUM]_])
 m4trace:configure.ac:5: -1- m4_pattern_forbid([_AC_])
@@ -153,7 +153,7 @@ m4trace:configure.ac:5: -1- AC_SUBST_TRACE([target_alias])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^target_alias$])
 m4trace:configure.ac:6: -1- AM_INIT_AUTOMAKE([foreign])
 m4trace:configure.ac:6: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
-m4trace:configure.ac:6: -1- AM_AUTOMAKE_VERSION([1.14.1])
+m4trace:configure.ac:6: -1- AM_AUTOMAKE_VERSION([1.15])
 m4trace:configure.ac:6: -1- AC_REQUIRE_AUX_FILE([install-sh])
 m4trace:configure.ac:6: -1- AC_SUBST([INSTALL_PROGRAM])
 m4trace:configure.ac:6: -1- AC_SUBST_TRACE([INSTALL_PROGRAM])
@@ -587,14 +587,14 @@ m4trace:configure.ac:60: -1- _AM_SUBST_NOTMAKE([am__fastdepCC_FALSE])
 m4trace:configure.ac:60: -1- _m4_warn([obsolete], ['AM_PROG_CC_STDC': this macro is obsolete.
 You should simply use the 'AC_PROG_CC' macro instead.
 Also, your code should no longer depend upon 'am_cv_prog_cc_stdc',
-but upon 'ac_cv_prog_cc_stdc'.], [aclocal.m4:965: AM_PROG_CC_STDC is expanded from...
+but upon 'ac_cv_prog_cc_stdc'.], [aclocal.m4:968: AM_PROG_CC_STDC is expanded from...
 configure.ac:60: the top level])
 m4trace:configure.ac:61: -1- AC_DEFINE_TRACE_LITERAL([const])
 m4trace:configure.ac:61: -1- m4_pattern_allow([^const$])
 m4trace:configure.ac:61: -1- AH_OUTPUT([const], [/* Define to empty if `const\' does not conform to ANSI C. */
 @%:@undef const])
 m4trace:configure.ac:62: -1- _m4_warn([obsolete], [The macro `AC_LIBTOOL_WIN32_DLL' is obsolete.
-You should run autoupdate.], [m4/ltoptions.m4:148: AC_LIBTOOL_WIN32_DLL is expanded from...
+You should run autoupdate.], [m4/ltoptions.m4:146: AC_LIBTOOL_WIN32_DLL is expanded from...
 configure.ac:62: the top level])
 m4trace:configure.ac:62: -1- AC_CANONICAL_HOST
 m4trace:configure.ac:62: -1- AC_CANONICAL_BUILD
@@ -634,11 +634,11 @@ m4trace:configure.ac:62: -1- AC_SUBST([OBJDUMP])
 m4trace:configure.ac:62: -1- AC_SUBST_TRACE([OBJDUMP])
 m4trace:configure.ac:62: -1- m4_pattern_allow([^OBJDUMP$])
 m4trace:configure.ac:62: -1- _m4_warn([obsolete], [AC_LIBTOOL_WIN32_DLL: Remove this warning and the call to _LT_SET_OPTION when you
-put the 'win32-dll' option into LT_INIT's first parameter.], [m4/ltoptions.m4:148: AC_LIBTOOL_WIN32_DLL is expanded from...
+put the `win32-dll' option into LT_INIT's first parameter.], [m4/ltoptions.m4:146: AC_LIBTOOL_WIN32_DLL is expanded from...
 configure.ac:62: the top level])
 m4trace:configure.ac:63: -1- AM_PROG_LIBTOOL
 m4trace:configure.ac:63: -1- _m4_warn([obsolete], [The macro `AM_PROG_LIBTOOL' is obsolete.
-You should run autoupdate.], [m4/libtool.m4:100: AM_PROG_LIBTOOL is expanded from...
+You should run autoupdate.], [m4/libtool.m4:108: AM_PROG_LIBTOOL is expanded from...
 configure.ac:63: the top level])
 m4trace:configure.ac:63: -1- LT_INIT
 m4trace:configure.ac:63: -1- m4_pattern_forbid([^_?LT_[A-Z_]+$])
@@ -704,7 +704,8 @@ m4trace:configure.ac:63: -1- m4_pattern_allow([^RANLIB$])
 m4trace:configure.ac:63: -1- m4_pattern_allow([LT_OBJDIR])
 m4trace:configure.ac:63: -1- AC_DEFINE_TRACE_LITERAL([LT_OBJDIR])
 m4trace:configure.ac:63: -1- m4_pattern_allow([^LT_OBJDIR$])
-m4trace:configure.ac:63: -1- AH_OUTPUT([LT_OBJDIR], [/* Define to the sub-directory where libtool stores uninstalled libraries. */
+m4trace:configure.ac:63: -1- AH_OUTPUT([LT_OBJDIR], [/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
 @%:@undef LT_OBJDIR])
 m4trace:configure.ac:63: -1- LT_SUPPORTED_TAG([CC])
 m4trace:configure.ac:63: -1- AC_SUBST([MANIFEST_TOOL])

@@ -144,6 +144,8 @@ ags_remove_audio_launch(AgsTask *task)
 {
   AgsRemoveAudio *remove_audio;
   AgsChannel *current;
+
+  GList *list;
   
   remove_audio = AGS_REMOVE_AUDIO(task);
 
@@ -168,8 +170,11 @@ ags_remove_audio_launch(AgsTask *task)
   }
   
   /* remove audio */
-  ags_devout_remove_audio(remove_audio->devout,
-			  G_OBJECT(remove_audio->audio));
+  list = ags_soundcard_get_audio(remove_audio->soundcard);
+  list = g_list_remove(list,
+		       G_OBJECT(remove_audio->audio));
+  ags_soundcard_set_audio(remove_audio->soundcard,
+			  list);
 }
 
 /**

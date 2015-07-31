@@ -158,6 +158,8 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 {
   AgsThread *thread;
 
+  pthread_mutexattr_t mutexattr;
+  
   thread = AGS_THREAD(task_thread);
 
   //  g_atomic_int_or(&(thread->flags),
