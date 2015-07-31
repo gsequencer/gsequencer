@@ -55,7 +55,7 @@ void ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdoub
 
 enum{
   PROP_0,
-  PROP_LOOP,
+  PROP_NOTATION_LOOP,
   PROP_NOTATION_LOOP_START,
   PROP_NOTATION_LOOP_END,
   PROP_SEQUENCER_LOOP,
@@ -67,18 +67,20 @@ static gpointer ags_count_beats_audio_parent_class = NULL;
 
 static const gchar *ags_count_beats_audio_plugin_name = "ags-count-beats\0";
 static const gchar *ags_count_beats_audio_specifier[] = {
-  "./loop[0]\0",
+  "./sequencer_loop[0]\0",
+  "./notation_loop[0]\0",
   "./sequencer_loop_start[0]\0",
   "./notation_loop_start[0]\0",
   "./sequencer_loop_end[0]\0",
   "./notation_loop_end[0]\0"
 };
 static const gchar *ags_count_beats_audio_control_port[] = {
-  "1/5\0",
-  "2/5\0",
-  "3/5\0",
-  "4/5\0",
-  "5/5\0",
+  "1/6\0",
+  "2/6\0",
+  "3/6\0",
+  "4/6\0",
+  "5/6\0",
+  "6/6\0",
 };
 
 GType

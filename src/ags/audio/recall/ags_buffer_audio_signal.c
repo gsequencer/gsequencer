@@ -212,6 +212,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 {
   AgsRecycling *recycling;
   AgsAudioSignal *destination;
+  AgsRecallID *parent_recall_id;
   AgsRecyclingContext *recycling_context;
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
@@ -220,6 +221,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   guint buffer_size;
   guint samplerate;
   guint length;
+  gdouble delay;
+  guint attack;
 
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);

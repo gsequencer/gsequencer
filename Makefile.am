@@ -525,11 +525,12 @@ ags_audio_recall_h_sources = \
 	src/ags/audio/recall/ags_copy_recycling.h		\
 	src/ags/audio/recall/ags_count_beats_audio.h		\
 	src/ags/audio/recall/ags_count_beats_audio_run.h	\
-	src/ags/audio/recall/ags_delay_audio.h 		\
+	src/ags/audio/recall/ags_delay_audio.h 			\
 	src/ags/audio/recall/ags_delay_audio_run.h		\
-	src/ags/audio/recall/ags_mute_audio.h		\
+	src/ags/audio/recall/ags_mute_audio.h			\
+	src/ags/audio/recall/ags_mute_audio_run.h		\
 	src/ags/audio/recall/ags_mute_audio_signal.h		\
-	src/ags/audio/recall/ags_mute_channel.h		\
+	src/ags/audio/recall/ags_mute_channel.h			\
 	src/ags/audio/recall/ags_mute_channel_run.h		\
 	src/ags/audio/recall/ags_mute_recycling.h		\
 	src/ags/audio/recall/ags_peak_channel.h		\
@@ -578,14 +579,15 @@ ags_audio_recall_c_sources = \
 	src/ags/audio/recall/ags_copy_recycling.c		\
 	src/ags/audio/recall/ags_count_beats_audio.c		\
 	src/ags/audio/recall/ags_count_beats_audio_run.c	\
-	src/ags/audio/recall/ags_delay_audio.c 		\
+	src/ags/audio/recall/ags_delay_audio.c 			\
 	src/ags/audio/recall/ags_delay_audio_run.c		\
-	src/ags/audio/recall/ags_mute_audio.c		\
+	src/ags/audio/recall/ags_mute_audio.c			\
+	src/ags/audio/recall/ags_mute_audio_run.c		\
 	src/ags/audio/recall/ags_mute_audio_signal.c		\
-	src/ags/audio/recall/ags_mute_channel.c		\
+	src/ags/audio/recall/ags_mute_channel.c			\
 	src/ags/audio/recall/ags_mute_channel_run.c		\
 	src/ags/audio/recall/ags_mute_recycling.c		\
-	src/ags/audio/recall/ags_peak_channel.c		\
+	src/ags/audio/recall/ags_peak_channel.c			\
 	src/ags/audio/recall/ags_peak_channel_run.c		\
 	src/ags/audio/recall/ags_play_audio_file.c		\
 	src/ags/audio/recall/ags_play_audio.c		\

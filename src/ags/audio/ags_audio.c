@@ -4238,12 +4238,12 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   pthread_mutex_unlock(application_context->mutex);
 
   /* load config */
-  str0 = ags_config_get(config,
-			AGS_CONFIG_THREAD,
-			"model\0");
-  str1 = ags_config_get(config,
-			AGS_CONFIG_THREAD,
-			"super-threaded-scope\0");
+  str0 = ags_config_get_value(config,
+			      AGS_CONFIG_THREAD,
+			      "model\0");
+  str1 = ags_config_get_value(config,
+			      AGS_CONFIG_THREAD,
+			      "super-threaded-scope\0");
   
   if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",
@@ -4251,9 +4251,7 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
     if(!g_ascii_strncasecmp(str1,
 			    "audio\0",
 			    6) ||
-       !g_ascii_strncasecmp(ags_config_get(config,
-					   AGS_CONFIG_THREAD,
-					   "super-threaded-scope\0"),
+       !g_ascii_strncasecmp(str1,
 			    "channel\0",
 			    8)){
       g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),

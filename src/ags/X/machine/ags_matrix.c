@@ -677,29 +677,6 @@ ags_matrix_map_recall(AgsMachine *machine)
 	  
       channel = channel->next;
     }
-  }
-
-  /*  */
-  list = audio->recall;
-
-  while((list = ags_recall_find_type(list,
-				     AGS_TYPE_PLAY_NOTATION_AUDIO)) != NULL){
-    play_notation = AGS_PLAY_NOTATION_AUDIO(list->data);
-
-    ags_port_safe_read(play_notation->notation,
-		       &value);
-
-    if(g_value_get_object(&value) == NULL){
-      notation = audio->notation;
-	
-      while(notation != NULL){
-	g_object_set(G_OBJECT(play_notation),
-		     "notation\0", notation->data,
-		     NULL);
-	
-	notation = notation->next;
-      }
-    }
 	
     list = list->next;
   }

@@ -484,12 +484,12 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   }
 
   if(delay_audio_run->notation_counter == 0){
-    AgsDevout *devout;
+    AgsSoundcard *soundcard;
     guint run_order;
     gdouble delay;
     guint attack;
 
-    devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
+    soundcard = AGS_SOUNDCARD(AGS_RECALL_AUDIO(delay_audio)->audio->soundcard);
 
     run_order = 0; //NOTE:JK: old hide_ref style
 
@@ -520,12 +520,12 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   }
 
   if(delay_audio_run->sequencer_counter == 0){
-    AgsDevout *devout;
+    AgsSoundcard *soundcard;
     guint run_order;
     gdouble delay;
     guint attack;
 
-    devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
+    soundcard = AGS_SOUNDCARD(AGS_RECALL_AUDIO(delay_audio)->audio->soundcard);
 
     /* delay and attack */
     //TODO:JK: unclear

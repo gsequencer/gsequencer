@@ -36,6 +36,7 @@
 #else
 #include <ags/thread/ags_thread-posix.h>
 #endif 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/ags_recall_id.h>
@@ -661,6 +662,9 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   guint samplerate;
   guint buffer_size;
   guint i;
+
+  pthread_mutex_t *audio_mutex;
+  
   GValue value = {0,};
 
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
@@ -706,7 +710,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			      audio_channel);
   }
 
-  timestamp_thread = (AgsTimestampThread *) AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
+  timestamp_thread = NULL;
   
   //TODO:JK: make it advanced
   notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
@@ -737,7 +741,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	//#endif
 
 	while(recycling != selected_channel->last_recycling->next){
-	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
+	  audio_signal = ags_audio_signal_new((GObject *) audio->soundcard,
 					      (GObject *) recycling,
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
 

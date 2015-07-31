@@ -285,6 +285,7 @@ am__objects_16 = $(am__objects_15) \
 	libags_audio_a-ags_delay_audio.$(OBJEXT) \
 	libags_audio_a-ags_delay_audio_run.$(OBJEXT) \
 	libags_audio_a-ags_mute_audio.$(OBJEXT) \
+	libags_audio_a-ags_mute_audio_run.$(OBJEXT) \
 	libags_audio_a-ags_mute_audio_signal.$(OBJEXT) \
 	libags_audio_a-ags_mute_channel.$(OBJEXT) \
 	libags_audio_a-ags_mute_channel_run.$(OBJEXT) \
@@ -1335,11 +1336,12 @@ ags_audio_recall_h_sources = \
 	src/ags/audio/recall/ags_copy_recycling.h		\
 	src/ags/audio/recall/ags_count_beats_audio.h		\
 	src/ags/audio/recall/ags_count_beats_audio_run.h	\
-	src/ags/audio/recall/ags_delay_audio.h 		\
+	src/ags/audio/recall/ags_delay_audio.h 			\
 	src/ags/audio/recall/ags_delay_audio_run.h		\
-	src/ags/audio/recall/ags_mute_audio.h		\
+	src/ags/audio/recall/ags_mute_audio.h			\
+	src/ags/audio/recall/ags_mute_audio_run.h		\
 	src/ags/audio/recall/ags_mute_audio_signal.h		\
-	src/ags/audio/recall/ags_mute_channel.h		\
+	src/ags/audio/recall/ags_mute_channel.h			\
 	src/ags/audio/recall/ags_mute_channel_run.h		\
 	src/ags/audio/recall/ags_mute_recycling.h		\
 	src/ags/audio/recall/ags_peak_channel.h		\
@@ -1388,14 +1390,15 @@ ags_audio_recall_c_sources = \
 	src/ags/audio/recall/ags_copy_recycling.c		\
 	src/ags/audio/recall/ags_count_beats_audio.c		\
 	src/ags/audio/recall/ags_count_beats_audio_run.c	\
-	src/ags/audio/recall/ags_delay_audio.c 		\
+	src/ags/audio/recall/ags_delay_audio.c 			\
 	src/ags/audio/recall/ags_delay_audio_run.c		\
-	src/ags/audio/recall/ags_mute_audio.c		\
+	src/ags/audio/recall/ags_mute_audio.c			\
+	src/ags/audio/recall/ags_mute_audio_run.c		\
 	src/ags/audio/recall/ags_mute_audio_signal.c		\
-	src/ags/audio/recall/ags_mute_channel.c		\
+	src/ags/audio/recall/ags_mute_channel.c			\
 	src/ags/audio/recall/ags_mute_channel_run.c		\
 	src/ags/audio/recall/ags_mute_recycling.c		\
-	src/ags/audio/recall/ags_peak_channel.c		\
+	src/ags/audio/recall/ags_peak_channel.c			\
 	src/ags/audio/recall/ags_peak_channel_run.c		\
 	src/ags/audio/recall/ags_play_audio_file.c		\
 	src/ags/audio/recall/ags_play_audio.c		\
@@ -2389,6 +2392,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_lv2ui_manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_midi_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_audio.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_audio_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_audio_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_a-ags_mute_channel_run.Po@am__quote@
@@ -4778,6 +4782,20 @@ libags_audio_a-ags_mute_audio.obj: src/ags/audio/recall/ags_mute_audio.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_mute_audio.c' object='libags_audio_a-ags_mute_audio.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_mute_audio.obj `if test -f 'src/ags/audio/recall/ags_mute_audio.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_mute_audio.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_mute_audio.c'; fi`
+
+libags_audio_a-ags_mute_audio_run.o: src/ags/audio/recall/ags_mute_audio_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_mute_audio_run.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_mute_audio_run.Tpo -c -o libags_audio_a-ags_mute_audio_run.o `test -f 'src/ags/audio/recall/ags_mute_audio_run.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_mute_audio_run.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_mute_audio_run.Tpo $(DEPDIR)/libags_audio_a-ags_mute_audio_run.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_mute_audio_run.c' object='libags_audio_a-ags_mute_audio_run.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_mute_audio_run.o `test -f 'src/ags/audio/recall/ags_mute_audio_run.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_mute_audio_run.c
+
+libags_audio_a-ags_mute_audio_run.obj: src/ags/audio/recall/ags_mute_audio_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_mute_audio_run.obj -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_mute_audio_run.Tpo -c -o libags_audio_a-ags_mute_audio_run.obj `if test -f 'src/ags/audio/recall/ags_mute_audio_run.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_mute_audio_run.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_mute_audio_run.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_a-ags_mute_audio_run.Tpo $(DEPDIR)/libags_audio_a-ags_mute_audio_run.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_mute_audio_run.c' object='libags_audio_a-ags_mute_audio_run.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -c -o libags_audio_a-ags_mute_audio_run.obj `if test -f 'src/ags/audio/recall/ags_mute_audio_run.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_mute_audio_run.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_mute_audio_run.c'; fi`
 
 libags_audio_a-ags_mute_audio_signal.o: src/ags/audio/recall/ags_mute_audio_signal.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_a_CFLAGS) $(CFLAGS) -MT libags_audio_a-ags_mute_audio_signal.o -MD -MP -MF $(DEPDIR)/libags_audio_a-ags_mute_audio_signal.Tpo -c -o libags_audio_a-ags_mute_audio_signal.o `test -f 'src/ags/audio/recall/ags_mute_audio_signal.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_mute_audio_signal.c

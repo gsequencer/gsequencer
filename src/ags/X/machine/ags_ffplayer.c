@@ -424,7 +424,7 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
     g_value_init(&value, G_TYPE_BOOLEAN);
     g_value_set_boolean(&value, TRUE);
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->loop,
+    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
 			&value);
   }
 
@@ -513,7 +513,7 @@ ags_ffplayer_connect(AgsConnectable *connectable)
       play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
       g_value_init(&value, G_TYPE_BOOLEAN);
       g_value_set_boolean(&value, FALSE);
-      ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->loop,
+      ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
 			  &value);
     }
   }
@@ -878,26 +878,6 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 				 AGS_RECALL_FACTORY_REMAP |
 				 AGS_RECALL_FACTORY_RECALL),
 				0);
-
-      /* set notation for AgsPlayNotationAudioRun recall */
-      list = audio->recall;
-
-      while((list = ags_recall_find_type(list,
-					 AGS_TYPE_PLAY_NOTATION_AUDIO)) != NULL){
-  
-	GValue value = {0,};
-
-	play_notation = AGS_PLAY_NOTATION_AUDIO(list->data);
-
-	g_value_init(&value, G_TYPE_POINTER);
-	g_value_set_pointer(&value,
-			    audio->notation);
-
-	ags_port_safe_write(play_notation->notation,
-			    &value);
-
-	list = list->next;
-      }
 
       /* depending on destination */
       ags_ffplayer_input_map_recall(ffplayer, pads_old);

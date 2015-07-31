@@ -34,12 +34,16 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/task/ags_cancel_audio.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
 
 #include <math.h>
@@ -690,7 +694,7 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 			       guint steps,
 			       gboolean move_forward)
 {
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
@@ -701,9 +705,9 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   delay_audio_run = count_beats_audio_run->delay_audio_run;
   delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
 
-  devout = AGS_DEVOUT(AGS_RECALL(count_beats_audio_run)->devout);
+  soundcard = AGS_SOUNDCARD(AGS_RECALL(count_beats_audio_run)->soundcard);
   
-  delay = devout->delay[devout->tic_counter];
+  delay = ags_soundcard_get_delay(soundcard);
   seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
   
   if(move_forward){
@@ -943,8 +947,6 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 void
 ags_count_beats_audio_run_done(AgsRecall *recall)
 {
-  AgsDevout *devout;
-
   AgsCountBeatsAudio *count_beats_audio;
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
@@ -952,15 +954,20 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 
   AgsThread *task_thread;
 
+  AgsApplicationContext *application_context;
+  AgsSoundcard *soundcard;
+
   gboolean sequencer, notation;
   
   AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done(recall);
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
-
-  devout = AGS_RECALL_AUDIO(count_beats_audio)->audio->devout;
-  task_thread = (AgsThread *) AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread;
+  
+  soundcard = AGS_RECALL_AUDIO(count_beats_audio)->audio->soundcard;
+  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   ags_recall_done(count_beats_audio_run->delay_audio_run);
   ags_audio_done(AGS_RECALL_AUDIO(count_beats_audio)->audio,
@@ -1294,28 +1301,28 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   }else{      
     if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
       AgsAudio *audio;
-      GList *devout_play;
+      GList *playback;
 
       count_beats_audio_run->sequencer_counter = 0;
 
       audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
-      devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+      playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
       /* emit stop signals */
       ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
 					       FALSE);
 
-      /* set done flag in devout play */
-      while(devout_play != NULL){
-	if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL &&
-	   AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1]->recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
+      /* set done flag in playback */
+      while(playback != NULL){
+	if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL &&
+	   AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
 	  AgsChannel *channel;
 	  AgsStreamChannelRun *stream_channel_run;
 	  GList *list;
 	  GList *recall_recycling_list, *recall_audio_signal_list;
 	  gboolean found;
 
-	  //	    AGS_DEVOUT_PLAY(devout_play->data)->flags |= AGS_DEVOUT_PLAY_DONE;
+	  //	    AGS_PLAYBACK(playback->data)->flags |= AGS_PLAYBACK_DONE;
 
 	  /* check if to stop audio processing */
 	  channel = audio->output;
@@ -1357,7 +1364,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	  break;
 	}
 
-	devout_play = devout_play->next;
+	playback = playback->next;
       }
 
       return;

@@ -486,10 +486,16 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   AgsAutomationEditor *automation_editor;
   
   gdouble width, height;
+  gdouble tact;
 
+  automation_editor = gtk_widget_get_ancestor(automation_area,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
   height = (gdouble) automation_area->height;
 
+  tact = 1.0; //TODO:JK: verify me
+  
   y0 += automation_area->y - y_offset;
   y1 += automation_area->y - y_offset;
 

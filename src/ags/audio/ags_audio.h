@@ -46,6 +46,8 @@ typedef enum{
   AGS_AUDIO_RUNNING                     = 1 <<  7,
   AGS_AUDIO_PLAYING                     = 1 <<  8,
   AGS_AUDIO_NOTATION_DEFAULT            = 1 <<  9,
+  AGS_AUDIO_REVERSE_MAPPING             = 1 << 10,
+  AGS_AUDIO_PATTERN_MODE                = 1 << 11,
 }AgsAudioFlags;
 
 struct _AgsAudio

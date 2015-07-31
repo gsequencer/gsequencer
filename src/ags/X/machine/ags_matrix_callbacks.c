@@ -228,7 +228,7 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    count_beats_audio->loop->port_value.ags_port_boolean = loop;
+    count_beats_audio->sequencer_loop->port_value.ags_port_boolean = loop;
 
     list = list->next;
   }
@@ -239,7 +239,7 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    count_beats_audio->loop->port_value.ags_port_boolean = loop;
+    count_beats_audio->sequencer_loop->port_value.ags_port_boolean = loop;
 
     list = list->next;
   }

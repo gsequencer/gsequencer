@@ -25,6 +25,10 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+
 void ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel);
 void ags_peak_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_peak_channel_plugin_interface_init(AgsPluginInterface *plugin);

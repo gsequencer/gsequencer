@@ -263,7 +263,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
 	recall = AGS_RECALL(list->data);
-	ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(recall)->loop,
+	ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(recall)->notation_loop,
 			    &value);
 
 	list = list->next;

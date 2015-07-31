@@ -77,11 +77,11 @@ void ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
 void ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 					 cairo_t *cr,
 					 gdouble x_offset, gdouble y_offset);
-void ags_automation_area_draw_surface(AgsAutomationArea *automation_area,
-				      cairo_t *cr,
+void ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr,
 				      gdouble x_offset, gdouble y_offset,
 				      gdouble x0, gdouble y0,
-				      gdouble x1, gdouble y1);
+				      gdouble x1, gdouble y1,
+				      guint steps);
 
 void ags_automation_area_paint(AgsAutomationArea *automation_area,
 			       cairo_t *cr,
