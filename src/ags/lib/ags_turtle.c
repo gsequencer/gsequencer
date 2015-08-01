@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <regex.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -41,6 +42,173 @@ void ags_turtle_get_property(GObject *gobject,
 			     GValue *value,
 			     GParamSpec *param_spec);
 void ags_turtle_finalize(GObject *gobject);
+
+#define UTF8_2_BYTE_RANGE(str, endptr, lower, upper) (str + 1 < endptr && \
+						      (((int) ((char *) str)[0] << 8) & ((int) ((char *) str)[1])) >= (int) ((lower[0] << 8) & (lower[1])) && \
+						      (((int) ((char *) str)[0] << 8) & ((int) ((char *) str)[1])) < (int) ((upper[0] << 8) & (upper[1])))
+#define UTF8_3_BYTE_RANGE(str, endptr, lower, upper) (str + 2 < endptr && \
+						       (((int) ((char *) str)[0] << 16) & ((int) ((char *) str)[1] << 8) & ((int) ((char *) str)[2])) >= (int) ((lower[0] << 16) & (lower[1] << 8) & (lower[2])) && \
+						       (((int) ((char *) str)[0] << 16) & ((int) ((char *) str)[1] << 8) & ((int) ((char *) str)[2])) < (int) ((upper[0] << 16) & (upper[1] << 8) & (upper[2])))
+
+#define rdf_is_iriref(str, endptr) (rdf_is_uchar(str, endptr) && \
+				    !(*str >= '\x00' && *str <= '\x20') && \
+				    *str != '<' && \
+				    *str != '>' && \
+				    *str != '"' && \
+				    *str != '{' && \
+				    *str != '}' && \
+				    *str != '^' && \
+				    *str != '`' && \
+				    *str != '\\')
+#define rdf_is_iriref_extended_valid_start(str, endptr) (*str == '<')
+#define rdf_is_iriref_extended_valid_end(str, endptr) (*str == '>')
+#define rdf_is_pname_ns(str, endptr) (rdf_is_pn_prefix(str, endptr) || \
+				      *str == ':')
+#define rdf_is_pname_ln(str, endptr) (rdf_is_pname_ns(str, endptr) || \
+				      rdf_is_pn_local(str, endptr))
+#define rdf_is_blank_node_label(str, endptr) (rdf_is_pn_chars(str, endptr) || \
+					      *str == '.')
+#define rdf_is_blank_node_label_valid_start(str, endptr) ((&(str[2]) < endptr) && \
+							  str[0] == '_' && \
+							  str[1] == ':' && \
+							  (rdf_is_pn_chars_u(&(str[2]), endptr) || \
+							   g_ascii_isdigit(str[2])))
+#define rdf_is_blank_node_label_valid_end(str, endptr) (rdf_is_pn_chars(str, endptr))
+#define rdf_is_langtag(str, endptr) (g_ascii_isalnum(str[1]))
+#define rdf_is_langtag_valid_start(str, endptr) ((&(str[1]) < endptr) && \
+						 str[0] == '@' && \
+						 g_ascii_isalpha(str[1]))
+#define rdf_is_integer(str, endptr) (((*str == '+' ||			\
+				       *str == '-') &&			\
+				      g_ascii_isdigit(str[1])) ||	\
+				     g_ascii_isdigit(str))
+#define rdf_is_decimal(str, endptr, ip_index) (str)
+#define rdf_is_double(str, endptr, ip_index) (((*str == '+' || \
+						*str == '-') && \
+					      g_ascii_isdigit(str[1]) || \
+					      g_ascii_isdigit(*str))
+#define rdf_is_double_extended_valid_start(str, endptr, ip_index) ((((*str == '+' || \
+								      *str == '-') && \
+								     g_ascii_isdigit(str[1])) || \
+								    g_ascii_isdigit(str)) || \
+								   *str == '.')
+#define rdf_is_double_extended_valid_end(str, endptr) (g_ascii_isdigit(str) || \
+						       rdf_is_exponent_valid_start(str, endptr))
+
+#define rdf_is_exponent(str, endptr) (g_ascii_isdigit(*str))
+#define rdf_is_exponent_extended_valid_start(str, endptr) ((&(str[1]) < endptr) && \
+							   (*str == 'e' || \
+							    *str == 'E') && \
+							   (g_ascii_isdigit(str[1]) || \
+							    ((str[1] == '+' || \
+							      str[1] == '-') && \
+							     (&(str[2]) < endptr) && \
+							     g_ascii_isdigit(str[2]))))
+#define rdf_is_string_literal_quote_delimiter(str, endptr) (*str == '"' &&	\
+							    (&(str[1]) < endptr) && \
+							    str[1] != '"')
+#define rdf_is_string_literal_single_quote_delimiter(str, endptr) (*str == '\'' && \
+								   (&(str[1]) < endptr) && \
+								   str[1] != '\'')
+#define rdf_is_string_literal_long_quote_delimiter(str, endptr) ((&(str[2]) < endptr) && \
+								 str[0] == '"' && \
+								 str[1] == '"' && \
+								 str[2] == '"')
+#define rdf_is_string_literal_long_single_quote_delimiter(str, endptr) ((&(str[2]) < endptr) && \
+									str[0] == '\'' && \
+									str[1] == '\'' && \
+									str[2] == '\'')
+#define rdf_is_uchar(str, endptr) (*str == '\\' &&			\
+				   ((&(str[5]) < &(buffer[sb->st_size])) && str[1] == 'u' && \
+				    (g_ascii_isxdigit(str[2] && g_ascii_isxdigit(str[3]) && g_ascii_isxdigit(str[4]) && g_ascii_isxdigit(str[5])))) || \
+				   ((&(str[9]) < &(buffer[sb->st_size])) && str[1] == 'U' && \
+				    (g_ascii_isxdigit(str[2] && g_ascii_isxdigit(str[3]) && g_ascii_isxdigit(str[4]) && g_ascii_isxdigit(str[5]) && g_ascii_isxdigit(str[6] && g_ascii_isxdigit(str[7]) && g_ascii_isxdigit(str[8]) && g_ascii_isxdigit(str[9]))))))
+#define rdf_is_echar(str, endptr) (*str == '\\' &&		\
+				   (&(str[1]) < endptr) &&	\
+				   (*str == 't' ||		\
+				    *str == 'b' ||		\
+				    *str == 'n' ||		\
+				    *str == 'r' ||		\
+				    *str == 'f' ||		\
+				    *str == '"' ||		\
+				    *str == '\'' ||		\
+				    *str == '\\'))
+#define rdf_is_ws(str, endptr) (*str == '\x20' ||	\
+				*str == '\x09' ||	\
+				*str == '\x0D' ||	\
+				*str == '\x0A')
+#define rdf_is_anon(str, endptr) (rdf_is_ws(str, endptr))
+#define rdf_is_anon_extended_valid_start(str, endptr) (*str == '[')
+#define rdf_is_anon_extended_valid_end(str, endptr) (*str == ']')
+#define rdf_is_pn_chars_base(str, endptr) (g_ascii_isalpha(*str) ||	\
+					   (*str >= '\xC0' && *str < '\xD6') || \
+					   (*str >= '\xD8' && *str < '\xF6') || \
+					   (UTF8_2_BYTE_RANGE(str, endptr, "\x00\xF8", "\x02\xFF")) || \
+					   (UTF8_2_BYTE_RANGE(str, endptr, "\x03\x70", "\x03\x7D")) || \
+					   (UTF8_2_BYTE_RANGE(str, endptr, "\x03\x7F", "\x1F\xFF")) || \
+					   (UTF8_2_BYTE_RANGE(str, endptr, "\x20\x0C", "\x20\x0D")) || \
+					   (UTF8_2_BYTE_RANGE(str, endptr, "\x20\x70", "\x21\x8F")) || \
+					   (UTF8_2_BYTE_RANGE(str, endptr, "\x2C\x00", "\x2F\xEF")) || \
+					   (UTF8_2_BYTE_RANGE(str, endptr, "\x30\x01", "\xD7\xFF")) || \
+					   (UTF8_2_BYTE_RANGE(str, endptr, "\xF9\x00", "\xFD\xCF")) || \
+					   (UTF8_2_BYTE_RANGE(str, endptr, "\xFD\xF0", "\xFF\xFD")) || \
+					   (UTF8_3_BYTE_RANGE(str, endptr, "\x01\x00\x00", "\x0E\xFF\xFF")))
+#define rdf_is_pn_chars_u(str, endptr) (rdf_is_pn_chars_base(str, endptr) || \
+					*str == '_')
+#define rdf_is_pn_chars(str, endptr) (g_ascii_isdigit(*str) ||		\
+				      *str == '-' ||			\
+				      *str == '\xB7' ||		\
+				      (UTF8_2_BYTE_RANGE(str, endptr, "\x03\x00", "\x03\x6F")) || \
+				      (UTF8_2_BYTE_RANGE(str, endptr, "\x20\x3F", "\x20\x40")))
+#define rdf_is_pn_prefix(str, endptr) (rdf_is_pn_chars_base(str, endptr))
+#define rdf_is_pn_prefix_extended(str, endptr) (rdf_is_pn_prefix(str, endptr) || \
+						rdf_is_pn_chars(str, endptr) || \
+						*str == '.')
+#define rdf_is_pn_prefix_extended_valid_end(str, endptr) (rdf_is_pn_prefix(str, endptr) || \
+							  rdf_is_pn_chars(str, endptr))
+#define rdf_is_pn_local(str, endptr) (rdf_is_pn_chars_u(str, endptr) ||	\
+				      *str == ':' ||			\
+				      g_ascii_isdigit(*str) ||		\
+				      rdf_is_plx(str, endptr))
+#define rdf_is_pn_local_extended(str, endptr) (rdf_is_pn_local(str, endptr) || \
+					       rdf_is_pn_chars(str, endptr) || \
+					       *str == '.' ||		\
+					       *str == ':' ||		\
+					       rdf_is_plx(str, endptr))
+#define rdf_is_pn_local_extended_valid_end(str, endptr) (rdf_is_pn_local(str, endptr) || \
+							 rdf_is_pn_chars(str, endptr) || \
+							 *str == ':' ||	\
+							 rdf_is_plx(str, endptr))
+#define rdf_is_plx(str, endptr) (rdf_is_percent(str, endptr) || \
+				 rdf_is_hex(str, endptr))
+#define rdf_is_percent(str, endptr) (str == '%' &&			\
+				     str[2] < endptr &&			\
+				     rdf_is_hex(&(str[1]), endptr) &&	\
+				     rdf_is_hex(&(str[2]), endptr))
+#define rdf_is_hex(str, endptr) ((*str >= '0' && *str <= '9') ||  \
+				 (*str >= 'a' && *str <= 'f') ||  \
+				 (*str >= 'A' && *str <= 'F'))
+#define rdf_is_pn_local_esc(str, endptr) (*str == '\\' &&		\
+					  (&(str[1]) < endptr &&	\
+					   (*str == '_' ||		\
+					    *str == '~' ||		\
+					    *str == '.' ||		\
+					    *str == '-' ||		\
+					    *str == '!' ||		\
+					    *str == '$' ||		\
+					    *str == '&' ||		\
+					    *str == '\'' ||		\
+					    *str == '(' ||		\
+					    *str == ')' ||		\
+					    *str == '*' ||		\
+					    *str == '+' ||		\
+					    *str == ',' ||		\
+					    *str == ';' ||		\
+					    *str == '=' ||		\
+					    *str == '?' ||		\
+					    *str == '#' ||		\
+					    *str == '@' ||		\
+					    *str == '%')))
 
 enum{
   PROP_0,
@@ -181,6 +349,28 @@ ags_turtle_finalize(GObject *gobject)
   turtle = AGS_TURTLE(gobject);
 }
 
+AgsTurtleParserContext*
+ags_turtle_parser_context_alloc()
+{
+  AgsTurtleParserContext *parser_context;
+
+  parser_context = (AgsTurtleParserContext *) malloc(sizeof(AgsTurtleParserContext));
+
+  parser_context->subject_delimiter = NULL;
+  parser_context->verb_delimiter = NULL;
+  parser_context->value_delimiter = NULL;
+
+  parser_context->statement_node = NULL;
+  
+  return(parser_context);
+}
+
+void
+ags_turtle_parser_context_free(AgsTurtleParserContext *parser_context)
+{
+  free(parser_context);
+}
+
 GList*
 ags_turtle_find_xpath(AgsTurtle *turtle,
 		      gchar *xpath)
@@ -213,478 +403,550 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
 }
 
 void
-ags_turtle_load(AgsTurtle *turtle)
+ags_turtle_load(AgsTurtle *turtle,
+		GError **error)
 {
   xmlDoc *doc;
   xmlNode *root_node, *node;
   FILE *file;
   
   gchar *buffer, *iter;
-  gchar *current, *current_end_ptr;
-  gchar *subject, *verb, *object;
-  guint nth_level;
   
   struct stat *sb;
 
+  auto gchar* ags_turtle_load_skip_comments_and_blanks();
+  auto gchar* ags_turtle_load_read_string();
+  auto xmlNode* ags_turtle_load_read_statement();
+  auto xmlNode* ags_turtle_load_read_directive();
   auto xmlNode* ags_turtle_load_read_triple();
-  auto gchar* ags_turtle_load_read_subject();
+  auto xmlNode* ags_turtle_load_read_collection();
   auto xmlNode* ags_turtle_load_read_verb();
-  auto xmlNode* ags_turtle_load_read_value();
+  auto xmlNode* ags_turtle_load_read_object_list();
 
-  xmlNode* ags_turtle_load_read_triple()
-  {
-    xmlNode *node_list, *node, *child_node_list;
-    xmlNode *verb, *value;
-    gchar  *subject;
-    gchar *start, *look_ahead;
-    guint current_level;
-
-    if(iter >= &(buffer[sb->st_size])){
-      return(NULL);
-    }
-    
-    start = iter;
-    subject = ags_turtle_load_read_subject();
-
-    if(subject == NULL){
-      return(NULL);
-    }
-
-    node_list = NULL;
-    current_level = nth_level;
-    
-  ags_turtle_load_read_triple_START:
+  gchar* ags_turtle_load_skip_comments_and_blanks(){
+    gchar *look_ahead;
     
     /* skip whitespaces and comments */
     look_ahead = iter;
     
-    for(; *look_ahead != '\0'; look_ahead++){
-      if((buffer == look_ahead && *buffer == '#') ||
-	 (buffer[look_ahead - buffer - 1] == '\n' && *look_ahead == '#')){
+    for(; *look_ahead != '\0' && (look_ahead < &(buffer[sb->st_size])); look_ahead++){
+      /* skip comments */
+      if(buffer == look_ahead){
+	if(*buffer == '#'){
+	  look_ahead = index(look_ahead, '\n');
+	  continue;
+	}
+      }else if(buffer[look_ahead - buffer - 1] == '\n' && *look_ahead == '#'){
 	look_ahead = index(look_ahead, '\n');
 	continue;
       }
 
-      if(*look_ahead == '\n'){
-	continue;
-      }
-      
-      if(*look_ahead == ';' || *look_ahead == '[' || *look_ahead == ']' || *look_ahead == ',' || *look_ahead == '(' || *look_ahead == ')'){
-	continue;
-      }
-      
-      /* delimiter */
-      if(*look_ahead != ' ' && *look_ahead != '\t'){
+      /* spaces */
+      if(*look_ahead != ' ' && *look_ahead != '\t' && *look_ahead != '\n'){
 	break;
       }
     }
+
+    return(look_ahead);
+  }
+
+  gchar* ags_turtle_load_read_string(){
+    gchar *str, *str_end;
+    gchar *start, *look_ahead;
+
+    str = NULL;
+    str_end = NULL;
+
+    /* find start */
+    start = iter;
     
-    /* read verb */
-    for(; !g_ascii_isspace(*look_ahead) && *look_ahead != '\0'; look_ahead++);
+    while((start = ags_turtle_load_skip_comments_and_blanks(start)) != '\0'){
+      if(rdf_is_string_literal_long_quote_delimiter(start, &(buffer[sb->st_size]))){
+	look_ahead = 
+	  str = &(start[3]);
 
-    /* skip spaces */
-    for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
-    
-    if(*look_ahead != '['){
-      verb = ags_turtle_load_read_verb();
-
-      if(verb == NULL){
-	g_warning("subject[%s] without verb\0", subject);
-      }else{
-#ifdef AGS_DEBUG
-	g_message("verb\0");
-#endif
+	while(!rdf_is_string_literal_long_quote_delimiter(look_ahead, &(buffer[sb->st_size]))) look_ahead++;
+	      
+	if(look_ahead < &(buffer[sb->st_size])){
+	  str_end = look_ahead;
+	}else{
+	  str_end = NULL;
+	}
 	
-	if(node_list == NULL){
-	  node_list = xmlNewNode(NULL, "rdf-list\0");
-	}
-      
-	node = xmlNewNode(NULL, "rdf-triple\0");
-	xmlNewProp(node,
-		   "subject\0",
-		   subject);
-	xmlAddChild(node_list,
-		    node);
-      
-	xmlAddChild(node,
-		    verb);
-      
-	value = ags_turtle_load_read_value();
-	xmlAddChild(verb,
-		    value);
-
-	if((*iter == ';' || *iter == '[') && *iter != '.' && *iter != ']'  && current_level == nth_level && iter < &(buffer[sb->st_size])){
-	  iter++;
-	  goto ags_turtle_load_read_triple_START;
-	}
+	break;
       }
-    }else{
-      /* check if collection */
-      nth_level++;
-      child_node_list = ags_turtle_load_read_triple();
+      
+      if(rdf_is_string_literal_long_single_quote_delimiter(start, &(buffer[sb->st_size]))){
+	look_ahead = 
+	  str = &(start[3]);
 
-      if(child_node_list != NULL){
-#ifdef AGS_DEBUG
-	g_message("child node\0");
-#endif
+	while(!rdf_is_string_literal_long_single_quote_delimiter(look_ahead, &(buffer[sb->st_size]))) look_ahead++;
 	
-	if(node_list == NULL){
-	  node_list = xmlNewNode(NULL, "rdf-list\0");
+	if(look_ahead < &(buffer[sb->st_size])){
+	  str_end = look_ahead;
+	}else{
+	  str_end = NULL;
 	}
-
-	node = xmlNewNode(NULL, "rdf-triple\0");
-	xmlNewProp(node,
-		   "subject\0",
-		   subject);
-	xmlAddChild(node_list,
-		    node);
-	
-	xmlAddChild(node,
-		    child_node_list);
-
-	if((*iter == ';' || *iter == '[') && *iter != '.' && *iter != ']' && current_level <= nth_level && iter < &(buffer[sb->st_size])){
-	  goto ags_turtle_load_read_triple_START;
-	}
+	break;
       }
+
+      if(rdf_is_string_literal_quote_delimiter(start, &(buffer[sb->st_size]))){
+	  look_ahead = 
+	  str = &(start[1]);
+	
+	while(!rdf_is_string_literal_quote_delimiter(look_ahead, &(buffer[sb->st_size]))) look_ahead++;
+	
+	if(look_ahead < &(buffer[sb->st_size])){
+	  str_end = look_ahead;
+	}else{
+	  str_end = NULL;
+	}
+	break;
+      }
+      
+      if(rdf_is_string_literal_single_quote_delimiter(start, &(buffer[sb->st_size]))){
+	look_ahead = 
+	  str = &(start[1]);
+
+	while(!rdf_is_string_literal_single_quote_delimiter(look_ahead, &(buffer[sb->st_size]))) look_ahead++;
+	
+	if(look_ahead < &(buffer[sb->st_size])){
+	  str_end = look_ahead;
+	}else{
+	  str_end = NULL;
+	}
+	break;
+      }
+      
+      if(rdf_is_iriref_extended_valid_start(start, &(buffer[sb->st_size]))){
+	look_ahead = 
+	  str = &(start[1]);
+	
+	while(!rdf_is_iriref_extended_valid_end(look_ahead, &(buffer[sb->st_size]))) look_ahead++;
+	
+	if(look_ahead < &(buffer[sb->st_size])){
+	  str_end = look_ahead;
+	}else{
+	  str_end = NULL;
+	}
+	break;
+      }
+
+      if(rdf_is_blank_node_label_valid_start(start, &(buffer[sb->st_size]))){
+	look_ahead = 
+	  str = &(start[2]);
+	
+	while(rdf_is_blank_node_label(look_ahead, &(buffer[sb->st_size]))) look_ahead++;
+
+	if(look_ahead != str && !rdf_is_blank_node_label_valid_end(look_ahead - 1, &(buffer[sb->st_size]))){
+	  look_ahead--;
+	}
+	
+	if(look_ahead < &(buffer[sb->st_size])){
+	  str_end = look_ahead;
+	}else{
+	  str_end = NULL;
+	}
+	break;
+      }
+      
+      start++;
     }
-
-    return(node_list);
+    
+    if(str != NULL &&
+       str_end != NULL){
+      return(g_strndup(str,
+		       str_end - str));
+    }else{
+      return(NULL);
+    }
   }
   
-  gchar* ags_turtle_load_read_subject()
-  {
-    gchar *subject;
-    gchar *start, *end;
+  xmlNode* ags_turtle_load_read_statement(){
+    xmlNode *node;
 
     if(iter >= &(buffer[sb->st_size])){
       return(NULL);
     }
+
+    node = NULL;
+
+    while(node == NULL &&
+	  (iter = ags_turtle_load_skip_comments_and_blanks(iter)) != '\0'){
+      if((node = ags_turtle_load_read_directive()) == NULL){
+	node = ags_turtle_load_read_triple();
+
+	if(node == NULL){
+	  iter++;
+	}
+      }
+    }
+
+    return(node);
+  }
     
-    subject = NULL;
-    start = NULL;
+  xmlNode* ags_turtle_load_read_directive(){
+    xmlNode *node;
+
+    gchar *prefix_id, *base_id;
+    gchar *pname_ns;
+    gchar *iriref;
+    gchar *start;
+    gchar *look_ahead, *current;
     
-    /* skip whitespaces and comments */
-    for(; iter < &(buffer[sb->st_size]); iter++){
-      if((buffer == iter && *buffer == '#') ||
-	 (buffer != iter && buffer[iter - buffer - 1] == '\n' && *iter == '#')){
-	iter = index(iter, '\n');
-	continue;
+    regex_t prefix_id_regex;
+    regex_t base_id_regex;
+    regmatch_t match_arr;
+    
+    static const char *prefix_id_pattern = "^(\@prefix|\"PREFIX\")\0";
+    static const char *base_id_pattern = "^(\@base|\"BASE\")\0";
+    static const size_t max_matches = 1;
+    
+    node = NULL;
+    regcomp(&prefix_id_regex, prefix_id_pattern, REG_EXTENDED);
+    
+    if(regexec(&prefix_id_regex, iter, max_matches, &match_arr, 0) == 0){
+      /* prefix directive */
+      start = 
+	look_ahead = iter;
+      
+      node = xmlNewNode(NULL,
+			"rdf-directive\0");
+      xmlNewProp(node,
+		 "type\0",
+		 "prefix\0");
+
+      /* read pname ns */
+      if(*iter == '@'){
+	look_ahead += 7;
+      }else{
+	look_ahead += 8;
+      }
+      
+      pname_ns = NULL;
+      
+      while(pname_ns == NULL &&
+	    (look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead)) != '\0'){
+	current = look_ahead;
+
+	while(rdf_is_pname_ns(current, &(buffer[sb->st_size]))){
+	  current++;
+	}
+
+	if(current == look_ahead){
+	  look_ahead++;
+	}else{
+	  pname_ns = g_strndup(look_ahead,
+			       current - look_ahead);
+	  look_ahead = current;
+	}
       }
 
-      /* skip line break */
-      if(*iter == '.'){
-	continue;
+      xmlNewProp(node,
+		 "pname-ns\0",
+		 pname_ns);
+      
+      /* read iriref */
+      while(iriref == NULL &&
+	    (look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead)) != '\0'){
+	current = look_ahead;
+
+	if(rdf_is_iriref_extended_valid_start(current, &(buffer[sb->st_size]))){
+	  current++;
+	  
+	  while(rdf_is_iriref(current, &(buffer[sb->st_size]))){
+	    current++;
+	  }
+	  
+	  if(rdf_is_iriref_extended_valid_end(current, &(buffer[sb->st_size]))){
+	    iriref = g_strndup(look_ahead + 1,
+			       current - look_ahead - 1);
+	  }else{
+	    g_warning("malformed directive\0");
+	  }
+	}
+	
+	if(current == look_ahead){
+	  look_ahead++;
+	}else{
+	  iriref = g_strndup(look_ahead,
+			     current - look_ahead);
+	  look_ahead = current + 1;	  
+	}
       }
 
-      if(*iter == '\n'){
-	continue;
+      xmlNewProp(node,
+		 "iriref\0",
+		 iriref);
+
+    }else{
+      regcomp(&base_id_regex, base_id_pattern, REG_EXTENDED);
+      
+      if(regexec(&base_id_regex, iter, max_matches, &match_arr, 0) == 0){
+	/* base directive */
+	start = 
+	  look_ahead = iter;
+	
+	/* read pname ns */
+	if(*iter == '@'){
+	  look_ahead += 5;
+	}else{
+	  look_ahead += 6;
+	}
+      
+      	node = xmlNewNode(NULL,
+			  "rdf-directive\0");
+	xmlNewProp(node,
+		   "type\0",
+		   "base\0");
+
+	/* read iriref */
+	while(iriref == NULL &&
+	      (look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead)) != '\0'){
+	  current = look_ahead;
+
+	  if(rdf_is_iriref_extended_valid_start(current, &(buffer[sb->st_size]))){
+	    current++;
+	  
+	    while(rdf_is_iriref(current, &(buffer[sb->st_size]))){
+	      current++;
+	    }
+	  
+	    if(rdf_is_iriref_extended_valid_end(current, &(buffer[sb->st_size]))){
+	      iriref = g_strndup(look_ahead + 1,
+				 current - look_ahead - 1);
+	    }else{
+	      g_warning("malformed directive\0");
+	    }
+	  }
+	  
+	  if(current == look_ahead){
+	    look_ahead++;
+	  }else{
+	    iriref = g_strndup(look_ahead,
+			       current - look_ahead);
+	    look_ahead = current + 1;
+	  }
+	}
+	
+	xmlNewProp(node,
+		   "iriref\0",
+		   iriref);
+      }
+    }
+
+    iter = index(look_ahead, '.') + 1;
+    
+    return(node);
+  }
+
+  xmlNode* ags_turtle_load_read_triple(){
+    xmlNode *node;
+    xmlNode *blank_node;
+    xmlNode *collection_node;
+    xmlNode *verb_node;
+    xmlNode *object_list_node;
+    
+    gchar *iri;
+    gchar *blank_node_start, *blank_node_end;
+    gchar *current_verb;
+    gchar *current_object;
+    gchar *start;
+    gchar *look_ahead, *current;
+
+    node = NULL;
+
+    /* subject */
+    start = 
+      look_ahead = iter;
+    
+    while((look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead)) != '\0'){
+      /* iri - IRIREF */
+      if(rdf_is_iriref_extended_valid_start(look_ahead, &(buffer[sb->st_size]))){
+	current = look_ahead + 1;
+
+	while(rdf_is_iriref(current, &(buffer[sb->st_size]))) current++;
+
+	if(current == look_ahead + 1){
+	  look_ahead++;
+	}else{
+	  if(rdf_is_iriref_extended_valid_end(current, &(buffer[sb->st_size]))){
+	    iri = g_strndup(look_ahead,
+			    current - look_ahead);
+	    look_ahead = current + 1;
+	    
+	    break;
+	  }else{
+	    look_ahead++;
+	  }
+	}
       }
 
-      if(*iter == ';' || *iter == '[' || *iter == ']' || *iter == ',' || *iter == '(' || *iter == ')'){
-	g_warning("read subject unexpected char: %c\0", *iter);
-	continue;
-      }
-
-      /* delimiter */
-      if(*iter != ' ' && *iter != '\t'){
-	start = iter;
+      /* iri - prefixed name */
+      if(rdf_is_pname_ns(look_ahead, &(buffer[sb->st_size])) ||
+	 rdf_is_pname_ln(look_ahead, &(buffer[sb->st_size]))){
+	current = look_ahead + 1;
+	
+	while(rdf_is_pname_ns(current, &(buffer[sb->st_size])) ||
+	      rdf_is_pname_ln(current, &(buffer[sb->st_size]))) current++;
+	
+	iri = g_strndup(look_ahead,
+			current - look_ahead);
+	look_ahead = current;
+	
 	break;
       }
+      
+      /* blank node - label */
+      if(rdf_is_blank_node_label_valid_start(look_ahead, &(buffer[sb->st_size]))){
+	current = look_ahead + 2;
+	blank_node_start = current;
+	
+	while(rdf_is_blank_node_label(current, &(buffer[sb->st_size]))) current++;
+
+	if(current != look_ahead + 2){
+	  if(rdf_is_blank_node_label_valid_end(current - 1, &(buffer[sb->st_size]))){
+	    blank_node_end = current;
+
+	    blank_node = xmlNewNode(NULL,
+				    "blank-node\0");
+	    xmlNewProp(blank_node,
+		       "label\0",
+		       g_strndup(blank_node_start,
+				 blank_node_end - blank_node_start));
+	    
+	    look_ahead = current;
+
+	    break;
+	  }else{
+	    look_ahead++;
+	  }
+	}else{
+	  look_ahead++;
+	}
+      }
+
+      /* blank node - anon */
+      if(rdf_is_anon_extended_valid_start(look_ahead, &(buffer[sb->st_size]))){
+	current = look_ahead + 1;
+	blank_node_start = current;
+	
+	while(rdf_is_ws(current, &(buffer[sb->st_size]))) current++;
+
+	if(current + 1 != look_ahead){
+	  if(rdf_is_anon_extended_valid_end(current, &(buffer[sb->st_size]))){
+	    blank_node_end = current;
+
+	    blank_node = xmlNewNode(NULL,
+				    "blank-node\0");
+	    xmlNewProp(blank_node,
+		       "anon\0",
+		       NULL);
+	    
+	    look_ahead = current + 1;
+	  }else{
+	    look_ahead++;
+	  }
+	}else{
+	  look_ahead++;
+	}
+	
+	break;
+      }
+
+      /* collection */
+      if(*look_ahead == '('){
+	collection_node = ags_turtle_load_read_collection();
+
+	break;
+      }
+      
+      look_ahead++;
     }
 
-    if(start == NULL){      
-      return(NULL);
+    if(iri != NULL ||
+       blank_node != NULL ||
+       collection_node != NULL){
+      node = xmlNewNode(NULL,
+			"rdf-triple\0");
+	 
+      if(iri != NULL){
+	xmlNewProp(node,
+		   "subject\0",
+		   iri);
+      }else if(blank_node != NULL){
+	xmlAddChild(node,
+		    blank_node);
+      }else if(collection_node != NULL){
+	xmlAddChild(node,
+		    collection_node);
+      }
+    }
+
+    iter = look_ahead;
+    
+    /* verb */
+    verb_node = NULL;
+    
+    if(node != NULL){
+      verb_node = ags_turtle_load_read_verb();
+      xmlAddChild(node,
+		  verb_node);
     }
     
-    /* read subject */
-    for(; !g_ascii_isspace(*iter) && *iter != '\0'; iter++);
-
-    end = iter;
-
-    subject = g_strndup(start,
-			end - start);
-
-#ifdef AGS_DEBUG
-    g_message("subject %s\0", subject);
-#endif
+    /* object list */
+    object_list_node = NULL;
     
-    return(subject);
+    if(verb_node != NULL){
+      object_list_node = ags_turtle_read_object_list();
+      xmlAddChild(node,
+		  object_list_node);
+    }
+    
+    /* finish tirple */
+    if(object_list_node != NULL){
+      iter = index(look_ahead, '.') + 1;
+    }
+    
+    return(node);
+  }
+    
+  xmlNode* ags_turtle_load_read_collection()
+  {
+    xmlNode *node;
+
+    node = NULL;
+
+    //TODO:JK: implement me
+    
+    return(node);
   }
   
   xmlNode* ags_turtle_load_read_verb()
   {
     xmlNode *node;
-    gchar *verb;
-    gchar *start, *end;
-    gboolean type_modifier;
-    
-    verb = NULL;
-    start = NULL;
 
-    type_modifier = FALSE;
-    
-    /* skip whitespaces and comments */
-    for(; *iter != '\0'; iter++){
-      if((buffer == iter && *buffer == '#') ||
-	 (buffer[iter - buffer - 1] == '\n' && *iter == '#')){
-	iter = index(iter, '\n');
-	continue;
-      }
+    node = NULL;
 
-      if(*iter == '.'){
-	break;
-      }
-      
-      if(*iter == '\n'){
-	continue;
-      }
-      
-      if(*iter == ';' || *iter == '[' || *iter == ']' || *iter == ',' || *iter == '(' || *iter == ')'){
-	g_warning("read verb unexpected char %c\0", *iter);
-	continue;
-      }
-      
-      /* delimiter */
-      if(*iter != ' ' && *iter != '\t'){
-	start = iter;
-	break;
-      }
-    }
-    
-    if(start == NULL){      
-      return(NULL);
-    }
-    
-    /* read verb */
-    for(; !g_ascii_isspace(*iter) && *iter != '\0'; iter++);
-
-    end = iter;
-
-    verb = g_strndup(start,
-		     end - start);
-    
-#ifdef AGS_DEBUG
-    g_message("verb %s\0", verb);
-#endif
-    
-    if(!g_ascii_strncasecmp(verb,
-			    "a\0",
-			    2)){
-      type_modifier = TRUE;
-    }
-
-    node = xmlNewNode(NULL, "rdf-verb\0");
-    
-    if(type_modifier){
-      xmlNewProp(node,
-		 "has-type\0",
-		 "true\0");
-    }else{
-      xmlNewProp(node,
-		 "do\0",
-		 verb);
-    }
+    //TODO:JK: implement me
     
     return(node);
   }
   
-  xmlNode* ags_turtle_load_read_value()
+  xmlNode* ags_turtle_load_read_object_list()
   {
-    xmlNode *node, *node_list;
+    xmlNode *node;
 
-    gchar *start, *end, *start_literal, *end_literal;
-    gchar *look_ahead;
-    gchar *str;
-    guint current_level;
-    gboolean escaped_literal;
-    gboolean more_collection;
-    
-    object = NULL;
-    start = NULL;
-
-    node_list = xmlNewNode(NULL, "rdf-list\0");
     node = NULL;
+
+    //TODO:JK: implement me
     
-    do{
-      more_collection = FALSE;
-      
-      /* skip comments/spaces and read value */
-      for(;  iter < &(buffer[sb->st_size]); iter++){
-	if((buffer == iter && *buffer == '#') ||
-	   (buffer[iter - buffer - 1] == '\n' && *iter == '#')){
-	  iter = index(iter, '\n');
-	  continue;
-	}
-
-	if(*iter == '['){
-	  nth_level++;
-	  continue;
-	}
-	
-	if(*iter == '\n' || *iter == ','){
-	  continue;
-	}
-
-	if(*iter != ' ' && *iter != '\t'){
-	  break;
-	}
-      }
-      
-      /* current node */
-      node = NULL;
-      start = iter;
-	
-      if(iter < &(buffer[sb->st_size]) && *iter != '.' && *iter != ';'){
-	node = xmlNewNode(NULL, "rdf-value\0");
-	xmlAddChild(node_list,
-		    node);
-	
-	/* read value  */
-	str = NULL;
-	
-	start_literal = NULL;
-	end_literal = NULL;
-
-	/* read value */
-	for(; iter < &(buffer[sb->st_size]); iter++){
-
-	  if(*iter == '"'){
-	    if(start_literal == NULL){
-	      start_literal = iter;
-
-	      if(iter[1] == '"' && iter[2] == '"'){
-		escaped_literal = TRUE;
-		iter += 3;
-	      }else{
-		escaped_literal = FALSE;
-	      }
-	    }else{
-	      if(escaped_literal){
-		if(iter[1] == '"' && iter[2] == '"'){
-		  end_literal = iter;
-		  iter += 3;
-		}
-	      }else{
-		end_literal = iter;
-	      }
-	    }
-
-	    continue;
-	  }
-
-	  if(start_literal != NULL && end_literal == NULL){
-	    continue;
-	  }
-
-	  if(*iter == ' ' || *iter == '\t' || *iter == '\n' || *iter == ';' || *iter == ','){
-	    break;
-	  }
-	}
-
-	end = iter;
-	str = g_strndup(start,
-			end - start);
-
-	/* skip */
-	for(;  iter < &(buffer[sb->st_size]); iter++){
-	  if(*iter == '\n'){
-	    continue;
-	  }
-	  
-	  if(*iter == ']'){
-	    nth_level--;
-	    continue;
-	  }
-
-	  if(*iter == ','){
-	    more_collection = TRUE;
-	    continue;
-	  }
-	  
-	  if(*iter == '(' || *iter == ')'){
-	    g_warning("unexpected char %c\0", *iter);
-	    continue;
-	  }
-
-	  if(*iter == ';' || *iter == '.'){
-	    break;
-	  }
-	  
-	  if(*iter == '['){
-	    nth_level++;
-	    break;
-	  }
-
-	  if(*iter != ' ' && *iter != '\t'){
-	    break;
-	  }
-      	}
-	
-	/* set value */
-	xmlNewProp(node,
-		   "value\0",
-		   str);
-#ifdef AGS_DEBUG
-	g_message("value_str %s\0", str);
-#endif
-      }
-    }while(more_collection && *iter != '[' && iter < &(buffer[sb->st_size]));
-
-    if(*iter == ';'){
-      do{
-	current_level = nth_level;
-    
-	look_ahead = iter + 1;
-
-	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
-
-	if(*look_ahead == ']'){
-	  nth_level--;
-	  iter = look_ahead;
-	}
-
-	look_ahead = iter + 1;
-	  
-	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
-
-	if(*look_ahead == ','){
-	  iter = look_ahead;
-	}
-
-	look_ahead = iter + 1;
-	  
-	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
-
-	if(*look_ahead == '['){
-	  nth_level++;
-	  iter = look_ahead;
-	  break;
-	}
-
-	look_ahead = iter + 1;
-	  
-	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
-
-	if(*look_ahead == '.'){
-	  iter = look_ahead;
-	}
-
-	look_ahead = iter + 1;
-	  
-	for(; (*look_ahead == ' ' || *look_ahead == '\t' || *look_ahead == '\n') && *look_ahead != '\0'; look_ahead++);
-
-	if(*look_ahead == ';'){
-	  iter = look_ahead;
-	}
-      }while(current_level != nth_level);
-    }
-    
-    return(node_list);
+    return(node);
   }
 
   g_message("file: %s\0", turtle->filename);
   
-  /* entry point */
+  /* entry point - open file and read it */
   sb = (struct stat *) malloc(sizeof(struct stat));
   stat(turtle->filename,
        sb);
@@ -701,6 +963,7 @@ ags_turtle_load(AgsTurtle *turtle)
   buffer[sb->st_size] = '\0';
   fclose(file);
 
+  /* alloc document */
   turtle->doc = 
     doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(NULL, "rdf-turtle\0");
@@ -709,8 +972,7 @@ ags_turtle_load(AgsTurtle *turtle)
   iter = buffer;
 
   do{
-    nth_level = 0;
-    node = ags_turtle_load_read_triple();
+    node = ags_turtle_load_read_statement();
 
     if(node != NULL){
       xmlAddChild(root_node,

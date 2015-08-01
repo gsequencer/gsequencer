@@ -1,0 +1,285 @@
+make  all-recursive
+make[1]: Entering directory '/home/joelkraehemann/gsequencer'
+Making all in po
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/po'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/po'
+Making all in .
+make[2]: Entering directory '/home/joelkraehemann/gsequencer'
+gcc -DHAVE_CONFIG_H -I.    -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2  -g -O2 -MT libags_a-ags_turtle.o -MD -MP -MF .deps/libags_a-ags_turtle.Tpo -c -o libags_a-ags_turtle.o `test -f 'src/ags/lib/ags_turtle.c' || echo './'`src/ags/lib/ags_turtle.c
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_finalize’:
+src/ags/lib/ags_turtle.c:347:11: warning: unused variable ‘str’ [-Wunused-variable]
+   gchar **str;
+           ^
+src/ags/lib/ags_turtle.c:346:14: warning: variable ‘turtle’ set but not used [-Wunused-but-set-variable]
+   AgsTurtle *turtle;
+              ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_directive’:
+src/ags/lib/ags_turtle.c:601:44: warning: unknown escape sequence: '\@'
+     static const char *prefix_id_pattern = "^(\@prefix|\"PREFIX\")\0";
+                                            ^
+src/ags/lib/ags_turtle.c:602:42: warning: unknown escape sequence: '\@'
+     static const char *base_id_pattern = "^(\@base|\"BASE\")\0";
+                                          ^
+src/ags/lib/ags_turtle.c:614:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-directive\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:616:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "type\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:617:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "prefix\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:646:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "pname-ns\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:647:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    pname_ns);
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:121:49: warning: suggest parentheses around ‘&&’ within ‘||’ [-Wparentheses]
+ #define rdf_is_uchar(str, endptr) (*str == '\\' &&   \
+                                                 ^
+src/ags/lib/ags_turtle.c:53:37: note: in expansion of macro ‘rdf_is_uchar’
+ #define rdf_is_iriref(str, endptr) (rdf_is_uchar(str, endptr) && \
+                                     ^
+src/ags/lib/ags_turtle.c:657:10: note: in expansion of macro ‘rdf_is_iriref’
+    while(rdf_is_iriref(current, &(buffer[sb->st_size]))){
+          ^
+src/ags/lib/ags_turtle.c:679:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "iriref\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:680:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    iriref);
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:698:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+      "rdf-directive\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:700:6: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+      "type\0",
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:701:6: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+      "base\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:121:49: warning: suggest parentheses around ‘&&’ within ‘||’ [-Wparentheses]
+ #define rdf_is_uchar(str, endptr) (*str == '\\' &&   \
+                                                 ^
+src/ags/lib/ags_turtle.c:53:37: note: in expansion of macro ‘rdf_is_uchar’
+ #define rdf_is_iriref(str, endptr) (rdf_is_uchar(str, endptr) && \
+                                     ^
+src/ags/lib/ags_turtle.c:711:12: note: in expansion of macro ‘rdf_is_iriref’
+      while(rdf_is_iriref(current, &(buffer[sb->st_size]))){
+            ^
+src/ags/lib/ags_turtle.c:733:6: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+      "iriref\0",
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:734:6: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+      iriref);
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:594:12: warning: variable ‘start’ set but not used [-Wunused-but-set-variable]
+     gchar *start;
+            ^
+src/ags/lib/ags_turtle.c:591:24: warning: unused variable ‘base_id’ [-Wunused-variable]
+     gchar *prefix_id, *base_id;
+                        ^
+src/ags/lib/ags_turtle.c:591:12: warning: unused variable ‘prefix_id’ [-Wunused-variable]
+     gchar *prefix_id, *base_id;
+            ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_triple’:
+src/ags/lib/ags_turtle.c:765:7: warning: implicit declaration of function ‘rdf_is_iriref_valid_start’ [-Wimplicit-function-declaration]
+       if(rdf_is_iriref_valid_start(look_ahead, &(buffer[sb->st_size]))){
+       ^
+src/ags/lib/ags_turtle.c:121:49: warning: suggest parentheses around ‘&&’ within ‘||’ [-Wparentheses]
+ #define rdf_is_uchar(str, endptr) (*str == '\\' &&   \
+                                                 ^
+src/ags/lib/ags_turtle.c:53:37: note: in expansion of macro ‘rdf_is_uchar’
+ #define rdf_is_iriref(str, endptr) (rdf_is_uchar(str, endptr) && \
+                                     ^
+src/ags/lib/ags_turtle.c:768:8: note: in expansion of macro ‘rdf_is_iriref’
+  while(rdf_is_iriref(current, &(buffer[sb->st_size]))) current++;
+        ^
+src/ags/lib/ags_turtle.c:773:4: warning: implicit declaration of function ‘rdf_is_iriref_valid_end’ [-Wimplicit-function-declaration]
+    if(rdf_is_iriref_valid_end(current, &(buffer[sb->st_size]))){
+    ^
+src/ags/lib/ags_turtle.c:184:42: warning: comparison between pointer and integer
+ #define rdf_is_percent(str, endptr) (str == '%' &&   \
+                                          ^
+src/ags/lib/ags_turtle.c:182:34: note: in expansion of macro ‘rdf_is_percent’
+ #define rdf_is_plx(str, endptr) (rdf_is_percent(str, endptr) || \
+                                  ^
+src/ags/lib/ags_turtle.c:172:11: note: in expansion of macro ‘rdf_is_plx’
+           rdf_is_plx(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:68:11: note: in expansion of macro ‘rdf_is_pn_local’
+           rdf_is_pn_local(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:787:3: note: in expansion of macro ‘rdf_is_pname_ln’
+   rdf_is_pname_ln(look_ahead, &(buffer[sb->st_size]))){
+   ^
+src/ags/lib/ags_turtle.c:185:17: warning: comparison between pointer and integer
+          str[2] < endptr &&   \
+                 ^
+src/ags/lib/ags_turtle.c:182:34: note: in expansion of macro ‘rdf_is_percent’
+ #define rdf_is_plx(str, endptr) (rdf_is_percent(str, endptr) || \
+                                  ^
+src/ags/lib/ags_turtle.c:172:11: note: in expansion of macro ‘rdf_is_plx’
+           rdf_is_plx(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:68:11: note: in expansion of macro ‘rdf_is_pn_local’
+           rdf_is_pn_local(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:787:3: note: in expansion of macro ‘rdf_is_pname_ln’
+   rdf_is_pname_ln(look_ahead, &(buffer[sb->st_size]))){
+   ^
+src/ags/lib/ags_turtle.c:787:3: warning: implicit declaration of function ‘g_ascii_is_digit’ [-Wimplicit-function-declaration]
+src/ags/lib/ags_turtle.c:188:34: error: called object is not a function or function pointer
+ #define rdf_is_hex(str, endptr) (((g_ascii_is_digit(*str)) ||   \
+                                  ^
+src/ags/lib/ags_turtle.c:186:10: note: in expansion of macro ‘rdf_is_hex’
+          rdf_is_hex(&(str[1]), endptr) \
+          ^
+src/ags/lib/ags_turtle.c:182:34: note: in expansion of macro ‘rdf_is_percent’
+ #define rdf_is_plx(str, endptr) (rdf_is_percent(str, endptr) || \
+                                  ^
+src/ags/lib/ags_turtle.c:172:11: note: in expansion of macro ‘rdf_is_plx’
+           rdf_is_plx(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:68:11: note: in expansion of macro ‘rdf_is_pn_local’
+           rdf_is_pn_local(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:787:3: note: in expansion of macro ‘rdf_is_pname_ln’
+   rdf_is_pname_ln(look_ahead, &(buffer[sb->st_size]))){
+   ^
+src/ags/lib/ags_turtle.c:787:55: error: expected ‘)’ before ‘{’ token
+   rdf_is_pname_ln(look_ahead, &(buffer[sb->st_size]))){
+                                                       ^
+src/ags/lib/ags_turtle.c:998:1: error: expected declaration or statement at end of input
+ }
+ ^
+src/ags/lib/ags_turtle.c:998:1: error: expected declaration or statement at end of input
+src/ags/lib/ags_turtle.c:754:12: warning: variable ‘start’ set but not used [-Wunused-but-set-variable]
+     gchar *start;
+            ^
+src/ags/lib/ags_turtle.c:753:12: warning: unused variable ‘current_object’ [-Wunused-variable]
+     gchar *current_object;
+            ^
+src/ags/lib/ags_turtle.c:752:12: warning: unused variable ‘current_verb’ [-Wunused-variable]
+     gchar *current_verb;
+            ^
+src/ags/lib/ags_turtle.c:751:31: warning: unused variable ‘blank_node_end’ [-Wunused-variable]
+     gchar *blank_node_start, *blank_node_end;
+                               ^
+src/ags/lib/ags_turtle.c:751:12: warning: unused variable ‘blank_node_start’ [-Wunused-variable]
+     gchar *blank_node_start, *blank_node_end;
+            ^
+src/ags/lib/ags_turtle.c:750:12: warning: variable ‘iri’ set but not used [-Wunused-but-set-variable]
+     gchar *iri;
+            ^
+src/ags/lib/ags_turtle.c:748:14: warning: unused variable ‘object_list_node’ [-Wunused-variable]
+     xmlNode *object_list_node;
+              ^
+src/ags/lib/ags_turtle.c:747:14: warning: unused variable ‘verb_node’ [-Wunused-variable]
+     xmlNode *verb_node;
+              ^
+src/ags/lib/ags_turtle.c:746:14: warning: unused variable ‘collection_node’ [-Wunused-variable]
+     xmlNode *collection_node;
+              ^
+src/ags/lib/ags_turtle.c:745:14: warning: unused variable ‘blank_node’ [-Wunused-variable]
+     xmlNode *blank_node;
+              ^
+src/ags/lib/ags_turtle.c:744:14: warning: variable ‘node’ set but not used [-Wunused-but-set-variable]
+     xmlNode *node;
+              ^
+src/ags/lib/ags_turtle.c:998:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load’:
+src/ags/lib/ags_turtle.c:998:1: error: expected declaration or statement at end of input
+src/ags/lib/ags_turtle.c:424:17: error: nested function ‘ags_turtle_load_read_object_list’ declared but never defined
+   auto xmlNode* ags_turtle_load_read_object_list();
+                 ^
+src/ags/lib/ags_turtle.c:423:17: error: nested function ‘ags_turtle_load_read_verb’ declared but never defined
+   auto xmlNode* ags_turtle_load_read_verb();
+                 ^
+src/ags/lib/ags_turtle.c:422:17: error: nested function ‘ags_turtle_load_read_collection’ declared but never defined
+   auto xmlNode* ags_turtle_load_read_collection();
+                 ^
+src/ags/lib/ags_turtle.c:411:9: warning: unused variable ‘file’ [-Wunused-variable]
+   FILE *file;
+         ^
+src/ags/lib/ags_turtle.c:410:24: warning: unused variable ‘node’ [-Wunused-variable]
+   xmlNode *root_node, *node;
+                        ^
+src/ags/lib/ags_turtle.c:410:12: warning: unused variable ‘root_node’ [-Wunused-variable]
+   xmlNode *root_node, *node;
+            ^
+src/ags/lib/ags_turtle.c:409:11: warning: unused variable ‘doc’ [-Wunused-variable]
+   xmlDoc *doc;
+           ^
+Makefile:2603: recipe for target 'libags_a-ags_turtle.o' failed
+make[2]: *** [libags_a-ags_turtle.o] Error 1
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer'
+Makefile:8204: recipe for target 'all-recursive' failed
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory '/home/joelkraehemann/gsequencer'
+Makefile:1966: recipe for target 'all' failed
+make: *** [all] Error 2

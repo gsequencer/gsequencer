@@ -33,8 +33,14 @@
 
 #define AGS_TURTLE_DEFAULT_ENCODING "UTF-8\0"
 
+#define AGS_TURTLE_STRING_LITERAL_QUOTE "\"\0"
+#define AGS_TURTLE_STRING_LITERAL_SINGLE_QUOTE "'\0"
+#define AGS_TURTLE_STRING_LITERAL_LONG_QUOTE "\"\"\"\0"
+#define AGS_TURTLE_STRING_LITERAL_LONG_SINGLE_QUOTE "'''\0"
+
 typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
+typedef struct _AgsTurtleParserContext AgsTurtleParserContext;
 
 typedef enum{
   AGS_TURTLE_READ_SUBJECT    = 1,
@@ -50,6 +56,8 @@ struct _AgsTurtle
   guint flags;
   
   gchar *filename;
+
+  GList *parser_context;
   
   xmlDoc *doc;
 };
@@ -59,11 +67,24 @@ struct _AgsTurtleClass
   GObjectClass object;
 };
 
+struct _AgsTurtleParserContext
+{
+  gchar *subject_delimiter;
+  gchar *verb_delimiter;
+  gchar *value_delimiter;
+  
+  xmlNode *statement_node;
+};
+
 GType ags_turtle_get_type(void);
+
+AgsTurtleParserContext* ags_turtle_parser_context_alloc();
+void ags_turtle_parser_context_free(AgsTurtleParserContext *parser_context);
 
 GList* ags_turtle_find_xpath(AgsTurtle *turtle,
 			     gchar *xpath);
-void ags_turtle_load(AgsTurtle *turtle);
+void ags_turtle_load(AgsTurtle *turtle,
+		     GError **error);
 
 AgsTurtle* ags_turtle_new(gchar *filename);
 

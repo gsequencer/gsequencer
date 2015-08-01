@@ -324,7 +324,8 @@ ags_lv2ui_manager_load_default_directory()
       
       manifest = ags_turtle_new(g_strdup_printf("%s/manifest.ttl\0",
 						plugin_path));
-      ags_turtle_load(manifest);
+      ags_turtle_load(manifest,
+		      NULL);
   
       /* instantiate and load turtle */
       ttl_list = ags_turtle_find_xpath(manifest,
@@ -352,7 +353,8 @@ ags_lv2ui_manager_load_default_directory()
 	turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
 						plugin_path,
 						turtle_path));
-	ags_turtle_load(turtle);
+	ags_turtle_load(turtle,
+			NULL);
 	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
 
 	/* read binary from turtle */
