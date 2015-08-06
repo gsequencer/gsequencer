@@ -101,6 +101,10 @@ gchar* ags_navigation_relative_tact_to_time_string(gchar *timestr,
 						   gdouble bpm,
 						   gdouble delay_factor);
 
+gchar* ags_navigation_absolute_tact_to_time_string(gdouble tact,
+						   gdouble bpm,
+						   gdouble delay_factor);
+
 void ags_navigation_update_time_string(double tact,
 				       gdouble bpm,
 				       gdouble delay_factor,

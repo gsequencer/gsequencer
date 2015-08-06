@@ -27,6 +27,8 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_config.h>
+
 #include <ags/audio/task/ags_seek_devout.h>
 
 #include <ags/X/ags_window.h>
@@ -78,6 +80,8 @@ enum{
 
 static gpointer ags_navigation_parent_class = NULL;
 static guint navigation_signals[LAST_SIGNAL];
+
+extern AgsConfig *config;
 
 GType
 ags_navigation_get_type(void)
@@ -496,9 +500,9 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 			     tact_counter * AGS_PATTERN_EDIT(editor->current_edit_widget)->control_current.control_width * (16.0 / tact_factor));
   }
   
-  timestr = ags_navigation_tact_to_time_string(tact_counter,
-					       navigation->bpm->adjustment->value,
-					       window->devout->delay_factor);
+  timestr = ags_navigation_absolute_tact_to_time_string(16.0 * tact_counter,
+							navigation->bpm->adjustment->value,
+							window->devout->delay_factor);
   gtk_label_set_text(navigation->position_time, timestr);
   
   g_free(timestr);
@@ -646,6 +650,66 @@ ags_navigation_relative_tact_to_time_string(gchar *timestr,
   
   timestr = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
   
+  return(timestr);
+}
+
+gchar*
+ags_navigation_absolute_tact_to_time_string(gdouble tact,
+					    gdouble bpm,
+					    gdouble delay_factor)
+{
+  gchar *str;
+  guint samplerate;
+  guint buffer_size;
+  gdouble delay;
+  gdouble delay_min, delay_sec, delay_msec;
+  gchar *timestr;
+  gdouble tact_redux;
+  guint min, sec, msec;
+
+  /* retrieve some presets */
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
+				NULL,
+				10);
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+  free(str);
+
+  /* calculate delays */
+  delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;
+  
+  delay_sec = (16.0 + (1.0 / 16.0)) / ((16.0 + (1.0 / 16.0)) * delay_factor * (gdouble)(60.0 / bpm));
+  delay_min = delay_sec * 60.0;
+  delay_msec = delay_sec / 1000.0;
+
+  /* translate to time string */
+  tact_redux = tact;
+
+  min = (guint) floor(tact_redux / delay_min);
+
+  if(min > 0){
+    tact_redux = tact_redux - (min * delay_min);
+  }
+
+  sec = (guint) floor(tact_redux / delay_sec);
+
+  if(sec > 0){
+    tact_redux = tact_redux - (sec * delay_sec);
+  }
+
+  msec = (guint) floor(tact_redux / delay_msec);
+
+  timestr = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
+
   return(timestr);
 }
 
