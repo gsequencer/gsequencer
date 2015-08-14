@@ -2121,7 +2121,7 @@ ags_thread_loop(void *ptr)
       clock_gettime(CLOCK_MONOTONIC, &time_now);
 
       if(time_now.tv_sec > time_prev.tv_sec){
-	time_spent = (time_now.tv_nsec); // + (NSEC_PER_SEC - time_prev.tv_nsec)
+	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - time_prev.tv_nsec);
       }else{
 	time_spent = time_now.tv_nsec - time_prev.tv_nsec;
       }

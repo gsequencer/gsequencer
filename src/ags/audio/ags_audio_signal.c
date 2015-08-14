@@ -26,7 +26,8 @@
 #include <ags/audio/ags_devout.h>
 
 #include <stdint.h>
-#include <emmintrin.h>
+//TODO:JK: do vector optimization
+//#include <emmintrin.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
