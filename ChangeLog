@@ -1,3 +1,9 @@
+ags (0.5.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed time calculation using absolute position for AgsExportWindow and AgsNavigation
+	* fixed fundamental timing issue which caused the engine to be delayed
+
 ags (0.5.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

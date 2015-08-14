@@ -687,7 +687,7 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
   /* calculate delays */
   delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;
   
-  delay_sec = (16.0 + (1.0 / 16.0)) / ((16.0 + (1.0 / 16.0)) * delay_factor * (gdouble)(60.0 / bpm));
+  delay_sec = ((bpm / delay_factor) / 60.0);
   delay_min = delay_sec * 60.0;
   delay_msec = delay_sec / 1000.0;
 
