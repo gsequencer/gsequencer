@@ -998,7 +998,7 @@ ags_turtle_load(AgsTurtle *turtle,
 	goto ags_turtle_load_read_object_CREATE_NODE;
       }
 
-      /* blank node property list */
+      /* blank node property listimplemented ags_turtle_load_read_object() */
       if(*look_ahead == '['){
 	blank_node_property_list_node = ags_turtle_load_read_blank_node_property_list_node(&look_ahead);
 	
@@ -1177,10 +1177,31 @@ ags_turtle_load(AgsTurtle *turtle,
   xmlNode* ags_turtle_load_read_blank_node_property_list(gchar **iter)
   {
     xmlNode *node;
+    xmlNode *predicate_object_list_node;
 
+    gchar *look_ahead;
+    
     node = NULL;
+    predicate_object_list_node = NULL;
+    
+    look_ahead = *iter;
+    look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
 
-    //TODO:JK: implement me
+    if(*look_ahead == '['){
+      look_ahead++;
+
+      predicate_object_list_node = ags_turtle_load_read_predicate_object_list(&look_ahead);
+
+      if(predicate_object_list_node != NULL){
+	node = xmlNewNode(NULL,
+			  "rdf-blank-node-property-list\0");
+
+	xmlAddChild(node,
+		    predicate_object_list_node);
+	
+	*iter = look_ahead;
+      }
+    }
     
     return(node);
   }
@@ -1193,7 +1214,7 @@ ags_turtle_load(AgsTurtle *turtle,
     
     node = NULL;
 
-    look_ahead = *iter;    
+    look_ahead = *iter;
     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
 
     /* read iriref */

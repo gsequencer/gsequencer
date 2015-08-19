@@ -1,0 +1,795 @@
+make  all-recursive
+make[1]: Entering directory '/home/joelkraehemann/gsequencer'
+Making all in po
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/po'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/po'
+Making all in .
+make[2]: Entering directory '/home/joelkraehemann/gsequencer'
+gcc -DHAVE_CONFIG_H -I.    -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2  -g -O2 -MT libags_a-ags_turtle.o -MD -MP -MF .deps/libags_a-ags_turtle.Tpo -c -o libags_a-ags_turtle.o `test -f 'src/ags/lib/ags_turtle.c' || echo './'`src/ags/lib/ags_turtle.c
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_finalize’:
+src/ags/lib/ags_turtle.c:347:11: warning: unused variable ‘str’ [-Wunused-variable]
+   gchar **str;
+           ^
+src/ags/lib/ags_turtle.c:346:14: warning: variable ‘turtle’ set but not used [-Wunused-but-set-variable]
+   AgsTurtle *turtle;
+              ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_directive’:
+src/ags/lib/ags_turtle.c:505:44: warning: unknown escape sequence: '\@'
+     static const char *prefix_id_pattern = "^(\@prefix|\"PREFIX\")\0";
+                                            ^
+src/ags/lib/ags_turtle.c:506:42: warning: unknown escape sequence: '\@'
+     static const char *base_id_pattern = "^(\@base|\"BASE\")\0";
+                                          ^
+src/ags/lib/ags_turtle.c:520:34: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
+     if(regexec(&prefix_id_regex, iter, max_matches, &match_arr, 0) == 0){
+                                  ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:520:53: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
+     if(regexec(&prefix_id_regex, iter, max_matches, &match_arr, 0) == 0){
+                                                     ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:525:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-directive\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:527:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "type\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:528:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "prefix\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:550:34: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
+       if(regexec(&base_id_regex, iter, max_matches, &match_arr, 0) == 0){
+                                  ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:550:53: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
+       if(regexec(&base_id_regex, iter, max_matches, &match_arr, 0) == 0){
+                                                     ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:562:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+      "rdf-directive\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:564:6: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+      "type\0",
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:565:6: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+      "base\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:496:25: warning: unused variable ‘current’ [-Wunused-variable]
+     gchar *look_ahead, *current;
+                         ^
+src/ags/lib/ags_turtle.c:495:24: warning: unused variable ‘base_id’ [-Wunused-variable]
+     gchar *prefix_id, *base_id;
+                        ^
+src/ags/lib/ags_turtle.c:495:12: warning: unused variable ‘prefix_id’ [-Wunused-variable]
+     gchar *prefix_id, *base_id;
+            ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_triple’:
+src/ags/lib/ags_turtle.c:599:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-triple\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:614:16: warning: comparison between pointer and integer
+  if(look_ahead == '['){
+                ^
+src/ags/lib/ags_turtle.c:638:12: warning: assignment from incompatible pointer type
+       iter = index(look_ahead, '.') + 1;
+            ^
+src/ags/lib/ags_turtle.c:584:25: warning: unused variable ‘current’ [-Wunused-variable]
+     gchar *look_ahead, *current;
+                         ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_collection’:
+src/ags/lib/ags_turtle.c:656:9: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+         "rdf-collection\0");
+         ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:665:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
+     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
+                                                           ^
+src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
+   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+          ^
+src/ags/lib/ags_turtle.c:667:19: warning: comparison between pointer and integer
+     if(look_ahead == '('){
+                   ^
+src/ags/lib/ags_turtle.c:670:68: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
+       while((look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead)) != '\0'){
+                                                                    ^
+src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
+   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+          ^
+src/ags/lib/ags_turtle.c:709:15: warning: assignment from incompatible pointer type
+    look_ahead = iter + 1;
+               ^
+src/ags/lib/ags_turtle.c:720:15: warning: assignment from incompatible pointer type
+    look_ahead = iter + 1;
+               ^
+src/ags/lib/ags_turtle.c:734:9: warning: assignment from incompatible pointer type
+    iter = look_ahead++;
+         ^
+src/ags/lib/ags_turtle.c:653:25: warning: variable ‘current’ set but not used [-Wunused-but-set-variable]
+     gchar *look_ahead, *current;
+                         ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_predicate_object_list’:
+src/ags/lib/ags_turtle.c:759:66: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
+     while((look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead)) != '\0'){
+                                                                  ^
+src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
+   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+          ^
+src/ags/lib/ags_turtle.c:764:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+      "rdf-predicate-object-list\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:782:61: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
+       look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
+                                                             ^
+src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
+   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+          ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_object_list’:
+src/ags/lib/ags_turtle.c:799:12: warning: variable ‘look_ahead’ set but not used [-Wunused-but-set-variable]
+     gchar *look_ahead;
+            ^
+src/ags/lib/ags_turtle.c:797:14: warning: variable ‘current_object_node’ set but not used [-Wunused-but-set-variable]
+     xmlNode *current_object_node;
+              ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_verb’:
+src/ags/lib/ags_turtle.c:828:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+      "rdf-verb\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:839:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-verb\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:843:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "verb\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:844:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "a\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_subject’:
+src/ags/lib/ags_turtle.c:873:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
+     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
+                                                           ^
+src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
+   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+          ^
+src/ags/lib/ags_turtle.c:910:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-subject\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:917:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-subject\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:924:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-subject\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:931:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-subject\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_predicate’:
+src/ags/lib/ags_turtle.c:945:12: warning: variable ‘look_ahead’ set but not used [-Wunused-but-set-variable]
+     gchar *look_ahead;
+            ^
+src/ags/lib/ags_turtle.c:943:14: warning: variable ‘iri_node’ set but not used [-Wunused-but-set-variable]
+     xmlNode *iri_node;
+              ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_object’:
+src/ags/lib/ags_turtle.c:977:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
+     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
+                                                           ^
+src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
+   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+          ^
+src/ags/lib/ags_turtle.c:1003:2: warning: implicit declaration of function ‘ags_turtle_load_read_blank_node_property_list_node’ [-Wimplicit-function-declaration]
+  blank_node_property_list_node = ags_turtle_load_read_blank_node_property_list_node(&look_ahead);
+  ^
+src/ags/lib/ags_turtle.c:1003:32: warning: assignment makes pointer from integer without a cast
+  blank_node_property_list_node = ags_turtle_load_read_blank_node_property_list_node(&look_ahead);
+                                ^
+src/ags/lib/ags_turtle.c:1021:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-object\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1028:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-object\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1035:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-object\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1042:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-object\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1049:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-object\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_literal’:
+src/ags/lib/ags_turtle.c:1105:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-literal\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1107:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "type\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1108:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "boolean\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1112:6: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
+      "true\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNodeSetContent (xmlNodePtr cur,
+   ^
+src/ags/lib/ags_turtle.c:1115:6: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
+      "false\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNodeSetContent (xmlNodePtr cur,
+   ^
+src/ags/lib/ags_turtle.c:1120:40: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
+     if(regexec(&integer_literal_regex, iter, max_matches, &match_arr, 0) == 0){
+                                        ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1120:59: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
+     if(regexec(&integer_literal_regex, iter, max_matches, &match_arr, 0) == 0){
+                                                           ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1122:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-literal\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1124:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "type\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1125:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "integer\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1128:4: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
+    g_strndup(literal,
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNodeSetContent (xmlNodePtr cur,
+   ^
+src/ags/lib/ags_turtle.c:1133:40: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
+     if(regexec(&decimal_literal_regex, iter, max_matches, &match_arr, 0) == 0){
+                                        ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1133:59: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
+     if(regexec(&decimal_literal_regex, iter, max_matches, &match_arr, 0) == 0){
+                                                           ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1135:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-literal\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1137:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "type\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1138:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "decimal\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1141:4: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
+    g_strndup(literal,
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNodeSetContent (xmlNodePtr cur,
+   ^
+src/ags/lib/ags_turtle.c:1146:39: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
+     if(regexec(&double_literal_regex, iter, max_matches, &match_arr, 0) == 0){
+                                       ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1146:58: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
+     if(regexec(&double_literal_regex, iter, max_matches, &match_arr, 0) == 0){
+                                                          ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1148:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-literal\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1150:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "type\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1151:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "double\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1154:4: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
+    g_strndup(literal,
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNodeSetContent (xmlNodePtr cur,
+   ^
+src/ags/lib/ags_turtle.c:1159:51: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
+     if(regexec(&string_literal_double_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
+                                                   ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1159:70: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
+     if(regexec(&string_literal_double_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
+                                                                      ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1160:51: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
+        regexec(&string_literal_single_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
+                                                   ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1160:70: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
+        regexec(&string_literal_single_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
+                                                                      ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1161:56: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
+        regexec(&string_literal_long_double_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
+                                                        ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1161:75: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
+        regexec(&string_literal_long_double_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
+                                                                           ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1162:56: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
+        regexec(&string_literal_long_single_quot_regex, iter, max_matches, &match_arr, 0) == 0){
+                                                        ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1162:75: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
+        regexec(&string_literal_long_single_quot_regex, iter, max_matches, &match_arr, 0) == 0){
+                                                                           ^
+In file included from src/ags/lib/ags_turtle.c:28:0:
+/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
+ extern int regexec (const regex_t *__restrict __preg,
+            ^
+src/ags/lib/ags_turtle.c:1164:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-literal\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1166:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "type\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1167:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "string\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1170:4: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
+    g_strndup(literal,
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNodeSetContent (xmlNodePtr cur,
+   ^
+src/ags/lib/ags_turtle.c:1082:24: warning: unused variable ‘string_literal_long_single_quot_pattern’ [-Wunused-variable]
+     static const char *string_literal_long_single_quot_pattern = "^('''(('|'')?([^'\\]|.))*''')\0";
+                        ^
+src/ags/lib/ags_turtle.c:1081:24: warning: unused variable ‘string_literal_long_double_quot_pattern’ [-Wunused-variable]
+     static const char *string_literal_long_double_quot_pattern = "^(\"\"\"((\"|\"\")?([^'\\]|.)*\"\"\")\0";
+                        ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_blank_node_property_list’:
+src/ags/lib/ags_turtle.c:1185:5: error: ‘look_ahead’ undeclared (first use in this function)
+     look_ahead = *iter;
+     ^
+src/ags/lib/ags_turtle.c:1185:5: note: each undeclared identifier is reported only once for each function it appears in
+src/ags/lib/ags_turtle.c:1191:7: warning: implicit declaration of function ‘ags_turtle_load_read_predicate_object_list_node’ [-Wimplicit-function-declaration]
+       predicate_object_list_node = ags_turtle_load_read_predicate_object_list_node(&look_ahead);
+       ^
+src/ags/lib/ags_turtle.c:1195:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+      "rdf-blank-node-property-list\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_iri’:
+src/ags/lib/ags_turtle.c:1216:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
+     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
+                                                           ^
+src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
+   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+          ^
+src/ags/lib/ags_turtle.c:1237:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-iri\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1245:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "iriref\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1246:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    iriref);
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_pname’:
+src/ags/lib/ags_turtle.c:1263:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
+     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
+                                                           ^
+src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
+   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+          ^
+src/ags/lib/ags_turtle.c:184:42: warning: comparison between pointer and integer
+ #define rdf_is_percent(str, endptr) (str == '%' &&   \
+                                          ^
+src/ags/lib/ags_turtle.c:182:34: note: in expansion of macro ‘rdf_is_percent’
+ #define rdf_is_plx(str, endptr) (rdf_is_percent(str, endptr) || \
+                                  ^
+src/ags/lib/ags_turtle.c:172:11: note: in expansion of macro ‘rdf_is_plx’
+           rdf_is_plx(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:68:11: note: in expansion of macro ‘rdf_is_pn_local’
+           rdf_is_pn_local(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:1269:4: note: in expansion of macro ‘rdf_is_pname_ln’
+    rdf_is_pname_ln(look_ahead, &(buffer[sb->st_size]))){
+    ^
+src/ags/lib/ags_turtle.c:185:17: warning: comparison between pointer and integer
+          str[2] < endptr &&   \
+                 ^
+src/ags/lib/ags_turtle.c:182:34: note: in expansion of macro ‘rdf_is_percent’
+ #define rdf_is_plx(str, endptr) (rdf_is_percent(str, endptr) || \
+                                  ^
+src/ags/lib/ags_turtle.c:172:11: note: in expansion of macro ‘rdf_is_plx’
+           rdf_is_plx(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:68:11: note: in expansion of macro ‘rdf_is_pn_local’
+           rdf_is_pn_local(str, endptr))
+           ^
+src/ags/lib/ags_turtle.c:1269:4: note: in expansion of macro ‘rdf_is_pname_ln’
+    rdf_is_pname_ln(look_ahead, &(buffer[sb->st_size]))){
+    ^
+src/ags/lib/ags_turtle.c:1275:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+    "rdf-pname\0");
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1281:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    "pname-ns\0",
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1282:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+    pname_ns);
+    ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_blank_node’:
+src/ags/lib/ags_turtle.c:1312:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+      "rdf-blank-node\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1314:6: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+      "label\0",
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+src/ags/lib/ags_turtle.c:1315:6: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+      g_strndup(blank_node_start,
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+In file included from /usr/include/glib-2.0/glib.h:62:0,
+                 from ./src/ags/lib/ags_turtle.h:22,
+                 from src/ags/lib/ags_turtle.c:19:
+src/ags/lib/ags_turtle.c:1322:14: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+              "label\0"));
+              ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/lib/ags_turtle.c:1343:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+      "rdf-blank-node\0");
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c:1345:6: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
+      "anon\0",
+      ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewProp  (xmlNodePtr node,
+   ^
+In file included from /usr/include/glib-2.0/glib.h:62:0,
+                 from ./src/ags/lib/ags_turtle.h:22,
+                 from src/ags/lib/ags_turtle.c:19:
+src/ags/lib/ags_turtle.c:1352:13: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
+             "anon\0"));
+             ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlGetProp  (const xmlNode *node,
+   ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load’:
+src/ags/lib/ags_turtle.c:1386:21: warning: pointer targets in passing argument 1 of ‘xmlNewDoc’ differ in signedness [-Wpointer-sign]
+     doc = xmlNewDoc("1.0\0");
+                     ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:779:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewDoc  (const xmlChar *version);
+   ^
+src/ags/lib/ags_turtle.c:1387:32: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
+   root_node = xmlNewNode(NULL, "rdf-turtle\0");
+                                ^
+In file included from ./src/ags/lib/ags_turtle.h:25:0,
+                 from src/ags/lib/ags_turtle.c:19:
+/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
+   xmlNewNode  (xmlNsPtr ns,
+   ^
+src/ags/lib/ags_turtle.c: In function ‘ags_turtle_new’:
+src/ags/lib/ags_turtle.c:1409:11: warning: unused variable ‘str’ [-Wunused-variable]
+   gchar **str;
+           ^
+Makefile:2603: recipe for target 'libags_a-ags_turtle.o' failed
+make[2]: *** [libags_a-ags_turtle.o] Error 1
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer'
+Makefile:8204: recipe for target 'all-recursive' failed
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory '/home/joelkraehemann/gsequencer'
+Makefile:1966: recipe for target 'all' failed
+make: *** [all] Error 2
