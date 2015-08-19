@@ -69,6 +69,8 @@
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
+#include <pthread.h>
+
 #include <sys/types.h>
 #include <pwd.h>
 
