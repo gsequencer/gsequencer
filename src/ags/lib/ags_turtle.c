@@ -802,8 +802,27 @@ ags_turtle_load(AgsTurtle *turtle,
     current_object_node = NULL;
 
     look_ahead = *iter;
-    
-    //TODO:JK: implement me
+
+    while((look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead)) != '\0'){
+      if(*look_ahead == ','){
+	look_ahead++;
+	continue;
+      }
+
+      current_object_node = ags_turtle_load_read_object(&look_ahead);
+
+      if(current_object_node != NULL){
+	if(node == NULL){
+	  node = xmlNewNode(NULL,
+			    "rdf-object-list\0");
+	}
+
+	xmlAddChild(node,
+		    current_object_node);
+
+	*iter = look_ahead;
+      }
+    }
     
     return(node);
   }
@@ -818,6 +837,8 @@ ags_turtle_load(AgsTurtle *turtle,
     iri_node = NULL;
     
     look_ahead = *iter;
+    
+    look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
     
     if(rdf_is_iriref_extended_valid_start(look_ahead, &(buffer[sb->st_size]))){
       /* iri - IRIREF */
@@ -949,7 +970,17 @@ ags_turtle_load(AgsTurtle *turtle,
 
     look_ahead = *iter;
 
-    //TODO:JK: implement me
+    /* iri - IRIREF */
+    iri_node = ags_turtle_load_read_iri(&look_ahead);
+    
+    if(iri_node != NULL){
+      node = xmlNewNode(NULL,
+			"rdf-predicate\0");
+      xmlAddChild(node,
+		  iri_node);
+
+      *iter = look_ahead;      
+    }
     
     return(node);
   }
@@ -1000,7 +1031,7 @@ ags_turtle_load(AgsTurtle *turtle,
 
       /* blank node property listimplemented ags_turtle_load_read_object() */
       if(*look_ahead == '['){
-	blank_node_property_list_node = ags_turtle_load_read_blank_node_property_list_node(&look_ahead);
+	blank_node_property_list_node = ags_turtle_load_read_blank_node_property_list(&look_ahead);
 	
 	goto ags_turtle_load_read_object_CREATE_NODE;
       }
