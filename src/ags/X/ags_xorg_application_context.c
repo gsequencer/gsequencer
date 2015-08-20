@@ -280,6 +280,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
   ags_thread_add_child(AGS_THREAD(audio_loop), AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
 
+  g_object_set(audio_loop,
+	       "async-queue\0", AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
+	       NULL);
+  
   /* AgsSoundcardThread */
   xorg_application_context->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);
   ags_thread_add_child(AGS_THREAD(audio_loop), xorg_application_context->soundcard_thread);

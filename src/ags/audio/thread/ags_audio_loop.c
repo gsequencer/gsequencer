@@ -91,6 +91,7 @@ enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
   PROP_APPLICATION_MUTEX,
+  PROP_ASYNC_QUEUE,
   PROP_SOUNDCARD,
   PROP_PLAY_RECALL,
   PROP_PLAY_CHANNEL,
@@ -174,8 +175,8 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * Since: 0.4
    */
   param_spec = g_param_spec_object("application-context\0",
-				   "task thread to run\0",
-				   "The task thread to run\0",
+				   "application context\0",
+				   "The application context\0",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -185,18 +186,34 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   /**
    * AgsAudioLoop:application-mutex:
    *
-   * The assigned #AgsApplicationMutex.
+   * The assigned #pthread_mutex_t with application scope.
    * 
    * Since: 0.4
    */
   param_spec = g_param_spec_pointer("application-mutex\0",
-				    "task thread to run\0",
-				    "The task thread to run\0",
+				    "application mutex\0",
+				    "The mutex with application context\0",
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_APPLICATION_MUTEX,
 				  param_spec);
 
+  /**
+   * AgsAudioLoop:async-queue:
+   *
+   * The assigned #AgsAsyncQueue
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("async-queue\0",
+				   "async queue\0",
+				   "The async queue\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ASYNC_QUEUE,
+				  param_spec);
+  
   /**
    * AgsAudioLoop:soundcard:
    *
@@ -381,6 +398,23 @@ ags_audio_loop_set_property(GObject *gobject,
       audio_loop->application_context = application_context;
     }
     break;
+  case PROP_ASYNC_QUEUE:
+    {
+      GObject *async_queue;
+
+      async_queue = (GObject *) g_value_get_object(value);
+
+      if(audio_loop->async_queue != NULL){
+	g_object_unref(G_OBJECT(audio_loop->async_queue));
+      }
+
+      if(async_queue != NULL){
+	g_object_ref(G_OBJECT(async_queue));
+      }
+
+      audio_loop->async_queue = async_queue;
+    }
+    break;
   case PROP_SOUNDCARD:
     {
       GObject *soundcard;
@@ -459,6 +493,11 @@ ags_audio_loop_get_property(GObject *gobject,
   case PROP_APPLICATION_MUTEX:
     {
       g_value_set_pointer(value, audio_loop->application_mutex);
+    }
+    break;
+  case PROP_ASYNC_QUEUE:
+    {
+      g_value_set_object(value, audio_loop->async_queue);
     }
     break;
   case PROP_SOUNDCARD:
