@@ -111,28 +111,6 @@ ags_signal_cleanup()
   sigemptyset(&(ags_sigact.sa_mask));
 }
 
-void
-ags_main_quit(AgsApplicationContext *application_context)
-{
-  AgsThread *gui_thread;
-  AgsThread *children;
-
-  /* find gui thread */
-  children = AGS_THREAD(application_context->main_loop)->children;
-
-  while(children != NULL){
-    if(AGS_IS_GUI_THREAD(children)){
-      gui_thread = children;
-
-      break;
-    }
-
-    children = children->next;
-  }
-
-  ags_thread_stop(gui_thread);
-}
-
 int
 main(int argc, char **argv)
 {

@@ -384,7 +384,8 @@ libags_thread_a_OBJECTS = $(am_libags_thread_a_OBJECTS)
 libgsequencer_a_AR = $(AR) $(ARFLAGS)
 libgsequencer_a_DEPENDENCIES = libags_audio.a libags_server.a \
 	libags_gui.a libags_log.a libags_thread.a libags.a
-am__objects_25 = $(am__objects_1) \
+am__objects_25 = libgsequencer_a-ags_main.$(OBJEXT)
+am__objects_26 = $(am__objects_1) \
 	libgsequencer_a-ags_xorg_init.$(OBJEXT) \
 	libgsequencer_a-ags_xorg_application_context.$(OBJEXT) \
 	libgsequencer_a-ags_audio_preferences_callbacks.$(OBJEXT) \
@@ -457,16 +458,16 @@ am__objects_25 = $(am__objects_1) \
 	libgsequencer_a-ags_server_preferences.$(OBJEXT) \
 	libgsequencer_a-ags_window_callbacks.$(OBJEXT) \
 	libgsequencer_a-ags_window.$(OBJEXT)
-am__objects_26 = $(am__objects_1) \
+am__objects_27 = $(am__objects_1) \
 	libgsequencer_a-ags_midi_import_wizard_callbacks.$(OBJEXT) \
 	libgsequencer_a-ags_midi_import_wizard.$(OBJEXT) \
 	libgsequencer_a-ags_track_collection_callbacks.$(OBJEXT) \
 	libgsequencer_a-ags_track_collection.$(OBJEXT) \
 	libgsequencer_a-ags_track_collection_mapper_callbacks.$(OBJEXT) \
 	libgsequencer_a-ags_track_collection_mapper.$(OBJEXT)
-am__objects_27 = $(am__objects_1) \
-	libgsequencer_a-ags_gui_thread.$(OBJEXT)
 am__objects_28 = $(am__objects_1) \
+	libgsequencer_a-ags_gui_thread.$(OBJEXT)
+am__objects_29 = $(am__objects_1) \
 	libgsequencer_a-ags_add_line_member.$(OBJEXT) \
 	libgsequencer_a-ags_add_bulk_member.$(OBJEXT) \
 	libgsequencer_a-ags_update_bulk_member.$(OBJEXT) \
@@ -475,7 +476,7 @@ am__objects_28 = $(am__objects_1) \
 	libgsequencer_a-ags_display_tact.$(OBJEXT) \
 	libgsequencer_a-ags_scroll_on_play.$(OBJEXT) \
 	libgsequencer_a-ags_toggle_led.$(OBJEXT)
-am__objects_29 = $(am__objects_1) \
+am__objects_30 = $(am__objects_1) \
 	libgsequencer_a-ags_drum_callbacks.$(OBJEXT) \
 	libgsequencer_a-ags_drum.$(OBJEXT) \
 	libgsequencer_a-ags_drum_input_line_callbacks.$(OBJEXT) \
@@ -530,7 +531,7 @@ am__objects_29 = $(am__objects_1) \
 	libgsequencer_a-ags_synth_output_line.$(OBJEXT) \
 	libgsequencer_a-ags_synth_output_pad_callbacks.$(OBJEXT) \
 	libgsequencer_a-ags_synth_output_pad.$(OBJEXT)
-am__objects_30 = $(am__objects_1) \
+am__objects_31 = $(am__objects_1) \
 	libgsequencer_a-ags_automation_area_callbacks.$(OBJEXT) \
 	libgsequencer_a-ags_automation_area.$(OBJEXT) \
 	libgsequencer_a-ags_automation_edit_callbacks.$(OBJEXT) \
@@ -563,17 +564,17 @@ am__objects_30 = $(am__objects_1) \
 	libgsequencer_a-ags_soundset.$(OBJEXT) \
 	libgsequencer_a-ags_toolbar_callbacks.$(OBJEXT) \
 	libgsequencer_a-ags_toolbar.$(OBJEXT)
-am__objects_31 = $(am__objects_1) \
+am__objects_32 = $(am__objects_1) \
 	libgsequencer_a-ags_gsequencer_file_xml.$(OBJEXT)
 am_libgsequencer_a_OBJECTS = $(am__objects_25) $(am__objects_26) \
 	$(am__objects_27) $(am__objects_28) $(am__objects_29) \
-	$(am__objects_30) $(am__objects_31)
+	$(am__objects_30) $(am__objects_31) $(am__objects_32)
 libgsequencer_a_OBJECTS = $(am_libgsequencer_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
-am__objects_32 = ags_functional_drum_test-ags_functional_menubar_util.$(OBJEXT) \
+am__objects_33 = ags_functional_drum_test-ags_functional_menubar_util.$(OBJEXT) \
 	ags_functional_drum_test-ags_functional_drum_test.$(OBJEXT)
-am_ags_functional_drum_test_OBJECTS = $(am__objects_32)
+am_ags_functional_drum_test_OBJECTS = $(am__objects_33)
 ags_functional_drum_test_OBJECTS =  \
 	$(am_ags_functional_drum_test_OBJECTS)
 ags_functional_drum_test_DEPENDENCIES = libgsequencer.a libags_audio.a \
@@ -587,8 +588,7 @@ ags_functional_drum_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_drum_test_CFLAGS) $(CFLAGS) \
 	$(ags_functional_drum_test_LDFLAGS) $(LDFLAGS) -o $@
-am__objects_33 = gsequencer-main.$(OBJEXT)
-am_gsequencer_OBJECTS = $(am__objects_33)
+am_gsequencer_OBJECTS = gsequencer-main.$(OBJEXT)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libgsequencer.a libags_audio.a \
 	libags_server.a libags_gui.a libags_log.a libags_thread.a \
@@ -1107,8 +1107,8 @@ libags_log_a_SOURCES = $(ags_log_c_sources) $(ags_log_task_c_sources)
 libags_server_a_SOURCES = $(ags_server_c_sources)
 libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_midi_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
-libgsequencer_a_SOURCES = $(gsequencer_xorg_c_sources) $(gsequencer_xorg_import_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
-gsequencer_SOURCES = $(gsequencer_main_c_sources)
+libgsequencer_a_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_import_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
+gsequencer_SOURCES = src/ags/main.c
 ags_functional_drum_test_SOURCES = $(ags_functional_drum_test_sources)
 
 #
@@ -1779,10 +1779,10 @@ ags_audio_task_recall_c_sources = \
 
 # gsequencer all files
 gsequencer_main_h_sources = \
-	src/ags/main.h
+	src/ags/ags_main.h
 
 gsequencer_main_c_sources = \
-	src/ags/main.c
+	src/ags/ags_main.c
 
 deprecated_ags_server_h_sources = 
 ags_server_h_sources = \
@@ -2703,6 +2703,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_machine_selection.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_machine_selector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_machine_selector_callbacks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_matrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_matrix_bridge.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_matrix_bridge_callbacks.Po@am__quote@
@@ -6015,6 +6016,20 @@ libags_thread_a-ags_start_thread.obj: src/ags/thread/task/ags_start_thread.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/task/ags_start_thread.c' object='libags_thread_a-ags_start_thread.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_a_CFLAGS) $(CFLAGS) -c -o libags_thread_a-ags_start_thread.obj `if test -f 'src/ags/thread/task/ags_start_thread.c'; then $(CYGPATH_W) 'src/ags/thread/task/ags_start_thread.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/thread/task/ags_start_thread.c'; fi`
+
+libgsequencer_a-ags_main.o: src/ags/ags_main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_a_CFLAGS) $(CFLAGS) -MT libgsequencer_a-ags_main.o -MD -MP -MF $(DEPDIR)/libgsequencer_a-ags_main.Tpo -c -o libgsequencer_a-ags_main.o `test -f 'src/ags/ags_main.c' || echo '$(srcdir)/'`src/ags/ags_main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_a-ags_main.Tpo $(DEPDIR)/libgsequencer_a-ags_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/ags_main.c' object='libgsequencer_a-ags_main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_a_CFLAGS) $(CFLAGS) -c -o libgsequencer_a-ags_main.o `test -f 'src/ags/ags_main.c' || echo '$(srcdir)/'`src/ags/ags_main.c
+
+libgsequencer_a-ags_main.obj: src/ags/ags_main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_a_CFLAGS) $(CFLAGS) -MT libgsequencer_a-ags_main.obj -MD -MP -MF $(DEPDIR)/libgsequencer_a-ags_main.Tpo -c -o libgsequencer_a-ags_main.obj `if test -f 'src/ags/ags_main.c'; then $(CYGPATH_W) 'src/ags/ags_main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/ags_main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_a-ags_main.Tpo $(DEPDIR)/libgsequencer_a-ags_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/ags_main.c' object='libgsequencer_a-ags_main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_a_CFLAGS) $(CFLAGS) -c -o libgsequencer_a-ags_main.obj `if test -f 'src/ags/ags_main.c'; then $(CYGPATH_W) 'src/ags/ags_main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/ags_main.c'; fi`
 
 libgsequencer_a-ags_xorg_init.o: src/ags/X/ags_xorg_init.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_a_CFLAGS) $(CFLAGS) -MT libgsequencer_a-ags_xorg_init.o -MD -MP -MF $(DEPDIR)/libgsequencer_a-ags_xorg_init.Tpo -c -o libgsequencer_a-ags_xorg_init.o `test -f 'src/ags/X/ags_xorg_init.c' || echo '$(srcdir)/'`src/ags/X/ags_xorg_init.c

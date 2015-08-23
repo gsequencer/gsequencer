@@ -17,15 +17,15 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GSEQUENCER_MAIN_H__
-#define __GSEQUENCER_MAIN_H__
-
-//#define AGS_DEBUG
-#define _GNU_SOURCE
-#define ALSA_PCM_NEW_HW_PARAMS_API
+#ifndef __AGS_MAIN_H__
+#define __AGS_MAIN_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#endif /*__GSEQUENCER_MAIN_H__*/
+#include <ags/object/ags_application_context.h>
+
+void ags_main_quit(AgsApplicationContext *application_context);
+
+#endif /*__AGS_MAIN_H__*/

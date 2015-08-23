@@ -276,8 +276,8 @@ ags_pad_init(AgsPad *pad)
 
   pad->name = NULL;
 
-  pad->version = AGS_VERSION;
-  pad->build_id = AGS_BUILD_ID;
+  pad->version = AGS_PAD_DEFAULT_VERSION;
+  pad->build_id = AGS_PAD_DEFAULT_BUILD_ID;
 
   pad->cols = 2;
   pad->expander_set = ags_expander_set_new(1, 1);

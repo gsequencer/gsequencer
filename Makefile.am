@@ -27,8 +27,8 @@ libags_log_a_SOURCES = $(ags_log_c_sources) $(ags_log_task_c_sources)
 libags_server_a_SOURCES = $(ags_server_c_sources)
 libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(ags_audio_file_c_sources) $(ags_audio_midi_c_sources) $(ags_audio_task_c_sources) $(ags_audio_task_recall_c_sources) $(ags_audio_recall_c_sources)  $(ags_plugin_c_sources)
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
-libgsequencer_a_SOURCES = $(gsequencer_xorg_c_sources) $(gsequencer_xorg_import_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
-gsequencer_SOURCES = $(gsequencer_main_c_sources)
+libgsequencer_a_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_import_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
+gsequencer_SOURCES = src/ags/main.c
 ags_functional_drum_test_SOURCES = $(ags_functional_drum_test_sources)
 
 #
@@ -740,10 +740,10 @@ ags_audio_task_recall_c_sources = \
 
 # gsequencer all files
 gsequencer_main_h_sources = \
-	src/ags/main.h
+	src/ags/ags_main.h
 
 gsequencer_main_c_sources = \
-	src/ags/main.c
+	src/ags/ags_main.c
 
 deprecated_ags_server_h_sources = 
 

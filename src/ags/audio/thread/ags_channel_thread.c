@@ -19,9 +19,8 @@
 
 #include <ags/audio/thread/ags_channel_thread.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 

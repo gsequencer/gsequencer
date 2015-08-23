@@ -17,15 +17,34 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GSEQUENCER_MAIN_H__
-#define __GSEQUENCER_MAIN_H__
+#include <ags/object/ags_application_context.h>
 
-//#define AGS_DEBUG
-#define _GNU_SOURCE
-#define ALSA_PCM_NEW_HW_PARAMS_API
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif
 
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
+#include <ags/X/thread/ags_gui_thread.h>
 
-#endif /*__GSEQUENCER_MAIN_H__*/
+void
+ags_main_quit(AgsApplicationContext *application_context)
+{
+  AgsThread *gui_thread;
+  AgsThread *children;
+
+  /* find gui thread */
+  children = AGS_THREAD(application_context->main_loop)->children;
+
+  while(children != NULL){
+    if(AGS_IS_GUI_THREAD(children)){
+      gui_thread = children;
+
+      break;
+    }
+
+    children = children->next;
+  }
+
+  ags_thread_stop(gui_thread);
+}

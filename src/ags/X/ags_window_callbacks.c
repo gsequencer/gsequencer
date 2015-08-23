@@ -18,6 +18,8 @@
 
 #include <ags/X/ags_window_callbacks.h>
 
+#include <ags/ags_main.h>
+
 #include <ags/object/ags_application_context.h>
 
 #include <ags/file/ags_file.h>
