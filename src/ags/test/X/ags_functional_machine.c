@@ -17,18 +17,30 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_FUNCTIONAL_MENU_BAR_UTIL_H__
-#define __AGS_FUNCTIONAL_MENU_BAR_UTIL_H__
+#include <ags/test/X/ags_functional_machine_util.h>
 
-#include <glib.h>
-#include <glib-object.h>
+#include <ags/test/X/ags_functional_menu_bar_util.h>
 
-#include <gtk/gtk.h>
+gboolean
+ags_functional_machine_util_context_menu_activate_path(AgsMachine *machine,
+						       gchar *path)
+{
+  GtkMenu *context_menu;
 
-gboolean ags_functional_menu_bar_util_activate_path(GtkMenuBar *menu_bar,
-						    gchar *path);
+  gboolean success;
 
-gboolean ags_functional_menu_bar_util_activate_menu_path(GtkMenu *menu,
-							 gchar *path);
+  if(machine == NULL){
+    return(FALSE);
+  }
 
-#endif /*__AGS_FUNCTIONAL_MENUBAR_UTIL_H__*/
+  gtk_test_widget_click(GTK_WIDGET(machine),
+			2,
+			GDK_BUTTON2_MASK);
+  context_menu = machine->popup;
+  
+  success = ags_functional_menu_bar_util_activate_menu_path(context_menu,
+							    path);
+
+  return(success);
+}
+
