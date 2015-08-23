@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <src/ags/test/X/ags_functional_menubar_util.h>
+#include <src/ags/test/X/ags_functional_menu_bar_util.h>
 
 #include <string.h>
 
@@ -29,6 +29,7 @@ ags_functional_menu_bar_util_menu_activate_path(GtkMenuBar *menu_bar,
   
   GList *list, *list_start;
 
+  gchar *menu_path, *iter;
   gchar *str;
   gboolean has_more;
   gboolean success;  
@@ -70,7 +71,13 @@ ags_functional_menu_bar_util_menu_activate_path(GtkMenuBar *menu_bar,
       gtk_menu_item_activate(GTK_MENU_ITEM(list->data));
       
       if(menu != NULL){
-	success = ags_functional_menu_bar_util_activate_menu_path(menu);
+	iter = index(path + 1,
+		     '/');
+	menu_path = g_strndup(iter,
+			      strlen(iter));
+	success = ags_functional_menu_bar_util_activate_menu_path(menu,
+								  menu_path);
+	g_free(menu_path);
       }else{
 	if(!has_more){
 	  success = TRUE;
@@ -101,9 +108,10 @@ ags_functional_menu_bar_util_activate_menu_path(GtkMenu *menu,
 
     gchar *str;
     gboolean success;
-
+    gboolean has_more;
+    
     list_start =
-      list = gtk_container_get_children(menu_bar);
+      list = gtk_container_get_children(menu);
 
     success = FALSE;
 
@@ -135,7 +143,7 @@ ags_functional_menu_bar_util_activate_menu_path(GtkMenu *menu,
 	gtk_menu_item_activate(GTK_MENU_ITEM(list->data));
       
 	if(menu != NULL){
-	  success = ags_functional_menu_bar_util_activate_path_recursive(menu);
+	  success = ags_functional_menu_bar_util_activate_menu_path_recursive(menu);
 	}else{
 	  if(!has_more){
 	    success = TRUE;

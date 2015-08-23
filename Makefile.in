@@ -89,9 +89,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = ags_functional_drum_test$(EXEEXT)
+TESTS = ags_audio_test$(EXEEXT) ags_functional_drum_test$(EXEEXT)
 bin_PROGRAMS = gsequencer$(EXEEXT)
-noinst_PROGRAMS = ags_functional_drum_test$(EXEEXT)
+noinst_PROGRAMS = ags_audio_test$(EXEEXT) \
+	ags_functional_drum_test$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
@@ -570,20 +571,37 @@ am_libgsequencer_a_OBJECTS = $(am__objects_25) $(am__objects_26) \
 	$(am__objects_27) $(am__objects_28) $(am__objects_29) \
 	$(am__objects_30) $(am__objects_31) $(am__objects_32)
 libgsequencer_a_OBJECTS = $(am_libgsequencer_a_OBJECTS)
+libgsequencer_test_a_AR = $(AR) $(ARFLAGS)
+libgsequencer_test_a_DEPENDENCIES = libags_audio.a libags_server.a \
+	libags_gui.a libags_log.a libags_thread.a libags.a
+am__objects_33 =  \
+	libgsequencer_test_a-ags_functional_runtime.$(OBJEXT)
+am__objects_34 =  \
+	libgsequencer_test_a-ags_functional_menu_bar_util.$(OBJEXT) \
+	libgsequencer_test_a-ags_functional_machine_util.$(OBJEXT)
+am_libgsequencer_test_a_OBJECTS = $(am__objects_33) $(am__objects_34)
+libgsequencer_test_a_OBJECTS = $(am_libgsequencer_test_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
-am__objects_33 = ags_functional_drum_test-ags_functional_menubar_util.$(OBJEXT) \
-	ags_functional_drum_test-ags_functional_drum_test.$(OBJEXT)
-am_ags_functional_drum_test_OBJECTS = $(am__objects_33)
-ags_functional_drum_test_OBJECTS =  \
-	$(am_ags_functional_drum_test_OBJECTS)
-ags_functional_drum_test_DEPENDENCIES = libgsequencer.a libags_audio.a \
-	libags_server.a libags_gui.a libags_log.a libags_thread.a \
-	libags.a
+am_ags_audio_test_OBJECTS = ags_audio_test-ags_audio_test.$(OBJEXT)
+ags_audio_test_OBJECTS = $(am_ags_audio_test_OBJECTS)
+ags_audio_test_DEPENDENCIES = libags_audio.a libags_server.a \
+	libags_log.a libags_thread.a libags.a
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+ags_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_audio_test_CFLAGS) $(CFLAGS) $(ags_audio_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_ags_functional_drum_test_OBJECTS =  \
+	ags_functional_drum_test-ags_functional_drum_test.$(OBJEXT)
+ags_functional_drum_test_OBJECTS =  \
+	$(am_ags_functional_drum_test_OBJECTS)
+ags_functional_drum_test_DEPENDENCIES = libgsequencer_test.a \
+	libgsequencer.a libags_audio.a libags_server.a libags_gui.a \
+	libags_log.a libags_thread.a libags.a
 ags_functional_drum_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_functional_drum_test_CFLAGS) $(CFLAGS) \
@@ -633,12 +651,14 @@ am__v_CCLD_1 =
 SOURCES = $(libags_a_SOURCES) $(libags_audio_a_SOURCES) \
 	$(libags_gui_a_SOURCES) $(libags_log_a_SOURCES) \
 	$(libags_server_a_SOURCES) $(libags_thread_a_SOURCES) \
-	$(libgsequencer_a_SOURCES) $(ags_functional_drum_test_SOURCES) \
+	$(libgsequencer_a_SOURCES) $(libgsequencer_test_a_SOURCES) \
+	$(ags_audio_test_SOURCES) $(ags_functional_drum_test_SOURCES) \
 	$(gsequencer_SOURCES)
 DIST_SOURCES = $(libags_a_SOURCES) $(libags_audio_a_SOURCES) \
 	$(libags_gui_a_SOURCES) $(libags_log_a_SOURCES) \
 	$(libags_server_a_SOURCES) $(libags_thread_a_SOURCES) \
-	$(libgsequencer_a_SOURCES) $(ags_functional_drum_test_SOURCES) \
+	$(libgsequencer_a_SOURCES) $(libgsequencer_test_a_SOURCES) \
+	$(ags_audio_test_SOURCES) $(ags_functional_drum_test_SOURCES) \
 	$(gsequencer_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
@@ -1100,7 +1120,7 @@ SUBDIRS = po \
 	doc
 
 
-#
+# libraries and gsequencer
 libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_file_c_sources) $(ags_file_task_c_sources)
 libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources) $(ags_thread_task_c_sources)
 libags_log_a_SOURCES = $(ags_log_c_sources) $(ags_log_task_c_sources)
@@ -1109,14 +1129,18 @@ libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
 libgsequencer_a_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_import_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
 gsequencer_SOURCES = src/ags/main.c
-ags_functional_drum_test_SOURCES = $(ags_functional_drum_test_sources)
+
+# testing
+libgsequencer_test_a_SOURCES = $(gsequencer_functional_test_runtime_sources) $(gsequencer_functional_test_x_util_sources)
+ags_audio_test_SOURCES = src/ags/test/audio/ags_audio_test.c
+ags_functional_drum_test_SOURCES = src/ags/test/X/machine/ags_functional_drum_test.c
 
 #
 TARGETS = gsequencer
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-noinst_LIBRARIES = libags.a libags_thread.a libags_server.a libags_log.a libags_audio.a libags_gui.a libgsequencer.a
+noinst_LIBRARIES = libags.a libags_thread.a libags_server.a libags_log.a libags_audio.a libags_gui.a libgsequencer.a libgsequencer_test.a
 
 # application
 COMPILER_FLAGS = -g -std=gnu11
@@ -1143,9 +1167,19 @@ libgsequencer_a_LIBADD = libags_audio.a libags_server.a libags_gui.a libags_log.
 gsequencer_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 gsequencer_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 gsequencer_LDADD = libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
+
+# testing
+libgsequencer_test_a_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libgsequencer_test_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libgsequencer_test_a_LIBADD = libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
+ags_audio_test_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) 
+ags_audio_test_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS)
+ags_audio_test_LDADD = libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a
 ags_functional_drum_test_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_drum_test_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-ags_functional_drum_test_LDADD = libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
+ags_functional_drum_test_LDADD = libgsequencer_test.a libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
+
+# 
 ACLOCAL_AMFLAGS = -I m4
 
 # libags all files
@@ -2200,15 +2234,6 @@ gsequencer_editor_c_sources = \
 	src/ags/X/editor/ags_toolbar.c
 
 deprecated_gsequencer_file_h_sources = 
-
-#
-
-#
-ags_functional_drum_test_sources = \
-	src/ags/test/X/ags_functional_menubar_util.h 		\
-	src/ags/test/X/ags_functional_menubar_util.c 		\
-	src/ags/test/X/machine/ags_functional_drum_test.c
-
 gsequencer_file_h_sources = \
 	$(deprecated_gsequencer_file_h_sources) \
 	src/ags/X/file/ags_gsequencer_file_xml.h
@@ -2217,6 +2242,18 @@ deprecated_gsequencer_file_c_sources =
 gsequencer_file_c_sources = \
 	$(deprecated_gsequencer_file_c_sources) \
 	src/ags/X/file/ags_gsequencer_file_xml.c
+
+
+# testing
+gsequencer_functional_test_runtime_sources = \
+	src/ags/test/ags_functional_runtime.h			\
+	src/ags/test/ags_functional_runtime.c
+
+gsequencer_functional_test_x_util_sources = \
+	src/ags/test/X/ags_functional_menu_bar_util.h 		\
+	src/ags/test/X/ags_functional_menu_bar_util.c 		\
+	src/ags/test/X/ags_functional_machine_util.h		\
+	src/ags/test/X/ags_functional_machine_util.c
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -2309,6 +2346,11 @@ libgsequencer.a: $(libgsequencer_a_OBJECTS) $(libgsequencer_a_DEPENDENCIES) $(EX
 	$(AM_V_at)-rm -f libgsequencer.a
 	$(AM_V_AR)$(libgsequencer_a_AR) libgsequencer.a $(libgsequencer_a_OBJECTS) $(libgsequencer_a_LIBADD)
 	$(AM_V_at)$(RANLIB) libgsequencer.a
+
+libgsequencer_test.a: $(libgsequencer_test_a_OBJECTS) $(libgsequencer_test_a_DEPENDENCIES) $(EXTRA_libgsequencer_test_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libgsequencer_test.a
+	$(AM_V_AR)$(libgsequencer_test_a_AR) libgsequencer_test.a $(libgsequencer_test_a_OBJECTS) $(libgsequencer_test_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libgsequencer_test.a
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -2368,6 +2410,10 @@ clean-noinstPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+ags_audio_test$(EXEEXT): $(ags_audio_test_OBJECTS) $(ags_audio_test_DEPENDENCIES) $(EXTRA_ags_audio_test_DEPENDENCIES) 
+	@rm -f ags_audio_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_audio_test_LINK) $(ags_audio_test_OBJECTS) $(ags_audio_test_LDADD) $(LIBS)
+
 ags_functional_drum_test$(EXEEXT): $(ags_functional_drum_test_OBJECTS) $(ags_functional_drum_test_DEPENDENCIES) $(EXTRA_ags_functional_drum_test_DEPENDENCIES) 
 	@rm -f ags_functional_drum_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_functional_drum_test_LINK) $(ags_functional_drum_test_OBJECTS) $(ags_functional_drum_test_LDADD) $(LIBS)
@@ -2382,8 +2428,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags_audio_test-ags_audio_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags_functional_drum_test-ags_functional_drum_test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ags_functional_drum_test-ags_functional_menubar_util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_a-ags_applicable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_a-ags_application_context.Po@am__quote@
@@ -2789,6 +2835,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_window_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_xorg_application_context.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_a-ags_xorg_init.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_test_a-ags_functional_machine_util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_test_a-ags_functional_menu_bar_util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_test_a-ags_functional_runtime.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -8467,19 +8516,61 @@ libgsequencer_a-ags_gsequencer_file_xml.obj: src/ags/X/file/ags_gsequencer_file_
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_a_CFLAGS) $(CFLAGS) -c -o libgsequencer_a-ags_gsequencer_file_xml.obj `if test -f 'src/ags/X/file/ags_gsequencer_file_xml.c'; then $(CYGPATH_W) 'src/ags/X/file/ags_gsequencer_file_xml.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/file/ags_gsequencer_file_xml.c'; fi`
 
-ags_functional_drum_test-ags_functional_menubar_util.o: src/ags/test/X/ags_functional_menubar_util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_drum_test_CFLAGS) $(CFLAGS) -MT ags_functional_drum_test-ags_functional_menubar_util.o -MD -MP -MF $(DEPDIR)/ags_functional_drum_test-ags_functional_menubar_util.Tpo -c -o ags_functional_drum_test-ags_functional_menubar_util.o `test -f 'src/ags/test/X/ags_functional_menubar_util.c' || echo '$(srcdir)/'`src/ags/test/X/ags_functional_menubar_util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags_functional_drum_test-ags_functional_menubar_util.Tpo $(DEPDIR)/ags_functional_drum_test-ags_functional_menubar_util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/X/ags_functional_menubar_util.c' object='ags_functional_drum_test-ags_functional_menubar_util.o' libtool=no @AMDEPBACKSLASH@
+libgsequencer_test_a-ags_functional_runtime.o: src/ags/test/ags_functional_runtime.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -MT libgsequencer_test_a-ags_functional_runtime.o -MD -MP -MF $(DEPDIR)/libgsequencer_test_a-ags_functional_runtime.Tpo -c -o libgsequencer_test_a-ags_functional_runtime.o `test -f 'src/ags/test/ags_functional_runtime.c' || echo '$(srcdir)/'`src/ags/test/ags_functional_runtime.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_test_a-ags_functional_runtime.Tpo $(DEPDIR)/libgsequencer_test_a-ags_functional_runtime.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/ags_functional_runtime.c' object='libgsequencer_test_a-ags_functional_runtime.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_drum_test_CFLAGS) $(CFLAGS) -c -o ags_functional_drum_test-ags_functional_menubar_util.o `test -f 'src/ags/test/X/ags_functional_menubar_util.c' || echo '$(srcdir)/'`src/ags/test/X/ags_functional_menubar_util.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -c -o libgsequencer_test_a-ags_functional_runtime.o `test -f 'src/ags/test/ags_functional_runtime.c' || echo '$(srcdir)/'`src/ags/test/ags_functional_runtime.c
 
-ags_functional_drum_test-ags_functional_menubar_util.obj: src/ags/test/X/ags_functional_menubar_util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_drum_test_CFLAGS) $(CFLAGS) -MT ags_functional_drum_test-ags_functional_menubar_util.obj -MD -MP -MF $(DEPDIR)/ags_functional_drum_test-ags_functional_menubar_util.Tpo -c -o ags_functional_drum_test-ags_functional_menubar_util.obj `if test -f 'src/ags/test/X/ags_functional_menubar_util.c'; then $(CYGPATH_W) 'src/ags/test/X/ags_functional_menubar_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/X/ags_functional_menubar_util.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags_functional_drum_test-ags_functional_menubar_util.Tpo $(DEPDIR)/ags_functional_drum_test-ags_functional_menubar_util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/X/ags_functional_menubar_util.c' object='ags_functional_drum_test-ags_functional_menubar_util.obj' libtool=no @AMDEPBACKSLASH@
+libgsequencer_test_a-ags_functional_runtime.obj: src/ags/test/ags_functional_runtime.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -MT libgsequencer_test_a-ags_functional_runtime.obj -MD -MP -MF $(DEPDIR)/libgsequencer_test_a-ags_functional_runtime.Tpo -c -o libgsequencer_test_a-ags_functional_runtime.obj `if test -f 'src/ags/test/ags_functional_runtime.c'; then $(CYGPATH_W) 'src/ags/test/ags_functional_runtime.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/ags_functional_runtime.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_test_a-ags_functional_runtime.Tpo $(DEPDIR)/libgsequencer_test_a-ags_functional_runtime.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/ags_functional_runtime.c' object='libgsequencer_test_a-ags_functional_runtime.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_drum_test_CFLAGS) $(CFLAGS) -c -o ags_functional_drum_test-ags_functional_menubar_util.obj `if test -f 'src/ags/test/X/ags_functional_menubar_util.c'; then $(CYGPATH_W) 'src/ags/test/X/ags_functional_menubar_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/X/ags_functional_menubar_util.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -c -o libgsequencer_test_a-ags_functional_runtime.obj `if test -f 'src/ags/test/ags_functional_runtime.c'; then $(CYGPATH_W) 'src/ags/test/ags_functional_runtime.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/ags_functional_runtime.c'; fi`
+
+libgsequencer_test_a-ags_functional_menu_bar_util.o: src/ags/test/X/ags_functional_menu_bar_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -MT libgsequencer_test_a-ags_functional_menu_bar_util.o -MD -MP -MF $(DEPDIR)/libgsequencer_test_a-ags_functional_menu_bar_util.Tpo -c -o libgsequencer_test_a-ags_functional_menu_bar_util.o `test -f 'src/ags/test/X/ags_functional_menu_bar_util.c' || echo '$(srcdir)/'`src/ags/test/X/ags_functional_menu_bar_util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_test_a-ags_functional_menu_bar_util.Tpo $(DEPDIR)/libgsequencer_test_a-ags_functional_menu_bar_util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/X/ags_functional_menu_bar_util.c' object='libgsequencer_test_a-ags_functional_menu_bar_util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -c -o libgsequencer_test_a-ags_functional_menu_bar_util.o `test -f 'src/ags/test/X/ags_functional_menu_bar_util.c' || echo '$(srcdir)/'`src/ags/test/X/ags_functional_menu_bar_util.c
+
+libgsequencer_test_a-ags_functional_menu_bar_util.obj: src/ags/test/X/ags_functional_menu_bar_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -MT libgsequencer_test_a-ags_functional_menu_bar_util.obj -MD -MP -MF $(DEPDIR)/libgsequencer_test_a-ags_functional_menu_bar_util.Tpo -c -o libgsequencer_test_a-ags_functional_menu_bar_util.obj `if test -f 'src/ags/test/X/ags_functional_menu_bar_util.c'; then $(CYGPATH_W) 'src/ags/test/X/ags_functional_menu_bar_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/X/ags_functional_menu_bar_util.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_test_a-ags_functional_menu_bar_util.Tpo $(DEPDIR)/libgsequencer_test_a-ags_functional_menu_bar_util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/X/ags_functional_menu_bar_util.c' object='libgsequencer_test_a-ags_functional_menu_bar_util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -c -o libgsequencer_test_a-ags_functional_menu_bar_util.obj `if test -f 'src/ags/test/X/ags_functional_menu_bar_util.c'; then $(CYGPATH_W) 'src/ags/test/X/ags_functional_menu_bar_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/X/ags_functional_menu_bar_util.c'; fi`
+
+libgsequencer_test_a-ags_functional_machine_util.o: src/ags/test/X/ags_functional_machine_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -MT libgsequencer_test_a-ags_functional_machine_util.o -MD -MP -MF $(DEPDIR)/libgsequencer_test_a-ags_functional_machine_util.Tpo -c -o libgsequencer_test_a-ags_functional_machine_util.o `test -f 'src/ags/test/X/ags_functional_machine_util.c' || echo '$(srcdir)/'`src/ags/test/X/ags_functional_machine_util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_test_a-ags_functional_machine_util.Tpo $(DEPDIR)/libgsequencer_test_a-ags_functional_machine_util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/X/ags_functional_machine_util.c' object='libgsequencer_test_a-ags_functional_machine_util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -c -o libgsequencer_test_a-ags_functional_machine_util.o `test -f 'src/ags/test/X/ags_functional_machine_util.c' || echo '$(srcdir)/'`src/ags/test/X/ags_functional_machine_util.c
+
+libgsequencer_test_a-ags_functional_machine_util.obj: src/ags/test/X/ags_functional_machine_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -MT libgsequencer_test_a-ags_functional_machine_util.obj -MD -MP -MF $(DEPDIR)/libgsequencer_test_a-ags_functional_machine_util.Tpo -c -o libgsequencer_test_a-ags_functional_machine_util.obj `if test -f 'src/ags/test/X/ags_functional_machine_util.c'; then $(CYGPATH_W) 'src/ags/test/X/ags_functional_machine_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/X/ags_functional_machine_util.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_test_a-ags_functional_machine_util.Tpo $(DEPDIR)/libgsequencer_test_a-ags_functional_machine_util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/X/ags_functional_machine_util.c' object='libgsequencer_test_a-ags_functional_machine_util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_a_CFLAGS) $(CFLAGS) -c -o libgsequencer_test_a-ags_functional_machine_util.obj `if test -f 'src/ags/test/X/ags_functional_machine_util.c'; then $(CYGPATH_W) 'src/ags/test/X/ags_functional_machine_util.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/X/ags_functional_machine_util.c'; fi`
+
+ags_audio_test-ags_audio_test.o: src/ags/test/audio/ags_audio_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_audio_test_CFLAGS) $(CFLAGS) -MT ags_audio_test-ags_audio_test.o -MD -MP -MF $(DEPDIR)/ags_audio_test-ags_audio_test.Tpo -c -o ags_audio_test-ags_audio_test.o `test -f 'src/ags/test/audio/ags_audio_test.c' || echo '$(srcdir)/'`src/ags/test/audio/ags_audio_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags_audio_test-ags_audio_test.Tpo $(DEPDIR)/ags_audio_test-ags_audio_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/audio/ags_audio_test.c' object='ags_audio_test-ags_audio_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_audio_test_CFLAGS) $(CFLAGS) -c -o ags_audio_test-ags_audio_test.o `test -f 'src/ags/test/audio/ags_audio_test.c' || echo '$(srcdir)/'`src/ags/test/audio/ags_audio_test.c
+
+ags_audio_test-ags_audio_test.obj: src/ags/test/audio/ags_audio_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_audio_test_CFLAGS) $(CFLAGS) -MT ags_audio_test-ags_audio_test.obj -MD -MP -MF $(DEPDIR)/ags_audio_test-ags_audio_test.Tpo -c -o ags_audio_test-ags_audio_test.obj `if test -f 'src/ags/test/audio/ags_audio_test.c'; then $(CYGPATH_W) 'src/ags/test/audio/ags_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/audio/ags_audio_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ags_audio_test-ags_audio_test.Tpo $(DEPDIR)/ags_audio_test-ags_audio_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/test/audio/ags_audio_test.c' object='ags_audio_test-ags_audio_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_audio_test_CFLAGS) $(CFLAGS) -c -o ags_audio_test-ags_audio_test.obj `if test -f 'src/ags/test/audio/ags_audio_test.c'; then $(CYGPATH_W) 'src/ags/test/audio/ags_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/test/audio/ags_audio_test.c'; fi`
 
 ags_functional_drum_test-ags_functional_drum_test.o: src/ags/test/X/machine/ags_functional_drum_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_drum_test_CFLAGS) $(CFLAGS) -MT ags_functional_drum_test-ags_functional_drum_test.o -MD -MP -MF $(DEPDIR)/ags_functional_drum_test-ags_functional_drum_test.Tpo -c -o ags_functional_drum_test-ags_functional_drum_test.o `test -f 'src/ags/test/X/machine/ags_functional_drum_test.c' || echo '$(srcdir)/'`src/ags/test/X/machine/ags_functional_drum_test.c
@@ -8765,6 +8856,13 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+ags_audio_test.log: ags_audio_test$(EXEEXT)
+	@p='ags_audio_test$(EXEEXT)'; \
+	b='ags_audio_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_functional_drum_test.log: ags_functional_drum_test$(EXEEXT)
 	@p='ags_functional_drum_test$(EXEEXT)'; \
 	b='ags_functional_drum_test'; \

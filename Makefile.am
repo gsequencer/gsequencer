@@ -20,7 +20,7 @@ SUBDIRS = po \
 	src/ags \
 	doc
 
-#
+# libraries and gsequencer
 libags_a_SOURCES = $(ags_util_c_sources) $(ags_lib_c_sources) $(ags_object_c_sources) $(ags_file_c_sources) $(ags_file_task_c_sources)
 libags_thread_a_SOURCES = $(ags_thread_c_sources) $(ags_thread_file_c_sources) $(ags_thread_task_c_sources)
 libags_log_a_SOURCES = $(ags_log_c_sources) $(ags_log_task_c_sources)
@@ -29,18 +29,24 @@ libags_audio_a_SOURCES = $(ags_audio_c_sources) $(ags_audio_thread_c_sources) $(
 libags_gui_a_SOURCES = $(ags_widget_c_sources)
 libgsequencer_a_SOURCES = $(gsequencer_main_c_sources) $(gsequencer_xorg_c_sources) $(gsequencer_xorg_import_c_sources) $(gsequencer_xorg_thread_c_sources) $(gsequencer_xorg_task_c_sources) $(gsequencer_machine_c_sources) $(gsequencer_editor_c_sources) $(ags_gsequencer_task_c_sources) $(gsequencer_file_c_sources)
 gsequencer_SOURCES = src/ags/main.c
-ags_functional_drum_test_SOURCES = $(ags_functional_drum_test_sources)
+
+# testing
+libgsequencer_test_a_SOURCES = $(gsequencer_functional_test_runtime_sources) $(gsequencer_functional_test_x_util_sources)
+ags_audio_test_SOURCES = src/ags/test/audio/ags_audio_test.c
+ags_functional_drum_test_SOURCES = src/ags/test/X/machine/ags_functional_drum_test.c
 
 #
 TARGETS = gsequencer
-TESTS = ags_functional_drum_test
+TESTS = \
+	ags_audio_test 					\
+	ags_functional_drum_test
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-noinst_LIBRARIES = libags.a libags_thread.a libags_server.a libags_log.a libags_audio.a libags_gui.a libgsequencer.a
+noinst_LIBRARIES = libags.a libags_thread.a libags_server.a libags_log.a libags_audio.a libags_gui.a libgsequencer.a libgsequencer_test.a
 bin_PROGRAMS = gsequencer
 
-noinst_PROGRAMS = ags_functional_drum_test
+noinst_PROGRAMS = ags_audio_test ags_functional_drum_test
 
 # application
 COMPILER_FLAGS = -g -std=gnu11
@@ -76,10 +82,20 @@ gsequencer_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/i
 gsequencer_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 gsequencer_LDADD = libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
 
+# testing
+libgsequencer_test_a_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libgsequencer_test_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libgsequencer_test_a_LIBADD = libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
+
+ags_audio_test_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) 
+ags_audio_test_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS)
+ags_audio_test_LDADD =  libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a
+
 ags_functional_drum_test_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_functional_drum_test_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-ags_functional_drum_test_LDADD = libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
+ags_functional_drum_test_LDADD = libgsequencer_test.a libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
 
+# 
 ACLOCAL_AMFLAGS = -I m4
 
 # libags all files
@@ -1178,15 +1194,6 @@ gsequencer_editor_c_sources = \
 
 deprecated_gsequencer_file_h_sources =
 
-#
-
-#
-ags_functional_drum_test_sources = \
-	src/ags/test/X/ags_functional_menubar_util.h 		\
-	src/ags/test/X/ags_functional_menubar_util.c 		\
-	src/ags/test/X/machine/ags_functional_drum_test.c
-
-
 gsequencer_file_h_sources = \
 	$(deprecated_gsequencer_file_h_sources) \
 	src/ags/X/file/ags_gsequencer_file_xml.h
@@ -1196,3 +1203,14 @@ deprecated_gsequencer_file_c_sources =
 gsequencer_file_c_sources = \
 	$(deprecated_gsequencer_file_c_sources) \
 	src/ags/X/file/ags_gsequencer_file_xml.c
+
+# testing
+gsequencer_functional_test_runtime_sources = \
+	src/ags/test/ags_functional_runtime.h			\
+	src/ags/test/ags_functional_runtime.c
+
+gsequencer_functional_test_x_util_sources = \
+	src/ags/test/X/ags_functional_menu_bar_util.h 		\
+	src/ags/test/X/ags_functional_menu_bar_util.c 		\
+	src/ags/test/X/ags_functional_machine_util.h		\
+	src/ags/test/X/ags_functional_machine_util.c

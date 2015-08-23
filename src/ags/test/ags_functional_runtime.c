@@ -17,9 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/main.h>
+#include <ags/test/ags_functional_runtime.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
@@ -59,18 +58,19 @@
 #include <sys/resource.h>
 #include <sys/mman.h>
 
+#include <sys/types.h>
+#include <pwd.h>
+
+#include <pthread.h>
+
 #include <ao/ao.h>
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gio/gio.h>
 
+#include <gdk/gdk.h>
 #include <gtk/gtk.h>
-
-#include <pthread.h>
-
-#include <sys/types.h>
-#include <pwd.h>
 
 static void ags_signal_cleanup();
 void ags_signal_handler(int signr);
@@ -106,17 +106,15 @@ ags_signal_cleanup()
   sigemptyset(&(ags_sigact.sa_mask));
 }
 
-int
-main(int argc, char **argv)
+AgsApplicationContext*
+ags_functional_runtime_enter()
 {
   AgsThread *audio_loop, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
   AgsApplicationContext *application_context;
-  GFile *autosave_file;
-    
-  gchar *filename, *autosave_filename;
-  gboolean single_thread = FALSE;
+
   guint i;
+  guint val;
 
   struct passwd *pw;
   uid_t uid;
@@ -179,11 +177,11 @@ main(int argc, char **argv)
   pw = getpwuid(uid);
 
   /* init gsequencer */
-  gtk_init(&argc, &argv);
+  gtk_init(NULL, NULL);
 
   application_context = ags_xorg_application_context_new();
-  application_context->argc = argc;
-  application_context->argv = argv;
+  application_context->argc = NULL;
+  application_context->argv = NULL;
   
   ags_xorg_init_context(application_context);
 
@@ -202,80 +200,66 @@ main(int argc, char **argv)
 
   mlockall(MCL_CURRENT | MCL_FUTURE);
 
-  /* parse command line parameter */
-  filename = NULL;
+  /* wait for audio loop */
+  thread_pool->parent = audio_loop;
+  ags_thread_pool_start(thread_pool);
 
-  for(i = 0; i < argc; i++){
-    if(!strncmp(argv[i], "--single-thread\0", 16)){
-      single_thread = TRUE;
-    }else if(!strncmp(argv[i], "--filename\0", 11)){
-      filename = argv[i + 1];
-      i++;
-    }
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
+    
+  gui_thread = ags_thread_find_type(audio_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  ags_thread_start(task_thread);
+  ags_thread_start(audio_loop);
+  ags_thread_start(gui_thread);
+    
+  /* wait for task thread */
+  pthread_mutex_lock(task_thread->start_mutex);
+  
+  while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(task_thread)->flags)))) != 0){
+    pthread_cond_wait(task_thread->start_cond,
+		      task_thread->start_mutex);
   }
-
-  if(filename != NULL){
-    AgsFile *file;
-
-    file = g_object_new(AGS_TYPE_FILE,
-			"application-context\0", application_context,
-			"filename\0", filename,
-			NULL);
-    ags_file_open(file);
-    ags_file_read(file);
-    ags_file_close(file);
-    
-    gui_thread = ags_thread_find_type(application_context->main_loop,
-				      AGS_TYPE_GUI_THREAD);
-  }else{
-    guint val;
-
-    /* wait for audio loop */
-    thread_pool->parent = audio_loop;
-    ags_thread_pool_start(thread_pool);
-
-    task_thread = ags_thread_find_type(audio_loop,
-				       AGS_TYPE_TASK_THREAD);
-    
-    gui_thread = ags_thread_find_type(audio_loop,
-				      AGS_TYPE_GUI_THREAD);
-
-    ags_thread_start(task_thread);
-    ags_thread_start(audio_loop);
-    ags_thread_start(gui_thread);
-    
-    /* wait for task thread */
-    pthread_mutex_lock(task_thread->start_mutex);
   
-    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(task_thread)->flags)))) != 0){
-      pthread_cond_wait(task_thread->start_cond,
-			task_thread->start_mutex);
-    }
-  
-    pthread_mutex_unlock(task_thread->start_mutex);
+  pthread_mutex_unlock(task_thread->start_mutex);
 
-    /* wait for audio loop */
-    pthread_mutex_lock(audio_loop->start_mutex);
+  /* wait for audio loop */
+  pthread_mutex_lock(audio_loop->start_mutex);
   
-    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags)))) != 0){
-      pthread_cond_wait(audio_loop->start_cond,
-			audio_loop->start_mutex);
-      val = g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags));
-    }
-  
-    pthread_mutex_unlock(audio_loop->start_mutex);
-
-    /* wait for audio loop */
-    pthread_mutex_lock(gui_thread->start_mutex);
-  
-    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags)))) != 0){
-      pthread_cond_wait(gui_thread->start_cond,
-			gui_thread->start_mutex);
-      val = g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags));
-    }
-  
-    pthread_mutex_unlock(gui_thread->start_mutex);
+  while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags)))) != 0){
+    pthread_cond_wait(audio_loop->start_cond,
+		      audio_loop->start_mutex);
+    val = g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags));
   }
+  
+  pthread_mutex_unlock(audio_loop->start_mutex);
+
+  /* wait for audio loop */
+  pthread_mutex_lock(gui_thread->start_mutex);
+  
+  while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags)))) != 0){
+    pthread_cond_wait(gui_thread->start_cond,
+		      gui_thread->start_mutex);
+    val = g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags));
+  }
+  
+  pthread_mutex_unlock(gui_thread->start_mutex);
+
+  return(application_context);
+}
+
+void
+ags_functional_runtime_join(AgsApplicationContext *application_context)
+{
+  AgsThread *audio_loop, *gui_thread;
+
+  gboolean single_thread = FALSE;
+
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  gui_thread = ags_thread_find_type(audio_loop,
+				    AGS_TYPE_GUI_THREAD);
 
   if(!single_thread){
     /* join gui thread */
@@ -299,32 +283,14 @@ main(int argc, char **argv)
     /* start thread tree */
     ags_thread_start((AgsThread *) single_thread);
   }
-    
+}
+
+void
+ags_functional_runtime_leave(AgsApplicationContext *application_context)
+{
   /* free managers */
   if(ags_ladspa_manager != NULL){
     g_object_unref(ags_ladspa_manager_get_instance());
   }
-  
-  /* delete autosave file */  
-  autosave_filename = g_strdup_printf("%s/%s/%d-%s\0",
-				      pw->pw_dir,
-				      AGS_DEFAULT_DIRECTORY,
-				      getpid(),
-				      AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
-  
-  autosave_file = g_file_new_for_path(autosave_filename);
-
-  if(g_file_query_exists(autosave_file,
-			 NULL)){
-    g_file_delete(autosave_file,
-		  NULL,
-		  NULL);
-  }
-
-  g_free(autosave_filename);
-  g_object_unref(autosave_file);
-
-  //  muntrace();
-
-  return(0);
 }
+
