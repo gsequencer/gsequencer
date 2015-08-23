@@ -33,12 +33,14 @@ gsequencer_SOURCES = src/ags/main.c
 # testing
 libgsequencer_test_a_SOURCES = $(gsequencer_functional_test_runtime_sources) $(gsequencer_functional_test_x_util_sources)
 ags_audio_test_SOURCES = src/ags/test/audio/ags_audio_test.c
+ags_channel_test_SOURCES = src/ags/test/audio/ags_channel_test.c
 ags_functional_drum_test_SOURCES = src/ags/test/X/machine/ags_functional_drum_test.c
 
 #
 TARGETS = gsequencer
 TESTS = \
 	ags_audio_test 					\
+	ags_channel_test				\
 	ags_functional_drum_test
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
@@ -46,7 +48,10 @@ TESTS = \
 noinst_LIBRARIES = libags.a libags_thread.a libags_server.a libags_log.a libags_audio.a libags_gui.a libgsequencer.a libgsequencer_test.a
 bin_PROGRAMS = gsequencer
 
-noinst_PROGRAMS = ags_audio_test ags_functional_drum_test
+noinst_PROGRAMS = \
+	ags_audio_test				\
+	ags_channel_test			\
+	ags_functional_drum_test
 
 # application
 COMPILER_FLAGS = -g -std=gnu11
@@ -86,6 +91,10 @@ gsequencer_LDADD = libgsequencer.a libags_audio.a libags_server.a libags_gui.a l
 libgsequencer_test_a_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libgsequencer_test_a_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 libgsequencer_test_a_LIBADD = libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
+
+ags_channel_test_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) 
+ags_channel_test_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS)
+ags_channel_test_LDADD =  libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a
 
 ags_audio_test_CFLAGS = @CFLAGS@ $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) 
 ags_audio_test_LDFLAGS = @LDFLAGS@ -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS)

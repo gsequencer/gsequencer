@@ -115,7 +115,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("Suite_1", ags_functional_drum_test_init_suite, ags_functional_drum_test_clean_suite);
+  pSuite = CU_add_suite("AgsDrumTest\0", ags_functional_drum_test_init_suite, ags_functional_drum_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

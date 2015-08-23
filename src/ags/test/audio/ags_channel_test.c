@@ -24,20 +24,17 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-int ags_audio_test_init_suite();
-int ags_audio_test_clean_suite();
+int ags_channel_test_init_suite();
+int ags_channel_test_clean_suite();
 
-void ags_audio_test_set_pads();
-void ags_audio_test_set_audio_channels();
-void ags_audio_test_link_channel();
-void ags_audio_test_finalize_linked_channel();
+void ags_channel_test_add_recall();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_audio_test_init_suite()
+ags_channel_test_init_suite()
 { 
   //TODO:JK: implement me
 }
@@ -47,31 +44,13 @@ ags_audio_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_audio_test_clean_suite()
+ags_channel_test_clean_suite()
 {
   //TODO:JK: implement me
 }
 
 void
-ags_audio_test_set_pads()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_test_set_audio_channels()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_test_link_channel()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_test_finalize_linked_channel()
+ags_channel_test_add_recall()
 {
   //TODO:JK: implement me
 }
@@ -87,7 +66,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsAudioTest\0", ags_audio_test_init_suite, ags_audio_test_clean_suite);
+  pSuite = CU_add_suite("AgsChannelTest\0", ags_channel_test_init_suite, ags_channel_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -96,10 +75,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsAudio set pads\0", ags_audio_test_set_pads) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio set audio channels\0", ags_audio_test_set_audio_channels) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio link channel\0", ags_audio_test_link_channel) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio finalize linked channel\0", ags_audio_test_finalize_linked_channel) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsChannel add recall\0", ags_channel_test_add_recall) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();
