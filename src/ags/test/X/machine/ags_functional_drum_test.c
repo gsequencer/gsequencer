@@ -28,7 +28,8 @@
 
 #include <ags/audio/task/ags_open_file.h>
 
-#include <ags/X/machine/ags_window.h>
+#include <ags/X/ags_window.h>
+
 #include <ags/X/machine/ags_drum.h>
 
 #include <glib.h>
@@ -37,6 +38,8 @@
 #include <gtk/gtk.h>
 
 #include <CUnit/CUnit.h>
+#include <CUnit/Automated.h>
+#include <CUnit/Basic.h>
 
 void ags_functional_drum_open_drumkit_test();
 void ags_functional_drum_edit_pattern_test();
@@ -46,7 +49,7 @@ void ags_functional_drum_edit_pattern_test();
 AgsApplicationContext *application_context;
 
 static const gchar *drumkit_directory = "/usr/share/hydrogen/data/drumkits/Synthie-1\0";
-static const guin64 drumkit_pattern[AGS_FUNCTIONAL_DRUM_N_PATTERNS] = 
+static const guint64 drumkit_pattern[AGS_FUNCTIONAL_DRUM_N_PATTERNS] = {
   0x8888888888888888,
   0x2222222222222222,
   0xcccccccccccccccc,
@@ -109,7 +112,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("Suite_1", init_functional_suite, clean_functional_suite);
+  pSuite = CU_add_suite("Suite_1", ags_functional_drum_init_suite, ags_functional_drum_clean_suite);
   
   if(NULL == pSuite) {
     CU_cleanup_registry();

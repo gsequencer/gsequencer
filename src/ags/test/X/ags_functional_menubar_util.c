@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags_functional_menu_bar_util.h>
+#include <src/ags/test/X/ags_functional_menubar_util.h>
 
 #include <string.h>
 
@@ -113,8 +113,6 @@ ags_functional_menu_bar_util_activate_path(GtkMenuBar *menu_bar,
 	has_more = FALSE;
       }
 
-      if
-      
       if(g_ascii_strcasecmp(gtk_menu_item_get_label(GTK_MENU_ITEM(list->data)),
 			    str)){
 	list = list->next;
@@ -139,7 +137,7 @@ ags_functional_menu_bar_util_activate_path(GtkMenuBar *menu_bar,
 
     list = list->next;
   }
-
+  
   g_list_free(list_start);
 }
 
