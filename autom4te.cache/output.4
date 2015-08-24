@@ -643,6 +643,8 @@ CAIRO_LIBS
 CAIRO_CFLAGS
 GDKPIXBUF_LIBS
 GDKPIXBUF_CFLAGS
+GIO_LIBS
+GIO_CFLAGS
 GOBJECT_LIBS
 GOBJECT_CFLAGS
 LIBINSTPATCH_LIBS
@@ -827,6 +829,8 @@ LIBINSTPATCH_CFLAGS
 LIBINSTPATCH_LIBS
 GOBJECT_CFLAGS
 GOBJECT_LIBS
+GIO_CFLAGS
+GIO_LIBS
 GDKPIXBUF_CFLAGS
 GDKPIXBUF_LIBS
 CAIRO_CFLAGS
@@ -1538,6 +1542,8 @@ Some influential environment variables:
               C compiler flags for GOBJECT, overriding pkg-config
   GOBJECT_LIBS 
               linker flags for GOBJECT, overriding pkg-config
+  GIO_CFLAGS  C compiler flags for GIO, overriding pkg-config
+  GIO_LIBS    linker flags for GIO, overriding pkg-config
   GDKPIXBUF_CFLAGS 
               C compiler flags for GDKPIXBUF, overriding pkg-config
   GDKPIXBUF_LIBS 
@@ -18273,6 +18279,100 @@ See \`config.log' for more details" "$LINENO" 5; }
 else
 	GOBJECT_CFLAGS=$pkg_cv_GOBJECT_CFLAGS
 	GOBJECT_LIBS=$pkg_cv_GOBJECT_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	
+fi
+
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GIO" >&5
+$as_echo_n "checking for GIO... " >&6; }
+
+if test -n "$GIO_CFLAGS"; then
+    pkg_cv_GIO_CFLAGS="$GIO_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gio-2.0 >= 2.44.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gio-2.0 >= 2.44.1") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GIO_CFLAGS=`$PKG_CONFIG --cflags "gio-2.0 >= 2.44.1" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GIO_LIBS"; then
+    pkg_cv_GIO_LIBS="$GIO_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gio-2.0 >= 2.44.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gio-2.0 >= 2.44.1") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GIO_LIBS=`$PKG_CONFIG --libs "gio-2.0 >= 2.44.1" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        GIO_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gio-2.0 >= 2.44.1" 2>&1`
+        else 
+	        GIO_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gio-2.0 >= 2.44.1" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$GIO_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (gio-2.0 >= 2.44.1) were not met:
+
+$GIO_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables GIO_CFLAGS
+and GIO_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5        
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables GIO_CFLAGS
+and GIO_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }        
+else
+	GIO_CFLAGS=$pkg_cv_GIO_CFLAGS
+	GIO_LIBS=$pkg_cv_GIO_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 	

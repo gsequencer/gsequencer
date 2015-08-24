@@ -2753,8 +2753,9 @@ ags_thread_find_type(AgsThread *thread, GType type)
 void
 ags_thread_cleanup(AgsThread *thread)
 {
-  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-  pango_cairo_font_map_set_default(NULL);
+  //FIXME:JK: invalid here since no pango present
+  //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  //  pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();
   //  FcFini();
 }

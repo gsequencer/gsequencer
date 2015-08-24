@@ -1729,7 +1729,7 @@ ags_devout_new(GObject *application_context)
   AgsDevout *devout;
 
   devout = (AgsDevout *) g_object_new(AGS_TYPE_DEVOUT,
-				      "application_context\0", application_context,
+				      "application-context\0", application_context,
 				      NULL);
   
   return(devout);

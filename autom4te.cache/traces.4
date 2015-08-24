@@ -2952,58 +2952,68 @@ m4trace:configure.ac:106: -1- PKG_CHECK_EXISTS([gobject-2.0 >= 2.32.3 glib-2.0 >
 m4trace:configure.ac:106: -1- _PKG_SHORT_ERRORS_SUPPORTED
 m4trace:configure.ac:107: -1- m4_pattern_allow([^GOBJECT_CFLAGS$])
 m4trace:configure.ac:108: -1- m4_pattern_allow([^GOBJECT_LIBS$])
-m4trace:configure.ac:110: -1- PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.26.1])
-m4trace:configure.ac:110: -1- m4_pattern_allow([^GDKPIXBUF_CFLAGS$])
-m4trace:configure.ac:110: -1- m4_pattern_allow([^GDKPIXBUF_LIBS$])
-m4trace:configure.ac:110: -1- PKG_CHECK_EXISTS([gdk-pixbuf-2.0 >= 2.26.1], [pkg_cv_[]GDKPIXBUF_CFLAGS=`$PKG_CONFIG --[]cflags "gdk-pixbuf-2.0 >= 2.26.1" 2>/dev/null`
+m4trace:configure.ac:110: -1- PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.44.1])
+m4trace:configure.ac:110: -1- m4_pattern_allow([^GIO_CFLAGS$])
+m4trace:configure.ac:110: -1- m4_pattern_allow([^GIO_LIBS$])
+m4trace:configure.ac:110: -1- PKG_CHECK_EXISTS([gio-2.0 >= 2.44.1], [pkg_cv_[]GIO_CFLAGS=`$PKG_CONFIG --[]cflags "gio-2.0 >= 2.44.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:110: -1- PKG_CHECK_EXISTS([gdk-pixbuf-2.0 >= 2.26.1], [pkg_cv_[]GDKPIXBUF_LIBS=`$PKG_CONFIG --[]libs "gdk-pixbuf-2.0 >= 2.26.1" 2>/dev/null`
+m4trace:configure.ac:110: -1- PKG_CHECK_EXISTS([gio-2.0 >= 2.44.1], [pkg_cv_[]GIO_LIBS=`$PKG_CONFIG --[]libs "gio-2.0 >= 2.44.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
 m4trace:configure.ac:110: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:111: -1- m4_pattern_allow([^GDKPIXBUF_CFLAGS$])
-m4trace:configure.ac:112: -1- m4_pattern_allow([^GDKPIXBUF_LIBS$])
-m4trace:configure.ac:114: -1- PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
-m4trace:configure.ac:114: -1- m4_pattern_allow([^CAIRO_CFLAGS$])
-m4trace:configure.ac:114: -1- m4_pattern_allow([^CAIRO_LIBS$])
-m4trace:configure.ac:114: -1- PKG_CHECK_EXISTS([cairo >= 1.12.0], [pkg_cv_[]CAIRO_CFLAGS=`$PKG_CONFIG --[]cflags "cairo >= 1.12.0" 2>/dev/null`
+m4trace:configure.ac:111: -1- m4_pattern_allow([^GIO_CFLAGS$])
+m4trace:configure.ac:112: -1- m4_pattern_allow([^GIO_LIBS$])
+m4trace:configure.ac:114: -1- PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.26.1])
+m4trace:configure.ac:114: -1- m4_pattern_allow([^GDKPIXBUF_CFLAGS$])
+m4trace:configure.ac:114: -1- m4_pattern_allow([^GDKPIXBUF_LIBS$])
+m4trace:configure.ac:114: -1- PKG_CHECK_EXISTS([gdk-pixbuf-2.0 >= 2.26.1], [pkg_cv_[]GDKPIXBUF_CFLAGS=`$PKG_CONFIG --[]cflags "gdk-pixbuf-2.0 >= 2.26.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:114: -1- PKG_CHECK_EXISTS([cairo >= 1.12.0], [pkg_cv_[]CAIRO_LIBS=`$PKG_CONFIG --[]libs "cairo >= 1.12.0" 2>/dev/null`
+m4trace:configure.ac:114: -1- PKG_CHECK_EXISTS([gdk-pixbuf-2.0 >= 2.26.1], [pkg_cv_[]GDKPIXBUF_LIBS=`$PKG_CONFIG --[]libs "gdk-pixbuf-2.0 >= 2.26.1" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
 m4trace:configure.ac:114: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:115: -1- m4_pattern_allow([^CAIRO_CFLAGS$])
-m4trace:configure.ac:116: -1- m4_pattern_allow([^CAIRO_LIBS$])
-m4trace:configure.ac:118: -1- PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.24.10])
-m4trace:configure.ac:118: -1- m4_pattern_allow([^GTK_CFLAGS$])
-m4trace:configure.ac:118: -1- m4_pattern_allow([^GTK_LIBS$])
-m4trace:configure.ac:118: -1- PKG_CHECK_EXISTS([gtk+-2.0 >= 2.24.10], [pkg_cv_[]GTK_CFLAGS=`$PKG_CONFIG --[]cflags "gtk+-2.0 >= 2.24.10" 2>/dev/null`
+m4trace:configure.ac:115: -1- m4_pattern_allow([^GDKPIXBUF_CFLAGS$])
+m4trace:configure.ac:116: -1- m4_pattern_allow([^GDKPIXBUF_LIBS$])
+m4trace:configure.ac:118: -1- PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
+m4trace:configure.ac:118: -1- m4_pattern_allow([^CAIRO_CFLAGS$])
+m4trace:configure.ac:118: -1- m4_pattern_allow([^CAIRO_LIBS$])
+m4trace:configure.ac:118: -1- PKG_CHECK_EXISTS([cairo >= 1.12.0], [pkg_cv_[]CAIRO_CFLAGS=`$PKG_CONFIG --[]cflags "cairo >= 1.12.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
-m4trace:configure.ac:118: -1- PKG_CHECK_EXISTS([gtk+-2.0 >= 2.24.10], [pkg_cv_[]GTK_LIBS=`$PKG_CONFIG --[]libs "gtk+-2.0 >= 2.24.10" 2>/dev/null`
+m4trace:configure.ac:118: -1- PKG_CHECK_EXISTS([cairo >= 1.12.0], [pkg_cv_[]CAIRO_LIBS=`$PKG_CONFIG --[]libs "cairo >= 1.12.0" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
 m4trace:configure.ac:118: -1- _PKG_SHORT_ERRORS_SUPPORTED
-m4trace:configure.ac:119: -1- m4_pattern_allow([^GTK_CFLAGS$])
-m4trace:configure.ac:120: -1- m4_pattern_allow([^GTK_LIBS$])
-m4trace:configure.ac:139: -1- m4_pattern_allow([^HAVE_STDLIB_H$])
-m4trace:configure.ac:139: -1- m4_pattern_allow([^HAVE_MALLOC$])
-m4trace:configure.ac:139: -1- m4_pattern_allow([^HAVE_MALLOC$])
-m4trace:configure.ac:139: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:139: -1- m4_pattern_allow([^malloc$])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^HAVE_STDLIB_H$])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^HAVE_REALLOC$])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^HAVE_REALLOC$])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:140: -1- m4_pattern_allow([^realloc$])
+m4trace:configure.ac:119: -1- m4_pattern_allow([^CAIRO_CFLAGS$])
+m4trace:configure.ac:120: -1- m4_pattern_allow([^CAIRO_LIBS$])
+m4trace:configure.ac:122: -1- PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.24.10])
+m4trace:configure.ac:122: -1- m4_pattern_allow([^GTK_CFLAGS$])
+m4trace:configure.ac:122: -1- m4_pattern_allow([^GTK_LIBS$])
+m4trace:configure.ac:122: -1- PKG_CHECK_EXISTS([gtk+-2.0 >= 2.24.10], [pkg_cv_[]GTK_CFLAGS=`$PKG_CONFIG --[]cflags "gtk+-2.0 >= 2.24.10" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
+m4trace:configure.ac:122: -1- PKG_CHECK_EXISTS([gtk+-2.0 >= 2.24.10], [pkg_cv_[]GTK_LIBS=`$PKG_CONFIG --[]libs "gtk+-2.0 >= 2.24.10" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes ], [pkg_failed=yes])
+m4trace:configure.ac:122: -1- _PKG_SHORT_ERRORS_SUPPORTED
+m4trace:configure.ac:123: -1- m4_pattern_allow([^GTK_CFLAGS$])
+m4trace:configure.ac:124: -1- m4_pattern_allow([^GTK_LIBS$])
+m4trace:configure.ac:143: -1- m4_pattern_allow([^HAVE_STDLIB_H$])
+m4trace:configure.ac:143: -1- m4_pattern_allow([^HAVE_MALLOC$])
+m4trace:configure.ac:143: -1- m4_pattern_allow([^HAVE_MALLOC$])
 m4trace:configure.ac:143: -1- m4_pattern_allow([^LIB@&t@OBJS$])
-m4trace:configure.ac:143: -1- m4_pattern_allow([^LTLIBOBJS$])
-m4trace:configure.ac:143: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:143: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:143: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:143: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:143: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:143: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
-m4trace:configure.ac:143: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
-m4trace:configure.ac:143: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
-m4trace:configure.ac:143: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
-m4trace:configure.ac:143: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
-m4trace:configure.ac:143: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
-m4trace:configure.ac:143: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
-m4trace:configure.ac:143: -1- _LT_PROG_LTMAIN
+m4trace:configure.ac:143: -1- m4_pattern_allow([^malloc$])
+m4trace:configure.ac:144: -1- m4_pattern_allow([^HAVE_STDLIB_H$])
+m4trace:configure.ac:144: -1- m4_pattern_allow([^HAVE_REALLOC$])
+m4trace:configure.ac:144: -1- m4_pattern_allow([^HAVE_REALLOC$])
+m4trace:configure.ac:144: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:144: -1- m4_pattern_allow([^realloc$])
+m4trace:configure.ac:147: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:147: -1- m4_pattern_allow([^LTLIBOBJS$])
+m4trace:configure.ac:147: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:147: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:147: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:147: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:147: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:147: -1- AM_CONDITIONAL([am__EXEEXT], [test -n "$EXEEXT"])
+m4trace:configure.ac:147: -1- m4_pattern_allow([^am__EXEEXT_TRUE$])
+m4trace:configure.ac:147: -1- m4_pattern_allow([^am__EXEEXT_FALSE$])
+m4trace:configure.ac:147: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_TRUE])
+m4trace:configure.ac:147: -1- _AM_SUBST_NOTMAKE([am__EXEEXT_FALSE])
+m4trace:configure.ac:147: -1- _AC_AM_CONFIG_HEADER_HOOK(["$ac_file"])
+m4trace:configure.ac:147: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:147: -1- _LT_PROG_LTMAIN

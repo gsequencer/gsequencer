@@ -19,6 +19,7 @@
 #ifndef __AGS_CONFIG_H__
 #define __AGS_CONFIG_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_CONFIG                (ags_config_get_type ())
