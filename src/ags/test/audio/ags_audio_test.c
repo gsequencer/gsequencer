@@ -187,7 +187,6 @@ ags_audio_test_set_audio_channels()
       current = current->next_pad;
     }
 
-    g_message("%d %d\0", j, AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_INPUT_PADS);
     CU_ASSERT(j == AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_INPUT_PADS);
     channel = channel->next;
   }
@@ -213,7 +212,6 @@ ags_audio_test_set_audio_channels()
       current = current->next_pad;
     }
     
-    g_message("%d %d\0", j, AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_INPUT_PADS);
     CU_ASSERT(j == AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_OUTPUT_PADS);
     channel = channel->next;
   }

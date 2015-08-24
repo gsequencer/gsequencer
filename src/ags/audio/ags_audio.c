@@ -1491,256 +1491,53 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	link_recycling = FALSE;
     }    
   }
-  void ags_audio_set_audio_channels_grow_one(GType type){
+  void ags_audio_set_audio_channels_grow(GType type){
+    AgsChannel *start;
+    guint i, j;
+    
     if(type == AGS_TYPE_OUTPUT){
       /* AGS_TYPE_OUTPUT */
       pads = audio->output_pads;
-
-      if(pads > 0){
-	channel = (AgsChannel *) g_object_new(type,
-					      "audio\0", (GObject *) audio,
-					      NULL);
-      }
       
-      audio->output = channel;
+      start = audio->output;
     }else{
       /* AGS_TYPE_INPUT */
       pads = audio->input_pads;
 
-      if(pads > 0){
-	channel = (AgsChannel *) g_object_new(type,
-					      "audio\0", (GObject *) audio,
-					      NULL);
-      }
-      
-      audio->input = channel;
+      start = audio->input;
     }
 
-    if(alloc_recycling){
-      recycling =
-	channel->first_recycling =
-	channel->last_recycling = ags_recycling_new(audio->soundcard);
-
-      channel->first_recycling->channel = (GObject *) channel;
-    }else if(set_sync_link){
-      /* set sync link */
-      channel->first_recycling = input->first_recycling;
-      channel->last_recycling = input->last_recycling;
-
-      input = ags_channel_nth(input, audio_channels);
-    }else if(set_async_link){
-
-      /* set async link */
-      channel->first_recycling = input->first_recycling;
-      channel->last_recycling = input_pad_last->last_recycling;
-
-      input = input->next;
-      input_pad_last = input_pad_last->next;
-    }
-
-    for(j = 1; j < pads; j++){
-      channel->next =
-	channel->next_pad = (AgsChannel *) g_object_new(type,
-							"audio\0", (GObject *) audio,
-							NULL);
-      channel->next->prev = channel;
-      channel = channel->next;
-      channel->prev_pad = channel->prev;
-
-      channel->pad = j;
-      channel->line = j;
-
-      if(alloc_recycling){
-	channel->first_recycling =
-	  channel->last_recycling = ags_recycling_new(audio->soundcard);
-
-	if(link_recycling){
-	  recycling->next = channel->first_recycling;
-	  recycling->next->prev = recycling;
-	  recycling = recycling->next;
-	}
-
-	channel->first_recycling->channel = (GObject *) channel;
-      }else if(set_sync_link){
-	/* set sync link */
-	channel->first_recycling = input->first_recycling;
-	channel->last_recycling = input->last_recycling;
-	
-	input = input->next;
-      }
-      /* set async link is illegal here */
-    }
-  }
-  void ags_audio_set_audio_channels_grow(GType type){
-    AgsChannel *prev_channel, *prev_pad, *next_channel, *start;
-    AgsRecycling *prev_channel_next_recycling;
-
-    if(type == AGS_TYPE_OUTPUT){
-      //      prev_pad = audio->output;
-      prev_channel = ags_channel_nth(audio->output, audio->audio_channels - 1);
-      pads = audio->output_pads;
-    }else{
-      //      prev_pad = audio->input;
-      prev_channel = ags_channel_nth(audio->input, audio->audio_channels - 1);
-      pads = audio->input_pads;
-    }
-
-    /*
-     * linking with prev_channel is done later else linked channels would be lost
-     */
-    start =
-      channel = (AgsChannel *) g_object_new(type,
-					    "audio\0", (GObject *) audio,
-					    NULL);
-
-    channel->audio_channel = audio->audio_channels;
-    channel->line = audio->audio_channels;
-
-    if(alloc_recycling){
-      recycling =
-	channel->first_recycling =
-	channel->last_recycling = ags_recycling_new(audio->soundcard);
-
-      if(link_recycling){
-	prev_channel->last_recycling->next = recycling;
-	recycling->prev = prev_channel->last_recycling;
-      }
-
-      channel->first_recycling->channel = (GObject *) channel;
-    }else if(set_sync_link){
-      /* set sync link */
-      channel->first_recycling = input->first_recycling;
-      channel->last_recycling = input->last_recycling;
-      input = input->next;
-    }else if(set_async_link){
-      /* set async link*/
-      channel->first_recycling = input->first_recycling;
-      channel->last_recycling = input_pad_last->last_recycling;
-
-      input = input->next;
-      input_pad_last = input_pad_last->next;
-    }
-
-    //    i = 1;
-
-    /*
-     * link now the new allocated channels
-     */
-    next_channel = prev_channel->next;
-
-    prev_channel->next = start;
-    start->prev = prev_channel;
-    prev_channel = next_channel;
-
-    for(j = audio->audio_channels + 1; j < audio_channels; j++){
-      channel->next = (AgsChannel *) g_object_new(type,
-						  "audio\0", (GObject *) audio,
-						  NULL);
-      channel->next->prev = channel;
-      channel = channel->next;
-
-      if(type == AGS_TYPE_OUTPUT){
-	channel->prev_pad = ags_channel_pad_last(ags_channel_nth(audio->output,
-								 audio->audio_channels));
-      }else{
-	channel->prev_pad = ags_channel_pad_last(ags_channel_nth(audio->input,
-								 audio->audio_channels));
-      }
-
-      channel->prev_pad->next_pad = channel;
-
-      channel->pad = 0;
-      channel->audio_channel = j;
-      channel->line = j;
-
-      if(alloc_recycling){
-	channel->first_recycling =
-	  channel->last_recycling = ags_recycling_new(audio->soundcard);
-
-	if(link_recycling){
-	  recycling->next = channel->first_recycling;
-	  recycling->next->prev = recycling;
-	  recycling = recycling->next;
-	}
-
-	channel->first_recycling->channel = (GObject *) channel;
-      }else if(set_sync_link){
-	/* set sync link */
-	channel->first_recycling = input->first_recycling;
-	channel->last_recycling = input->last_recycling;
-	input = input->next;
-      }else if(set_async_link){
-	/* set async link */
-	channel->first_recycling = input->first_recycling;
-	channel->last_recycling = input_pad_last->last_recycling;
-
-	input = input->next;
-	input_pad_last = input_pad_last->next;
-      }
-    }
-
-    if(pads == 1)
-      return;
-
-    /*
-     * the main part of allocation
-     */
-    for(i = 1; i < pads -1; i++){
-      channel->next = prev_channel;
-      prev_channel->prev = channel;
-
-      /* set async link is illegal here */
-
-      for(j = 0; j < audio->audio_channels -1; j++){
-	prev_channel->line = i * audio_channels + j;
-
-	prev_channel = prev_channel->next;
-      }
-
-      prev_channel->line = i * audio_channels + j;
-
-      // prev_channel = prev_channel->next; will be called later
-
-      if(link_recycling){
-	recycling = prev_channel->last_recycling;
-      }
-
-      prev_pad = start;
-
-      /* alloc new AgsChannel's */
-      start =
+    for(j = 0; j < pads; j++){
+      for(i = audio->audio_channels; i < audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio\0", (GObject *) audio,
 					      "soundcard\0", audio->soundcard,
 					      NULL);
 
-      next_channel = prev_channel->next;
+	if(start == NULL){
+	  start = channel;
 
-      prev_channel->next = start;
-      start->prev = prev_channel;
-      prev_channel = next_channel;
-
-      j++;
-
-      goto ags_audio_set_audio_channels_grow0;
-
-      for(; j < audio_channels; j++){
-	channel->next = (AgsChannel *) g_object_new(type,
-						    "audio\0", (GObject *) audio,
-						    "soundcard\0", audio->soundcard,
-						    NULL);
-
-	channel->next->prev = channel;
-	channel = channel->next;
-
-      ags_audio_set_audio_channels_grow0:
-
-	prev_pad->next_pad = channel;
-	channel->prev_pad = prev_pad;
-
-	channel->pad = i;
-	channel->audio_channel = j;
-	channel->line = (i * audio_channels) + j;
+	  if(type == AGS_TYPE_OUTPUT){
+	    audio->output = channel;
+	  }else{
+	    audio->input = channel;
+	  }
+	}
+	
+	if(j * audio_channels + i != 0){
+	  channel->prev = ags_channel_nth(start, j * audio_channels + i - 1);
+	  channel->prev->next = channel;
+	}
+	
+	if(j != 0){
+	  channel->prev_pad = ags_channel_pad_nth(ags_channel_nth(start,
+								  i),
+						  j - 1);
+	  channel->prev_pad->next_pad = channel;
+	}
+	
+	channel->pad = j;
+	channel->line = j;
 
 	if(alloc_recycling){
 	  channel->first_recycling =
@@ -1757,84 +1554,23 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  /* set sync link */
 	  channel->first_recycling = input->first_recycling;
 	  channel->last_recycling = input->last_recycling;
+	
 	  input = input->next;
+	}else if(set_async_link){
+	  AgsChannel *input, *input_pad_last;
+
+	  input = ags_channel_nth(audio->input,
+				  i);
+
+	  /* set async link */
+	  if(input != NULL){
+	    input_pad_last = ags_channel_pad_last(input);
+	    
+	    channel->first_recycling = input->first_recycling;
+	    channel->last_recycling = input_pad_last->last_recycling;
+	  }
 	}
-	/* set async link is illegal here */
-
-	prev_pad = prev_pad->next;
       }
-
-      if(link_recycling){
-	recycling->next = prev_channel->first_recycling;
-	prev_channel->first_recycling->prev = recycling;
-      }
-    }
-
-    channel->next = prev_channel;
-    prev_channel->prev = channel;
-
-    /* set async link is illegal here */
-
-    for(j = 0; j < audio->audio_channels -1; j++){
-      prev_channel->line = i * audio_channels + j;
-
-      prev_channel = prev_channel->next;
-
-      if(link_recycling)
-	recycling = recycling->next;
-    }
-
-    prev_channel->line = i * audio_channels + j;
-
-    start =
-      channel = (AgsChannel *) g_object_new(type,
-					    "audio\0", (GObject *) audio,
-					    "soundcard\0", audio->soundcard,
-					    NULL);
-
-    prev_channel->next = start;
-    start->prev = prev_channel;
-    j++;
-
-    goto ags_audio_set_audio_channels_grow1;
-
-    for(; j < audio_channels; j++){
-      channel->next = (AgsChannel *) g_object_new(type,
-						  "audio\0", (GObject *) audio,
-						  "soundcard\0", audio->soundcard,
-						  NULL);
-
-      channel->next->prev = channel;
-      channel = channel->next;
-
-    ags_audio_set_audio_channels_grow1:
-
-      prev_pad->next_pad = channel;
-      channel->prev_pad = prev_pad;
-
-      channel->pad = i;
-      channel->audio_channel = j;
-      channel->line = (i * audio_channels) + j;
-
-      if(alloc_recycling){
-	channel->first_recycling =
-	  channel->last_recycling = ags_recycling_new(audio->soundcard);
-
-	if(link_recycling){
-	  recycling->next = channel->first_recycling;
-	  recycling->next->prev = recycling;
-	  recycling = recycling->next;
-	}
-
-	channel->first_recycling->channel = (GObject *) channel;
-      }else if(set_sync_link){
-	channel->first_recycling = input->first_recycling;
-	channel->last_recycling = input->last_recycling;
-	input = input->next;
-      }
-      /* set async link is illegal here */
-
-      prev_pad = prev_pad->next;
     }
   }
   void ags_audio_set_audio_channels_shrink_zero(){
@@ -2003,44 +1739,23 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     AgsChannel *current;
 
     /* grow audio channels*/
-    if((AGS_AUDIO_HAS_NOTATION & audio->flags) != 0)
+    if((AGS_AUDIO_HAS_NOTATION & audio->flags) != 0){
       ags_audio_set_audio_channels_grow_notation();
-
-    /* grow one */
-    if(audio->audio_channels == 0){
-      if(audio->input_pads > 0){
-	ags_audio_set_audio_channels_init_parameters(AGS_TYPE_INPUT);
-	ags_audio_set_audio_channels_grow_one(AGS_TYPE_INPUT);
-      }
-
-      audio->input_lines = audio->input_pads;
-
-      if(audio->output_pads > 0){
-	ags_audio_set_audio_channels_init_parameters(AGS_TYPE_OUTPUT);
-	ags_audio_set_audio_channels_grow_one(AGS_TYPE_OUTPUT);
-      }
-
-      audio->output_lines = audio->output_pads;
-
-      audio->audio_channels = 1;
     }
 
-    /* grow more than one */
-    if(audio_channels > 1){
-      if(audio->input_pads > 0){
-	ags_audio_set_audio_channels_init_parameters(AGS_TYPE_INPUT);
-	ags_audio_set_audio_channels_grow(AGS_TYPE_INPUT);
-      }
-
-      audio->input_lines = audio_channels * audio->input_pads;
-
-      if(audio->output_pads > 0){
-	ags_audio_set_audio_channels_init_parameters(AGS_TYPE_OUTPUT);
-     	ags_audio_set_audio_channels_grow(AGS_TYPE_OUTPUT);
-      }
-
-      audio->output_lines = audio_channels * audio->output_pads;
+    if(audio->input_pads > 0){
+      ags_audio_set_audio_channels_init_parameters(AGS_TYPE_INPUT);
+      ags_audio_set_audio_channels_grow(AGS_TYPE_INPUT);
     }
+
+    audio->input_lines = audio_channels * audio->input_pads;
+
+    if(audio->output_pads > 0){
+      ags_audio_set_audio_channels_init_parameters(AGS_TYPE_OUTPUT);
+      ags_audio_set_audio_channels_grow(AGS_TYPE_OUTPUT);
+    }
+
+    audio->output_lines = audio_channels * audio->output_pads;
 
     /* alloc playback domain */
     playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
