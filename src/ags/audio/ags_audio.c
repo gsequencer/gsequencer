@@ -1762,13 +1762,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     current = ags_channel_nth(audio->output,
 			      pads - audio->output_pads);
 
-    for(i = 0; i < audio_channels - audio_channels_old; i++){
-      playback_domain->playback = g_list_append(playback_domain->playback,
-						current->playback);
+    if(current != NULL){
+      for(i = 0; i < audio_channels - audio_channels_old; i++){
+	playback_domain->playback = g_list_append(playback_domain->playback,
+						  current->playback);
 
-      current = current->next;
+	current = current->next;
+      }
     }
-
   }else if(audio_channels < audio->audio_channels){
     AgsPlaybackDomain *playback_domain;
     AgsChannel *current;

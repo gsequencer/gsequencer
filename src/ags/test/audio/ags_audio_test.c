@@ -39,6 +39,10 @@ void ags_audio_test_set_audio_channels();
 void ags_audio_test_link_channel();
 void ags_audio_test_finalize_linked_channel();
 
+void ags_audio_test_set_link_callback(AgsChannel *channel, AgsChannel *link,
+				      GError **error,
+				      AgsAudio *audio);
+
 #define AGS_AUDIO_TEST_SET_PADS_AUDIO_CHANNELS (2)
 #define AGS_AUDIO_TEST_SET_PADS_INPUT_PADS (12)
 #define AGS_AUDIO_TEST_SET_PADS_OUTPUT_PADS (5)
@@ -47,7 +51,34 @@ void ags_audio_test_finalize_linked_channel();
 #define AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_INPUT_PADS (1)
 #define AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_OUTPUT_PADS (7)
 
+#define AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_INPUT_PADS (8)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_OUTPUT_PADS (1)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_INPUT_PADS (8)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_OUTPUT_PADS (1)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_AUDIO_CHANNELS (1)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_INPUT_PADS (128)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_OUTPUT_PADS (1)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_INPUT_PADS (1)
+#define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_OUTPUT_PADS (1)
+
 AgsDevout *devout;
+
+struct{
+  AgsAudio *master;
+  guint n_link_master;
+
+  AgsAudio *slave_0;
+  guint n_link_slave_0;
+
+  AgsAudio *slave_1;
+  guint n_link_slave_1;
+  
+  AgsAudio *slave_2;
+  guint n_link_slave_2;
+}test_link_channel;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -231,13 +262,219 @@ ags_audio_test_set_audio_channels()
 void
 ags_audio_test_link_channel()
 {
-  //TODO:JK: implement me
+  AgsChannel *channel, *link;
+
+  guint i;
+
+  GError *error;
+  
+  /* audio - master */
+  test_link_channel.master = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_link_channel.master->flags |= AGS_AUDIO_ASYNC;
+  
+  ags_audio_set_audio_channels(test_link_channel.master,
+			       AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS);
+  
+  ags_audio_set_pads(test_link_channel.master,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_INPUT_PADS);
+  ags_audio_set_pads(test_link_channel.master,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_OUTPUT_PADS);
+
+  /* audio - slave 0 */
+  test_link_channel.slave_0 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_link_channel.slave_0->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+				       AGS_AUDIO_ASYNC);
+  
+  ags_audio_set_audio_channels(test_link_channel.slave_0,
+			       AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_AUDIO_CHANNELS);
+  
+  ags_audio_set_pads(test_link_channel.slave_0,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_INPUT_PADS);
+  ags_audio_set_pads(test_link_channel.slave_0,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_OUTPUT_PADS);
+
+  /* audio - slave 1 */
+  test_link_channel.slave_1 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_link_channel.slave_1->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+				       AGS_AUDIO_ASYNC);
+  
+  ags_audio_set_audio_channels(test_link_channel.slave_1,
+			       AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_AUDIO_CHANNELS);
+  
+  ags_audio_set_pads(test_link_channel.slave_1,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_INPUT_PADS);
+  ags_audio_set_pads(test_link_channel.slave_1,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_OUTPUT_PADS);
+
+  /* audio - slave 2 */
+  test_link_channel.slave_2 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_link_channel.slave_2->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+				       AGS_AUDIO_ASYNC);
+  
+  ags_audio_set_audio_channels(test_link_channel.slave_2,
+			       AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_AUDIO_CHANNELS);
+  
+  ags_audio_set_pads(test_link_channel.slave_2,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_INPUT_PADS);
+  ags_audio_set_pads(test_link_channel.slave_2,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_OUTPUT_PADS);
+
+  /* setup link master to slave_0 */
+  /* connect callback */
+  channel = test_link_channel.master->input;
+  link = test_link_channel.slave_0->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    //TODO:JK: implement me
+    /*
+    g_signal_connect(G_OBJECT(channel), "set-link\0",
+		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.master);
+
+    g_signal_connect(G_OBJECT(link), "set-link\0",
+		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.slave_0);
+    */
+    
+    channel = channel->next;
+    link = link->next;
+  }
+
+  /* set link */
+  channel = test_link_channel.master->input;
+  link = test_link_channel.slave_0->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    error = NULL;
+    ags_channel_set_link(channel, link,
+			 &error);
+
+    /* assert link set */
+    CU_ASSERT(error == NULL);
+    CU_ASSERT(channel->link == link);
+    CU_ASSERT(link->link == channel);
+
+    /* iterate */
+    channel = channel->next;
+    link = link->next;
+  }
+
+  /* setup link master to slave_1 */
+  /* connect callback */
+  channel = ags_channel_pad_nth(test_link_channel.master->input,
+				1);
+  link = test_link_channel.slave_1->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    //TODO:JK: implement me
+    /*
+    g_signal_connect(G_OBJECT(channel), "set-link\0",
+		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.master);
+
+    g_signal_connect(G_OBJECT(link), "set-link\0",
+		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.slave_1);
+    */
+    
+    channel = channel->next;
+    link = link->next;
+  }
+
+  /* set link */
+  channel = ags_channel_pad_nth(test_link_channel.master->input,
+				1);
+  link = test_link_channel.slave_1->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    error = NULL;
+    ags_channel_set_link(channel, link,
+			 &error);
+
+    /* assert link set */
+    CU_ASSERT(error == NULL);
+    CU_ASSERT(channel->link == link);
+    CU_ASSERT(link->link == channel);
+
+    /* iterate */
+    channel = channel->next;
+    link = link->next;
+  }
+
+  /* setup link master to slave_2 */
+  /* connect callback */
+  channel = ags_channel_pad_nth(test_link_channel.master->input,
+				2);
+  link = test_link_channel.slave_2->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    //TODO:JK: implement me
+    /*
+    g_signal_connect(G_OBJECT(channel), "set-link\0",
+		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.master);
+
+    g_signal_connect(G_OBJECT(link), "set-link\0",
+		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.slave_2);
+    */
+    
+    channel = channel->next;
+    link = link->next;
+  }
+
+  /* set link */
+  channel = ags_channel_pad_nth(test_link_channel.master->input,
+				2);
+  link = test_link_channel.slave_2->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    error = NULL;
+    ags_channel_set_link(channel, link,
+			 &error);
+
+    /* assert link set */
+    CU_ASSERT(error == NULL);
+    CU_ASSERT(channel->link == link);
+    CU_ASSERT(link->link == channel);
+
+    /* iterate */
+    channel = channel->next;
+    link = link->next;
+  }
 }
 
 void
 ags_audio_test_finalize_linked_channel()
 {
   //TODO:JK: implement me
+}
+
+void
+ags_audio_test_set_link_callback(AgsChannel *channel, AgsChannel *link,
+				 GError **error,
+				 AgsAudio *audio)
+{
 }
 
 int
