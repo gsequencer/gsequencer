@@ -64,6 +64,19 @@ void ags_audio_test_set_link_callback(AgsChannel *channel, AgsChannel *link,
 #define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_INPUT_PADS (1)
 #define AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_OUTPUT_PADS (1)
 
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_INPUT_PADS (8)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_OUTPUT_PADS (1)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_INPUT_PADS (8)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_OUTPUT_PADS (1)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_INPUT_PADS (128)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_OUTPUT_PADS (1)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS (2)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_INPUT_PADS (1)
+#define AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_OUTPUT_PADS (1)
+
 AgsDevout *devout;
 
 struct{
@@ -79,6 +92,20 @@ struct{
   AgsAudio *slave_2;
   guint n_link_slave_2;
 }test_link_channel;
+
+struct{
+  AgsAudio *master;
+  guint n_link_master;
+
+  AgsAudio *slave_0;
+  guint n_link_slave_0;
+
+  AgsAudio *slave_1;
+  guint n_link_slave_1;
+  
+  AgsAudio *slave_2;
+  guint n_link_slave_2;
+}test_finalize_linked_channel;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -263,6 +290,7 @@ void
 ags_audio_test_link_channel()
 {
   AgsChannel *channel, *link;
+  AgsChannel *output, *first_channel;
 
   guint i;
 
@@ -366,11 +394,28 @@ ags_audio_test_link_channel()
     CU_ASSERT(channel->link == link);
     CU_ASSERT(link->link == channel);
 
+    /* check recycling */
+    CU_ASSERT(channel->first_recycling == link->first_recycling);
+    CU_ASSERT(channel->last_recycling == link->last_recycling);
+
     /* iterate */
     channel = channel->next;
     link = link->next;
   }
 
+  /* check output recycling */
+  output = test_link_channel.master->output;
+  first_channel = 
+    link = test_link_channel.slave_0->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    CU_ASSERT(output->first_recycling == link->first_recycling);
+    CU_ASSERT(output->last_recycling == link->last_recycling);
+  }  
+  
   /* setup link master to slave_1 */
   /* connect callback */
   channel = ags_channel_pad_nth(test_link_channel.master->input,
@@ -412,11 +457,32 @@ ags_audio_test_link_channel()
     CU_ASSERT(channel->link == link);
     CU_ASSERT(link->link == channel);
 
+    /* check recycling */
+    CU_ASSERT(channel->first_recycling == link->first_recycling);
+    CU_ASSERT(channel->last_recycling == link->last_recycling);
+
     /* iterate */
     channel = channel->next;
     link = link->next;
   }
 
+  /* check output recycling */
+  output = test_link_channel.master->output;
+  first_channel = test_link_channel.slave_0->output;
+  link = test_link_channel.slave_1->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    CU_ASSERT(output->first_recycling == first_channel->first_recycling);
+    CU_ASSERT(output->last_recycling == link->last_recycling);
+
+    output = output->next;
+    first_channel = first_channel->next;
+    link = link->next;
+  }  
+  
   /* setup link master to slave_2 */
   /* connect callback */
   channel = ags_channel_pad_nth(test_link_channel.master->input,
@@ -458,16 +524,289 @@ ags_audio_test_link_channel()
     CU_ASSERT(channel->link == link);
     CU_ASSERT(link->link == channel);
 
+    /* check recycling */
+    CU_ASSERT(channel->first_recycling == link->first_recycling);
+    CU_ASSERT(channel->last_recycling == link->last_recycling);
+
     /* iterate */
     channel = channel->next;
     link = link->next;
   }
+
+  /* check output recycling */
+  output = test_link_channel.master->output;
+  first_channel = test_link_channel.slave_0->output;
+  link = test_link_channel.slave_2->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    CU_ASSERT(output->first_recycling == first_channel->first_recycling);
+    CU_ASSERT(output->last_recycling == link->last_recycling);
+
+    output = output->next;
+    first_channel = first_channel->next;
+    link = link->next;
+  }  
 }
 
 void
 ags_audio_test_finalize_linked_channel()
 {
-  //TODO:JK: implement me
+  AgsChannel *channel, *link;
+  AgsChannel *output, *current, *last_channel;
+
+  guint i;
+
+  GError *error;
+  
+  /* audio - master */
+  test_finalize_linked_channel.master = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_finalize_linked_channel.master->flags |= AGS_AUDIO_ASYNC;
+  
+  ags_audio_set_audio_channels(test_finalize_linked_channel.master,
+			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS);
+  
+  ags_audio_set_pads(test_finalize_linked_channel.master,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_INPUT_PADS);
+  ags_audio_set_pads(test_finalize_linked_channel.master,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_OUTPUT_PADS);
+
+  /* audio - slave 0 */
+  test_finalize_linked_channel.slave_0 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_finalize_linked_channel.slave_0->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+						  AGS_AUDIO_ASYNC);
+  
+  ags_audio_set_audio_channels(test_finalize_linked_channel.slave_0,
+			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_AUDIO_CHANNELS);
+  
+  ags_audio_set_pads(test_finalize_linked_channel.slave_0,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_INPUT_PADS);
+  ags_audio_set_pads(test_finalize_linked_channel.slave_0,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_OUTPUT_PADS);
+
+  /* audio - slave 1 */
+  test_finalize_linked_channel.slave_1 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_finalize_linked_channel.slave_1->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+						  AGS_AUDIO_ASYNC);
+  
+  ags_audio_set_audio_channels(test_finalize_linked_channel.slave_1,
+			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_AUDIO_CHANNELS);
+  
+  ags_audio_set_pads(test_finalize_linked_channel.slave_1,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_INPUT_PADS);
+  ags_audio_set_pads(test_finalize_linked_channel.slave_1,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_OUTPUT_PADS);
+
+  /* audio - slave 2 */
+  test_finalize_linked_channel.slave_2 = ags_audio_new(AGS_SOUNDCARD(devout));
+  test_finalize_linked_channel.slave_2->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+						  AGS_AUDIO_ASYNC);
+  
+  ags_audio_set_audio_channels(test_finalize_linked_channel.slave_2,
+			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS);
+  
+  ags_audio_set_pads(test_finalize_linked_channel.slave_2,
+		     AGS_TYPE_INPUT,
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_INPUT_PADS);
+  ags_audio_set_pads(test_finalize_linked_channel.slave_2,
+		     AGS_TYPE_OUTPUT,
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_OUTPUT_PADS);
+
+  /* setup link master to slave_0 */
+  /* set link */
+  channel = test_finalize_linked_channel.master->input;
+  link = test_finalize_linked_channel.slave_0->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    error = NULL;
+    ags_channel_set_link(channel, link,
+			 &error);
+
+    /* iterate */
+    channel = channel->next;
+    link = link->next;
+  }
+
+  /* setup link master to slave_1 */
+  /* set link */
+  channel = ags_channel_pad_nth(test_finalize_linked_channel.master->input,
+				1);
+  link = test_finalize_linked_channel.slave_1->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    error = NULL;
+    ags_channel_set_link(channel, link,
+			 &error);
+
+    /* iterate */
+    channel = channel->next;
+    link = link->next;
+  }
+  
+  /* setup link master to slave_2 */
+  /* set link */
+  channel = ags_channel_pad_nth(test_finalize_linked_channel.master->input,
+				2);
+  link = test_finalize_linked_channel.slave_2->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    error = NULL;
+    ags_channel_set_link(channel, link,
+			 &error);
+    
+    /* iterate */
+    channel = channel->next;
+    link = link->next;
+  }
+
+  /* asserts */
+  /* unset link */
+  channel = test_finalize_linked_channel.master->input;
+
+  ags_audio_set_pads(test_finalize_linked_channel.slave_0,
+		     AGS_TYPE_INPUT,
+		     0);
+  ags_audio_set_pads(test_finalize_linked_channel.slave_0,
+		     AGS_TYPE_OUTPUT,
+		     0);
+
+  g_object_unref(test_finalize_linked_channel.slave_0);
+  
+  for(i = 0; i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS; i++){
+    /* assert link set */
+    CU_ASSERT(channel->link == NULL);
+
+    /* check recycling */
+    CU_ASSERT(channel->first_recycling == NULL);
+    CU_ASSERT(channel->last_recycling == NULL);
+
+    /* iterate */
+    channel = channel->next;
+  }
+
+  /* check output recycling */
+  output = test_finalize_linked_channel.master->output;
+  current = test_finalize_linked_channel.slave_1->output;
+  
+  for(i = 0; i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_AUDIO_CHANNELS;
+      i++){
+    CU_ASSERT(output->first_recycling == current->first_recycling);
+
+    output = output->next;
+    current = current->next;
+  }  
+
+  output = test_finalize_linked_channel.master->output;
+  last_channel = test_finalize_linked_channel.slave_2->output;
+  
+  for(i = 0; i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS;
+      i++){
+    CU_ASSERT(output->last_recycling == last_channel->last_recycling);
+
+    output = output->next;
+    last_channel = last_channel->next;
+  }  
+  
+  /* unset link */
+  channel = ags_channel_pad_nth(test_finalize_linked_channel.master->input,
+				1);
+  
+  ags_audio_set_pads(test_finalize_linked_channel.slave_1,
+		     AGS_TYPE_INPUT,
+		     0);
+  ags_audio_set_pads(test_finalize_linked_channel.slave_1,
+		     AGS_TYPE_OUTPUT,
+		     0);
+
+  g_object_unref(test_finalize_linked_channel.slave_1);
+  
+  for(i = 0; i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS; i++){
+    /* assert link set */
+    CU_ASSERT(channel->link == NULL);
+
+    /* check recycling */
+    CU_ASSERT(channel->first_recycling == NULL);
+    CU_ASSERT(channel->last_recycling == NULL);
+
+    /* iterate */
+    channel = channel->next;
+  }
+
+  /* check output recycling */
+  output = test_finalize_linked_channel.master->output;
+  last_channel = test_finalize_linked_channel.slave_2->output;
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    /* check recycling */
+    CU_ASSERT(output->first_recycling == last_channel->first_recycling);
+    CU_ASSERT(output->last_recycling == last_channel->last_recycling);
+
+    output = output->next;
+    last_channel = last_channel->next;
+  }  
+
+  /* unset link */
+  channel = ags_channel_pad_nth(test_finalize_linked_channel.master->input,
+				2);
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    /* assert link unset */
+    CU_ASSERT(channel->link == NULL);
+
+    /* check recycling */
+    CU_ASSERT(channel->first_recycling == NULL);
+    CU_ASSERT(channel->last_recycling == NULL);
+
+    /* iterate */
+    channel = channel->next;
+  }
+
+  /* check output recycling */
+  output = test_finalize_linked_channel.master->output;
+
+  ags_audio_set_pads(test_finalize_linked_channel.slave_2,
+		     AGS_TYPE_INPUT,
+		     0);
+  ags_audio_set_pads(test_finalize_linked_channel.slave_2,
+		     AGS_TYPE_OUTPUT,
+		     0);
+
+  g_object_unref(test_finalize_linked_channel.slave_2);
+  
+  for(i = 0;
+      i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS &&
+	i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS;
+      i++){
+    CU_ASSERT(output->first_recycling == NULL);
+    CU_ASSERT(output->last_recycling == NULL);
+
+    output = output->next;
+  }  
 }
 
 void
@@ -475,6 +814,7 @@ ags_audio_test_set_link_callback(AgsChannel *channel, AgsChannel *link,
 				 GError **error,
 				 AgsAudio *audio)
 {
+  //TODO:JK: implement me
 }
 
 int

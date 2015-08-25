@@ -1071,18 +1071,20 @@ ags_channel_finalize(GObject *gobject)
 
   AgsApplicationContext *application_context;
   
+  channel = AGS_CHANNEL(gobject);
+  
   application_context = ags_soundcard_get_application_context(channel->soundcard);
 
-  pthread_mutex_lock(application_context->mutex);
+  if(application_context != NULL){
+    pthread_mutex_lock(application_context->mutex);
   
-  mutex_manager = ags_mutex_manager_get_instance();
+    mutex_manager = ags_mutex_manager_get_instance();
 
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
+    ags_mutex_manager_remove(mutex_manager,
+			     gobject);
   
-  pthread_mutex_unlock(application_context->mutex);
-
-  channel = AGS_CHANNEL(gobject);
+    pthread_mutex_unlock(application_context->mutex);
+  }
 
   //FIXME:JK: wrong ref count
   if(channel->audio != NULL){
@@ -1196,9 +1198,10 @@ ags_channel_nth(AgsChannel *channel, guint nth)
     channel = channel->next;
   }
 
-  if((nth != 0 && i != nth) || channel == NULL)
+  if((nth != 0 && i != nth) || channel == NULL){
     g_message("ags_channel_nth:\n  nth channel does not exist\n  `- stopped @: i = %u; nth = %u\n\0", i, nth);
-
+  }
+  
   return(channel);
 }
 
@@ -1215,8 +1218,13 @@ ags_channel_nth(AgsChannel *channel, guint nth)
 AgsChannel*
 ags_channel_pad_first(AgsChannel *channel)
 {
-  while(channel->prev_pad != NULL)
+  if(channel == NULL){
+    return(NULL);
+  }
+  
+  while(channel->prev_pad != NULL){
     channel = channel->prev_pad;
+  }
 
   return(channel);
 }
@@ -1234,8 +1242,13 @@ ags_channel_pad_first(AgsChannel *channel)
 AgsChannel*
 ags_channel_pad_last(AgsChannel *channel)
 {
-  while(channel->next_pad != NULL)
+  if(channel == NULL){
+    return(NULL);
+  }
+  
+  while(channel->next_pad != NULL){
     channel = channel->next_pad;
+  }
 
   return(channel);
 }
@@ -2229,7 +2242,8 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 
     old_channel_link = NULL;
   }
-  
+
+  g_message("set link %x %x\0", channel, link);
   application_context = ags_soundcard_get_application_context(channel->soundcard);
 
   /* retrieve lock */

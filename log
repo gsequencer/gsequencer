@@ -6,790 +6,264 @@ make[2]: Nothing to be done for 'all'.
 make[2]: Leaving directory '/home/joelkraehemann/gsequencer/po'
 Making all in .
 make[2]: Entering directory '/home/joelkraehemann/gsequencer'
-gcc -DHAVE_CONFIG_H -I.    -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2  -g -O2 -MT libags_a-ags_turtle.o -MD -MP -MF .deps/libags_a-ags_turtle.Tpo -c -o libags_a-ags_turtle.o `test -f 'src/ags/lib/ags_turtle.c' || echo './'`src/ags/lib/ags_turtle.c
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_finalize’:
-src/ags/lib/ags_turtle.c:347:11: warning: unused variable ‘str’ [-Wunused-variable]
-   gchar **str;
+gcc -DHAVE_CONFIG_H -I.    -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2  -g -O2 -MT libags_audio_a-ags_audio.o -MD -MP -MF .deps/libags_audio_a-ags_audio.Tpo -c -o libags_audio_a-ags_audio.o `test -f 'src/ags/audio/ags_audio.c' || echo './'`src/ags/audio/ags_audio.c
+src/ags/audio/ags_audio.c: In function ‘ags_audio_init’:
+src/ags/audio/ags_audio.c:586:26: warning: assignment from incompatible pointer type
+   audio->playback_domain = ags_playback_domain_new();
+                          ^
+src/ags/audio/ags_audio.c:587:55: warning: assignment from incompatible pointer type
+   AGS_PLAYBACK_DOMAIN(audio->playback_domain)->domain = audio;
+                                                       ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_property’:
+src/ags/audio/ags_audio.c:661:33: warning: comparison of distinct pointer types lacks a cast
+       if(audio->playback_domain == playback_domain){
+                                 ^
+src/ags/audio/ags_audio.c:673:30: warning: assignment from incompatible pointer type
+       audio->playback_domain = playback_domain;
+                              ^
+src/ags/audio/ags_audio.c:688:9: warning: passing argument 2 of ‘ags_audio_add_notation’ from incompatible pointer type
+         notation);
+         ^
+In file included from src/ags/audio/ags_audio.c:20:0:
+./src/ags/audio/ags_audio.h:124:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsNotation *’
+ void ags_audio_add_notation(AgsAudio *audio,
+      ^
+src/ags/audio/ags_audio.c:703:11: warning: passing argument 2 of ‘ags_audio_add_automation’ from incompatible pointer type
+           automation);
            ^
-src/ags/lib/ags_turtle.c:346:14: warning: variable ‘turtle’ set but not used [-Wunused-but-set-variable]
-   AgsTurtle *turtle;
-              ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_directive’:
-src/ags/lib/ags_turtle.c:505:44: warning: unknown escape sequence: '\@'
-     static const char *prefix_id_pattern = "^(\@prefix|\"PREFIX\")\0";
-                                            ^
-src/ags/lib/ags_turtle.c:506:42: warning: unknown escape sequence: '\@'
-     static const char *base_id_pattern = "^(\@base|\"BASE\")\0";
-                                          ^
-src/ags/lib/ags_turtle.c:520:34: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
-     if(regexec(&prefix_id_regex, iter, max_matches, &match_arr, 0) == 0){
-                                  ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:520:53: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
-     if(regexec(&prefix_id_regex, iter, max_matches, &match_arr, 0) == 0){
-                                                     ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:525:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-directive\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:527:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "type\0",
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:528:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "prefix\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:550:34: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
-       if(regexec(&base_id_regex, iter, max_matches, &match_arr, 0) == 0){
-                                  ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:550:53: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
-       if(regexec(&base_id_regex, iter, max_matches, &match_arr, 0) == 0){
-                                                     ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:562:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-      "rdf-directive\0");
+In file included from src/ags/audio/ags_audio.c:20:0:
+./src/ags/audio/ags_audio.h:129:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsAutomation *’
+ void ags_audio_add_automation(AgsAudio *audio,
       ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:564:6: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-      "type\0",
-      ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:565:6: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-      "base\0");
-      ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:496:25: warning: unused variable ‘current’ [-Wunused-variable]
-     gchar *look_ahead, *current;
-                         ^
-src/ags/lib/ags_turtle.c:495:24: warning: unused variable ‘base_id’ [-Wunused-variable]
-     gchar *prefix_id, *base_id;
-                        ^
-src/ags/lib/ags_turtle.c:495:12: warning: unused variable ‘prefix_id’ [-Wunused-variable]
-     gchar *prefix_id, *base_id;
-            ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_triple’:
-src/ags/lib/ags_turtle.c:599:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-triple\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:614:16: warning: comparison between pointer and integer
-  if(look_ahead == '['){
-                ^
-src/ags/lib/ags_turtle.c:638:12: warning: assignment from incompatible pointer type
-       iter = index(look_ahead, '.') + 1;
-            ^
-src/ags/lib/ags_turtle.c:584:25: warning: unused variable ‘current’ [-Wunused-variable]
-     gchar *look_ahead, *current;
-                         ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_collection’:
-src/ags/lib/ags_turtle.c:656:9: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-         "rdf-collection\0");
-         ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:665:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
-     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
-                                                           ^
-src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
-   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+src/ags/audio/ags_audio.c:718:10: warning: passing argument 2 of ‘ags_audio_add_recall_id’ from incompatible pointer type
+          recall_id);
           ^
-src/ags/lib/ags_turtle.c:667:19: warning: comparison between pointer and integer
-     if(look_ahead == '('){
-                   ^
-src/ags/lib/ags_turtle.c:670:68: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
-       while((look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead)) != '\0'){
-                                                                    ^
-src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
-   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
-          ^
-src/ags/lib/ags_turtle.c:709:15: warning: assignment from incompatible pointer type
-    look_ahead = iter + 1;
-               ^
-src/ags/lib/ags_turtle.c:720:15: warning: assignment from incompatible pointer type
-    look_ahead = iter + 1;
-               ^
-src/ags/lib/ags_turtle.c:734:9: warning: assignment from incompatible pointer type
-    iter = look_ahead++;
-         ^
-src/ags/lib/ags_turtle.c:653:25: warning: variable ‘current’ set but not used [-Wunused-but-set-variable]
-     gchar *look_ahead, *current;
-                         ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_predicate_object_list’:
-src/ags/lib/ags_turtle.c:759:66: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
-     while((look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead)) != '\0'){
-                                                                  ^
-src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
-   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
-          ^
-src/ags/lib/ags_turtle.c:764:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-      "rdf-predicate-object-list\0");
+In file included from src/ags/audio/ags_audio.c:20:0:
+./src/ags/audio/ags_audio.h:134:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallID *’
+ void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
       ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:782:61: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
-       look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
-                                                             ^
-src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
-   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
-          ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_object_list’:
-src/ags/lib/ags_turtle.c:799:12: warning: variable ‘look_ahead’ set but not used [-Wunused-but-set-variable]
-     gchar *look_ahead;
-            ^
-src/ags/lib/ags_turtle.c:797:14: warning: variable ‘current_object_node’ set but not used [-Wunused-but-set-variable]
-     xmlNode *current_object_node;
-              ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_verb’:
-src/ags/lib/ags_turtle.c:828:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-      "rdf-verb\0");
+src/ags/audio/ags_audio.c:733:11: warning: passing argument 2 of ‘ags_audio_add_recycling_context’ from incompatible pointer type
+           recycling_context);
+           ^
+In file included from src/ags/audio/ags_audio.c:20:0:
+./src/ags/audio/ags_audio.h:137:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContext *’
+ void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
       ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:839:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-verb\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:843:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "verb\0",
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:844:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "a\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_subject’:
-src/ags/lib/ags_turtle.c:873:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
-     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
-                                                           ^
-src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
-   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
+src/ags/audio/ags_audio.c:748:10: warning: passing argument 2 of ‘ags_audio_add_recall_container’ from incompatible pointer type
+          recall_container);
           ^
-src/ags/lib/ags_turtle.c:910:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-subject\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:917:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-subject\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:924:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-subject\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:931:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-subject\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_predicate’:
-src/ags/lib/ags_turtle.c:945:12: warning: variable ‘look_ahead’ set but not used [-Wunused-but-set-variable]
-     gchar *look_ahead;
-            ^
-src/ags/lib/ags_turtle.c:943:14: warning: variable ‘iri_node’ set but not used [-Wunused-but-set-variable]
-     xmlNode *iri_node;
-              ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_object’:
-src/ags/lib/ags_turtle.c:977:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
-     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
-                                                           ^
-src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
-   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
-          ^
-src/ags/lib/ags_turtle.c:1003:2: warning: implicit declaration of function ‘ags_turtle_load_read_blank_node_property_list_node’ [-Wimplicit-function-declaration]
-  blank_node_property_list_node = ags_turtle_load_read_blank_node_property_list_node(&look_ahead);
-  ^
-src/ags/lib/ags_turtle.c:1003:32: warning: assignment makes pointer from integer without a cast
-  blank_node_property_list_node = ags_turtle_load_read_blank_node_property_list_node(&look_ahead);
-                                ^
-src/ags/lib/ags_turtle.c:1021:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-object\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1028:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-object\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1035:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-object\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1042:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-object\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1049:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-object\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_literal’:
-src/ags/lib/ags_turtle.c:1105:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-literal\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1107:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "type\0",
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1108:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "boolean\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1112:6: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
-      "true\0");
+In file included from src/ags/audio/ags_audio.c:20:0:
+./src/ags/audio/ags_audio.h:140:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
       ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNodeSetContent (xmlNodePtr cur,
-   ^
-src/ags/lib/ags_turtle.c:1115:6: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
-      "false\0");
-      ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNodeSetContent (xmlNodePtr cur,
-   ^
-src/ags/lib/ags_turtle.c:1120:40: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
-     if(regexec(&integer_literal_regex, iter, max_matches, &match_arr, 0) == 0){
-                                        ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1120:59: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
-     if(regexec(&integer_literal_regex, iter, max_matches, &match_arr, 0) == 0){
-                                                           ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1122:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-literal\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1124:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "type\0",
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1125:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "integer\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1128:4: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
-    g_strndup(literal,
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
-   xmlNodeSetContent (xmlNodePtr cur,
-   ^
-src/ags/lib/ags_turtle.c:1133:40: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
-     if(regexec(&decimal_literal_regex, iter, max_matches, &match_arr, 0) == 0){
-                                        ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1133:59: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
-     if(regexec(&decimal_literal_regex, iter, max_matches, &match_arr, 0) == 0){
-                                                           ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1135:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-literal\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1137:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "type\0",
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1138:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "decimal\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1141:4: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
-    g_strndup(literal,
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
-   xmlNodeSetContent (xmlNodePtr cur,
-   ^
-src/ags/lib/ags_turtle.c:1146:39: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
-     if(regexec(&double_literal_regex, iter, max_matches, &match_arr, 0) == 0){
-                                       ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1146:58: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
-     if(regexec(&double_literal_regex, iter, max_matches, &match_arr, 0) == 0){
-                                                          ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1148:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-literal\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1150:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "type\0",
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1151:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "double\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1154:4: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
-    g_strndup(literal,
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
-   xmlNodeSetContent (xmlNodePtr cur,
-   ^
-src/ags/lib/ags_turtle.c:1159:51: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
-     if(regexec(&string_literal_double_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
-                                                   ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1159:70: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
-     if(regexec(&string_literal_double_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
-                                                                      ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1160:51: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
-        regexec(&string_literal_single_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
-                                                   ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1160:70: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
-        regexec(&string_literal_single_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
-                                                                      ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1161:56: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
-        regexec(&string_literal_long_double_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
-                                                        ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1161:75: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
-        regexec(&string_literal_long_double_quot_regex, iter, max_matches, &match_arr, 0) == 0 ||
-                                                                           ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1162:56: warning: passing argument 2 of ‘regexec’ from incompatible pointer type
-        regexec(&string_literal_long_single_quot_regex, iter, max_matches, &match_arr, 0) == 0){
-                                                        ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘const char * restrict’ but argument is of type ‘gchar **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1162:75: warning: passing argument 4 of ‘regexec’ from incompatible pointer type
-        regexec(&string_literal_long_single_quot_regex, iter, max_matches, &match_arr, 0) == 0){
-                                                                           ^
-In file included from src/ags/lib/ags_turtle.c:28:0:
-/usr/include/regex.h:566:12: note: expected ‘struct regmatch_t * restrict’ but argument is of type ‘struct regmatch_t **’
- extern int regexec (const regex_t *__restrict __preg,
-            ^
-src/ags/lib/ags_turtle.c:1164:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-literal\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1166:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "type\0",
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1167:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "string\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1170:4: warning: pointer targets in passing argument 2 of ‘xmlNodeSetContent’ differ in signedness [-Wpointer-sign]
-    g_strndup(literal,
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:1059:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
-   xmlNodeSetContent (xmlNodePtr cur,
-   ^
-src/ags/lib/ags_turtle.c:1082:24: warning: unused variable ‘string_literal_long_single_quot_pattern’ [-Wunused-variable]
-     static const char *string_literal_long_single_quot_pattern = "^('''(('|'')?([^'\\]|.))*''')\0";
-                        ^
-src/ags/lib/ags_turtle.c:1081:24: warning: unused variable ‘string_literal_long_double_quot_pattern’ [-Wunused-variable]
-     static const char *string_literal_long_double_quot_pattern = "^(\"\"\"((\"|\"\")?([^'\\]|.)*\"\"\")\0";
-                        ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_blank_node_property_list’:
-src/ags/lib/ags_turtle.c:1185:5: error: ‘look_ahead’ undeclared (first use in this function)
-     look_ahead = *iter;
-     ^
-src/ags/lib/ags_turtle.c:1185:5: note: each undeclared identifier is reported only once for each function it appears in
-src/ags/lib/ags_turtle.c:1191:7: warning: implicit declaration of function ‘ags_turtle_load_read_predicate_object_list_node’ [-Wimplicit-function-declaration]
-       predicate_object_list_node = ags_turtle_load_read_predicate_object_list_node(&look_ahead);
+src/ags/audio/ags_audio.c:763:7: warning: passing argument 2 of ‘ags_audio_add_recall’ from incompatible pointer type
+       recall,
        ^
-src/ags/lib/ags_turtle.c:1195:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-      "rdf-blank-node-property-list\0");
+In file included from src/ags/audio/ags_audio.c:20:0:
+./src/ags/audio/ags_audio.h:143:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
+ void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
       ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_iri’:
-src/ags/lib/ags_turtle.c:1216:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
-     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
-                                                           ^
-src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
-   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
-          ^
-src/ags/lib/ags_turtle.c:1237:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-iri\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1245:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "iriref\0",
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1246:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    iriref);
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_pname’:
-src/ags/lib/ags_turtle.c:1263:59: warning: passing argument 1 of ‘ags_turtle_load_skip_comments_and_blanks’ from incompatible pointer type
-     look_ahead = ags_turtle_load_skip_comments_and_blanks(look_ahead);
-                                                           ^
-src/ags/lib/ags_turtle.c:435:10: note: expected ‘gchar **’ but argument is of type ‘gchar *’
-   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
-          ^
-src/ags/lib/ags_turtle.c:184:42: warning: comparison between pointer and integer
- #define rdf_is_percent(str, endptr) (str == '%' &&   \
-                                          ^
-src/ags/lib/ags_turtle.c:182:34: note: in expansion of macro ‘rdf_is_percent’
- #define rdf_is_plx(str, endptr) (rdf_is_percent(str, endptr) || \
-                                  ^
-src/ags/lib/ags_turtle.c:172:11: note: in expansion of macro ‘rdf_is_plx’
-           rdf_is_plx(str, endptr))
-           ^
-src/ags/lib/ags_turtle.c:68:11: note: in expansion of macro ‘rdf_is_pn_local’
-           rdf_is_pn_local(str, endptr))
-           ^
-src/ags/lib/ags_turtle.c:1269:4: note: in expansion of macro ‘rdf_is_pname_ln’
-    rdf_is_pname_ln(look_ahead, &(buffer[sb->st_size]))){
-    ^
-src/ags/lib/ags_turtle.c:185:17: warning: comparison between pointer and integer
-          str[2] < endptr &&   \
+src/ags/audio/ags_audio.c:779:7: warning: passing argument 2 of ‘ags_audio_add_recall’ from incompatible pointer type
+       recall,
+       ^
+In file included from src/ags/audio/ags_audio.c:20:0:
+./src/ags/audio/ags_audio.h:143:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
+ void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
+      ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_flags_set_recycling_parameter’:
+src/ags/audio/ags_audio.c:1237:31: warning: unused variable ‘recycling_next’ [-Wunused-variable]
+     AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
+                               ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_flags_add_recycling_task’:
+src/ags/audio/ags_audio.c:1297:15: warning: assignment from incompatible pointer type
+     main_loop = application_context->main_loop;
+               ^
+src/ags/audio/ags_audio.c:1298:17: warning: assignment from incompatible pointer type
+     task_thread = ags_thread_find_type(main_loop,
                  ^
-src/ags/lib/ags_turtle.c:182:34: note: in expansion of macro ‘rdf_is_percent’
- #define rdf_is_plx(str, endptr) (rdf_is_percent(str, endptr) || \
-                                  ^
-src/ags/lib/ags_turtle.c:172:11: note: in expansion of macro ‘rdf_is_plx’
-           rdf_is_plx(str, endptr))
-           ^
-src/ags/lib/ags_turtle.c:68:11: note: in expansion of macro ‘rdf_is_pn_local’
-           rdf_is_pn_local(str, endptr))
-           ^
-src/ags/lib/ags_turtle.c:1269:4: note: in expansion of macro ‘rdf_is_pname_ln’
-    rdf_is_pname_ln(look_ahead, &(buffer[sb->st_size]))){
-    ^
-src/ags/lib/ags_turtle.c:1275:4: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-    "rdf-pname\0");
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1281:4: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    "pname-ns\0",
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1282:4: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-    pname_ns);
-    ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load_read_blank_node’:
-src/ags/lib/ags_turtle.c:1312:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-      "rdf-blank-node\0");
-      ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1314:6: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-      "label\0",
-      ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-src/ags/lib/ags_turtle.c:1315:6: warning: pointer targets in passing argument 3 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-      g_strndup(blank_node_start,
-      ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘gchar *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-In file included from /usr/include/glib-2.0/glib.h:62:0,
-                 from ./src/ags/lib/ags_turtle.h:22,
-                 from src/ags/lib/ags_turtle.c:19:
-src/ags/lib/ags_turtle.c:1322:14: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
-              "label\0"));
+src/ags/audio/ags_audio.c:1292:28: warning: unused variable ‘current’ [-Wunused-variable]
+     AgsThread *main_loop, *current;
+                            ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_unset_flags_set_recycling_parameter’:
+src/ags/audio/ags_audio.c:1359:31: warning: unused variable ‘recycling_next’ [-Wunused-variable]
+     AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
+                               ^
+src/ags/audio/ags_audio.c:1359:19: warning: unused variable ‘recycling’ [-Wunused-variable]
+     AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
+                   ^
+src/ags/audio/ags_audio.c:1358:17: warning: unused variable ‘channel’ [-Wunused-variable]
+     AgsChannel *channel, *start_channel, *end_channel;
+                 ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_unset_flags_add_recycling_task’:
+src/ags/audio/ags_audio.c:1399:15: warning: assignment from incompatible pointer type
+     main_loop = application_context->main_loop;
+               ^
+src/ags/audio/ags_audio.c:1400:17: warning: assignment from incompatible pointer type
+     task_thread = ags_thread_find_type(main_loop,
+                 ^
+src/ags/audio/ags_audio.c:1394:28: warning: unused variable ‘current’ [-Wunused-variable]
+     AgsThread *main_loop, *current;
+                            ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_audio_channels_shrink_zero’:
+src/ags/audio/ags_audio.c:1578:36: warning: unused variable ‘next_recycling’ [-Wunused-variable]
+     AgsRecycling *prev_recycling, *next_recycling;
+                                    ^
+src/ags/audio/ags_audio.c:1578:19: warning: unused variable ‘prev_recycling’ [-Wunused-variable]
+     AgsRecycling *prev_recycling, *next_recycling;
+                   ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_audio_channels_shrink’:
+src/ags/audio/ags_audio.c:1621:19: warning: unused variable ‘recycling’ [-Wunused-variable]
+     AgsRecycling *recycling;
+                   ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_audio_channels_grow_notation’:
+src/ags/audio/ags_audio.c:1711:48: warning: passing argument 1 of ‘ags_notation_new’ from incompatible pointer type
+       list->data = (gpointer) ags_notation_new(audio,
+                                                ^
+In file included from ./src/ags/audio/ags_channel.h:29:0,
+                 from ./src/ags/audio/ags_audio.h:26,
+                 from src/ags/audio/ags_audio.c:20:
+./src/ags/audio/ags_notation.h:149:14: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsAudio *’
+ AgsNotation* ags_notation_new(GObject *audio,
               ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlGetProp  (const xmlNode *node,
-   ^
-src/ags/lib/ags_turtle.c:1343:6: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-      "rdf-blank-node\0");
-      ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c:1345:6: warning: pointer targets in passing argument 2 of ‘xmlNewProp’ differ in signedness [-Wpointer-sign]
-      "anon\0",
-      ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:789:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewProp  (xmlNodePtr node,
-   ^
-In file included from /usr/include/glib-2.0/glib.h:62:0,
-                 from ./src/ags/lib/ags_turtle.h:22,
-                 from src/ags/lib/ags_turtle.c:19:
-src/ags/lib/ags_turtle.c:1352:13: warning: pointer targets in passing argument 2 of ‘xmlGetProp’ differ in signedness [-Wpointer-sign]
-             "anon\0"));
+src/ags/audio/ags_audio.c: In function ‘ags_audio_real_set_audio_channels’:
+src/ags/audio/ags_audio.c:1796:16: warning: assignment from incompatible pointer type
+       playback = g_list_last(playback_domain->playback);
+                ^
+src/ags/audio/ags_audio.c:1775:17: warning: unused variable ‘current’ [-Wunused-variable]
+     AgsChannel *current;
+                 ^
+src/ags/audio/ags_audio.c:1446:10: warning: unused variable ‘list’ [-Wunused-variable]
+   GList *list;
+          ^
+src/ags/audio/ags_audio.c:1445:12: warning: unused variable ‘parent’ [-Wunused-variable]
+   GObject *parent; // of recycling
+            ^
+src/ags/audio/ags_audio.c:1443:44: warning: variable ‘input_pad_last’ set but not used [-Wunused-but-set-variable]
+   AgsChannel *channel, *prev_pad, *input, *input_pad_last;
+                                            ^
+src/ags/audio/ags_audio.c:1443:25: warning: unused variable ‘prev_pad’ [-Wunused-variable]
+   AgsChannel *channel, *prev_pad, *input, *input_pad_last;
+                         ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_pads_grow’:
+src/ags/audio/ags_audio.c:1937:12: warning: unused variable ‘recall_id’ [-Wunused-variable]
+     GList *recall_id;
+            ^
+src/ags/audio/ags_audio.c:1935:31: warning: unused variable ‘last_recycling’ [-Wunused-variable]
+     AgsRecycling *recycling, *last_recycling;
+                               ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_pads_shrink_zero’:
+src/ags/audio/ags_audio.c:2080:13: warning: unused variable ‘error’ [-Wunused-variable]
+     GError *error;
              ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:1028:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlGetProp  (const xmlNode *node,
-   ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_load’:
-src/ags/lib/ags_turtle.c:1386:21: warning: pointer targets in passing argument 1 of ‘xmlNewDoc’ differ in signedness [-Wpointer-sign]
-     doc = xmlNewDoc("1.0\0");
-                     ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:779:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewDoc  (const xmlChar *version);
-   ^
-src/ags/lib/ags_turtle.c:1387:32: warning: pointer targets in passing argument 2 of ‘xmlNewNode’ differ in signedness [-Wpointer-sign]
-   root_node = xmlNewNode(NULL, "rdf-turtle\0");
-                                ^
-In file included from ./src/ags/lib/ags_turtle.h:25:0,
-                 from src/ags/lib/ags_turtle.c:19:
-/usr/include/libxml2/libxml/tree.h:836:3: note: expected ‘const xmlChar *’ but argument is of type ‘char *’
-   xmlNewNode  (xmlNsPtr ns,
-   ^
-src/ags/lib/ags_turtle.c: In function ‘ags_turtle_new’:
-src/ags/lib/ags_turtle.c:1409:11: warning: unused variable ‘str’ [-Wunused-variable]
-   gchar **str;
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_pads_alloc_notation’:
+src/ags/audio/ags_audio.c:2136:48: warning: passing argument 1 of ‘ags_notation_new’ from incompatible pointer type
+       list->data = (gpointer) ags_notation_new(audio,
+                                                ^
+In file included from ./src/ags/audio/ags_channel.h:29:0,
+                 from ./src/ags/audio/ags_audio.h:26,
+                 from src/ags/audio/ags_audio.c:20:
+./src/ags/audio/ags_notation.h:149:14: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsAudio *’
+ AgsNotation* ags_notation_new(GObject *audio,
+              ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_real_set_pads’:
+src/ags/audio/ags_audio.c:2302:7: warning: implicit declaration of function ‘ags_audio_set_pads_unlink_zero’ [-Wimplicit-function-declaration]
+       ags_audio_set_pads_unlink_zero(channel);
+       ^
+src/ags/audio/ags_audio.c:2316:37: warning: passing argument 1 of ‘ags_channel_pad_nth’ makes pointer from integer without a cast
+       channel = ags_channel_pad_nth(pads);
+                                     ^
+In file included from ./src/ags/audio/ags_audio.h:26:0,
+                 from src/ags/audio/ags_audio.c:20:
+./src/ags/audio/ags_channel.h:129:13: note: expected ‘struct AgsChannel *’ but argument is of type ‘guint’
+ AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
+             ^
+src/ags/audio/ags_audio.c:2316:17: error: too few arguments to function ‘ags_channel_pad_nth’
+       channel = ags_channel_pad_nth(pads);
+                 ^
+In file included from ./src/ags/audio/ags_audio.h:26:0,
+                 from src/ags/audio/ags_audio.c:20:
+./src/ags/audio/ags_channel.h:129:13: note: declared here
+ AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
+             ^
+src/ags/audio/ags_audio.c:2318:7: warning: implicit declaration of function ‘ags_audio_set_pads_unlink’ [-Wimplicit-function-declaration]
+       ags_audio_set_pads_unlink(channel);
+       ^
+src/ags/audio/ags_audio.c:2326:11: warning: assignment from incompatible pointer type
+  playback = g_list_last(playback_domain->playback);
            ^
-Makefile:2603: recipe for target 'libags_a-ags_turtle.o' failed
-make[2]: *** [libags_a-ags_turtle.o] Error 1
+src/ags/audio/ags_audio.c:2369:40: warning: unused variable ‘default_recall_id’ [-Wunused-variable]
+       AgsRecallID *current_recall_id, *default_recall_id;
+                                        ^
+src/ags/audio/ags_audio.c:2532:11: warning: passing argument 2 of ‘ags_audio_add_recycling_context’ from incompatible pointer type
+           recycling_context);
+           ^
+In file included from src/ags/audio/ags_audio.c:20:0:
+./src/ags/audio/ags_audio.h:137:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContext *’
+ void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
+      ^
+src/ags/audio/ags_audio.c:1872:60: warning: variable ‘update_async_link’ set but not used [-Wunused-but-set-variable]
+   gboolean alloc_recycling, link_recycling, set_sync_link, update_async_link, set_async_link;
+                                                            ^
+src/ags/audio/ags_audio.c:1868:10: warning: unused variable ‘playback’ [-Wunused-variable]
+   GList *playback;
+          ^
+src/ags/audio/ags_audio.c:1864:33: warning: unused variable ‘prev_pad’ [-Wunused-variable]
+   AgsChannel *start, *channel, *prev_pad, *input, *input_pad_last;
+                                 ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_init_run’:
+src/ags/audio/ags_audio.c:2646:5: warning: ‘return’ with no value, in function returning non-void
+     return;
+     ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_duplicate_recall’:
+src/ags/audio/ags_audio.c:3377:7: warning: passing argument 2 of ‘ags_audio_add_recall’ from incompatible pointer type
+       copy,
+       ^
+src/ags/audio/ags_audio.c:3163:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
+ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_resolve_recall’:
+src/ags/audio/ags_audio.c:3447:71: warning: passing argument 2 of ‘ags_recall_find_recycling_context’ from incompatible pointer type
+   while((list_recall = ags_recall_find_recycling_context(list_recall, recall_id->recycling_context)) != NULL){
+                                                                       ^
+In file included from ./src/ags/audio/ags_channel.h:27:0,
+                 from ./src/ags/audio/ags_audio.h:26,
+                 from src/ags/audio/ags_audio.c:20:
+./src/ags/audio/ags_recall.h:207:8: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContext *’
+ GList* ags_recall_find_recycling_context(GList *recall, GObject *recycling_context);
+        ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_init_recall’:
+src/ags/audio/ags_audio.c:3543:2: warning: implicit declaration of function ‘ags_dynamic_connectable_connect_dynamic’ [-Wimplicit-function-declaration]
+  ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
+  ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_is_playing’:
+src/ags/audio/ags_audio.c:3577:16: warning: unused variable ‘recall_id’ [-Wunused-variable]
+   AgsRecallID *recall_id;
+                ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_remove’:
+src/ags/audio/ags_audio.c:3904:8: warning: passing argument 2 of ‘ags_audio_remove_recall’ from incompatible pointer type
+        recall,
+        ^
+src/ags/audio/ags_audio.c:3210:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
+ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_audio.c: In function ‘ags_audio_set_soundcard’:
+src/ags/audio/ags_audio.c:4063:4: warning: implicit declaration of function ‘ags_audio_thread_new’ [-Wimplicit-function-declaration]
+    AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
+    ^
+src/ags/audio/ags_audio.c:4063:65: warning: assignment makes pointer from integer without a cast
+    AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
+                                                                 ^
+src/ags/audio/ags_audio.c:4068:65: warning: assignment makes pointer from integer without a cast
+    AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
+                                                                 ^
+src/ags/audio/ags_audio.c:4073:65: warning: assignment makes pointer from integer without a cast
+    AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
+                                                                 ^
+Makefile:3536: recipe for target 'libags_audio_a-ags_audio.o' failed
+make[2]: *** [libags_audio_a-ags_audio.o] Error 1
 make[2]: Leaving directory '/home/joelkraehemann/gsequencer'
-Makefile:8204: recipe for target 'all-recursive' failed
+Makefile:8759: recipe for target 'all-recursive' failed
 make[1]: *** [all-recursive] Error 1
 make[1]: Leaving directory '/home/joelkraehemann/gsequencer'
-Makefile:1966: recipe for target 'all' failed
+Makefile:2323: recipe for target 'all' failed
 make: *** [all] Error 2
