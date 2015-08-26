@@ -707,8 +707,13 @@ ags_channel_nth(AgsChannel *channel, guint nth)
 AgsChannel*
 ags_channel_pad_first(AgsChannel *channel)
 {
-  while(channel->prev_pad != NULL)
+  if(channel == NULL){
+    return(NULL);
+  }
+  
+  while(channel->prev_pad != NULL){
     channel = channel->prev_pad;
+  }
 
   return(channel);
 }
@@ -726,8 +731,13 @@ ags_channel_pad_first(AgsChannel *channel)
 AgsChannel*
 ags_channel_pad_last(AgsChannel *channel)
 {
-  while(channel->next_pad != NULL)
+  if(channel == NULL){
+    return(NULL);
+  }
+  
+  while(channel->next_pad != NULL){
     channel = channel->next_pad;
+  }
 
   return(channel);
 }
@@ -1075,7 +1085,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
   pthread_mutex_t *channel_mutex, *link_mutex;
 
   GError *this_error;
-  
   if(channel == NULL &&
      link == NULL){
     return;
@@ -1095,8 +1104,16 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     old_channel_link = NULL;
   }
 
+  if(link != NULL){
+    old_link_link = link->link;
+  }else{
+    old_link_link = NULL;
+  }
+  
+  g_message("set link %x %x\0", channel, link);
+
   /* retrieve lock */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(&ags_application_mutex);
   
   mutex_manager = ags_mutex_manager_get_instance();
 
@@ -1105,7 +1122,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 
   link_mutex = ags_mutex_manager_lookup(mutex_manager,
 					(GObject *) link);
-  
 
   if(channel_mutex != NULL){
     pthread_mutex_lock(channel_mutex);
@@ -1168,8 +1184,8 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	    pthread_mutex_unlock(channel_mutex);
 	  }
   
-	  pthread_mutex_unlock(&(ags_application_mutex));
-
+	  pthread_mutex_unlock(&ags_application_mutex);
+	  
 	  return;
 	}
 
@@ -1190,9 +1206,25 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     }
   }
 
+  /* set link */
+  if(channel != NULL){
+    channel->link = link;
+  }  
+
+  if(link != NULL){
+    link->link = channel;
+
+    if(channel != NULL){
+      ags_channel_set_link(link,
+			   channel,
+			   &this_error);
+    }
+  }
+
   /* set old input/output to NULL */
-  if(old_link_link != NULL &&
-     channel != NULL){
+  if(old_link_link != NULL){
+    old_link_link->link = NULL;
+    
     this_error = NULL;
 
     ags_channel_set_link(old_link_link,
@@ -1201,22 +1233,14 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
   }
 
   /* set old input/output to NULL */
-  if(old_channel_link != NULL &&
-     link != NULL){
+  if(old_channel_link != NULL){
+    old_channel_link->link = NULL;
+      
     this_error = NULL;
     
     ags_channel_set_link(old_channel_link,
 			 NULL,
 			 &this_error);
-  }
-
-  /* set link */
-  if(channel != NULL){
-    channel->link = link;
-  }  
-
-  if(link != NULL){
-    link->link = channel;
   }
 
   /* set recycling */
@@ -1225,8 +1249,18 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
       first_recycling = channel->first_recycling;
       last_recycling = channel->last_recycling;
 
-      ags_channel_set_recycling(link,
-				first_recycling, last_recycling,
+      if(link != NULL){
+	ags_channel_set_recycling(link,
+				  first_recycling, last_recycling,
+				  TRUE, TRUE);
+      }
+      
+      ags_channel_set_recycling(old_channel_link,
+				NULL, NULL,
+				TRUE, TRUE);
+
+      ags_channel_set_recycling(old_link_link,
+				NULL, NULL,
 				TRUE, TRUE);
     }else{
       if(link != NULL){
@@ -1235,6 +1269,14 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 
 	ags_channel_set_recycling(channel,
 				  first_recycling, last_recycling,
+				  TRUE, TRUE);
+
+	ags_channel_set_recycling(old_channel_link,
+				  NULL, NULL,
+				  TRUE, TRUE);
+
+      	ags_channel_set_recycling(old_link_link,
+				  NULL, NULL,
 				  TRUE, TRUE);
       }else{
 	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags))){
@@ -1247,20 +1289,46 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	  ags_channel_set_recycling(channel,
 				    first_recycling, last_recycling,
 				    TRUE, TRUE);
+
+	  //	  ags_channel_set_recycling(old_channel_link,
+	  //			    NULL, NULL,
+	  //			    TRUE, TRUE);
+	}else{
+	  ags_channel_set_recycling(channel,
+				    NULL, NULL,
+				    TRUE, TRUE);
+
+	  //	  ags_channel_set_recycling(old_channel_link,
+	  //			    NULL, NULL,
+	  //			    TRUE, TRUE);
 	}
       }
     }
   }else{
     if(AGS_IS_INPUT(link)){
-      first_recycling = g_object_new(AGS_TYPE_RECYCLING,
-				     "channel\0", link,
-				     "devout\0", AGS_AUDIO(link->audio)->devout,
-				     NULL);
-      last_recycling = first_recycling;
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(link->audio)->flags))){
+	first_recycling = g_object_new(AGS_TYPE_RECYCLING,
+				       "channel\0", link,
+				       "devout\0", AGS_AUDIO(link->audio)->devout,
+				       NULL);
+	last_recycling = first_recycling;
+      
+	ags_channel_set_recycling(link,
+				  first_recycling, last_recycling,
+				  TRUE, TRUE);
 
-      ags_channel_set_recycling(link,
-				first_recycling, last_recycling,
-				TRUE, TRUE);
+	ags_channel_set_recycling(old_link_link,
+				  NULL, NULL,
+				  TRUE, TRUE);
+      }else{
+	ags_channel_set_recycling(link,
+				  NULL, NULL,
+				  TRUE, TRUE);
+
+	//	ags_channel_set_recycling(old_link_link,
+	//			  NULL, NULL,
+	//			  TRUE, TRUE);
+      }
     }
   }
   
@@ -1277,7 +1345,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     pthread_mutex_unlock(channel_mutex);
   }
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(&ags_application_mutex);
 }
 
 /**
@@ -1308,7 +1376,8 @@ ags_channel_set_recycling(AgsChannel *channel,
   AgsRecyclingContainer *recycling_container, *old_recycling_container;
   
   GList *recall_id;
-  
+
+  guint complete_level_first, complete_level_last;
   gboolean replace_first, replace_last;
   gboolean find_prev, find_next;
   gboolean change_old_last, change_old_first;
@@ -1349,29 +1418,40 @@ ags_channel_set_recycling(AgsChannel *channel,
  
   gboolean ags_channel_set_recycling_recursive_input(AgsChannel *input){
     AgsChannel *nth_channel_prev, *nth_channel_next;
+    AgsChannel *tmp0, *tmp1;
+    
+    if(input == NULL){
+      return(TRUE);
+    }
 
+    /* set recycling */
     if(replace_first){
-      /* set recycling */
       input->first_recycling = replace_with_first_recycling;
     }
 
     if(replace_last){
-      /* set recycling */
       input->last_recycling = replace_with_last_recycling;
     }
-
+    
+    /* search for neighboor recyclings */
     if((AGS_AUDIO_ASYNC & (AGS_AUDIO(input->audio)->flags)) != 0){
-      /* search for neighboor recyclings */
       if(find_prev){
 	nth_channel_prev = ags_channel_find_prev_recycling(input);
 	
 	if(nth_channel_prev != NULL){
-	  if(replace_first){
-	    found_prev = audio;
-	    prev_channel = nth_channel_prev;
-	  }
-
+	  g_message("found\0");
+	  
+	  find_prev = FALSE;
 	  replace_first = FALSE;
+
+	  replace_with_first_recycling = nth_channel_prev;
+
+	  if(complete_level_first == 0){
+	    found_prev = audio;
+	    prev_channel = nth_channel_prev;	    
+	    
+	    complete_level_first = 1;
+	  }
 	}
       }
 
@@ -1379,42 +1459,39 @@ ags_channel_set_recycling(AgsChannel *channel,
 	nth_channel_next = ags_channel_find_next_recycling(input);
 
 	if(nth_channel_next != NULL){
-	  if(replace_last){
+	  find_next = FALSE;
+	  replace_last = FALSE;
+
+	  replace_with_last_recycling = nth_channel_next;
+
+	  if(complete_level_last == 0){
 	    found_next = audio;
 	    next_channel = nth_channel_next;
+	    
+	    complete_level_last = 1;
 	  }
-
-	  replace_last = FALSE;
 	}
-      }
-
-      /* check if there's still a need for finding neighboor recyclings */
-      if(!replace_first)
-	if(!replace_last){
-	  find_next = FALSE;
-	  find_prev = FALSE;
-
-	  return(TRUE);
-	}else{
-	  if(first_recycling == NULL){
-	    /* reset to NULL */
-	    replace_with_last_recycling = nth_channel_prev->last_recycling;
-	  }else
-	    find_prev = FALSE;
-	}
-    }else if(!replace_last){
-      if(first_recycling == NULL){
-	/* reset to NULL */
-	replace_with_first_recycling = nth_channel_next->first_recycling;
-      }else{
-	find_next = FALSE;
       }
     }
-
-    return(FALSE);
+	      
+    if(!replace_first && !replace_last){
+      return(TRUE);
+    }else{
+      return(FALSE);
+    }
   }
   
   void ags_channel_set_recycling_recursive_output(AgsChannel *output){
+    AgsAudio *audio;
+    AgsChannel *nth_channel_prev, *nth_channel_next;
+    AgsChannel *input;
+
+    if(output == NULL){
+      return;
+    }
+
+    audio = AGS_AUDIO(output->audio);
+    
     /* update input AgsRecallIDs */
     //TODO:JK: check for compliance
     //    ags_recall_id_reset_recycling(output->recall_id,
@@ -1422,11 +1499,39 @@ ags_channel_set_recycling(AgsChannel *channel,
     //				  replace_with_first_recycling, replace_with_last_recycling);
 
     if(replace_first){
-      output->first_recycling = replace_with_first_recycling;
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0 &&
+	 replace_with_first_recycling == NULL){
+	input = ags_channel_nth(audio->input,
+				output->audio_channel);
+	
+	nth_channel_next = ags_channel_find_next_recycling(input);
+
+	if(nth_channel_next != NULL){
+	  output->first_recycling = nth_channel_next->first_recycling;
+	}else{
+	  output->first_recycling = NULL;
+	}
+      }else{
+	output->first_recycling = replace_with_first_recycling;
+      }
     }
     
     if(replace_last){
-      output->last_recycling = replace_with_last_recycling;
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0 &&
+	 replace_with_last_recycling == NULL){
+	input = ags_channel_nth(audio->input,
+				output->audio_channel);
+	
+	nth_channel_prev = ags_channel_find_prev_recycling(input);
+
+      	if(nth_channel_prev != NULL){
+	  output->last_recycling = nth_channel_prev->last_recycling;
+	}else{
+	  output->last_recycling = NULL;
+	}
+      }else{
+	output->last_recycling = replace_with_last_recycling;
+      }
     }
     
     if(output->link != NULL){
@@ -1438,6 +1543,10 @@ ags_channel_set_recycling(AgsChannel *channel,
     AgsAudio *audio;
     AgsChannel *output;
     gboolean completed;
+
+    if(input == NULL){
+      return;
+    }
     
     audio = AGS_AUDIO(input->audio);
 
@@ -1462,46 +1571,24 @@ ags_channel_set_recycling(AgsChannel *channel,
   
   void ags_channel_set_recycling_emit_changed_input(AgsChannel *input){
     AgsChannel *nth_channel;
-    AgsAudio *audio;
 
-    audio = AGS_AUDIO(input->audio);
-
-    if(audio == found_prev){
-      change_old_first = TRUE;
+    if(input == NULL){
+      return;
     }
-
-    if(audio == found_next){
-      change_old_last = TRUE;
-    }
-
+    
     /* emit changed */
     ags_channel_recycling_changed(input,
 				  changed_old_first_recycling, changed_old_last_recycling,
 				  input->first_recycling, input->last_recycling,
 				  old_first_recycling, old_last_recycling,
 				  first_recycling, last_recycling);
-
-    /* change will affect output */
-    if(change_old_first){
-      nth_channel = ags_channel_first_with_recycling(input);
-
-      if(nth_channel == NULL){
-	changed_old_first_recycling = NULL;
-	changed_old_last_recycling = NULL;
-	return;
-      }
-
-      changed_old_first_recycling = nth_channel->first_recycling;
-    }
-
-    if(change_old_last){
-      nth_channel = ags_channel_last_with_recycling(input);
-      
-      changed_old_last_recycling = nth_channel->last_recycling;
-    }
   }
 
   void ags_channel_set_recycling_emit_changed_output(AgsChannel *output){
+    if(output == NULL){
+      return;
+    }
+
     ags_channel_recycling_changed(output,
 				  changed_old_first_recycling, changed_old_last_recycling,
 				  output->first_recycling, output->last_recycling,
@@ -1520,6 +1607,10 @@ ags_channel_set_recycling(AgsChannel *channel,
   gboolean ags_channel_set_recycling_emit_changed(AgsChannel *input){
     AgsAudio *audio;
     AgsChannel *output;
+
+    if(input == NULL){
+      return;
+    }
 
     audio = AGS_AUDIO(input->audio);
 
@@ -1559,8 +1650,9 @@ ags_channel_set_recycling(AgsChannel *channel,
   old_first_recycling = channel->first_recycling;
   old_last_recycling = channel->last_recycling;
 
-  if(!update && old_first_recycling == first_recycling && old_last_recycling == last_recycling)
+  if(!update && old_first_recycling == first_recycling && old_last_recycling == last_recycling){
     return;
+  }
 
   /* initialising */
   found_prev = NULL;
@@ -1577,14 +1669,17 @@ ags_channel_set_recycling(AgsChannel *channel,
   changed_old_first_recycling = old_first_recycling;
   changed_old_last_recycling = old_last_recycling;
 
+  complete_level_first = 0;
+  complete_level_last = 0;
+  
   replace_first = TRUE;
   replace_last = TRUE;
 
   find_next = TRUE;
   find_prev = TRUE;
 
-  change_old_first = FALSE;
-  change_old_last = FALSE;
+  change_old_first = TRUE;
+  change_old_last = TRUE;
 
   if((old_first_recycling == first_recycling)){
     if(!update){
@@ -1597,28 +1692,20 @@ ags_channel_set_recycling(AgsChannel *channel,
   }
 
   if((old_last_recycling == last_recycling)){
-    if(!update)
+    if(!update){
       replace_last = FALSE;
+    }
   }
 
   /* set recycling - update AgsChannel */
   if(AGS_IS_INPUT(channel)){
-    AgsChannel *output;
-
-    if(!ags_channel_set_recycling_recursive_input(channel)){
-      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
-	if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-	  output = ags_channel_nth(audio->output, channel->audio_channel);
-	}else{
-	  output = ags_channel_nth(audio->output, channel->line);
-	}
-
-	ags_channel_set_recycling_recursive_output(output);	
-      }
-    }
+    ags_channel_set_recycling_recursive(channel);    
   }else{
     ags_channel_set_recycling_recursive_output(channel);
   }
+
+  channel->first_recycling = first_recycling;
+  channel->last_recycling = last_recycling;
 
   /* join now the retrieved recyclings */
   if(first_recycling != NULL){
@@ -1776,7 +1863,7 @@ ags_channel_set_recycling(AgsChannel *channel,
     ags_audio_add_recycling_container(audio,
 				      recycling_container);
     ags_audio_remove_recycling_container(audio,
-    					 (GObject *) old_recycling_container);
+					 (GObject *) old_recycling_container);
     
     ags_channel_recursive_reset_recycling_container(channel,
 						    old_recycling_container,

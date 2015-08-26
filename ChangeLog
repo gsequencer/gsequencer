@@ -1,3 +1,9 @@
+ags (0.5.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_channel_set_link() and ags_channel_set_recycling()
+	* fixed unlink while ags_audio_set_pads() and ags_audio_set_audio_channels()
+
 ags (0.5.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
