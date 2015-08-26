@@ -6,264 +6,686 @@ make[2]: Nothing to be done for 'all'.
 make[2]: Leaving directory '/home/joelkraehemann/gsequencer/po'
 Making all in .
 make[2]: Entering directory '/home/joelkraehemann/gsequencer'
-gcc -DHAVE_CONFIG_H -I.    -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2  -g -O2 -MT libags_audio_a-ags_audio.o -MD -MP -MF .deps/libags_audio_a-ags_audio.Tpo -c -o libags_audio_a-ags_audio.o `test -f 'src/ags/audio/ags_audio.c' || echo './'`src/ags/audio/ags_audio.c
-src/ags/audio/ags_audio.c: In function ‘ags_audio_init’:
-src/ags/audio/ags_audio.c:586:26: warning: assignment from incompatible pointer type
-   audio->playback_domain = ags_playback_domain_new();
-                          ^
-src/ags/audio/ags_audio.c:587:55: warning: assignment from incompatible pointer type
-   AGS_PLAYBACK_DOMAIN(audio->playback_domain)->domain = audio;
-                                                       ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_property’:
-src/ags/audio/ags_audio.c:661:33: warning: comparison of distinct pointer types lacks a cast
-       if(audio->playback_domain == playback_domain){
-                                 ^
-src/ags/audio/ags_audio.c:673:30: warning: assignment from incompatible pointer type
-       audio->playback_domain = playback_domain;
-                              ^
-src/ags/audio/ags_audio.c:688:9: warning: passing argument 2 of ‘ags_audio_add_notation’ from incompatible pointer type
-         notation);
+gcc -DHAVE_CONFIG_H -I.    -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2  -g -O2 -MT libags_audio_a-ags_channel.o -MD -MP -MF .deps/libags_audio_a-ags_channel.Tpo -c -o libags_audio_a-ags_channel.o `test -f 'src/ags/audio/ags_channel.c' || echo './'`src/ags/audio/ags_channel.c
+src/ags/audio/ags_channel.c: In function ‘ags_channel_set_property’:
+src/ags/audio/ags_channel.c:638:12: warning: assignment discards ‘const’ qualifier from pointer target type
+       note = g_value_get_string(value);
+            ^
+src/ags/audio/ags_channel.c:657:28: warning: comparison of distinct pointer types lacks a cast
+       if(channel->playback == playback){
+                            ^
+src/ags/audio/ags_channel.c:669:25: warning: assignment from incompatible pointer type
+       channel->playback = playback;
+                         ^
+src/ags/audio/ags_channel.c:699:12: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
+            recall_container);
+            ^
+In file included from src/ags/audio/ags_channel.c:20:0:
+./src/ags/audio/ags_channel.h:139:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ void ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container);
+      ^
+src/ags/audio/ags_channel.c:714:9: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+         recall,
          ^
-In file included from src/ags/audio/ags_audio.c:20:0:
-./src/ags/audio/ags_audio.h:124:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsNotation *’
- void ags_audio_add_notation(AgsAudio *audio,
+In file included from src/ags/audio/ags_channel.c:20:0:
+./src/ags/audio/ags_channel.h:143:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
+ void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
       ^
-src/ags/audio/ags_audio.c:703:11: warning: passing argument 2 of ‘ags_audio_add_automation’ from incompatible pointer type
-           automation);
-           ^
-In file included from src/ags/audio/ags_audio.c:20:0:
-./src/ags/audio/ags_audio.h:129:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsAutomation *’
- void ags_audio_add_automation(AgsAudio *audio,
+src/ags/audio/ags_channel.c:730:9: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+         play,
+         ^
+In file included from src/ags/audio/ags_channel.c:20:0:
+./src/ags/audio/ags_channel.h:143:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
+ void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
       ^
-src/ags/audio/ags_audio.c:718:10: warning: passing argument 2 of ‘ags_audio_add_recall_id’ from incompatible pointer type
-          recall_id);
+src/ags/audio/ags_channel.c:753:15: warning: assignment from incompatible pointer type
+       pattern = (AgsRecall *) g_value_get_object(value);
+               ^
+src/ags/audio/ags_channel.c:761:10: warning: passing argument 2 of ‘ags_channel_add_pattern’ from incompatible pointer type
+          pattern);
           ^
-In file included from src/ags/audio/ags_audio.c:20:0:
+In file included from src/ags/audio/ags_channel.c:20:0:
+./src/ags/audio/ags_channel.h:146:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ void ags_channel_add_pattern(AgsChannel *channel, GObject *pattern);
+      ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_get_recall_by_effect’:
+src/ags/audio/ags_channel.c:1571:14: warning: unused variable ‘recall’ [-Wunused-variable]
+   AgsRecall *recall;
+              ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_add_ladspa_effect’:
+src/ags/audio/ags_channel.c:1622:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
+        recall_container);
+        ^
+src/ags/audio/ags_channel.c:1454:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
+ ^
+src/ags/audio/ags_channel.c:1634:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_ladspa,
+     ^
+src/ags/audio/ags_channel.c:1522:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLadspa *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1638:3: warning: implicit declaration of function ‘ags_recall_ladspa_load’ [-Wimplicit-function-declaration]
+   ags_recall_ladspa_load(recall_ladspa);
+   ^
+src/ags/audio/ags_channel.c:1653:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_channel_run_dummy,
+     ^
+src/ags/audio/ags_channel.c:1522:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1669:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
+  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+                                 ^
+In file included from ./src/ags/audio/ags_channel.h:27:0,
+                 from src/ags/audio/ags_channel.c:20:
+./src/ags/audio/ags_recall.h:183:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
+            ^
+src/ags/audio/ags_channel.c:1693:2: warning: implicit declaration of function ‘ags_dynamic_connectable_connect_dynamic’ [-Wimplicit-function-declaration]
+  ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+  ^
+src/ags/audio/ags_channel.c:1711:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
+        recall_container);
+        ^
+src/ags/audio/ags_channel.c:1454:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
+ ^
+src/ags/audio/ags_channel.c:1722:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_ladspa,
+     ^
+src/ags/audio/ags_channel.c:1522:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLadspa *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1744:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_channel_run_dummy,
+     ^
+src/ags/audio/ags_channel.c:1522:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1759:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
+  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+                                 ^
+In file included from ./src/ags/audio/ags_channel.h:27:0,
+                 from src/ags/audio/ags_channel.c:20:
+./src/ags/audio/ags_recall.h:183:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
+            ^
+src/ags/audio/ags_channel.c:1609:22: warning: unused variable ‘plugin_descriptor’ [-Wunused-variable]
+   LADSPA_Descriptor *plugin_descriptor;
+                      ^
+src/ags/audio/ags_channel.c:1608:30: warning: unused variable ‘ladspa_descriptor’ [-Wunused-variable]
+   LADSPA_Descriptor_Function ladspa_descriptor;
+                              ^
+src/ags/audio/ags_channel.c:1607:9: warning: unused variable ‘plugin_so’ [-Wunused-variable]
+   void *plugin_so;
+         ^
+src/ags/audio/ags_channel.c:1603:17: warning: unused variable ‘add_recall’ [-Wunused-variable]
+   AgsAddRecall *add_recall;
+                 ^
+src/ags/audio/ags_channel.c:1602:26: warning: unused variable ‘add_recall_container’ [-Wunused-variable]
+   AgsAddRecallContainer *add_recall_container;
+                          ^
+src/ags/audio/ags_channel.c:1601:20: warning: variable ‘ladspa_plugin’ set but not used [-Wunused-but-set-variable]
+   AgsLadspaPlugin *ladspa_plugin;
+                    ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_add_lv2_effect’:
+src/ags/audio/ags_channel.c:1835:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
+        recall_container);
+        ^
+src/ags/audio/ags_channel.c:1454:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
+ ^
+src/ags/audio/ags_channel.c:1848:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_lv2,
+     ^
+src/ags/audio/ags_channel.c:1522:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLv2 *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1852:3: warning: implicit declaration of function ‘ags_recall_lv2_load’ [-Wimplicit-function-declaration]
+   ags_recall_lv2_load(recall_lv2);
+   ^
+src/ags/audio/ags_channel.c:1866:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_channel_run_dummy,
+     ^
+src/ags/audio/ags_channel.c:1522:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1882:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
+  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+                                 ^
+In file included from ./src/ags/audio/ags_channel.h:27:0,
+                 from src/ags/audio/ags_channel.c:20:
+./src/ags/audio/ags_recall.h:183:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
+            ^
+src/ags/audio/ags_channel.c:1924:8: warning: passing argument 2 of ‘ags_channel_add_recall_container’ from incompatible pointer type
+        recall_container);
+        ^
+src/ags/audio/ags_channel.c:1454:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
+ ags_channel_add_recall_container(AgsChannel *channel, GObject *container)
+ ^
+src/ags/audio/ags_channel.c:1936:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_lv2,
+     ^
+src/ags/audio/ags_channel.c:1522:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallLv2 *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1958:5: warning: passing argument 2 of ‘ags_channel_add_recall’ from incompatible pointer type
+     recall_channel_run_dummy,
+     ^
+src/ags/audio/ags_channel.c:1522:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c:1973:33: warning: passing argument 1 of ‘ags_recall_duplicate’ from incompatible pointer type
+  current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+                                 ^
+In file included from ./src/ags/audio/ags_channel.h:27:0,
+                 from src/ags/audio/ags_channel.c:20:
+./src/ags/audio/ags_recall.h:183:12: note: expected ‘struct AgsRecall *’ but argument is of type ‘struct AgsRecallChannelRunDummy *’
+ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
+            ^
+src/ags/audio/ags_channel.c:1822:19: warning: unused variable ‘plugin_descriptor’ [-Wunused-variable]
+   LV2_Descriptor *plugin_descriptor;
+                   ^
+src/ags/audio/ags_channel.c:1821:27: warning: unused variable ‘lv2_descriptor’ [-Wunused-variable]
+   LV2_Descriptor_Function lv2_descriptor;
+                           ^
+src/ags/audio/ags_channel.c:1820:9: warning: unused variable ‘plugin_so’ [-Wunused-variable]
+   void *plugin_so;
+         ^
+src/ags/audio/ags_channel.c:1818:10: warning: unused variable ‘str’ [-Wunused-variable]
+   gchar *str;
+          ^
+src/ags/audio/ags_channel.c:1814:10: warning: unused variable ‘uri_node’ [-Wunused-variable]
+   GList *uri_node;
+          ^
+src/ags/audio/ags_channel.c:1810:17: warning: unused variable ‘add_recall’ [-Wunused-variable]
+   AgsAddRecall *add_recall;
+                 ^
+src/ags/audio/ags_channel.c:1809:26: warning: unused variable ‘add_recall_container’ [-Wunused-variable]
+   AgsAddRecallContainer *add_recall_container;
+                          ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_real_remove_effect’:
+src/ags/audio/ags_channel.c:2103:13: warning: assignment from incompatible pointer type
+   main_loop = application_context->main_loop;
+             ^
+src/ags/audio/ags_channel.c:2116:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
+   remove_recall = ags_remove_recall_new(channel,
+                                         ^
+In file included from src/ags/audio/ags_channel.c:67:0:
+./src/ags/audio/task/ags_remove_recall.h:58:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsRemoveRecall* ags_remove_recall_new(GObject *context,
+                  ^
+src/ags/audio/ags_channel.c:2124:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
+   remove_recall = ags_remove_recall_new(channel,
+                                         ^
+In file included from src/ags/audio/ags_channel.c:67:0:
+./src/ags/audio/task/ags_remove_recall.h:58:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsRemoveRecall* ags_remove_recall_new(GObject *context,
+                  ^
+In file included from ./src/ags/audio/ags_channel.h:27:0,
+                 from src/ags/audio/ags_channel.c:20:
+./src/ags/audio/ags_recall.h:31:40: warning: passing argument 2 of ‘ags_remove_recall_container_new’ from incompatible pointer type
+ #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
+                                        ^
+src/ags/audio/ags_channel.c:2133:12: note: in expansion of macro ‘AGS_RECALL’
+            AGS_RECALL(g_list_nth(play_ladspa,
+            ^
+In file included from src/ags/audio/ags_channel.c:68:0:
+./src/ags/audio/task/ags_remove_recall_container.h:56:27: note: expected ‘struct AgsRecallContainer *’ but argument is of type ‘struct GObject *’
+ AgsRemoveRecallContainer* ags_remove_recall_container_new(GObject *audio,
+                           ^
+src/ags/audio/ags_channel.c:2139:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
+   remove_recall = ags_remove_recall_new(channel,
+                                         ^
+In file included from src/ags/audio/ags_channel.c:67:0:
+./src/ags/audio/task/ags_remove_recall.h:58:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsRemoveRecall* ags_remove_recall_new(GObject *context,
+                  ^
+src/ags/audio/ags_channel.c:2147:41: warning: passing argument 1 of ‘ags_remove_recall_new’ from incompatible pointer type
+   remove_recall = ags_remove_recall_new(channel,
+                                         ^
+In file included from src/ags/audio/ags_channel.c:67:0:
+./src/ags/audio/task/ags_remove_recall.h:58:18: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsChannel *’
+ AgsRemoveRecall* ags_remove_recall_new(GObject *context,
+                  ^
+In file included from ./src/ags/audio/ags_channel.h:27:0,
+                 from src/ags/audio/ags_channel.c:20:
+./src/ags/audio/ags_recall.h:31:40: warning: passing argument 2 of ‘ags_remove_recall_container_new’ from incompatible pointer type
+ #define AGS_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL, AgsRecall))
+                                        ^
+src/ags/audio/ags_channel.c:2156:12: note: in expansion of macro ‘AGS_RECALL’
+            AGS_RECALL(g_list_nth(recall_ladspa,
+            ^
+In file included from src/ags/audio/ags_channel.c:68:0:
+./src/ags/audio/task/ags_remove_recall_container.h:56:27: note: expected ‘struct AgsRecallContainer *’ but argument is of type ‘struct GObject *’
+ AgsRemoveRecallContainer* ags_remove_recall_container_new(GObject *audio,
+                           ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_set_recycling_recursive_input’:
+src/ags/audio/ags_channel.c:2595:34: warning: assignment from incompatible pointer type
+      replace_with_last_recycling = nth_channel_next;
+                                  ^
+src/ags/audio/ags_channel.c:2615:35: warning: assignment from incompatible pointer type
+      replace_with_first_recycling = nth_channel_next;
+                                   ^
+src/ags/audio/ags_channel.c:2570:24: warning: unused variable ‘tmp1’ [-Wunused-variable]
+     AgsChannel *tmp0, *tmp1;
+                        ^
+src/ags/audio/ags_channel.c:2570:17: warning: unused variable ‘tmp0’ [-Wunused-variable]
+     AgsChannel *tmp0, *tmp1;
+                 ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_set_recycling_emit_changed_input’:
+src/ags/audio/ags_channel.c:2691:17: warning: unused variable ‘nth_channel’ [-Wunused-variable]
+     AgsChannel *nth_channel;
+                 ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_set_recycling_emit_changed’:
+src/ags/audio/ags_channel.c:2730:7: warning: ‘return’ with no value, in function returning non-void
+       return;
+       ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_set_recycling’:
+src/ags/audio/ags_channel.c:2982:9: warning: passing argument 2 of ‘ags_audio_add_recycling_context’ from incompatible pointer type
+         recycling_context);
+         ^
+In file included from src/ags/audio/ags_channel.c:41:0:
+./src/ags/audio/ags_audio.h:137:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContext *’
+ void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
+      ^
+src/ags/audio/ags_channel.c:2532:29: warning: variable ‘change_old_first’ set but not used [-Wunused-but-set-variable]
+   gboolean change_old_last, change_old_first;
+                             ^
+src/ags/audio/ags_channel.c:2532:12: warning: variable ‘change_old_last’ set but not used [-Wunused-but-set-variable]
+   gboolean change_old_last, change_old_first;
+            ^
+src/ags/audio/ags_channel.c:2518:26: warning: variable ‘found_next’ set but not used [-Wunused-but-set-variable]
+   AgsAudio *found_prev, *found_next;
+                          ^
+src/ags/audio/ags_channel.c:2518:13: warning: variable ‘found_prev’ set but not used [-Wunused-but-set-variable]
+   AgsAudio *found_prev, *found_next;
+             ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_recycling_context’:
+src/ags/audio/ags_channel.c:3026:9: warning: unused variable ‘length’ [-Wunused-variable]
+   guint length;
+         ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_input_sync_threaded’:
+src/ags/audio/ags_channel.c:3510:15: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
+     AgsAudio *audio;
+               ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_input_async_threaded’:
+src/ags/audio/ags_channel.c:3556:15: warning: unused variable ‘audio’ [-Wunused-variable]
+     AgsAudio *audio;
+               ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_down’:
+src/ags/audio/ags_channel.c:4246:28: warning: unused variable ‘recycling_context’ [-Wunused-variable]
+       AgsRecyclingContext *recycling_context;
+                            ^
+src/ags/audio/ags_channel.c:4245:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+       AgsChannel *input;
+                   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_duplicate_recall’:
+src/ags/audio/ags_channel.c:4379:13: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
+   AgsAudio *audio;
+             ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_arrange_recall_id_up’:
+src/ags/audio/ags_channel.c:4675:7: warning: ‘return’ with no value, in function returning non-void
+       return;
+       ^
+src/ags/audio/ags_channel.c:4733:10: warning: passing argument 2 of ‘ags_audio_add_recall_id’ from incompatible pointer type
+          audio_recall_id);
+          ^
+In file included from src/ags/audio/ags_channel.c:41:0:
 ./src/ags/audio/ags_audio.h:134:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallID *’
  void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
       ^
-src/ags/audio/ags_audio.c:733:11: warning: passing argument 2 of ‘ags_audio_add_recycling_context’ from incompatible pointer type
-           recycling_context);
-           ^
-In file included from src/ags/audio/ags_audio.c:20:0:
-./src/ags/audio/ags_audio.h:137:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContext *’
- void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
-      ^
-src/ags/audio/ags_audio.c:748:10: warning: passing argument 2 of ‘ags_audio_add_recall_container’ from incompatible pointer type
-          recall_container);
+src/ags/audio/ags_channel.c:4825:5: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+     (GObject *) recall_id);
+     ^
+src/ags/audio/ags_channel.c:1411:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:4880:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) recall_id);
+       ^
+src/ags/audio/ags_channel.c:1411:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_arrange_recall_id_down_input’:
+src/ags/audio/ags_channel.c:4945:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) input_recall_id);
+       ^
+src/ags/audio/ags_channel.c:1411:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:4982:5: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+     (GObject *) input_recall_id);
+     ^
+src/ags/audio/ags_channel.c:1411:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:4919:26: warning: unused variable ‘recycling_context’ [-Wunused-variable]
+     AgsRecyclingContext *recycling_context;
+                          ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_arrange_recall_id_down’:
+src/ags/audio/ags_channel.c:5021:7: warning: ‘return’ with no value, in function returning non-void
+       return;
+       ^
+src/ags/audio/ags_channel.c:5071:5: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+     (GObject *) output_recall_id);
+     ^
+src/ags/audio/ags_channel.c:1411:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_duplicate_down’:
+src/ags/audio/ags_channel.c:5361:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+       AgsChannel *input;
+                   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_resolve_down’:
+src/ags/audio/ags_channel.c:5562:17: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+     AgsChannel *input;
+                 ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_down’:
+src/ags/audio/ags_channel.c:5776:17: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+     AgsChannel *input;
+                 ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init’:
+src/ags/audio/ags_channel.c:5905:9: warning: passing argument 2 of ‘ags_recall_id_add’ from incompatible pointer type
+         (GObject *) default_recall_id);
+         ^
+In file included from ./src/ags/audio/ags_channel.h:26:0,
+                 from src/ags/audio/ags_channel.c:20:
+./src/ags/audio/ags_recall_id.h:80:8: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ GList* ags_recall_id_add(GList *recall_id_list,
+        ^
+src/ags/audio/ags_channel.c:5931:9: warning: passing argument 2 of ‘ags_recall_id_add’ from incompatible pointer type
+         (GObject *) recall_id);
+         ^
+In file included from ./src/ags/audio/ags_channel.h:26:0,
+                 from src/ags/audio/ags_channel.c:20:
+./src/ags/audio/ags_recall_id.h:80:8: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ GList* ags_recall_id_add(GList *recall_id_list,
+        ^
+src/ags/audio/ags_channel.c:5953:18: warning: variable ‘next_recall_id’ set but not used [-Wunused-but-set-variable]
+     AgsRecallID *next_recall_id;
+                  ^
+src/ags/audio/ags_channel.c:5974:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+       AgsChannel *input;
+                   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_remove’:
+src/ags/audio/ags_channel.c:6129:10: warning: passing argument 2 of ‘ags_channel_remove_recall’ from incompatible pointer type
+          recall,
           ^
-In file included from src/ags/audio/ags_audio.c:20:0:
-./src/ags/audio/ags_audio.h:140:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecallContainer *’
- void ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container);
-      ^
-src/ags/audio/ags_audio.c:763:7: warning: passing argument 2 of ‘ags_audio_add_recall’ from incompatible pointer type
-       recall,
-       ^
-In file included from src/ags/audio/ags_audio.c:20:0:
-./src/ags/audio/ags_audio.h:143:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
- void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
-      ^
-src/ags/audio/ags_audio.c:779:7: warning: passing argument 2 of ‘ags_audio_add_recall’ from incompatible pointer type
-       recall,
-       ^
-In file included from src/ags/audio/ags_audio.c:20:0:
-./src/ags/audio/ags_audio.h:143:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
- void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
-      ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_flags_set_recycling_parameter’:
-src/ags/audio/ags_audio.c:1237:31: warning: unused variable ‘recycling_next’ [-Wunused-variable]
-     AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
-                               ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_flags_add_recycling_task’:
-src/ags/audio/ags_audio.c:1297:15: warning: assignment from incompatible pointer type
-     main_loop = application_context->main_loop;
-               ^
-src/ags/audio/ags_audio.c:1298:17: warning: assignment from incompatible pointer type
-     task_thread = ags_thread_find_type(main_loop,
-                 ^
-src/ags/audio/ags_audio.c:1292:28: warning: unused variable ‘current’ [-Wunused-variable]
-     AgsThread *main_loop, *current;
+src/ags/audio/ags_channel.c:1496:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
+ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_cancel_down’:
+src/ags/audio/ags_channel.c:6401:28: warning: unused variable ‘recycling_context’ [-Wunused-variable]
+       AgsRecyclingContext *recycling_context;
                             ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_unset_flags_set_recycling_parameter’:
-src/ags/audio/ags_audio.c:1359:31: warning: unused variable ‘recycling_next’ [-Wunused-variable]
-     AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
-                               ^
-src/ags/audio/ags_audio.c:1359:19: warning: unused variable ‘recycling’ [-Wunused-variable]
-     AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
+src/ags/audio/ags_channel.c:6400:19: warning: variable ‘input’ set but not used [-Wunused-but-set-variable]
+       AgsChannel *input;
                    ^
-src/ags/audio/ags_audio.c:1358:17: warning: unused variable ‘channel’ [-Wunused-variable]
-     AgsChannel *channel, *start_channel, *end_channel;
-                 ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_unset_flags_add_recycling_task’:
-src/ags/audio/ags_audio.c:1399:15: warning: assignment from incompatible pointer type
-     main_loop = application_context->main_loop;
-               ^
-src/ags/audio/ags_audio.c:1400:17: warning: assignment from incompatible pointer type
-     task_thread = ags_thread_find_type(main_loop,
-                 ^
-src/ags/audio/ags_audio.c:1394:28: warning: unused variable ‘current’ [-Wunused-variable]
-     AgsThread *main_loop, *current;
-                            ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_audio_channels_shrink_zero’:
-src/ags/audio/ags_audio.c:1578:36: warning: unused variable ‘next_recycling’ [-Wunused-variable]
-     AgsRecycling *prev_recycling, *next_recycling;
-                                    ^
-src/ags/audio/ags_audio.c:1578:19: warning: unused variable ‘prev_recycling’ [-Wunused-variable]
-     AgsRecycling *prev_recycling, *next_recycling;
-                   ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_audio_channels_shrink’:
-src/ags/audio/ags_audio.c:1621:19: warning: unused variable ‘recycling’ [-Wunused-variable]
+src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_cancel’:
+src/ags/audio/ags_channel.c:6449:9: warning: assignment from incompatible pointer type
+   audio = channel->audio;
+         ^
+src/ags/audio/ags_channel.c:6203:34: warning: unused variable ‘default_recall_id’ [-Wunused-variable]
+   AgsRecallID *audio_recall_id, *default_recall_id;
+                                  ^
+src/ags/audio/ags_channel.c:6203:16: warning: unused variable ‘audio_recall_id’ [-Wunused-variable]
+   AgsRecallID *audio_recall_id, *default_recall_id;
+                ^
+src/ags/audio/ags_channel.c:6202:13: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
+   AgsAudio *audio;
+             ^
+src/ags/audio/ags_channel.c: In function ‘ags_audio_reset_recall_id’:
+src/ags/audio/ags_channel.c:6589:10: warning: unused variable ‘i’ [-Wunused-variable]
+     gint i;
+          ^
+src/ags/audio/ags_channel.c:6588:10: warning: unused variable ‘recycling_length’ [-Wunused-variable]
+     gint recycling_length;
+          ^
+src/ags/audio/ags_channel.c:6587:19: warning: unused variable ‘recycling’ [-Wunused-variable]
      AgsRecycling *recycling;
                    ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_audio_channels_grow_notation’:
-src/ags/audio/ags_audio.c:1711:48: warning: passing argument 1 of ‘ags_notation_new’ from incompatible pointer type
-       list->data = (gpointer) ags_notation_new(audio,
-                                                ^
-In file included from ./src/ags/audio/ags_channel.h:29:0,
-                 from ./src/ags/audio/ags_audio.h:26,
-                 from src/ags/audio/ags_audio.c:20:
-./src/ags/audio/ags_notation.h:149:14: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsAudio *’
- AgsNotation* ags_notation_new(GObject *audio,
-              ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_real_set_audio_channels’:
-src/ags/audio/ags_audio.c:1796:16: warning: assignment from incompatible pointer type
-       playback = g_list_last(playback_domain->playback);
-                ^
-src/ags/audio/ags_audio.c:1775:17: warning: unused variable ‘current’ [-Wunused-variable]
-     AgsChannel *current;
-                 ^
-src/ags/audio/ags_audio.c:1446:10: warning: unused variable ‘list’ [-Wunused-variable]
+src/ags/audio/ags_channel.c: In function ‘ags_channel_reset_recall_id’:
+src/ags/audio/ags_channel.c:6777:11: warning: assignment from incompatible pointer type
+     audio = channel->audio;
+           ^
+src/ags/audio/ags_channel.c:6828:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) recall_id);
+       ^
+src/ags/audio/ags_channel.c:1411:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:6864:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) recall_id);
+       ^
+src/ags/audio/ags_channel.c:1411:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:6900:7: warning: passing argument 2 of ‘ags_channel_add_recall_id’ from incompatible pointer type
+       (GObject *) recall_id);
+       ^
+src/ags/audio/ags_channel.c:1411:1: note: expected ‘struct AgsRecallID *’ but argument is of type ‘struct GObject *’
+ ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
+ ^
+src/ags/audio/ags_channel.c:6768:15: warning: variable ‘audio’ set but not used [-Wunused-but-set-variable]
+     AgsAudio *audio;
+               ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_channel_init_recall’:
+src/ags/audio/ags_channel.c:7012:15: warning: unused variable ‘audio’ [-Wunused-variable]
+     AgsAudio *audio;
+               ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_collect_playback_down_input’:
+src/ags/audio/ags_channel.c:7056:73: warning: pointer type mismatch in conditional expression
+       (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                         ^
+src/ags/audio/ags_channel.c:7066:73: warning: pointer type mismatch in conditional expression
+       (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                         ^
+src/ags/audio/ags_channel.c:7076:73: warning: pointer type mismatch in conditional expression
+       (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                         ^
+src/ags/audio/ags_channel.c:7098:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:7108:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:7118:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_collect_playback_down’:
+src/ags/audio/ags_channel.c:7149:76: warning: pointer type mismatch in conditional expression
+          (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                            ^
+src/ags/audio/ags_channel.c:7159:76: warning: pointer type mismatch in conditional expression
+          (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                            ^
+src/ags/audio/ags_channel.c:7169:76: warning: pointer type mismatch in conditional expression
+          (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                            ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_collect_playback_up’:
+src/ags/audio/ags_channel.c:7214:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:7224:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:7234:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:7265:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[0]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:7275:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[1]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c:7285:71: warning: pointer type mismatch in conditional expression
+     (collect_recall_id ? AGS_PLAYBACK(current->playback)->recall_id[2]: current->playback));
+                                                                       ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_recall_ids’:
+src/ags/audio/ags_channel.c:8427:20: warning: suggest parentheses around ‘&&’ within ‘||’ [-Wparentheses]
+   if((link != NULL && (AGS_IS_OUTPUT(link)) ||
+                    ^
+src/ags/audio/ags_channel.c:6500:10: warning: unused variable ‘list’ [-Wunused-variable]
    GList *list;
           ^
-src/ags/audio/ags_audio.c:1445:12: warning: unused variable ‘parent’ [-Wunused-variable]
-   GObject *parent; // of recycling
-            ^
-src/ags/audio/ags_audio.c:1443:44: warning: variable ‘input_pad_last’ set but not used [-Wunused-but-set-variable]
-   AgsChannel *channel, *prev_pad, *input, *input_pad_last;
-                                            ^
-src/ags/audio/ags_audio.c:1443:25: warning: unused variable ‘prev_pad’ [-Wunused-variable]
-   AgsChannel *channel, *prev_pad, *input, *input_pad_last;
-                         ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_pads_grow’:
-src/ags/audio/ags_audio.c:1937:12: warning: unused variable ‘recall_id’ [-Wunused-variable]
-     GList *recall_id;
-            ^
-src/ags/audio/ags_audio.c:1935:31: warning: unused variable ‘last_recycling’ [-Wunused-variable]
-     AgsRecycling *recycling, *last_recycling;
-                               ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_pads_shrink_zero’:
-src/ags/audio/ags_audio.c:2080:13: warning: unused variable ‘error’ [-Wunused-variable]
-     GError *error;
-             ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_pads_alloc_notation’:
-src/ags/audio/ags_audio.c:2136:48: warning: passing argument 1 of ‘ags_notation_new’ from incompatible pointer type
-       list->data = (gpointer) ags_notation_new(audio,
-                                                ^
-In file included from ./src/ags/audio/ags_channel.h:29:0,
-                 from ./src/ags/audio/ags_audio.h:26,
-                 from src/ags/audio/ags_audio.c:20:
-./src/ags/audio/ags_notation.h:149:14: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsAudio *’
- AgsNotation* ags_notation_new(GObject *audio,
-              ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_real_set_pads’:
-src/ags/audio/ags_audio.c:2302:7: warning: implicit declaration of function ‘ags_audio_set_pads_unlink_zero’ [-Wimplicit-function-declaration]
-       ags_audio_set_pads_unlink_zero(channel);
-       ^
-src/ags/audio/ags_audio.c:2316:37: warning: passing argument 1 of ‘ags_channel_pad_nth’ makes pointer from integer without a cast
-       channel = ags_channel_pad_nth(pads);
-                                     ^
-In file included from ./src/ags/audio/ags_audio.h:26:0,
-                 from src/ags/audio/ags_audio.c:20:
-./src/ags/audio/ags_channel.h:129:13: note: expected ‘struct AgsChannel *’ but argument is of type ‘guint’
- AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
-             ^
-src/ags/audio/ags_audio.c:2316:17: error: too few arguments to function ‘ags_channel_pad_nth’
-       channel = ags_channel_pad_nth(pads);
-                 ^
-In file included from ./src/ags/audio/ags_audio.h:26:0,
-                 from src/ags/audio/ags_audio.c:20:
-./src/ags/audio/ags_channel.h:129:13: note: declared here
- AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
-             ^
-src/ags/audio/ags_audio.c:2318:7: warning: implicit declaration of function ‘ags_audio_set_pads_unlink’ [-Wimplicit-function-declaration]
-       ags_audio_set_pads_unlink(channel);
-       ^
-src/ags/audio/ags_audio.c:2326:11: warning: assignment from incompatible pointer type
-  playback = g_list_last(playback_domain->playback);
-           ^
-src/ags/audio/ags_audio.c:2369:40: warning: unused variable ‘default_recall_id’ [-Wunused-variable]
-       AgsRecallID *current_recall_id, *default_recall_id;
-                                        ^
-src/ags/audio/ags_audio.c:2532:11: warning: passing argument 2 of ‘ags_audio_add_recycling_context’ from incompatible pointer type
-           recycling_context);
-           ^
-In file included from src/ags/audio/ags_audio.c:20:0:
-./src/ags/audio/ags_audio.h:137:6: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContext *’
- void ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context);
-      ^
-src/ags/audio/ags_audio.c:1872:60: warning: variable ‘update_async_link’ set but not used [-Wunused-but-set-variable]
-   gboolean alloc_recycling, link_recycling, set_sync_link, update_async_link, set_async_link;
-                                                            ^
-src/ags/audio/ags_audio.c:1868:10: warning: unused variable ‘playback’ [-Wunused-variable]
-   GList *playback;
+src/ags/audio/ags_channel.c:6499:10: warning: unused variable ‘parent’ [-Wunused-variable]
+   GList *parent;
           ^
-src/ags/audio/ags_audio.c:1864:33: warning: unused variable ‘prev_pad’ [-Wunused-variable]
-   AgsChannel *start, *channel, *prev_pad, *input, *input_pad_last;
-                                 ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_init_run’:
-src/ags/audio/ags_audio.c:2646:5: warning: ‘return’ with no value, in function returning non-void
-     return;
-     ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_duplicate_recall’:
-src/ags/audio/ags_audio.c:3377:7: warning: passing argument 2 of ‘ags_audio_add_recall’ from incompatible pointer type
-       copy,
-       ^
-src/ags/audio/ags_audio.c:3163:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
- ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_resolve_recall’:
-src/ags/audio/ags_audio.c:3447:71: warning: passing argument 2 of ‘ags_recall_find_recycling_context’ from incompatible pointer type
-   while((list_recall = ags_recall_find_recycling_context(list_recall, recall_id->recycling_context)) != NULL){
-                                                                       ^
-In file included from ./src/ags/audio/ags_channel.h:27:0,
-                 from ./src/ags/audio/ags_audio.h:26,
-                 from src/ags/audio/ags_audio.c:20:
-./src/ags/audio/ags_recall.h:207:8: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecyclingContext *’
- GList* ags_recall_find_recycling_context(GList *recall, GObject *recycling_context);
-        ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_init_recall’:
-src/ags/audio/ags_audio.c:3543:2: warning: implicit declaration of function ‘ags_dynamic_connectable_connect_dynamic’ [-Wimplicit-function-declaration]
-  ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
-  ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_is_playing’:
-src/ags/audio/ags_audio.c:3577:16: warning: unused variable ‘recall_id’ [-Wunused-variable]
-   AgsRecallID *recall_id;
+src/ags/audio/ags_channel.c:6494:26: warning: unused variable ‘application_context’ [-Wunused-variable]
+   AgsApplicationContext *application_context;
+                          ^
+src/ags/audio/ags_channel.c:6493:24: warning: unused variable ‘recycling_context’ [-Wunused-variable]
+   AgsRecyclingContext *recycling_context;
+                        ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recall_id_set’:
+src/ags/audio/ags_channel.c:8551:9: warning: variable ‘key’ set but not used [-Wunused-but-set-variable]
+   char *key;
+         ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_tillrecycling_cancel’:
+src/ags/audio/ags_channel.c:6447:3: warning: ‘application_context’ is used uninitialized in this function [-Wuninitialized]
+   pthread_mutex_lock(application_context->mutex);
+   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_add_to_registry’:
+src/ags/audio/ags_channel.c:888:3: warning: ‘server’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   ags_registry_add(server->registry,
+   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_set_recycling_recursive’:
+src/ags/audio/ags_channel.c:2595:34: warning: ‘nth_channel_next’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+      replace_with_last_recycling = nth_channel_next;
+                                  ^
+src/ags/audio/ags_channel.c:2569:36: note: ‘nth_channel_next’ was declared here
+     AgsChannel *nth_channel_prev, *nth_channel_next;
+                                    ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_recycling_context_down_output’:
+src/ags/audio/ags_channel.c:3121:15: warning: ‘input’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+       input = ags_channel_nth(audio->input,
+               ^
+src/ags/audio/ags_channel.c:3099:17: note: ‘input’ was declared here
+     AgsChannel *input;
+                 ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_recall_id_down’:
+src/ags/audio/ags_channel.c:7391:25: warning: ‘recall_id’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+        recall_id->flags |= AGS_RECALL_ID_NOTATION;
+                         ^
+src/ags/audio/ags_channel.c:7367:18: note: ‘recall_id’ was declared here
+     AgsRecallID *recall_id, *default_recall_id;
+                  ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init_duplicate_down_input’:
+src/ags/audio/ags_channel.c:4391:16: warning: ‘input_recall_id’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+      recall_id == NULL){
                 ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_remove’:
-src/ags/audio/ags_audio.c:3904:8: warning: passing argument 2 of ‘ags_audio_remove_recall’ from incompatible pointer type
-        recall,
-        ^
-src/ags/audio/ags_audio.c:3210:1: note: expected ‘struct GObject *’ but argument is of type ‘struct AgsRecall *’
- ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
- ^
-src/ags/audio/ags_audio.c: In function ‘ags_audio_set_soundcard’:
-src/ags/audio/ags_audio.c:4063:4: warning: implicit declaration of function ‘ags_audio_thread_new’ [-Wimplicit-function-declaration]
-    AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
-    ^
-src/ags/audio/ags_audio.c:4063:65: warning: assignment makes pointer from integer without a cast
-    AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
-                                                                 ^
-src/ags/audio/ags_audio.c:4068:65: warning: assignment makes pointer from integer without a cast
-    AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
-                                                                 ^
-src/ags/audio/ags_audio.c:4073:65: warning: assignment makes pointer from integer without a cast
-    AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
-                                                                 ^
-Makefile:3536: recipe for target 'libags_audio_a-ags_audio.o' failed
-make[2]: *** [libags_audio_a-ags_audio.o] Error 1
+src/ags/audio/ags_channel.c:5263:18: note: ‘input_recall_id’ was declared here
+     AgsRecallID *input_recall_id;
+                  ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_play_init’:
+src/ags/audio/ags_channel.c:4782:25: warning: ‘audio_recall_id’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  audio_recall_id->flags |= AGS_RECALL_ID_PLAYBACK;
+                         ^
+src/ags/audio/ags_channel.c:6082:3: warning: ‘application_context’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   pthread_mutex_unlock(application_context->mutex);
+   ^
+src/ags/audio/ags_channel.c:6027:2: warning: ‘default_recall_id’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  ags_channel_recursive_play_init_resolve_down(channel->link,
+  ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recursive_reset_recall_ids’:
+src/ags/audio/ags_channel.c:8477:3: warning: ‘recycled_recall_id_list’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+   ags_channel_recursive_reset_recall_id_down(channel,
+   ^
+src/ags/audio/ags_channel.c: In function ‘ags_channel_recall_id_set’:
+src/ags/audio/ags_channel.c:8601:2: warning: ‘stage’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  ags_recall_id_set_run_stage(default_recall_id, stage);
+  ^
+mv -f .deps/libags_audio_a-ags_channel.Tpo .deps/libags_audio_a-ags_channel.Po
+rm -f libags_audio.a
+ar cru libags_audio.a libags_audio_a-ags_libao.o libags_audio_a-ags_timestamp.o libags_audio_a-ags_timestamp_factory.o libags_audio_a-ags_audio_init.o libags_audio_a-ags_audio_application_context.o libags_audio_a-ags_sound_provider.o libags_audio_a-ags_acceleration.o libags_audio_a-ags_audio.o libags_audio_a-ags_audio_signal.o libags_audio_a-ags_automation.o libags_audio_a-ags_channel.o libags_audio_a-ags_channel_iter.o libags_audio_a-ags_playback_domain.o libags_audio_a-ags_playback.o libags_audio_a-ags_devout.o libags_audio_a-ags_input.o libags_audio_a-ags_notation.o libags_audio_a-ags_note.o libags_audio_a-ags_output.o libags_audio_a-ags_pattern.o libags_audio_a-ags_port.o libags_audio_a-ags_recall_audio.o libags_audio_a-ags_recall_audio_run.o libags_audio_a-ags_recall_audio_signal.o libags_audio_a-ags_recall_channel.o libags_audio_a-ags_recall_channel_run_dummy.o libags_audio_a-ags_recall_channel_run.o libags_audio_a-ags_recall_container.o libags_audio_a-ags_recall_dependency.o libags_audio_a-ags_recall_factory.o libags_audio_a-ags_recall.o libags_audio_a-ags_recall_id.o libags_audio_a-ags_recall_ladspa.o libags_audio_a-ags_recall_ladspa_run.o libags_audio_a-ags_recall_lv2.o libags_audio_a-ags_recall_lv2_run.o libags_audio_a-ags_recall_recycling_dummy.o libags_audio_a-ags_recall_recycling.o libags_audio_a-ags_recycling_context.o libags_audio_a-ags_recycling.o libags_audio_a-ags_synths.o libags_audio_a-ags_timestamp_factory.o libags_audio_a-ags_timestamp.o  libags_audio_a-ags_audio_loop.o libags_audio_a-ags_audio_thread.o libags_audio_a-ags_channel_thread.o libags_audio_a-ags_export_thread.o libags_audio_a-ags_iterator_thread.o libags_audio_a-ags_record_thread.o libags_audio_a-ags_recycling_thread_callbacks.o libags_audio_a-ags_recycling_thread.o libags_audio_a-ags_soundcard_thread.o libags_audio_a-ags_audio_file_xml.o libags_audio_a-ags_audio_file_xml.o libags_audio_a-ags_playable.o libags_audio_a-ags_audio_file.o libags_audio_a-ags_ipatch.o libags_audio_a-ags_ipatch_sf2_reader.o libags_audio_a-ags_sndfile.o  libags_audio_a-ags_midi_parser.o libags_audio_a-ags_add_audio.o libags_audio_a-ags_add_audio_signal.o libags_audio_a-ags_add_note.o libags_audio_a-ags_add_point_to_selection.o libags_audio_a-ags_add_effect.o libags_audio_a-ags_remove_point_from_selection.o libags_audio_a-ags_add_region_to_selection.o libags_audio_a-ags_remove_region_from_selection.o libags_audio_a-ags_free_selection.o libags_audio_a-ags_add_recall_container.o libags_audio_a-ags_add_recall.o libags_audio_a-ags_append_audio.o libags_audio_a-ags_append_audio_threaded.o libags_audio_a-ags_append_channel.o libags_audio_a-ags_append_recall.o libags_audio_a-ags_apply_synth.o libags_audio_a-ags_audio_set_recycling.o libags_audio_a-ags_cancel_audio.o libags_audio_a-ags_cancel_channel.o libags_audio_a-ags_cancel_recall.o libags_audio_a-ags_channel_set_recycling.o libags_audio_a-ags_export_output.o libags_audio_a-ags_init_audio.o libags_audio_a-ags_init_channel.o libags_audio_a-ags_link_channel.o libags_audio_a-ags_open_file.o libags_audio_a-ags_open_single_file.o libags_audio_a-ags_remove_audio.o libags_audio_a-ags_remove_audio_signal.o libags_audio_a-ags_remove_note.o libags_audio_a-ags_remove_recall_container.o libags_audio_a-ags_remove_recall.o libags_audio_a-ags_resize_audio.o libags_audio_a-ags_set_audio_channels.o libags_audio_a-ags_set_buffer_size.o libags_audio_a-ags_set_playback_flags.o libags_audio_a-ags_set_output_device.o libags_audio_a-ags_set_samplerate.o libags_audio_a-ags_start_soundcard.o libags_audio_a-ags_unref_audio_signal.o libags_audio_a-ags_toggle_pattern_bit.o  libags_audio_a-ags_apply_bpm.o libags_audio_a-ags_apply_sequencer_length.o libags_audio_a-ags_apply_tact.o libags_audio_a-ags_set_muted.o libags_audio_a-ags_clone_channel.o libags_audio_a-ags_clone_channel_run.o libags_audio_a-ags_loop_channel.o libags_audio_a-ags_loop_channel_run.o libags_audio_a-ags_play_note.o libags_audio_a-ags_buffer_audio_signal.o libags_audio_a-ags_buffer_channel.o libags_audio_a-ags_buffer_channel_run.o libags_audio_a-ags_buffer_recycling.o libags_audio_a-ags_copy_audio_signal.o libags_audio_a-ags_copy_channel.o libags_audio_a-ags_copy_channel_run.o libags_audio_a-ags_copy_notation_audio.o libags_audio_a-ags_copy_notation_audio_run.o libags_audio_a-ags_copy_pattern_audio.o libags_audio_a-ags_copy_pattern_audio_run.o libags_audio_a-ags_copy_pattern_channel.o libags_audio_a-ags_copy_pattern_channel_run.o libags_audio_a-ags_copy_recycling.o libags_audio_a-ags_count_beats_audio.o libags_audio_a-ags_count_beats_audio_run.o libags_audio_a-ags_delay_audio.o libags_audio_a-ags_delay_audio_run.o libags_audio_a-ags_mute_audio.o libags_audio_a-ags_mute_audio_run.o libags_audio_a-ags_mute_audio_signal.o libags_audio_a-ags_mute_channel.o libags_audio_a-ags_mute_channel_run.o libags_audio_a-ags_mute_recycling.o libags_audio_a-ags_peak_channel.o libags_audio_a-ags_peak_channel_run.o libags_audio_a-ags_play_audio_file.o libags_audio_a-ags_play_audio.o libags_audio_a-ags_play_audio_signal.o libags_audio_a-ags_play_channel.o libags_audio_a-ags_play_channel_run.o libags_audio_a-ags_play_channel_run_master.o libags_audio_a-ags_play_notation_audio.o libags_audio_a-ags_play_notation_audio_run.o libags_audio_a-ags_play_pattern.o libags_audio_a-ags_play_recycling.o libags_audio_a-ags_stream_audio_signal.o libags_audio_a-ags_stream_channel.o libags_audio_a-ags_stream_channel_run.o libags_audio_a-ags_stream_recycling.o libags_audio_a-ags_volume_audio_signal.o libags_audio_a-ags_volume_channel.o libags_audio_a-ags_volume_channel_run.o libags_audio_a-ags_volume_recycling.o  libags_audio_a-ags_ladspa_manager.o libags_audio_a-ags_lv2_manager.o libags_audio_a-ags_lv2ui_manager.o libags_audio_a-ags_plugin_factory.o libags_log.a libags_server.a libags_thread.a libags.a
+ar: `u' modifier ignored since `D' is the default (see `U')
+ranlib libags_audio.a
+rm -f libgsequencer.a
+ar cru libgsequencer.a libgsequencer_a-ags_main.o  libgsequencer_a-ags_xorg_init.o libgsequencer_a-ags_xorg_application_context.o libgsequencer_a-ags_audio_preferences_callbacks.o libgsequencer_a-ags_audio_preferences.o libgsequencer_a-ags_automation_editor_callbacks.o libgsequencer_a-ags_automation_editor.o libgsequencer_a-ags_automation_window.o libgsequencer_a-ags_automation_window_callbacks.o libgsequencer_a-ags_editor_callbacks.o libgsequencer_a-ags_editor.o libgsequencer_a-ags_effect_bridge_callbacks.o libgsequencer_a-ags_effect_bridge.o libgsequencer_a-ags_effect_bulk_callbacks.o libgsequencer_a-ags_effect_bulk.o libgsequencer_a-ags_bulk_member.o libgsequencer_a-ags_bulk_member_callbacks.o libgsequencer_a-ags_effect_line.o libgsequencer_a-ags_effect_line_callbacks.o libgsequencer_a-ags_effect_pad_callbacks.o libgsequencer_a-ags_effect_pad.o libgsequencer_a-ags_export_window_callbacks.o libgsequencer_a-ags_export_window.o libgsequencer_a-ags_generic_preferences_callbacks.o libgsequencer_a-ags_generic_preferences.o libgsequencer_a-ags_plugin_browser_callbacks.o libgsequencer_a-ags_plugin_browser.o libgsequencer_a-ags_ladspa_browser_callbacks.o libgsequencer_a-ags_ladspa_browser.o libgsequencer_a-ags_lv2_browser_callbacks.o libgsequencer_a-ags_lv2_browser.o libgsequencer_a-ags_line_callbacks.o libgsequencer_a-ags_line_editor_callbacks.o libgsequencer_a-ags_line_editor.o libgsequencer_a-ags_line.o libgsequencer_a-ags_line_member_callbacks.o libgsequencer_a-ags_line_member_editor_callbacks.o libgsequencer_a-ags_line_member_editor.o libgsequencer_a-ags_line_member.o libgsequencer_a-ags_link_collection_editor_callbacks.o libgsequencer_a-ags_link_collection_editor.o libgsequencer_a-ags_link_editor_callbacks.o libgsequencer_a-ags_link_editor.o libgsequencer_a-ags_listing_editor_callbacks.o libgsequencer_a-ags_listing_editor.o libgsequencer_a-ags_machine_callbacks.o libgsequencer_a-ags_machine_editor_callbacks.o libgsequencer_a-ags_machine_editor.o libgsequencer_a-ags_machine.o libgsequencer_a-ags_menu_bar_callbacks.o libgsequencer_a-ags_menu_bar.o libgsequencer_a-ags_navigation_callbacks.o libgsequencer_a-ags_navigation.o libgsequencer_a-ags_pad_callbacks.o libgsequencer_a-ags_pad_editor_callbacks.o libgsequencer_a-ags_pad_editor.o libgsequencer_a-ags_pad.o libgsequencer_a-ags_performance_preferences_callbacks.o libgsequencer_a-ags_performance_preferences.o libgsequencer_a-ags_plugin_preferences_callbacks.o libgsequencer_a-ags_plugin_preferences.o libgsequencer_a-ags_preferences_callbacks.o libgsequencer_a-ags_preferences.o libgsequencer_a-ags_property_collection_editor_callbacks.o libgsequencer_a-ags_property_collection_editor.o libgsequencer_a-ags_property_editor_callbacks.o libgsequencer_a-ags_property_editor.o libgsequencer_a-ags_property_listing_editor.o libgsequencer_a-ags_resize_editor.o libgsequencer_a-ags_server_preferences_callbacks.o libgsequencer_a-ags_server_preferences.o libgsequencer_a-ags_window_callbacks.o libgsequencer_a-ags_window.o  libgsequencer_a-ags_midi_import_wizard_callbacks.o libgsequencer_a-ags_midi_import_wizard.o libgsequencer_a-ags_track_collection_callbacks.o libgsequencer_a-ags_track_collection.o libgsequencer_a-ags_track_collection_mapper_callbacks.o libgsequencer_a-ags_track_collection_mapper.o  libgsequencer_a-ags_gui_thread.o  libgsequencer_a-ags_add_line_member.o libgsequencer_a-ags_add_bulk_member.o libgsequencer_a-ags_update_bulk_member.o libgsequencer_a-ags_change_indicator.o libgsequencer_a-ags_change_tact.o libgsequencer_a-ags_display_tact.o libgsequencer_a-ags_scroll_on_play.o libgsequencer_a-ags_toggle_led.o  libgsequencer_a-ags_drum_callbacks.o libgsequencer_a-ags_drum.o libgsequencer_a-ags_drum_input_line_callbacks.o libgsequencer_a-ags_drum_input_line.o libgsequencer_a-ags_drum_input_pad_callbacks.o libgsequencer_a-ags_drum_input_pad.o libgsequencer_a-ags_drum_output_line_callbacks.o libgsequencer_a-ags_drum_output_line.o libgsequencer_a-ags_drum_output_pad_callbacks.o libgsequencer_a-ags_drum_output_pad.o libgsequencer_a-ags_ffplayer_bridge_callbacks.o libgsequencer_a-ags_ffplayer_bridge.o libgsequencer_a-ags_ffplayer_bulk_input_callbacks.o libgsequencer_a-ags_ffplayer_bulk_input.o libgsequencer_a-ags_ffplayer_callbacks.o libgsequencer_a-ags_ffplayer.o libgsequencer_a-ags_ffplayer_input_line_callbacks.o libgsequencer_a-ags_ffplayer_input_line.o libgsequencer_a-ags_ffplayer_input_pad_callbacks.o libgsequencer_a-ags_ffplayer_input_pad.o libgsequencer_a-ags_ladspa_bridge_callbacks.o libgsequencer_a-ags_ladspa_bridge.o libgsequencer_a-ags_lv2_bridge_callbacks.o libgsequencer_a-ags_lv2_bridge.o libgsequencer_a-ags_replicator_bridge_callbacks.o libgsequencer_a-ags_replicator_bridge.o libgsequencer_a-ags_matrix_bridge_callbacks.o libgsequencer_a-ags_matrix_bridge.o libgsequencer_a-ags_matrix_bulk_input_callbacks.o libgsequencer_a-ags_matrix_bulk_input.o libgsequencer_a-ags_matrix_callbacks.o libgsequencer_a-ags_matrix.o libgsequencer_a-ags_mixer_callbacks.o libgsequencer_a-ags_mixer.o libgsequencer_a-ags_mixer_input_line.o libgsequencer_a-ags_mixer_input_pad.o libgsequencer_a-ags_oscillator_callbacks.o libgsequencer_a-ags_oscillator.o libgsequencer_a-ags_panel_callbacks.o libgsequencer_a-ags_panel.o libgsequencer_a-ags_panel_input_line.o libgsequencer_a-ags_panel_input_pad.o libgsequencer_a-ags_synth_bridge_callbacks.o libgsequencer_a-ags_synth_bridge.o libgsequencer_a-ags_synth_bulk_output_callbacks.o libgsequencer_a-ags_synth_bulk_output.o libgsequencer_a-ags_synth_callbacks.o libgsequencer_a-ags_synth.o libgsequencer_a-ags_synth_input_line.o libgsequencer_a-ags_synth_input_pad.o libgsequencer_a-ags_synth_output_line_callbacks.o libgsequencer_a-ags_synth_output_line.o libgsequencer_a-ags_synth_output_pad_callbacks.o libgsequencer_a-ags_synth_output_pad.o  libgsequencer_a-ags_automation_area_callbacks.o libgsequencer_a-ags_automation_area.o libgsequencer_a-ags_automation_edit_callbacks.o libgsequencer_a-ags_automation_edit.o libgsequencer_a-ags_automation_toolbar_callbacks.o libgsequencer_a-ags_automation_toolbar.o libgsequencer_a-ags_file_selection_callbacks.o libgsequencer_a-ags_file_selection.o libgsequencer_a-ags_inline_player_callbacks.o libgsequencer_a-ags_inline_player.o libgsequencer_a-ags_machine_radio_button.o libgsequencer_a-ags_machine_selection.o libgsequencer_a-ags_machine_selector_callbacks.o libgsequencer_a-ags_machine_selector.o libgsequencer_a-ags_notebook_callbacks.o libgsequencer_a-ags_notebook.o libgsequencer_a-ags_note_edit_callbacks.o libgsequencer_a-ags_note_edit.o libgsequencer_a-ags_pattern_edit_callbacks.o libgsequencer_a-ags_pattern_edit.o libgsequencer_a-ags_piano_callbacks.o libgsequencer_a-ags_piano.o libgsequencer_a-ags_scale_area_callbacks.o libgsequencer_a-ags_scale_area.o libgsequencer_a-ags_scale_callbacks.o libgsequencer_a-ags_scale.o libgsequencer_a-ags_sf2_chooser_callbacks.o libgsequencer_a-ags_sf2_chooser.o libgsequencer_a-ags_soundset_callbacks.o libgsequencer_a-ags_soundset.o libgsequencer_a-ags_toolbar_callbacks.o libgsequencer_a-ags_toolbar.o  libgsequencer_a-ags_gsequencer_file_xml.o libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
+ar: `u' modifier ignored since `D' is the default (see `U')
+ranlib libgsequencer.a
+rm -f libgsequencer_test.a
+ar cru libgsequencer_test.a libgsequencer_test_a-ags_functional_runtime.o libgsequencer_test_a-ags_functional_menu_bar_util.o libgsequencer_test_a-ags_functional_machine_util.o libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a
+ar: `u' modifier ignored since `D' is the default (see `U')
+ranlib libgsequencer_test.a
+/bin/bash ./libtool  --tag=CC   --mode=link gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2  -g -O2 -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -luuid  -lao  -lasound  -lxml2  -lsndfile  -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile  -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0  -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  -lcairo  -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype   -o gsequencer gsequencer-main.o libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp 
+libtool: link: gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid -I/usr/include/alsa -I/usr/include/libxml2 -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2 -g -O2 -pthread -Wl,--export-dynamic -pthread -pthread -o gsequencer gsequencer-main.o  -L/lib -L/usr/lib -L/usr/X11/lib -ldl -luuid -lao -lasound -lxml2 -linstpatch-1.0 -lsndfile -lgmodule-2.0 -lgthread-2.0 -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig /usr/lib/x86_64-linux-gnu/libfreetype.so libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp -pthread
+/bin/bash ./libtool  --tag=CC   --mode=link gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -g -O2 -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit -luuid  -lao  -lasound  -lxml2  -lsndfile  -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile  -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0  -lgio-2.0 -lgobject-2.0 -lglib-2.0   -o ags_audio_test ags_audio_test-ags_audio_test.o libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp 
+libtool: link: gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid -I/usr/include/alsa -I/usr/include/libxml2 -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -g -O2 -pthread -Wl,--export-dynamic -pthread -pthread -o ags_audio_test ags_audio_test-ags_audio_test.o  -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lcunit -luuid -lao -lasound -lxml2 -linstpatch-1.0 -lsndfile -lgmodule-2.0 -lgthread-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp -pthread
+/bin/bash ./libtool  --tag=CC   --mode=link gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -g -O2 -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit -luuid  -lao  -lasound  -lxml2  -lsndfile  -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile  -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0  -lgio-2.0 -lgobject-2.0 -lglib-2.0   -o ags_channel_test ags_channel_test-ags_channel_test.o libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp 
+libtool: link: gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid -I/usr/include/alsa -I/usr/include/libxml2 -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -g -O2 -pthread -Wl,--export-dynamic -pthread -pthread -o ags_channel_test ags_channel_test-ags_channel_test.o  -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lcunit -luuid -lao -lasound -lxml2 -linstpatch-1.0 -lsndfile -lgmodule-2.0 -lgthread-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp -pthread
+/bin/bash ./libtool  --tag=CC   --mode=link gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -g -O2 -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit -luuid  -lao  -lasound  -lxml2  -lsndfile  -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile  -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0  -lgio-2.0 -lgobject-2.0 -lglib-2.0   -o ags_recycling_test ags_recycling_test-ags_recycling_test.o libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp 
+libtool: link: gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid -I/usr/include/alsa -I/usr/include/libxml2 -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -g -O2 -pthread -Wl,--export-dynamic -pthread -pthread -o ags_recycling_test ags_recycling_test-ags_recycling_test.o  -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lcunit -luuid -lao -lasound -lxml2 -linstpatch-1.0 -lsndfile -lgmodule-2.0 -lgthread-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp -pthread
+/bin/bash ./libtool  --tag=CC   --mode=link gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -g -O2 -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit -luuid  -lao  -lasound  -lxml2  -lsndfile  -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile  -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0  -lgio-2.0 -lgobject-2.0 -lglib-2.0   -o ags_audio_signal_test ags_audio_signal_test-ags_audio_signal_test.o libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp 
+libtool: link: gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid -I/usr/include/alsa -I/usr/include/libxml2 -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -g -O2 -pthread -Wl,--export-dynamic -pthread -pthread -o ags_audio_signal_test ags_audio_signal_test-ags_audio_signal_test.o  -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lcunit -luuid -lao -lasound -lxml2 -linstpatch-1.0 -lsndfile -lgmodule-2.0 -lgthread-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 libags_audio.a libags_server.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp -pthread
+/bin/bash ./libtool  --tag=CC   --mode=link gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid   -I/usr/include/alsa  -I/usr/include/libxml2   -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2  -g -O2 -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp -lcunit -luuid  -lao  -lasound  -lxml2  -lsndfile  -linstpatch-1.0 -lgobject-2.0 -lglib-2.0 -lsndfile  -lgobject-2.0 -Wl,--export-dynamic -lgmodule-2.0 -pthread -lgthread-2.0 -pthread -lglib-2.0  -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0  -lcairo  -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig -lfreetype   -o ags_functional_drum_test ags_functional_drum_test-ags_functional_drum_test.o libgsequencer_test.a libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp 
+libtool: link: gcc -g -O2 -g -std=gnu11 -Wuninitialized -Wreturn-type -Wunused-variable -Wunused-but-set-variable -Wmaybe-uninitialized -Wimplicit-function-declaration -Wparentheses -Wpointer-sign -Wdeprecated-declarations -Wcomment -O -I./src -I/usr/include -I/usr/include/uuid -I/usr/include/alsa -I/usr/include/libxml2 -I/usr/include/libinstpatch-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -pthread -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -pthread -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/gio-unix-2.0/ -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pango-1.0 -I/usr/include/harfbuzz -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/freetype2 -g -O2 -pthread -Wl,--export-dynamic -pthread -pthread -o ags_functional_drum_test ags_functional_drum_test-ags_functional_drum_test.o  -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lcunit -luuid -lao -lasound -lxml2 -linstpatch-1.0 -lsndfile -lgmodule-2.0 -lgthread-2.0 -lgtk-x11-2.0 -lgdk-x11-2.0 -lpangocairo-1.0 -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lpangoft2-1.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0 -lfontconfig /usr/lib/x86_64-linux-gnu/libfreetype.so libgsequencer_test.a libgsequencer.a libags_audio.a libags_server.a libags_gui.a libags_log.a libags_thread.a libags.a -lrt -lm -lgmp -pthread
 make[2]: Leaving directory '/home/joelkraehemann/gsequencer'
-Makefile:8759: recipe for target 'all-recursive' failed
-make[1]: *** [all-recursive] Error 1
+Making all in src/ags/util
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/util'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/util'
+Making all in src/ags/lib
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/lib'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/lib'
+Making all in src/ags/object
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/object'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/object'
+Making all in src/ags/widget
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/widget'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/widget'
+Making all in src/ags/audio/task
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/audio/task'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/audio/task'
+Making all in src/ags/audio/task/recall
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/audio/task/recall'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/audio/task/recall'
+Making all in src/ags/audio/file
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/audio/file'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/audio/file'
+Making all in src/ags/audio/recall
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/audio/recall'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/audio/recall'
+Making all in src/ags/audio
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/audio'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/audio'
+Making all in src/ags/file
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/file'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/file'
+Making all in src/ags/server
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/server'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/server'
+Making all in src/ags/X/editor
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/X/editor'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/X/editor'
+Making all in src/ags/X/machine
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/X/machine'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/X/machine'
+Making all in src/ags/X
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags/X'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags/X'
+Making all in src/ags
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/src/ags'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/src/ags'
+Making all in doc
+make[2]: Entering directory '/home/joelkraehemann/gsequencer/doc'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/joelkraehemann/gsequencer/doc'
 make[1]: Leaving directory '/home/joelkraehemann/gsequencer'
-Makefile:2323: recipe for target 'all' failed
-make: *** [all] Error 2

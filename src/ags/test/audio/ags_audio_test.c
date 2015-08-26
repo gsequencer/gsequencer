@@ -770,7 +770,16 @@ ags_audio_test_finalize_linked_channel()
   /* unset link */
   channel = ags_channel_pad_nth(test_finalize_linked_channel.master->input,
 				2);
-  
+
+  ags_audio_set_pads(test_finalize_linked_channel.slave_2,
+		     AGS_TYPE_INPUT,
+		     0);
+  ags_audio_set_pads(test_finalize_linked_channel.slave_2,
+		     AGS_TYPE_OUTPUT,
+		     0);
+
+  g_object_unref(test_finalize_linked_channel.slave_2);
+
   for(i = 0;
       i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS &&
 	i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS;
@@ -788,15 +797,6 @@ ags_audio_test_finalize_linked_channel()
 
   /* check output recycling */
   output = test_finalize_linked_channel.master->output;
-
-  ags_audio_set_pads(test_finalize_linked_channel.slave_2,
-		     AGS_TYPE_INPUT,
-		     0);
-  ags_audio_set_pads(test_finalize_linked_channel.slave_2,
-		     AGS_TYPE_OUTPUT,
-		     0);
-
-  g_object_unref(test_finalize_linked_channel.slave_2);
   
   for(i = 0;
       i < AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS &&
