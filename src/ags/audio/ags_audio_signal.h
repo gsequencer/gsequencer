@@ -29,6 +29,12 @@
 #define AGS_IS_AUDIO_SIGNAL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_SIGNAL))
 #define AGS_AUDIO_SIGNAL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_AUDIO_SIGNAL, AgsAudioSignalClass))
 
+#define AGS_BUFFER_RAW(x) ((unsigned char *)(x))
+#define AGS_BUFFER_8_BIT_PCM(x) ((signed char *)(x))
+#define AGS_BUFFER_16_BIT_PCM(x) ((signed short *)(x))
+#define AGS_BUFFER_32_BIT_PCM(x) ((signed long int *)(x))
+#define AGS_BUFFER_64_BIT_PCM(x) ((signed long long int *)(x))
+
 typedef struct _AgsAudioSignal AgsAudioSignal;
 typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
 

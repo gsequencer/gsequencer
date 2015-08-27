@@ -40,6 +40,14 @@ void ags_recycling_test_create_audio_signal_with_frame_count();
 void ags_recycling_test_position();
 void ags_recycling_test_find_next_channel();
 
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_SAMPLERATE (44100)
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE (944)
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FORMAT (AGS_AUDIO_SIGNAL_FORMAT_16_BIT_PCM)
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FREQUENCY (440.0)
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FRAMES (AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_SAMPLERATE / \
+								     AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE * \
+								     440.0)
+
 AgsDevout *devout;
 
 /* The suite initialization function.
@@ -70,22 +78,147 @@ void
 ags_recycling_test_add_audio_signal()
 {
   AgsRecycling *recycling;
+  AgsAudioSignal *audio_signal;
+  
+  /* instantiate recycling */
+  recycling = ags_recycling_new(G_OBJECT(devout));
 
-  /*  */
-  recycling = ags_recycling_new(NULL);
-  //TODO:JK: implement me
+  /* instantiate audio signal */
+  audio_signal = ags_audio_signal_new(G_OBJECT(devout),
+				      recycling,
+				      NULL);
+
+  /* add audio signal */
+  ags_recycling_add_audio_signal(recycling,
+				 audio_signal);
+
+  /* assert if audio signal available in recycling */
+  CU_ASSERT(g_list_find(recycling->audio_signal,
+			audio_signal) != NULL);
 }
 
 void
 ags_recycling_test_remove_audio_signal()
 {
-  //TODO:JK: implement me
+  AgsRecycling *recycling;
+  AgsAudioSignal *audio_signal;
+  
+  /* instantiate recycling */
+  recycling = ags_recycling_new(G_OBJECT(devout));
+
+  /* instantiate audio signal */
+  audio_signal = ags_audio_signal_new(G_OBJECT(devout),
+				      recycling,
+				      NULL);
+
+  /* add audio signal */
+  ags_recycling_add_audio_signal(recycling,
+				 audio_signal);
+
+  /* assert if audio signal available in recycling */
+  CU_ASSERT(g_list_find(recycling->audio_signal,
+			audio_signal) != NULL);
+
+  /* add audio signal */
+  ags_recycling_remove_audio_signal(recycling,
+				    audio_signal);
+
+  /* assert if no audio signal in recycling */
+  CU_ASSERT(g_list_find(recycling->audio_signal,
+			audio_signal) == NULL);
 }
 
 void
 ags_recycling_test_create_audio_signal_with_defaults()
 {
-  //TODO:JK: implement me
+  AgsRecycling *recycling;
+  AgsAudioSignal *template, *audio_signal;
+  GList *stream, *template_stream;
+  signed short *buffer;
+  guint i, j;
+  
+  /* instantiate recycling */
+  recycling = ags_recycling_new(G_OBJECT(devout));
+
+  /* instantiate template audio signal */
+  template = ags_audio_signal_new(G_OBJECT(devout),
+				  recycling,
+				  NULL);
+  template->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+  g_object_set(G_OBJECT(template),
+	       "samplerate\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_SAMPLERATE,
+	       "buffer-size\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE,
+	       "format\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FORMAT,
+	       NULL);
+
+  /* fill stream */
+  stream = NULL;
+  
+  for(i = 0; i < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FRAMES;){
+    buffer = (signed short *) malloc(template->buffer_size * sizeof(signed short));
+    memset(buffer, 0, template->buffer_size * sizeof(signed short));
+    
+    for(j = 0;
+	j < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE &&
+	  i + j < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FRAMES;
+	j++){
+      /* generate sin tone */
+      buffer[j] = (signed short) (0xffff & (int) (32000.0 * (double) (sin ((double)(j) * 2.0 * M_PI * AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FREQUENCY / (double) AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_SAMPLERATE))));
+    }
+
+    /* prepend buffer */
+    stream = g_list_prepend(stream,
+			    buffer);
+
+    /* iterate */
+    i += AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE;
+  }
+
+  template->stream_end = stream;
+  template->stream_beginning = g_list_reverse(stream);
+  
+  /* add audio signal to recycling */
+  ags_recycling_add_audio_signal(recycling,
+				 template);
+
+  /* instantiate audio signal */
+  audio_signal = ags_audio_signal_new(G_OBJECT(devout),
+				      recycling,
+				      NULL);
+
+  /* create defaults */
+  ags_recycling_create_audio_signal_with_defaults(recycling,
+						  template,
+						  0.0, 0);
+
+  /* assert audio signal */
+  CU_ASSERT(audio_signal->samplerate == template->samplerate);
+  CU_ASSERT(audio_signal->buffer_size == template->buffer_size);
+  CU_ASSERT(audio_signal->format == template->format);
+
+  CU_ASSERT(audio_signal->length == template->length);
+  CU_ASSERT(audio_signal->first_frame == template->first_frame);
+  CU_ASSERT(audio_signal->last_frame == template->last_frame);
+  CU_ASSERT(audio_signal->loop_start == template->loop_start);
+  CU_ASSERT(audio_signal->loop_end == template->loop_end);
+
+  stream = audio_signal->stream_beginning;
+  template_stream = template->stream_beginning;
+  
+  for(i = 0; i < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FRAMES;){
+    for(j = 0;
+	j < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE &&
+	  i + j < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FRAMES;
+	j++){
+      CU_ASSERT(AGS_BUFFER_16_BIT_PCM(stream->data)[j] == AGS_BUFFER_16_BIT_PCM(template_stream->data)[j]);
+    }
+
+    /* iterate */
+    stream = stream->next;
+    template_stream = template_stream->next;
+    
+    i += AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE;
+  }
 }
 
 void
