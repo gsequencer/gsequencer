@@ -135,9 +135,9 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsChannel add recall container\0", ags_channel_test_add_recall_container) == NULL) ||
      (CU_add_test(pSuite, "test of AgsChannel add recall id\0", ags_channel_test_add_recall_id) == NULL) ||
      (CU_add_test(pSuite, "test of AgsChannel add recycling context\0", ags_channel_test_add_recycling_context) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel add duplicate recall\0", ags_channel_test_add_duplicate_recall) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel add resolve recall\0", ags_channel_test_add_resolve_recall) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsChannel add init recall\0", ags_channel_test_add_init_recall) == NULL)){
+     (CU_add_test(pSuite, "test of AgsChannel add duplicate recall\0", ags_channel_test_duplicate_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add resolve recall\0", ags_channel_test_resolve_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add init recall\0", ags_channel_test_init_recall) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();

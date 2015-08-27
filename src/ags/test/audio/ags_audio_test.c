@@ -878,7 +878,7 @@ ags_audio_test_add_recall_container()
   recall_container = ags_recall_container_new(NULL);
 
   /* assert to be in audio->recall_container */
-  CU_ASSERT(g_list_find(audio->recall_container,
+  CU_ASSERT(g_list_find(audio->container,
 			recall_container) != NULL);
 }
 
@@ -951,7 +951,7 @@ ags_audio_test_duplicate_recall()
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
-  recall_id = ags_recall_id_new();
+  recall_id = ags_recall_id_new(NULL);
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);
@@ -991,7 +991,7 @@ ags_audio_test_duplicate_recall()
 	       "parent\0", parent_recycling_context,
 	       NULL);
 
-  recall_id = ags_recall_id_new();
+  recall_id = ags_recall_id_new(NULL);
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);
@@ -1035,7 +1035,7 @@ ags_audio_test_init_recall()
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
-  recall_id = ags_recall_id_new();
+  recall_id = ags_recall_id_new(NULL);
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);
@@ -1054,7 +1054,8 @@ ags_audio_test_init_recall()
 	       NULL);
   
   /* init recall */
-  ags_audio_init_recall(audio);
+  ags_audio_init_recall(audio, 0,
+			recall_id);
   
   CU_ASSERT(test_init_recall_callback_hits_count == 3);
 }
@@ -1063,7 +1064,6 @@ void
 ags_audio_test_resolve_recall()
 {
   AgsAudio *audio;
-  AgsRecall *recall;
   AgsRecall *master_recall_audio_run, *master_recall_channel_run;
   AgsRecall  *slave_recall_audio_run, *slave_recall_channel_run;
   AgsRecyclingContext *recycling_context;
@@ -1073,46 +1073,38 @@ ags_audio_test_resolve_recall()
   audio = ags_audio_new(AGS_SOUNDCARD(devout));
 
   /* instantiate recalls */
-  recall = ags_recall_new();
+  slave_recall_audio_run = ags_recall_audio_run_new();
   ags_audio_add_recall(audio,
-		       recall,
+		       slave_recall_audio_run,
 		       TRUE);
   
-  recall_audio_run = ags_recall_audio_run_new();
+  slave_recall_channel_run = ags_recall_channel_run_new();
   ags_audio_add_recall(audio,
-		       recall_audio_run,
-		       TRUE);
-  
-  recall_channel_run = ags_recall_channel_run_new();
-  ags_audio_add_recall(audio,
-		       recall_channel_run,
+		       slave_recall_channel_run,
 		       TRUE);
 
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
-  recall_id = ags_recall_id_new();
+  recall_id = ags_recall_id_new(NULL);
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);
   
   /* setup recalls */
-  g_object_set(recall,
+  g_object_set(slave_recall_audio_run,
 	       "recall-id\0", recall_id,
 	       NULL);
 
-  g_object_set(recall_audio_run,
-	       "recall-id\0", recall_id,
-	       NULL);
-
-  g_object_set(recall_channel_run,
+  g_object_set(slave_recall_channel_run,
 	       "recall-id\0", recall_id,
 	       NULL);
 
   /* resolve recall */
-  ags_audio_resolve_recall(audio);
+  ags_audio_resolve_recall(audio,
+			   recall_id);
   
-  CU_ASSERT(test_resolve_recall_callback_hits_count == 3);
+  CU_ASSERT(test_resolve_recall_callback_hits_count == 2);
 }
 
 void
@@ -1164,7 +1156,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsAudio add recall\0", ags_audio_test_add_recall) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio add recall container\0", ags_audio_test_add_recall_container) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio recall id\0", ags_audio_test_add_recall_id) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio recycling context\0", ags_audio_test_recycling_context) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio recycling context\0", ags_audio_test_add_recycling_context) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio duplicate recall\0", ags_audio_test_duplicate_recall) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio initialize recall\0", ags_audio_test_init_recall) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio resolve recall\0", ags_audio_test_resolve_recall) == NULL)){
