@@ -24,10 +24,30 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
+#include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recycling_context.h>
+
 int ags_channel_test_init_suite();
 int ags_channel_test_clean_suite();
 
 void ags_channel_test_add_recall();
+void ags_channel_test_add_recall_container();
+void ags_channel_test_add_recall_id();
+void ags_channel_test_add_recycling_context();
+void ags_channel_test_duplicate_recall();
+void ags_channel_test_init_recall();
+void ags_channel_test_resolve_recall();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -55,6 +75,42 @@ ags_channel_test_add_recall()
   //TODO:JK: implement me
 }
 
+void
+ags_channel_test_add_recall_container()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_channel_test_add_recall_id()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_channel_test_add_recycling_context()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_channel_test_duplicate_recall()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_channel_test_init_recall()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_channel_test_resolve_recall()
+{
+  //TODO:JK: implement me
+}
+
 int
 main(int argc, char **argv)
 {
@@ -75,7 +131,13 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsChannel add recall\0", ags_channel_test_add_recall) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsChannel add recall\0", ags_channel_test_add_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add recall container\0", ags_channel_test_add_recall_container) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add recall id\0", ags_channel_test_add_recall_id) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add recycling context\0", ags_channel_test_add_recycling_context) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add duplicate recall\0", ags_channel_test_add_duplicate_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add resolve recall\0", ags_channel_test_add_resolve_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsChannel add init recall\0", ags_channel_test_add_init_recall) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();

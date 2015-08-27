@@ -30,6 +30,14 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recycling_context.h>
 
 int ags_audio_test_init_suite();
 int ags_audio_test_clean_suite();
@@ -38,6 +46,13 @@ void ags_audio_test_set_pads();
 void ags_audio_test_set_audio_channels();
 void ags_audio_test_link_channel();
 void ags_audio_test_finalize_linked_channel();
+void ags_audio_test_add_recall();
+void ags_audio_test_add_recall_container();
+void ags_audio_test_add_recall_id();
+void ags_audio_test_add_recycling_context();
+void ags_audio_test_duplicate_recall();
+void ags_audio_test_init_recall();
+void ags_audio_test_resolve_recall();
 
 void ags_audio_test_set_link_callback(AgsChannel *channel, AgsChannel *link,
 				      GError **error,
@@ -817,6 +832,122 @@ ags_audio_test_set_link_callback(AgsChannel *channel, AgsChannel *link,
   //TODO:JK: implement me
 }
 
+void
+ags_audio_test_add_recall()
+{
+  AgsAudio *audio;
+  AgsRecall *recall;
+
+  /* instantiate audio */
+  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+
+  /* instantiate recall */
+  recall = ags_recall_new();
+
+  /* add recall to audio */
+  ags_audio_add_recall(audio,
+		       recall,
+		       TRUE);
+
+  /* assert to be in audio->play */
+  CU_ASSERT(g_list_find(audio->play,
+			recall) != NULL);
+
+  /* instantiate recall */
+  recall = ags_recall_new();
+
+  /* add recall to audio */
+  ags_audio_add_recall(audio,
+		       recall,
+		       FALSE);
+
+  /* assert to be in audio->recall */
+  CU_ASSERT(g_list_find(audio->recall,
+			recall) != NULL);
+}
+
+void
+ags_audio_test_add_recall_container()
+{
+  AgsAudio *audio;
+  AgsRecallContainer *recall_container;
+  
+  /* instantiate audio */
+  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+
+  /* instantiate recall */
+  recall_container = ags_recall_container_new(NULL);
+
+  /* assert to be in audio->recall_container */
+  CU_ASSERT(g_list_find(audio->recall_container,
+			recall_container) != NULL);
+}
+
+void
+ags_audio_test_add_recall_id()
+{
+  AgsAudio *audio;
+  AgsRecallID *recall_id;
+  
+  /* instantiate audio */
+  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+
+  /* instantiate recall */
+  recall_id = ags_recall_id_new(NULL);
+
+  /* assert to be in audio->recall_id */
+  CU_ASSERT(g_list_find(audio->recall_id,
+			recall_id) != NULL);
+}
+
+void
+ags_audio_test_add_recycling_context()
+{
+  AgsAudio *audio;
+  AgsRecyclingContext *recycling_context;
+  
+  /* instantiate audio */
+  audio = ags_audio_new(AGS_SOUNDCARD(devout));
+
+  /* instantiate recall */
+  recycling_context = ags_recycling_context_new(0);
+
+  /* assert to be in audio->recycling_context */
+  CU_ASSERT(g_list_find(audio->recycling_context,
+			recycling_context) != NULL);
+}
+
+void
+ags_audio_test_duplicate_recall()
+{
+  AgsAudio *audio;
+  AgsRecall *recall;
+  AgsRecall *recall_audio_run, *recall_channel_run;
+  
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_test_init_recall()
+{
+  AgsAudio *audio;
+  AgsRecall *recall;
+  AgsRecall *recall_audio_run, *recall_channel_run;
+  
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_test_resolve_recall()
+{
+  AgsAudio *audio;
+  AgsRecall *recall;
+  AgsRecall *master_recall_audio_run, *master_recall_channel_run;
+  AgsRecall  *slave_recall_audio_run, *slave_recall_channel_run;
+  
+  //TODO:JK: implement me
+}
+
 int
 main(int argc, char **argv)
 {
@@ -840,7 +971,14 @@ main(int argc, char **argv)
   if((CU_add_test(pSuite, "test of AgsAudio set pads\0", ags_audio_test_set_pads) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio set audio channels\0", ags_audio_test_set_audio_channels) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio link channel\0", ags_audio_test_link_channel) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio finalize linked channel\0", ags_audio_test_finalize_linked_channel) == NULL)){
+     (CU_add_test(pSuite, "test of AgsAudio finalize linked channel\0", ags_audio_test_finalize_linked_channel) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio add recall\0", ags_audio_test_add_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio add recall container\0", ags_audio_test_add_recall_container) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio recall id\0", ags_audio_test_add_recall_id) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio recycling context\0", ags_audio_test_recycling_context) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio duplicate recall\0", ags_audio_test_duplicate_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio initialize recall\0", ags_audio_test_init_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio resolve recall\0", ags_audio_test_resolve_recall) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();
