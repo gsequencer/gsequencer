@@ -27,7 +27,18 @@
 int ags_audio_signal_test_init_suite();
 int ags_audio_signal_test_clean_suite();
 
+void ags_audio_signal_test_add_stream();
 void ags_audio_signal_test_resize_stream();
+void ags_audio_signal_test_realloc_buffer_size();
+void ags_audio_signal_test_morph_samplerate();
+void ags_audio_signal_test_copy_buffer_to_buffer();
+void ags_audio_signal_test_copy_double_buffer_to_buffer();
+void ags_audio_signal_test_duplicate_stream();
+void ags_audio_signal_test_get_template();
+void ags_audio_signal_test_get_stream_current();
+void ags_audio_signal_test_get_by_recall_id();
+void ags_audio_signal_test_tile();
+void ags_audio_signal_test_scale();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -50,7 +61,73 @@ ags_audio_signal_test_clean_suite()
 }
 
 void
+ags_audio_signal_test_add_stream()
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_audio_signal_test_resize_stream()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_realloc_buffer_size()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_morph_samplerate()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_copy_buffer_to_buffer()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_copy_double_buffer_to_buffer()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_duplicate_stream()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_get_template()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_get_stream_current()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_get_by_recall_id()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_tile()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_signal_test_scale()
 {
   //TODO:JK: implement me
 }
@@ -75,7 +152,18 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsAudioSignal resize stream\0", ags_audio_signal_test_resize_stream) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsAudioSignal add stream\0", ags_audio_signal_test_add_stream) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal resize stream\0", ags_audio_signal_test_resize_stream) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal realloc buffer size\0", ags_audio_signal_test_realloc_buffer_size) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal morph samplerate\0", ags_audio_signal_test_morph_samplerate) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal copy buffer to buffer\0", ags_audio_signal_test_copy_buffer_to_buffer) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal copy double buffer to buffer\0", ags_audio_signal_test_copy_double_buffer_to_buffer) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal duplicate stream\0", ags_audio_signal_test_duplicate_stream) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal get template\0", ags_audio_signal_test_get_template) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal get stream current\0", ags_audio_signal_test_get_stream_current) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal get by recall id\0", ags_audio_signal_test_get_by_recall_id) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal tile\0", ags_audio_signal_test_tile) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudioSignal scale\0", ags_audio_signal_test_scale) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();

@@ -24,10 +24,23 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
+#include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+
 int ags_recycling_test_init_suite();
 int ags_recycling_test_clean_suite();
 
 void ags_recycling_test_add_audio_signal();
+void ags_recycling_test_remove_audio_signal();
+void ags_recycling_test_create_audio_signal_with_defaults();
+void ags_recycling_test_create_audio_signal_with_frame_count();
+void ags_recycling_test_position();
+void ags_recycling_test_find_next_channel();
+
+AgsDevout *devout;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -36,7 +49,9 @@ void ags_recycling_test_add_audio_signal();
 int
 ags_recycling_test_init_suite()
 { 
-  //TODO:JK: implement me
+  devout = ags_devout_new(NULL);
+
+  return(0);
 }
 
 /* The suite cleanup function.
@@ -46,11 +61,47 @@ ags_recycling_test_init_suite()
 int
 ags_recycling_test_clean_suite()
 {
-  //TODO:JK: implement me
+  g_object_unref(devout);
+  
+  return(0);
 }
 
 void
 ags_recycling_test_add_audio_signal()
+{
+  AgsRecycling *recycling;
+
+  /*  */
+  recycling = ags_recycling_new(NULL);
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_test_remove_audio_signal()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_test_create_audio_signal_with_defaults()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_test_create_audio_signal_with_frame_count()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_test_position()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_test_find_next_channel()
 {
   //TODO:JK: implement me
 }
@@ -75,7 +126,12 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsRecycling add audio signal\0", ags_recycling_test_add_audio_signal) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsRecycling add audio signal\0", ags_recycling_test_add_audio_signal) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecycling remove audio signal\0", ags_recycling_test_remove_audio_signal) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecycling create audio signal with defaults\0", ags_recycling_test_create_audio_signal_with_defaults) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecycling create audio signal with frame count\0", ags_recycling_test_create_audio_signal_with_frame_count) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecycling position\0", ags_recycling_test_position) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecycling find next channel\0", ags_recycling_test_find_next_channel) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();
