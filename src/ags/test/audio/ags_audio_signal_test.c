@@ -24,6 +24,9 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio_signal.h>
+
 int ags_audio_signal_test_init_suite();
 int ags_audio_signal_test_clean_suite();
 
@@ -40,6 +43,11 @@ void ags_audio_signal_test_get_by_recall_id();
 void ags_audio_signal_test_tile();
 void ags_audio_signal_test_scale();
 
+#define AGS_AUDIO_SIGNAL_TEST_GET_TEMPLATE_N_AUDIO_SIGNAL (3)
+#define AGS_AUDIO_SIGNAL_TEST_GET_STREAM_CURRENT_N_AUDIO_SIGNAL (6)
+
+AgsDevout *devout;
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -47,7 +55,7 @@ void ags_audio_signal_test_scale();
 int
 ags_audio_signal_test_init_suite()
 { 
-  //TODO:JK: implement me
+  devout = ags_devout_new(NULL);
 }
 
 /* The suite cleanup function.
@@ -57,19 +65,44 @@ ags_audio_signal_test_init_suite()
 int
 ags_audio_signal_test_clean_suite()
 {
-  //TODO:JK: implement me
+  g_object_unref(devout);
 }
 
 void
 ags_audio_signal_test_add_stream()
 {
-  //TODO:JK: implement me
+  AgsAudioSignal *audio_signal;
+
+  /* instantiate audio signal */
+  audio_signal = ags_audio_signal_new(G_OBJECT(devout),
+				      NULL,
+				      NULL);
+
+  /* assert add stream */
+  CU_ASSERT(audio_signal->stream_beginning == NULL);
+
+  ags_audio_signal_add_stream(audio_signal);
+  CU_ASSERT(audio_signal->stream_beginning != NULL);
+  CU_ASSERT(g_list_length(audio_signal->stream_beginning) == 1);
 }
 
 void
 ags_audio_signal_test_resize_stream()
 {
-  //TODO:JK: implement me
+  AgsAudioSignal *audio_signal;
+
+  /* instantiate audio signal */
+  audio_signal = ags_audio_signal_new(G_OBJECT(devout),
+				      NULL,
+				      NULL);
+
+  /* assert resize stream */
+  CU_ASSERT(audio_signal->stream_beginning == NULL);
+
+  ags_audio_signal_stream_resize(audio_signal,
+				 5);
+  CU_ASSERT(audio_signal->stream_beginning != NULL);
+  CU_ASSERT(g_list_length(audio_signal->stream_beginning) == 5);
 }
 
 void
