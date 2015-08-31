@@ -39,6 +39,7 @@ struct _AgsAccessibleWindowInterface
   gboolean (*move_to_machines_pane)(AgsAccessibleWindow *accessible_window);
   gboolean (*move_to_editor_index_pane)(AgsAccessibleWindow *accessible_window);
   gboolean (*move_to_notation_editor_pane)(AgsAccessibleWindow *accessible_window);
+  gboolean (*move_to_navigation)(AgsAccessibleWindow *accessible_window);
   
   gboolean (*open_file)(AgsAccessibleWindow *accessible_window);
   gboolean (*save_file)(AgsAccessibleWindow *accessible_window);
@@ -63,7 +64,8 @@ GType ags_accessible_window_get_type();
 gboolean ags_accessible_window_move_to_machines_pane(AgsAccessibleWindow *accessible_window);
 gboolean ags_accessible_window_move_to_editor_index_pane(AgsAccessibleWindow *accessible_window);
 gboolean ags_accessible_window_move_to_notation_editor_pane(AgsAccessibleWindow *accessible_window);
-  
+gboolean ags_accessible_window_move_to_navigation(AgsAccessibleWindow *accessible_window);
+
 gboolean ags_accessible_window_open_file(AgsAccessibleWindow *accessible_window);
 gboolean ags_accessible_window_save_file(AgsAccessibleWindow *accessible_window);
 gboolean ags_accessible_window_save_file_as(AgsAccessibleWindow *accessible_window);

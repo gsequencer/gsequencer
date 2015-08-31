@@ -40,6 +40,7 @@ struct _AgsAccessibleEditorInterface
   gboolean (*delete_note)(AgsAccessibleEditor *accessible_editor);
   gboolean (*select_region)(AgsAccessibleEditor *accessible_editor);
   gboolean (*select_all)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*unselect_all)(AgsAccessibleEditor *accessible_editor);
   gboolean (*copy)(AgsAccessibleEditor *accessible_editor);
   gboolean (*cut)(AgsAccessibleEditor *accessible_editor);
   gboolean (*paste)(AgsAccessibleEditor *accessible_editor);
@@ -58,6 +59,7 @@ gboolean ags_accessible_editor_insert_note(AgsAccessibleEditor *accessible_edito
 gboolean ags_accessible_editor_delete_note(AgsAccessibleEditor *accessible_editor);
 gboolean ags_accessible_editor_select_region(AgsAccessibleEditor *accessible_editor);
 gboolean ags_accessible_editor_select_all(AgsAccessibleEditor *accessible_editor);
+gboolean ags_accessible_editor_unselect_all(AgsAccessibleEditor *accessible_editor);
 gboolean ags_accessible_editor_copy(AgsAccessibleEditor *accessible_editor);
 gboolean ags_accessible_editor_cut(AgsAccessibleEditor *accessible_editor);
 gboolean ags_accessible_editor_paste(AgsAccessibleEditor *accessible_editor);
