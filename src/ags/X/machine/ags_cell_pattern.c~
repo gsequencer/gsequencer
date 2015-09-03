@@ -1,0 +1,6 @@
+
+void ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern);
+void ags_cell_pattern_draw_cell_pattern(AgsCellPattern *cell_pattern);
+void ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *channel, guint j, guint i);
+void ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);
+void ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);

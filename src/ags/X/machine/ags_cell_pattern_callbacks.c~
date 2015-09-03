@@ -1,0 +1,53 @@
+gboolean
+ags_matrix_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsMatrix *matrix)
+{
+  ags_matrix_draw_matrix(matrix);
+
+  return(FALSE);
+}
+
+gboolean
+ags_matrix_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsMatrix *matrix)
+{
+  ags_matrix_draw_gutter(matrix);
+  ags_matrix_draw_matrix(matrix);
+
+  return(FALSE);
+}
+
+gboolean
+ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsMatrix *matrix)
+{
+  if (event->button == 1){
+    AgsTogglePatternBit *toggle_pattern_bit;
+    AgsChannel *channel;
+    guint i, j;
+    guint index1;
+    
+    i = (guint) floor((double) event->y / (double) AGS_MATRIX_CELL_HEIGHT);
+    j = (guint) floor((double) event->x / (double) AGS_MATRIX_CELL_WIDTH);
+
+    index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
+    
+    channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - ((guint) matrix->adjustment->value + i) - 1);
+
+    toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
+						    channel->line,
+						    0, index1,
+						    j);
+    g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
+		     G_CALLBACK(ags_matrix_refresh_gui_callback), matrix);
+
+    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout)->ags_main)->main_loop)->task_thread),
+				AGS_TASK(toggle_pattern_bit));
+  }else if (event->button == 3){
+  }
+
+  return(FALSE);
+}
+
+void
+ags_matrix_adjustment_value_changed_callback(GtkWidget *widget, AgsMatrix *matrix)
+{
+  ags_matrix_draw_matrix(matrix);
+}
