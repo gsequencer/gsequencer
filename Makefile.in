@@ -399,6 +399,8 @@ am_gsequencer_OBJECTS = $(am__objects_1) \
 	gsequencer-ags_sf2_chooser_callbacks.$(OBJEXT) \
 	gsequencer-ags_toolbar.$(OBJEXT) \
 	gsequencer-ags_toolbar_callbacks.$(OBJEXT) \
+	gsequencer-ags_cell_pattern.$(OBJEXT) \
+	gsequencer-ags_cell_pattern_callbacks.$(OBJEXT) \
 	gsequencer-ags_drum.$(OBJEXT) \
 	gsequencer-ags_drum_callbacks.$(OBJEXT) \
 	gsequencer-ags_drum_input_line.$(OBJEXT) \
@@ -1030,6 +1032,8 @@ gsequencerheaders = \
 	src/ags/X/editor/ags_toolbar_callbacks.h \
 	src/ags/X/editor/ags_toolbar.h \
 	src/ags/X/editor/ags_toolbar_mode_stock.h \
+	src/ags/X/machine/ags_cell_pattern_callbacks.h \
+	src/ags/X/machine/ags_cell_pattern.h \
 	src/ags/X/machine/ags_drum_callbacks.h \
 	src/ags/X/machine/ags_drum.h \
 	src/ags/X/machine/ags_drum_input_line_callbacks.h \
@@ -1359,6 +1363,8 @@ gsequencer_SOURCES = \
 	src/ags/X/editor/ags_sf2_chooser_callbacks.c \
 	src/ags/X/editor/ags_toolbar.c \
 	src/ags/X/editor/ags_toolbar_callbacks.c \
+	src/ags/X/machine/ags_cell_pattern.c \
+	src/ags/X/machine/ags_cell_pattern_callbacks.c \
 	src/ags/X/machine/ags_drum.c \
 	src/ags/X/machine/ags_drum_callbacks.c \
 	src/ags/X/machine/ags_drum_input_line.c \
@@ -1542,6 +1548,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_cancel_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_cancel_recall.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_cartesian.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_cell_pattern.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_cell_pattern_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_change_indicator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_change_tact.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_channel.Po@am__quote@
@@ -6019,6 +6027,34 @@ gsequencer-ags_toolbar_callbacks.obj: src/ags/X/editor/ags_toolbar_callbacks.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/editor/ags_toolbar_callbacks.c' object='gsequencer-ags_toolbar_callbacks.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_toolbar_callbacks.obj `if test -f 'src/ags/X/editor/ags_toolbar_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/editor/ags_toolbar_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/editor/ags_toolbar_callbacks.c'; fi`
+
+gsequencer-ags_cell_pattern.o: src/ags/X/machine/ags_cell_pattern.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_cell_pattern.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_cell_pattern.Tpo -c -o gsequencer-ags_cell_pattern.o `test -f 'src/ags/X/machine/ags_cell_pattern.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_cell_pattern.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_cell_pattern.Tpo $(DEPDIR)/gsequencer-ags_cell_pattern.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_cell_pattern.c' object='gsequencer-ags_cell_pattern.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_cell_pattern.o `test -f 'src/ags/X/machine/ags_cell_pattern.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_cell_pattern.c
+
+gsequencer-ags_cell_pattern.obj: src/ags/X/machine/ags_cell_pattern.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_cell_pattern.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_cell_pattern.Tpo -c -o gsequencer-ags_cell_pattern.obj `if test -f 'src/ags/X/machine/ags_cell_pattern.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_cell_pattern.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_cell_pattern.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_cell_pattern.Tpo $(DEPDIR)/gsequencer-ags_cell_pattern.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_cell_pattern.c' object='gsequencer-ags_cell_pattern.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_cell_pattern.obj `if test -f 'src/ags/X/machine/ags_cell_pattern.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_cell_pattern.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_cell_pattern.c'; fi`
+
+gsequencer-ags_cell_pattern_callbacks.o: src/ags/X/machine/ags_cell_pattern_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_cell_pattern_callbacks.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_cell_pattern_callbacks.Tpo -c -o gsequencer-ags_cell_pattern_callbacks.o `test -f 'src/ags/X/machine/ags_cell_pattern_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_cell_pattern_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_cell_pattern_callbacks.Tpo $(DEPDIR)/gsequencer-ags_cell_pattern_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_cell_pattern_callbacks.c' object='gsequencer-ags_cell_pattern_callbacks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_cell_pattern_callbacks.o `test -f 'src/ags/X/machine/ags_cell_pattern_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_cell_pattern_callbacks.c
+
+gsequencer-ags_cell_pattern_callbacks.obj: src/ags/X/machine/ags_cell_pattern_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_cell_pattern_callbacks.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_cell_pattern_callbacks.Tpo -c -o gsequencer-ags_cell_pattern_callbacks.obj `if test -f 'src/ags/X/machine/ags_cell_pattern_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_cell_pattern_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_cell_pattern_callbacks.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_cell_pattern_callbacks.Tpo $(DEPDIR)/gsequencer-ags_cell_pattern_callbacks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_cell_pattern_callbacks.c' object='gsequencer-ags_cell_pattern_callbacks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_cell_pattern_callbacks.obj `if test -f 'src/ags/X/machine/ags_cell_pattern_callbacks.c'; then $(CYGPATH_W) 'src/ags/X/machine/ags_cell_pattern_callbacks.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/X/machine/ags_cell_pattern_callbacks.c'; fi`
 
 gsequencer-ags_drum.o: src/ags/X/machine/ags_drum.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_drum.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_drum.Tpo -c -o gsequencer-ags_drum.o `test -f 'src/ags/X/machine/ags_drum.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_drum.c

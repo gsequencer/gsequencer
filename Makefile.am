@@ -376,6 +376,8 @@ gsequencerheaders = \
 	src/ags/X/editor/ags_toolbar_callbacks.h \
 	src/ags/X/editor/ags_toolbar.h \
 	src/ags/X/editor/ags_toolbar_mode_stock.h \
+	src/ags/X/machine/ags_cell_pattern_callbacks.h \
+	src/ags/X/machine/ags_cell_pattern.h \
 	src/ags/X/machine/ags_drum_callbacks.h \
 	src/ags/X/machine/ags_drum.h \
 	src/ags/X/machine/ags_drum_input_line_callbacks.h \
@@ -705,6 +707,8 @@ gsequencer_SOURCES = \
 	src/ags/X/editor/ags_sf2_chooser_callbacks.c \
 	src/ags/X/editor/ags_toolbar.c \
 	src/ags/X/editor/ags_toolbar_callbacks.c \
+	src/ags/X/machine/ags_cell_pattern.c \
+	src/ags/X/machine/ags_cell_pattern_callbacks.c \
 	src/ags/X/machine/ags_drum.c \
 	src/ags/X/machine/ags_drum_callbacks.c \
 	src/ags/X/machine/ags_drum_input_line.c \

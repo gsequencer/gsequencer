@@ -69,8 +69,6 @@
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
-#include <ags/widget/ags_led.h>
-
 #include <ags/X/ags_menu_bar.h>
 
 #include <math.h>
@@ -118,8 +116,6 @@ void ags_matrix_set_pads(AgsAudio *audio, GType type,
 static gpointer ags_matrix_parent_class = NULL;
 
 static AgsConnectableInterface *ags_matrix_parent_connectable_interface;
-
-GtkStyle *matrix_style;
 
 extern const char *AGS_COPY_PATTERN;
 const char *AGS_MATRIX_INDEX = "AgsMatrixIndex\0";
@@ -226,8 +222,6 @@ ags_matrix_init(AgsMatrix *matrix)
   GtkFrame *frame;
   GtkTable *table;
   GtkToggleButton *button;
-  GtkVScrollbar *vscrollbar;
-  AgsLed *led;
   GtkVBox *vbox;
   GtkHBox *hbox;
 
@@ -280,7 +274,8 @@ ags_matrix_init(AgsMatrix *matrix)
   frame = (GtkFrame *) (gtk_bin_get_child((GtkBin *) matrix));
 
   matrix->table = (GtkTable *) gtk_table_new(4, 4, FALSE);
-  gtk_container_add((GtkContainer *) frame, (GtkWidget *) matrix->table);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) matrix->table);
 
   AGS_MACHINE(matrix)->play = 
     matrix->run = (GtkToggleButton *) gtk_toggle_button_new_with_label("run\0");
@@ -302,8 +297,10 @@ ags_matrix_init(AgsMatrix *matrix)
       matrix->index[i * 3 + j] =
 	button = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%d\0", i * 3 + j +1));
       g_object_set_data((GObject *) button, AGS_MATRIX_INDEX, GUINT_TO_POINTER(i * 3 + j));
-      gtk_table_attach(table, (GtkWidget *) button,
-		       j, j +1, i, i +1,
+      gtk_table_attach(table,
+		       (GtkWidget *) button,
+		       j, j +1,
+		       i, i +1,
 		       GTK_FILL, GTK_FILL,
 		       0, 0);
     }
@@ -313,69 +310,46 @@ ags_matrix_init(AgsMatrix *matrix)
   gtk_toggle_button_set_active(matrix->selected, TRUE);
 
   /* sequencer */
-  table = (GtkTable *) gtk_table_new(2, 2, FALSE);
-  gtk_table_attach(matrix->table, (GtkWidget *) table,
-		   2, 3, 0, 1,
+  matrix->cell_pattern = ags_cell_pattern_new();
+  gtk_table_attach(matrix->table,
+		   (GtkWidget *) matrix->cell_pattern,
+		   2, 3,
+		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  matrix->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_size_request((GtkWidget *) matrix->drawing_area, 32 * AGS_MATRIX_CELL_WIDTH +1, AGS_MATRIX_OCTAVE * AGS_MATRIX_CELL_HEIGHT +1);
-  gtk_widget_set_style((GtkWidget *) matrix->drawing_area, matrix_style);
-  gtk_table_attach(table, (GtkWidget *) matrix->drawing_area,
-		   0, 1, 0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-  gtk_widget_set_events ((GtkWidget *) matrix->drawing_area,
-                         GDK_EXPOSURE_MASK
-                         | GDK_LEAVE_NOTIFY_MASK
-                         | GDK_BUTTON_PRESS_MASK
-                         | GDK_POINTER_MOTION_MASK
-                         | GDK_POINTER_MOTION_HINT_MASK);
-
-  matrix->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 77.0, 1.0, 1.0, (gdouble) AGS_MATRIX_OCTAVE);
-
-  vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(matrix->adjustment);
-  gtk_widget_set_style((GtkWidget *) vscrollbar, matrix_style);
-  gtk_table_attach(table, (GtkWidget *) vscrollbar,
-		   1, 2, 0, 1,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  /* led */
-  matrix->active_led = 0;
-
-  matrix->led =
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach(matrix->table, (GtkWidget *) hbox,
-		   2, 3, 1, 2,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  for(i = 0; i < 32; i++){
-    led = ags_led_new();
-    gtk_widget_set_size_request((GtkWidget *) led, AGS_MATRIX_CELL_WIDTH, AGS_MATRIX_CELL_WIDTH / 2);
-    gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) led, FALSE, FALSE, 0);
-  }
-
-  /*  */
+  /* length and loop */
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_table_attach(matrix->table, (GtkWidget *) vbox,
-		   3, 4, 0, 1,
+  gtk_table_attach(matrix->table,
+		   (GtkWidget *) vbox,
+		   3, 4,
+		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) hbox,
+		     FALSE, FALSE,
+		     0);
 
-  gtk_box_pack_start((GtkBox *) hbox, gtk_label_new("length\0"), FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     gtk_label_new("length\0"),
+		     FALSE, FALSE,
+		     0);
 
   matrix->length_spin = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 32.0, 1.0);
   matrix->length_spin->adjustment->value = 16.0;
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) matrix->length_spin, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) matrix->length_spin,
+		     FALSE, FALSE,
+		     0);
 
   matrix->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label("loop\0");
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) matrix->loop_button, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) matrix->loop_button,
+		     FALSE, FALSE,
+		     0);
 }
 
 void
@@ -399,26 +373,14 @@ ags_matrix_connect(AgsConnectable *connectable)
 
   ags_matrix_parent_connectable_interface->connect(connectable);
 
+  /* AgsMatrix */
   matrix = AGS_MATRIX(connectable);
 
-  /* AgsMatrix */
   for(i  = 0; i < 9; i++){
     g_signal_connect (G_OBJECT (matrix->index[i]), "clicked\0",
 		      G_CALLBACK (ags_matrix_index_callback), (gpointer) matrix);
   }
-
-  g_signal_connect_after(G_OBJECT (matrix->drawing_area), "configure_event\0",
-			 G_CALLBACK (ags_matrix_drawing_area_configure_callback), (gpointer) matrix);
-
-  g_signal_connect_after(G_OBJECT (matrix->drawing_area), "expose_event\0",
-			 G_CALLBACK (ags_matrix_drawing_area_expose_callback), (gpointer) matrix);
-
-  g_signal_connect (G_OBJECT (matrix->drawing_area), "button_press_event\0",
-                    G_CALLBACK (ags_matrix_drawing_area_button_press_callback), (gpointer) matrix);
-
-  g_signal_connect (G_OBJECT (matrix->adjustment), "value_changed\0",
-                    G_CALLBACK (ags_matrix_adjustment_value_changed_callback), (gpointer) matrix);
-
+  
   g_signal_connect_after((GObject *) matrix->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_matrix_length_spin_callback), (gpointer) matrix);
 
@@ -450,16 +412,12 @@ void
 ags_matrix_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_matrix_parent_class)->show(widget);
-
-  ags_matrix_draw_matrix(AGS_MATRIX(widget));
 }
 
 void
 ags_matrix_show_all(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_matrix_parent_class)->show_all(widget);
-
-  ags_matrix_draw_matrix(AGS_MATRIX(widget));
 }
 
 void
@@ -493,14 +451,14 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   machine = AGS_MACHINE(matrix);
 
   if(type == AGS_TYPE_INPUT){
-    if(pads < AGS_MATRIX_OCTAVE){
-      gtk_widget_set_size_request((GtkWidget *) matrix->drawing_area,
-				  32 * AGS_MATRIX_CELL_WIDTH +1,
-				  pads * AGS_MATRIX_CELL_HEIGHT +1);
-    }else if(pads_old < AGS_MATRIX_OCTAVE){
-      gtk_widget_set_size_request((GtkWidget *) matrix->drawing_area,
-				  32 * AGS_MATRIX_CELL_WIDTH +1,
-				  AGS_MATRIX_OCTAVE * AGS_MATRIX_CELL_HEIGHT +1);
+    if(pads < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+      gtk_widget_set_size_request((GtkWidget *) matrix->cell_pattern,
+				  -1,
+				  pads * matrix->cell_pattern->cell_height + 1);
+    }else if(pads_old < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+      gtk_widget_set_size_request((GtkWidget *) matrix->cell_pattern,
+				  -1,
+				  AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY * matrix->cell_pattern->cell_height + 1);
     }
   }
 
@@ -852,139 +810,6 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
   }
 
   matrix->mapped_output_pad = audio->output_pads;
-}
-
-void
-ags_matrix_draw_gutter(AgsMatrix *matrix)
-{
-  AgsChannel *channel;
-
-  AgsMutexManager *mutex_manager;
-
-  guint gutter;
-  int i, j;
-
-  pthread_mutex_t *audio_mutex;
-  
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) AGS_MACHINE(matrix)->audio);
-  
-  pthread_mutex_unlock(&(ags_application_mutex));
-
-  pthread_mutex_lock(audio_mutex);
-
-  gdk_draw_rectangle (GTK_WIDGET (matrix->drawing_area)->window,
-                      GTK_WIDGET (matrix->drawing_area)->style->bg_gc[0],
-                      TRUE,
-                      0, 0,
-                      288, 80);
-
-  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - ((guint) matrix->adjustment->value + AGS_MATRIX_OCTAVE) - 1);
-
-  if(AGS_MACHINE(matrix)->audio->input_pads > AGS_MATRIX_OCTAVE){
-    gutter = AGS_MATRIX_OCTAVE;
-  }else{
-    gutter = AGS_MACHINE(matrix)->audio->input_pads;
-  }
-
-  for (i = 0; i < gutter; i++){
-    for (j = 0; j < 32; j++){
-      gdk_draw_rectangle (GTK_WIDGET (matrix->drawing_area)->window,
-                          GTK_WIDGET (matrix->drawing_area)->style->fg_gc[0],
-                          FALSE,
-                          j * 12, i * 10,
-                          12, 10);
-
-      ags_matrix_redraw_gutter_point (matrix, channel, j, i);
-    }
-
-    channel = channel->prev;
-  }
-
-  pthread_mutex_unlock(audio_mutex);
-}
-
-void
-ags_matrix_draw_matrix(AgsMatrix *matrix)
-{
-  AgsChannel *channel;
-
-  AgsMutexManager *mutex_manager;
-
-  guint gutter;
-  int i, j;
-
-  pthread_mutex_t *audio_mutex;
-
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) AGS_MACHINE(matrix)->audio);
-  
-  pthread_mutex_unlock(&(ags_application_mutex));
-
-  pthread_mutex_lock(audio_mutex);
-
-  if(AGS_MACHINE(matrix)->audio->input_pads > AGS_MATRIX_OCTAVE){
-    gutter = AGS_MATRIX_OCTAVE;
-  }else{
-    gutter = AGS_MACHINE(matrix)->audio->input_pads;
-  }
-
-  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_pads - (guint) matrix->adjustment->value - 1);
-
-  if(channel == NULL){
-    pthread_mutex_unlock(audio_mutex);
-    
-    return;
-  }
-
-  for (i = 0; i < gutter; i++){
-    for (j = 0; j < 32; j++)
-      ags_matrix_redraw_gutter_point (matrix, channel, j, i);
-
-    channel = channel->prev;
-  }
-
-  pthread_mutex_unlock(audio_mutex);
-}
-
-void
-ags_matrix_redraw_gutter_point (AgsMatrix *matrix, AgsChannel *channel, guint j, guint i)
-{
-  if(channel->pattern == NULL)
-    return;
-
-  if(ags_pattern_get_bit((AgsPattern *) channel->pattern->data, 0, strtol(matrix->selected->button.label_text, NULL, 10) - 1, j))
-    ags_matrix_highlight_gutter_point(matrix, j, i);
-  else
-    ags_matrix_unpaint_gutter_point(matrix, j, i);
-}
-
-void
-ags_matrix_highlight_gutter_point(AgsMatrix *matrix, guint j, guint i)
-{
-  gdk_draw_rectangle (GTK_WIDGET (matrix->drawing_area)->window,
-		      GTK_WIDGET (matrix->drawing_area)->style->fg_gc[0],
-		      TRUE,
-		      j * AGS_MATRIX_CELL_WIDTH + 1, i * AGS_MATRIX_CELL_HEIGHT + 1,
-		      11, 9);
-}
-
-void
-ags_matrix_unpaint_gutter_point(AgsMatrix *matrix, guint j, guint i)
-{
-  gdk_draw_rectangle (GTK_WIDGET (matrix->drawing_area)->window,
-		      GTK_WIDGET (matrix->drawing_area)->style->bg_gc[0],
-		      TRUE,
-		      j * AGS_MATRIX_CELL_WIDTH + 1, i * AGS_MATRIX_CELL_HEIGHT +1,
-		      11, 9);
 }
 
 gchar*

@@ -34,7 +34,6 @@
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/task/ags_toggle_led.h>
-#include <ags/audio/task/ags_toggle_pattern_bit.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
@@ -51,9 +50,6 @@
 #include <ags/X/ags_navigation.h>
 
 #include <math.h>
-
-void ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
-				     AgsMatrix *matrix);
 
 extern const char *AGS_MATRIX_INDEX;
 extern pthread_mutex_t ags_application_mutex;
@@ -98,7 +94,7 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       gtk_toggle_button_set_active(toggle, FALSE);
 
       matrix->selected = (GtkToggleButton*) widget;
-      ags_matrix_draw_matrix(matrix);
+      gtk_widget_queue_draw(matrix->cell_pattern);
 
       /*  */
       AGS_MACHINE(matrix)->bank_1 = 
@@ -124,60 +120,6 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       matrix->selected = toggle;
     }
   }
-}
-
-gboolean
-ags_matrix_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsMatrix *matrix)
-{
-  ags_matrix_draw_matrix(matrix);
-
-  return(FALSE);
-}
-
-gboolean
-ags_matrix_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsMatrix *matrix)
-{
-  ags_matrix_draw_gutter(matrix);
-  ags_matrix_draw_matrix(matrix);
-
-  return(FALSE);
-}
-
-gboolean
-ags_matrix_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsMatrix *matrix)
-{
-  if (event->button == 1){
-    AgsTogglePatternBit *toggle_pattern_bit;
-    AgsChannel *channel;
-    guint i, j;
-    guint index1;
-    
-    i = (guint) floor((double) event->y / (double) AGS_MATRIX_CELL_HEIGHT);
-    j = (guint) floor((double) event->x / (double) AGS_MATRIX_CELL_WIDTH);
-
-    index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
-    
-    channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, AGS_MACHINE(matrix)->audio->input_lines - ((guint) matrix->adjustment->value + i) - 1);
-
-    toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
-						    channel->line,
-						    0, index1,
-						    j);
-    g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
-		     G_CALLBACK(ags_matrix_refresh_gui_callback), matrix);
-
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(matrix)->audio->devout)->ags_main)->main_loop)->task_thread),
-				AGS_TASK(toggle_pattern_bit));
-  }else if (event->button == 3){
-  }
-
-  return(FALSE);
-}
-
-void
-ags_matrix_adjustment_value_changed_callback(GtkWidget *widget, AgsMatrix *matrix)
-{
-  ags_matrix_draw_matrix(matrix);
 }
 
 void
@@ -229,19 +171,6 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 
     list = list->next;
   }
-}
-
-void
-ags_matrix_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
-				AgsMatrix *matrix)
-{
-  AgsChannel *channel;
-  guint line;
-
-  channel = ags_channel_nth(AGS_MACHINE(matrix)->audio->input, toggle_pattern_bit->line);
-  line = AGS_MACHINE(matrix)->audio->input_pads - toggle_pattern_bit->line - (guint) matrix->adjustment->value - 1;
-
-  ags_matrix_redraw_gutter_point(matrix, channel, toggle_pattern_bit->bit, line);
 }
 
 void
@@ -303,7 +232,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   /* set optical feedback */
   active_led_new = play_count_beats_audio_run->sequencer_counter;
-  matrix->active_led = (guint) active_led_new;
+  matrix->cell_pattern->active_led = (guint) active_led_new;
 
   if(active_led_new == 0){
     g_value_init(&value, G_TYPE_DOUBLE);
@@ -313,11 +242,11 @@ ags_matrix_tact_callback(AgsAudio *audio,
     active_led_old = g_value_get_double(&value) - 1.0;
     g_value_unset(&value);
   }else{
-    active_led_old = (gdouble) matrix->active_led - 1.0;
+    active_led_old = (gdouble) matrix->cell_pattern->active_led - 1.0;
   }
 
   //FIXME:JK: memory leak of GList
-  toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(matrix->led)),
+  toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(matrix->cell_pattern->led)),
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
@@ -354,7 +283,7 @@ ags_matrix_done_callback(AgsAudio *audio,
     
     /* unset led */
     list_start = 
-      list = gtk_container_get_children(GTK_CONTAINER(matrix->led));
+      list = gtk_container_get_children(GTK_CONTAINER(matrix->cell_pattern->led));
 
     while(list != NULL){
       ags_led_unset_active(AGS_LED(list->data));

@@ -85,7 +85,7 @@ extern void ags_thread_suspend_handler(int sig);
 
 extern AgsConfig *config;
 
-extern GtkStyle *matrix_style;
+extern GtkStyle *cell_pattern_style;
 extern GtkStyle *ffplayer_style;
 extern GtkStyle *editor_style;
 extern GtkStyle *notebook_style;
@@ -286,49 +286,49 @@ ags_colors_alloc()
   if(!allocated){
     allocated = TRUE;
 
-    matrix_style = gtk_style_new();
-    matrix_style->fg[0].red = 120 * (65535/255);
-    matrix_style->fg[0].green = 220 * (65535/255);
-    matrix_style->fg[0].blue = 120 * (65535/255);
-    matrix_style->fg[0].pixel = (gulong)(120*65536 + 220*256 + 120);
+    cell_pattern_style = gtk_style_new();
+    cell_pattern_style->fg[0].red = 120 * (65535/255);
+    cell_pattern_style->fg[0].green = 220 * (65535/255);
+    cell_pattern_style->fg[0].blue = 120 * (65535/255);
+    cell_pattern_style->fg[0].pixel = (gulong)(120*65536 + 220*256 + 120);
 
-    matrix_style->light[0].red = 100 * (65535/255);
-    matrix_style->light[0].green = 200 * (65535/255);
-    matrix_style->light[0].blue = 100 * (65535/255);
-    matrix_style->light[0].pixel = (gulong)(100*65536 + 200*256 + 100);
+    cell_pattern_style->light[0].red = 100 * (65535/255);
+    cell_pattern_style->light[0].green = 200 * (65535/255);
+    cell_pattern_style->light[0].blue = 100 * (65535/255);
+    cell_pattern_style->light[0].pixel = (gulong)(100*65536 + 200*256 + 100);
 
-    matrix_style->bg[0].red = 0 * (65535/255);
-    matrix_style->bg[0].green = 80 * (65535/255);
-    matrix_style->bg[0].blue = 0 * (65535/255);
-    matrix_style->bg[0].pixel = (gulong)(0*65536 + 80*256 + 0);
+    cell_pattern_style->bg[0].red = 0 * (65535/255);
+    cell_pattern_style->bg[0].green = 80 * (65535/255);
+    cell_pattern_style->bg[0].blue = 0 * (65535/255);
+    cell_pattern_style->bg[0].pixel = (gulong)(0*65536 + 80*256 + 0);
 
-    matrix_style->bg[1].red = 120 * (65535/255);
-    matrix_style->bg[1].green = 220 * (65535/255);
-    matrix_style->bg[1].blue = 120 * (65535/255);
-    matrix_style->bg[1].pixel = (gulong)(120*65536 + 220*256 + 120);
+    cell_pattern_style->bg[1].red = 120 * (65535/255);
+    cell_pattern_style->bg[1].green = 220 * (65535/255);
+    cell_pattern_style->bg[1].blue = 120 * (65535/255);
+    cell_pattern_style->bg[1].pixel = (gulong)(120*65536 + 220*256 + 120);
 
-    matrix_style->bg[2].red = 120 * (65535/255);
-    matrix_style->bg[2].green = 220 * (65535/255);
-    matrix_style->bg[2].blue = 120 * (65535/255);
-    matrix_style->bg[2].pixel = (gulong)(120*65536 + 220*256 + 120);
+    cell_pattern_style->bg[2].red = 120 * (65535/255);
+    cell_pattern_style->bg[2].green = 220 * (65535/255);
+    cell_pattern_style->bg[2].blue = 120 * (65535/255);
+    cell_pattern_style->bg[2].pixel = (gulong)(120*65536 + 220*256 + 120);
 
-    matrix_style->base[0].red = 120 * (65535/255);
-    matrix_style->base[0].green = 220 * (65535/255);
-    matrix_style->base[0].blue = 120 * (65535/255);
-    matrix_style->base[0].pixel = (gulong)(120*65536 + 220*256 + 120);
+    cell_pattern_style->base[0].red = 120 * (65535/255);
+    cell_pattern_style->base[0].green = 220 * (65535/255);
+    cell_pattern_style->base[0].blue = 120 * (65535/255);
+    cell_pattern_style->base[0].pixel = (gulong)(120*65536 + 220*256 + 120);
 
 
-    /*  matrix_style->fg[1] = matrix_green;
-	matrix_style->fg[2] = matrix_green;
-	matrix_style->fg[3] = matrix_green;
-	matrix_style->fg[4] = matrix_green;
+    /*  cell_pattern_style->fg[1] = matrix_green;
+	cell_pattern_style->fg[2] = matrix_green;
+	cell_pattern_style->fg[3] = matrix_green;
+	cell_pattern_style->fg[4] = matrix_green;
 
-	matrix_style->bg[0] = matrix_led_bg;
-	matrix_style->bg[1] = matrix_led_bg;
-	matrix_style->bg[2] = matrix_led_bg;
-	matrix_style->bg[2] = matrix_led_bg;
-	matrix_style->bg[3] = matrix_led_bg;
-	matrix_style->bg[4] = matrix_led_bg;
+	cell_pattern_style->bg[0] = matrix_led_bg;
+	cell_pattern_style->bg[1] = matrix_led_bg;
+	cell_pattern_style->bg[2] = matrix_led_bg;
+	cell_pattern_style->bg[2] = matrix_led_bg;
+	cell_pattern_style->bg[3] = matrix_led_bg;
+	cell_pattern_style->bg[4] = matrix_led_bg;
     */
 
     /* ffplayer style */

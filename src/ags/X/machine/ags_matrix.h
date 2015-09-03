@@ -26,18 +26,14 @@
 
 #include <ags/X/ags_machine.h>
 
+#include <ags/X/machine/ags_cell_pattern.h>
+
 #define AGS_TYPE_MATRIX                (ags_matrix_get_type())
 #define AGS_MATRIX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MATRIX, AgsMatrix))
 #define AGS_MATRIX_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MATRIX, AgsMatrixClass))
 #define AGS_IS_MATRIX(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_MATRIX))
 #define AGS_IS_MATRIX_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MATRIX))
 #define AGS_MATRIX_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MATRIX, AgsMatrixClass))
-
-#define AGS_MATRIX_PATTERN_CONTROLS (16)
-#define AGS_MATRIX_OCTAVE 10
-
-#define AGS_MATRIX_CELL_WIDTH   12
-#define AGS_MATRIX_CELL_HEIGHT  10
 
 typedef struct _AgsMatrix AgsMatrix;
 typedef struct _AgsMatrixClass AgsMatrixClass;
@@ -60,11 +56,7 @@ struct _AgsMatrix
   GtkToggleButton *selected;
   GtkToggleButton *index[9];
 
-  GtkDrawingArea *drawing_area;
-  guint active_led;
-  GtkHBox *led;
-
-  GtkAdjustment *adjustment;
+  AgsCellPattern *cell_pattern;
 
   GtkSpinButton *length_spin;
   GtkCheckButton *loop_button;
@@ -79,12 +71,6 @@ GType ags_matrix_get_type(void);
 
 void ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start);
 void ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start);
-
-void ags_matrix_draw_gutter(AgsMatrix *matrix);
-void ags_matrix_draw_matrix(AgsMatrix *matrix);
-void ags_matrix_redraw_gutter_point(AgsMatrix *matrix, AgsChannel *channel, guint j, guint i);
-void ags_matrix_highlight_gutter_point(AgsMatrix *matrix, guint j, guint i);
-void ags_matrix_unpaint_gutter_point(AgsMatrix *matrix, guint j, guint i);
 
 AgsMatrix* ags_matrix_new(GObject *devout);
 
