@@ -22,7 +22,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+static GType ags_accessible_dial_get_type(void);
 void ags_dial_class_init(AgsDialClass *dial);
+void ags_accessible_dial_class_init(AtkObject *object);
+void ags_accessible_dial_value_interface_init(AtkValue *value);
 void ags_dial_init(AgsDial *dial);
 void ags_dial_set_property(GObject *gobject,
 			   guint prop_id,
@@ -32,7 +35,16 @@ void ags_dial_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
+AtkObject* ags_dial_get_accessible(GtkWidget *widget);
 void ags_dial_show(GtkWidget *widget);
+
+void ags_accessible_dial_get_value_and_text(AtkValue *value,
+					    GValue *value,
+					    gchar **text);
+AtkRange* ags_accessible_dial_get_range(AtkValue *value);
+gdouble ags_accessible_dial_get_increment(AtkValue *value);
+void ags_accessible_dial_set_value(AtkValue *value,
+				   gdouble new_value);
 
 void ags_dial_map(GtkWidget *widget);
 void ags_dial_realize(GtkWidget *widget);
@@ -69,6 +81,8 @@ enum{
 
 static gpointer ags_dial_parent_class = NULL;
 
+static GQuark quark_accessible_object = 0;
+
 GType
 ags_dial_get_type(void)
 {
@@ -95,6 +109,42 @@ ags_dial_get_type(void)
   return(ags_type_dial);
 }
 
+static GType
+ags_accessible_dial_get_type(void)
+{
+  static GType ags_accessible_dial_type = 0;
+
+  if(!ags_accessible_dial_type){
+    const GTypeInfo ags_accesssible_dial_info = {
+      sizeof(GtkAccessibleClass),
+      NULL,           /* base_init */
+      NULL,           /* base_finalize */
+      (GClassInitFunc) ags_accessible_dial_class_init,
+      NULL,           /* class_finalize */
+      NULL,           /* class_data */
+      sizeof(GtkAccessible),
+      0,             /* n_preallocs */
+      NULL, NULL
+    };
+
+    static const GInterfaceInfo atk_value_interface_info = {
+      (GInterfaceInitFunc) ags_dial_value_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_accessible_dial_type = g_type_register_static(GTK_TYPE_ACCESSIBLE,
+						      "AgsAccessibleDial\0", &ags_accesssible_dial_info,
+						      0);
+
+    g_type_add_interface_static(ags_type_accessible_dial,
+				ATK_TYPE_VALUE,
+				&atk_value_interface_info);
+  }
+  
+  return(ags_accessible_dial_type);
+}
+
 void
 ags_dial_class_init(AgsDialClass *dial)
 {
@@ -104,6 +154,8 @@ ags_dial_class_init(AgsDialClass *dial)
 
   ags_dial_parent_class = g_type_class_peek_parent(dial);
 
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");
+  
   /* GObjectClass */
   gobject = (GObjectClass *) dial;
 
@@ -113,6 +165,7 @@ ags_dial_class_init(AgsDialClass *dial)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) dial;
 
+  widget->get_accessible = ags_dial_get_accessible;
   //  widget->map = ags_dial_map;
   widget->realize = ags_dial_realize;
   widget->expose_event = ags_dial_expose;
@@ -135,8 +188,39 @@ ags_dial_class_init(AgsDialClass *dial)
 }
 
 void
+ags_accessible_dial_class_init(AtkObject *object)
+{
+  /* empty */
+}
+
+void
+ags_accessible_dial_value_interface_init(AtkValue *value)
+{
+  value->get_current_value = NULL;
+  value->get_maximum_value = NULL;
+  value->get_minimum_value = NULL;
+  value->set_current_value = NULL;
+  value->set_minimum_increment = NULL;
+  
+  value->get_value_and_text = ags_accessible_dial_get_value_and_text;
+  value->get_range = ags_accessible_dial_get_range;
+  value->get_increment = ags_accessible_dial_get_increment;
+  value->get_sub_ranges = NULL;
+  value->set_value = ags_accessible_dial_set_value;
+}
+
+void
 ags_dial_init(AgsDial *dial)
 {
+  AtkObject *accessible;
+  
+  accessible = gtk_widget_get_accessible(dial);
+
+  g_object_set(accessible,
+	       "accessible-name\0", "dial\0",
+	       "accessible-description\0", "Adjust a value\0",
+	       NULL);
+  
   g_object_set(G_OBJECT(dial),
   	       "app-paintable\0", TRUE,
   	       NULL);
@@ -219,6 +303,62 @@ ags_dial_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_accessible_dial_get_value_and_text(AtkValue *value,
+				       gdouble *value,
+				       gchar **text)
+{
+  AgsDial *dial;
+  GValue *value;
+  gchar *str;
+  
+  dial = (AgsDial *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
+
+  if(value != NULL){
+    *value = gtk_adjustment_get_value(dial->adjustment);
+  }
+
+  if(text != NULL){
+    *text = g_strdup_printf("%f\0",
+			    gtk_adjustment_get_value(dial->adjustment));
+  }
+}
+
+AtkRange*
+ags_accessible_dial_get_range(AtkValue *value)
+{
+  AgsDial *dial;
+  AtkRange *range;
+  
+  dial = (AgsDial *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
+
+  range = atk_range_new(gtk_adjustment_get_lower(dial->adjustment),
+			gtk_adjustment_get_upper(dial->adjustment),
+			"Valid lower and upper input range of this dial\0");
+}
+
+gdouble
+ags_accessible_dial_get_increment(AtkValue *value)
+{
+  AgsDial *dial;
+
+  dial = (AgsDial *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
+
+  return(gtk_adjustment_get_step_increment(dial->adjustment));
+}
+
+void
+ags_accessible_dial_set_value(AtkValue *value,
+			      gdouble new_value)
+{
+  AgsDial *dial;
+
+  dial = (AgsDial *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
+  gtk_adjustment_set_value(dial->adjustment,
+			   new_value);
+  gtk_widget_queue_draw(dial);
 }
 
 void
@@ -314,6 +454,28 @@ ags_dial_realize(GtkWidget *widget)
   gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
 
   gtk_widget_queue_resize (widget);
+}
+
+AtkObject*
+ags_dial_get_accessible(GtkWidget *widget)
+{
+  AtkObject* accessible;
+
+  accessible = g_object_get_qdata(G_OBJECT(widget),
+				    quark_accessible_object);
+  
+  if(!accessible){
+    accessible = g_object_new(ags_accessible_dial_get_type(),
+			      NULL);
+    
+    g_object_set_qdata(G_OBJECT(widget),
+		       quark_accessible_object,
+		       accessible);
+    gtk_accessible_set_widget(accessible,
+			      widget);
+  }
+  
+  return(accessible);
 }
 
 void
