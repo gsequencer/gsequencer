@@ -251,6 +251,7 @@ ags_machine_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_machine_init(AgsMachine *machine)
 {
+  GtkVBox *vbox;
   GtkFrame *frame;
 
   machine->flags = 0;
@@ -267,6 +268,8 @@ ags_machine_init(AgsMachine *machine)
 
   machine->bank_0 = 0;
   machine->bank_1 = 0;
+
+  vbox = gtk_vbox_new(FALSE, 0);
   
   frame = (GtkFrame *) gtk_frame_new(NULL);
   gtk_container_add((GtkContainer *) machine, (GtkWidget *) frame);

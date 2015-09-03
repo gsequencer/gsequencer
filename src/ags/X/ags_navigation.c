@@ -198,7 +198,7 @@ ags_navigation_init(AgsNavigation *navigation)
 			 G_CALLBACK(ags_navigation_parent_set_callback), NULL);
 
   navigation->start_tact = 0.0;
-  
+
   /* GtkWidget */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) navigation, (GtkWidget *) hbox, FALSE, FALSE, 2);

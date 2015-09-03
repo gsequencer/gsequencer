@@ -294,8 +294,11 @@ ags_line_init(AgsLine *line)
 
   line->channel = NULL;
 
-  line->pad = NULL;
+  //  gtk_widget_set_can_focus(line,
+  //			   TRUE);
 
+  line->pad = NULL;
+  
   line->label = (GtkLabel *) gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->label),
