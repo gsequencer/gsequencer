@@ -19,13 +19,15 @@
 
 #include "ags_dial.h"
 
+#include <atk/atk.h>
+
 #include <stdlib.h>
 #include <math.h>
 
 static GType ags_accessible_dial_get_type(void);
 void ags_dial_class_init(AgsDialClass *dial);
 void ags_accessible_dial_class_init(AtkObject *object);
-void ags_accessible_dial_value_interface_init(AtkValue *value);
+void ags_accessible_dial_value_interface_init(AtkValueIface *value);
 void ags_dial_init(AgsDial *dial);
 void ags_dial_set_property(GObject *gobject,
 			   guint prop_id,
@@ -39,7 +41,7 @@ AtkObject* ags_dial_get_accessible(GtkWidget *widget);
 void ags_dial_show(GtkWidget *widget);
 
 void ags_accessible_dial_get_value_and_text(AtkValue *value,
-					    GValue *value,
+					    gdouble *current_value,
 					    gchar **text);
 AtkRange* ags_accessible_dial_get_range(AtkValue *value);
 gdouble ags_accessible_dial_get_increment(AtkValue *value);
@@ -112,9 +114,9 @@ ags_dial_get_type(void)
 static GType
 ags_accessible_dial_get_type(void)
 {
-  static GType ags_accessible_dial_type = 0;
+  static GType ags_type_accessible_dial = 0;
 
-  if(!ags_accessible_dial_type){
+  if(!ags_type_accessible_dial){
     const GTypeInfo ags_accesssible_dial_info = {
       sizeof(GtkAccessibleClass),
       NULL,           /* base_init */
@@ -128,12 +130,12 @@ ags_accessible_dial_get_type(void)
     };
 
     static const GInterfaceInfo atk_value_interface_info = {
-      (GInterfaceInitFunc) ags_dial_value_interface_init,
+      (GInterfaceInitFunc) ags_accessible_dial_value_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
     
-    ags_accessible_dial_type = g_type_register_static(GTK_TYPE_ACCESSIBLE,
+    ags_type_accessible_dial = g_type_register_static(GTK_TYPE_ACCESSIBLE,
 						      "AgsAccessibleDial\0", &ags_accesssible_dial_info,
 						      0);
 
@@ -142,7 +144,7 @@ ags_accessible_dial_get_type(void)
 				&atk_value_interface_info);
   }
   
-  return(ags_accessible_dial_type);
+  return(ags_type_accessible_dial);
 }
 
 void
@@ -194,13 +196,13 @@ ags_accessible_dial_class_init(AtkObject *object)
 }
 
 void
-ags_accessible_dial_value_interface_init(AtkValue *value)
+ags_accessible_dial_value_interface_init(AtkValueIface *value)
 {
   value->get_current_value = NULL;
   value->get_maximum_value = NULL;
   value->get_minimum_value = NULL;
   value->set_current_value = NULL;
-  value->set_minimum_increment = NULL;
+  value->get_minimum_increment = NULL;
   
   value->get_value_and_text = ags_accessible_dial_get_value_and_text;
   value->get_range = ags_accessible_dial_get_range;
@@ -213,7 +215,10 @@ void
 ags_dial_init(AgsDial *dial)
 {
   AtkObject *accessible;
-  
+
+  gtk_widget_set_can_focus(dial,
+			   TRUE);
+
   accessible = gtk_widget_get_accessible(dial);
 
   g_object_set(accessible,
@@ -307,17 +312,15 @@ ags_dial_get_property(GObject *gobject,
 
 void
 ags_accessible_dial_get_value_and_text(AtkValue *value,
-				       gdouble *value,
+				       gdouble *current_value,
 				       gchar **text)
 {
   AgsDial *dial;
-  GValue *value;
-  gchar *str;
   
   dial = (AgsDial *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
 
-  if(value != NULL){
-    *value = gtk_adjustment_get_value(dial->adjustment);
+  if(current_value != NULL){
+    *current_value = gtk_adjustment_get_value(dial->adjustment);
   }
 
   if(text != NULL){
@@ -608,6 +611,8 @@ ags_dial_button_release(GtkWidget *widget,
   AgsDial *dial;
 
   //  GTK_WIDGET_CLASS(ags_dial_parent_class)->button_release_event(widget, event);
+
+  gtk_widget_grab_focus(widget);
 
   dial = AGS_DIAL(widget);
   dial->flags &= (~AGS_DIAL_MOUSE_BUTTON_PRESSED);

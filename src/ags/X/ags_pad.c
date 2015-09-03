@@ -283,6 +283,7 @@ ags_pad_init(AgsPad *pad)
   pad->build_id = AGS_BUILD_ID;
 
   pad->cols = 2;
+
   pad->expander_set = ags_expander_set_new(1, 1);
   gtk_box_pack_start((GtkBox *) pad, (GtkWidget *) pad->expander_set, TRUE, TRUE, 0);
 
