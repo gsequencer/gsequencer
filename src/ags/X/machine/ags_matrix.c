@@ -380,6 +380,8 @@ ags_matrix_connect(AgsConnectable *connectable)
     g_signal_connect (G_OBJECT (matrix->index[i]), "clicked\0",
 		      G_CALLBACK (ags_matrix_index_callback), (gpointer) matrix);
   }
+
+  ags_connectable_connect(AGS_CONNECTABLE(matrix->cell_pattern));
   
   g_signal_connect_after((GObject *) matrix->length_spin, "value-changed\0",
 			 G_CALLBACK(ags_matrix_length_spin_callback), (gpointer) matrix);
