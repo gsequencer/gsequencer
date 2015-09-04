@@ -56,7 +56,7 @@ ags_cell_pattern_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose 
 gboolean
 ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsCellPattern *cell_pattern)
 {
-  if (event->button == 1){
+  if(event->button == 1){
     AgsMachine *machine;
     
     AgsTogglePatternBit *toggle_pattern_bit;
@@ -73,7 +73,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 
     index1 = machine->bank_1;
 
-    channel = ags_channel_nth(AGS_MACHINE(cell_pattern)->audio->input, AGS_MACHINE(cell_pattern)->audio->input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + i) - 1);
+    channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + i) - 1);
 
     toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
 						    channel->line,
