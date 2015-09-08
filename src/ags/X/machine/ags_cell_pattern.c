@@ -637,7 +637,10 @@ ags_cell_pattern_blink_worker(void *data)
   }
 
   /* unset cursor */
-  cell_pattern->flags &= (~AGS_CELL_PATTERN_CURSOR_ON);
+  blink_cell_pattern_cursor = ags_blink_cell_pattern_cursor_new(cell_pattern,
+								FALSE);
+  ags_task_thread_append_task(task_thread,
+			      blink_cell_pattern_cursor);
 
   return(NULL);
 }
