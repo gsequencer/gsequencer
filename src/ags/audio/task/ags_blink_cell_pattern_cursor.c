@@ -145,6 +145,8 @@ ags_blink_cell_pattern_cursor_launch(AgsTask *task)
 {
   AgsBlinkCellPatternCursor *blink_cell_pattern_cursor;
 
+  blink_cell_pattern_cursor = AGS_BLINK_CELL_PATTERN_CURSOR(task);
+  
   if(blink_cell_pattern_cursor->highlight_cursor){
     blink_cell_pattern_cursor->cell_pattern->flags |= AGS_CELL_PATTERN_CURSOR_ON;
   }else{

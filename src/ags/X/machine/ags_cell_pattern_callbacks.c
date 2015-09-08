@@ -41,7 +41,10 @@ void ags_cell_pattern_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_b
 gboolean
 ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern)
 {
-  //TODO:JK: implement me
+  pthread_t thread;
+  
+  pthread_create(&thread, NULL,
+		 ags_cell_pattern_blink_worker, cell_pattern);
   
   return(TRUE);
 }
@@ -102,6 +105,10 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 gboolean
 ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern)
 {
+  if(event->keyval == GDK_KEY_Tab){
+    return(FALSE);
+  }
+
   switch(event->keyval){
   case GDK_KEY_Control_L:
     {
@@ -128,12 +135,16 @@ ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *ev
     break;
   }
   
-  return(FALSE);
+  return(TRUE);
 }
 
 gboolean
 ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern)
 {
+  if(event->keyval == GDK_KEY_Tab){
+    return(FALSE);
+  }
+  
   switch(event->keyval){
   case GDK_KEY_Control_L:
     {
@@ -145,29 +156,82 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       cell_pattern->key_mask &= (~AGS_CELL_PATTERN_KEY_R_CONTROL);
     }
     break;
+  case GDK_KEY_Left:
   case GDK_KEY_leftarrow:
     {
-      //TODO:JK: implement me
+      if(cell_pattern->cursor_x > 0){
+	cell_pattern->cursor_x -= 1;
+      }
     }
     break;
+  case GDK_KEY_Right:
   case GDK_KEY_rightarrow:
     {
-      //TODO:JK: implement me
+      if(cell_pattern->cursor_x < cell_pattern->n_cols){
+	cell_pattern->cursor_x += 1;
+      }
     }
     break;
+  case GDK_KEY_Up:
   case GDK_KEY_uparrow:
     {
-      //TODO:JK: implement me
+      if(cell_pattern->cursor_y > 0){
+	cell_pattern->cursor_y -= 1;
+      }
+
+      if(cell_pattern->cursor_y < GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value){
+	gtk_range_set_value(GTK_RANGE(cell_pattern->vscrollbar),
+			    GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value - 1.0);
+      }
     }
     break;
+  case GDK_KEY_Down:
   case GDK_KEY_downarrow:
     {
-      //TODO:JK: implement me
+      if(cell_pattern->cursor_y < cell_pattern->n_rows){
+	cell_pattern->cursor_y += 1;
+      }
+
+      if(cell_pattern->cursor_y >= GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
+	gtk_range_set_value(GTK_RANGE(cell_pattern->vscrollbar),
+			    GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + 1.0);
+      }
+    }
+    break;
+  case GDK_KEY_space:
+    {
+      AgsMachine *machine;
+      
+      AgsTogglePatternBit *toggle_pattern_bit;
+      AgsChannel *channel;
+      
+      guint i, j;
+      guint index1;
+      
+      machine = gtk_widget_get_ancestor(cell_pattern,
+					AGS_TYPE_MACHINE);
+      
+      i = cell_pattern->cursor_y;
+      j = cell_pattern->cursor_x;
+      
+      index1 = machine->bank_1;
+
+      channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - i - 1);
+
+      toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
+						      channel->line,
+						      0, index1,
+						      j);
+      g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
+		       G_CALLBACK(ags_cell_pattern_refresh_gui_callback), cell_pattern);
+      
+      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
+				  AGS_TASK(toggle_pattern_bit));
     }
     break;
   }
 
-  return(FALSE);
+  return(TRUE);
 }
 
 void
