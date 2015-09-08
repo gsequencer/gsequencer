@@ -37,6 +37,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
+#include <gdk/gdkkeysyms.h>
+
 #include <atk/atk.h>
 
 static GType ags_accessible_cell_pattern_get_type(void);
@@ -386,34 +388,159 @@ gboolean
 ags_accessible_cell_pattern_do_action(AtkAction *action,
 				      gint i)
 {
-  //TODO:JK: implement me
+  AgsCellPattern *cell_pattern;
+  
+  GdkEventKey *key_press, *key_release;
+  GdkEventKey *modifier_press, *modifier_release;
+  
+  if(!(i >= 0 && i < 6)){
+    return(FALSE);
+  }
+
+  cell_pattern = gtk_accessible_get_widget(ATK_OBJECT(action));
+  
+  key_press = gdk_event_new(GDK_KEY_PRESS);
+  key_release = gdk_event_new(GDK_KEY_RELEASE);
+
+  switch(i){
+  case 0:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Left;
+      
+      /* send event */
+      gtk_widget_event(cell_pattern, key_press);
+      gtk_widget_event(cell_pattern, key_release);
+    }
+    break;
+  case 1:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Right;
+      
+      /* send event */
+      gtk_widget_event(cell_pattern, key_press);
+      gtk_widget_event(cell_pattern, key_release);
+    }
+    break;
+  case 2:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Up;
+    
+      /* send event */
+      gtk_widget_event(cell_pattern, key_press);
+      gtk_widget_event(cell_pattern, key_release);
+    }
+    break;
+  case 3:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Down;
+      
+      /* send event */
+      gtk_widget_event(cell_pattern, key_press);
+      gtk_widget_event(cell_pattern, key_release);
+    }
+    break;
+  case 4:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_space;
+      
+      /* send event */
+      gtk_widget_event(cell_pattern, key_press);
+      gtk_widget_event(cell_pattern, key_release);
+    }
+    break;
+  case 5:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_c;
+
+      /* create modifier */
+      modifier_press = gdk_event_new(GDK_KEY_PRESS);
+      modifier_release = gdk_event_new(GDK_KEY_RELEASE);
+
+      modifier_press->keyval =
+	modifier_release->keyval = GDK_KEY_Control_R;
+
+      /* send event */
+      gtk_widget_event(cell_pattern, modifier_press);
+      gtk_widget_event(cell_pattern, key_press);
+      gtk_widget_event(cell_pattern, key_release);
+      gtk_widget_event(cell_pattern, modifier_release);      
+    }    
+    break;
+  }
+
+  return(TRUE);
 }
 
 gint
 ags_accessible_cell_pattern_get_n_actions(AtkAction *action)
 {
-  //TODO:JK: implement me
+  return(6);
 }
 
 const gchar*
 ags_accessible_cell_pattern_get_description(AtkAction *action,
 					    gint i)
 {
-  //TODO:JK: implement me
+  static const gchar **actions = {
+    "move cursor left\0",
+    "move cursor right\0",
+    "move cursor up\0",
+    "move cursor down\0",
+    "toggle audio pattern\0"
+    "copy pattern to clipboard\0",
+  };
+
+  if(i >= 0 && i < 6){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
 }
 
 const gchar*
 ags_accessible_cell_pattern_get_name(AtkAction *action,
 				     gint i)
 {
-  //TODO:JK: implement me
+  static const gchar **actions = {
+    "left\0",
+    "right\0",
+    "up\0",
+    "down\0",
+    "toggle\0",
+    "copy\0",
+  };
+  
+  if(i >= 0 && i < 6){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
 }
 
 const gchar*
 ags_accessible_cell_pattern_get_keybinding(AtkAction *action,
 					   gint i)
 {
-  //TODO:JK: implement me
+  static const gchar **actions = {
+    "left\0",
+    "right\0",
+    "up\0",
+    "down\0",
+    "space",
+    "Ctrl+c",
+  };
+  
+  if(i >= 0 && i < 6){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
 }
 
 gboolean
@@ -421,6 +548,8 @@ ags_accessible_cell_pattern_set_description(AtkAction *action,
 					    gint i)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gchar*
@@ -428,6 +557,8 @@ ags_accessible_cell_pattern_get_localized_name(AtkAction *action,
 					       gint i)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void
