@@ -37,6 +37,7 @@
 
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_pattern.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -1197,6 +1198,112 @@ ags_machine_open_files(AgsMachine *machine,
   ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
 			      AGS_TASK(open_file));
 
+}
+
+void
+ags_machine_copy_pattern(AgsMachine *machine)
+{
+  AgsChannel *channel;
+  
+  xmlDoc *clipboard;
+  xmlNode *audio_node, *notation_node;
+
+  xmlChar *buffer;
+  int size;
+  gint i;
+
+  auto xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current);
+
+  xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current){
+    AgsPattern *pattern;
+    xmlNode *notation_node, *current_note;
+    guint x_boundary, y_boundary;
+    guint bank_0, bank_1, k;
+    
+    /* create root node */
+    notation_node = xmlNewNode(NULL, BAD_CAST "notation\0");
+
+    xmlNewProp(notation_node, BAD_CAST "program\0", BAD_CAST "ags\0");
+    xmlNewProp(notation_node, BAD_CAST "type\0", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
+    xmlNewProp(notation_node, BAD_CAST "version\0", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
+    xmlNewProp(notation_node, BAD_CAST "format\0", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
+    xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup("0\0"));
+    xmlNewProp(notation_node, BAD_CAST "audio-channel\0", BAD_CAST g_strdup_printf("%u\0", current->audio_channel));
+
+    bank_0 = machine->bank_0;
+    bank_1 = machine->bank_1;
+    
+    x_boundary = G_MAXUINT;
+    y_boundary = G_MAXUINT;
+
+    while(current != NULL){
+      pattern = current->pattern->data;
+
+      for(k = 0; k < pattern->dim[2]; k++){
+	if(ags_pattern_get_bit(pattern, bank_0, bank_1, k)){
+	  current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note\0", NULL);
+	  
+	  xmlNewProp(current_note, BAD_CAST "x\0", BAD_CAST g_strdup_printf("%u\0", k));
+	  xmlNewProp(current_note, BAD_CAST "x1\0", BAD_CAST g_strdup_printf("%u\0", k + 1));
+
+	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
+	    xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", machine->audio->input_pads - current->pad - 1));
+	  }else{
+	    xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", current->pad));
+	  }
+	  
+	  if(x_boundary > k){
+	    x_boundary = k;
+	  }
+      
+	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
+	    guint tmp;
+
+	    tmp = machine->audio->input_pads - current->pad - 1;
+	    
+	    if(y_boundary > tmp){
+	      y_boundary = tmp;
+	    }
+	  }else{
+	    if(y_boundary > current->pad){
+	      y_boundary = current->pad;
+	    }
+	  }
+	}
+      }
+      
+      current = current->next;
+    }
+
+    xmlNewProp(notation_node, BAD_CAST "x_boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
+    xmlNewProp(notation_node, BAD_CAST "y_boundary\0", BAD_CAST g_strdup_printf("%u\0", y_boundary));
+
+    return(notation_node);
+  }
+  
+  /* create document */
+  clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+  /* create root node */
+  audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+  xmlDocSetRootElement(clipboard, audio_node);
+  
+  channel = machine->audio->input;
+  
+  for(i = 0; i < machine->audio->audio_channels; i++){
+    notation_node = ags_machine_copy_pattern_to_notation(channel);
+    xmlAddChild(audio_node, notation_node);
+
+    channel = channel->next;
+  }
+  
+  /* write to clipboard */
+  xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+  gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+			 buffer, size);
+  gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+  
+  xmlFreeDoc(clipboard);
 }
 
 /**

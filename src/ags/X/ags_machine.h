@@ -146,6 +146,8 @@ void ags_machine_open_files(AgsMachine *machine,
 			    gboolean overwrite_channels,
 			    gboolean create_channels);
 
+void ags_machine_copy_pattern(AgsMachine *machine);
+
 AgsMachine* ags_machine_new(GObject *devout);
 
 #endif /*__AGS_MACHINE_H__*/

@@ -47,7 +47,13 @@ typedef struct _AgsCellPatternClass AgsCellPatternClass;
 
 typedef enum{
   AGS_CELL_PATTERN_CONNECTED    = 1,
+  AGS_CELL_PATTERN_CURSOR_ON    = 1 <<  1,
 }AgsCellPatternFlags;
+
+typedef enum{
+  AGS_CELL_PATTERN_KEY_L_CONTROL       = 1,
+  AGS_CELL_PATTERN_KEY_R_CONTROL       = 1 <<  1,
+}AgsCellPatternKeyMask;
 
 struct _AgsCellPattern
 {
@@ -55,12 +61,17 @@ struct _AgsCellPattern
 
   guint flags;
   
+  guint key_mask;
+  
   guint cell_width;
   guint cell_height;
   
   guint n_cols;
   guint n_rows;
 
+  guint cursor_x;
+  guint cursor_y;
+  
   GtkDrawingArea *drawing_area;
   
   GtkVScrollbar *vscrollbar;
@@ -77,11 +88,16 @@ struct _AgsCellPatternClass
 
 GType ags_cell_pattern_get_type(void);
 
+void ags_cell_pattern_paint(AgsCellPattern *cell_pattern);
+
 void ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern);
 void ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern);
+void ags_cell_pattern_draw_cursor(AgsCellPattern *cell_pattern);
 void ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *channel, guint j, guint i);
 void ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);
 void ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);
+
+void* ags_cell_pattern_blink_worker(void *data);
 
 AgsCellPattern* ags_cell_pattern_new();
 

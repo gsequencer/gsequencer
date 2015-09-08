@@ -182,6 +182,7 @@ gsequencerheaders = \
 	src/ags/audio/task/ags_apply_synth.h \
 	src/ags/audio/task/ags_apply_wavetable.h \
 	src/ags/audio/task/ags_audio_set_recycling.h \
+	src/ags/audio/task/ags_blink_cell_pattern_cursor.h \
 	src/ags/audio/task/ags_cancel_audio.h \
 	src/ags/audio/task/ags_cancel_channel.h \
 	src/ags/audio/task/ags_cancel_recall.h \
@@ -518,6 +519,7 @@ gsequencer_SOURCES = \
 	src/ags/audio/task/ags_apply_synth.c \
 	src/ags/audio/task/ags_apply_wavetable.c \
 	src/ags/audio/task/ags_audio_set_recycling.c \
+	src/ags/audio/task/ags_blink_cell_pattern_cursor.c \
 	src/ags/audio/task/ags_cancel_audio.c \
 	src/ags/audio/task/ags_cancel_channel.c \
 	src/ags/audio/task/ags_cancel_recall.c \

@@ -213,6 +213,7 @@ am_gsequencer_OBJECTS = $(am__objects_1) \
 	gsequencer-ags_apply_synth.$(OBJEXT) \
 	gsequencer-ags_apply_wavetable.$(OBJEXT) \
 	gsequencer-ags_audio_set_recycling.$(OBJEXT) \
+	gsequencer-ags_blink_cell_pattern_cursor.$(OBJEXT) \
 	gsequencer-ags_cancel_audio.$(OBJEXT) \
 	gsequencer-ags_cancel_channel.$(OBJEXT) \
 	gsequencer-ags_cancel_recall.$(OBJEXT) \
@@ -660,6 +661,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -838,6 +840,7 @@ gsequencerheaders = \
 	src/ags/audio/task/ags_apply_synth.h \
 	src/ags/audio/task/ags_apply_wavetable.h \
 	src/ags/audio/task/ags_audio_set_recycling.h \
+	src/ags/audio/task/ags_blink_cell_pattern_cursor.h \
 	src/ags/audio/task/ags_cancel_audio.h \
 	src/ags/audio/task/ags_cancel_channel.h \
 	src/ags/audio/task/ags_cancel_recall.h \
@@ -1174,6 +1177,7 @@ gsequencer_SOURCES = \
 	src/ags/audio/task/ags_apply_synth.c \
 	src/ags/audio/task/ags_apply_wavetable.c \
 	src/ags/audio/task/ags_audio_set_recycling.c \
+	src/ags/audio/task/ags_blink_cell_pattern_cursor.c \
 	src/ags/audio/task/ags_cancel_audio.c \
 	src/ags/audio/task/ags_cancel_channel.c \
 	src/ags/audio/task/ags_cancel_recall.c \
@@ -1540,6 +1544,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_audio_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_audio_thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_autosave_thread.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_blink_cell_pattern_cursor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_buffer_audio_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_buffer_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_buffer_channel_run.Po@am__quote@
@@ -3381,6 +3386,20 @@ gsequencer-ags_audio_set_recycling.obj: src/ags/audio/task/ags_audio_set_recycli
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/task/ags_audio_set_recycling.c' object='gsequencer-ags_audio_set_recycling.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_audio_set_recycling.obj `if test -f 'src/ags/audio/task/ags_audio_set_recycling.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_audio_set_recycling.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_audio_set_recycling.c'; fi`
+
+gsequencer-ags_blink_cell_pattern_cursor.o: src/ags/audio/task/ags_blink_cell_pattern_cursor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_blink_cell_pattern_cursor.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_blink_cell_pattern_cursor.Tpo -c -o gsequencer-ags_blink_cell_pattern_cursor.o `test -f 'src/ags/audio/task/ags_blink_cell_pattern_cursor.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_blink_cell_pattern_cursor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_blink_cell_pattern_cursor.Tpo $(DEPDIR)/gsequencer-ags_blink_cell_pattern_cursor.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/task/ags_blink_cell_pattern_cursor.c' object='gsequencer-ags_blink_cell_pattern_cursor.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_blink_cell_pattern_cursor.o `test -f 'src/ags/audio/task/ags_blink_cell_pattern_cursor.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_blink_cell_pattern_cursor.c
+
+gsequencer-ags_blink_cell_pattern_cursor.obj: src/ags/audio/task/ags_blink_cell_pattern_cursor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_blink_cell_pattern_cursor.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_blink_cell_pattern_cursor.Tpo -c -o gsequencer-ags_blink_cell_pattern_cursor.obj `if test -f 'src/ags/audio/task/ags_blink_cell_pattern_cursor.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_blink_cell_pattern_cursor.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_blink_cell_pattern_cursor.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_blink_cell_pattern_cursor.Tpo $(DEPDIR)/gsequencer-ags_blink_cell_pattern_cursor.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/task/ags_blink_cell_pattern_cursor.c' object='gsequencer-ags_blink_cell_pattern_cursor.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_blink_cell_pattern_cursor.obj `if test -f 'src/ags/audio/task/ags_blink_cell_pattern_cursor.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_blink_cell_pattern_cursor.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_blink_cell_pattern_cursor.c'; fi`
 
 gsequencer-ags_cancel_audio.o: src/ags/audio/task/ags_cancel_audio.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_cancel_audio.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_cancel_audio.Tpo -c -o gsequencer-ags_cancel_audio.o `test -f 'src/ags/audio/task/ags_cancel_audio.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_cancel_audio.c

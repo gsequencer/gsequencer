@@ -131,8 +131,7 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 			| GDK_POINTER_MOTION_HINT_MASK
 			| GDK_CONTROL_MASK
 			| GDK_KEY_PRESS_MASK
-			| GDK_KEY_RELEASE_MASK
-			);
+			| GDK_KEY_RELEASE_MASK);
   gtk_widget_set_can_focus(note_edit->drawing_area,
 			   TRUE);
   
