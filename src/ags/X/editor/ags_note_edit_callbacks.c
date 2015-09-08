@@ -954,6 +954,8 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
       break;
     }
   }
+
+  return(FALSE);
 }
 
 gboolean
@@ -971,6 +973,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     }
     break;
   }
+
+  return(FALSE);
 }
 
 void

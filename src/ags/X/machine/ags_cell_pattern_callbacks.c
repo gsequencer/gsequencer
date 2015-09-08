@@ -31,24 +31,33 @@
 
 #include <ags/X/ags_machine.h>
 
+#include <gdk/gdkkeysyms.h>
+
 #include <math.h>
 
 void ags_cell_pattern_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 					   AgsCellPattern *cell_pattern);
 
 gboolean
+ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern)
+{
+  //TODO:JK: implement me
+  
+  return(TRUE);
+}
+
+gboolean
 ags_cell_pattern_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsCellPattern *cell_pattern)
 {
-  ags_cell_pattern_draw_matrix(cell_pattern);
-
+  ags_cell_pattern_paint(cell_pattern);
+  
   return(FALSE);
 }
 
 gboolean
 ags_cell_pattern_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsCellPattern *cell_pattern)
 {
-  ags_cell_pattern_draw_gutter(cell_pattern);
-  ags_cell_pattern_draw_matrix(cell_pattern);
+  ags_cell_pattern_paint(cell_pattern);
 
   return(FALSE);
 }
@@ -85,6 +94,77 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
 				AGS_TASK(toggle_pattern_bit));
   }else if (event->button == 3){
+  }
+
+  return(FALSE);
+}
+
+gboolean
+ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern)
+{
+  switch(event->keyval){
+  case GDK_KEY_Control_L:
+    {
+      cell_pattern->key_mask |= AGS_CELL_PATTERN_KEY_L_CONTROL;
+    }
+    break;
+  case GDK_KEY_Control_R:
+    {
+      cell_pattern->key_mask |= AGS_CELL_PATTERN_KEY_R_CONTROL;
+    }
+    break;
+  case GDK_KEY_c:
+    {
+      /* copy notes */
+      if((AGS_CELL_PATTERN_KEY_L_CONTROL & (cell_pattern->key_mask)) != 0 || (AGS_CELL_PATTERN_KEY_R_CONTROL & (cell_pattern->key_mask)) != 0){
+	AgsMachine *machine;
+
+	machine = gtk_widget_get_ancestor(cell_pattern,
+					  AGS_TYPE_MACHINE);
+	
+	ags_machine_copy_pattern(machine);
+      }
+    }
+    break;
+  }
+  
+  return(FALSE);
+}
+
+gboolean
+ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern)
+{
+  switch(event->keyval){
+  case GDK_KEY_Control_L:
+    {
+      cell_pattern->key_mask &= (~AGS_CELL_PATTERN_KEY_L_CONTROL);
+    }
+    break;
+  case GDK_KEY_Control_R:
+    {
+      cell_pattern->key_mask &= (~AGS_CELL_PATTERN_KEY_R_CONTROL);
+    }
+    break;
+  case GDK_KEY_leftarrow:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+  case GDK_KEY_rightarrow:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+  case GDK_KEY_uparrow:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+  case GDK_KEY_downarrow:
+    {
+      //TODO:JK: implement me
+    }
+    break;
   }
 
   return(FALSE);
