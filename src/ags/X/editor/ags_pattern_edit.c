@@ -75,6 +75,8 @@ GtkStyle *pattern_edit_style;
 
 extern pthread_mutex_t ags_application_mutex;
 
+static GQuark quark_accessible_object = 0;
+
 GType
 ags_pattern_edit_get_type(void)
 {
@@ -159,6 +161,7 @@ ags_pattern_edit_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_pattern_edit_class_init(AgsPatternEditClass *pattern_edit)
 {
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");  
 }
 
 void
@@ -327,6 +330,28 @@ ags_pattern_edit_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+AtkObject*
+ags_pattern_edit_get_accessible(GtkWidget *widget)
+{
+  AtkObject* accessible;
+
+  accessible = g_object_get_qdata(G_OBJECT(widget),
+				    quark_accessible_object);
+  
+  if(!accessible){
+    accessible = g_object_new(ags_accessible_pattern_edit_get_type(),
+			      NULL);
+    
+    g_object_set_qdata(G_OBJECT(widget),
+		       quark_accessible_object,
+		       accessible);
+    gtk_accessible_set_widget(accessible,
+			      widget);
+  }
+  
+  return(accessible);
+}
+
 gboolean
 ags_accessible_pattern_edit_do_action(AtkAction *action,
 				      gint i)
@@ -359,8 +384,8 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Left;
       
       /* send event */
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
     }
     break;
   case 1:
@@ -369,8 +394,8 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Right;
       
       /* send event */
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
     }
     break;
   case 2:
@@ -379,8 +404,8 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Up;
     
       /* send event */
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
     }
     break;
   case 3:
@@ -389,8 +414,8 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_Down;
       
       /* send event */
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
     }
     break;
   case 4:
@@ -399,8 +424,8 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_space;
       
       /* send event */
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
     }
     break;
   case 5:
@@ -409,10 +434,10 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_c;
 
       /* send event */
-      gtk_widget_event(pattern_edit, modifier_press);
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
-      gtk_widget_event(pattern_edit, modifier_release);      
+      gtk_widget_event(pattern_edit->drawing_area, modifier_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, modifier_release);      
     }    
     break;
   case 6:
@@ -421,10 +446,10 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_x;
 
       /* send event */
-      gtk_widget_event(pattern_edit, modifier_press);
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
-      gtk_widget_event(pattern_edit, modifier_release);      
+      gtk_widget_event(pattern_edit->drawing_area, modifier_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, modifier_release);      
     }
     break;
   case 7:
@@ -433,10 +458,10 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_v;
 
       /* send event */
-      gtk_widget_event(pattern_edit, modifier_press);
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
-      gtk_widget_event(pattern_edit, modifier_release);      
+      gtk_widget_event(pattern_edit->drawing_area, modifier_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, modifier_release);      
     }
     break;
   case 8:
@@ -445,10 +470,10 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_a;
 
       /* send event */
-      gtk_widget_event(pattern_edit, modifier_press);
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
-      gtk_widget_event(pattern_edit, modifier_release);      
+      gtk_widget_event(pattern_edit->drawing_area, modifier_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, modifier_release);      
     }
     break;
   case 9:
@@ -457,10 +482,10 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 	key_release->keyval = GDK_KEY_i;
 
       /* send event */
-      gtk_widget_event(pattern_edit, modifier_press);
-      gtk_widget_event(pattern_edit, key_press);
-      gtk_widget_event(pattern_edit, key_release);
-      gtk_widget_event(pattern_edit, modifier_release);      
+      gtk_widget_event(pattern_edit->drawing_area, modifier_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
+      gtk_widget_event(pattern_edit->drawing_area, modifier_release);      
     }
     break;
   }
@@ -483,12 +508,12 @@ ags_accessible_pattern_edit_get_description(AtkAction *action,
     "move cursor right\0",
     "move cursor up\0",
     "move cursor down\0",
-    "toggle audio pattern\0"
+    "add audio pattern\0"
     "copy pattern to clipboard\0",
     "cut pattern to clipbaord\0",
     "paste pattern from clipboard\0",
     "select all pattern\0",
-    "inverte pattern\0",
+    "invert pattern\0",
   };
 
   if(i >= 0 && i < 10){
@@ -507,7 +532,7 @@ ags_accessible_pattern_edit_get_name(AtkAction *action,
     "right\0",
     "up\0",
     "down\0",
-    "toggle\0",
+    "add\0",
     "copy\0",
     "cut\0",
     "paste\0",
