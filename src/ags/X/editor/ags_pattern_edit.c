@@ -31,11 +31,33 @@
 
 #include <ags/X/editor/ags_pattern_edit.h>
 
+#include <gdk/gdkkeysyms.h>
+
+#include <atk/atk.h>
+
+static GType ags_accessible_pattern_edit_get_type(void);
 void ags_pattern_edit_class_init(AgsPatternEditClass *pattern_edit);
+void ags_accessible_pattern_edit_class_init(AtkObject *object);
+void ags_accessible_pattern_edit_action_interface_init(AtkActionIface *action);
 void ags_pattern_edit_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pattern_edit_init(AgsPatternEdit *pattern_edit);
 void ags_pattern_edit_connect(AgsConnectable *connectable);
 void ags_pattern_edit_disconnect(AgsConnectable *connectable);
+AtkObject* ags_pattern_edit_get_accessible(GtkWidget *widget);
+
+gboolean ags_accessible_pattern_edit_do_action(AtkAction *action,
+					       gint i);
+gint ags_accessible_pattern_edit_get_n_actions(AtkAction *action);
+const gchar* ags_accessible_pattern_edit_get_description(AtkAction *action,
+							 gint i);
+const gchar* ags_accessible_pattern_edit_get_name(AtkAction *action,
+						  gint i);
+const gchar* ags_accessible_pattern_edit_get_keybinding(AtkAction *action,
+							gint i);
+gboolean ags_accessible_pattern_edit_set_description(AtkAction *action,
+						     gint i);
+gchar* ags_accessible_pattern_edit_get_localized_name(AtkAction *action,
+						      gint i);
 
 void ags_pattern_edit_paint(AgsPatternEdit *pattern_edit);
 
@@ -89,6 +111,42 @@ ags_pattern_edit_get_type(void)
   return(ags_type_pattern_edit);
 }
 
+static GType
+ags_accessible_pattern_edit_get_type(void)
+{
+  static GType ags_type_accessible_pattern_edit = 0;
+
+  if(!ags_type_accessible_pattern_edit){
+    const GTypeInfo ags_accesssible_pattern_edit_info = {
+      sizeof(GtkAccessibleClass),
+      NULL,           /* base_init */
+      NULL,           /* base_finalize */
+      (GClassInitFunc) ags_accessible_pattern_edit_class_init,
+      NULL,           /* class_finalize */
+      NULL,           /* class_data */
+      sizeof(GtkAccessible),
+      0,             /* n_preallocs */
+      NULL, NULL
+    };
+
+    static const GInterfaceInfo atk_action_interface_info = {
+      (GInterfaceInitFunc) ags_accessible_pattern_edit_action_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_accessible_pattern_edit = g_type_register_static(GTK_TYPE_ACCESSIBLE,
+							      "AgsAccessiblePatternEdit\0", &ags_accesssible_pattern_edit_info,
+							      0);
+
+    g_type_add_interface_static(ags_type_accessible_pattern_edit,
+				ATK_TYPE_ACTION,
+				&atk_action_interface_info);
+  }
+  
+  return(ags_type_accessible_pattern_edit);
+}
+
 void
 ags_pattern_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 {
@@ -101,6 +159,24 @@ ags_pattern_edit_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_pattern_edit_class_init(AgsPatternEditClass *pattern_edit)
 {
+}
+
+void
+ags_accessible_pattern_edit_class_init(AtkObject *object)
+{
+  /* empty */
+}
+
+void
+ags_accessible_pattern_edit_action_interface_init(AtkActionIface *action)
+{
+  action->do_action = ags_accessible_pattern_edit_do_action;
+  action->get_n_actions = ags_accessible_pattern_edit_get_n_actions;
+  action->get_description = ags_accessible_pattern_edit_get_description;
+  action->get_name = ags_accessible_pattern_edit_get_name;
+  action->get_keybinding = ags_accessible_pattern_edit_get_keybinding;
+  action->set_description = ags_accessible_pattern_edit_set_description;
+  action->get_localized_name = ags_accessible_pattern_edit_get_localized_name;
 }
 
 void
@@ -249,6 +325,243 @@ void
 ags_pattern_edit_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
+}
+
+gboolean
+ags_accessible_pattern_edit_do_action(AtkAction *action,
+				      gint i)
+{
+  AgsPatternEdit *pattern_edit;
+  
+  GdkEventKey *key_press, *key_release;
+  GdkEventKey *modifier_press, *modifier_release;
+  
+  if(!(i >= 0 && i < 10)){
+    return(FALSE);
+  }
+
+  pattern_edit = gtk_accessible_get_widget(ATK_OBJECT(action));
+  
+  key_press = gdk_event_new(GDK_KEY_PRESS);
+  key_release = gdk_event_new(GDK_KEY_RELEASE);
+
+  /* create modifier */
+  modifier_press = gdk_event_new(GDK_KEY_PRESS);
+  modifier_release = gdk_event_new(GDK_KEY_RELEASE);
+  
+  modifier_press->keyval =
+    modifier_release->keyval = GDK_KEY_Control_R;
+
+  switch(i){
+  case 0:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Left;
+      
+      /* send event */
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+    }
+    break;
+  case 1:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Right;
+      
+      /* send event */
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+    }
+    break;
+  case 2:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Up;
+    
+      /* send event */
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+    }
+    break;
+  case 3:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Down;
+      
+      /* send event */
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+    }
+    break;
+  case 4:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_space;
+      
+      /* send event */
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+    }
+    break;
+  case 5:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_c;
+
+      /* send event */
+      gtk_widget_event(pattern_edit, modifier_press);
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit, modifier_release);      
+    }    
+    break;
+  case 6:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_x;
+
+      /* send event */
+      gtk_widget_event(pattern_edit, modifier_press);
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit, modifier_release);      
+    }
+    break;
+  case 7:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_v;
+
+      /* send event */
+      gtk_widget_event(pattern_edit, modifier_press);
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit, modifier_release);      
+    }
+    break;
+  case 8:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_a;
+
+      /* send event */
+      gtk_widget_event(pattern_edit, modifier_press);
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit, modifier_release);      
+    }
+    break;
+  case 9:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_i;
+
+      /* send event */
+      gtk_widget_event(pattern_edit, modifier_press);
+      gtk_widget_event(pattern_edit, key_press);
+      gtk_widget_event(pattern_edit, key_release);
+      gtk_widget_event(pattern_edit, modifier_release);      
+    }
+    break;
+  }
+
+  return(TRUE);
+}
+
+gint
+ags_accessible_pattern_edit_get_n_actions(AtkAction *action)
+{
+  return(10);
+}
+
+const gchar*
+ags_accessible_pattern_edit_get_description(AtkAction *action,
+					    gint i)
+{
+  static const gchar **actions = {
+    "move cursor left\0",
+    "move cursor right\0",
+    "move cursor up\0",
+    "move cursor down\0",
+    "toggle audio pattern\0"
+    "copy pattern to clipboard\0",
+    "cut pattern to clipbaord\0",
+    "paste pattern from clipboard\0",
+    "select all pattern\0",
+    "inverte pattern\0",
+  };
+
+  if(i >= 0 && i < 10){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+const gchar*
+ags_accessible_pattern_edit_get_name(AtkAction *action,
+				     gint i)
+{
+  static const gchar **actions = {
+    "left\0",
+    "right\0",
+    "up\0",
+    "down\0",
+    "toggle\0",
+    "copy\0",
+    "cut\0",
+    "paste\0",
+    "select-all\0",
+    "invert\0",
+  };
+  
+  if(i >= 0 && i < 10){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+const gchar*
+ags_accessible_pattern_edit_get_keybinding(AtkAction *action,
+					   gint i)
+{
+  static const gchar **actions = {
+    "left\0",
+    "right\0",
+    "up\0",
+    "down\0",
+    "space",
+    "Ctrl+c"
+    "Ctrl+x",
+    "Ctrl+v",
+    "Ctrl+a",
+    "Ctrl+i",
+  };
+  
+  if(i >= 0 && i < 10){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+gboolean
+ags_accessible_pattern_edit_set_description(AtkAction *action,
+					    gint i)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+gchar*
+ags_accessible_pattern_edit_get_localized_name(AtkAction *action,
+					       gint i)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**

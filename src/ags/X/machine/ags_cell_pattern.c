@@ -44,7 +44,6 @@
 static GType ags_accessible_cell_pattern_get_type(void);
 void ags_cell_pattern_class_init(AgsCellPatternClass *cell_pattern);
 void ags_accessible_cell_pattern_class_init(AtkObject *object);
-void ags_accessible_cell_pattern_class_init(AtkObject *object);
 void ags_accessible_cell_pattern_action_interface_init(AtkActionIface *action);
 void ags_cell_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cell_pattern_init(AgsCellPattern *cell_pattern);
