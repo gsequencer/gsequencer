@@ -130,7 +130,9 @@ struct _AgsNoteEdit
 
   guint selected_x;
   guint selected_y;
-  
+
+  guint selected_width;
+
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
 };
