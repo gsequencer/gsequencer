@@ -263,8 +263,6 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
   note_edit->selected_x = 0;
   note_edit->selected_y = 0;
 
-  note_edit->selected_width = 1;
-
   /* GtkScrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 16.0, 1.0);
   note_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
@@ -367,8 +365,9 @@ ags_accessible_note_edit_do_action(AtkAction *action,
   
   GdkEventKey *key_press, *key_release;
   GdkEventKey *modifier_press, *modifier_release;
+  GdkEventKey *second_level_press, *second_level_release;
   
-  if(!(i >= 0 && i < 10)){
+  if(!(i >= 0 && i < 13)){
     return(FALSE);
   }
 
@@ -383,6 +382,13 @@ ags_accessible_note_edit_do_action(AtkAction *action,
   
   modifier_press->keyval =
     modifier_release->keyval = GDK_KEY_Control_R;
+
+  /* create second level */
+  second_level_press = gdk_event_new(GDK_KEY_PRESS);
+  second_level_release = gdk_event_new(GDK_KEY_RELEASE);
+  
+  second_level_press->keyval =
+    second_level_release->keyval = GDK_KEY_Shift_R;
 
   switch(i){
   case 0:
@@ -438,6 +444,40 @@ ags_accessible_note_edit_do_action(AtkAction *action,
   case 5:
     {
       key_press->keyval =
+	key_release->keyval = GDK_KEY_Left;
+      
+      /* send event */
+      gtk_widget_event(note_edit->drawing_area, second_level_press);
+      gtk_widget_event(note_edit->drawing_area, key_press);
+      gtk_widget_event(note_edit->drawing_area, key_release);
+      gtk_widget_event(note_edit->drawing_area, second_level_release);
+    }
+    break;
+  case 6:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Right;
+      
+      /* send event */
+      gtk_widget_event(note_edit->drawing_area, second_level_press);
+      gtk_widget_event(note_edit->drawing_area, key_press);
+      gtk_widget_event(note_edit->drawing_area, key_release);
+      gtk_widget_event(note_edit->drawing_area, second_level_release);
+    }
+    break;
+  case 7:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Delete;
+      
+      /* send event */
+      gtk_widget_event(note_edit->drawing_area, key_press);
+      gtk_widget_event(note_edit->drawing_area, key_release);
+    }
+    break;
+  case 8:
+    {
+      key_press->keyval =
 	key_release->keyval = GDK_KEY_c;
 
       /* send event */
@@ -447,7 +487,7 @@ ags_accessible_note_edit_do_action(AtkAction *action,
       gtk_widget_event(note_edit->drawing_area, modifier_release);      
     }    
     break;
-  case 6:
+  case 9:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_x;
@@ -459,7 +499,7 @@ ags_accessible_note_edit_do_action(AtkAction *action,
       gtk_widget_event(note_edit->drawing_area, modifier_release);      
     }
     break;
-  case 7:
+  case 10:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_v;
@@ -471,7 +511,7 @@ ags_accessible_note_edit_do_action(AtkAction *action,
       gtk_widget_event(note_edit->drawing_area, modifier_release);      
     }
     break;
-  case 8:
+  case 11:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_a;
@@ -483,7 +523,7 @@ ags_accessible_note_edit_do_action(AtkAction *action,
       gtk_widget_event(note_edit->drawing_area, modifier_release);      
     }
     break;
-  case 9:
+  case 12:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_i;
@@ -503,7 +543,7 @@ ags_accessible_note_edit_do_action(AtkAction *action,
 gint
 ags_accessible_note_edit_get_n_actions(AtkAction *action)
 {
-  return(10);
+  return(13);
 }
 
 const gchar*
@@ -515,7 +555,10 @@ ags_accessible_note_edit_get_description(AtkAction *action,
     "move cursor right\0",
     "move cursor up\0",
     "move cursor down\0",
-    "add audio note\0"
+    "add audio note\0",
+    "shrink audio note\0",
+    "grow audio note\0",
+    "remove audio note\0",
     "copy note to clipboard\0",
     "cut note to clipbaord\0",
     "paste note from clipboard\0",
@@ -523,7 +566,7 @@ ags_accessible_note_edit_get_description(AtkAction *action,
     "invert note\0",
   };
 
-  if(i >= 0 && i < 10){
+  if(i >= 0 && i < 13){
     return(actions[i]);
   }else{
     return(NULL);
@@ -540,6 +583,9 @@ ags_accessible_note_edit_get_name(AtkAction *action,
     "up\0",
     "down\0",
     "add\0",
+    "shrink\0",
+    "grow\0",
+    "remove\0",
     "copy\0",
     "cut\0",
     "paste\0",
@@ -547,7 +593,7 @@ ags_accessible_note_edit_get_name(AtkAction *action,
     "invert\0",
   };
   
-  if(i >= 0 && i < 10){
+  if(i >= 0 && i < 13){
     return(actions[i]);
   }else{
     return(NULL);
@@ -564,6 +610,9 @@ ags_accessible_note_edit_get_keybinding(AtkAction *action,
     "up\0",
     "down\0",
     "space",
+    "Shft+Left\0",
+    "Shft+Right\0",
+    "Del\0"
     "Ctrl+c"
     "Ctrl+x",
     "Ctrl+v",
@@ -571,7 +620,7 @@ ags_accessible_note_edit_get_keybinding(AtkAction *action,
     "Ctrl+i",
   };
   
-  if(i >= 0 && i < 10){
+  if(i >= 0 && i < 13){
     return(actions[i]);
   }else{
     return(NULL);

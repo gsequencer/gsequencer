@@ -361,7 +361,7 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
   GdkEventKey *key_press, *key_release;
   GdkEventKey *modifier_press, *modifier_release;
   
-  if(!(i >= 0 && i < 10)){
+  if(!(i >= 0 && i < 11)){
     return(FALSE);
   }
 
@@ -431,6 +431,16 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
   case 5:
     {
       key_press->keyval =
+	key_release->keyval = GDK_KEY_Delete;
+      
+      /* send event */
+      gtk_widget_event(pattern_edit->drawing_area, key_press);
+      gtk_widget_event(pattern_edit->drawing_area, key_release);
+    }
+    break;
+  case 6:
+    {
+      key_press->keyval =
 	key_release->keyval = GDK_KEY_c;
 
       /* send event */
@@ -440,7 +450,7 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
       gtk_widget_event(pattern_edit->drawing_area, modifier_release);      
     }    
     break;
-  case 6:
+  case 7:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_x;
@@ -452,7 +462,7 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
       gtk_widget_event(pattern_edit->drawing_area, modifier_release);      
     }
     break;
-  case 7:
+  case 8:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_v;
@@ -464,7 +474,7 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
       gtk_widget_event(pattern_edit->drawing_area, modifier_release);      
     }
     break;
-  case 8:
+  case 9:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_a;
@@ -476,7 +486,7 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
       gtk_widget_event(pattern_edit->drawing_area, modifier_release);      
     }
     break;
-  case 9:
+  case 10:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_i;
@@ -496,7 +506,7 @@ ags_accessible_pattern_edit_do_action(AtkAction *action,
 gint
 ags_accessible_pattern_edit_get_n_actions(AtkAction *action)
 {
-  return(10);
+  return(11);
 }
 
 const gchar*
@@ -508,7 +518,8 @@ ags_accessible_pattern_edit_get_description(AtkAction *action,
     "move cursor right\0",
     "move cursor up\0",
     "move cursor down\0",
-    "add audio pattern\0"
+    "add audio pattern\0",
+    "remove audio pattern\0"
     "copy pattern to clipboard\0",
     "cut pattern to clipbaord\0",
     "paste pattern from clipboard\0",
@@ -516,7 +527,7 @@ ags_accessible_pattern_edit_get_description(AtkAction *action,
     "invert pattern\0",
   };
 
-  if(i >= 0 && i < 10){
+  if(i >= 0 && i < 11){
     return(actions[i]);
   }else{
     return(NULL);
@@ -533,6 +544,7 @@ ags_accessible_pattern_edit_get_name(AtkAction *action,
     "up\0",
     "down\0",
     "add\0",
+    "remove\0",
     "copy\0",
     "cut\0",
     "paste\0",
@@ -540,7 +552,7 @@ ags_accessible_pattern_edit_get_name(AtkAction *action,
     "invert\0",
   };
   
-  if(i >= 0 && i < 10){
+  if(i >= 0 && i < 11){
     return(actions[i]);
   }else{
     return(NULL);
@@ -557,6 +569,7 @@ ags_accessible_pattern_edit_get_keybinding(AtkAction *action,
     "up\0",
     "down\0",
     "space",
+    "Del\0",
     "Ctrl+c"
     "Ctrl+x",
     "Ctrl+v",
@@ -564,7 +577,7 @@ ags_accessible_pattern_edit_get_keybinding(AtkAction *action,
     "Ctrl+i",
   };
   
-  if(i >= 0 && i < 10){
+  if(i >= 0 && i < 11){
     return(actions[i]);
   }else{
     return(NULL);
