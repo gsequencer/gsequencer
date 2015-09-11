@@ -403,6 +403,8 @@ gsequencerheaders = \
 	src/ags/X/machine/ags_panel.h \
 	src/ags/X/machine/ags_panel_input_line.h \
 	src/ags/X/machine/ags_panel_input_pad.h \
+	src/ags/X/machine/ags_pattern_box_callbacks.h \
+	src/ags/X/machine/ags_pattern_box.h \
 	src/ags/X/machine/ags_synth_callbacks.h \
 	src/ags/X/machine/ags_synth.h \
 	src/ags/X/machine/ags_synth_input_line.h \
@@ -735,6 +737,8 @@ gsequencer_SOURCES = \
 	src/ags/X/machine/ags_panel_callbacks.c \
 	src/ags/X/machine/ags_panel_input_line.c \
 	src/ags/X/machine/ags_panel_input_pad.c \
+	src/ags/X/machine/ags_pattern_box_callbacks.c \
+	src/ags/X/machine/ags_pattern_box.c \
 	src/ags/X/machine/ags_synth.c \
 	src/ags/X/machine/ags_synth_callbacks.c \
 	src/ags/X/machine/ags_synth_input_line.c \

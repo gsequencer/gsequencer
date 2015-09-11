@@ -302,7 +302,7 @@ ags_drum_init(AgsDrum *drum)
   frame = (GtkFrame *) gtk_frame_new("Pattern\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) frame, FALSE, FALSE, 0);
 
-  table0 = (GtkTable *) gtk_table_new(16, 4, FALSE);
+  table0 = (GtkTable *) gtk_table_new(8, 4, FALSE);
   gtk_container_add((GtkContainer*) frame, (GtkWidget *) table0);
 
   drum->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label("loop\0");
@@ -361,58 +361,13 @@ ags_drum_init(AgsDrum *drum)
   drum->length_spin->adjustment->value = 16.0;
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) drum->length_spin, FALSE, FALSE, 0);
 
-  /* led */
-  drum->active_led = 0;
-
-  drum->led =
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 16);
+  /* pattern box */
+  drum->pattern_box = ags_pattern_box_new();
   gtk_table_attach(table0,
-		   (GtkWidget *) hbox,
-		   3, 15,
-		   1, 2,
-		   0, 0,
-		   0, 0);
-
-  for(i = 0; i < 16; i++){
-    toggle_button = (GtkToggleButton *) ags_led_new();
-    gtk_widget_set_size_request((GtkWidget *) toggle_button, 8, 4);
-    gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) toggle_button, FALSE, FALSE, 0);
-  }
-
-  /* pattern */
-  drum->pattern =
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_table_attach(table0,
-		   (GtkWidget *) hbox,
-		   3, 15,
-		   2, 3,
-		   0, 0,
-		   0, 0);
-
-  for(i = 0; i < 16; i++){
-    toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
-    gtk_widget_set_size_request((GtkWidget *) toggle_button, 24, 24);
-    gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) toggle_button, FALSE, FALSE, 0);
-  }
-
-  /* page / offset */
-  drum->offset = (GtkVBox*) gtk_vbox_new(FALSE, 0);
-  gtk_table_attach_defaults(table0, (GtkWidget *) drum->offset, 15, 16, 0, 3);
-
-  radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, "1-16\0");
-  gtk_box_pack_start((GtkBox*) drum->offset, (GtkWidget *) radio_button, FALSE, FALSE, 0);
-
-  gtk_box_pack_start((GtkBox*) drum->offset,
-		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, "17-32\0"),
-		     FALSE, FALSE, 0);
-
-  gtk_box_pack_start((GtkBox*) drum->offset,
-		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, "33-48\0"),
-		     FALSE, FALSE, 0);
-
-  gtk_box_pack_start((GtkBox*) drum->offset,
-		     (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, "49-64\0"),
-		     FALSE, FALSE, 0);
+		   (GtkWidget *) drum->pattern_box,
+		   7, 8, 0, 3,
+		   GTK_EXPAND, GTK_EXPAND,
+		   0, 0);  
 }
 
 void
@@ -426,9 +381,13 @@ ags_drum_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
   AgsDrum *drum;
-  AgsDelayAudioRun *play_delay_audio_run;
+
   AgsRecallHandler *recall_handler;
+
+  AgsDelayAudioRun *play_delay_audio_run;
+
   GList *list, *list_start;
+
   int i;
 
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
@@ -462,32 +421,6 @@ ags_drum_connect(AgsConnectable *connectable)
     g_signal_connect(G_OBJECT(drum->index0[i]), "clicked\0",
 		     G_CALLBACK(ags_drum_index0_callback), (gpointer) drum);
   }
-
-  /* connect pattern */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) drum->pattern);
-
-  while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "clicked\0",
-		     G_CALLBACK(ags_drum_pad_callback), (gpointer) drum);
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-
-  /* connect pattern offset range */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) drum->offset);
-
-  while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "clicked\0",
-		     G_CALLBACK(ags_drum_offset_callback), (gpointer) drum);
-		   
-    list = list->next;
-  }
-
-  g_list_free(list_start);
 
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "tact\0",
@@ -900,63 +833,6 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
       }
     }
   }  
-}
-
-void
-ags_drum_set_pattern(AgsDrum *drum)
-{
-  AgsLine *selected_line;
-  GList *list, *line;
-  guint index0, index1, offset;
-  gboolean set_active;
-  guint i;
-
-  if(drum->selected_pad == NULL){
-    g_message("no selected pad\n\0");
-    return;
-  }
-
-  for(i = 0; i < 4 && drum->selected0 != drum->index0[i]; i++);
-
-  index0 = i;
-
-  for(i = 0; i < 12 && drum->selected1 != drum->index1[i]; i++);
-  
-  index1 = i;
-
-  list = gtk_container_get_children((GtkContainer *) drum->offset);
-
-  for(i = 0; i < 4 && ! GTK_TOGGLE_BUTTON(list->data)->active; i++)
-    list = list->next;
-
-  offset = i * 16;
-
-  list = gtk_container_get_children((GtkContainer *) drum->pattern);
-
-  drum->flags |= AGS_DRUM_BLOCK_PATTERN;
-
-  for(i = 0; i < 16; i++){
-    set_active = TRUE;
-
-    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum->selected_pad)->expander_set));
-
-    while((line = ags_line_find_next_grouped(line)) != NULL){
-      selected_line = AGS_LINE(line->data);
-
-      if(!ags_pattern_get_bit((AgsPattern *) selected_line->channel->pattern->data, index0, index1, offset + i)){
-	set_active = FALSE;
-	break;
-      }
-
-      line = line->next;
-    }
-
-    gtk_toggle_button_set_active((GtkToggleButton *) list->data, set_active);
-
-    list = list->next;
-  }
-
-  drum->flags &= (~AGS_DRUM_BLOCK_PATTERN);
 }
 
 /**

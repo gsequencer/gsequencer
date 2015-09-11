@@ -289,7 +289,10 @@ ags_machine_init(AgsMachine *machine)
   machine->play = NULL;
 
   machine->output = NULL;
+  machine->selected_output_pad = NULL;
+
   machine->input = NULL;
+  machine->selected_input_pad = NULL;
 
   machine->port = NULL;
 
