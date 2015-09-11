@@ -916,6 +916,16 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
 	note_edit->key_mask |= AGS_NOTE_EDIT_KEY_R_CONTROL;
       }
       break;
+    case GDK_KEY_Shift_L:
+      {
+	note_edit->key_mask |= AGS_NOTE_EDIT_KEY_L_SHIFT;
+      }
+      break;
+    case GDK_KEY_Shift_R:
+      {
+	note_edit->key_mask |= AGS_NOTE_EDIT_KEY_R_SHIFT;
+      }
+      break;
     case GDK_KEY_a:
       {
 	/* select all notes */
@@ -985,6 +995,16 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       note_edit->key_mask &= (~AGS_NOTE_EDIT_KEY_R_CONTROL);
     }
     break;
+  case GDK_KEY_Shift_L:
+    {
+      note_edit->key_mask &= (~AGS_NOTE_EDIT_KEY_L_SHIFT);
+    }
+    break;
+  case GDK_KEY_Shift_R:
+    {
+      note_edit->key_mask &= (~AGS_NOTE_EDIT_KEY_R_SHIFT);
+    }
+    break;
   case GDK_KEY_Left:
   case GDK_KEY_leftarrow:
     {
@@ -992,22 +1012,58 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       guint x0_offset;
 
       tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+
+      if((AGS_NOTE_EDIT_KEY_L_SHIFT & (note_edit->key_mask)) == 0 &&
+	 (AGS_NOTE_EDIT_KEY_R_SHIFT & (note_edit->key_mask)) == 0){
+	/* position cursor */
+	if(note_edit->selected_x > 0){
+	  if(note_edit->selected_x - (1 * tact) > 0){
+	    note_edit->selected_x -= (1 * tact);
+	  }else{
+	    note_edit->selected_x = 0;
+	  }
+	}
+
+	x0_offset = note_edit->selected_x * note_edit->control_unit.control_width;
       
-      if(note_edit->selected_x > 0){
-	if(note_edit->selected_x - (1 * tact) > 0){
-	  note_edit->selected_x -= (1 * tact);
-	}else{
-	  note_edit->selected_x = 0;
+	if(x0_offset < GTK_RANGE(note_edit->hscrollbar)->adjustment->value){
+	  gtk_range_set_value(GTK_RANGE(note_edit->hscrollbar),
+			      x0_offset * GTK_RANGE(note_edit->hscrollbar)->adjustment->step_increment);
+	}
+      }else{
+	AgsMachine *machine;
+	AgsNote *note;
+	GList *list_notation;
+	gint i;
+      
+	/* shrink note */
+	machine = editor->selected_machine;
+
+	i = 0;
+
+	while((i = ags_notebook_next_active_tab(editor->current_notebook,
+						i)) != -1){
+	  list_notation = g_list_nth(machine->audio->notation,
+				     i);
+
+	  if(list_notation == NULL){
+	    i++;
+	
+	    continue;
+	  }
+
+	  note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
+					 note_edit->selected_x, note_edit->selected_y,
+					 FALSE);
+
+	  if(note->x[1] - note->x[0] - tact > tact){
+	    note->x[1] -= tact;
+	  }
+	  
+	  i++;
 	}
       }
-
-      x0_offset = note_edit->selected_x * note_edit->control_unit.control_width;
       
-      if(x0_offset < GTK_RANGE(note_edit->hscrollbar)->adjustment->value){
-	gtk_range_set_value(GTK_RANGE(note_edit->hscrollbar),
-			    x0_offset * GTK_RANGE(note_edit->hscrollbar)->adjustment->step_increment);
-      }
-
       gtk_widget_queue_draw(note_edit);
     }
     break;
@@ -1019,17 +1075,50 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
       tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
       
-      if(note_edit->selected_x < 16.0 * AGS_NOTE_EDIT_MAX_CONTROLS){
-	note_edit->selected_x += (1.0 * tact);
-      }
+      if((AGS_NOTE_EDIT_KEY_L_SHIFT & (note_edit->key_mask)) == 0 &&
+	 (AGS_NOTE_EDIT_KEY_R_SHIFT & (note_edit->key_mask)) == 0){
+	/* position cursor */      
+	if(note_edit->selected_x < 16.0 * AGS_NOTE_EDIT_MAX_CONTROLS){
+	  note_edit->selected_x += (1.0 * tact);
+	}
 
-      x0_offset = note_edit->selected_x * note_edit->control_unit.control_width;
+	x0_offset = note_edit->selected_x * note_edit->control_unit.control_width;
       
-      if(x0_offset + note_edit->control_current.control_width > GTK_RANGE(note_edit->hscrollbar)->adjustment->value + GTK_WIDGET(note_edit->drawing_area)->allocation.width){
-	gtk_range_set_value(GTK_RANGE(note_edit->hscrollbar),
-			    x0_offset * GTK_RANGE(note_edit->hscrollbar)->adjustment->step_increment);
-      }
+	if(x0_offset + note_edit->control_current.control_width > GTK_RANGE(note_edit->hscrollbar)->adjustment->value + GTK_WIDGET(note_edit->drawing_area)->allocation.width){
+	  gtk_range_set_value(GTK_RANGE(note_edit->hscrollbar),
+			      x0_offset * GTK_RANGE(note_edit->hscrollbar)->adjustment->step_increment);
+	}
+      }else{
+	AgsMachine *machine;
+	AgsNote *note;
+	GList *list_notation;
+	gint i;
+      
+	/* grow note */
+	machine = editor->selected_machine;
 
+	i = 0;
+
+	while((i = ags_notebook_next_active_tab(editor->current_notebook,
+						i)) != -1){
+	  list_notation = g_list_nth(machine->audio->notation,
+				     i);
+
+	  if(list_notation == NULL){
+	    i++;
+	
+	    continue;
+	  }
+
+	  note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
+					 note_edit->selected_x, note_edit->selected_y,
+					 FALSE);
+	  note->x[1] += tact;
+	
+	  i++;
+	}
+      }
+      
       gtk_widget_queue_draw(note_edit);
     }
     break;
@@ -1106,6 +1195,37 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       gtk_widget_queue_draw(note_edit);
 
       fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+    }
+    break;
+  case GDK_KEY_Delete:
+    {
+      AgsMachine *machine;
+      AgsNote *note;
+      GList *list_notation;
+      gint i;
+      
+      machine = editor->selected_machine;
+
+      i = 0;
+
+      while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					      i)) != -1){
+	list_notation = g_list_nth(machine->audio->notation,
+				   i);
+
+	if(list_notation == NULL){
+	  i++;
+	
+	  continue;
+	}
+
+	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
+					     note_edit->selected_x, note_edit->selected_y);
+	
+	i++;
+      }
+
+      gtk_widget_queue_draw(note_edit);
     }
     break;
   }

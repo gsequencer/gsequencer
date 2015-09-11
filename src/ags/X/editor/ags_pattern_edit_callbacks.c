@@ -1101,6 +1101,36 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
     }
     break;
+  case GDK_KEY_Delete:
+    {
+      AgsMachine *machine;
+      GList *list_notation;
+      gint i;
+      
+      machine = editor->selected_machine;
+
+      i = 0;
+
+      while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					      i)) != -1){
+	list_notation = g_list_nth(machine->audio->notation,
+				   i);
+
+	if(list_notation == NULL){
+	  i++;
+	
+	  continue;
+	}
+
+	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
+					     pattern_edit->selected_x, pattern_edit->selected_y);
+
+	i++;
+      }
+
+      gtk_widget_queue_draw(pattern_edit);
+    }
+    break;
   }
 
   return(TRUE);
