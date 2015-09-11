@@ -1,0 +1,796 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <ags/X/machine/ags_pattern_box.h>
+#include <ags/X/machine/ags_pattern_box_callbacks.h>
+
+#include <ags/main.h>
+
+#include <ags-lib/object/ags_connectable.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/ags_pattern.h>
+
+#include <ags/audio/task/ags_blink_pattern_box_cursor.h>
+
+#include <ags/widget/ags_led.h>
+
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
+
+#include <gdk/gdkkeysyms.h>
+
+#include <atk/atk.h>
+
+static GType ags_accessible_pattern_box_get_type(void);
+void ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box);
+void ags_accessible_pattern_box_class_init(AtkObject *object);
+void ags_accessible_pattern_box_action_interface_init(AtkActionIface *action);
+void ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_pattern_box_init(AgsPatternBox *pattern_box);
+void ags_pattern_box_finalize(GObject *gobject);
+void ags_pattern_box_connect(AgsConnectable *connectable);
+void ags_pattern_box_disconnect(AgsConnectable *connectable);
+AtkObject* ags_pattern_box_get_accessible(GtkWidget *widget);
+void ags_pattern_box_show(GtkWidget *widget);
+void ags_pattern_box_show_all(GtkWidget *widget);
+
+gboolean ags_accessible_pattern_box_do_action(AtkAction *action,
+					       gint i);
+gint ags_accessible_pattern_box_get_n_actions(AtkAction *action);
+const gchar* ags_accessible_pattern_box_get_description(AtkAction *action,
+							 gint i);
+const gchar* ags_accessible_pattern_box_get_name(AtkAction *action,
+						  gint i);
+const gchar* ags_accessible_pattern_box_get_keybinding(AtkAction *action,
+							gint i);
+gboolean ags_accessible_pattern_box_set_description(AtkAction *action,
+						     gint i);
+gchar* ags_accessible_pattern_box_get_localized_name(AtkAction *action,
+						      gint i);
+
+/**
+ * SECTION:ags_pattern_box
+ * @short_description: pattern_box sequencer
+ * @title: AgsPatternBox
+ * @section_id:
+ * @include: ags/X/machine/ags_pattern_box.h
+ *
+ * The #AgsPatternBox is a composite widget to act as pattern_box sequencer.
+ */
+
+static gpointer ags_pattern_box_parent_class = NULL;
+static GQuark quark_accessible_object = 0;
+
+extern pthread_mutex_t ags_application_mutex;
+
+GtkStyle *pattern_box_style;
+
+GType
+ags_pattern_box_get_type(void)
+{
+  static GType ags_type_pattern_box = 0;
+
+  if(!ags_type_pattern_box){
+    static const GTypeInfo ags_pattern_box_info = {
+      sizeof(AgsPatternBoxClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_pattern_box_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof(AgsPatternBox),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_pattern_box_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_pattern_box_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_pattern_box = g_type_register_static(GTK_TYPE_TABLE,
+						   "AgsPatternBox\0", &ags_pattern_box_info,
+						   0);
+    
+    g_type_add_interface_static(ags_type_pattern_box,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+  }
+
+  return(ags_type_pattern_box);
+}
+
+static GType
+ags_accessible_pattern_box_get_type(void)
+{
+  static GType ags_type_accessible_pattern_box = 0;
+
+  if(!ags_type_accessible_pattern_box){
+    const GTypeInfo ags_accesssible_pattern_box_info = {
+      sizeof(GtkAccessibleClass),
+      NULL,           /* base_init */
+      NULL,           /* base_finalize */
+      (GClassInitFunc) ags_accessible_pattern_box_class_init,
+      NULL,           /* class_finalize */
+      NULL,           /* class_data */
+      sizeof(GtkAccessible),
+      0,             /* n_preallocs */
+      NULL, NULL
+    };
+
+    static const GInterfaceInfo atk_action_interface_info = {
+      (GInterfaceInitFunc) ags_accessible_pattern_box_action_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_accessible_pattern_box = g_type_register_static(GTK_TYPE_ACCESSIBLE,
+							      "AgsAccessiblePatternBox\0", &ags_accesssible_pattern_box_info,
+							      0);
+
+    g_type_add_interface_static(ags_type_accessible_pattern_box,
+				ATK_TYPE_ACTION,
+				&atk_action_interface_info);
+  }
+  
+  return(ags_type_accessible_pattern_box);
+}
+
+void
+ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box)
+{
+  GObjectClass *gobject;
+  GtkWidgetClass *widget;
+
+  ags_pattern_box_parent_class = g_type_class_peek_parent(pattern_box);
+
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) pattern_box;
+
+  gobject->finalize = ags_pattern_box_finalize;
+
+  /* GtkWidget */
+  widget = (GtkWidgetClass *) pattern_box;
+
+  widget->show = ags_pattern_box_show;
+  widget->show_all = ags_pattern_box_show_all;
+}
+
+void
+ags_accessible_pattern_box_class_init(AtkObject *object)
+{
+  /* empty */
+}
+
+void
+ags_accessible_pattern_box_action_interface_init(AtkActionIface *action)
+{
+  action->do_action = ags_accessible_pattern_box_do_action;
+  action->get_n_actions = ags_accessible_pattern_box_get_n_actions;
+  action->get_description = ags_accessible_pattern_box_get_description;
+  action->get_name = ags_accessible_pattern_box_get_name;
+  action->get_keybinding = ags_accessible_pattern_box_get_keybinding;
+  action->set_description = ags_accessible_pattern_box_set_description;
+  action->get_localized_name = ags_accessible_pattern_box_get_localized_name;
+}
+
+void
+ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  AgsConnectableInterface *ags_pattern_box_connectable_parent_interface;
+
+  connectable->connect = ags_pattern_box_connect;
+  connectable->disconnect = ags_pattern_box_disconnect;
+}
+
+void
+ags_pattern_box_init(AgsPatternBox *pattern_box)
+{
+  GtkAdjustment *adjustment;
+  AgsLed *led;
+
+  guint i;
+
+  g_object_set(pattern_box,
+	       "can-focus\0", TRUE,
+	       "n-columns\0", 2,
+	       "n-rows", 2,
+	       "homogeneous\0", FALSE,
+	       NULL);
+
+  pattern_box->flags = 0;
+
+  pattern_box->key_mask = 0;
+  
+  pattern_box->cell_width = AGS_PATTERN_BOX_DEFAULT_CELL_WIDTH;
+  pattern_box->cell_height = AGS_PATTERN_BOX_DEFAULT_CELL_HEIGHT;
+
+  pattern_box->n_cols = AGS_PATTERN_BOX_DEFAULT_CONTROLS_HORIZONTALLY;
+  pattern_box->n_rows = AGS_PATTERN_BOX_DEFAULT_CONTROLS_VERTICALLY;
+
+  pattern_box->cursor_x = 0;
+  pattern_box->cursor_y = 0;
+  
+  pattern_box->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();  
+
+  gtk_widget_set_size_request((GtkWidget *) pattern_box->drawing_area,
+			      AGS_PATTERN_BOX_MAX_CONTROLS_SHOWN_HORIZONTALLY * pattern_box->cell_width + 1, AGS_PATTERN_BOX_MAX_CONTROLS_SHOWN_VERTICALLY * pattern_box->cell_height + 1);
+  gtk_widget_set_style((GtkWidget *) pattern_box->drawing_area,
+		       pattern_box_style);
+  gtk_table_attach(pattern_box,
+		   (GtkWidget *) pattern_box->drawing_area,
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  gtk_widget_set_events((GtkWidget *) pattern_box->drawing_area,
+			GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK
+			| GDK_KEY_PRESS_MASK
+			| GDK_KEY_RELEASE_MASK);
+  
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, (double) AGS_PATTERN_BOX_DEFAULT_CONTROLS_VERTICALLY - 1.0, 1.0, 1.0, (gdouble) AGS_PATTERN_BOX_MAX_CONTROLS_SHOWN_VERTICALLY);
+
+  pattern_box->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
+  gtk_widget_set_style((GtkWidget *) pattern_box->vscrollbar,
+		       pattern_box_style);
+  gtk_table_attach(pattern_box,
+		   (GtkWidget *) pattern_box->vscrollbar,
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  pattern_box->hscrollbar = NULL;
+  
+  /* led */
+  pattern_box->active_led = 0;
+
+  pattern_box->led = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  gtk_table_attach(pattern_box,
+		   (GtkWidget *) pattern_box->led,
+		   0, 1,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  for(i = 0; i < 32; i++){
+    led = ags_led_new();
+    gtk_widget_set_size_request((GtkWidget *) led,
+				pattern_box->cell_width, pattern_box->cell_width / 2);
+    gtk_box_pack_start((GtkBox *) pattern_box->led,
+		       (GtkWidget *) led,
+		       FALSE, FALSE,
+		       0);
+  }
+}
+
+void
+ags_pattern_box_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_pattern_box_parent_class)->finalize(gobject);
+}
+
+void
+ags_pattern_box_connect(AgsConnectable *connectable)
+{
+  AgsPatternBox *pattern_box;
+
+  if((AGS_PATTERN_BOX_CONNECTED & (AGS_PATTERN_BOX(connectable)->flags)) != 0){
+    return;
+  }
+
+  /* AgsPatternBox */
+  pattern_box = AGS_PATTERN_BOX(connectable);
+
+  pattern_box->flags |= AGS_PATTERN_BOX_CONNECTED;
+
+  g_signal_connect_after(G_OBJECT(pattern_box), "focus_in_event\0",
+			 G_CALLBACK(ags_pattern_box_focus_in_callback), (gpointer) pattern_box);
+  
+  g_signal_connect(G_OBJECT(pattern_box), "key_press_event\0",
+		   G_CALLBACK(ags_pattern_box_drawing_area_key_press_event), (gpointer) pattern_box);
+
+  g_signal_connect(G_OBJECT(pattern_box), "key_release_event\0",
+		   G_CALLBACK(ags_pattern_box_drawing_area_key_release_event), (gpointer) pattern_box);
+
+  g_signal_connect_after(G_OBJECT(pattern_box->drawing_area), "configure_event\0",
+			 G_CALLBACK(ags_pattern_box_drawing_area_configure_callback), (gpointer) pattern_box);
+
+  g_signal_connect_after(G_OBJECT(pattern_box->drawing_area), "expose_event\0",
+			 G_CALLBACK(ags_pattern_box_drawing_area_expose_callback), (gpointer) pattern_box);
+
+  g_signal_connect(G_OBJECT(pattern_box->drawing_area), "button_press_event\0",
+		   G_CALLBACK(ags_pattern_box_drawing_area_button_press_callback), (gpointer) pattern_box);
+
+  g_signal_connect(G_OBJECT(GTK_RANGE(pattern_box->vscrollbar)->adjustment), "value_changed\0",
+		   G_CALLBACK(ags_pattern_box_adjustment_value_changed_callback), (gpointer) pattern_box);
+}
+
+void
+ags_pattern_box_disconnect(AgsConnectable *connectable)
+{
+  AgsPatternBox *pattern_box;
+
+  /* AgsPatternBox */
+  pattern_box = AGS_PATTERN_BOX(connectable);
+
+  //TODO:JK: implement me
+}
+
+AtkObject*
+ags_pattern_box_get_accessible(GtkWidget *widget)
+{
+  AtkObject* accessible;
+
+  accessible = g_object_get_qdata(G_OBJECT(widget),
+				  quark_accessible_object);
+  
+  if(!accessible){
+    accessible = g_object_new(ags_accessible_pattern_box_get_type(),
+			      NULL);
+    
+    g_object_set_qdata(G_OBJECT(widget),
+		       quark_accessible_object,
+		       accessible);
+    gtk_accessible_set_widget(accessible,
+			      widget);
+  }
+  
+  return(accessible);
+}
+
+void
+ags_pattern_box_show(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_pattern_box_parent_class)->show(widget);
+
+  //  ags_pattern_box_draw_matrix(AGS_PATTERN_BOX(widget));
+}
+
+void
+ags_pattern_box_show_all(GtkWidget *widget)
+{
+  GTK_WIDGET_CLASS(ags_pattern_box_parent_class)->show_all(widget);
+
+  //  ags_pattern_box_draw_matrix(AGS_PATTERN_BOX(widget));
+}
+
+gboolean
+ags_accessible_pattern_box_do_action(AtkAction *action,
+				      gint i)
+{
+  AgsPatternBox *pattern_box;
+  
+  GdkEventKey *key_press, *key_release;
+  GdkEventKey *modifier_press, *modifier_release;
+  
+  if(!(i >= 0 && i < 6)){
+    return(FALSE);
+  }
+
+  pattern_box = gtk_accessible_get_widget(ATK_OBJECT(action));
+  
+  key_press = gdk_event_new(GDK_KEY_PRESS);
+  key_release = gdk_event_new(GDK_KEY_RELEASE);
+
+  switch(i){
+  case 0:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Left;
+      
+      /* send event */
+      gtk_widget_event(pattern_box, key_press);
+      gtk_widget_event(pattern_box, key_release);
+    }
+    break;
+  case 1:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Right;
+      
+      /* send event */
+      gtk_widget_event(pattern_box, key_press);
+      gtk_widget_event(pattern_box, key_release);
+    }
+    break;
+  case 2:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Up;
+    
+      /* send event */
+      gtk_widget_event(pattern_box, key_press);
+      gtk_widget_event(pattern_box, key_release);
+    }
+    break;
+  case 3:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Down;
+      
+      /* send event */
+      gtk_widget_event(pattern_box, key_press);
+      gtk_widget_event(pattern_box, key_release);
+    }
+    break;
+  case 4:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_space;
+      
+      /* send event */
+      gtk_widget_event(pattern_box, key_press);
+      gtk_widget_event(pattern_box, key_release);
+    }
+    break;
+  case 5:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_c;
+
+      /* create modifier */
+      modifier_press = gdk_event_new(GDK_KEY_PRESS);
+      modifier_release = gdk_event_new(GDK_KEY_RELEASE);
+
+      modifier_press->keyval =
+	modifier_release->keyval = GDK_KEY_Control_R;
+
+      /* send event */
+      gtk_widget_event(pattern_box, modifier_press);
+      gtk_widget_event(pattern_box, key_press);
+      gtk_widget_event(pattern_box, key_release);
+      gtk_widget_event(pattern_box, modifier_release);      
+    }    
+    break;
+  }
+
+  return(TRUE);
+}
+
+gint
+ags_accessible_pattern_box_get_n_actions(AtkAction *action)
+{
+  return(6);
+}
+
+const gchar*
+ags_accessible_pattern_box_get_description(AtkAction *action,
+					    gint i)
+{
+  static const gchar **actions = {
+    "move cursor left\0",
+    "move cursor right\0",
+    "move cursor up\0",
+    "move cursor down\0",
+    "toggle audio pattern\0"
+    "copy pattern to clipboard\0",
+  };
+
+  if(i >= 0 && i < 6){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+const gchar*
+ags_accessible_pattern_box_get_name(AtkAction *action,
+				     gint i)
+{
+  static const gchar **actions = {
+    "left\0",
+    "right\0",
+    "up\0",
+    "down\0",
+    "toggle\0",
+    "copy\0",
+  };
+  
+  if(i >= 0 && i < 6){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+const gchar*
+ags_accessible_pattern_box_get_keybinding(AtkAction *action,
+					   gint i)
+{
+  static const gchar **actions = {
+    "left\0",
+    "right\0",
+    "up\0",
+    "down\0",
+    "space",
+    "Ctrl+c",
+  };
+  
+  if(i >= 0 && i < 6){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+gboolean
+ags_accessible_pattern_box_set_description(AtkAction *action,
+					    gint i)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+gchar*
+ags_accessible_pattern_box_get_localized_name(AtkAction *action,
+					       gint i)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_pattern_box_paint(AgsPatternBox *pattern_box)
+{
+  ags_pattern_box_draw_gutter(pattern_box);
+  ags_pattern_box_draw_matrix(pattern_box);
+
+  ags_pattern_box_draw_cursor(pattern_box);
+}
+
+void
+ags_pattern_box_draw_gutter(AgsPatternBox *pattern_box)
+{
+  AgsMachine *machine;
+  
+  AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
+  guint gutter;
+  int i, j;
+
+  pthread_mutex_t *audio_mutex;
+
+  machine = gtk_widget_get_ancestor(pattern_box,
+				    AGS_TYPE_MACHINE);
+  
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) machine->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+
+  gdk_draw_rectangle(GTK_WIDGET(pattern_box->drawing_area)->window,
+		     GTK_WIDGET(pattern_box->drawing_area)->style->bg_gc[0],
+		     TRUE,
+		     0, 0,
+		     288, 80);
+
+  channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - ((guint) GTK_RANGE(pattern_box->vscrollbar)->adjustment->value + AGS_PATTERN_BOX_MAX_CONTROLS_SHOWN_VERTICALLY) - 1);
+
+  if(machine->audio->input_pads > AGS_PATTERN_BOX_MAX_CONTROLS_SHOWN_VERTICALLY){
+    gutter = AGS_PATTERN_BOX_MAX_CONTROLS_SHOWN_VERTICALLY;
+  }else{
+    gutter = machine->audio->input_pads;
+  }
+
+  for (i = 0; i < gutter; i++){
+    for (j = 0; j < 32; j++){
+      gdk_draw_rectangle(GTK_WIDGET(pattern_box->drawing_area)->window,
+			 GTK_WIDGET(pattern_box->drawing_area)->style->fg_gc[0],
+			 FALSE,
+			 j * 12, i * 10,
+			 12, 10);
+
+      ags_pattern_box_redraw_gutter_point (pattern_box, channel, j, i);
+    }
+
+    channel = channel->prev;
+  }
+
+  pthread_mutex_unlock(audio_mutex);
+}
+
+void
+ags_pattern_box_draw_matrix(AgsPatternBox *pattern_box)
+{
+  AgsMachine *machine;
+
+  AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
+  guint gutter;
+  int i, j;
+
+  pthread_mutex_t *audio_mutex;
+
+  machine = gtk_widget_get_ancestor(pattern_box,
+				    AGS_TYPE_MACHINE);
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) machine->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+
+  if(machine->audio->input_pads > AGS_PATTERN_BOX_MAX_CONTROLS_SHOWN_VERTICALLY){
+    gutter = AGS_PATTERN_BOX_MAX_CONTROLS_SHOWN_VERTICALLY;
+  }else{
+    gutter = machine->audio->input_pads;
+  }
+
+  channel = ags_channel_nth(machine->audio->input, machine->audio->input_pads - (guint) GTK_RANGE(pattern_box->vscrollbar)->adjustment->value - 1);
+
+  if(channel == NULL){
+    pthread_mutex_unlock(audio_mutex);
+    
+    return;
+  }
+
+  for (i = 0; i < gutter; i++){
+    for (j = 0; j < 32; j++)
+      ags_pattern_box_redraw_gutter_point(pattern_box, channel, j, i);
+
+    channel = channel->prev;
+  }
+
+  pthread_mutex_unlock(audio_mutex);
+}
+
+void
+ags_pattern_box_draw_cursor(AgsPatternBox *pattern_box)
+{
+  guint i, j;
+
+  
+  if(pattern_box->cursor_y >= GTK_RANGE(pattern_box->vscrollbar)->adjustment->value &&
+     pattern_box->cursor_y < GTK_RANGE(pattern_box->vscrollbar)->adjustment->value + pattern_box->n_rows){
+    i = pattern_box->cursor_y - GTK_RANGE(pattern_box->vscrollbar)->adjustment->value;
+    j = pattern_box->cursor_x;
+    
+    if((AGS_PATTERN_BOX_CURSOR_ON & (pattern_box->flags)) != 0){
+      ags_pattern_box_highlight_gutter_point(pattern_box, j, i);
+    }else{
+      ags_pattern_box_unpaint_gutter_point(pattern_box, j, i);
+    }
+  }
+}
+
+void
+ags_pattern_box_redraw_gutter_point(AgsPatternBox *pattern_box, AgsChannel *channel, guint j, guint i)
+{
+  AgsMachine *machine;
+
+  if(channel->pattern == NULL)
+    return;
+
+  machine = gtk_widget_get_ancestor(pattern_box,
+				    AGS_TYPE_MACHINE);
+
+  if(ags_pattern_get_bit((AgsPattern *) channel->pattern->data, machine->bank_0, machine->bank_1, j)){
+    ags_pattern_box_highlight_gutter_point(pattern_box, j, i);
+  }else{
+    ags_pattern_box_unpaint_gutter_point(pattern_box, j, i);
+  }
+}
+
+void
+ags_pattern_box_highlight_gutter_point(AgsPatternBox *pattern_box, guint j, guint i)
+{
+  gdk_draw_rectangle(GTK_WIDGET (pattern_box->drawing_area)->window,
+		     GTK_WIDGET (pattern_box->drawing_area)->style->fg_gc[0],
+		     TRUE,
+		     j * pattern_box->cell_width + 1, i * pattern_box->cell_height + 1,
+		     11, 9);
+}
+
+void
+ags_pattern_box_unpaint_gutter_point(AgsPatternBox *pattern_box, guint j, guint i)
+{
+  gdk_draw_rectangle(GTK_WIDGET (pattern_box->drawing_area)->window,
+		     GTK_WIDGET (pattern_box->drawing_area)->style->bg_gc[0],
+		     TRUE,
+		     j * pattern_box->cell_width + 1, i * pattern_box->cell_height +1,
+		     11, 9);
+}
+
+void*
+ags_pattern_box_blink_worker(void *data)
+{
+  AgsWindow *window;
+  AgsPatternBox *pattern_box;
+  
+  AgsTaskThread *task_thread;
+  
+  AgsBlinkPatternBoxCursor *blink_pattern_box_cursor;
+  
+  static const guint blink_delay = 1000000; // blink every second
+  
+  pattern_box = AGS_PATTERN_BOX(data);
+  window = gtk_widget_get_ancestor(pattern_box,
+				   AGS_TYPE_WINDOW);
+  
+  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread);
+
+  while(gtk_widget_has_focus(pattern_box)){
+    /* blink cursor */
+    blink_pattern_box_cursor = ags_blink_pattern_box_cursor_new(pattern_box,
+								  !(AGS_PATTERN_BOX_CURSOR_ON & (pattern_box->flags)));
+    ags_task_thread_append_task(task_thread,
+				blink_pattern_box_cursor);
+
+    /* delay */
+    usleep(blink_delay);
+  }
+
+  /* unset cursor */
+  blink_pattern_box_cursor = ags_blink_pattern_box_cursor_new(pattern_box,
+								FALSE);
+  ags_task_thread_append_task(task_thread,
+			      blink_pattern_box_cursor);
+
+  return(NULL);
+}
+
+/**
+ * ags_pattern_box_new:
+ *
+ * Creates an #AgsPatternBox
+ *
+ * Returns: a new #AgsPatternBox
+ *
+ * Since: 0.5
+ */
+AgsPatternBox*
+ags_pattern_box_new()
+{
+  AgsPatternBox *pattern_box;
+
+  pattern_box = (AgsPatternBox *) g_object_new(AGS_TYPE_PATTERN_BOX,
+						 NULL);
+
+  return(pattern_box);
+}

@@ -94,9 +94,13 @@ struct _AgsMachine
   GType output_line_type;
   GtkContainer *output;
 
+  GtkWidget *selected_output_pad;
+  
   GType input_pad_type;
   GType input_line_type;
   GtkContainer *input;
+  
+  GtkWidget *selected_input_pad;
 
   GList *port;
 

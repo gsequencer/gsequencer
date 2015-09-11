@@ -627,16 +627,27 @@ ags_drum_input_pad_edit_callback(GtkWidget *toggle_button, AgsDrumInputPad *drum
 
   if(drum->selected_edit_button != NULL){
     if(GTK_TOGGLE_BUTTON(toggle_button) != drum->selected_edit_button){
+      /* unset old */
       toggle = drum->selected_edit_button;
+
       drum->selected_edit_button = NULL;
       gtk_toggle_button_set_active((GtkToggleButton *) toggle, FALSE);
+
+      /* apply new */
       drum->selected_edit_button = (GtkToggleButton *) toggle_button;
       drum->selected_pad = (AgsDrumInputPad *) gtk_widget_get_ancestor((GtkWidget *) toggle_button, AGS_TYPE_DRUM_INPUT_PAD);
-      ags_drum_set_pattern(drum);
+
+      machine->selected_input_pad = drum->selected_pad;
+      
+      ags_pattern_box_set_pattern(drum->pattern_box);
     }else{
+      /* chain up */
       toggle = drum->selected_edit_button;
+      
       drum->selected_edit_button = NULL;
       gtk_toggle_button_set_active((GtkToggleButton *) toggle, TRUE);
+
+      /* reset */
       drum->selected_edit_button = toggle;
     }
   }

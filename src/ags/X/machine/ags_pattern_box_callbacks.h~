@@ -1,0 +1,41 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef __AGS_PATTERN_BOX_CALLBACKS_H__
+#define __AGS_PATTERN_BOX_CALLBACKS_H__
+
+#include <glib.h>
+#include <glib-object.h>
+#include <gtk/gtk.h>
+
+#include <ags/X/machine/ags_pattern_box.h>
+
+/* controls */
+gboolean ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *pattern_box);
+
+gboolean ags_pattern_box_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsCellPattern *pattern_box);
+gboolean ags_pattern_box_drawing_area_expose_callback(GtkWidget *widget, GdkEventExpose *event, AgsCellPattern *pattern_box);
+
+gboolean ags_pattern_box_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsCellPattern *pattern_box);
+gboolean ags_pattern_box_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *pattern_box);
+gboolean ags_pattern_box_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *pattern_box);
+
+void ags_pattern_box_adjustment_value_changed_callback(GtkWidget *widget, AgsCellPattern *pattern_box);
+
+#endif /*__AGS_PATTERN_BOX_CALLBACKS_H__*/

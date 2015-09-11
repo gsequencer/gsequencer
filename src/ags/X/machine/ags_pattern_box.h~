@@ -33,8 +33,8 @@
 #define AGS_IS_CELL_PATTERN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CELL_PATTERN))
 #define AGS_CELL_PATTERN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CELL_PATTERN, AgsCellPatternClass))
 
-#define AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH   (12)
-#define AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT  (10)
+#define AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH   12
+#define AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT  10
 
 #define AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY (32)
 #define AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY (10)
@@ -87,17 +87,6 @@ struct _AgsCellPatternClass
 };
 
 GType ags_cell_pattern_get_type(void);
-
-void ags_cell_pattern_paint(AgsCellPattern *cell_pattern);
-
-void ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern);
-void ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern);
-void ags_cell_pattern_draw_cursor(AgsCellPattern *cell_pattern);
-void ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *channel, guint j, guint i);
-void ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);
-void ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i);
-
-void* ags_cell_pattern_blink_worker(void *data);
 
 AgsCellPattern* ags_cell_pattern_new();
 
