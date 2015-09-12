@@ -30,15 +30,28 @@
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
 
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
 
 #include <gdk/gdkkeysyms.h>
 
 void ags_pattern_box_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
-					  AgsCellPattern *pattern_box);
+					  AgsPatternBox *pattern_box);
+
+extern pthread_mutex_t ags_application_mutex;
+
+gboolean
+ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box)
+{
+  g_message("got focus\0");
+ 
+  return(TRUE);
+}
 
 void
 ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box)
 {
+  AgsMachine *machine;
   AgsLine *selected_line;
 
   AgsPattern *pattern;
@@ -54,7 +67,10 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
   pthread_mutex_t *audio_mutex;
 
-  if(pattern_box->selected_pad == NULL){
+  machine = gtk_widget_get_ancestor(pattern_box,
+				    AGS_TYPE_MACHINE);
+  
+  if(machine->selected_input_pad == NULL){
     return;
   }
 
@@ -87,11 +103,9 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   offset = i;
   g_list_free(list_start);
 
-  /* calculate index 0 */
-  index0 = ((guint) pattern_box->selected0->button.label_text[0] - 'a');
-  
-  /* calculate index 1 */
-  index1 = ((guint) g_ascii_strtoull(pattern_box->selected1->button.label_text, NULL, 10)) - 1;
+  /* retrieve indices */
+  index0 = machine->bank_0;
+  index1 = machine->bank_1;
   
   /* calculate offset / page */
   list_start = 
@@ -106,7 +120,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
   /**/
   line_start = 
-    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pattern_box->selected_pad)->expander_set));
+    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(machine->selected_input_pad)->expander_set));
   tasks = NULL;
 
   while((line = ags_line_find_next_grouped(line)) != NULL){
@@ -139,7 +153,7 @@ ags_pattern_box_offset_callback(GtkWidget *widget, AgsPatternBox *pattern_box)
 }
 
 gboolean
-ags_pattern_box_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *pattern_box)
+ags_pattern_box_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsPatternBox *pattern_box)
 {
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
@@ -175,7 +189,7 @@ ags_pattern_box_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *eve
 }
 
 gboolean
-ags_pattern_box_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *pattern_box)
+ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatternBox *pattern_box)
 {
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
@@ -212,12 +226,15 @@ ags_pattern_box_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *e
   case GDK_KEY_uparrow:
     {
       if(pattern_box->cursor_y > 0){
-	pattern_box->cursor_y -= 1;
-      }
+	GList *list;
 
-      if(pattern_box->cursor_y < GTK_RANGE(pattern_box->vscrollbar)->adjustment->value){
-	gtk_range_set_value(GTK_RANGE(pattern_box->vscrollbar),
-			    GTK_RANGE(pattern_box->vscrollbar)->adjustment->value - 1.0);
+	list = gtk_container_get_children(pattern_box->offset);
+	pattern_box->cursor_y -= 1;
+
+      	gtk_button_clicked(g_list_nth_data(pattern_box->offset,
+					   pattern_box->cursor_y));
+
+	free(list);
       }
     }
     break;
@@ -225,12 +242,15 @@ ags_pattern_box_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *e
   case GDK_KEY_downarrow:
     {
       if(pattern_box->cursor_y < pattern_box->n_indices){
-	pattern_box->cursor_y += 1;
-      }
+	GList *list;
 
-      if(pattern_box->cursor_y >= GTK_RANGE(pattern_box->vscrollbar)->adjustment->value + AGS_PATTERN_BOX_MAX_CONTROLS_SHOWN_VERTICALLY){
-	gtk_range_set_value(GTK_RANGE(pattern_box->vscrollbar),
-			    GTK_RANGE(pattern_box->vscrollbar)->adjustment->value + 1.0);
+	list = gtk_container_get_children(pattern_box->offset);
+	pattern_box->cursor_y += 1;
+
+	gtk_button_clicked(g_list_nth_data(list,
+					   pattern_box->cursor_y));
+
+	g_free(list);
       }
     }
     break;
@@ -273,23 +293,42 @@ ags_pattern_box_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *e
 
 void
 ags_pattern_box_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
-				     AgsCellPattern *pattern_box)
+				     AgsPatternBox *pattern_box)
 {
   AgsMachine *machine;
   
   AgsChannel *channel;
 
-  guint line;
+  GList *radio;
   
   machine = gtk_widget_get_ancestor(pattern_box,
 				    AGS_TYPE_MACHINE);
     
   channel = ags_channel_nth(machine->audio->input,
 			    toggle_pattern_bit->line);
-  line = machine->audio->input_pads - toggle_pattern_bit->line - (guint) GTK_RANGE(pattern_box->vscrollbar)->adjustment->value - 1;
 
-  ags_pattern_box_redraw_gutter_point(pattern_box,
-				      channel,
-				      toggle_pattern_bit->bit,
-				      line);
+  if(!gtk_toggle_button_get_active(AGS_LINE(channel->line_widget)->group)){
+    return;
+  }
+  
+  radio = gtk_container_get_children(pattern_box->offset);
+  
+  if(gtk_toggle_button_get_active(g_list_nth_data(radio,
+						  toggle_pattern_bit->bit / pattern_box->n_controls))){
+    GList *list;
+
+    list = gtk_container_get_children(pattern_box->pattern);
+
+    pattern_box->flags |= AGS_PATTERN_BOX_BLOCK_PATTERN;
+    
+    gtk_toggle_button_set_active(g_list_nth_data(list,
+						 toggle_pattern_bit->bit % pattern_box->n_controls),
+				 TRUE);
+    
+    pattern_box->flags &= (~AGS_PATTERN_BOX_BLOCK_PATTERN);
+    
+    g_list_free(list);
+  }
+
+  g_list_free(radio);
 }

@@ -449,18 +449,18 @@ ags_drum_tact_callback(AgsAudio *audio,
   }
 
   /* set optical feedback */
-  active_led_new = (guint) play_count_beats_audio_run->sequencer_counter % AGS_DRUM_PATTERN_CONTROLS;
-  drum->active_led = (guint) active_led_new;
+  active_led_new = (guint) play_count_beats_audio_run->sequencer_counter % AGS_PATTERN_BOX_N_CONTROLS;
+  drum->pattern_box->active_led = (guint) active_led_new;
 
   if(play_count_beats_audio_run->sequencer_counter == 0){
     g_value_init(&value, G_TYPE_DOUBLE);
     ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
 		       &value);
     
-    active_led_old = (guint) (g_value_get_double(&value) - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
+    active_led_old = (guint) (g_value_get_double(&value) - 1.0) % AGS_PATTERN_BOX_N_CONTROLS;
     g_value_unset(&value);
   }else{
-    active_led_old = (guint) (drum->active_led - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
+    active_led_old = (guint) (drum->pattern_box->active_led - 1.0) % AGS_PATTERN_BOX_N_CONTROLS;
   }
 
   toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(drum->pattern_box->led)),
@@ -500,7 +500,7 @@ ags_drum_done_callback(AgsAudio *audio,
 
     /* unset led */
     list_start = 
-      list = gtk_container_get_children(GTK_CONTAINER(drum->led));
+      list = gtk_container_get_children(GTK_CONTAINER(drum->pattern_box->led));
 
     while(list != NULL){
       ags_led_unset_active(AGS_LED(list->data));

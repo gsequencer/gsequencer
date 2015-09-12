@@ -41,16 +41,12 @@
 typedef struct _AgsDrum AgsDrum;
 typedef struct _AgsDrumClass AgsDrumClass;
 
-typedef enum{
-  /* empty */
-}AgsDrumFlags;
-
 struct _AgsDrum
 {
   AgsMachine machine;
 
   guint flags;
-
+  
   gchar *name;
   gchar *xml_type;
 

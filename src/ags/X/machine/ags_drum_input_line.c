@@ -390,7 +390,7 @@ ags_drum_input_line_group_changed(AgsLine *line)
   AgsDrum *drum;
 
   drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line), AGS_TYPE_DRUM);
-  ags_drum_set_pattern(drum);
+  ags_pattern_box_set_pattern(drum->pattern_box);
 }
 
 void
