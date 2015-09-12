@@ -254,6 +254,7 @@ ags_machine_init(AgsMachine *machine)
 {
   GtkVBox *vbox;
   GtkFrame *frame;
+  GtkMenuToolButton *menu_tool_button;
 
   machine->flags = 0;
   machine->file_input_flags = 0;
@@ -297,6 +298,13 @@ ags_machine_init(AgsMachine *machine)
   machine->port = NULL;
 
   machine->popup = ags_machine_popup_new(machine);
+
+  menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+				  "label\0", "machine\0",
+				  "menu\0", machine->popup,
+				  NULL);
+  gtk_frame_set_label_widget(frame,
+			     menu_tool_button);
   machine->properties = NULL;
   machine->rename = NULL;
 }
@@ -565,8 +573,8 @@ ags_machine_connect(AgsConnectable *connectable)
   }
 
   /* GtkWidget */
-  g_signal_connect(G_OBJECT (machine), "button_press_event\0",
-		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
+  //  g_signal_connect(G_OBJECT (machine), "button_press_event\0",
+  //		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
 
   /* AgsPad - input */
   if(machine->input != NULL){
