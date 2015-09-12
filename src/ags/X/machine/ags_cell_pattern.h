@@ -55,6 +55,15 @@ typedef enum{
   AGS_CELL_PATTERN_KEY_R_CONTROL       = 1 <<  1,
 }AgsCellPatternKeyMask;
 
+typedef enum{
+  AGS_CELL_PATTERN_MOVE_LEFT,
+  AGS_CELL_PATTERN_MOVE_RIGHT,
+  AGS_CELL_PATTERN_MOVE_UP,
+  AGS_CELL_PATTERN_MOVE_DOWN,
+  AGS_CELL_PATTERN_TOGGLE_PAD,
+  AGS_CELL_PATTERN_COPY_PATTERN,
+}AgsCellPatternAction;
+
 struct _AgsCellPattern
 {
   GtkTable table;

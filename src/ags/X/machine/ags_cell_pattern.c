@@ -402,7 +402,7 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
   key_release = gdk_event_new(GDK_KEY_RELEASE);
 
   switch(i){
-  case 0:
+  case AGS_CELL_PATTERN_MOVE_LEFT:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_Left;
@@ -412,7 +412,7 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
       gtk_widget_event(cell_pattern, key_release);
     }
     break;
-  case 1:
+  case AGS_CELL_PATTERN_MOVE_RIGHT:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_Right;
@@ -422,7 +422,7 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
       gtk_widget_event(cell_pattern, key_release);
     }
     break;
-  case 2:
+  case AGS_CELL_PATTERN_MOVE_UP:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_Up;
@@ -432,7 +432,7 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
       gtk_widget_event(cell_pattern, key_release);
     }
     break;
-  case 3:
+  case AGS_CELL_PATTERN_MOVE_DOWN:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_Down;
@@ -442,7 +442,7 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
       gtk_widget_event(cell_pattern, key_release);
     }
     break;
-  case 4:
+  case AGS_CELL_PATTERN_TOGGLE_PAD:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_space;
@@ -452,7 +452,7 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
       gtk_widget_event(cell_pattern, key_release);
     }
     break;
-  case 5:
+  case AGS_CELL_PATTERN_COPY_PATTERN:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_c;

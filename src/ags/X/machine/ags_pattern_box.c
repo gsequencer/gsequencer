@@ -30,12 +30,12 @@
 
 #include <ags/audio/ags_pattern.h>
 
-#include <ags/audio/task/ags_blink_pattern_box_cursor.h>
-
 #include <ags/widget/ags_led.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -210,7 +210,9 @@ void
 ags_pattern_box_init(AgsPatternBox *pattern_box)
 {
   AgsLed *led;
-
+  GtkToggleButton *toggle_button;
+  GtkRadioButton *radio_button;
+  
   guint i;
 
   g_object_set(pattern_box,
@@ -242,11 +244,12 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 		   0, 0,
 		   0, 0);
 
-  for(i = 0; i < 16; i++){
-    toggle_button = (GtkToggleButton *) ags_led_new();
-    gtk_widget_set_size_request((GtkWidget *) toggle_button, AGS_PATTERN_BOX_LED_DEFAULT_WIDTH, AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT);
+  for(i = 0; i < pattern_box->n_controls; i++){
+    led = (GtkToggleButton *) ags_led_new();
+    gtk_widget_set_size_request((GtkWidget *) led,
+				AGS_PATTERN_BOX_LED_DEFAULT_WIDTH, AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT);
     gtk_box_pack_start((GtkBox *) pattern_box->led,
-		       (GtkWidget *) toggle_button,
+		       (GtkWidget *) led,
 		       FALSE, FALSE,
 		       0);
   }
@@ -262,8 +265,9 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   for(i = 0; i < pattern_box->n_controls; i++){
     toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
-    gtk_widget_set_size_request((GtkWidget *) toggle_button, AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, AGS_PATTERN_BOX_DEFAULT_PAD_HEIGHT);
-    gtk_box_pack_start((GtkBox *) hbox,
+    gtk_widget_set_size_request((GtkWidget *) toggle_button,
+				AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, AGS_PATTERN_BOX_DEFAULT_PAD_HEIGHT);
+    gtk_box_pack_start((GtkBox *) pattern_box->pattern,
 		       (GtkWidget *) toggle_button,
 		       FALSE, FALSE,
 		       0);
@@ -280,7 +284,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   for(i = 0; i < pattern_box->n_indices; i++){
     if(radio_button == NULL){
       radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label(NULL, g_strdup_printf("%d-%d\0",
-											      i * pattern_box->n_indices + 1, (i + 1) * pattern_box->n_indices));
+											      i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls));
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
 			 (GtkWidget *) radio_button,
 			 FALSE, FALSE,
@@ -288,7 +292,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
     }else{
       gtk_box_pack_start((GtkBox*) pattern_box->offset,
 			 (GtkWidget *) gtk_radio_button_new_with_label(radio_button->group, g_strdup_printf("%d-%d\0",
-													    i * pattern_box->n_indices + 1, (i + 1) * pattern_box->n_indices)),
+													    i * pattern_box->n_controls + 1, (i + 1) * pattern_box->n_controls)),
 			 FALSE, FALSE,
 			 0);
     }
@@ -321,13 +325,10 @@ ags_pattern_box_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_pattern_box_focus_in_callback), (gpointer) pattern_box);
   
   g_signal_connect(G_OBJECT(pattern_box), "key_press_event\0",
-		   G_CALLBACK(ags_pattern_box_drawing_area_key_press_event), (gpointer) pattern_box);
+		   G_CALLBACK(ags_pattern_box_key_press_event), (gpointer) pattern_box);
 
   g_signal_connect(G_OBJECT(pattern_box), "key_release_event\0",
-		   G_CALLBACK(ags_pattern_box_drawing_area_key_release_event), (gpointer) pattern_box);
-
-  g_signal_connect(G_OBJECT(GTK_RANGE(pattern_box->vscrollbar)->adjustment), "value_changed\0",
-		   G_CALLBACK(ags_pattern_box_adjustment_value_changed_callback), (gpointer) pattern_box);
+		   G_CALLBACK(ags_pattern_box_key_release_event), (gpointer) pattern_box);
 
   /* connect pattern */
   list_start = 
@@ -474,7 +475,7 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
       gtk_widget_event(pattern_box, key_release);
     }
     break;
-  case AGS_PATTERN_BOX_COPY:
+  case AGS_PATTERN_BOX_COPY_PATTERN:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_c;
@@ -595,14 +596,19 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
 {
   AgsMachine *machine;
   AgsLine *selected_line;
-  GList *list, *line;
+  GList *list, *list_start;
+  GList *line, *line_start;
   guint index0, index1, offset;
   gboolean set_active;
   guint i;
 
   machine = gtk_widget_get_ancestor(pattern_box,
 				    AGS_TYPE_MACHINE);
-  
+
+  if(machine->selected_input_pad == NULL){
+    return;
+  }
+    
   index0 = machine->bank_0;
   index1 = machine->bank_1;
 
@@ -615,15 +621,17 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   offset = i * pattern_box->n_controls;
 
   /* get pads */
-  list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
   /* reset */
   pattern_box->flags |= AGS_PATTERN_BOX_BLOCK_PATTERN;
 
-  for(i = 0; i < 16; i++){
+  for(i = 0; i < pattern_box->n_controls; i++){
     set_active = TRUE;
 
-    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(machine->selected_input_pad)->expander_set));
+    line_start = 
+      line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(machine->selected_input_pad)->expander_set));
 
     while((line = ags_line_find_next_grouped(line)) != NULL){
       selected_line = AGS_LINE(line->data);
@@ -636,12 +644,16 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
       line = line->next;
     }
 
+    g_list_free(line_start);
+    
     gtk_toggle_button_set_active((GtkToggleButton *) list->data, set_active);
-
+    
     list = list->next;
   }
 
   pattern_box->flags &= (~AGS_PATTERN_BOX_BLOCK_PATTERN);
+
+  g_list_free(list_start);
 }
 
 /**

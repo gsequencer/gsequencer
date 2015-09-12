@@ -637,7 +637,7 @@ ags_drum_input_pad_edit_callback(GtkWidget *toggle_button, AgsDrumInputPad *drum
       drum->selected_edit_button = (GtkToggleButton *) toggle_button;
       drum->selected_pad = (AgsDrumInputPad *) gtk_widget_get_ancestor((GtkWidget *) toggle_button, AGS_TYPE_DRUM_INPUT_PAD);
 
-      machine->selected_input_pad = drum->selected_pad;
+      AGS_MACHINE(drum)->selected_input_pad = drum->selected_pad;
       
       ags_pattern_box_set_pattern(drum->pattern_box);
     }else{

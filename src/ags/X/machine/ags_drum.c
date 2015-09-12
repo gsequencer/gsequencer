@@ -422,6 +422,8 @@ ags_drum_connect(AgsConnectable *connectable)
 		     G_CALLBACK(ags_drum_index0_callback), (gpointer) drum);
   }
 
+  ags_connectable_connect(drum->pattern_box);
+
   /* AgsAudio */
   g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "tact\0",
 			 G_CALLBACK(ags_drum_tact_callback), drum);
@@ -450,7 +452,7 @@ ags_drum_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_drum_parent_class)->show(widget);
 
-  ags_drum_set_pattern(AGS_DRUM(widget));
+  ags_pattern_box_set_pattern(AGS_DRUM(widget)->pattern_box);
 }
 
 void
@@ -458,7 +460,7 @@ ags_drum_show_all(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_drum_parent_class)->show_all(widget);
 
-  ags_drum_set_pattern(AGS_DRUM(widget));
+  ags_pattern_box_set_pattern(AGS_DRUM(widget)->pattern_box);
 }
 
 void
@@ -813,7 +815,9 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
       if(pads_old == 0){
 	GtkToggleButton *selected_edit_button;
 
-	drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
+	AGS_MACHINE(drum)->selected_input_pad = 
+	  drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
+	
 	drum->selected_edit_button = drum->selected_pad->edit;
 	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
       }
@@ -826,7 +830,9 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
 	drum_input_pad = AGS_DRUM_INPUT_PAD(gtk_widget_get_ancestor(GTK_WIDGET(drum->selected_edit_button), AGS_TYPE_PAD));
 
 	if(drum_input_pad->pad.channel->pad > pads){
-	  drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
+	  AGS_MACHINE(drum)->selected_input_pad = 
+	    drum->selected_pad = AGS_DRUM_INPUT_PAD(gtk_container_get_children((GtkContainer *) drum->input_pad)->data);
+	  
 	  drum->selected_edit_button = drum->selected_pad->edit;
 	  gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
 	}
