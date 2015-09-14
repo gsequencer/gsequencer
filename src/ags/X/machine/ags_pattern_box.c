@@ -323,6 +323,9 @@ ags_pattern_box_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(G_OBJECT(pattern_box), "focus_in_event\0",
 			 G_CALLBACK(ags_pattern_box_focus_in_callback), (gpointer) pattern_box);
+
+  g_signal_connect_after(G_OBJECT(pattern_box), "focus_out_event\0",
+			 G_CALLBACK(ags_pattern_box_focus_out_callback), (gpointer) pattern_box);
   
   g_signal_connect(G_OBJECT(pattern_box), "key_press_event\0",
 		   G_CALLBACK(ags_pattern_box_key_press_event), (gpointer) pattern_box);
@@ -348,8 +351,8 @@ ags_pattern_box_connect(AgsConnectable *connectable)
     list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
   while(list != NULL){
-    g_signal_connect(G_OBJECT(list->data), "clicked\0",
-		     G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
+    g_signal_connect_after(G_OBJECT(list->data), "clicked\0",
+			   G_CALLBACK(ags_pattern_box_offset_callback), (gpointer) pattern_box);
 		   
     list = list->next;
   }
@@ -615,8 +618,9 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   /* read boundaries */
   list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
-  for(i = 0; i < pattern_box->n_indices && ! GTK_TOGGLE_BUTTON(list->data)->active; i++)
+  for(i = 0; i < pattern_box->n_indices && !GTK_TOGGLE_BUTTON(list->data)->active; i++){
     list = list->next;
+  }
 
   offset = i * pattern_box->n_controls;
 

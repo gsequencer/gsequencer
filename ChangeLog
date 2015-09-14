@@ -1,3 +1,10 @@
+ags (0.6.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]u
+	* fixed crash while clicking AgsPatternBox pad
+	* fixed toggling all selected pads of AgsPatternBox pattern
+	* enhanced prelight of focused AgsPatternBox pad
+
 ags (0.6.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]u
