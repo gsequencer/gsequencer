@@ -43,8 +43,37 @@ extern pthread_mutex_t ags_application_mutex;
 gboolean
 ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box)
 {
-  g_message("got focus\0");
- 
+  GList *list;
+
+  list = gtk_container_get_children(pattern_box->pattern);
+  gtk_widget_set_state(g_list_nth_data(list,
+				       pattern_box->cursor_x),
+		       GTK_STATE_PRELIGHT);
+  g_list_free(list);
+  
+  return(TRUE);
+}
+
+gboolean
+ags_pattern_box_focus_out_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box)
+{
+  GList *list;
+
+  list = gtk_container_get_children(pattern_box->pattern);
+
+  if(!gtk_toggle_button_get_active(g_list_nth_data(list,
+						   pattern_box->cursor_x - 1))){
+    gtk_widget_set_state(g_list_nth_data(list,
+					 pattern_box->cursor_x),
+			 GTK_STATE_NORMAL);
+  }else{
+    gtk_widget_set_state(g_list_nth_data(list,
+					 pattern_box->cursor_x),
+			 GTK_STATE_ACTIVE);
+  }
+  
+  g_list_free(list);
+  
   return(TRUE);
 }
 
@@ -87,7 +116,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   mutex_manager = ags_mutex_manager_get_instance();
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) AGS_MACHINE(pattern_box)->audio);
+					 (GObject *) machine->audio);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -97,8 +126,9 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   list_start = 
     list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
-  for(i = 0; i < 16 && toggle_button != list->data; i++)
+  for(i = 0; i < pattern_box->n_controls && toggle_button != list->data; i++){
     list = list->next;
+  }
 
   offset = i;
   g_list_free(list_start);
@@ -111,10 +141,11 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   list_start = 
     list = gtk_container_get_children((GtkContainer *) pattern_box->offset);
 
-  for(i = 0; i < 4 && ! GTK_TOGGLE_BUTTON(list->data)->active; i++)
+  for(i = 0; i < 4 && !GTK_TOGGLE_BUTTON(list->data)->active; i++){
     list = list->next;
+  }
 
-  offset += (i * 16);
+  offset += (i * pattern_box->n_controls);
 
   g_list_free(list_start);
 
@@ -140,7 +171,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   g_list_free(line_start);
 
   /* append AgsTogglePatternBit */
-  ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(pattern_box)->audio->devout)->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
 			       tasks);
 
   pthread_mutex_unlock(audio_mutex);
@@ -210,15 +241,57 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   case GDK_KEY_leftarrow:
     {
       if(pattern_box->cursor_x > 0){
+	GList *list;
+	
 	pattern_box->cursor_x -= 1;
+
+	list = gtk_container_get_children(pattern_box->pattern);
+	
+	gtk_widget_set_state(g_list_nth_data(list,
+					     pattern_box->cursor_x),
+			     GTK_STATE_PRELIGHT);
+
+	if(!gtk_toggle_button_get_active(g_list_nth_data(list,
+							 pattern_box->cursor_x + 1))){
+	  gtk_widget_set_state(g_list_nth_data(list,
+					       pattern_box->cursor_x + 1),
+			       GTK_STATE_NORMAL);
+	}else{
+	  gtk_widget_set_state(g_list_nth_data(list,
+					       pattern_box->cursor_x + 1),
+			       GTK_STATE_ACTIVE);
+	}
+	
+	g_list_free(list);
       }
     }
     break;
   case GDK_KEY_Right:
   case GDK_KEY_rightarrow:
     {
-      if(pattern_box->cursor_x < pattern_box->n_controls){
+      if(pattern_box->cursor_x + 1 < pattern_box->n_controls){
+	GList *list;
+	
 	pattern_box->cursor_x += 1;
+
+	list = gtk_container_get_children(pattern_box->pattern);
+
+      	gtk_widget_set_state(g_list_nth_data(list,
+					     pattern_box->cursor_x),
+			     GTK_STATE_PRELIGHT);
+	
+	if(!gtk_toggle_button_get_active(g_list_nth_data(list,
+							 pattern_box->cursor_x - 1))){
+	  gtk_widget_set_state(g_list_nth_data(list,
+					       pattern_box->cursor_x - 1),
+			       GTK_STATE_NORMAL);
+	}else{
+	  gtk_widget_set_state(g_list_nth_data(list,
+					       pattern_box->cursor_x - 1),
+			       GTK_STATE_ACTIVE);
+	}
+
+	g_list_free(list);
       }
     }
     break;
@@ -228,20 +301,21 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       if(pattern_box->cursor_y > 0){
 	GList *list;
 
-	list = gtk_container_get_children(pattern_box->offset);
 	pattern_box->cursor_y -= 1;
 
-      	gtk_button_clicked(g_list_nth_data(pattern_box->offset,
+	list = gtk_container_get_children(pattern_box->offset);
+
+      	gtk_button_clicked(g_list_nth_data(list,
 					   pattern_box->cursor_y));
 
-	free(list);
+	g_list_free(list);
       }
     }
     break;
   case GDK_KEY_Down:
   case GDK_KEY_downarrow:
     {
-      if(pattern_box->cursor_y < pattern_box->n_indices){
+      if(pattern_box->cursor_y + 1 < pattern_box->n_indices){
 	GList *list;
 
 	list = gtk_container_get_children(pattern_box->offset);
@@ -250,18 +324,23 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	gtk_button_clicked(g_list_nth_data(list,
 					   pattern_box->cursor_y));
 
-	g_free(list);
+	g_list_free(list);
       }
     }
     break;
   case GDK_KEY_space:
     {
       AgsMachine *machine;
-      
+      AgsLine *selected_line;
+
       AgsTogglePatternBit *toggle_pattern_bit;
       AgsChannel *channel;
+
+      GList *line, *line_start;
+      GList *tasks;
       
       guint i, j;
+      guint offset;
       guint index0, index1;
       
       machine = gtk_widget_get_ancestor(pattern_box,
@@ -269,21 +348,39 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       
       i = pattern_box->cursor_y;
       j = pattern_box->cursor_x;
+
+      offset = (i * pattern_box->n_controls) + j;
       
       index0 = machine->bank_0;
       index1 = machine->bank_1;
 
       channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - i - 1);
 
-      toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
-						      channel->line,
-						      index0, index1,
-						      j);
-      g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
-		       G_CALLBACK(ags_pattern_box_refresh_gui_callback), pattern_box);
+      line_start = 
+	line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(machine->selected_input_pad)->expander_set));
+      tasks = NULL;
+
+      while((line = ags_line_find_next_grouped(line)) != NULL){
+	selected_line = AGS_LINE(line->data);
+
+	toggle_pattern_bit = ags_toggle_pattern_bit_new(selected_line->channel->pattern->data,
+							selected_line->channel->line,
+							index0, index1,
+							offset);
+	
+	g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
+			 G_CALLBACK(ags_pattern_box_refresh_gui_callback), pattern_box);
+
+	tasks = g_list_prepend(tasks,
+			       toggle_pattern_bit);
+
+	line = line->next;
+      }
+
+      g_list_free(line_start);
       
-      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
-				  AGS_TASK(toggle_pattern_bit));
+      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
+				   tasks);
     }
     break;
   }
