@@ -1,19 +1,21 @@
 ags (0.6.2)
 
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]u
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed buffer attack in ags_buffer_audio_signal_run_inter()
 	* fixed NULL link within link editor to be shown correctly
-	* implemented file link for link editor
+	* implemented file link in link editor
+	* TODO implement audible feedback of AgsPatternBox, AgsCellPattern, AgsPatternEdit and AgsNoteEdit
 
 ags (0.6.1)
 
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]u
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed crash while clicking AgsPatternBox pad
 	* fixed toggling all selected pads of AgsPatternBox pattern
 	* enhanced prelight of focused AgsPatternBox pad
 
 ags (0.6.0)
 
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]u
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* Implemented basic accessibility thus refactored AgsDrum and AgsMatrix. Further enhanced AgsPatternEdit and AgsNoteEdit.
 
 ags (0.5.12)

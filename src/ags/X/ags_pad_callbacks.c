@@ -21,17 +21,28 @@
 
 #include <ags/main.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_recall.h>
+
+#include <ags/audio/recall/ags_play_channel_run.h>
+
+#include <ags/audio/task/ags_add_audio_signal.h>
 
 #include <ags/audio/task/recall/ags_set_muted.h>
 
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_line_callbacks.h>
+
+extern pthread_mutex_t ags_application_mutex;
 
 int
 ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pad)
@@ -202,4 +213,110 @@ ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
     machine->flags &= ~(AGS_MACHINE_SOLO);
 
   return(0);
+}
+
+void
+ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
+{ 
+  AgsDevout *devout;
+  AgsChannel *channel, *next_pad;
+  AgsRecycling *recycling;
+
+  AgsAddAudioSignal *add_audio_signal;
+
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsMutexManager *mutex_manager;
+
+  GList *recall, *tmp;
+  GList *list, *list_start;
+
+  pthread_mutex_t *audio_mutex;
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) input_pad->channel->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+  
+  devout = AGS_DEVOUT(AGS_AUDIO(input_pad->channel->audio)->devout);
+
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
+  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+
+
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) input_pad->expander_set);
+  
+  channel = input_pad->channel;
+  next_pad = channel->next_pad;
+
+  g_message("launch\0");
+  
+  while(channel != next_pad){
+    if(AGS_DEVOUT_PLAY(channel->devout_play) == NULL ||
+       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){
+      channel = channel->next;
+      list = list->next;
+
+      continue;
+    }
+
+    /* connect done */
+    recall = ags_recall_find_provider_with_recycling_container(channel->play,
+							       G_OBJECT(channel),
+							       G_OBJECT(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->recycling_container));
+
+    tmp = recall;
+    recall = ags_recall_find_type(recall,
+				  AGS_TYPE_PLAY_CHANNEL_RUN);
+    //TODO:JK: fix me
+    //    g_list_free(tmp);
+
+    if(recall != NULL){
+      AgsAudioSignal *audio_signal;
+      
+      g_signal_connect_after(channel, "done\0",
+			     G_CALLBACK(ags_line_channel_done_callback), AGS_LINE(list->data));
+      
+      /* add audio signal */
+      recycling = channel->first_recycling;
+
+      while(recycling != channel->last_recycling->next){
+	audio_signal = ags_audio_signal_new((GObject *) devout,
+					    (GObject *) recycling,
+					    (GObject *) AGS_RECALL(recall->data)->recall_id);
+	/* add audio signal */
+	ags_recycling_create_audio_signal_with_defaults(recycling,
+							audio_signal,
+							0.0, 0);
+	audio_signal->stream_current = audio_signal->stream_beginning;
+	ags_audio_signal_connect(audio_signal);
+  
+	/*
+	 * emit add_audio_signal on AgsRecycling
+	 */
+	ags_recycling_add_audio_signal(recycling,
+				       audio_signal);
+
+	recycling = recycling->next;
+      }    
+    }
+
+    //TODO:JK: fix me
+    //    g_list_free(recall);
+
+    channel = channel->next;
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  pthread_mutex_unlock(audio_mutex);
 }

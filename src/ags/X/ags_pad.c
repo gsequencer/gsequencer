@@ -27,6 +27,26 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_recall.h>
+
+#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_init_channel.h>
+#include <ags/audio/task/ags_append_channel.h>
+#include <ags/audio/task/ags_append_recall.h>
+#include <ags/audio/task/ags_add_audio_signal.h>
+#include <ags/audio/task/ags_open_single_file.h>
+#include <ags/audio/task/ags_cancel_channel.h>
+
 #include <ags/X/ags_machine.h>
 
 void ags_pad_class_init(AgsPadClass *pad);
@@ -83,6 +103,8 @@ enum{
 
 static gpointer ags_pad_parent_class = NULL;
 static guint pad_signals[LAST_SIGNAL];
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_pad_get_type(void)
@@ -694,6 +716,169 @@ ags_pad_find_port(AgsPad *pad)
   g_object_unref((GObject *) pad);
 
   return(list);
+}
+
+void
+ags_pad_play(AgsPad *pad)
+{
+  AgsMachine *machine;
+
+  AgsDevout *devout;
+  AgsChannel *channel;
+
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+  AgsDevoutThread *devout_thread;
+
+  AgsMutexManager *mutex_manager;
+
+  GList *tasks;
+
+  pthread_mutex_t *audio_mutex;
+  
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
+						   AGS_TYPE_MACHINE);
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) machine->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+  
+  devout = AGS_DEVOUT(machine->audio->devout);
+
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
+  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+  devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
+
+  tasks = NULL;
+
+  if(pad->play == NULL ||
+     pad->play->active){
+    AgsStartDevout *start_devout;
+    AgsInitChannel *init_channel;
+    AgsAppendChannel *append_channel;
+    gboolean play_all;
+    guint flags;
+
+    play_all = pad->group->active;
+
+    flags = AGS_AUDIO_SIGNAL_STANDALONE;
+
+    channel = pad->channel;
+
+    /* init channel for playback */
+    init_channel = ags_init_channel_new(channel, play_all,
+					TRUE, FALSE, FALSE);
+    g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
+			   G_CALLBACK(ags_pad_init_channel_launch_callback), pad);
+    tasks = g_list_prepend(tasks, init_channel);
+
+    if(play_all){
+      AgsChannel *next_pad;
+
+      next_pad = channel->next_pad;
+
+      while(channel != next_pad){
+	/* append channel for playback */
+	append_channel = ags_append_channel_new(G_OBJECT(audio_loop),
+						G_OBJECT(channel));
+	tasks = g_list_prepend(tasks, append_channel);
+
+	channel = channel->next;
+      }
+    }else{
+      AgsLine *line;
+      GList *list;
+
+      list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+      line = AGS_LINE(ags_line_find_next_grouped(list)->data);
+
+      /* append channel for playback */
+      append_channel = ags_append_channel_new(G_OBJECT(audio_loop),
+					      G_OBJECT(line->channel));
+      tasks = g_list_prepend(tasks, append_channel);
+
+      g_list_free(list);
+    }
+
+    /* create start task */
+    start_devout = ags_start_devout_new(devout);
+    tasks = g_list_prepend(tasks,
+			   start_devout);
+
+    /* perform playback */
+    tasks = g_list_reverse(tasks);
+    ags_task_thread_append_tasks(task_thread, tasks);
+  }else{
+    AgsCancelChannel *cancel_channel;
+
+    channel = pad->channel;
+
+    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL ||
+       (AGS_DEVOUT_PLAY_DONE & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->flags)))) != 0){
+      pthread_mutex_unlock(audio_mutex);
+      return;
+    }
+
+    if((AGS_DEVOUT_PLAY_PAD & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) != 0){
+      AgsChannel *next_pad;
+
+      next_pad = channel->next_pad;
+
+      if((AGS_DEVOUT_PLAY_DONE & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) == 0){
+	/* cancel request */
+	while(channel != next_pad){
+	  cancel_channel = ags_cancel_channel_new(channel, AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0],
+						  AGS_DEVOUT_PLAY(channel->devout_play));
+
+	  ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
+
+	  channel = channel->next;
+	}
+      }else{
+	/* done */
+	while(channel != next_pad){
+	  g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			  AGS_DEVOUT_PLAY_REMOVE);
+	  g_atomic_int_and(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			   (~AGS_DEVOUT_PLAY_DONE));
+
+	  channel = channel->next;
+	}
+      }
+    }else{
+      AgsLine *line;
+      GList *list;
+
+      list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+      line = AGS_LINE(ags_line_find_next_grouped(list)->data);
+
+      g_list_free(list);
+
+      /*  */
+      channel = line->channel;
+
+      if((AGS_DEVOUT_PLAY_DONE & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) == 0){
+	/* cancel request */
+	cancel_channel = ags_cancel_channel_new(channel, AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0],
+						AGS_DEVOUT_PLAY(channel->devout_play));
+
+	ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
+      }else{
+	/* done */
+	AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;
+	AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
+      }
+    }
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
