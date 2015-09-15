@@ -242,7 +242,9 @@ ags_drum_init(AgsDrum *drum)
 		   AGS_AUDIO_NOTATION_DEFAULT |
 		   AGS_AUDIO_PATTERN_MODE);
   
-  AGS_MACHINE(drum)->flags |= AGS_MACHINE_IS_SEQUENCER;
+  AGS_MACHINE(drum)->flags |= (AGS_MACHINE_IS_SEQUENCER
+			       | AGS_MACHINE_TAKES_FILE_INPUT);
+  AGS_MACHINE(drum)->file_input_flags |= (AGS_MACHINE_ACCEPT_WAV);
   AGS_MACHINE(drum)->input_pad_type = AGS_TYPE_DRUM_INPUT_PAD;
   AGS_MACHINE(drum)->input_line_type = AGS_TYPE_DRUM_INPUT_LINE;
   AGS_MACHINE(drum)->output_pad_type = AGS_TYPE_DRUM_OUTPUT_PAD;
