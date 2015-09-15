@@ -19,12 +19,25 @@
 
 #include <ags/X/editor/ags_note_edit_callbacks.h>
 
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/main.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+
+#include <ags/audio/recall/ags_play_channel_run.h>
+
+#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_init_channel.h>
+#include <ags/audio/task/ags_append_channel.h>
+#include <ags/audio/task/ags_append_recall.h>
+#include <ags/audio/task/ags_add_audio_signal.h>
 
 #include <ags/X/ags_editor.h>
 
@@ -36,6 +49,8 @@
 #include <ags/X/machine/ags_ffplayer.h>
 
 #include <gdk/gdkkeysyms.h>
+
+void ags_note_edit_init_channel_launch_callback(AgsTask *task, gpointer data);
 
 extern pthread_mutex_t ags_application_mutex;
 
@@ -896,6 +911,8 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
 {
   AgsEditor *editor;
 
+  AgsMachine *machine;
+  
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
   }
@@ -903,8 +920,9 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  if(editor->selected_machine != NULL){
-
+  machine = editor->selected_machine;
+  
+  if(machine != NULL){
     switch(event->keyval){
     case GDK_KEY_Control_L:
       {
@@ -976,6 +994,76 @@ gboolean
 ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsNoteEdit *note_edit)
 {
   AgsEditor *editor;
+  AgsMachine *machine;
+      
+  AgsChannel *channel;
+
+  GList *list_notation;
+
+  gint i;
+  gboolean do_feedback;
+  
+  auto void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel);
+
+  void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel){
+    AgsDevout *devout;
+
+    AgsStartDevout *start_devout;
+    AgsInitChannel *init_channel;
+    AgsAppendChannel *append_channel;
+
+    AgsAudioLoop *audio_loop;
+    AgsTaskThread *task_thread;
+    AgsDevoutThread *devout_thread;
+
+    AgsMutexManager *mutex_manager;
+
+    GList *tasks;
+
+    pthread_mutex_t *audio_mutex;
+
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel->audio);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    pthread_mutex_lock(audio_mutex);
+  
+    devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
+
+    audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
+    task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+    devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
+
+    tasks = NULL;
+
+    /* init channel for playback */
+    init_channel = ags_init_channel_new(channel, FALSE,
+					TRUE, FALSE, FALSE);
+    g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
+			   G_CALLBACK(ags_note_edit_init_channel_launch_callback), NULL);
+    tasks = g_list_prepend(tasks, init_channel);
+    
+    /* append channel for playback */
+    append_channel = ags_append_channel_new(G_OBJECT(audio_loop),
+					    G_OBJECT(channel));
+    tasks = g_list_prepend(tasks, append_channel);
+
+    /* create start task */
+    start_devout = ags_start_devout_new(devout);
+    tasks = g_list_prepend(tasks,
+			   start_devout);
+
+    /* perform playback */
+    tasks = g_list_reverse(tasks);
+    ags_task_thread_append_tasks(task_thread, tasks);
+
+    pthread_mutex_unlock(audio_mutex);
+  }
 
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
@@ -983,6 +1071,10 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
+
+  machine = editor->selected_machine;
+
+  do_feedback = FALSE;
 
   switch(event->keyval){
   case GDK_KEY_Control_L:
@@ -1022,6 +1114,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	  }else{
 	    note_edit->selected_x = 0;
 	  }
+	  
+	  do_feedback = TRUE;
 	}
 
 	x0_offset = note_edit->selected_x * note_edit->control_unit.control_width;
@@ -1031,16 +1125,12 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 			      x0_offset * GTK_RANGE(note_edit->hscrollbar)->adjustment->step_increment);
 	}
       }else{
-	AgsMachine *machine;
 	AgsNote *note;
-	GList *list_notation;
-	gint i;
       
 	/* shrink note */
-	machine = editor->selected_machine;
-
 	i = 0;
-
+	do_feedback = TRUE;
+	
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
 	  list_notation = g_list_nth(machine->audio->notation,
@@ -1080,6 +1170,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	/* position cursor */      
 	if(note_edit->selected_x < 16.0 * AGS_NOTE_EDIT_MAX_CONTROLS){
 	  note_edit->selected_x += (1.0 * tact);
+	  
+	  do_feedback = TRUE;
 	}
 
 	x0_offset = note_edit->selected_x * note_edit->control_unit.control_width;
@@ -1089,15 +1181,11 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 			      x0_offset * GTK_RANGE(note_edit->hscrollbar)->adjustment->step_increment);
 	}
       }else{
-	AgsMachine *machine;
 	AgsNote *note;
-	GList *list_notation;
-	gint i;
       
 	/* grow note */
-	machine = editor->selected_machine;
-
 	i = 0;
+	do_feedback = TRUE;
 
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
@@ -1129,6 +1217,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       
       if(note_edit->selected_y > 0){
 	note_edit->selected_y -= 1;
+	
+	do_feedback = TRUE;
       }
 
       y0_offset = note_edit->selected_y * note_edit->control_height;
@@ -1148,6 +1238,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       
       if(note_edit->selected_y * (note_edit->control_height) < note_edit->map_height){
 	note_edit->selected_y += 1;
+	
+	do_feedback = TRUE;
       }
 
       y0_offset = note_edit->selected_y * note_edit->control_height;
@@ -1162,15 +1254,11 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     break;
   case GDK_KEY_space:
     {
-      AgsMachine *machine;
       AgsNote *note;
-      GList *list_notation;
-      gint i;
-      
-      machine = editor->selected_machine;
 
       i = 0;
-
+      do_feedback = TRUE;
+      
       while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					      i)) != -1){
 	list_notation = g_list_nth(machine->audio->notation,
@@ -1199,12 +1287,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     break;
   case GDK_KEY_Delete:
     {
-      AgsMachine *machine;
       AgsNote *note;
-      GList *list_notation;
-      gint i;
-      
-      machine = editor->selected_machine;
 
       i = 0;
 
@@ -1230,7 +1313,123 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     break;
   }
 
+  if(do_feedback){
+    /* audible feedback */
+    while((i = ags_notebook_next_active_tab(editor->current_notebook,
+					    i)) != -1){
+      list_notation = g_list_nth(machine->audio->notation,
+				 i);
+
+      if(list_notation == NULL){
+	i++;
+	
+	continue;
+      }
+
+      if(ags_notation_find_point(list_notation->data,
+				 note_edit->selected_x, note_edit->selected_y,
+				 FALSE) != NULL){
+	channel = ags_channel_nth(machine->audio->input,
+				  i);
+
+	if((AGS_AUDIO_REVERSE_MAPPING & (machine->audio->flags)) != 0){
+	  channel = ags_channel_pad_nth(channel, machine->audio->input_pads - note_edit->selected_y - 1);
+	}else{
+	  channel = ags_channel_pad_nth(channel, note_edit->selected_y);
+	}
+
+	ags_note_edit_drawing_area_key_release_event_play_channel(channel);
+      }
+	  
+      i++;
+    }
+  }
+
   return(TRUE);
+}
+
+void
+ags_note_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
+{
+  AgsDevout *devout;
+  AgsChannel *channel;
+  AgsRecycling *recycling;
+
+  AgsAddAudioSignal *add_audio_signal;
+
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsMutexManager *mutex_manager;
+
+  GList *recall, *tmp;
+
+  pthread_mutex_t *audio_mutex;
+
+  channel = AGS_INIT_CHANNEL(task)->channel;
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel->audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(audio_mutex);
+  
+  devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
+
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
+  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+
+  g_message("launch\0");
+  
+  if(AGS_DEVOUT_PLAY(channel->devout_play) == NULL ||
+     AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){    
+    return;
+  }
+
+  /* connect done */
+  recall = ags_recall_find_provider_with_recycling_container(channel->play,
+							     G_OBJECT(channel),
+							     G_OBJECT(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->recycling_container));
+  
+  tmp = recall;
+  recall = ags_recall_find_type(recall,
+				AGS_TYPE_PLAY_CHANNEL_RUN);
+  //TODO:JK: fix me
+  //    g_list_free(tmp);
+
+  if(recall != NULL){
+    AgsAudioSignal *audio_signal;
+      
+    /* add audio signal */
+    recycling = channel->first_recycling;
+
+    while(recycling != channel->last_recycling->next){
+      audio_signal = ags_audio_signal_new((GObject *) devout,
+					  (GObject *) recycling,
+					  (GObject *) AGS_RECALL(recall->data)->recall_id);
+      /* add audio signal */
+      ags_recycling_create_audio_signal_with_defaults(recycling,
+						      audio_signal,
+						      0.0, 0);
+      audio_signal->stream_current = audio_signal->stream_beginning;
+      ags_audio_signal_connect(audio_signal);
+  
+      /*
+       * emit add_audio_signal on AgsRecycling
+       */
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal);
+
+      recycling = recycling->next;
+    }    
+  }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
