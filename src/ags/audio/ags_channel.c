@@ -31,6 +31,8 @@
 #include <ags/thread/ags_channel_thread.h>
 #include <ags/thread/ags_recycling_thread.h>
 
+#include <ags/file/ags_file_link.h>
+
 #include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -44,6 +46,8 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_id.h>
+
+#include <ags/audio/file/ags_audio_file.h>
 
 #include <stdio.h>
 
@@ -361,8 +365,9 @@ ags_channel_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if((AgsAudio *) channel->audio == audio)
+      if((AgsAudio *) channel->audio == audio){
 	return;
+      }
 
       if(channel->audio != NULL){
 	g_object_unref(G_OBJECT(channel->audio));

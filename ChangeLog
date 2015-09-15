@@ -1,3 +1,9 @@
+ags (0.6.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]u
+	* fixed NULL link within link editor to be shown correctly
+	* implemented file link for link editor
+
 ags (0.6.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]u

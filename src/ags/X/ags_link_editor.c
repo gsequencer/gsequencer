@@ -29,11 +29,14 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/file/ags_file_link.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 
 #include <ags/audio/task/ags_link_channel.h>
+#include <ags/audio/task/ags_open_single_file.h>
 
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_line_editor.h>
@@ -214,8 +217,9 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(link_editor->combo,
 				   &iter)){
-    AgsMachine *link_machine;
+    AgsMachine *link_machine, *machine;
     AgsLineEditor *line_editor;
+    AgsDevout *devout;
     AgsChannel *channel, *link;
     AgsLinkChannel *link_channel;
     GtkTreeModel *model;
@@ -224,37 +228,68 @@ ags_link_editor_apply(AgsApplicable *applicable)
 							  AGS_TYPE_LINE_EDITOR));
 
     channel = line_editor->channel;
+    devout = AGS_AUDIO(channel->audio)->devout;	
 
+    machine = AGS_AUDIO(channel->audio)->machine;
+    
     model = gtk_combo_box_get_model(link_editor->combo);
     gtk_tree_model_get(model,
 		       &iter,
 		       1, &link_machine,
 		       -1);
-    
+
     if(link_machine == NULL){
-      /* create task */
-      link_channel = ags_link_channel_new(channel, NULL);
-      
-      /* append AgsLinkChannel */
-      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
-				  AGS_TASK(link_channel));
+      if((AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
+	 ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
+	  ((AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0)) &&
+	 gtk_combo_box_get_active(link_editor->combo) + 1 == gtk_tree_model_iter_n_children(model,
+											    NULL)){
+	AgsOpenSingleFile *open_single_file;
+	gchar *str, *filename;
+	
+	gtk_tree_model_get(model,
+			   &iter,
+			   0, &str,
+			   -1);
+	
+	filename = g_strdup(str + 7);
+	
+	if(g_strcmp0(filename, "\0")){
+	  open_single_file = ags_open_single_file_new(channel,
+						      devout,
+						      filename,
+						      (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button),
+						      1);
+	  /* append AgsLinkChannel */
+	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+				      AGS_TASK(open_single_file));
+	}
+      }else{
+	/* create task */
+	link_channel = ags_link_channel_new(channel, NULL);
+	
+	/* append AgsLinkChannel */
+	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+				    AGS_TASK(link_channel));
+      }
     }else{
       guint link_line;
 
       link_line = (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button);
 
-      if(AGS_IS_INPUT(channel))
+      if(AGS_IS_INPUT(channel)){
 	link = ags_channel_nth(link_machine->audio->output,
 			       link_line);
-      else
+      }else{
 	link = ags_channel_nth(link_machine->audio->input,
 			       link_line);
-
+      }
+      
       /* create task */
       link_channel = ags_link_channel_new(channel, link);
       
       /* append AgsLinkChannel */
-      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread),
+      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
 				  AGS_TASK(link_channel));
     }
   }
@@ -273,7 +308,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
 
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
-    AgsMachine *machine, *link;
+    AgsMachine *machine, *link_machine, *link;
     AgsLineEditor *line_editor;
     AgsChannel *channel;
     gint i;
@@ -283,39 +318,71 @@ ags_link_editor_reset(AgsApplicable *applicable)
 							  AGS_TYPE_LINE_EDITOR));
 
     channel = line_editor->channel;
-
-    if(channel->link != NULL)
-      machine = AGS_MACHINE(AGS_AUDIO(channel->link->audio)->machine);
-    else
-      machine = NULL;
-
+    machine = AGS_MACHINE(AGS_AUDIO(channel->audio)->machine);
+    
+    if(channel->link != NULL){
+      link_machine = AGS_MACHINE(AGS_AUDIO(channel->link->audio)->machine);
+    }else{
+      link_machine = NULL;
+    }
+    
     i = 0;
     found = FALSE;
 
-    do{
-      gtk_tree_model_get(model,
-			 &iter,
-			 1, &link,
-			 -1);
+    if(link_machine != NULL){
+      do{
+	gtk_tree_model_get(model,
+			   &iter,
+			   1, &link,
+			   -1);
 
-      if(machine == link){
-	found = TRUE;
-	break;
-      }
+	if(link_machine == link){
+	  found = TRUE;
+	  break;
+	}
 
-      i++;
-    }while(gtk_tree_model_iter_next(model,
-				    &iter));
-
+	i++;
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+    
     if(found){
+      /* set channel link */
       gtk_combo_box_set_active(link_editor->combo, i);
 
-      if(channel->link == NULL)
+      if(channel->link == NULL){
 	gtk_spin_button_set_value(link_editor->spin_button, 0);
-      else
+      }else{
 	gtk_spin_button_set_value(link_editor->spin_button, channel->link->line);
-    }else
-      gtk_combo_box_set_active(link_editor->combo, -1);
+      }
+    }else{
+      gtk_combo_box_set_active(link_editor->combo,
+			       0);
+    }
+
+    /* set file link */
+    if((AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
+     ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
+      (AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0) &&
+       AGS_IS_INPUT(channel)){
+      gtk_tree_model_iter_nth_child(model,
+				    &iter,
+				    NULL,
+				    gtk_tree_model_iter_n_children(model,
+								   NULL) - 1);
+      
+      if(AGS_INPUT(channel)->file_link != NULL){
+	gtk_list_store_set(model, &iter,
+			   0, g_strdup_printf("file://%s\0", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
+			   1, NULL,
+			   -1);
+      }else{
+	gtk_list_store_set(model, &iter,
+			   0, "file://\0",
+			   1, NULL,
+			   -1);
+      }
+    }
   }
 }
 

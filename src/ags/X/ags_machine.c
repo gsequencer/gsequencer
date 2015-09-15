@@ -760,7 +760,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
       list = list->next;
     }
   }
-
+  
   return(model);
 }
 

@@ -365,9 +365,22 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
     }
   
     //TODO:JK: in future release buffer size may differ
-    ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
-					   (signed short *) stream_source->data, 1,
-					   source->buffer_size);
+    if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
+      AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
+      ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
+					     (signed short *) stream_source->data, 1,
+					     devout->buffer_size - source->attack);
+    }else{
+      if(source->attack != 0 && stream_source->prev != NULL){
+	ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
+					       &(((signed short *) stream_source->prev->data)[devout->buffer_size - source->attack]), 1,
+					       source->attack);
+      }
+
+      ags_audio_signal_copy_buffer_to_buffer(&(((signed short *) stream_destination->data)[source->attack]), 1,
+					     (signed short *) stream_source->data, 1,
+					     devout->buffer_size - source->attack);
+    }
   }
 }
 
