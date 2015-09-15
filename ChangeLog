@@ -4,7 +4,7 @@ ags (0.6.2)
 	* fixed buffer attack in ags_buffer_audio_signal_run_inter()
 	* fixed NULL link within link editor to be shown correctly
 	* implemented file link in link editor
-	* TODO implement audible feedback of AgsPatternBox, AgsCellPattern, AgsPatternEdit and AgsNoteEdit
+	* implemented audible feedback of AgsPatternBox, AgsCellPattern, AgsPatternEdit and AgsNoteEdit
 
 ags (0.6.1)
 
