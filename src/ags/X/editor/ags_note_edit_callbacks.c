@@ -987,7 +987,7 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
     }
   }
 
-  return(FALSE);
+  return(TRUE);
 }
 
 gboolean
@@ -1146,7 +1146,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 					 note_edit->selected_x, note_edit->selected_y,
 					 FALSE);
 
-	  if(note->x[1] - note->x[0] - tact > tact){
+	  if(note->x[1] - note->x[0] - tact >= tact){
 	    note->x[1] -= tact;
 	  }
 	  
@@ -1255,9 +1255,12 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
   case GDK_KEY_space:
     {
       AgsNote *note;
+      gdouble tact;
 
       i = 0;
       do_feedback = TRUE;
+
+      tact = exp2(6.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
       
       while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					      i)) != -1){
@@ -1272,7 +1275,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       
 	note = ags_note_new();
 	note->x[0] = note_edit->selected_x;
-	note->x[1] = note_edit->selected_x + 1;
+	note->x[1] = note_edit->selected_x + (1.0 * tact);
 	note->y = note_edit->selected_y;
 	
 	ags_notation_add_note(AGS_NOTATION(list_notation->data), note, FALSE);
@@ -1314,6 +1317,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
   }
 
   if(do_feedback){
+    i = 0;
+    
     /* audible feedback */
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					    i)) != -1){
