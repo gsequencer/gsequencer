@@ -110,6 +110,367 @@
 	</tbody>
       </tgroup>
     </table>
+    
+  </sect1>
+  
+  <sect1>
+    <title>pattern edit</title>
+    <para>
+      The pattern edit widget is available as linking an editor index with a pattern sequencer e.g.
+      drum or matrix.
+    </para>
+
+    <itemizedlist mark="bullet">
+      <listitem>
+	<para>
+	  Left, Left-Arrow
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within notation left, as there is a pattern you get an audible feedback.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Right, Right-Arrow 
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within notation right, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Up, Up-Arrow
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within notation up, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Down, Down-Arrow 
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within notation down, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Space
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Add audio pattern and give audible feedback.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Delete
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Remove audio pattern and give audible feedback.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+c
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Copy the selected pattern to clipboard.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+x
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Cut the selected pattern to clipboard.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+v
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Paste pattern from clipboard.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+a
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Select all.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+i
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Invert all.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Tab
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Leave notation focus.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+    </itemizedlist>
+
+  </sect1>
+
+  <sect1>
+    <title>note edit</title>
+    <para>
+      The note edit widget is available as linking an editor index with a notes sequencer e.g.
+      Soundfont2 file player.
+    </para>
+
+    <itemizedlist mark="bullet">
+      <listitem>
+	<para>
+	  Left, Left-Arrow
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within notation left, as there is a note you get an audible feedback.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Right, Right-Arrow 
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within notation right, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Up, Up-Arrow
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within notation up, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Down, Down-Arrow 
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within notation down, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Space
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Add audio notes and give audible feedback.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Delete
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Remove audio notes and give audible feedback.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+c
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Copy the selected notes to clipboard.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+x
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Cut the selected notes to clipboard.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+v
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Paste notes from clipboard.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+a
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Select all.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+i
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Invert all.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Tab
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Leave notation focus.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+    </itemizedlist>
+    
   </sect1>
 
 </chapter>

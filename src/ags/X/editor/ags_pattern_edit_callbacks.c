@@ -1225,6 +1225,8 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   }
   
   if(do_feedback){
+    i = 0;
+    
     /* audible feedback */
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					    i)) != -1){

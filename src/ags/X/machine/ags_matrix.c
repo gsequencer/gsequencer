@@ -744,7 +744,6 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 

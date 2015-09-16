@@ -1,3 +1,8 @@
+ags (0.6.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed to shrink of notes by keyboard to enable initial size
+
 ags (0.6.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -88,7 +88,13 @@
     <title>Panel</title>
     <imagedata fileref="../images/ags_panel.png" />
     <para>
-      The panel is used to output to your soundcard.
+      The panel is used for outputting to your soundcard and should be at topmost of your
+      audio processing tree. It contains per audio channel a mute check box.
+    </para>
+    <para>
+      Due the synchroneous nature of the output engine you're just able to adjust the audio
+      channels. The output pads aren't visible and the ones available for input are packed
+      vertically.
     </para>
   </sect1>
 
@@ -96,7 +102,13 @@
     <title>Mixer</title>
     <imagedata fileref="../images/ags_mixer.png" />
     <para>
-      Bundle audio lines with the mixer and perform toplevel stream manipulation.
+      Bundle audio lines with the mixer and perform toplevel stream manipulation. It contains
+      per audio channel a volume indicator and may contain LADSPA plugins.
+    </para>
+    <para>
+      Due the limitation of recycling it is just able to handle multiple input lines and only one
+      output pad. Whereas the output is hidden. They are locate just below the machine's menu tool
+      button. 
     </para>
   </sect1>
 
@@ -104,9 +116,140 @@
     <title>Drum</title>
     <imagedata fileref="../images/ags_drum.png" />
     <para>
-      Produce an audio stream by defining a pattern. The drum supports opening
-      audio files and associate to its input.
+      Produce an audio stream by defining a pattern. The drum supports opening audio files and
+      associate to its input. You might doing it by open button located preceeding to pattern
+      box. Thus multi-selection of files is supported and assigning can be controlled by the
+      controls just above the action widgets. The drum input pad contains an open button, too.
+      It assigns available audio channels of the file to the grouped lines. One more way to
+      assign audio files is doing it so by link editor of machine's property dialog.
+      The drum may contain LADSPA plugins, too.
     </para>
+    <para>
+      The drum may contain multiple input as well output pads. They are packed on top of the
+      composite widget, just below the machine's menu tool button. The input is packed horizontally
+      followed by vertically packed output.
+      The edit button within every input pad enables it as current input for editing pattern data.
+      Further you may de-/activate the group toggle button to control audio channel assignment.
+    </para>
+    <para>
+      Next to the multi-selection enable open button there's a loop check-box followed by the run
+      button what starts the drum sequencer. It follows the into a two dimensional matrix packed
+      pattern banks. Labeled from 1 to 12 and an the combined index labeled a throughout d. The
+      length spin-button controls the number of pattern pads to be played in sequence which may
+      be looped.
+    </para>
+    
+    <sect2>
+      <title>The pattern box</title>
+      <para>
+	As entering to pattern box with focus the only way to get out of it is by tabulator key.
+	With arrow keys you may navigate within pattern or toggle with space.
+      </para>
+
+      <itemizedlist mark="bullet">
+	<listitem>
+	  <para>
+	    Left, Left-Arrow
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within pattern box left, as the pattern pad control is activate you get
+		an audible feedback.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Right, Right-Arrow 
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Move within pattern box right, audible feedback as above.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Up, Up-Arrow
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Decrease pattern box offset about available number of pattern pads, audible feedback as above.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Down, Down-Arrow 
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Increase pattern box offset about available number of pattern pads, audible feedback as above.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Space
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Toggle audio pattern and give audible feedback.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Ctrl+c
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Copy the current pattern to clipboard
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+	<listitem>
+	  <para>
+	    Tab
+	  </para>
+	  
+	  <itemizedlist mark="bullet">
+	    <listitem>
+	      <para>
+		Leave pattern box focus.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+
+	</listitem>
+      </itemizedlist>
+
+    </sect2>
+    
   </sect1>
 
   <sect1>
@@ -115,8 +258,120 @@
     <para>
       Produce an audio stream by defining a pattern. The matrix itselves doesn't
       have any audio signals on its own input you may rather link it to a synth
-      engine.
+      engine. The matrix is a rectangular area you may navigate within by arrow keys
+      or toggle pattern by hiting space.
+      The matrix is a true mono device but you may emulate multiple channels by doing
+      multi-output. This is fulfilled by adjusting output pads within machine's properties
+      dialog.
     </para>
+    <para>
+      Run button comes first and is followed by a one dimensional vector bank index
+      labeled from 1 to 9. Then follows the matrix you have to leave it by hiting tab
+      then you might modify sequence length or do loop control of the sequence.
+    </para>
+    
+    <itemizedlist mark="bullet">
+      <listitem>
+	<para>
+	  Left, Left-Arrow
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within matrix left, as the pattern pad control is activate you get
+	      an audible feedback.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Right, Right-Arrow 
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Move within matrix right, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Up, Up-Arrow
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Decrease matrix offset about available number of pattern pads, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Down, Down-Arrow 
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Increase matrix offset about available number of pattern pads, audible feedback as above.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Space
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Toggle audio pattern and give audible feedback.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Ctrl+c
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Copy the current pattern to clipboard
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+      <listitem>
+	<para>
+	  Tab
+	</para>
+	
+	<itemizedlist mark="bullet">
+	  <listitem>
+	    <para>
+	      Leave matrix focus.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+      </listitem>
+    </itemizedlist>
+
   </sect1>
 
   <sect1>
@@ -124,7 +379,9 @@
     <imagedata fileref="../images/ags_synth.png" />
     <para>
       Produce audio data using its oscillators. The count of oscillators depends on number of
-      input lines.
+      input lines. They are adjusted vertically. You have on the right the option to auto-update
+      changes you do with the controls or do it manually with the update button.
+      Warning: There are some disabled controls.
     </para>
   </sect1>
 
@@ -132,7 +389,9 @@
     <title>FFPlayer</title>
     <imagedata fileref="../images/ags_ffplayer.png" />
     <para>
-      Produce audio data by opening Soundfont2 audio file container format.
+      Produce audio data by opening Soundfont2 audio file container format. There three available
+      controls, preset and instrument to navigate within container format and a open button to
+      read Soundfont2 files and assign the selected instrument to the input.
     </para>
   </sect1>
 
