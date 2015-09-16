@@ -149,9 +149,14 @@ void
 ags_init_channel_launch(AgsTask *task)
 {
   AgsChannel *channel;
-  AgsInitChannel *init_channel;
   AgsRecallID *recall_id;
+  
+  AgsInitChannel *init_channel;
+
   GList *list, *list_start;
+
+  gint stage;
+  gboolean arrange_recall_id, duplicate_templates, resolve_dependencies;
 
   init_channel = AGS_INIT_CHANNEL(task);
 
@@ -161,8 +166,6 @@ ags_init_channel_launch(AgsTask *task)
   /* init channel */
   if(init_channel->play_pad){
     AgsChannel *next_pad;
-    gint stage;
-    gboolean arrange_recall_id, duplicate_templates, resolve_dependencies;
 
     next_pad = init_channel->channel->next_pad;
 
@@ -258,40 +261,86 @@ ags_init_channel_launch(AgsTask *task)
 
     channel = init_channel->channel;
 
-    if(init_channel->playback){
-      recall_id = ags_channel_recursive_play_init(init_channel->channel, -1,
-						  TRUE, TRUE,
-						  TRUE, FALSE, FALSE,
-						  TRUE,
-						  NULL);
-    
-      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-		      AGS_DEVOUT_PLAY_PLAYBACK);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id;
-    }
+    for(stage = 0; stage < 3; stage++){
 
-    if(init_channel->sequencer){
-      recall_id = ags_channel_recursive_play_init(init_channel->channel, -1,
-						  TRUE, TRUE,
-						  FALSE, TRUE, FALSE,
-						  TRUE,
-						  NULL);
-    
-      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-		      AGS_DEVOUT_PLAY_SEQUENCER);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = recall_id;
-    }
+      channel = init_channel->channel;
+      list = list_start;
+      
+      if(stage == 0){
+	arrange_recall_id = TRUE;
+	duplicate_templates = TRUE;
+	resolve_dependencies = TRUE;
+      }else{
+	arrange_recall_id = FALSE;
+	duplicate_templates = FALSE;
+	resolve_dependencies = FALSE;
+      }
+      
+      if(stage == 0){
+	if(init_channel->playback){
+	  g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			  AGS_DEVOUT_PLAY_PLAYBACK);
 
-    if(init_channel->notation){
-      recall_id = ags_channel_recursive_play_init(init_channel->channel, -1,
-						  TRUE, TRUE,
-						  FALSE, FALSE, TRUE,
-						  TRUE,
-						  NULL);
-    
-      g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-		      AGS_DEVOUT_PLAY_NOTATION);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = recall_id;
+	  recall_id = ags_channel_recursive_play_init(channel, stage,
+						      arrange_recall_id, duplicate_templates,
+						      TRUE, FALSE, FALSE,
+						      resolve_dependencies,
+						      NULL);
+	  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id;
+	}
+	  
+	if(init_channel->sequencer){
+	  g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			  AGS_DEVOUT_PLAY_SEQUENCER);
+
+	  recall_id = ags_channel_recursive_play_init(channel, stage,
+						      arrange_recall_id, duplicate_templates,
+						      FALSE, TRUE, FALSE,
+						      resolve_dependencies,
+						      NULL);
+	  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = recall_id;
+	}
+	  
+	if(init_channel->notation){
+	  g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			  AGS_DEVOUT_PLAY_NOTATION);
+
+	  recall_id = ags_channel_recursive_play_init(channel, stage,
+						      arrange_recall_id, duplicate_templates,
+						      FALSE, FALSE, TRUE,
+						      resolve_dependencies,
+						      NULL);
+	  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = recall_id;
+	}
+
+	list_start = g_list_append(list_start,
+				   recall_id);
+      }else{
+	if(init_channel->playback){
+	  ags_channel_recursive_play_init(channel, stage,
+					  arrange_recall_id, duplicate_templates,
+					  TRUE, FALSE, FALSE,
+					  resolve_dependencies,
+					  AGS_RECALL_ID(list->data));
+	}
+
+	if(init_channel->sequencer){
+	  ags_channel_recursive_play_init(channel, stage,
+					  arrange_recall_id, duplicate_templates,
+					  FALSE, TRUE, FALSE,
+					  resolve_dependencies,
+					  AGS_RECALL_ID(list->data));
+	}
+
+	if(init_channel->notation){
+	  ags_channel_recursive_play_init(channel, stage,
+					  arrange_recall_id, duplicate_templates,
+					  FALSE, FALSE, TRUE,
+					  resolve_dependencies,
+					  AGS_RECALL_ID(list->data));
+	
+	}
+      }
     }
   }
 }

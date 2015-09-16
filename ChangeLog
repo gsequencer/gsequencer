@@ -3,6 +3,7 @@ ags (0.6.2)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed buffer attack in ags_buffer_audio_signal_run_inter()
 	* fixed NULL link within link editor to be shown correctly
+	* fixed playback of linked input
 	* implemented file link in link editor
 	* implemented audible feedback of AgsPatternBox, AgsCellPattern, AgsPatternEdit and AgsNoteEdit
 
