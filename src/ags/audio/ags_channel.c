@@ -3116,6 +3116,12 @@ ags_channel_recursive_play(AgsChannel *channel,
       audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 							       recall_id->recycling_container);
 
+      if(audio_recall_id == NULL &&
+	 AGS_RECYCLING_CONTAINER(recall_id->recycling_container)->parent == NULL){
+	audio_recall_id = ags_recall_id_find_parent_recycling_container(audio->recall_id,
+									recall_id->recycling_container);
+      }
+
       list = audio_recall_id->recycling_container->children;
       default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 								 AGS_RECYCLING_CONTAINER(list->data));
@@ -3436,20 +3442,37 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
 	    (long long unsigned int) channel->audio_channel,
 	    (long long unsigned int) channel->pad);  
 #endif
-
-  if(recall_id->recycling_container->parent == NULL)
+    
+  if(recall_id->recycling_container->parent == NULL){
     list_recall = channel->play;
-  else
+  }else{
     list_recall = channel->recall;
-
+  }
+  
   while(list_recall != NULL){
     recall = AGS_RECALL(list_recall->data);
     
     if(recall->recall_id == NULL ||
-       recall->recall_id->recycling_container != recall_id->recycling_container ||
        AGS_IS_RECALL_CHANNEL(recall)){
       list_recall = list_recall->next;
       continue;
+    }
+
+    if(recall->recall_id->recycling_container != recall_id->recycling_container){
+      if(AGS_IS_INPUT(channel) && recall->recall_id->recycling_container->parent == NULL){
+	AgsRecyclingContainer *parent_container;
+
+	parent_container = ags_recall_id_find_parent_recycling_container(AGS_AUDIO(channel->audio)->recall_id,
+									 recall->recall_id->recycling_container);
+	
+	if(recall_id->recycling_container->parent != parent_container){
+	  list_recall = list_recall->next;
+  	  continue;
+	}
+      }else{
+	list_recall = list_recall->next;
+  	continue;
+      }
     }
     
     if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
@@ -4256,6 +4279,12 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 							       recall_id->recycling_container);
 
+      if(audio_recall_id == NULL &&
+	 AGS_RECYCLING_CONTAINER(recall_id->recycling_container)->parent == NULL){
+	audio_recall_id = ags_recall_id_find_parent_recycling_container(audio->recall_id,
+									recall_id->recycling_container);
+      }
+      
       list = audio_recall_id->recycling_container->children;
       default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 								 AGS_RECYCLING_CONTAINER(list->data));
@@ -4485,6 +4514,12 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 							       recall_id->recycling_container);
 
+      if(audio_recall_id == NULL &&
+	 AGS_RECYCLING_CONTAINER(recall_id->recycling_container)->parent == NULL){
+	audio_recall_id = ags_recall_id_find_parent_recycling_container(audio->recall_id,
+									recall_id->recycling_container);
+      }
+
       list = audio_recall_id->recycling_container->children;
       default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 								 AGS_RECYCLING_CONTAINER(list->data));
@@ -4699,6 +4734,12 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 							       recall_id->recycling_container);
 
+      if(audio_recall_id == NULL &&
+	 AGS_RECYCLING_CONTAINER(recall_id->recycling_container)->parent == NULL){
+	audio_recall_id = ags_recall_id_find_parent_recycling_container(audio->recall_id,
+									recall_id->recycling_container);
+      }
+
       list = audio_recall_id->recycling_container->children;
       default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 								 AGS_RECYCLING_CONTAINER(list->data));
@@ -4849,7 +4890,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       input = channel;
       next_recall_id = ags_channel_recursive_play_init_arrange_recall_id_down(input->link,
 									      recall_id,
-									      TRUE);
+									      FALSE);
     }
   }
 
@@ -4955,7 +4996,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     }else{
       if(channel->link != NULL){
 	ags_channel_recursive_play_init_down(channel->link,
-					     default_recall_id);
+					     recall_id);
       }
 
       /* init recall */
@@ -5295,6 +5336,12 @@ ags_channel_tillrecycling_cancel(AgsChannel *channel,
 
       audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
 							       recall_id->recycling_container);
+
+      if(audio_recall_id == NULL &&
+	 AGS_RECYCLING_CONTAINER(recall_id->recycling_container)->parent == NULL){
+	audio_recall_id = ags_recall_id_find_parent_recycling_container(audio->recall_id,
+									recall_id->recycling_container);
+      }
 
       list = audio_recall_id->recycling_container->children;
       default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,

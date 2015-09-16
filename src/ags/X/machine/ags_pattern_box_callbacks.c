@@ -266,7 +266,10 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	  gtk_widget_set_state(g_list_nth_data(list,
 					       pattern_box->cursor_x + 1),
 			       GTK_STATE_ACTIVE);
+	}
 
+	if(gtk_toggle_button_get_active(g_list_nth_data(list,
+							pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  /* give audible feedback */
 	  ags_pad_play(machine->selected_input_pad);
 	}
@@ -298,11 +301,14 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	  gtk_widget_set_state(g_list_nth_data(list,
 					       pattern_box->cursor_x - 1),
 			       GTK_STATE_ACTIVE);
+	}
 
+	if(gtk_toggle_button_get_active(g_list_nth_data(list,
+							pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  /* give audible feedback */
 	  ags_pad_play(machine->selected_input_pad);
 	}
-
+	
 	g_list_free(list);
       }
     }
@@ -326,7 +332,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	pad = gtk_container_get_children(pattern_box->pattern);
 
 	if(gtk_toggle_button_get_active(g_list_nth_data(pad,
-							pattern_box->cursor_x - 1))){
+							pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  ags_pad_play(machine->selected_input_pad);
 	}
       }
@@ -350,7 +356,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 	pad = gtk_container_get_children(pattern_box->pattern);
 
 	if(gtk_toggle_button_get_active(g_list_nth_data(pad,
-							pattern_box->cursor_x - 1))){
+							pattern_box->cursor_y * pattern_box->n_controls + pattern_box->cursor_x))){
 	  ags_pad_play(machine->selected_input_pad);
 	}
       }
@@ -407,6 +413,9 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       /* append tasks to task thread */
       ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
 				   tasks);
+
+      /* give audible feedback */
+      ags_pad_play(machine->selected_input_pad);
     }
     break;
   }

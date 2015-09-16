@@ -322,7 +322,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       index1 = machine->bank_1;
 
       channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - i - 1);
-
+      
       toggle_pattern_bit = ags_toggle_pattern_bit_new(channel->pattern->data,
 						      channel->line,
 						      0, index1,

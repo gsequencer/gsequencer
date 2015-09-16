@@ -731,6 +731,25 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 
     current = current->next_pad;
   }
+  
+  /*  */
+  current = source;
+
+  while(current != NULL){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-play\0",
+			      current->audio_channel, current->audio_channel + 1, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
 
   /*  */
   current = source;
@@ -743,6 +762,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
 			      current->audio_channel, current->audio_channel + 1, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
 			       AGS_RECALL_FACTORY_RECALL | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
