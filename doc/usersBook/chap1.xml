@@ -45,7 +45,16 @@
 
     <sect2>
       <title>Export to PCM audio file</title>
-      <imagedata fileref="../images/ags_export_window.png" />
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_export_window.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The export window dialog screenshot.
+	  </para>
+	</caption>
+      </mediaobject>
       <para>
 	This shows you the export dialog. You may select filename to export to and duration of the exported track. BPM adjustment
 	is take from the navigation. Basically &ags; exports what you hear of the speakers.
@@ -122,7 +131,17 @@
 
       <sect3>
 	<title>Generic</title>
-	<imagedata fileref="../images/ags_generic_preferences.png" />
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="../images/ags_generic_preferences.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The preferences dialog screenshot - generic tab
+	    </para>
+	  </caption>
+	</mediaobject>
+
 	<para>
 	  The autosave thread option enables auto-saving to $HOME/.gsequencer directory.
 	</para>
@@ -130,7 +149,16 @@
 
       <sect3>
 	<title>Audio</title>
-	<imagedata fileref="../images/ags_audio_preferences.png" />
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="../images/ags_audio_preferences.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The preferences dialog screenshot - audio tab
+	    </para>
+	  </caption>
+	</mediaobject>
 	<para>
 	  Sound card is your physical devices to do playback.
 	</para>
@@ -148,7 +176,16 @@
 
       <sect3>
 	<title>Performance</title>
-	<imagedata fileref="../images/ags_performance_preferences.png" />
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="../images/ags_performance_preferences.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The preferences dialog screenshot - performance tab
+	    </para>
+	  </caption>
+	</mediaobject>
 	<para>
 	  Auto-sense on stream is required for certain LADSPA plugins but may cause additional performance losses.
 	</para>
@@ -156,7 +193,16 @@
 
       <sect3>
 	<title>Server</title>
-	<imagedata fileref="../images/ags_server_preferences.png" />
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="../images/ags_server_preferences.png" />
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The preferences dialog screenshot - server tab
+	    </para>
+	  </caption>
+	</mediaobject>
 	<para>
 	  Ignored for now.
 	</para>

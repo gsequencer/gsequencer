@@ -9,7 +9,16 @@
 ]>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>The navigation</title>
-  <imagedata fileref="../images/ags_navigation.png" />
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="../images/ags_navigation.png" />
+    </imageobject>
+    <caption>
+      <para>
+	The navigation screenshot
+      </para>
+    </caption>
+  </mediaobject>
   <para>
     With the navigation you have overall control of your song. Settings you perform
     here may influence the behaviour of AGS.
