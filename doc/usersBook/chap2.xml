@@ -47,6 +47,7 @@
     </para>
     
     <sect2>
+      <title>Output Tab</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_machine_properties-output.png" />
@@ -58,11 +59,17 @@
 	</caption>
       </mediaobject>
       <para>
-	The output tab lets you mainly perform linking and adding effects.
+	The output tab lets you mainly perform linking lines and adding effects to them. For each
+	line there's a combo box listing available linking engines, on the right of it there is
+	a spin button let you choose the input line to be linked.
+	As you have added LADSPA effects by clicking add and selected appropriate plugin by using
+	LADSPA dialog. You may remove it by clicking checkbox of the listed plugin and finally click
+	remove.
       </para>
     </sect2>
 
     <sect2>
+      <title>Input Tab</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_machine_properties-input.png" />
@@ -74,11 +81,13 @@
 	</caption>
       </mediaobject>
       <para>
-	The input tab does the same as output tab in view of input lines.
+	The input tab does the mainly same as output tab in view of input lines. If supported
+	you might assign files, too.
       </para>
     </sect2>
 
     <sect2>
+      <title>Link Input Tab</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_machine_properties-link_input.png" />
@@ -90,11 +99,14 @@
 	</caption>
       </mediaobject>
       <para>
-	Do linking in batch mode.
+	Do linking in batch mode. This means you're able to assign multiple lines at once.
+	Thus you have to decide what start channel on each side to use and the count of
+	lines to be linked.
       </para>
     </sect2>
 
     <sect2>
+      <title>Resize Channels Tab</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_machine_properties-resize_channels.png" />
@@ -106,11 +118,13 @@
 	</caption>
       </mediaobject>
       <para>
-	Adjust audio channels or input/output pads.
+	Adjust audio channels or input/output pads. If supported the GUI may provide more
+	lines and pads as increasing the amount.
       </para>
     </sect2>
 
     <sect2>
+      <title>LADSPA Browser dialog</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_ladspa_browser.png" />
@@ -123,7 +137,8 @@
       </mediaobject>
       <para>
 	The LADSPA browser gives you choice of available LADSPA plugin. It lets you modify
-	the controls to be used.
+	the controls to be used. The added plugin can be removed by activating checkbox in
+	output/input tab and clicking remove.
       </para>
     </sect2>
     
