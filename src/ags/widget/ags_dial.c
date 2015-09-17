@@ -819,7 +819,7 @@ ags_dial_key_press(GtkWidget *widget,
 		   GdkEventKey *event)
 {
   if(event->keyval == GDK_KEY_Tab){
-    return(FALSE);
+    return(GTK_WIDGET_CLASS(ags_dial_parent_class)->key_press_event(widget, event));
   }
   
   return(TRUE);
@@ -832,7 +832,7 @@ ags_dial_key_release(GtkWidget *widget,
   AgsDial *dial;
   
   if(event->keyval == GDK_KEY_Tab){
-    return(FALSE);
+    return(GTK_WIDGET_CLASS(ags_dial_parent_class)->key_release_event(widget, event));
   }
 
   dial = AGS_DIAL(widget);
