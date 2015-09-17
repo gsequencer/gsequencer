@@ -2,6 +2,8 @@ ags (0.6.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed to shrink of notes by keyboard to enable initial size
+	* improved user's manual docbook XML documentation
+	* implemented AtkAction interface in ags_dial.c and key-bindings
 
 ags (0.6.2)
 

@@ -49,6 +49,11 @@ typedef enum{
   AGS_DIAL_IDLE                   = 1 <<  6,
 }AgsDialFlags;
 
+typedef enum{
+  AGS_DIAL_INCREMENT,
+  AGS_DIAL_DECREMENT,
+}AgsDialAction;
+
 struct _AgsDial
 {
   GtkWidget widget;

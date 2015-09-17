@@ -21,6 +21,8 @@
 
 #include <atk/atk.h>
 
+#include <gdk/gdkkeysyms.h>
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -28,6 +30,7 @@ static GType ags_accessible_dial_get_type(void);
 void ags_dial_class_init(AgsDialClass *dial);
 void ags_accessible_dial_class_init(AtkObject *object);
 void ags_accessible_dial_value_interface_init(AtkValueIface *value);
+void ags_accessible_dial_action_interface_init(AtkActionIface *action);
 void ags_dial_init(AgsDial *dial);
 void ags_dial_set_property(GObject *gobject,
 			   guint prop_id,
@@ -48,6 +51,20 @@ gdouble ags_accessible_dial_get_increment(AtkValue *value);
 void ags_accessible_dial_set_value(AtkValue *value,
 				   gdouble new_value);
 
+gboolean ags_accessible_dial_do_action(AtkAction *action,
+				       gint i);
+gint ags_accessible_dial_get_n_actions(AtkAction *action);
+const gchar* ags_accessible_dial_get_description(AtkAction *action,
+						 gint i);
+const gchar* ags_accessible_dial_get_name(AtkAction *action,
+					  gint i);
+const gchar* ags_accessible_dial_get_keybinding(AtkAction *action,
+						gint i);
+gboolean ags_accessible_dial_set_description(AtkAction *action,
+					     gint i);
+gchar* ags_accessible_dial_get_localized_name(AtkAction *action,
+					      gint i);
+
 void ags_dial_map(GtkWidget *widget);
 void ags_dial_realize(GtkWidget *widget);
 void ags_dial_size_request(GtkWidget *widget,
@@ -59,7 +76,11 @@ gboolean ags_dial_expose(GtkWidget *widget,
 gboolean ags_dial_button_press(GtkWidget *widget,
 			       GdkEventButton *event);
 gboolean ags_dial_button_release(GtkWidget *widget,
-				 GdkEventButton   *event);
+				 GdkEventButton *event);
+gboolean ags_dial_key_press(GtkWidget *widget,
+			    GdkEventKey *event);
+gboolean ags_dial_key_release(GtkWidget *widget,
+			      GdkEventKey *event);
 gboolean ags_dial_motion_notify(GtkWidget *widget,
 				GdkEventMotion *event);
 
@@ -135,6 +156,12 @@ ags_accessible_dial_get_type(void)
       NULL, /* interface_data */
     };
     
+    static const GInterfaceInfo atk_action_interface_info = {
+      (GInterfaceInitFunc) ags_accessible_dial_action_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_accessible_dial = g_type_register_static(GTK_TYPE_ACCESSIBLE,
 						      "AgsAccessibleDial\0", &ags_accesssible_dial_info,
 						      0);
@@ -142,6 +169,10 @@ ags_accessible_dial_get_type(void)
     g_type_add_interface_static(ags_type_accessible_dial,
 				ATK_TYPE_VALUE,
 				&atk_value_interface_info);
+
+    g_type_add_interface_static(ags_type_accessible_dial,
+				ATK_TYPE_ACTION,
+				&atk_action_interface_info);
   }
   
   return(ags_type_accessible_dial);
@@ -175,6 +206,8 @@ ags_dial_class_init(AgsDialClass *dial)
   widget->size_allocate = ags_dial_size_allocate;
   widget->button_press_event = ags_dial_button_press;
   widget->button_release_event = ags_dial_button_release;
+  widget->key_press_event = ags_dial_key_press;
+  widget->key_release_event = ags_dial_key_release;
   widget->motion_notify_event = ags_dial_motion_notify;
   widget->show = ags_dial_show;
 
@@ -212,6 +245,18 @@ ags_accessible_dial_value_interface_init(AtkValueIface *value)
 }
 
 void
+ags_accessible_dial_action_interface_init(AtkActionIface *action)
+{
+  action->do_action = ags_accessible_dial_do_action;
+  action->get_n_actions = ags_accessible_dial_get_n_actions;
+  action->get_description = ags_accessible_dial_get_description;
+  action->get_name = ags_accessible_dial_get_name;
+  action->get_keybinding = ags_accessible_dial_get_keybinding;
+  action->set_description = ags_accessible_dial_set_description;
+  action->get_localized_name = ags_accessible_dial_get_localized_name;
+}
+
+void
 ags_dial_init(AgsDial *dial)
 {
   AtkObject *accessible;
@@ -228,6 +273,7 @@ ags_dial_init(AgsDial *dial)
   
   g_object_set(G_OBJECT(dial),
   	       "app-paintable\0", TRUE,
+	       "can-focus\0", TRUE,
   	       NULL);
 
   dial->flags = AGS_DIAL_WITH_BUTTONS;
@@ -270,8 +316,9 @@ ags_dial_set_property(GObject *gobject,
 
       adjustment = (GtkAdjustment *) g_value_get_object(value);
 
-      if(dial->adjustment == adjustment)
+      if(dial->adjustment == adjustment){
 	return;
+      }
 
       if(dial->adjustment != NULL){
 	g_object_unref(G_OBJECT(dial->adjustment));
@@ -364,6 +411,121 @@ ags_accessible_dial_set_value(AtkValue *value,
   gtk_widget_queue_draw(dial);
 }
 
+gboolean
+ags_accessible_dial_do_action(AtkAction *action,
+			      gint i)
+{
+  AgsDial *dial;
+  
+  GdkEventKey *key_press, *key_release;
+  
+  if(!(i >= 0 && i < 2)){
+    return(FALSE);
+  }
+
+  dial = gtk_accessible_get_widget(ATK_OBJECT(action));
+  
+  key_press = gdk_event_new(GDK_KEY_PRESS);
+  key_release = gdk_event_new(GDK_KEY_RELEASE);
+
+  switch(i){
+  case AGS_DIAL_INCREMENT:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Up;
+    
+      /* send event */
+      gtk_widget_event(dial, key_press);
+      gtk_widget_event(dial, key_release);
+    }
+    break;
+  case AGS_DIAL_DECREMENT:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Down;
+      
+      /* send event */
+      gtk_widget_event(dial, key_press);
+      gtk_widget_event(dial, key_release);
+    }
+    break;
+  }
+
+  return(TRUE);
+}
+
+gint
+ags_accessible_dial_get_n_actions(AtkAction *action)
+{
+  return(2);
+}
+
+const gchar*
+ags_accessible_dial_get_description(AtkAction *action,
+				    gint i)
+{
+  static const gchar **actions = {
+    "increment dial value\0",
+    "decrement dial value\0",
+  };
+
+  if(i >= 0 && i < 2){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+const gchar*
+ags_accessible_dial_get_name(AtkAction *action,
+			     gint i)
+{
+  static const gchar **actions = {
+    "increment\0",
+    "decrement\0",
+  };
+  
+  if(i >= 0 && i < 2){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+const gchar*
+ags_accessible_dial_get_keybinding(AtkAction *action,
+				   gint i)
+{
+  static const gchar **actions = {
+    "up\0",
+    "down\0",
+  };
+  
+  if(i >= 0 && i < 2){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
+}
+
+gboolean
+ags_accessible_dial_set_description(AtkAction *action,
+				    gint i)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+gchar*
+ags_accessible_dial_get_localized_name(AtkAction *action,
+				       gint i)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
 void
 ags_dial_map(GtkWidget *widget)
 {
@@ -442,6 +604,8 @@ ags_dial_realize(GtkWidget *widget)
   attributes.event_mask |= (GDK_EXPOSURE_MASK |
                             GDK_BUTTON_PRESS_MASK |
                             GDK_BUTTON_RELEASE_MASK |
+			    GDK_KEY_PRESS_MASK | 
+			    GDK_KEY_RELEASE_MASK |
                             GDK_BUTTON1_MOTION_MASK |
                             GDK_BUTTON3_MOTION_MASK |
                             GDK_POINTER_MOTION_HINT_MASK |
@@ -648,6 +812,71 @@ ags_dial_button_release(GtkWidget *widget,
   }
 
   return(FALSE);
+}
+
+gboolean
+ags_dial_key_press(GtkWidget *widget,
+		   GdkEventKey *event)
+{
+  if(event->keyval == GDK_KEY_Tab){
+    return(FALSE);
+  }
+  
+  return(TRUE);
+}
+
+gboolean
+ags_dial_key_release(GtkWidget *widget,
+		     GdkEventKey *event)
+{
+  AgsDial *dial;
+  
+  if(event->keyval == GDK_KEY_Tab){
+    return(FALSE);
+  }
+
+  dial = AGS_DIAL(widget);
+  
+  switch(event->keyval){
+  case GDK_KEY_Up:
+  case GDK_KEY_uparrow:
+    {
+      gdouble value, step, upper;
+
+      value = gtk_adjustment_get_value(dial->adjustment);
+      step = gtk_adjustment_get_step_increment(dial->adjustment);
+      upper = gtk_adjustment_get_upper(dial->adjustment);
+      
+      if(value + step > upper){
+	gtk_adjustment_set_value(dial->adjustment,
+				 upper);
+      }else{
+	gtk_adjustment_set_value(dial->adjustment,
+				 value + step);
+      }
+    }
+    break;
+  case GDK_KEY_Down:
+  case GDK_KEY_downarrow:
+    {
+      gdouble value, step, lower;
+
+      value = gtk_adjustment_get_value(dial->adjustment);
+      step = gtk_adjustment_get_step_increment(dial->adjustment);
+      lower = gtk_adjustment_get_lower(dial->adjustment);
+      
+      if(value - step < lower){
+	gtk_adjustment_set_value(dial->adjustment,
+				 lower);
+      }else{
+	gtk_adjustment_set_value(dial->adjustment,
+				 value - step);
+      }      
+    }
+    break;
+  }
+  
+  return(TRUE);
 }
 
 gboolean
