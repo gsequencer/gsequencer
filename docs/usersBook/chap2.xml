@@ -47,35 +47,80 @@
     </para>
     
     <sect2>
-      <imagedata fileref="../images/ags_machine_properties-output.png" />
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_machine_properties-output.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The machine properties dialog screenshot - output tab
+	  </para>
+	</caption>
+      </mediaobject>
       <para>
 	The output tab lets you mainly perform linking and adding effects.
       </para>
     </sect2>
 
     <sect2>
-      <imagedata fileref="../images/ags_machine_properties-input.png" />
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_machine_properties-input.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The machine properties dialog screenshot - input tab
+	  </para>
+	</caption>
+      </mediaobject>
       <para>
 	The input tab does the same as output tab in view of input lines.
       </para>
     </sect2>
 
     <sect2>
-      <imagedata fileref="../images/ags_machine_properties-link_input.png" />
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_machine_properties-link_input.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The machine properties dialog screenshot - link input tab
+	  </para>
+	</caption>
+      </mediaobject>
       <para>
 	Do linking in batch mode.
       </para>
     </sect2>
 
     <sect2>
-      <imagedata fileref="../images/ags_machine_properties-resize_channels.png" />
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_machine_properties-resize_channels.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The machine properties dialog screenshot - resize tab
+	  </para>
+	</caption>
+      </mediaobject>
       <para>
 	Adjust audio channels or input/output pads.
       </para>
     </sect2>
 
     <sect2>
-      <imagedata fileref="../images/ags_ladspa_browser.png" />
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_ladspa_browser.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The LADSPA browser dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
       <para>
 	The LADSPA browser gives you choice of available LADSPA plugin. It lets you modify
 	the controls to be used.
@@ -86,7 +131,16 @@
 
   <sect1>
     <title>Panel</title>
-    <imagedata fileref="../images/ags_panel.png" />
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_panel.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The panel screenshot
+	</para>
+      </caption>
+    </mediaobject>
     <para>
       The panel is used for outputting to your soundcard and should be at topmost of your
       audio processing tree. It contains per audio channel a mute check box.
@@ -100,7 +154,16 @@
 
   <sect1>
     <title>Mixer</title>
-    <imagedata fileref="../images/ags_mixer.png" />
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_mixer.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The mixer screenshot
+	</para>
+      </caption>
+    </mediaobject>
     <para>
       Bundle audio lines with the mixer and perform toplevel stream manipulation. It contains
       per audio channel a volume indicator and may contain LADSPA plugins.
@@ -114,7 +177,16 @@
 
   <sect1>
     <title>Drum</title>
-    <imagedata fileref="../images/ags_drum.png" />
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_drum.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The drum screenshot
+	</para>
+      </caption>
+    </mediaobject>
     <para>
       Produce an audio stream by defining a pattern. The drum supports opening audio files and
       associate to its input. You might doing it by open button located preceeding to pattern
@@ -254,7 +326,16 @@
 
   <sect1>
     <title>Matrix</title>
-    <imagedata fileref="../images/ags_matrix.png" />
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_matrix.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The matrix screenshot
+	</para>
+      </caption>
+    </mediaobject>
     <para>
       Produce an audio stream by defining a pattern. The matrix itselves doesn't
       have any audio signals on its own input you may rather link it to a synth
@@ -376,7 +457,16 @@
 
   <sect1>
     <title>Synth</title>
-    <imagedata fileref="../images/ags_synth.png" />
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_synth.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
     <para>
       Produce audio data using its oscillators. The count of oscillators depends on number of
       input lines. They are adjusted vertically. You have on the right the option to auto-update
@@ -387,7 +477,16 @@
 
   <sect1>
     <title>FFPlayer</title>
-    <imagedata fileref="../images/ags_ffplayer.png" />
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_ffplayer.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The ffplayer screenshot
+	</para>
+      </caption>
+    </mediaobject>
     <para>
       Produce audio data by opening Soundfont2 audio file container format. There three available
       controls, preset and instrument to navigate within container format and a open button to

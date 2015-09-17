@@ -8,7 +8,7 @@
 <!ENTITY copyIcon "/usr/share/icons/Adwaita/32x32/actions/edit-copy.png">
 <!ENTITY cutIcon "/usr/share/icons/Adwaita/32x32/actions/edit-cut.png">
 <!ENTITY pasteIcon "/usr/share/icons/Adwaita/32x32/actions/edit-paste.png">
-<!ENTITY invertIcon "/usr/share/icons/Adwaita/32x32/actions/gtk-convert.png">
+<!-- <!ENTITY invertIcon "/usr/share/icons/Adwaita/32x32/actions/gtk-convert.png"> -->
 ]>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
   <title>Editor</title>
@@ -33,7 +33,16 @@
 
   <sect1>
     <title>Toolbar</title>
-    <imagedata fileref="../images/ags-toolbar.png" />
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags-toolbar.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The editor's toolbar screenshot
+	</para>
+      </caption>
+    </mediaobject>
     <para>
       In the table below are the various buttons explained you may use for editing.
     </para>
@@ -101,7 +110,8 @@
 	    </entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&invertIcon;" /></entry>
+	    <!-- FIXME:JK: missing icon -->
+	    <entry>missing</entry><!-- imagedata fileref="&invertIcon;" -->
 	    <entry>paste</entry>
 	    <entry>
 	      Invert entire notation in conjunction with reverse mapping or MIDI import.
