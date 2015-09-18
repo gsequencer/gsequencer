@@ -511,7 +511,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_UINT64){
       g_value_set_uint64(value, port->port_value.ags_port_uint);
     }else if(port->port_value_type == G_TYPE_FLOAT){
-      g_value_set_float(value, (gdouble) port->port_value.ags_port_float);
+      g_value_set_float(value, port->port_value.ags_port_float);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       g_value_set_double(value, port->port_value.ags_port_double);
     }
@@ -533,7 +533,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
 	guint i;
 
 	for(i = 0; i < port->port_value_length; i++){
-	  port->port_value.ags_port_float_ptr[i] = ((gdouble *) data)[i];
+	  port->port_value.ags_port_float_ptr[i] = ((gfloat *) data)[i];
 	}
       }else if(port->port_value_type == G_TYPE_DOUBLE){
 	memcpy(data, port->port_value.ags_port_double_ptr, overall_size);

@@ -2,6 +2,8 @@ ags (0.6.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed audible feedback of note edit to play actual length of note
+	* fixed not connected line member
+	* fixed missing value_changed event in ags_dial.c
 	* removed built-in styles
 
 ags (0.6.3)
