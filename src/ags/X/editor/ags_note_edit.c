@@ -201,7 +201,8 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 		   0, 0);
 
   note_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_style((GtkWidget *) note_edit->drawing_area, note_edit_style);
+  gtk_widget_set_style((GtkWidget *) note_edit->drawing_area,
+		       note_edit_style);
   gtk_widget_set_events(GTK_WIDGET(note_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
@@ -980,22 +981,40 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
 {
   AgsEditor *editor;
   GtkWidget *widget;
+
+  GtkStyle *note_edit_style;
+  
   double tact;
   guint i, j;
   guint j_set;
 
-  widget = (GtkWidget *) note_edit->drawing_area;
+  static const gdouble white_gc = 65535.0;
 
+  widget = (GtkWidget *) note_edit->drawing_area;
+  note_edit_style = gtk_widget_get_style(widget);
+  
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-  cairo_rectangle(cr, 0.0, 0.0, (double) widget->allocation.width, (double) widget->allocation.height);
+  /* clear with background color */
+  cairo_set_source_rgb(cr,
+		       note_edit_style->bg[0].red / white_gc,
+		       note_edit_style->bg[0].green / white_gc,
+		       note_edit_style->bg[0].blue / white_gc);
+
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  (double) widget->allocation.width, (double) widget->allocation.height);
+  
   cairo_fill(cr);
 
+  /* horizontal lines */
   cairo_set_line_width(cr, 1.0);
 
-  cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+  cairo_set_source_rgb(cr,
+		       note_edit_style->fg[0].red / white_gc,
+		       note_edit_style->fg[0].green / white_gc,
+		       note_edit_style->fg[0].blue / white_gc);
 
   for(i = note_edit->y0 ; i < note_edit->height;){
     cairo_move_to(cr, 0.0, (double) i);
@@ -1005,10 +1024,13 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
     i += note_edit->control_height;
   }
 
-  cairo_move_to(cr, 0.0, (double) i);
-  cairo_line_to(cr, (double) note_edit->width, (double) i);
+  cairo_move_to(cr,
+		0.0, (double) i);
+  cairo_line_to(cr,
+		(double) note_edit->width, (double) i);
   cairo_stroke(cr);
 
+  /* vertical lines */
   tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
 
   i = note_edit->control_current.x0;
@@ -1016,7 +1038,12 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
   if(i < note_edit->width &&
      tact > 1.0 ){
     j_set = note_edit->control_current.nth_x % ((guint) tact);
-    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+
+    /* thin lines */
+    cairo_set_source_rgb(cr,
+		       note_edit_style->mid[0].red / white_gc,
+		       note_edit_style->mid[0].green / white_gc,
+		       note_edit_style->mid[0].blue / white_gc);
 
     if(j_set != 0){
       j = j_set;
@@ -1025,15 +1052,25 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
   }
 
   for(; i < note_edit->width; ){
-    cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
+    /* strong lines */
+    cairo_set_source_rgb(cr,
+		       note_edit_style->fg[0].red / white_gc,
+		       note_edit_style->fg[0].green / white_gc,
+		       note_edit_style->fg[0].blue / white_gc);
     
-    cairo_move_to(cr, (double) i, 0.0);
-    cairo_line_to(cr, (double) i, (double) note_edit->height);
+    cairo_move_to(cr,
+		  (double) i, 0.0);
+    cairo_line_to(cr,
+		  (double) i, (double) note_edit->height);
     cairo_stroke(cr);
     
     i += note_edit->control_current.control_width;
     
-    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+    /* thin lines */
+    cairo_set_source_rgb(cr,
+		       note_edit_style->mid[0].red / white_gc,
+		       note_edit_style->mid[0].green / white_gc,
+		       note_edit_style->mid[0].blue / white_gc);
     
     for(j = 1; i < note_edit->width && j < tact; j++){
     ags_note_edit_draw_segment0:
@@ -1058,11 +1095,17 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
 void
 ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr)
 {
+  GtkStyle *note_edit_style;
+  
   guint selected_x, selected_y;
   guint x_offset[2], y_offset[2];
   guint x, y, width, height;
   gint size_width, size_height;
 
+  static const gdouble white_gc = 65535.0;
+
+  note_edit_style = gtk_widget_get_style(GTK_WIDGET(note_edit->drawing_area));
+  
   selected_x = note_edit->selected_x * note_edit->control_unit.control_width;
   selected_y = note_edit->selected_y * note_edit->control_height;
 
@@ -1091,7 +1134,7 @@ ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr)
     if(selected_x + note_edit->control_current.control_width < x_offset[1]){
       width = note_edit->control_current.control_width;
     }else{
-      width = note_edit->control_current.control_width - (x_offset[1] - (selected_x + note_edit->control_current.control_width));
+      width = x_offset[1] - selected_x;
     }
   }
 
@@ -1111,13 +1154,19 @@ ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr)
     if(selected_y + note_edit->control_height < y_offset[1]){
       height = note_edit->control_height;
     }else{
-      height = y_offset[1] - (selected_y + note_edit->control_height);
+      height = y_offset[1] - selected_y;
     }
   }
 
   /* draw */
-  cairo_set_source_rgba(cr, 0.25, 0.5, 1.0, 0.5);
-  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+  cairo_set_source_rgba(cr,
+			note_edit_style->base[0].red / white_gc,
+			note_edit_style->base[0].green / white_gc,
+			note_edit_style->base[0].blue / white_gc,
+			0.5);
+  cairo_rectangle(cr,
+		  (double) x, (double) y,
+		  (double) width, (double) height);
   cairo_fill(cr);
 }
 
@@ -1137,6 +1186,7 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
   AgsEditor *editor;
   GtkWidget *widget;
 
+  GtkStyle *note_edit_style;
   AgsNote *note;
 
   AgsMutexManager *mutex_manager;
@@ -1151,6 +1201,10 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
   pthread_mutex_t *audio_mutex;
 
+  static const gdouble white_gc = 65535.0;
+
+  note_edit_style = gtk_widget_get_style(GTK_WIDGET(note_edit->drawing_area));
+  
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
@@ -1170,7 +1224,11 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
   widget = (GtkWidget *) note_edit->drawing_area;
 
-  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  /* draw */
+  cairo_set_source_rgb(cr,
+		       note_edit_style->fg[0].red / white_gc,
+		       note_edit_style->fg[0].green / white_gc,
+		       note_edit_style->fg[0].blue / white_gc);
 
   i = 0;
 
@@ -1210,12 +1268,19 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
 	  /* check if note is selected */
 	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	    cairo_set_source_rgba(cr,
+				  note_edit_style->light[0].red / white_gc,
+				  note_edit_style->light[0].green / white_gc,
+				  note_edit_style->light[0].blue / white_gc,
+				  0.7);
 
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	    cairo_set_source_rgb(cr,
+				 note_edit_style->fg[0].red / white_gc,
+				 note_edit_style->fg[0].green / white_gc,
+				 note_edit_style->fg[0].blue / white_gc);	    
 	  }
 	}else if(note->y == (note_edit->nth_y - 1) && note_edit->y0 != 0){
 	  if(note_edit->y0 > note_edit->control_margin_y){
@@ -1239,12 +1304,19 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
 	    /* check if note is selected */
 	    if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	      cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	      cairo_set_source_rgba(cr,
+				    note_edit_style->light[0].red / white_gc,
+				    note_edit_style->light[0].green / white_gc,
+				    note_edit_style->light[0].blue / white_gc,
+				    0.7);
 	    
 	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	      cairo_stroke(cr);
 	    
-	      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	      cairo_set_source_rgb(cr,
+				   note_edit_style->fg[0].red / white_gc,
+				   note_edit_style->fg[0].green / white_gc,
+				   note_edit_style->fg[0].blue / white_gc);	    
 	    }
 	  }
 	}else if(note->y == (note_edit->stop_y + 1) && note_edit->y1 != 0){
@@ -1269,12 +1341,19 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 	  
 	    /* check if note is selected */
 	    if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	      cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	      cairo_set_source_rgba(cr,
+				    note_edit_style->light[0].red / white_gc,
+				    note_edit_style->light[0].green / white_gc,
+				    note_edit_style->light[0].blue / white_gc,
+				    0.7);
 	    
 	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	      cairo_stroke(cr);
 	    
-	      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	      cairo_set_source_rgb(cr,
+				   note_edit_style->fg[0].red / white_gc,
+				   note_edit_style->fg[0].green / white_gc,
+				   note_edit_style->fg[0].blue / white_gc);	    
 	    }
 	  }
 	}
@@ -1305,12 +1384,19 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
 	/* check if note is selected */
 	if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	  cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	  cairo_set_source_rgba(cr,
+				note_edit_style->light[0].red / white_gc,
+				note_edit_style->light[0].green / white_gc,
+				note_edit_style->light[0].blue / white_gc,
+				0.7);
 	
 	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	  cairo_stroke(cr);
 	
-	  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	  cairo_set_source_rgb(cr,
+			       note_edit_style->fg[0].red / white_gc,
+			       note_edit_style->fg[0].green / white_gc,
+			       note_edit_style->fg[0].blue / white_gc);	    
 	}
       }else if(note->y == (note_edit->nth_y - 1) && note_edit->y0 != 0){
 	if(note_edit->y0 > note_edit->control_margin_y){
@@ -1334,12 +1420,19 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
 	  /* check if note is selected */
 	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	    cairo_set_source_rgba(cr,
+				  note_edit_style->light[0].red / white_gc,
+				  note_edit_style->light[0].green / white_gc,
+				  note_edit_style->light[0].blue / white_gc,
+				  0.7);
 
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	    cairo_set_source_rgb(cr,
+				 note_edit_style->fg[0].red / white_gc,
+				 note_edit_style->fg[0].green / white_gc,
+				 note_edit_style->fg[0].blue / white_gc);	    
 	  }
 	}
       }else if(note->y == (note_edit->stop_y + 1) && note_edit->y1 != 0){
@@ -1364,12 +1457,19 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
 	  /* check if note is selected */
 	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	    cairo_set_source_rgba(cr,
+				  note_edit_style->light[0].red / white_gc,
+				  note_edit_style->light[0].green / white_gc,
+				  note_edit_style->light[0].blue / white_gc,
+				  0.7);
 
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+	    cairo_set_source_rgb(cr,
+				 note_edit_style->fg[0].red / white_gc,
+				 note_edit_style->fg[0].green / white_gc,
+				 note_edit_style->fg[0].blue / white_gc);	    
 	  }
 	}
       }
@@ -1395,9 +1495,15 @@ void
 ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
 			  gdouble position)
 {
+  GtkStyle *note_edit_style;
+  
   double x, y;
   double width, height;
 
+  static const gdouble white_gc = 65535.0;
+
+  note_edit_style = gtk_widget_get_style(GTK_WIDGET(note_edit->drawing_area));
+  
   y = 0.0;
   x = (position) - (GTK_RANGE(note_edit->hscrollbar)->adjustment->value);
 
@@ -1405,8 +1511,14 @@ ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
   width = 3.0;
 
   /* draw */
-  cairo_set_source_rgba(cr, 0.79, 0.0, 1.0, 0.5);
-  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+  cairo_set_source_rgba(cr,
+			note_edit_style->dark[0].red / white_gc,
+			note_edit_style->dark[0].green / white_gc,
+			note_edit_style->dark[0].blue / white_gc,
+			0.5);
+  cairo_rectangle(cr,
+		  (double) x, (double) y,
+		  (double) width, (double) height);
   cairo_fill(cr);
 }
 

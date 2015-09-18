@@ -55,6 +55,8 @@ enum{
 
 static gpointer ags_indicator_parent_class = NULL;
 
+GtkStyle *indicator_style;
+
 GType
 ags_indicator_get_type(void)
 {
@@ -121,6 +123,9 @@ ags_indicator_init(AgsIndicator *indicator)
   g_object_set(G_OBJECT(indicator),
 	       "app-paintable\0", TRUE,
 	       NULL);
+  
+  gtk_widget_set_style((GtkWidget *) indicator,
+		       indicator_style);
 
   indicator->adjustment = NULL;
 }

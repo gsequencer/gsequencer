@@ -44,8 +44,6 @@ AgsNotebookTab* ags_notebook_tab_alloc();
  * The #AgsNotebook lets select/deselect channels to edit.
  */
 
-GtkStyle *notebook_style;
-
 GType
 ags_notebook_get_type(void)
 {
@@ -99,8 +97,6 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
 void
 ags_notebook_init(AgsNotebook *notebook)
 {
-  gtk_widget_set_style((GtkWidget *) notebook, notebook_style);
-
   notebook->flags = 0;
 
   notebook->hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);

@@ -30,6 +30,7 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_config.h>
 
 #include <ags/audio/recall/ags_play_channel_run.h>
 
@@ -50,9 +51,10 @@
 
 #include <gdk/gdkkeysyms.h>
 
-void ags_note_edit_init_channel_launch_callback(AgsTask *task, gpointer data);
+void ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note);
 
 extern pthread_mutex_t ags_application_mutex;
+extern AgsConfig *config;
 
 void
 ags_note_edit_set_audio_channels_callback(AgsAudio *audio,
@@ -1003,9 +1005,9 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
   gint i;
   gboolean do_feedback;
   
-  auto void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel);
+  auto void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel, AgsNote *note);
 
-  void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel){
+  void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel, AgsNote *note){
     AgsDevout *devout;
 
     AgsStartDevout *start_devout;
@@ -1045,7 +1047,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     init_channel = ags_init_channel_new(channel, FALSE,
 					TRUE, FALSE, FALSE);
     g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
-			   G_CALLBACK(ags_note_edit_init_channel_launch_callback), NULL);
+			   G_CALLBACK(ags_note_edit_init_channel_launch_callback), note);
     tasks = g_list_prepend(tasks, init_channel);
     
     /* append channel for playback */
@@ -1317,6 +1319,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
   }
 
   if(do_feedback){
+    AgsNote *current_note;
+    
     i = 0;
     
     /* audible feedback */
@@ -1343,7 +1347,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	  channel = ags_channel_pad_nth(channel, note_edit->selected_y);
 	}
 
-	ags_note_edit_drawing_area_key_release_event_play_channel(channel);
+	ags_note_edit_drawing_area_key_release_event_play_channel(channel,
+								  current_note);
       }
 	  
       i++;
@@ -1354,7 +1359,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 }
 
 void
-ags_note_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
+ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 {
   AgsDevout *devout;
   AgsChannel *channel;
@@ -1369,9 +1374,29 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 
   GList *recall, *tmp;
 
+  guint samplerate;
+  guint buffer_size;
+  gchar *str;
+
   pthread_mutex_t *audio_mutex;
 
   channel = AGS_INIT_CHANNEL(task)->channel;
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+  free(str);
+
+  str = ags_config_get(config,
+		       AGS_CONFIG_DEVOUT,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
+				NULL,
+				10);
+  free(str);
 
   pthread_mutex_lock(&(ags_application_mutex));
   
@@ -1418,9 +1443,10 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 					  (GObject *) recycling,
 					  (GObject *) AGS_RECALL(recall->data)->recall_id);
       /* add audio signal */
-      ags_recycling_create_audio_signal_with_defaults(recycling,
-						      audio_signal,
-						      0.0, 0);
+      ags_recycling_create_audio_signal_with_frame_count(recycling,
+							 audio_signal,
+							 samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
+							 0.0, 0);
       audio_signal->stream_current = audio_signal->stream_beginning;
       ags_audio_signal_connect(audio_signal);
   

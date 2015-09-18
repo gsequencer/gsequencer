@@ -149,7 +149,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
       gchar *str, *tmp;
       
       /* set file link */
-      if(link_editor->file_chooser != NULL){
+      if(link_editor->file_chooser != NULL || (AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER & (link_editor->flags)) != 0){
 	return;
       }
 

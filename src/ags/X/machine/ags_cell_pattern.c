@@ -720,8 +720,8 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
 void
 ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i)
 {
-  gdk_draw_rectangle(GTK_WIDGET (cell_pattern->drawing_area)->window,
-		     GTK_WIDGET (cell_pattern->drawing_area)->style->fg_gc[0],
+  gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
+		     GTK_WIDGET(cell_pattern->drawing_area)->style->fg_gc[0],
 		     TRUE,
 		     j * cell_pattern->cell_width + 1, i * cell_pattern->cell_height + 1,
 		     11, 9);
@@ -730,8 +730,8 @@ ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, g
 void
 ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, guint i)
 {
-  gdk_draw_rectangle(GTK_WIDGET (cell_pattern->drawing_area)->window,
-		     GTK_WIDGET (cell_pattern->drawing_area)->style->bg_gc[0],
+  gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
+		     GTK_WIDGET(cell_pattern->drawing_area)->style->bg_gc[0],
 		     TRUE,
 		     j * cell_pattern->cell_width + 1, i * cell_pattern->cell_height +1,
 		     11, 9);

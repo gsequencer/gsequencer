@@ -214,6 +214,7 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 void
 ags_config_load_defaults(AgsConfig *config)
 {
+  ags_config_set(config, ags_config_generic, "builtin-theme\0", "false\0");
   ags_config_set(config, ags_config_generic, "autosave-thread\0", "false\0");
   ags_config_set(config, ags_config_generic, "segmentation\0", "4/4\0");
 
