@@ -904,22 +904,40 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
 {
   AgsEditor *editor;
   GtkWidget *widget;
+
+  GtkStyle *pattern_edit_style;
+  
   double tact;
   guint i, j;
   guint j_set;
 
+  static const gdouble white_gc = 65535.0;
+
+  pattern_edit_style = gtk_widget_get_style(GTK_WIDGET(pattern_edit->drawing_area));
+  
   widget = (GtkWidget *) pattern_edit->drawing_area;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
 
-  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-  cairo_rectangle(cr, 0.0, 0.0, (double) widget->allocation.width, (double) widget->allocation.height);
+  /* clear with background color */
+  cairo_set_source_rgb(cr,
+		       pattern_edit_style->bg[0].red / white_gc,
+		       pattern_edit_style->bg[0].green / white_gc,
+		       pattern_edit_style->bg[0].blue / white_gc);
+  
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  (double) widget->allocation.width, (double) widget->allocation.height);
   cairo_fill(cr);
 
+  /* horizontal lines */
   cairo_set_line_width(cr, 1.0);
 
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_set_source_rgb(cr,
+		       pattern_edit_style->fg[0].red / white_gc,
+		       pattern_edit_style->fg[0].green / white_gc,
+		       pattern_edit_style->fg[0].blue / white_gc);
 
   for(i = pattern_edit->y0 ; i < pattern_edit->height;){
     cairo_move_to(cr, 0.0, (double) i);
@@ -929,10 +947,13 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
     i += pattern_edit->control_height;
   }
 
-  cairo_move_to(cr, 0.0, (double) i);
-  cairo_line_to(cr, (double) pattern_edit->width, (double) i);
+  cairo_move_to(cr,
+		0.0, (double) i);
+  cairo_line_to(cr,
+		(double) pattern_edit->width, (double) i);
   cairo_stroke(cr);
 
+  /* vertical lines */
   tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 2.0);
 
   i = pattern_edit->control_current.x0;
@@ -940,7 +961,12 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
   if(i < pattern_edit->width &&
      tact > 1.0 ){
     j_set = pattern_edit->control_current.nth_x % ((guint) tact);
-    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+
+    /* thin lines */
+    cairo_set_source_rgb(cr,
+		       pattern_edit_style->mid[0].red / white_gc,
+		       pattern_edit_style->mid[0].green / white_gc,
+		       pattern_edit_style->mid[0].blue / white_gc);
 
     if(j_set != 0){
       j = j_set;
@@ -949,20 +975,32 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
   }
 
   for(; i < pattern_edit->width; ){
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+    /* strong lines */
+    cairo_set_source_rgb(cr,
+		       pattern_edit_style->fg[0].red / white_gc,
+		       pattern_edit_style->fg[0].green / white_gc,
+		       pattern_edit_style->fg[0].blue / white_gc);
     
-    cairo_move_to(cr, (double) i, 0.0);
-    cairo_line_to(cr, (double) i, (double) pattern_edit->height);
+    cairo_move_to(cr,
+		  (double) i, 0.0);
+    cairo_line_to(cr,
+		  (double) i, (double) pattern_edit->height);
     cairo_stroke(cr);
     
     i += pattern_edit->control_current.control_width;
     
-    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);
+    /* thin lines */
+    cairo_set_source_rgb(cr,
+		       pattern_edit_style->mid[0].red / white_gc,
+		       pattern_edit_style->mid[0].green / white_gc,
+		       pattern_edit_style->mid[0].blue / white_gc);
     
     for(j = 1; i < pattern_edit->width && j < tact; j++){
     ags_pattern_edit_draw_segment0:
-      cairo_move_to(cr, (double) i, 0.0);
-      cairo_line_to(cr, (double) i, (double) pattern_edit->height);
+      cairo_move_to(cr,
+		    (double) i, 0.0);
+      cairo_line_to(cr,
+		    (double) i, (double) pattern_edit->height);
       cairo_stroke(cr);
       
       i += pattern_edit->control_current.control_width;
@@ -982,11 +1020,17 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
 void
 ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
 {
+  GtkStyle *pattern_edit_style;
+  
   guint selected_x, selected_y;
   guint x_offset[2], y_offset[2];
   guint x, y, width, height;
   gint size_width, size_height;
 
+  static const gdouble white_gc = 65535.0;
+
+  pattern_edit_style = gtk_widget_get_style(GTK_WIDGET(pattern_edit->drawing_area));
+  
   selected_x = pattern_edit->selected_x * pattern_edit->control_unit.control_width;
   selected_y = pattern_edit->selected_y * pattern_edit->control_height;
 
@@ -1015,7 +1059,7 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
     if(selected_x + pattern_edit->control_current.control_width < x_offset[1]){
       width = pattern_edit->control_current.control_width;
     }else{
-      width = pattern_edit->control_current.control_width - (x_offset[1] - (selected_x + pattern_edit->control_current.control_width));
+      width = x_offset[1] - selected_x;
     }
   }
 
@@ -1035,13 +1079,20 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
     if(selected_y + pattern_edit->control_height < y_offset[1]){
       height = pattern_edit->control_height;
     }else{
-      height = y_offset[1] - (selected_y + pattern_edit->control_height);
+      height = y_offset[1] - selected_y;
     }
   }
 
   /* draw */
-  cairo_set_source_rgba(cr, 0.25, 0.5, 1.0, 0.5);
-  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+  cairo_set_source_rgba(cr,
+			pattern_edit_style->base[0].red / white_gc,
+			pattern_edit_style->base[0].green / white_gc,
+			pattern_edit_style->base[0].blue / white_gc,
+			0.5);
+  
+  cairo_rectangle(cr,
+		  (double) x, (double) y,
+		  (double) width, (double) height);
   cairo_fill(cr);
 }
 
@@ -1061,6 +1112,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
   AgsEditor *editor;
   GtkWidget *widget;
 
+  GtkStyle *pattern_edit_style;
   AgsNote *note;
 
   AgsMutexManager *mutex_manager;
@@ -1075,7 +1127,10 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
   pthread_mutex_t *audio_mutex;
 
-
+  static const gdouble white_gc = 65535.0;
+  
+  pattern_edit_style = gtk_widget_get_style(GTK_WIDGET(pattern_edit->drawing_area));
+  
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
 
@@ -1100,7 +1155,11 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
   widget = (GtkWidget *) pattern_edit->drawing_area;
 
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  /* draw */
+  cairo_set_source_rgb(cr,
+		       pattern_edit_style->fg[0].red / white_gc,
+		       pattern_edit_style->fg[0].green / white_gc,
+		       pattern_edit_style->fg[0].blue / white_gc);
 
   i = 0;
 
@@ -1140,12 +1199,19 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
 	  /* check if note is selected */
 	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
-
+	    cairo_set_source_rgba(cr,
+				  pattern_edit_style->light[0].red / white_gc,
+				  pattern_edit_style->light[0].green / white_gc,
+				  pattern_edit_style->light[0].blue / white_gc,
+				  0.7);
+	    
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	    cairo_set_source_rgb(cr,
+				 pattern_edit_style->fg[0].red / white_gc,
+				 pattern_edit_style->fg[0].green / white_gc,
+				 pattern_edit_style->fg[0].blue / white_gc);	    
 	  }
 	}else if(note->y == (pattern_edit->nth_y - 1) && pattern_edit->y0 != 0){
 	  if(pattern_edit->y0 > pattern_edit->control_margin_y){
@@ -1169,12 +1235,19 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
 	    /* check if note is selected */
 	    if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	      cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	      cairo_set_source_rgba(cr,
+				    pattern_edit_style->light[0].red / white_gc,
+				    pattern_edit_style->light[0].green / white_gc,
+				    pattern_edit_style->light[0].blue / white_gc,
+				    0.7);
 	    
 	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	      cairo_stroke(cr);
 	    
-	      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	      cairo_set_source_rgb(cr,
+				   pattern_edit_style->fg[0].red / white_gc,
+				   pattern_edit_style->fg[0].green / white_gc,
+				   pattern_edit_style->fg[0].blue / white_gc);
 	    }
 	  }
 	}else if(note->y == (pattern_edit->stop_y + 1) && pattern_edit->y1 != 0){
@@ -1199,12 +1272,19 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 	  
 	    /* check if note is selected */
 	    if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	      cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	      cairo_set_source_rgba(cr,
+				    pattern_edit_style->light[0].red / white_gc,
+				    pattern_edit_style->light[0].green / white_gc,
+				    pattern_edit_style->light[0].blue / white_gc,
+				    0.7);
 	    
 	      cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	      cairo_stroke(cr);
 	    
-	      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	      cairo_set_source_rgb(cr,
+				   pattern_edit_style->fg[0].red / white_gc,
+				   pattern_edit_style->fg[0].green / white_gc,
+				   pattern_edit_style->fg[0].blue / white_gc);
 	    }
 	  }
 	}
@@ -1235,12 +1315,19 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
 	/* check if note is selected */
 	if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	  cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	  cairo_set_source_rgba(cr,
+				pattern_edit_style->light[0].red / white_gc,
+				pattern_edit_style->light[0].green / white_gc,
+				pattern_edit_style->light[0].blue / white_gc,
+				0.7);
 	
 	  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	  cairo_stroke(cr);
 	
-	  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	  cairo_set_source_rgb(cr,
+			       pattern_edit_style->fg[0].red / white_gc,
+			       pattern_edit_style->fg[0].green / white_gc,
+			       pattern_edit_style->fg[0].blue / white_gc);
 	}
       }else if(note->y == (pattern_edit->nth_y - 1) && pattern_edit->y0 != 0){
 	if(pattern_edit->y0 > pattern_edit->control_margin_y){
@@ -1264,12 +1351,19 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
 	  /* check if note is selected */
 	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	    cairo_set_source_rgba(cr,
+				  pattern_edit_style->light[0].red / white_gc,
+				  pattern_edit_style->light[0].green / white_gc,
+				  pattern_edit_style->light[0].blue / white_gc,
+				  0.7);
 
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	    cairo_set_source_rgb(cr,
+				 pattern_edit_style->fg[0].red / white_gc,
+				 pattern_edit_style->fg[0].green / white_gc,
+				 pattern_edit_style->fg[0].blue / white_gc);
 	  }
 	}
       }else if(note->y == (pattern_edit->stop_y + 1) && pattern_edit->y1 != 0){
@@ -1294,12 +1388,19 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
 	  /* check if note is selected */
 	  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
-	    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 0.7);
+	    cairo_set_source_rgba(cr,
+				  pattern_edit_style->light[0].red / white_gc,
+				  pattern_edit_style->light[0].green / white_gc,
+				  pattern_edit_style->light[0].blue / white_gc,
+				  0.7);
 
 	    cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
 	    cairo_stroke(cr);
 
-	    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+	    cairo_set_source_rgb(cr,
+				 pattern_edit_style->fg[0].red / white_gc,
+				 pattern_edit_style->fg[0].green / white_gc,
+				 pattern_edit_style->fg[0].blue / white_gc);
 	  }
 	}
       }
@@ -1327,9 +1428,15 @@ void
 ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
 			     gdouble position)
 {
+  GtkStyle *pattern_edit_style;
+  
   double x, y;
   double width, height;
 
+  static const gdouble white_gc = 65535.0;
+
+  pattern_edit_style = gtk_widget_get_style(GTK_WIDGET(pattern_edit->drawing_area));
+  
   y = 0.0;
   x = (position) - (GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value);
 
@@ -1337,8 +1444,14 @@ ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
   width = 3.0;
 
   /* draw */
-  cairo_set_source_rgba(cr, 0.79, 0.0, 1.0, 0.5);
-  cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
+  cairo_set_source_rgba(cr,
+			pattern_edit_style->dark[0].red / white_gc,
+			pattern_edit_style->dark[0].green / white_gc,
+			pattern_edit_style->dark[0].blue / white_gc,
+			0.5);
+  cairo_rectangle(cr,
+		  (double) x, (double) y,
+		  (double) width, (double) height);
   cairo_fill(cr);
 }
 

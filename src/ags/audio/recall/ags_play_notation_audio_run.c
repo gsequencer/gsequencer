@@ -41,7 +41,6 @@
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
-
 #include <ags/audio/ags_config.h>
 
 void ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notation_audio_run);

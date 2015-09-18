@@ -50,6 +50,8 @@ void ags_led_draw(AgsLed *led);
 
 static gpointer ags_led_parent_class = NULL;
 
+GtkStyle *led_style;
+
 GType
 ags_led_get_type(void)
 {
@@ -96,6 +98,9 @@ ags_led_init(AgsLed *led)
   g_object_set(G_OBJECT(led),
 	       "app-paintable\0", TRUE,
 	       NULL);
+
+  gtk_widget_set_style((GtkWidget *) led,
+		       led_style);
 
   led->flags = 0;
 }
@@ -163,28 +168,30 @@ ags_led_draw(AgsLed *led)
 {
   GtkWidget *widget;
   GdkWindow *window;
-  GtkStyle *style;
+
+  GtkStyle *led_style;
   cairo_t *cr;
+  
+  static const gdouble white_gc = 65535.0;
 
   widget = GTK_WIDGET(led);
-
+  led_style = gtk_widget_get_style(widget);
+  
   cr = gdk_cairo_create(widget->window);
-
-  style = widget->style;
 
   /*  */
   if((AGS_LED_ACTIVE & (led->flags)) != 0){
-    cairo_set_source_rgba (cr,
-			   1.0,
-			   0.0,
-			   0.0,
-			   1.0);
+    /* active */
+    cairo_set_source_rgb(cr,
+			 led_style->light[0].red / white_gc,
+			 led_style->light[0].green / white_gc,
+			 led_style->light[0].blue / white_gc);
   }else{
-    cairo_set_source_rgba (cr,
-			   0.3,
-			   0.0,
-			   0.0,
-			   1.0);
+    /* normal */
+    cairo_set_source_rgb(cr,
+			 led_style->dark[0].red / white_gc,
+			 led_style->dark[0].green / white_gc,
+			 led_style->dark[0].blue / white_gc);
   }
 
   cairo_rectangle(cr,
@@ -192,14 +199,13 @@ ags_led_draw(AgsLed *led)
 		  widget->allocation.width, widget->allocation.height);
   cairo_fill(cr);
 
-  /*  */
-  cairo_set_source_rgba (cr,
-			 1.0 / G_MAXUINT16 * style->fg[0].red,
-			 1.0 / G_MAXUINT16 * style->fg[0].green,
-			 1.0 / G_MAXUINT16 * style->fg[0].blue,
-			 1.0);
+  /* outline */
+  cairo_set_source_rgb(cr,
+		       led_style->fg[0].red / white_gc,
+		       led_style->fg[0].green / white_gc,
+		       led_style->fg[0].blue / white_gc);
   cairo_set_line_width(cr, 1.0);
-
+  
   cairo_rectangle(cr,
 		  widget->allocation.x, widget->allocation.y,
 		  widget->allocation.width, widget->allocation.height);

@@ -376,6 +376,13 @@ ags_link_editor_reset(AgsApplicable *applicable)
 			   0, g_strdup_printf("file://%s\0", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
 			   1, NULL,
 			   -1);
+	link_editor->flags |= AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER;
+	
+	gtk_combo_box_set_active(link_editor->combo,
+				 gtk_tree_model_iter_n_children(model,
+								NULL) - 1);
+
+	link_editor->flags &= (~AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER);
       }else{
 	gtk_list_store_set(model, &iter,
 			   0, "file://\0",

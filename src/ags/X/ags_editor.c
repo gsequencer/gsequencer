@@ -86,8 +86,6 @@ enum{
 static gpointer ags_editor_parent_class = NULL;
 static guint editor_signals[LAST_SIGNAL];
 
-GtkStyle *editor_style;
-
 extern pthread_mutex_t ags_application_mutex;
 
 GType

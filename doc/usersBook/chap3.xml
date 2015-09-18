@@ -112,7 +112,7 @@
 	  <row>
 	    <!-- FIXME:JK: missing icon -->
 	    <entry>missing</entry><!-- imagedata fileref="&invertIcon;" -->
-	    <entry>paste</entry>
+	    <entry>invert</entry>
 	    <entry>
 	      Invert entire notation in conjunction with reverse mapping or MIDI import.
 	    </entry>
@@ -124,7 +124,7 @@
   </sect1>
   
   <sect1>
-    <title>pattern edit</title>
+    <title>Pattern edit</title>
     <para>
       The pattern edit widget is available as linking an editor index with a pattern sequencer e.g.
       drum or matrix.
@@ -304,7 +304,7 @@
   </sect1>
 
   <sect1>
-    <title>note edit</title>
+    <title>Note edit</title>
     <para>
       The note edit widget is available as linking an editor index with a notes sequencer e.g.
       Soundfont2 file player.

@@ -41,6 +41,7 @@ void ags_vindicator_draw(AgsVIndicator *indicator);
  */
 
 static gpointer ags_vindicator_parent_class = NULL;
+extern GtkStyle *indicator_style;
 
 GType
 ags_vindicator_get_type(void)
@@ -112,15 +113,22 @@ void
 ags_vindicator_draw(AgsVIndicator *indicator)
 {
   GtkWidget *widget;
+  
   GtkAdjustment *adjustment;
+  GtkStyle *indicator_style;
   cairo_t *cr;
+  
   gdouble value;
   guint width, height;
   guint segment_width, segment_height;
   guint padding;
   guint i;
 
+  static const gdouble white_gc = 65535.0;
+
   widget = GTK_WIDGET(indicator);
+  indicator_style = gtk_widget_get_style(widget);
+  
   adjustment = AGS_INDICATOR(indicator)->adjustment;
 
   //  g_message("draw %f\0", adjustment->value);
@@ -146,10 +154,16 @@ ags_vindicator_draw(AgsVIndicator *indicator)
     if(adjustment->value > 0.0 &&
        (1.0 / adjustment->value * i < (height / (segment_height + padding)))){
       /* active */
-      cairo_set_source_rgba(cr, 0.9, 0.7, 0.2, 1.0);
+      cairo_set_source_rgb(cr,
+			   indicator_style->light[0].red / white_gc,
+			   indicator_style->light[0].green / white_gc,
+			   indicator_style->light[0].blue / white_gc);
     }else{
       /* normal */
-      cairo_set_source_rgba(cr, 0.0, 0.0, 0.4, 1.0);
+      cairo_set_source_rgb(cr,
+			   indicator_style->dark[0].red / white_gc,
+			   indicator_style->dark[0].green / white_gc,
+			   indicator_style->dark[0].blue / white_gc);
     }
 
     cairo_rectangle(cr,
@@ -157,7 +171,11 @@ ags_vindicator_draw(AgsVIndicator *indicator)
 		    segment_width, segment_height);
     cairo_fill(cr);
 
-    cairo_set_source_rgba(cr, 0.0, 0.0, 1.0, 0.3);
+    /* outline */
+    cairo_set_source_rgb(cr,
+			 indicator_style->fg[0].red / white_gc,
+			 indicator_style->fg[0].green / white_gc,
+			 indicator_style->fg[0].blue / white_gc);
     cairo_rectangle(cr,
 		    0, height - i * (segment_height + padding) - segment_height,
 		    segment_width, segment_height);

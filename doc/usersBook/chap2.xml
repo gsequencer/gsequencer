@@ -41,13 +41,13 @@
   </itemizedlist>
 
   <sect1>
-    <title>Machine Properties</title>
+    <title>Machine properties</title>
     <para>
       Within properties dialog you can link lines or add effects and adjust audio-channels/pads.
     </para>
     
     <sect2>
-      <title>Output Tab</title>
+      <title>Output tab</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_machine_properties-output.png" />
@@ -69,7 +69,7 @@
     </sect2>
 
     <sect2>
-      <title>Input Tab</title>
+      <title>Input tab</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_machine_properties-input.png" />
@@ -87,7 +87,7 @@
     </sect2>
 
     <sect2>
-      <title>Link Input Tab</title>
+      <title>Link input tab</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_machine_properties-link_input.png" />
@@ -106,7 +106,7 @@
     </sect2>
 
     <sect2>
-      <title>Resize Channels Tab</title>
+      <title>Resize channels tab</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_machine_properties-resize_channels.png" />
@@ -124,7 +124,7 @@
     </sect2>
 
     <sect2>
-      <title>LADSPA Browser dialog</title>
+      <title>LADSPA browser dialog</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_ladspa_browser.png" />
