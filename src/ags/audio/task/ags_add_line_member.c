@@ -159,7 +159,7 @@ ags_add_line_member_launch(AgsTask *task)
 		   add_line_member->width, add_line_member->height);
 
   ags_line_member_find_port(add_line_member->line_member);
-
+  ags_connectable_connect(AGS_CONNECTABLE(add_line_member->line_member));
   //  gtk_widget_set_child_visible(GTK_BIN(add_line_member->line->expander)->child,
   //			       TRUE);
 }

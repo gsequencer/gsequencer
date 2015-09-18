@@ -87,6 +87,9 @@ gboolean ags_dial_motion_notify(GtkWidget *widget,
 void ags_dial_draw(AgsDial *dial);
 void* ags_dial_idle(void *dial0);
 
+void ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
+					  AgsDial *dial);
+
 /**
  * SECTION:ags_dial
  * @short_description: A dial widget
@@ -98,11 +101,17 @@ void* ags_dial_idle(void *dial0);
  */
 
 enum{
+  VALUE_CHANGED,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
   PROP_ADJUSTMENT,
 };
 
 static gpointer ags_dial_parent_class = NULL;
+static guint dial_signals[LAST_SIGNAL];
 
 static GQuark quark_accessible_object = 0;
 
@@ -222,6 +231,27 @@ ags_dial_class_init(AgsDialClass *dial)
   g_object_class_install_property(gobject,
 				  PROP_ADJUSTMENT,
 				  param_spec);
+
+  /* AgsDialClass */
+  dial->value_changed = NULL;
+
+  /* signals */
+  /**
+   * AgsDial::value-changed:
+   * @dial: the #AgsDial
+   * @port_data: the port's data
+   *
+   * The ::value-changed signal notifies adjustment value changed.
+   */
+  dial_signals[VALUE_CHANGED] =
+    g_signal_new("value-changed\0",
+		 G_TYPE_FROM_CLASS(dial),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsDialClass, value_changed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
 }
 
 void
@@ -331,6 +361,8 @@ ags_dial_set_property(GObject *gobject,
 
       if(adjustment != NULL){
 	g_object_ref(G_OBJECT(adjustment));
+	g_signal_connect(adjustment, "value-changed\0",
+			 G_CALLBACK(ags_dial_adjustment_changed_callback), dial);
       }
 
       dial->adjustment = adjustment;
@@ -1225,6 +1257,24 @@ ags_dial_idle(void *dial0)
   dial->flags &= (~AGS_DIAL_IDLE);
 
   return(NULL);
+}
+
+void
+ags_dial_value_changed(AgsDial *dial)
+{
+  g_return_if_fail(AGS_IS_DIAL(dial));
+
+  g_object_ref((GObject *) dial);
+  g_signal_emit(G_OBJECT(dial),
+		dial_signals[VALUE_CHANGED], 0);
+  g_object_unref((GObject *) dial);
+}
+
+void
+ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
+				     AgsDial *dial)
+{
+  ags_dial_value_changed(dial);
 }
 
 /**

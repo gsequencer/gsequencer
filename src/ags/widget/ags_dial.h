@@ -86,9 +86,13 @@ struct _AgsDial
 struct _AgsDialClass
 {
   GtkWidgetClass widget;
+
+  void (*value_changed)(AgsDial *dial);
 };
 
 GType ags_dial_get_type(void);
+
+void ags_dial_value_changed(AgsDial *dial);
 
 AgsDial* ags_dial_new();
 

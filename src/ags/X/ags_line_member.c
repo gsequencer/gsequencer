@@ -723,10 +723,10 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 			   ((guint *) port_data)[0]);
       }else if(port->port_value_type == G_TYPE_FLOAT){
 	g_value_init(&value,
-		     G_TYPE_DOUBLE);
+		     G_TYPE_FLOAT);
 
-	g_value_set_double(&value,
-			   ((gdouble *) port_data)[0]);
+	g_value_set_float(&value,
+			  (gfloat) ((gdouble *) port_data)[0]);
       }else if(port->port_value_type == G_TYPE_DOUBLE){
 	g_value_init(&value,
 		     G_TYPE_DOUBLE);
