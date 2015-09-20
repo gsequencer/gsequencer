@@ -1,3 +1,10 @@
+ags (0.6.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed modified default thread model in ags_config.c what caused certain crashes without ECC
+	* extended AgsFileLink with field audio_channel see next
+	* improved link editor file chooser to let you select audio channel
+
 ags (0.6.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

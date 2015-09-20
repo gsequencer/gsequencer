@@ -37,6 +37,8 @@ int ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, A
 void ags_link_editor_file_chooser_play_done(AgsRecall *recall, AgsLinkEditor *link_editor);
 void ags_link_editor_file_chooser_play_cancel(AgsRecall *recall, AgsLinkEditor *link_editor);
 
+#define AGS_LINK_EDITOR_OPEN_SPIN_BUTTON "AgsLinkEditorOpenSpinButton\0"
+
 int
 ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLinkEditor *link_editor)
 {
@@ -130,6 +132,9 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 	 AGS_IS_INPUT(channel) &&
 	 gtk_combo_box_get_active(link_editor->combo) + 1 == gtk_tree_model_iter_n_children(model,
 											    NULL))){
+      gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
+			       TRUE);
+
       /* set machine link */
       gtk_tree_model_get(model,
 			 &iter,
@@ -146,6 +151,9 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 	}
       }
     }else{
+      GtkHBox *hbox;
+      GtkLabel *label;
+      GtkSpinButton *spin_button;
       gchar *str, *tmp;
       
       /* set file link */
@@ -153,14 +161,41 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 	return;
       }
 
+      gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
+				 FALSE);
+
       link_editor->file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("select audio file\0"),
 										       (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) link_editor),
 										       GTK_FILE_CHOOSER_ACTION_OPEN,
 										       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 										       GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 										       NULL);
-      gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(link_editor->file_chooser), FALSE);
+      gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(link_editor->file_chooser),
+					   FALSE);
 
+      /* extra widget */
+      hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				      0);
+      gtk_file_chooser_set_extra_widget((GtkFileChooser *) link_editor->file_chooser,
+					(GtkWidget *) hbox);
+
+      label = (GtkLabel *) gtk_label_new(g_strdup("audio channel: \0"));
+      gtk_box_pack_start((GtkBox *) hbox,
+			 (GtkWidget *) label,
+			 FALSE, FALSE,
+			 0);
+
+      spin_button = gtk_spin_button_new_with_range(0.0,
+						   256.0,
+						   1.0);
+      g_object_set_data((GObject *) link_editor->file_chooser,
+			AGS_LINK_EDITOR_OPEN_SPIN_BUTTON, spin_button);
+      gtk_box_pack_start((GtkBox *) hbox,
+			 (GtkWidget *) spin_button,
+			 FALSE, FALSE,
+			 0);
+
+      /*  */
       gtk_tree_model_get(model,
 			 &iter,
 			 0, &str,
@@ -215,6 +250,8 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
 
   if(response == GTK_RESPONSE_ACCEPT){
     AgsLineEditor *line_editor;
+    GtkSpinButton *spin_button;
+    
     GtkTreeModel *model;
     GtkTreeIter iter;
 
@@ -225,6 +262,7 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
 
     channel = line_editor->channel;
 
+    /* set filename in combo box */
     model = gtk_combo_box_get_model(link_editor->combo);
     
     name = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
@@ -237,6 +275,12 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
     gtk_list_store_set(model, &iter,
 		       0, g_strdup_printf("file://%s\0", name),
 		       -1);
+
+    /* set audio channel */
+    spin_button = (GtkSpinButton *) g_object_get_data((GObject *) file_chooser, AGS_LINK_EDITOR_OPEN_SPIN_BUTTON);
+
+    gtk_spin_button_set_value(link_editor->spin_button,
+			      gtk_spin_button_get_value(spin_button));
   }
 
   link_editor->file_chooser = NULL;

@@ -345,7 +345,10 @@ ags_link_editor_reset(AgsApplicable *applicable)
       }while(gtk_tree_model_iter_next(model,
 				      &iter));
     }
-    
+
+    gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
+			     FALSE);
+
     if(found){
       /* set channel link */
       gtk_combo_box_set_active(link_editor->combo, i);
@@ -372,16 +375,28 @@ ags_link_editor_reset(AgsApplicable *applicable)
 								   NULL) - 1);
       
       if(AGS_INPUT(channel)->file_link != NULL){
+	/* add file link */
 	gtk_list_store_set(model, &iter,
 			   0, g_strdup_printf("file://%s\0", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
 			   1, NULL,
 			   -1);
+
+	/* file link set active */
 	link_editor->flags |= AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER;
-	
+
 	gtk_combo_box_set_active(link_editor->combo,
 				 gtk_tree_model_iter_n_children(model,
 								NULL) - 1);
 
+	/* set spin button insensitive */
+	gtk_spin_button_set_range(link_editor->spin_button,
+				  0.0, 256.0);
+	gtk_spin_button_set_value(link_editor->spin_button,
+				  AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->audio_channel);
+	gtk_widget_set_sensitive((GtkWidget *) link_editor->spin_button,
+				 FALSE);
+
+	/* re-enable file chooser */
 	link_editor->flags &= (~AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER);
       }else{
 	gtk_list_store_set(model, &iter,

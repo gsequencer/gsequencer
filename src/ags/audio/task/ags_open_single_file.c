@@ -179,6 +179,7 @@ ags_open_single_file_launch(AgsTask *task)
 
     file_link = g_object_new(AGS_TYPE_FILE_LINK,
 			     "filename\0", open_single_file->filename,
+			     "audio-channel\0", i,
 			     NULL);
     g_object_set(channel,
 		 "file-link\0", file_link,
