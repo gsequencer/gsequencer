@@ -284,7 +284,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   for(i = 0; i < 32; i++){
     led = ags_led_new();
     gtk_widget_set_size_request((GtkWidget *) led,
-				cell_pattern->cell_width, cell_pattern->cell_width / 2);
+				cell_pattern->cell_width, cell_pattern->cell_height);
     gtk_box_pack_start((GtkBox *) cell_pattern->led,
 		       (GtkWidget *) led,
 		       FALSE, FALSE,

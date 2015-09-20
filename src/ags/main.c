@@ -658,6 +658,14 @@ main(int argc, char **argv)
   }
 #endif
 
+  /* parse gtkrc */
+  uid = getuid();
+  pw = getpwuid(uid);
+  
+  gtk_rc_parse(g_strdup_printf("%s/%s/ags.rc",
+			       pw->pw_dir,
+			       AGS_DEFAULT_DIRECTORY));
+  
   /**/
   LIBXML_TEST_VERSION;
 
@@ -702,8 +710,6 @@ main(int argc, char **argv)
   }
 
   config = ags_config_new();
-  uid = getuid();
-  pw = getpwuid(uid);
   
   wdir = g_strdup_printf("%s/%s\0",
 			 pw->pw_dir,

@@ -768,50 +768,113 @@ ags_pad_play(AgsPad *pad)
 
   channel = pad->channel;
 
-  /* init channel for playback */
-  init_channel = ags_init_channel_new(channel, play_all,
-				      TRUE, FALSE, FALSE);
-  g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
-			 G_CALLBACK(ags_pad_init_channel_launch_callback), pad);
-  tasks = g_list_prepend(tasks, init_channel);
+  if(pad->play->active){
+    /* init channel for playback */
+    init_channel = ags_init_channel_new(channel, play_all,
+					TRUE, FALSE, FALSE);
+    g_signal_connect_after(G_OBJECT(init_channel), "launch\0",
+			   G_CALLBACK(ags_pad_init_channel_launch_callback), pad);
+    tasks = g_list_prepend(tasks, init_channel);
 
-  if(play_all){
-    AgsChannel *next_pad;
+    if(play_all){
+      AgsChannel *next_pad;
 
-    next_pad = channel->next_pad;
+      next_pad = channel->next_pad;
 
-    while(channel != next_pad){
+      while(channel != next_pad){
+	/* append channel for playback */
+	append_channel = ags_append_channel_new(G_OBJECT(audio_loop),
+						G_OBJECT(channel));
+	tasks = g_list_prepend(tasks, append_channel);
+
+	channel = channel->next;
+      }
+    }else{
+      AgsLine *line;
+      GList *list;
+
+      list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+      line = AGS_LINE(ags_line_find_next_grouped(list)->data);
+
       /* append channel for playback */
       append_channel = ags_append_channel_new(G_OBJECT(audio_loop),
-					      G_OBJECT(channel));
+					      G_OBJECT(line->channel));
       tasks = g_list_prepend(tasks, append_channel);
 
-      channel = channel->next;
+      g_list_free(list);
     }
+
+    /* create start task */
+    start_devout = ags_start_devout_new(devout);
+    tasks = g_list_prepend(tasks,
+			   start_devout);
+
+    /* perform playback */
+    tasks = g_list_reverse(tasks);
+    ags_task_thread_append_tasks(task_thread, tasks);
   }else{
-    AgsLine *line;
-    GList *list;
+    AgsCancelChannel *cancel_channel;
 
-    list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
-    line = AGS_LINE(ags_line_find_next_grouped(list)->data);
+    channel = pad->channel;
 
-    /* append channel for playback */
-    append_channel = ags_append_channel_new(G_OBJECT(audio_loop),
-					    G_OBJECT(line->channel));
-    tasks = g_list_prepend(tasks, append_channel);
+    if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL ||
+       (AGS_DEVOUT_PLAY_DONE & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->flags)))) != 0){
+      pthread_mutex_unlock(audio_mutex);
+      return;
+    }
 
-    g_list_free(list);
+    if((AGS_DEVOUT_PLAY_PAD & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) != 0){
+      AgsChannel *next_pad;
+
+      next_pad = channel->next_pad;
+
+      if((AGS_DEVOUT_PLAY_DONE & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) == 0){
+	/* cancel request */
+	while(channel != next_pad){
+	  cancel_channel = ags_cancel_channel_new(channel, AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0],
+						  AGS_DEVOUT_PLAY(channel->devout_play));
+
+	  ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
+
+	  channel = channel->next;
+	}
+      }else{
+	/* done */
+	while(channel != next_pad){
+	  g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			  AGS_DEVOUT_PLAY_REMOVE);
+	  g_atomic_int_and(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
+			   (~AGS_DEVOUT_PLAY_DONE));
+
+	  channel = channel->next;
+	}
+      }
+    }else{
+      AgsLine *line;
+      GList *list;
+
+      list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+      line = AGS_LINE(ags_line_find_next_grouped(list)->data);
+
+      g_list_free(list);
+
+      /*  */
+      channel = line->channel;
+
+      if((AGS_DEVOUT_PLAY_DONE & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) == 0){
+	/* cancel request */
+	cancel_channel = ags_cancel_channel_new(channel, AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0],
+						AGS_DEVOUT_PLAY(channel->devout_play));
+
+	ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
+      }else{
+	/* done */
+	AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;
+	AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
+      }
+    }
   }
-
-  /* create start task */
-  start_devout = ags_start_devout_new(devout);
-  tasks = g_list_prepend(tasks,
-			 start_devout);
-
-  /* perform playback */
-  tasks = g_list_reverse(tasks);
-  ags_task_thread_append_tasks(task_thread, tasks);
-
+  
   pthread_mutex_unlock(audio_mutex);
 }
 

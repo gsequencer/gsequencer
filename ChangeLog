@@ -1,3 +1,10 @@
+ags (0.6.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_pad_play() to contain cancel code instead of playing again on toggle
+	* modified default thread model in ags_config.c what caused certain crashes without ECC
+	* implemented loading GTKRC from $(HOME)/.gsequencer/ags.rc
+
 ags (0.6.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
