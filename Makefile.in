@@ -166,6 +166,10 @@ am_gsequencer_OBJECTS = $(am__objects_1) \
 	gsequencer-ags_delay_audio.$(OBJEXT) \
 	gsequencer-ags_delay_audio_run.$(OBJEXT) \
 	gsequencer-ags_echo.$(OBJEXT) \
+	gsequencer-ags_envelope_audio_signal.$(OBJEXT) \
+	gsequencer-ags_envelope_channel.$(OBJEXT) \
+	gsequencer-ags_envelope_channel_run.$(OBJEXT) \
+	gsequencer-ags_envelope_recycling.$(OBJEXT) \
 	gsequencer-ags_loop_channel.$(OBJEXT) \
 	gsequencer-ags_loop_channel_run.$(OBJEXT) \
 	gsequencer-ags_mute_audio.$(OBJEXT) \
@@ -794,6 +798,10 @@ gsequencerheaders = \
 	src/ags/audio/recall/ags_delay_audio_run.h \
 	src/ags/audio/recall/ags_down_mix.h \
 	src/ags/audio/recall/ags_echo.h \
+	src/ags/audio/recall/ags_envelope_audio_signal.h \
+	src/ags/audio/recall/ags_envelope_channel.h \
+	src/ags/audio/recall/ags_envelope_channel_run.h \
+	src/ags/audio/recall/ags_envelope_recycling.h \
 	src/ags/audio/recall/ags_loop_channel.h \
 	src/ags/audio/recall/ags_loop_channel_run.h \
 	src/ags/audio/recall/ags_mute_audio.h \
@@ -1134,6 +1142,10 @@ gsequencer_SOURCES = \
 	src/ags/audio/recall/ags_delay_audio.c \
 	src/ags/audio/recall/ags_delay_audio_run.c \
 	src/ags/audio/recall/ags_echo.c \
+	src/ags/audio/recall/ags_envelope_audio_signal.c \
+	src/ags/audio/recall/ags_envelope_channel.c \
+	src/ags/audio/recall/ags_envelope_channel_run.c \
+	src/ags/audio/recall/ags_envelope_recycling.c \
 	src/ags/audio/recall/ags_loop_channel.c \
 	src/ags/audio/recall/ags_loop_channel_run.c \
 	src/ags/audio/recall/ags_mute_audio.c \
@@ -1607,6 +1619,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_editor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_editor_callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_effect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_envelope_audio_signal.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_envelope_channel.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_envelope_channel_run.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_envelope_recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_expander.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_expander_set.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_export_output.Po@am__quote@
@@ -2736,6 +2752,62 @@ gsequencer-ags_echo.obj: src/ags/audio/recall/ags_echo.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_echo.c' object='gsequencer-ags_echo.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_echo.obj `if test -f 'src/ags/audio/recall/ags_echo.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_echo.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_echo.c'; fi`
+
+gsequencer-ags_envelope_audio_signal.o: src/ags/audio/recall/ags_envelope_audio_signal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_envelope_audio_signal.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_envelope_audio_signal.Tpo -c -o gsequencer-ags_envelope_audio_signal.o `test -f 'src/ags/audio/recall/ags_envelope_audio_signal.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_envelope_audio_signal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_envelope_audio_signal.Tpo $(DEPDIR)/gsequencer-ags_envelope_audio_signal.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_envelope_audio_signal.c' object='gsequencer-ags_envelope_audio_signal.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_envelope_audio_signal.o `test -f 'src/ags/audio/recall/ags_envelope_audio_signal.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_envelope_audio_signal.c
+
+gsequencer-ags_envelope_audio_signal.obj: src/ags/audio/recall/ags_envelope_audio_signal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_envelope_audio_signal.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_envelope_audio_signal.Tpo -c -o gsequencer-ags_envelope_audio_signal.obj `if test -f 'src/ags/audio/recall/ags_envelope_audio_signal.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_envelope_audio_signal.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_envelope_audio_signal.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_envelope_audio_signal.Tpo $(DEPDIR)/gsequencer-ags_envelope_audio_signal.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_envelope_audio_signal.c' object='gsequencer-ags_envelope_audio_signal.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_envelope_audio_signal.obj `if test -f 'src/ags/audio/recall/ags_envelope_audio_signal.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_envelope_audio_signal.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_envelope_audio_signal.c'; fi`
+
+gsequencer-ags_envelope_channel.o: src/ags/audio/recall/ags_envelope_channel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_envelope_channel.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_envelope_channel.Tpo -c -o gsequencer-ags_envelope_channel.o `test -f 'src/ags/audio/recall/ags_envelope_channel.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_envelope_channel.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_envelope_channel.Tpo $(DEPDIR)/gsequencer-ags_envelope_channel.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_envelope_channel.c' object='gsequencer-ags_envelope_channel.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_envelope_channel.o `test -f 'src/ags/audio/recall/ags_envelope_channel.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_envelope_channel.c
+
+gsequencer-ags_envelope_channel.obj: src/ags/audio/recall/ags_envelope_channel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_envelope_channel.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_envelope_channel.Tpo -c -o gsequencer-ags_envelope_channel.obj `if test -f 'src/ags/audio/recall/ags_envelope_channel.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_envelope_channel.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_envelope_channel.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_envelope_channel.Tpo $(DEPDIR)/gsequencer-ags_envelope_channel.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_envelope_channel.c' object='gsequencer-ags_envelope_channel.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_envelope_channel.obj `if test -f 'src/ags/audio/recall/ags_envelope_channel.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_envelope_channel.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_envelope_channel.c'; fi`
+
+gsequencer-ags_envelope_channel_run.o: src/ags/audio/recall/ags_envelope_channel_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_envelope_channel_run.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_envelope_channel_run.Tpo -c -o gsequencer-ags_envelope_channel_run.o `test -f 'src/ags/audio/recall/ags_envelope_channel_run.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_envelope_channel_run.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_envelope_channel_run.Tpo $(DEPDIR)/gsequencer-ags_envelope_channel_run.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_envelope_channel_run.c' object='gsequencer-ags_envelope_channel_run.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_envelope_channel_run.o `test -f 'src/ags/audio/recall/ags_envelope_channel_run.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_envelope_channel_run.c
+
+gsequencer-ags_envelope_channel_run.obj: src/ags/audio/recall/ags_envelope_channel_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_envelope_channel_run.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_envelope_channel_run.Tpo -c -o gsequencer-ags_envelope_channel_run.obj `if test -f 'src/ags/audio/recall/ags_envelope_channel_run.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_envelope_channel_run.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_envelope_channel_run.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_envelope_channel_run.Tpo $(DEPDIR)/gsequencer-ags_envelope_channel_run.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_envelope_channel_run.c' object='gsequencer-ags_envelope_channel_run.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_envelope_channel_run.obj `if test -f 'src/ags/audio/recall/ags_envelope_channel_run.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_envelope_channel_run.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_envelope_channel_run.c'; fi`
+
+gsequencer-ags_envelope_recycling.o: src/ags/audio/recall/ags_envelope_recycling.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_envelope_recycling.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_envelope_recycling.Tpo -c -o gsequencer-ags_envelope_recycling.o `test -f 'src/ags/audio/recall/ags_envelope_recycling.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_envelope_recycling.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_envelope_recycling.Tpo $(DEPDIR)/gsequencer-ags_envelope_recycling.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_envelope_recycling.c' object='gsequencer-ags_envelope_recycling.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_envelope_recycling.o `test -f 'src/ags/audio/recall/ags_envelope_recycling.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_envelope_recycling.c
+
+gsequencer-ags_envelope_recycling.obj: src/ags/audio/recall/ags_envelope_recycling.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_envelope_recycling.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_envelope_recycling.Tpo -c -o gsequencer-ags_envelope_recycling.obj `if test -f 'src/ags/audio/recall/ags_envelope_recycling.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_envelope_recycling.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_envelope_recycling.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_envelope_recycling.Tpo $(DEPDIR)/gsequencer-ags_envelope_recycling.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_envelope_recycling.c' object='gsequencer-ags_envelope_recycling.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_envelope_recycling.obj `if test -f 'src/ags/audio/recall/ags_envelope_recycling.c'; then $(CYGPATH_W) 'src/ags/audio/recall/ags_envelope_recycling.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/recall/ags_envelope_recycling.c'; fi`
 
 gsequencer-ags_loop_channel.o: src/ags/audio/recall/ags_loop_channel.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_loop_channel.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_loop_channel.Tpo -c -o gsequencer-ags_loop_channel.o `test -f 'src/ags/audio/recall/ags_loop_channel.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_loop_channel.c
