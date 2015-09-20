@@ -1,0 +1,4 @@
+style "GtkHandleBox"
+{
+    bg_pixmap[NORMAL] = "ags-handlebox.svg"
+}
