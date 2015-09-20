@@ -1807,22 +1807,22 @@ ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
       switch(j){
       case 0:
 	{
-	  volume = (1.0 / (k - i)) * (attack / (k - i));
+	  volume = (1.0 / (k - i)) / (attack / (k - i));
 	}
 	break;
       case 1:
 	{
-	  volume = (1.0 / (k - i)) * (decay / (k - i));
+	  volume = (1.0 / (k - i)) / (decay / (k - i));
 	}
 	break;
       case 2:
 	{
-	  volume = (1.0 / (k - i)) * (sustain / (k - i));
+	  volume = (1.0 / (k - i)) / (sustain / (k - i));
 	}
 	break;
       case 3:
 	{
-	  volume = (1.0 / (k - i)) * (release / (k - i));
+	  volume = (1.0 / (k - i)) / (release / (k - i));
 	}
 	break;
       }
