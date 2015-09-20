@@ -125,6 +125,13 @@ void ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 			    AgsAudioSignal *template,
 			    guint length);
 
+void ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
+			       gdouble attack,
+			       gdouble decay,
+			       gdouble sustain,
+			       gdouble release,
+			       gdouble ratio);
+
 AgsAudioSignal* ags_audio_signal_new(GObject *devout,
 				     GObject *recycling,
 				     GObject *recall_id);

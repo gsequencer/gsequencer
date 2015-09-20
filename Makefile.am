@@ -134,6 +134,10 @@ gsequencerheaders = \
 	src/ags/audio/recall/ags_delay_audio_run.h \
 	src/ags/audio/recall/ags_down_mix.h \
 	src/ags/audio/recall/ags_echo.h \
+	src/ags/audio/recall/ags_envelope_audio_signal.h \
+	src/ags/audio/recall/ags_envelope_channel.h \
+	src/ags/audio/recall/ags_envelope_channel_run.h \
+	src/ags/audio/recall/ags_envelope_recycling.h \
 	src/ags/audio/recall/ags_loop_channel.h \
 	src/ags/audio/recall/ags_loop_channel_run.h \
 	src/ags/audio/recall/ags_mute_audio.h \
@@ -474,6 +478,10 @@ gsequencer_SOURCES = \
 	src/ags/audio/recall/ags_delay_audio.c \
 	src/ags/audio/recall/ags_delay_audio_run.c \
 	src/ags/audio/recall/ags_echo.c \
+	src/ags/audio/recall/ags_envelope_audio_signal.c \
+	src/ags/audio/recall/ags_envelope_channel.c \
+	src/ags/audio/recall/ags_envelope_channel_run.c \
+	src/ags/audio/recall/ags_envelope_recycling.c \
 	src/ags/audio/recall/ags_loop_channel.c \
 	src/ags/audio/recall/ags_loop_channel_run.c \
 	src/ags/audio/recall/ags_mute_audio.c \

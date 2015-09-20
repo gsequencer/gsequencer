@@ -1761,6 +1761,79 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 }
 
 /**
+ * ags_audio_signal_envelope:
+ * @audio_signal:
+ * @attack:
+ * @decay:
+ * @sustain:
+ * @release:
+ * @ratio:
+ *
+ * Envelope audio signal.
+ *
+ * Since: 0.6.7
+ */
+void
+ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
+			  gdouble attack,
+			  gdouble decay,
+			  gdouble sustain,
+			  gdouble release,
+			  gdouble ratio)
+{
+  GList *stream;
+  
+  signed short *buffer;
+  gdouble volume;
+  guint frame_count, current_frame_count;
+  guint i, j, k;
+  
+  if(ratio == 0.0){
+    return;
+  }
+
+  stream = audio_signal->stream_beginning;
+  buffer = stream->data;
+  
+  frame_count = audio_signal->buffer_size * audio_signal->length - (audio_signal->buffer_size - audio_signal->last_frame);
+
+  for(j = 0, k = 0; j < 4; j++){
+    for(i = 0; ratio * (k + i) < (1.0 / ratio) * (frame_count / 4.0); i++, k++){
+      if(k != 0 && k % audio_signal->buffer_size == 0){
+	stream = stream->next;
+	buffer = stream->data;
+      }
+
+      switch(j){
+      case 0:
+	{
+	  volume = (1.0 / (k - i)) * attack;
+	}
+	break;
+      case 1:
+	{
+	  volume = (1.0 / (k - i)) * decay;
+	}
+	break;
+      case 2:
+	{
+	  volume = (1.0 / (k - i)) * sustain;
+	}
+	break;
+      case 3:
+	{
+	  volume = (1.0 / (k - i)) * release;
+	}
+	break;
+      }
+
+      *buffer = (signed short) (volume * buffer[0]);
+      buffer++;
+    }
+  }
+}
+
+/**
  * ags_audio_signal_new:
  * @devout: the assigned #AgsDevout
  * @recycling: the #AgsRecycling
