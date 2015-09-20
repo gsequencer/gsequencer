@@ -81,22 +81,31 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 									 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 									 GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 									 NULL);
-  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), FALSE);
+  gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
+				       FALSE);
   g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_AUDIO_FILE), NULL);
   g_object_set_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME, NULL);
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_file_chooser_set_extra_widget((GtkFileChooser *) file_chooser, (GtkWidget *) hbox);
+  gtk_file_chooser_set_extra_widget((GtkFileChooser *) file_chooser,
+				    (GtkWidget *) hbox);
   
   label = (GtkLabel *) gtk_label_new(g_strdup("channel: \0"));
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
 
   spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_AUDIO(AGS_PAD(drum_input_pad)->channel->audio)->audio_channels - 1, 1.0);
   g_object_set_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON, spin_button);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) spin_button, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) spin_button,
+		     FALSE, FALSE,
+		     0);
 
   if(drum_input_pad->pad.group->active)
-    gtk_widget_set_sensitive((GtkWidget *) spin_button, FALSE);
+    gtk_widget_set_sensitive((GtkWidget *) spin_button,
+			     FALSE);
 
   //  play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
   //					  "label\0", GTK_STOCK_MEDIA_PLAY,

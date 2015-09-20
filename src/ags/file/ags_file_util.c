@@ -1099,12 +1099,24 @@ ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
   xmlChar *xpath;
   xmlChar *filename;
   xmlChar *encoding, *demuxer;
-
+  xmlChar *str;
+  guint audio_channel;
+  
   node = file_launch->node;
 
   /*  */
   xpath = xmlGetProp(node,
 		     "devout\0");
+
+  str = xmlGetProp(node,
+		   "audio-channel\0");
+
+  if(str != NULL){
+    audio_channel = g_ascii_strtoull(str,
+				     NULL, 10);
+  }else{
+    audio_channel = 0;
+  }
   
   /*  */
   input = NULL;
@@ -1133,7 +1145,7 @@ ags_file_util_read_file_link_launch(AgsFileLaunch *file_launch,
     ags_audio_file_read_audio_signal(audio_file);
 
     audio_signal = g_list_nth(audio_file->audio_signal,
-			      input->audio_channel);
+			      audio_channel);
 
     if(audio_signal == NULL){
       return;
@@ -1267,6 +1279,10 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
     xmlNewProp(node,
 	       "filename\0",
 	       g_strdup(file_link->filename));
+
+    xmlNewProp(node,
+	       "audio-channel\0",
+	       g_strdup_printf("%s\0", file_link->audio_channel));
   }else{
     xmlNewProp(node,
 	       "filename\0",

@@ -40,6 +40,8 @@ struct _AgsFileLink
   GObject object;
 
   gchar *filename;
+  guint audio_channel;
+  
   gchar *data;
   AgsTimestamp *timestamp;
 };

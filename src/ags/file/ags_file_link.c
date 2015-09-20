@@ -44,6 +44,7 @@ void ags_file_link_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_FILENAME,
+  PROP_AUDIO_CHANNEL,
   PROP_DATA,
   PROP_TIMESTAMP,
 };
@@ -103,6 +104,16 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
 				  PROP_FILENAME,
 				  param_spec);
 
+    param_spec = g_param_spec_uint("audio-channel\0",
+				   "audio channel to read\0",
+				   "The selected audio channel to read\0",
+				   0, 256,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
   param_spec = g_param_spec_string("data\0",
 				   "the data\0",
 				   "The embedded data\0",
@@ -126,6 +137,8 @@ void
 ags_file_link_init(AgsFileLink *file_link)
 {
   file_link->filename = NULL;
+  file_link->audio_channel = 0;
+  
   file_link->data = NULL;
   file_link->timestamp = NULL;
 }
@@ -152,6 +165,11 @@ ags_file_link_set_property(GObject *gobject,
       }
 
       file_link->filename = g_strdup(filename);
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      file_link->audio_channel = g_value_get_uint(value);
     }
     break;
   case PROP_DATA:
@@ -208,6 +226,11 @@ ags_file_link_get_property(GObject *gobject,
   case PROP_FILENAME:
     {
       g_value_set_string(value, file_link->filename);
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      g_value_set_uint(value, file_link->audio_channel);
     }
     break;
   case PROP_DATA:
