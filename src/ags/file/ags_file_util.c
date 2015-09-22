@@ -1282,7 +1282,7 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
 
     xmlNewProp(node,
 	       "audio-channel\0",
-	       g_strdup_printf("%s\0", file_link->audio_channel));
+	       g_strdup_printf("%d\0", file_link->audio_channel));
   }else{
     xmlNewProp(node,
 	       "filename\0",
