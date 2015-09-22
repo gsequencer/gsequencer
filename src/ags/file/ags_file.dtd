@@ -915,6 +915,7 @@
 	  id               ID         #REQUIRED
 	  type             CDATA      "url"
 	  filename         CDATA      #REQUIRED
+	  audio-channel    CDATA      0
 	  delay            CDATA      #REQUIRED <!-- start renamed -->
 	  >
 
