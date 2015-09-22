@@ -342,7 +342,7 @@ ags_note_edit_get_accessible(GtkWidget *widget)
   AtkObject* accessible;
 
   accessible = g_object_get_qdata(G_OBJECT(widget),
-				    quark_accessible_object);
+				  quark_accessible_object);
   
   if(!accessible){
     accessible = g_object_new(ags_accessible_note_edit_get_type(),
@@ -906,7 +906,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
     note_edit->control_unit.nth_x = 0;
   }
 
-    /* refresh display */
+  /* refresh display */
   if(editor->selected_machine != NULL){
     cairo_t *cr;
 
@@ -1041,9 +1041,9 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
 
     /* thin lines */
     cairo_set_source_rgb(cr,
-		       note_edit_style->mid[0].red / white_gc,
-		       note_edit_style->mid[0].green / white_gc,
-		       note_edit_style->mid[0].blue / white_gc);
+			 note_edit_style->mid[0].red / white_gc,
+			 note_edit_style->mid[0].green / white_gc,
+			 note_edit_style->mid[0].blue / white_gc);
 
     if(j_set != 0){
       j = j_set;
@@ -1054,9 +1054,9 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
   for(; i < note_edit->width; ){
     /* strong lines */
     cairo_set_source_rgb(cr,
-		       note_edit_style->fg[0].red / white_gc,
-		       note_edit_style->fg[0].green / white_gc,
-		       note_edit_style->fg[0].blue / white_gc);
+			 note_edit_style->fg[0].red / white_gc,
+			 note_edit_style->fg[0].green / white_gc,
+			 note_edit_style->fg[0].blue / white_gc);
     
     cairo_move_to(cr,
 		  (double) i, 0.0);
@@ -1068,9 +1068,9 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
     
     /* thin lines */
     cairo_set_source_rgb(cr,
-		       note_edit_style->mid[0].red / white_gc,
-		       note_edit_style->mid[0].green / white_gc,
-		       note_edit_style->mid[0].blue / white_gc);
+			 note_edit_style->mid[0].red / white_gc,
+			 note_edit_style->mid[0].green / white_gc,
+			 note_edit_style->mid[0].blue / white_gc);
     
     for(j = 1; i < note_edit->width && j < tact; j++){
     ags_note_edit_draw_segment0:

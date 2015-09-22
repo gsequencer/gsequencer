@@ -989,13 +989,20 @@ void
 ags_ffplayer_paint(AgsFFPlayer *ffplayer)
 {
   GtkWidget *widget;
+
+  GtkStyle *ffplayer_style;
+  
   cairo_t *cr;
+
   double semi_key_height;
   guint bitmap;
   guint x[2];
   guint i, i_stop, j, j0;
-
+  
+  static const gdouble white_gc = 65535.0;
+    
   widget = (GtkWidget *) ffplayer->drawing_area;
+  ffplayer_style = gtk_widget_get_style(widget);
 
   semi_key_height = 2.0 / 3.0 * (double) ffplayer->control_height;
   bitmap = 0x52a52a; // description of the keyboard
@@ -1014,23 +1021,28 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
 
   cr = gdk_cairo_create(widget->window);
 
-  cairo_set_source_rgb(cr, 0.015625, 0.03125, 0.21875);
+  /* clear with background color */
+  cairo_set_source_rgb(cr,
+		       ffplayer_style->bg[0].red / white_gc,
+		       ffplayer_style->bg[0].green / white_gc,
+		       ffplayer_style->bg[0].blue / white_gc);
   cairo_rectangle(cr, 0.0, 0.0, (double) widget->allocation.width, (double) widget->allocation.height);
   cairo_fill(cr);
 
+  /* draw piano */
   cairo_set_line_width(cr, 1.0);
-  cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
+
+  cairo_set_source_rgb(cr,
+		       ffplayer_style->fg[0].red / white_gc,
+		       ffplayer_style->fg[0].green / white_gc,
+		       ffplayer_style->fg[0].blue / white_gc);
 
   if(x[0] != 0){
     j0 = (j != 0) ? j -1: 11;
 
     if(((1 << j0) & bitmap) != 0){
-      cairo_set_source_rgb(cr, 0.5, 0.5, 1.0);
-
       cairo_rectangle(cr, 0.0, 0.0, x[0], (double) semi_key_height);
       cairo_fill(cr); 	
-
-      cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
 
       if(x[0] > ffplayer->control_width / 2){
 	cairo_move_to(cr, (double) (x[0] - ffplayer->control_width / 2),  semi_key_height);
@@ -1057,12 +1069,8 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
   for(i = 0; i < i_stop; i++){
     if(((1 << j) & bitmap) != 0){
       // draw semi tone key
-      cairo_set_source_rgb(cr, 0.5, 0.5, 1.0);
-
       cairo_rectangle(cr, (double) (i * ffplayer->control_width + x[0]), 0.0, (double) ffplayer->control_width, semi_key_height);
       cairo_fill(cr); 	
-
-      cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
 
       cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width / 2), semi_key_height);
       cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width / 2), ffplayer->control_height);
@@ -1094,12 +1102,8 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
     j0 = j;
 
     if(((1 << j0) & bitmap) != 0){
-      cairo_set_source_rgb(cr, 0.5, 0.5, 1.0);
-
       cairo_rectangle(cr, (double) (widget->allocation.width - x[1]), 0.0, (double) x[1], semi_key_height);
       cairo_fill(cr); 	
-
-      cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
 
       if(x[1] > ffplayer->control_width / 2){
 	cairo_move_to(cr, (double) (widget->allocation.width - x[1] + ffplayer->control_width / 2), semi_key_height);

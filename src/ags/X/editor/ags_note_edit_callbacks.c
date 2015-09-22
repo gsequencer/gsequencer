@@ -339,9 +339,15 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 {
   AgsMachine *machine;
   AgsEditor *editor;
+
+  GtkStyle *note_edit_style;
+
   AgsNote *note, *note0;
+
   double tact;
-  
+
+  static const gdouble white_gc = 65535.0;
+
   auto void ags_note_edit_drawing_area_button_release_event_set_control();
   auto void ags_note_edit_drawing_area_button_release_event_draw_control(cairo_t *cr);
   auto void ags_note_edit_drawing_area_button_release_event_delete_point();
@@ -444,7 +450,12 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
       }
     }
 
-    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+    
+    cairo_set_source_rgb(cr,
+			 note_edit_style->fg[0].red / white_gc,
+			 note_edit_style->fg[0].green / white_gc,
+			 note_edit_style->fg[0].blue / white_gc);
+
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }
@@ -580,6 +591,8 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     machine = editor->selected_machine;
     note = note_edit->control.note;
 
+    note_edit_style = gtk_widget_get_style(widget);
+
     /* store the events position */
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
@@ -678,11 +691,18 @@ ags_note_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
 {
   AgsMachine *machine;
   AgsEditor *editor;
+
+  GtkStyle *note_edit_style;
+
   AgsNote *note, *note0;
+  
   double value[2];
   double tact;
   guint note_x1;
   guint prev_x1;
+
+  static const gdouble white_gc = 65535.0;
+
   void ags_note_edit_drawing_area_motion_notify_event_set_control(){
     GList *list_notation;
     guint note_x, note_y;
@@ -757,7 +777,11 @@ ags_note_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
       }
     }
 
-    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+    cairo_set_source_rgb(cr,
+			 note_edit_style->fg[0].red / white_gc,
+			 note_edit_style->fg[0].green / white_gc,
+			 note_edit_style->fg[0].blue / white_gc);
+
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }
@@ -867,6 +891,8 @@ ags_note_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
     
     machine = editor->selected_machine;
     note = note_edit->control.note;
+
+    note_edit_style = gtk_widget_get_style(widget);
 
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
