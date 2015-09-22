@@ -1,3 +1,9 @@
+ags (0.6.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash related to XML IO of AgsFileLink
+	* implemented ags-envelope recall but it's not tested, yet
+
 ags (0.6.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

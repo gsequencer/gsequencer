@@ -356,7 +356,24 @@ ags_channel_set_property(GObject *gobject,
 {
   AgsChannel *channel;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *channel_mutex;
+  
   channel = AGS_CHANNEL(gobject);
+
+  pthread_mutex_lock(&ags_application_mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+
+  pthread_mutex_unlock(&ags_application_mutex);
+  
+  if(channel_mutex != NULL){
+    pthread_mutex_lock(channel_mutex);
+  }
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -392,6 +409,10 @@ ags_channel_set_property(GObject *gobject,
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
+  }
+
+  if(channel_mutex != NULL){
+    pthread_mutex_unlock(channel_mutex);
   }
 }
 
@@ -2079,7 +2100,7 @@ ags_channel_recycling_changed(AgsChannel *channel,
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *mutex;
-  
+
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
