@@ -1,3 +1,11 @@
+ags (0.6.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored ags_audio_set_audio_channels() and ags_audio_set_pads()
+	* improved ags_channel_set_recycling() to instantiate AgsRecallID
+	* enhanced ags_recycling.c to use mutices in view of super-threaded computing
+	* enhanced ags_audio.c to use mutices
+
 ags (0.6.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
