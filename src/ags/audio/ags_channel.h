@@ -126,6 +126,8 @@ AgsChannel* ags_channel_pad_nth(AgsChannel *channel, guint nth);
 
 AgsChannel* ags_channel_first_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_last_with_recycling(AgsChannel *channel);
+AgsChannel* ags_channel_prev_with_recycling(AgsChannel *channel);
+AgsChannel* ags_channel_next_with_recycling(AgsChannel *channel);
 
 void ags_channel_set_devout(AgsChannel *channel, GObject *devout);
 
@@ -140,7 +142,9 @@ void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
 
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			  GError **error);
-void ags_channel_set_recycling(AgsChannel *channel, AgsRecycling *first_recycling, AgsRecycling *last_recycling, gboolean update, gboolean destroy_old);
+void ags_channel_set_recycling(AgsChannel *channel,
+			       AgsRecycling *first_recycling, AgsRecycling *last_recycling,
+			       gboolean update, gboolean destroy_old);
 void ags_channel_recursive_reset_recycling_container(AgsChannel *channel,
 						     AgsRecyclingContainer *old_recycling_container,
 						     AgsRecyclingContainer *recycling_container);
