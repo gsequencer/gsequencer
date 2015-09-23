@@ -1393,13 +1393,14 @@ ags_channel_set_recycling(AgsChannel *channel,
 {
   AgsAudio *audio;
   AgsAudio *found_prev, *found_next;
+  AgsChannel *prev_channel, *next_channel, *current;
+  AgsRecycling *parent;
   AgsRecycling *old_first_recycling, *old_last_recycling;
   AgsRecycling *replace_with_first_recycling, *replace_with_last_recycling;
   AgsRecycling *changed_old_first_recycling, *changed_old_last_recycling;
-  AgsChannel *prev_channel, *next_channel, *current;
   AgsRecycling *nth_recycling, *next_recycling, *stop_recycling;
-  AgsRecycling *parent;
   AgsRecyclingContainer *recycling_container, *old_recycling_container;
+  AgsRecallID *current_recall_id;
   
   GList *recall_id;
 
@@ -1857,7 +1858,29 @@ ags_channel_set_recycling(AgsChannel *channel,
       nth_recycling = nth_recycling->next;
     }
   }
-  
+
+  /* add recall id */
+  recall_id = audio->recall_id;
+
+  while(recall_id != NULL){
+    if(AGS_RECALL_ID(recall_id->data)->recycling != NULL &&
+       AGS_IS_OUTPUT(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)){
+      recall_id = recall_id->next;
+	    
+      continue;
+    }
+	    
+    current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+				     "recycling\0", channel->first_recycling,
+				     "recycling-container\0", AGS_RECALL_ID(recall_id->data)->recycling_container,
+				     NULL);
+	  
+    ags_channel_add_recall_id(channel,
+			      current_recall_id);
+	    
+    recall_id = recall_id->next;
+  }
+
   /* update recycling container */
   recall_id = audio->recall_id;
     
