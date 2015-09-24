@@ -409,6 +409,10 @@ ags_recycling_add_audio_signal(AgsRecycling *recycling,
 
   pthread_mutex_t *recycling_mutex;
 
+  if(recycling == NULL){
+    return;
+  }
+  
   /* lookup mutex */
   pthread_mutex_lock(&ags_application_mutex);
   
@@ -470,6 +474,10 @@ ags_recycling_remove_audio_signal(AgsRecycling *recycling,
 
   pthread_mutex_t *recycling_mutex;
 
+  if(recycling == NULL){
+    return;
+  }
+  
   /* lookup mutex */
   pthread_mutex_lock(&ags_application_mutex);
   

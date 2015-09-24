@@ -1696,6 +1696,12 @@ ags_audio_real_set_pads(AgsAudio *audio,
   /* entry point */
   ags_audio_set_pads_init_parameters();
 
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+	  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
   if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
     /* output */
     pads_old = audio->output_pads;
@@ -3272,8 +3278,8 @@ ags_audio_open_files(AgsAudio *audio,
 	  audio_signal_list = audio_signal_list->next;
 	  channel = channel->next;
 	  
-	  pthread_mutex_lock(recycling_mutex);
-	  pthread_mutex_lock(channel_mutex);
+	  pthread_mutex_unlock(recycling_mutex);
+	  pthread_mutex_unlock(channel_mutex);
 	}
 
 	if(audio_file->channels < audio->audio_channels)
@@ -3339,8 +3345,8 @@ ags_audio_open_files(AgsAudio *audio,
 	audio_signal_list = audio_signal_list->next;
 	channel = channel->next;
 
-	pthread_mutex_lock(recycling_mutex);
-	pthread_mutex_lock(channel_mutex);
+	pthread_mutex_unlock(recycling_mutex);
+	pthread_mutex_unlock(channel_mutex);
       }
       
       if(audio->audio_channels > audio_file->channels)
