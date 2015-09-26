@@ -140,21 +140,19 @@ void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_co
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
 
-void ags_channel_done(AgsChannel *channel,
-		      AgsRecallID *recall_id);
-
 void ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 					  guint size);
 
-void ags_channel_resolve_recall(AgsChannel *channel,
-				AgsRecallID *recall_id);
-
-void ags_channel_play(AgsChannel *channel,
-		      AgsRecallID *recall_id, gint stage);
 void ags_channel_duplicate_recall(AgsChannel *channel,
 				  AgsRecallID *recall_id);
+void ags_channel_resolve_recall(AgsChannel *channel,
+				AgsRecallID *recall_id);
 void ags_channel_init_recall(AgsChannel *channel, gint stage,
 			     AgsRecallID *recall_id);
+void ags_channel_play(AgsChannel *channel,
+		      AgsRecallID *recall_id, gint stage);
+void ags_channel_done(AgsChannel *channel,
+		      AgsRecallID *recall_id);
 
 void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id);
 void ags_channel_remove(AgsChannel *channel, AgsRecallID *recall_id);
