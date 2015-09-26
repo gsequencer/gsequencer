@@ -247,6 +247,7 @@ gsequencerheaders = \
 	src/ags/object/ags_applicable.h \
 	src/ags/object/ags_async_queue.h \
 	src/ags/object/ags_countable.h \
+	src/ags/object/ags_concurrent_tree.h \
 	src/ags/object/ags_dynamic_connectable.h \
 	src/ags/object/ags_effect.h \
 	src/ags/object/ags_main_loop.h \
@@ -587,6 +588,7 @@ gsequencer_SOURCES = \
 	src/ags/object/ags_applicable.c \
 	src/ags/object/ags_async_queue.c \
 	src/ags/object/ags_countable.c \
+	src/ags/object/ags_concurrent_tree.c \
 	src/ags/object/ags_dynamic_connectable.c \
 	src/ags/object/ags_effect.c \
 	src/ags/object/ags_main_loop.c \

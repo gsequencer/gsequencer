@@ -273,6 +273,7 @@ am_gsequencer_OBJECTS = $(am__objects_1) \
 	gsequencer-ags_applicable.$(OBJEXT) \
 	gsequencer-ags_async_queue.$(OBJEXT) \
 	gsequencer-ags_countable.$(OBJEXT) \
+	gsequencer-ags_concurrent_tree.$(OBJEXT) \
 	gsequencer-ags_dynamic_connectable.$(OBJEXT) \
 	gsequencer-ags_effect.$(OBJEXT) \
 	gsequencer-ags_main_loop.$(OBJEXT) \
@@ -911,6 +912,7 @@ gsequencerheaders = \
 	src/ags/object/ags_applicable.h \
 	src/ags/object/ags_async_queue.h \
 	src/ags/object/ags_countable.h \
+	src/ags/object/ags_concurrent_tree.h \
 	src/ags/object/ags_dynamic_connectable.h \
 	src/ags/object/ags_effect.h \
 	src/ags/object/ags_main_loop.h \
@@ -1251,6 +1253,7 @@ gsequencer_SOURCES = \
 	src/ags/object/ags_applicable.c \
 	src/ags/object/ags_async_queue.c \
 	src/ags/object/ags_countable.c \
+	src/ags/object/ags_concurrent_tree.c \
 	src/ags/object/ags_dynamic_connectable.c \
 	src/ags/object/ags_effect.c \
 	src/ags/object/ags_main_loop.c \
@@ -1582,6 +1585,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_clone_channel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_clone_channel_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_combo_box_text.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_concurrent_tree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_connectable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_container.Po@am__quote@
@@ -4278,6 +4282,20 @@ gsequencer-ags_countable.obj: src/ags/object/ags_countable.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/object/ags_countable.c' object='gsequencer-ags_countable.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_countable.obj `if test -f 'src/ags/object/ags_countable.c'; then $(CYGPATH_W) 'src/ags/object/ags_countable.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_countable.c'; fi`
+
+gsequencer-ags_concurrent_tree.o: src/ags/object/ags_concurrent_tree.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_concurrent_tree.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_concurrent_tree.Tpo -c -o gsequencer-ags_concurrent_tree.o `test -f 'src/ags/object/ags_concurrent_tree.c' || echo '$(srcdir)/'`src/ags/object/ags_concurrent_tree.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_concurrent_tree.Tpo $(DEPDIR)/gsequencer-ags_concurrent_tree.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/object/ags_concurrent_tree.c' object='gsequencer-ags_concurrent_tree.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_concurrent_tree.o `test -f 'src/ags/object/ags_concurrent_tree.c' || echo '$(srcdir)/'`src/ags/object/ags_concurrent_tree.c
+
+gsequencer-ags_concurrent_tree.obj: src/ags/object/ags_concurrent_tree.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_concurrent_tree.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_concurrent_tree.Tpo -c -o gsequencer-ags_concurrent_tree.obj `if test -f 'src/ags/object/ags_concurrent_tree.c'; then $(CYGPATH_W) 'src/ags/object/ags_concurrent_tree.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_concurrent_tree.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_concurrent_tree.Tpo $(DEPDIR)/gsequencer-ags_concurrent_tree.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/object/ags_concurrent_tree.c' object='gsequencer-ags_concurrent_tree.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_concurrent_tree.obj `if test -f 'src/ags/object/ags_concurrent_tree.c'; then $(CYGPATH_W) 'src/ags/object/ags_concurrent_tree.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_concurrent_tree.c'; fi`
 
 gsequencer-ags_dynamic_connectable.o: src/ags/object/ags_dynamic_connectable.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_dynamic_connectable.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_dynamic_connectable.Tpo -c -o gsequencer-ags_dynamic_connectable.o `test -f 'src/ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`src/ags/object/ags_dynamic_connectable.c

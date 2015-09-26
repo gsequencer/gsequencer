@@ -217,6 +217,7 @@ ags_soundcard_get_buffer(AgsSoundcard *soundcard)
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_val_if_fail(soundcard_interface->get_buffer, NULL);
+
   return(soundcard_interface->get_buffer(soundcard));
 }
 
@@ -234,5 +235,6 @@ ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
   g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
   soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
   g_return_val_if_fail(soundcard_interface->get_next_buffer, NULL);
+
   return(soundcard_interface->get_next_buffer(soundcard));
 }

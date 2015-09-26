@@ -105,19 +105,15 @@ struct _AgsAudioClass
 
 GType ags_audio_get_type();
 
+void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
+
 void ags_audio_set_flags(AgsAudio *audio, guint flags);
 void ags_audio_unset_flags(AgsAudio *audio, guint flags);
 
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
 void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
 
-AgsRecallID* ags_audio_init_run(AgsAudio *audio);
-void ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id);
-void ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id);
-
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
-
-void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
 
 void ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container);
 void ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container);
@@ -133,33 +129,34 @@ void ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play);
 
 void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
 
+AgsRecallID* ags_audio_init_run(AgsAudio *audio);
 void ags_audio_duplicate_recall(AgsAudio *audio,
 				AgsRecallID *recall_id);
 void ags_audio_init_recall(AgsAudio *audio, gint stage,
 			   AgsRecallID *recall_id);
 void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id);
-
 gboolean ags_audio_is_playing(AgsAudio *audio);
-
 void ags_audio_play(AgsAudio *audio,
 		    AgsRecallID *recall_id,
 		    gint stage);
-
-GList* ags_audio_recursive_play_init(AgsAudio *audio,
-				     gboolean playback, gboolean sequencer, gboolean notation);
+void ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id);
+void ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id);
 
 void ags_audio_cancel(AgsAudio *audio,
 		      AgsRecallID *recall_id);
 void ags_audio_remove(AgsAudio *audio,
 		      AgsRecallID *recall_id);
 
+GList* ags_audio_find_port(AgsAudio *audio);
+
 void ags_audio_open_files(AgsAudio *audio,
 			  GSList *filenames,
 			  gboolean overwrite_channels,
 			  gboolean create_channels);
 
-GList* ags_audio_find_port(AgsAudio *audio);
+GList* ags_audio_recursive_play_init(AgsAudio *audio,
+				     gboolean playback, gboolean sequencer, gboolean notation);
 
 AgsAudio* ags_audio_new();
 
