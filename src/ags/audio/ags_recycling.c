@@ -23,6 +23,7 @@
 
 #include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_concurrent_tree.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
@@ -35,6 +36,7 @@
 
 void ags_recycling_class_init(AgsRecyclingClass *recycling_class);
 void ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_recycling_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent_tree);
 void ags_recycling_set_property(GObject *gobject,
 				guint prop_id,
 				const GValue *value,
@@ -46,6 +48,8 @@ void ags_recycling_get_property(GObject *gobject,
 void ags_recycling_init(AgsRecycling *recycling);
 void ags_recycling_connect(AgsConnectable *connectable);
 void ags_recycling_disconnect(AgsConnectable *connectable);
+pthread_mutex_t* ags_recycling_get_lock(AgsConcurrentTree *concurrent_tree);
+pthread_mutex_t* ags_recycling_get_parent_lock(AgsConcurrentTree *concurrent_tree);
 void ags_recycling_finalize(GObject *gobject);
 
 void ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
@@ -106,6 +110,12 @@ ags_recycling_get_type (void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_concurrent_tree_interface_info = {
+      (GInterfaceInitFunc) ags_recycling_concurrent_tree_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_recycling = g_type_register_static(G_TYPE_OBJECT,
 						"AgsRecycling\0",
 						&ags_recycling_info, 0);
@@ -113,6 +123,10 @@ ags_recycling_get_type (void)
     g_type_add_interface_static(ags_type_recycling,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_recycling,
+				AGS_TYPE_CONCURRENT_TREE,
+				&ags_concurrent_tree_interface_info);
   }
 
   return(ags_type_recycling);
@@ -213,6 +227,13 @@ ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_recycling_connect;
   connectable->disconnect = ags_recycling_disconnect;
+}
+
+void
+ags_recycling_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent_tree)
+{
+  concurrent_tree->get_lock = ags_recycling_get_lock;
+  concurrent_tree->get_parent_lock = ags_recycling_get_parent_lock;
 }
 
 void
@@ -336,6 +357,51 @@ void
 ags_recycling_disconnect(AgsConnectable *connectable)
 {
   /* empty */
+}
+
+pthread_mutex_t*
+ags_recycling_get_lock(AgsConcurrentTree *concurrent_tree)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *recycling_mutex;
+  
+  /* lookup mutex */
+  pthread_mutex_lock(&ags_application_mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     AGS_RECYCLING(concurrent_tree));
+
+  pthread_mutex_unlock(&ags_application_mutex);
+
+  return(recycling_mutex);
+}
+
+pthread_mutex_t*
+ags_recycling_get_parent_lock(AgsConcurrentTree *concurrent_tree)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *parent_mutex;
+  
+  /* lookup mutex */
+  pthread_mutex_lock(&ags_application_mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  if(AGS_RECYCLING(concurrent_tree)->parent != NULL){
+    parent_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    AGS_RECYCLING(concurrent_tree)->parent);
+  }else{
+    parent_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    AGS_RECYCLING(concurrent_tree)->devout);
+  }
+  
+  pthread_mutex_unlock(&ags_application_mutex);
+
+  return(parent_mutex);
 }
 
 void
