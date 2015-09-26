@@ -1,0 +1,121 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Drum</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="Advanced Gtk+ Sequencer"><link rel="up" href="ch02.html" title="Chapter 2. Engines"><link rel="prev" href="ch02s03.html" title="Mixer"><link rel="next" href="ch02s05.html" title="Matrix"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm46223126349984"></a>Drum</h2></div></div></div>
+    
+    <div class="mediaobject"><img src="../images/ags_drum.png"><div class="caption">
+	<p>
+	  The drum screenshot
+	</p>
+      </div></div>
+    <p>
+      Produce an audio stream by defining a pattern. The drum supports opening audio files and
+      associate to its input. You might doing it by open button located preceeding to pattern
+      box. Thus multi-selection of files is supported and assigning can be controlled by the
+      controls just above the action widgets. The drum input pad contains an open button, too.
+      It assigns available audio channels of the file to the grouped lines. One more way to
+      assign audio files is doing it so by link editor of machine's property dialog.
+      The drum may contain LADSPA plugins, too.
+    </p>
+    <p>
+      The drum may contain multiple input as well output pads. They are packed on top of the
+      composite widget, just below the machine's menu tool button. The input is packed horizontally
+      followed by vertically packed output.
+      The edit button within every input pad enables it as current input for editing pattern data.
+      Further you may de-/activate the group toggle button to control audio channel assignment.
+    </p>
+    <p>
+      Next to the multi-selection enable open button there's a loop check-box followed by the run
+      button what starts the drum sequencer. It follows the into a two dimensional matrix packed
+      pattern banks. Labeled from 1 to 12 and an the combined index labeled a throughout d. The
+      length spin-button controls the number of pattern pads to be played in sequence which may
+      be looped.
+    </p>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="idm46223126344480"></a>The pattern box</h3></div></div></div>
+      
+      <p>
+	As entering to pattern box with focus the only way to get out of it is by tabulator key.
+	With arrow keys you may navigate within pattern or toggle with space.
+      </p>
+
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	  <p>
+	    Left, Left-Arrow
+	  </p>
+	  
+	  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	      <p>
+		Move within pattern box left, as the pattern pad control is activate you get
+		an audible feedback.
+	      </p>
+	    </li></ul></div>
+
+	</li><li class="listitem" style="list-style-type: disc">
+	  <p>
+	    Right, Right-Arrow 
+	  </p>
+	  
+	  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	      <p>
+		Move within pattern box right, audible feedback as above.
+	      </p>
+	    </li></ul></div>
+
+	</li><li class="listitem" style="list-style-type: disc">
+	  <p>
+	    Up, Up-Arrow
+	  </p>
+	  
+	  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	      <p>
+		Decrease pattern box offset about available number of pattern pads, audible feedback as above.
+	      </p>
+	    </li></ul></div>
+
+	</li><li class="listitem" style="list-style-type: disc">
+	  <p>
+	    Down, Down-Arrow 
+	  </p>
+	  
+	  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	      <p>
+		Increase pattern box offset about available number of pattern pads, audible feedback as above.
+	      </p>
+	    </li></ul></div>
+
+	</li><li class="listitem" style="list-style-type: disc">
+	  <p>
+	    Space
+	  </p>
+	  
+	  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	      <p>
+		Toggle audio pattern and give audible feedback.
+	      </p>
+	    </li></ul></div>
+
+	</li><li class="listitem" style="list-style-type: disc">
+	  <p>
+	    Ctrl+c
+	  </p>
+	  
+	  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	      <p>
+		Copy the current pattern to clipboard
+	      </p>
+	    </li></ul></div>
+
+	</li><li class="listitem" style="list-style-type: disc">
+	  <p>
+	    Tab
+	  </p>
+	  
+	  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: bullet; "><li class="listitem" style="list-style-type: disc">
+	      <p>
+		Leave pattern box focus.
+	      </p>
+	    </li></ul></div>
+
+	</li></ul></div>
+
+    </div>
+    
+  </div></body></html>

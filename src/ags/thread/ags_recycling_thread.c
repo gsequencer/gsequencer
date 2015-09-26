@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_marshal.h>
 #include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_concurrent_tree.h>
 
 #include <ags/thread/ags_iterator_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
@@ -60,10 +61,14 @@ void ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
 					  AgsRecallID *recall_id,
 					  gint stage);
 
-void ags_recycling_thread_play_channel_queue(AgsReturnableThread *returnable_thread,
-					     AgsRecyclingThread *recycling_thread);
-void ags_recycling_thread_play_audio_queue(AgsReturnableThread *returnable_thread,
-					   AgsRecyclingThread *recycling_thread);
+void ags_recycling_thread_play_channel_worker(AgsRecyclingThread *recycling_thread,
+					      GObject *channel,
+					      AgsRecallID *recall_id,
+					      gint stage);
+void ags_recycling_thread_play_audio_worker(AgsRecyclingThread *recycling_thread,
+					    GObject *output, GObject *audio,
+					    AgsRecallID *recall_id,
+					    gint stage);
 
 void ags_recycling_thread_fifo(AgsRecyclingThread *thread);
 
@@ -207,6 +212,9 @@ ags_recycling_thread_init(AgsRecyclingThread *recycling_thread)
 
   recycling_thread->iteration_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(recycling_thread->iteration_cond, NULL);
+
+  recycling_thread->recycling_container = NULL;
+  recycling_thread->worker = NULL;
 }
 
 
@@ -305,7 +313,89 @@ ags_recycling_thread_start(AgsThread *thread)
 void
 ags_recycling_thread_run(AgsThread *thread)
 {
-  //TODO:JK: implement me
+  AgsRecyclingThread *recycling_thread;
+
+  AgsRecyclingThreadWorker *worker;
+  
+  GList *list;
+
+  guint i;
+  
+  recycling_thread = AGS_RECYCLING_THREAD(thread);
+
+  for(i = 0; i < 3; i++){
+    /* wait for iterator thread */
+    //TODO:JK: implement me
+    
+    /* lock context */
+    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(recycling_thread->recycling_container));
+
+    /* process worker */
+    list = g_list_reverse(recycling_thread->worker);
+  
+    while(list != NULL){
+      worker = list->data;
+      
+      if(worker->audio_worker){
+	ags_recycling_thread_play_audio_worker(recycling_thread,
+					       worker->channel, worker->audio,
+					       worker->recall_id,
+					       worker->stage);
+      }else{
+	ags_recycling_thread_play_channel_worker(recycling_thread,
+						 worker->channel,
+						 worker->recall_id,
+						 worker->stage);
+      }
+
+      list = list->next;
+    }
+
+    /* clear worker */
+    g_list_free_full(recycling_thread->worker,
+		     free);
+  
+    recycling_thread->worker = NULL;
+  }
+}
+
+AgsRecyclingThreadWorker*
+ags_recycling_thread_worker_alloc(AgsRecyclingThread *recycling_thread,
+				  GObject *audio,
+				  GObject *channel,
+				  AgsRecallID *recall_id,
+				  gint stage,
+				  gboolean audio_worker)
+{
+  AgsRecyclingThreadWorker *worker;
+
+  worker = (AgsRecyclingThreadWorker *) malloc(sizeof(AgsRecyclingThreadWorker));
+
+  worker->audio = audio;
+  worker->channel = channel;
+  
+  worker->recall_id = recall_id;
+  worker->stage = stage;
+
+  worker->audio_worker = audio_worker;
+  
+  return(worker);
+}
+
+void
+ags_recycling_thread_add_worker(AgsRecyclingThread *recycling_thread,
+				AgsRecyclingThreadWorker *worker)
+{
+  recycling_thread->worker = g_list_prepend(recycling_thread,
+					    worker);
+}
+
+void
+ags_recycling_thread_remove_worker(AgsRecyclingThread *recycling_thread,
+				   AgsRecyclingThreadWorker *worker)
+{
+  recycling_thread->worker = g_list_remove(recycling_thread,
+					   worker);
 }
 
 void
@@ -314,13 +404,13 @@ ags_recycling_thread_real_play_channel(AgsRecyclingThread *recycling_thread,
 				       AgsRecallID *recall_id,
 				       gint stage)
 {
-  while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(recycling_thread)->flags)))) != 0){
-    ags_recycling_thread_fifo(recycling_thread);
-
-    ags_channel_play(AGS_CHANNEL(channel),
-		     recall_id,
-		     stage);
-  }
+  ags_recycling_thread_add_worker(recycling_thread,
+				  ags_recycling_thread_worker_alloc(recycling_thread,
+								    NULL,
+								    channel,
+								    recall_id,
+								    stage,
+								    FALSE));
 }
 
 void
@@ -347,53 +437,13 @@ ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
 				     AgsRecallID *recall_id,
 				     gint stage)
 {
-  AgsChannel *input;
-  
-  if((AGS_AUDIO_ASYNC & (AGS_AUDIO(audio)->flags)) != 0){
-    input = ags_channel_nth(AGS_AUDIO(audio)->input,
-			    AGS_CHANNEL(output)->audio_channel);
-  }else{
-    input = ags_channel_nth(AGS_AUDIO(audio)->input,
-			    AGS_CHANNEL(output)->line);
-  }
-
-  while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(recycling_thread)->flags)))) != 0){
-    ags_recycling_thread_fifo(recycling_thread);
-
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
-      AgsRecallID *input_recall_id;
-      gint child_position;
-
-      /* input_recall_id - check if there is a new recycling */
-      child_position = ags_recycling_container_find_child(recall_id->recycling_container,
-							  input->first_recycling);
-      
-      if(child_position == -1){
-	input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
-								 recall_id->recycling_container);
-      }else{
-	GList *list;
-
-	list = g_list_nth(recall_id->recycling_container->children,
-			  child_position);
-
-	if(list != NULL){
-	  input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
-								   AGS_RECYCLING_CONTAINER(list->data));
-	}else{
-	  input_recall_id = NULL;
-	}
-      }
-
-      ags_audio_play(AGS_AUDIO(audio),
-		     input_recall_id,
-		     stage);
-    }
-    
-    ags_audio_play(AGS_AUDIO(audio),
-		   recall_id,
-		   stage);
-  }
+  ags_recycling_thread_add_worker(recycling_thread,
+				  ags_recycling_thread_worker_alloc(recycling_thread,
+								    audio,
+								    output,
+								    recall_id,
+								    stage,
+								    TRUE));
 }
 
 void
@@ -416,17 +466,69 @@ ags_recycling_thread_play_audio(AgsRecyclingThread *recycling_thread,
 }
 
 void
-ags_recycling_thread_play_channel_queue(AgsReturnableThread *returnable_thread,
-					AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_play_channel_worker(AgsRecyclingThread *recycling_thread,
+					 GObject *channel,
+					 AgsRecallID *recall_id,
+					 gint stage)
 {
-  //TODO:JK: implement me
+  ags_recycling_thread_fifo(recycling_thread);
+
+  ags_channel_play(AGS_CHANNEL(channel),
+		   recall_id,
+		   stage);
 }
 
 void
-ags_recycling_thread_play_audio_queue(AgsReturnableThread *returnable_thread,
-				      AgsRecyclingThread *recycling_thread)
+ags_recycling_thread_play_audio_worker(AgsRecyclingThread *recycling_thread,
+				       GObject *output, GObject *audio,
+				       AgsRecallID *recall_id,
+				       gint stage)
 {
-  //TODO:JK: implement me
+  AgsChannel *input;
+  
+  if((AGS_AUDIO_ASYNC & (AGS_AUDIO(audio)->flags)) != 0){
+    input = ags_channel_nth(AGS_AUDIO(audio)->input,
+			    AGS_CHANNEL(output)->audio_channel);
+  }else{
+    input = ags_channel_nth(AGS_AUDIO(audio)->input,
+			    AGS_CHANNEL(output)->line);
+  }
+
+  ags_recycling_thread_fifo(recycling_thread);
+
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
+    AgsRecallID *input_recall_id;
+    gint child_position;
+
+    /* input_recall_id - check if there is a new recycling */
+    child_position = ags_recycling_container_find_child(recall_id->recycling_container,
+							input->first_recycling);
+      
+    if(child_position == -1){
+      input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
+							       recall_id->recycling_container);
+    }else{
+      GList *list;
+
+      list = g_list_nth(recall_id->recycling_container->children,
+			child_position);
+
+      if(list != NULL){
+	input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
+								 AGS_RECYCLING_CONTAINER(list->data));
+      }else{
+	input_recall_id = NULL;
+      }
+    }
+
+    ags_audio_play(AGS_AUDIO(audio),
+		   input_recall_id,
+		   stage);
+  }
+    
+  ags_audio_play(AGS_AUDIO(audio),
+		 recall_id,
+		 stage);
 }
 
 void
@@ -436,26 +538,17 @@ ags_recycling_thread_fifo(AgsRecyclingThread *recycling_thread)
   
   pthread_mutex_lock(recycling_thread->iteration_mutex);
 
-  g_atomic_int_and(&(recycling_thread->flags),
-		   (~AGS_RECYCLING_THREAD_DONE));
+  g_atomic_int_or(&(recycling_thread->flags),
+		  AGS_RECYCLING_THREAD_WAIT);
 
   flags = g_atomic_int_get(&(recycling_thread->flags));
-
-  if((AGS_RECYCLING_THREAD_WAIT & (flags)) != 0 &&
-     (AGS_RECYCLING_THREAD_DONE & (flags)) == 0){
-    flags = g_atomic_int_get(&(recycling_thread->flags));
   
-    while((AGS_RECYCLING_THREAD_WAIT & (flags)) != 0 &&
-	  (AGS_RECYCLING_THREAD_DONE & (flags)) == 0){
-      pthread_cond_wait(recycling_thread->iteration_cond,
-			recycling_thread->iteration_mutex);
-    }
+  while((AGS_RECYCLING_THREAD_WAIT & (flags)) != 0 &&
+	(AGS_RECYCLING_THREAD_DONE & (flags)) == 0){
+    pthread_cond_wait(recycling_thread->iteration_cond,
+		      recycling_thread->iteration_mutex);
   }
   
-  g_atomic_int_or(&(recycling_thread->flags),
-		  (AGS_RECYCLING_THREAD_WAIT |
-		   AGS_RECYCLING_THREAD_DONE));
-
   pthread_mutex_unlock(recycling_thread->iteration_mutex);
 }
 

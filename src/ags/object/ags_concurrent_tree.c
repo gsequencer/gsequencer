@@ -111,8 +111,14 @@ ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
   mutex = ags_concurrent_tree_get_lock(concurrent_tree);
 
   if(lock_parent){
+    static pthread_mutex_t exclusive_lock = PTHREAD_MUTEX_INITIALIZER;
+
+    pthread_mutex_lock(&exclusive_lock);
+    
     pthread_mutex_lock(parent_mutex);
     pthread_mutex_lock(mutex);
+
+    pthread_mutex_unlock(&exclusive_lock);
 
     return(TRUE);
   }
