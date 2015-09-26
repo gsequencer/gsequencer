@@ -132,8 +132,11 @@ ags_iterator_thread_init(AgsIteratorThread *iterator_thread)
 {
   iterator_thread->flags = 0;
 
-  pthread_mutex_init(&(iterator_thread->tic_mutex), NULL);
-  pthread_cond_init(&(iterator_thread->tic_cond), NULL);
+  iterator_thread->tic_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(iterator_thread->tic_mutex, NULL);
+  
+  iterator_thread->tic_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(iterator_thread->tic_cond, NULL);
 
   iterator_thread->recycling_thread = NULL;
 
@@ -184,32 +187,46 @@ ags_iterator_thread_run(AgsThread *thread)
 {
   AgsIteratorThread *iterator_thread;
 
+  guint flags;
+  guint i;
+  
   iterator_thread = AGS_ITERATOR_THREAD(thread);
 
   /*  */
-  pthread_mutex_lock(&(iterator_thread->tic_mutex));
+  for(i = 0; i < 3; i++){
+    /* wait to be signaled */
+    pthread_mutex_lock(iterator_thread->tic_mutex);
 
-  iterator_thread->flags &= (~AGS_ITERATOR_THREAD_DONE);
+    g_atomic_int_and(&(iterator_thread->flags),
+		     (~AGS_ITERATOR_THREAD_DONE));
 
-  if((AGS_ITERATOR_THREAD_WAIT & (iterator_thread->flags)) != 0 &&
-     (AGS_ITERATOR_THREAD_DONE & (iterator_thread->flags)) == 0){
-    while((AGS_ITERATOR_THREAD_WAIT & (iterator_thread->flags)) != 0 &&
-	  (AGS_ITERATOR_THREAD_DONE & (iterator_thread->flags)) == 0){
-      pthread_cond_wait(&(iterator_thread->tic_cond),
-			&(iterator_thread->tic_mutex));
+    flags = g_atomic_int_get(&(iterator_thread->flags));
+    
+    if((AGS_ITERATOR_THREAD_WAIT & (flags)) != 0 &&
+       (AGS_ITERATOR_THREAD_DONE & (flags)) == 0){
+
+      flags = g_atomic_int_get(&(iterator_thread->flags));
+    
+      while((AGS_ITERATOR_THREAD_WAIT & (flags)) != 0 &&
+	    (AGS_ITERATOR_THREAD_DONE & (flags)) == 0){
+	pthread_cond_wait(iterator_thread->tic_cond,
+			  iterator_thread->tic_mutex);
+      }
     }
+
+    g_atomic_int_or(&(iterator_thread->flags),
+		    (AGS_ITERATOR_THREAD_WAIT |
+		     AGS_ITERATOR_THREAD_DONE));
+
+    pthread_mutex_unlock(iterator_thread->tic_mutex);
+
+    /* process tree */
+    iterator_thread->stage = i;
+    
+    ags_channel_recursive_play_threaded(iterator_thread->channel,
+					iterator_thread->recall_id,
+					iterator_thread->stage);
   }
-
-  iterator_thread->flags |= AGS_ITERATOR_THREAD_WAIT;
-
-  pthread_mutex_unlock(&(iterator_thread->tic_mutex));
-
-  /*  */
-  AGS_THREAD_CLASS(ags_iterator_thread_parent_class)->run(thread);
-
-  ags_channel_recursive_play_threaded(iterator_thread->channel,
-				      iterator_thread->recall_id,
-				      iterator_thread->stage);
 }
 
 void
@@ -220,12 +237,17 @@ ags_iterator_thread_real_children_ready(AgsIteratorThread *iterator_thread,
 
   recycling_thread = AGS_RECYCLING_THREAD(current);
 
-  pthread_mutex_lock(&(recycling_thread->iteration_mutex));
+  /* signal iterator thread's run */
+  pthread_mutex_lock(recycling_thread->iteration_mutex);
 
-  recycling_thread->flags &= (~AGS_RECYCLING_THREAD_WAIT);
-  pthread_cond_signal(&(recycling_thread->iteration_cond));
+  g_atomic_int_and(&(recycling_thread->flags),
+		   (~AGS_RECYCLING_THREAD_WAIT));
 
-  pthread_mutex_unlock(&(recycling_thread->iteration_mutex));
+  if((AGS_RECYCLING_THREAD_DONE & (g_atomic_int_get(&(iterator_thread->flags)))) == 0){
+    pthread_cond_signal(recycling_thread->iteration_cond);
+  }
+  
+  pthread_mutex_unlock(recycling_thread->iteration_mutex);
 }
 
 void
