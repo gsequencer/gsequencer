@@ -50,10 +50,10 @@ struct _AgsIteratorThread
 {
   AgsThread thread;
 
-  guint flags;
+  volatile guint flags;
 
-  pthread_mutex_t tic_mutex;
-  pthread_cond_t tic_cond;
+  pthread_mutex_t *tic_mutex;
+  pthread_cond_t *tic_cond;
 
   AgsThread *recycling_thread;
 

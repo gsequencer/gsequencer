@@ -47,4 +47,7 @@ GType ags_concurrent_tree_get_type();
 pthread_mutex_t* ags_concurrent_tree_get_lock(AgsConcurrentTree *concurrent_tree);
 pthread_mutex_t* ags_concurrent_tree_get_parent_lock(AgsConcurrentTree *concurrent_tree);
 
+gboolean ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree);
+void ags_concurrent_tree_unlock_context(AgsConcurrentTree *concurrent_tree);
+
 #endif /*__AGS_CONCURRENT_TREE_H__*/

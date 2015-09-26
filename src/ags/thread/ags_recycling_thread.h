@@ -44,21 +44,22 @@ typedef struct _AgsRecyclingThread AgsRecyclingThread;
 typedef struct _AgsRecyclingThreadClass AgsRecyclingThreadClass;
 
 typedef enum{
-  AGS_RECYCLING_THREAD_RUNNING   = 1,
-  AGS_RECYCLING_THREAD_WAIT      = 1 << 1,
-  AGS_RECYCLING_THREAD_DONE      = 1 << 2,
+  AGS_RECYCLING_THREAD_WAIT           = 1,
+  AGS_RECYCLING_THREAD_DONE           = 1 <<  1,
+  AGS_RECYCLING_THREAD_LOCKED         = 1 <<  2,
+  AGS_RECYCLING_THREAD_LOCKED_PARENT  = 1 <<  3,
 }AgsRecyclingThreadFlags;
 
 struct _AgsRecyclingThread
 {
   AgsThread thread;
 
-  guint flags;
+  volatile guint flags;
 
   AgsThread *iterator_thread;
 
-  pthread_mutex_t iteration_mutex;
-  pthread_cond_t iteration_cond;
+  pthread_mutex_t *iteration_mutex;
+  pthread_cond_t *iteration_cond;
 };
 
 struct _AgsRecyclingThreadClass

@@ -23,6 +23,7 @@
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/thread/ags_iterator_thread.h>
+#include <ags/thread/ags_returnable_thread.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -49,7 +50,7 @@ void ags_recycling_thread_disconnect(AgsConnectable *connectable);
 void ags_recycling_thread_finalize(GObject *gobject);
 
 void ags_recycling_thread_start(AgsThread *thread);
-
+void ags_recycling_thread_run(AgsThread *thread);
 void ags_recycling_thread_real_play_channel(AgsRecyclingThread *recycling_thread,
 					    GObject *channel,
 					    AgsRecallID *recall_id,
@@ -58,6 +59,11 @@ void ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
 					  GObject *output, GObject *audio,
 					  AgsRecallID *recall_id,
 					  gint stage);
+
+void ags_recycling_thread_play_channel_queue(AgsReturnableThread *returnable_thread,
+					     AgsRecyclingThread *recycling_thread);
+void ags_recycling_thread_play_audio_queue(AgsReturnableThread *returnable_thread,
+					   AgsRecyclingThread *recycling_thread);
 
 void ags_recycling_thread_fifo(AgsRecyclingThread *thread);
 
@@ -145,7 +151,8 @@ ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread)
   thread = (AgsThreadClass *) recycling_thread;
 
   thread->start = ags_recycling_thread_start;
-
+  thread->run = ags_recycling_thread_run;
+  
   /* AgsRecyclingThread */
   recycling_thread->play_channel = ags_recycling_thread_play_channel;
   recycling_thread->play_audio = ags_recycling_thread_play_audio;
@@ -195,8 +202,11 @@ ags_recycling_thread_init(AgsRecyclingThread *recycling_thread)
 
   recycling_thread->iterator_thread = NULL;
 
-  pthread_mutex_init(&(recycling_thread->iteration_mutex), NULL);
-  pthread_cond_init(&(recycling_thread->iteration_cond), NULL);
+  recycling_thread->iteration_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(recycling_thread->iteration_mutex, NULL);
+
+  recycling_thread->iteration_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(recycling_thread->iteration_cond, NULL);
 }
 
 
@@ -293,12 +303,18 @@ ags_recycling_thread_start(AgsThread *thread)
 }
 
 void
+ags_recycling_thread_run(AgsThread *thread)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_recycling_thread_real_play_channel(AgsRecyclingThread *recycling_thread,
 				       GObject *channel,
 				       AgsRecallID *recall_id,
 				       gint stage)
 {
-  while((AGS_RECYCLING_THREAD_RUNNING & (recycling_thread->flags)) != 0){
+  while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(recycling_thread)->flags)))) != 0){
     ags_recycling_thread_fifo(recycling_thread);
 
     ags_channel_play(AGS_CHANNEL(channel),
@@ -332,6 +348,7 @@ ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
 				     gint stage)
 {
   AgsChannel *input;
+  
   if((AGS_AUDIO_ASYNC & (AGS_AUDIO(audio)->flags)) != 0){
     input = ags_channel_nth(AGS_AUDIO(audio)->input,
 			    AGS_CHANNEL(output)->audio_channel);
@@ -340,7 +357,7 @@ ags_recycling_thread_real_play_audio(AgsRecyclingThread *recycling_thread,
 			    AGS_CHANNEL(output)->line);
   }
 
-  while((AGS_RECYCLING_THREAD_RUNNING & (recycling_thread->flags)) != 0){
+  while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(recycling_thread)->flags)))) != 0){
     ags_recycling_thread_fifo(recycling_thread);
 
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
@@ -399,21 +416,47 @@ ags_recycling_thread_play_audio(AgsRecyclingThread *recycling_thread,
 }
 
 void
+ags_recycling_thread_play_channel_queue(AgsReturnableThread *returnable_thread,
+					AgsRecyclingThread *recycling_thread)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recycling_thread_play_audio_queue(AgsReturnableThread *returnable_thread,
+				      AgsRecyclingThread *recycling_thread)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_recycling_thread_fifo(AgsRecyclingThread *recycling_thread)
 {
-  pthread_mutex_lock(&(recycling_thread->iteration_mutex));
+  guint flags;
+  
+  pthread_mutex_lock(recycling_thread->iteration_mutex);
 
-  recycling_thread->flags |= AGS_RECYCLING_THREAD_WAIT;
+  g_atomic_int_and(&(recycling_thread->flags),
+		   (~AGS_RECYCLING_THREAD_DONE));
 
-  while((AGS_RECYCLING_THREAD_WAIT & (recycling_thread->flags)) != 0 &&
-	(AGS_RECYCLING_THREAD_DONE & (recycling_thread->flags)) == 0){
-    pthread_cond_wait(&(recycling_thread->iteration_cond),
-		      &(recycling_thread->iteration_mutex));
+  flags = g_atomic_int_get(&(recycling_thread->flags));
+
+  if((AGS_RECYCLING_THREAD_WAIT & (flags)) != 0 &&
+     (AGS_RECYCLING_THREAD_DONE & (flags)) == 0){
+    flags = g_atomic_int_get(&(recycling_thread->flags));
+  
+    while((AGS_RECYCLING_THREAD_WAIT & (flags)) != 0 &&
+	  (AGS_RECYCLING_THREAD_DONE & (flags)) == 0){
+      pthread_cond_wait(recycling_thread->iteration_cond,
+			recycling_thread->iteration_mutex);
+    }
   }
+  
+  g_atomic_int_or(&(recycling_thread->flags),
+		  (AGS_RECYCLING_THREAD_WAIT |
+		   AGS_RECYCLING_THREAD_DONE));
 
-  recycling_thread->flags &= (~AGS_RECYCLING_THREAD_WAIT);
-
-  pthread_mutex_unlock(&(recycling_thread->iteration_mutex));
+  pthread_mutex_unlock(recycling_thread->iteration_mutex);
 }
 
 AgsRecyclingThread*

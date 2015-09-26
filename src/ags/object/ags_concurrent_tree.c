@@ -65,6 +65,8 @@ ags_concurrent_tree_base_init(AgsConcurrentTreeInterface *interface)
  * @concurrent_tree an #AgsConcurrent_Tree
  *
  * Get tree node's lock.
+ *
+ * Since: 0.6
  */
 pthread_mutex_t*
 ags_concurrent_tree_get_lock(AgsConcurrentTree *concurrent_tree)
@@ -82,7 +84,9 @@ ags_concurrent_tree_get_lock(AgsConcurrentTree *concurrent_tree)
  * ags_concurrent_tree_get_parent_lock:
  * @concurrent_tree an #AgsConcurrent_Tree
  *
- * Get tree node's lock.
+ * Get tree node's parent lock.
+ *
+ * Since: 0.6
  */
 pthread_mutex_t*
 ags_concurrent_tree_get_parent_lock(AgsConcurrentTree *concurrent_tree)
@@ -94,4 +98,38 @@ ags_concurrent_tree_get_parent_lock(AgsConcurrentTree *concurrent_tree)
   g_return_val_if_fail(concurrent_tree_interface->get_parent_lock, NULL);
   
   return(concurrent_tree_interface->get_parent_lock(concurrent_tree));
+}
+
+gboolean
+ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
+{
+  pthread_mutex_t *parent_mutex, *mutex;
+
+  gboolean lock_parent = TRUE;
+  
+  parent_mutex = ags_concurrent_tree_get_parent_lock(concurrent_tree);
+  mutex = ags_concurrent_tree_get_lock(concurrent_tree);
+
+  if(lock_parent){
+    pthread_mutex_lock(parent_mutex);
+    pthread_mutex_lock(mutex);
+
+    return(TRUE);
+  }
+}
+
+void
+ags_concurrent_tree_unlock_context(AgsConcurrentTree *concurrent_tree)
+{
+  pthread_mutex_t *parent_mutex, *mutex;
+
+  gboolean lock_parent = TRUE;
+  
+  parent_mutex = ags_concurrent_tree_get_parent_lock(concurrent_tree);
+  mutex = ags_concurrent_tree_get_lock(concurrent_tree);
+
+  if(lock_parent){
+    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(parent_mutex);
+  }
 }
