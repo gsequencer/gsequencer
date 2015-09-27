@@ -49,6 +49,7 @@ void ags_recycling_thread_get_property(GObject *gobject,
 void ags_recycling_thread_connect(AgsConnectable *connectable);
 void ags_recycling_thread_disconnect(AgsConnectable *connectable);
 void ags_recycling_thread_finalize(GObject *gobject);
+void ags_recycling_thread_queue(void *data);
 
 void ags_recycling_thread_start(AgsThread *thread);
 void ags_recycling_thread_run(AgsThread *thread);
@@ -305,13 +306,7 @@ ags_recycling_thread_finalize(GObject *gobject)
 }
 
 void
-ags_recycling_thread_start(AgsThread *thread)
-{
-  AGS_THREAD_CLASS(ags_recycling_thread_parent_class)->start(thread);
-}
-
-void
-ags_recycling_thread_run(AgsThread *thread)
+ags_recycling_thread_queue(void *data)
 {
   AgsRecyclingThread *recycling_thread;
 
@@ -319,17 +314,40 @@ ags_recycling_thread_run(AgsThread *thread)
   
   GList *list;
 
-  guint i;
-  
-  recycling_thread = AGS_RECYCLING_THREAD(thread);
+  guint flags;
 
-  for(i = 0; i < 3; i++){
-    /* wait for iterator thread */
-    //TODO:JK: implement me
+  recycling_thread = AGS_RECYCLING_THREAD(data);
+
+  while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(recycling_thread->flags)))) != 0){
+    /* wait for next run */
+    ags_recycling_thread_fifo(recycling_thread);
+
+    /* wait until lock is available */
+    pthread_mutex_lock(recycling_thread->worker_mutex);
+
+    g_atomic_int_and(&(recycling_thread->flags),
+		     ~AGS_RECYCLING_THREAD_WORKER_DONE);
     
-    /* lock context */
-    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(recycling_thread->recycling_container));
+    flags = g_atomic_int_get(&(recycling_thread->flags));
+    
+    if((AGS_RECYCLING_THREAD_WORKER_WAIT & (flags)) != 0 &&
+       (AGS_RECYCLING_THREAD_WORKER_DONE & (flags)) == 0){
 
+      while((AGS_RECYCLING_THREAD_WORKER_WAIT & (flags)) != 0 &&
+	    (AGS_RECYCLING_THREAD_WORKER_DONE & (flags)) == 0){
+	pthread_cond_wait(recycling_thread->worker_cond,
+			  recycling_thread->worker_mutex);
+	
+	flags = g_atomic_int_get(&(recycling_thread->flags));
+      }
+    }
+
+    g_atomic_int_or(&(recycling_thread->flags),
+		    (AGS_RECYCLING_THREAD_WORKER_WAIT |
+		     AGS_RECYCLING_THREAD_WORKER_DONE));
+    
+    pthread_mutex_unlock(recycling_thread->worker_mutex);
+    
     /* process worker */
     list = g_list_reverse(recycling_thread->worker);
   
@@ -356,6 +374,42 @@ ags_recycling_thread_run(AgsThread *thread)
 		     free);
   
     recycling_thread->worker = NULL;
+  }
+}
+
+void
+ags_recycling_thread_start(AgsThread *thread)
+{
+  AGS_THREAD_CLASS(ags_recycling_thread_parent_class)->start(thread);
+}
+
+void
+ags_recycling_thread_run(AgsThread *thread)
+{
+  AgsRecyclingThread *recycling_thread;
+
+  guint flags;
+  guint i;
+  
+  recycling_thread = AGS_RECYCLING_THREAD(thread);
+
+  for(i = 0; i < 3; i++){
+    /* lock context */
+    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(recycling_thread->recycling_container));
+
+    /* signal worker */
+    pthread_mutex_lock(recycling_thread->worker_mutex);
+
+    g_atomic_int_and(&(recycling_thread->flags),
+		     ~AGS_RECYCLING_THREAD_WORKER_WAIT);
+    
+    flags = g_atomic_int_get(&(recycling_thread->flags));
+
+    if((AGS_RECYCLING_THREAD_WORKER_DONE & (flags)) == 0){
+      pthread_cond_signal(recycling_thread->worker_cond);
+    }
+    
+    pthread_mutex_unlock(recycling_thread->worker_mutex);
   }
 }
 
@@ -494,8 +548,6 @@ ags_recycling_thread_play_audio_worker(AgsRecyclingThread *recycling_thread,
 			    AGS_CHANNEL(output)->line);
   }
 
-  ags_recycling_thread_fifo(recycling_thread);
-
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(audio)->flags)) != 0){
     AgsRecallID *input_recall_id;
     gint child_position;
@@ -547,6 +599,8 @@ ags_recycling_thread_fifo(AgsRecyclingThread *recycling_thread)
 	(AGS_RECYCLING_THREAD_DONE & (flags)) == 0){
     pthread_cond_wait(recycling_thread->iteration_cond,
 		      recycling_thread->iteration_mutex);
+
+    flags = g_atomic_int_get(&(recycling_thread->flags));
   }
   
   pthread_mutex_unlock(recycling_thread->iteration_mutex);

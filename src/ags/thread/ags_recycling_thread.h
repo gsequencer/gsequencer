@@ -49,6 +49,8 @@ typedef enum{
   AGS_RECYCLING_THREAD_DONE           = 1 <<  1,
   AGS_RECYCLING_THREAD_LOCKED         = 1 <<  2,
   AGS_RECYCLING_THREAD_LOCKED_PARENT  = 1 <<  3,
+  AGS_RECYCLING_THREAD_WORKER_WAIT    = 1 <<  4,
+  AGS_RECYCLING_THREAD_WORKER_DONE    = 1 <<  5,
 }AgsRecyclingThreadFlags;
 
 struct _AgsRecyclingThread
@@ -61,6 +63,11 @@ struct _AgsRecyclingThread
 
   pthread_mutex_t *iteration_mutex;
   pthread_cond_t *iteration_cond;
+
+  pthread_t *worker_queue;
+  
+  pthread_mutex_t *worker_mutex;
+  pthread_cond_t *worker_cond;
 
   GObject *recycling_container;
   GList *worker;
