@@ -1020,7 +1020,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   auto void ags_audio_set_audio_channels_shrink_notation();
   
   void ags_audio_set_audio_channels_init_parameters(GType type){
-    if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
+    if(type == AGS_TYPE_OUTPUT){
       link_recycling = FALSE;
 
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
@@ -1069,7 +1069,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     guint pads;
     guint i, j;
 
-    if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
+    if(type == AGS_TYPE_OUTPUT){
       /* AGS_TYPE_OUTPUT */
       pads = audio->output_pads;
       
@@ -1149,11 +1149,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  
 	  first_recycling->channel = (GObject *) channel;
 	  
-	  if(link_recycling){	    
-	    ags_channel_set_recycling(channel,
-				      first_recycling, last_recycling,
-				      TRUE, TRUE);
-	  }
+	  ags_channel_set_recycling(channel,
+				    first_recycling, last_recycling,
+				    TRUE, TRUE);
 	}else if(set_sync_link){
 	  AgsChannel *input;
 
@@ -1519,44 +1517,34 @@ ags_audio_real_set_pads(AgsAudio *audio,
   auto void ags_audio_set_pads_remove_notes();
 
   void ags_audio_set_pads_init_parameters(){
-    if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
-      link_recycling = FALSE;
-
+    alloc_recycling = FALSE;
+    link_recycling = FALSE;
+    set_sync_link = FALSE;
+    set_async_link = FALSE;
+    
+    if(type == AGS_TYPE_OUTPUT){
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	alloc_recycling = TRUE;
       }else{
-	alloc_recycling = FALSE;
-
 	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	  if((AGS_AUDIO_SYNC & (audio->flags)) != 0 && (AGS_AUDIO_ASYNC & (audio->flags)) == 0){
-	    set_sync_link = FALSE;
 	    set_async_link = TRUE;
 	  }else if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
 	    set_async_link = TRUE;
-	    set_sync_link = FALSE;
 	  }else{
 #ifdef AGS_DEBUG
 	    g_message("ags_audio_set_pads - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined\0");
 #endif
-	    set_sync_link = FALSE;
-	    set_async_link = FALSE;
 	  }
 	}
       }
-    }else{
-      set_sync_link = FALSE;
-      set_async_link = FALSE;
-      
+    }else{      
       if((AGS_AUDIO_INPUT_HAS_RECYCLING & audio->flags) != 0){
 	alloc_recycling = TRUE;
-      }else{
-	alloc_recycling = FALSE;
       }
       
       if((AGS_AUDIO_ASYNC & audio->flags) != 0 && alloc_recycling){
 	link_recycling = TRUE;
-      }else{
-	link_recycling = FALSE;
       }
     }    
   }
@@ -1640,11 +1628,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  
 	  first_recycling->channel = (GObject *) channel;
 	  
-	  if(link_recycling){	    
-	    ags_channel_set_recycling(channel,
-				      first_recycling, last_recycling,
-				      TRUE, TRUE);
-	  }
+	  ags_channel_set_recycling(channel,
+				    first_recycling, last_recycling,
+				    TRUE, TRUE);
 	}else if(set_sync_link){
 	  AgsChannel *input;
 
@@ -1842,7 +1828,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
   if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
     /* output */
     pads_old = audio->output_pads;
-    link_recycling = FALSE;
 
     if(pads_old == pads){
       return;
