@@ -896,7 +896,7 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
 
   end_recycling = end_region->next;
   
-  pthread_mutex_lock(end_recycling_mutex);
+  pthread_mutex_unlock(end_recycling_mutex);
 
   /* find */
   recycling = start_region;
@@ -947,7 +947,7 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
 
   AgsMutexManager *mutex_manager;
 
-  pthread_mutex_t *recycling_mutex, *start_recycling_mutex, *end_recycling_mutex;
+  pthread_mutex_t *current_mutex;
 
   gint position;
 
@@ -960,34 +960,7 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
   
   mutex_manager = ags_mutex_manager_get_instance();  
 
-  start_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						   (GObject *) start_region);
-
-  end_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) end_region);
-
   pthread_mutex_unlock(&ags_application_mutex);
-
-  /* verify objects */
-  pthread_mutex_lock(start_recycling_mutex);
-
-  if(!AGS_IS_RECYCLING(start_region)){
-    pthread_mutex_unlock(start_recycling_mutex);
-    
-    return;
-  }
-
-  pthread_mutex_lock(start_recycling_mutex);
-
-  pthread_mutex_lock(end_recycling_mutex);
-
-  if(!AGS_IS_RECYCLING(end_region)){
-    pthread_mutex_unlock(end_recycling_mutex);
-    
-    return;
-  }
-
-  pthread_mutex_lock(end_recycling_mutex);
 
   /* determine position */
   current = start_region;
@@ -999,22 +972,22 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
     /* lock current */
     pthread_mutex_lock(&ags_application_mutex);
     
-    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) recycling);
+    current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) current);
 
     pthread_mutex_unlock(&ags_application_mutex);
 
     /* check if new match */
-    pthread_mutex_lock(recycling_mutex);
+    pthread_mutex_lock(current_mutex);
 
     if(current == recycling){
-      pthread_mutex_unlock(recycling_mutex);
+      pthread_mutex_unlock(current_mutex);
 
       return(position);
     }
 
     current = current->next;
-    pthread_mutex_unlock(recycling_mutex);
+    pthread_mutex_unlock(current_mutex);
   }
 
   /* no match within region */
@@ -1037,7 +1010,9 @@ ags_recycling_new(GObject *devout)
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
-  recycling = (AgsRecycling *) g_object_new(AGS_TYPE_RECYCLING, NULL);
+  recycling = (AgsRecycling *) g_object_new(AGS_TYPE_RECYCLING,
+					    "devout\0", devout,
+					    NULL);
 
   audio_signal = ags_audio_signal_new(devout,
 				      (GObject *) recycling,

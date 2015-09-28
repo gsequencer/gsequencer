@@ -153,7 +153,7 @@ ags_link_channel_launch(AgsTask *task)
 	       "file-link", NULL,
 	       NULL);
   ags_channel_set_link(link_channel->channel, link_channel->link,
-		       &(link_channel->error));
+  		       &(link_channel->error));
 
   if(link_channel->error != NULL){
     g_message("%s\0", link_channel->error->message);
