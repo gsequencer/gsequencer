@@ -71,11 +71,11 @@ void ags_recycling_thread_play_audio_worker(AgsRecyclingThread *recycling_thread
 					    AgsRecallID *recall_id,
 					    gint stage);
 
-void ags_recycling_thread_fifo(AgsRecyclingThread *thread);
-
 enum{
   PROP_0,
   PROP_ITERATOR_THREAD,
+  PROP_FIRST_RECYCLING,
+  PROP_LAST_RECYCLING,
 };
 
 enum{
@@ -144,13 +144,31 @@ ags_recycling_thread_class_init(AgsRecyclingThreadClass *recycling_thread)
   gobject->finalize = ags_recycling_thread_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("iterator_thread\0",
+  param_spec = g_param_spec_object("iterator-thread\0",
 				   "assigned iterator thread\0",
 				   "The iterator thread object it is assigned to\0",
 				    AGS_TYPE_ITERATOR_THREAD,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
    g_object_class_install_property(gobject,
 				   PROP_ITERATOR_THREAD,
+				   param_spec);
+
+   param_spec = g_param_spec_object("first-recycling\0",
+				    "assigned first recycling\0",
+				    "The first recycling to acquire lock\0",
+				    AGS_TYPE_RECYCLING,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+   g_object_class_install_property(gobject,
+				   PROP_FIRST_RECYCLING,
+				   param_spec);
+
+   param_spec = g_param_spec_object("last-recycling\0",
+				    "assigned last recycling\0",
+				    "The last recycling to acquire lock\0",
+				    AGS_TYPE_RECYCLING,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+   g_object_class_install_property(gobject,
+				   PROP_LAST_RECYCLING,
 				   param_spec);
 
   /* AgsThread */
@@ -245,16 +263,61 @@ ags_recycling_thread_set_property(GObject *gobject,
 
        iterator_thread = (AgsThread *) g_value_get_object(value);
 
-       if(recycling_thread->iterator_thread == iterator_thread)
+       if(recycling_thread->iterator_thread == iterator_thread){
 	 return;
+       }
 
-       if(recycling_thread->iterator_thread != NULL)
+       if(recycling_thread->iterator_thread != NULL){
 	 g_object_unref(recycling_thread->iterator_thread);
-
-       if(iterator_thread != NULL)
+       }
+       
+       if(iterator_thread != NULL){
 	 g_object_ref(iterator_thread);
-
+       }
+       
        recycling_thread->iterator_thread = iterator_thread;
+     }
+     break;
+   case PROP_FIRST_RECYCLING:
+     {
+       AgsRecycling *first_recycling;
+
+       first_recycling = (AgsRecycling *) g_value_get_object(value);
+
+       if(recycling_thread->first_recycling == first_recycling){
+	 return;
+       }
+
+       if(recycling_thread->first_recycling != NULL){
+	 g_object_unref(recycling_thread->first_recycling);
+       }
+       
+       if(first_recycling != NULL){
+	 g_object_ref(first_recycling);
+       }
+       
+       recycling_thread->first_recycling = first_recycling;
+     }
+     break;
+   case PROP_LAST_RECYCLING:
+     {
+       AgsRecycling *last_recycling;
+
+       last_recycling = (AgsRecycling *) g_value_get_object(value);
+
+       if(recycling_thread->last_recycling == last_recycling){
+	 return;
+       }
+
+       if(recycling_thread->last_recycling != NULL){
+	 g_object_unref(recycling_thread->last_recycling);
+       }
+       
+       if(last_recycling != NULL){
+	 g_object_ref(last_recycling);
+       }
+       
+       recycling_thread->last_recycling = last_recycling;
      }
      break;
   default:
@@ -276,6 +339,12 @@ ags_recycling_thread_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_ITERATOR_THREAD:
     g_value_set_object(value, recycling_thread->iterator_thread);
+    break;
+  case PROP_FIRST_RECYCLING:
+    g_value_set_object(value, recycling_thread->first_recycling);
+    break;
+  case PROP_LAST_RECYCLING:
+    g_value_set_object(value, recycling_thread->last_recycling);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -386,6 +455,10 @@ ags_recycling_thread_queue(void *data)
 
     /* unlock context */
     ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(recycling_thread->first_recycling));
+
+    /* notify iterator thread, signal fifo */
+    ags_iterator_thread_children_ready(recycling_thread->iterator_thread,
+				       recycling_thread);
   }
 }
 
@@ -600,6 +673,15 @@ ags_recycling_thread_play_audio_worker(AgsRecyclingThread *recycling_thread,
 		 stage);
 }
 
+AgsRecyclingThread*
+ags_recycling_thread_find_child(AgsRecyclingThread *recycling_thread,
+				GObject *parent_recycling)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
 void
 ags_recycling_thread_fifo(AgsRecyclingThread *recycling_thread)
 {
@@ -624,11 +706,14 @@ ags_recycling_thread_fifo(AgsRecyclingThread *recycling_thread)
 }
 
 AgsRecyclingThread*
-ags_recycling_thread_new()
+ags_recycling_thread_new(GObject *first_recycling,
+			 GObject *last_recycling)
 {
   AgsRecyclingThread *recycling_thread;
   
   recycling_thread = (AgsRecyclingThread *) g_object_new(AGS_TYPE_RECYCLING_THREAD,
+							 "first-recycling\0", first_recycling,
+							 "last-recycling\0", last_recycling,
 							 NULL);
 
   return(recycling_thread);
