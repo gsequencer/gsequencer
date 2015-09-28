@@ -69,7 +69,8 @@ struct _AgsRecyclingThread
   pthread_mutex_t *worker_mutex;
   pthread_cond_t *worker_cond;
 
-  GObject *recycling_container;
+  GObject *first_recycling;
+  GObject *last_recycling;
   GList *worker;
 };
 
