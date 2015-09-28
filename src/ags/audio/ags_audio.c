@@ -362,7 +362,12 @@ ags_audio_init(AgsAudio *audio)
 					   AGS_CONFIG_THREAD,
 					   "super-threaded-scope\0"),
 			    "channel\0",
-			    8)){
+			    8) ||
+       !g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "recycling\0",
+			    10)){
       g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
 		      AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO);
 
@@ -710,7 +715,13 @@ ags_audio_set_devout(AgsAudio *audio, GObject *devout)
 					   AGS_CONFIG_THREAD,
 					   "super-threaded-scope\0"),
 			    "channel\0",
-			    8)){
+			    8) ||
+       !g_ascii_strncasecmp(ags_config_get(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "recycling\0",
+			    10)){
+      
       /* sequencer */
       g_object_set(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->audio_thread[1],
 		   "devout\0", devout,

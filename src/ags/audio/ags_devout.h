@@ -33,6 +33,7 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_devout_thread.h>
 #include <ags/thread/ags_iterator_thread.h>
+#include <ags/thread/ags_recycling_thread.h>
 
 #include <ags/audio/ags_recall_id.h>
 
@@ -222,6 +223,8 @@ struct _AgsDevoutPlay
   
   AgsThread **channel_thread;
   AgsIteratorThread **iterator_thread;
+
+  AgsThread **recycling_thread;
 
   GObject *source;
   guint audio_channel;

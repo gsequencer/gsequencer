@@ -961,6 +961,13 @@ ags_devout_play_alloc()
   play->iterator_thread[1] = NULL;
   play->iterator_thread[2] = NULL;
 
+  /* recycling thread */
+  play->recycling_thread = (AgsRecyclingThread **) malloc(3 * sizeof(AgsRecyclingThread *));
+
+  play->recycling_thread[0] = NULL;
+  play->recycling_thread[1] = NULL;
+  play->recycling_thread[2] = NULL;
+
   /* source */
   play->source = NULL;
   play->audio_channel = 0;
@@ -986,11 +993,26 @@ ags_devout_play_alloc()
 void
 ags_devout_play_free(AgsDevoutPlay *play)
 {
+  /* channel thread */
+  g_object_unref(G_OBJECT(play->channel_thread[0]));
+  g_object_unref(G_OBJECT(play->channel_thread[1]));
+  g_object_unref(G_OBJECT(play->channel_thread[2]));
+
+  free(play->channel_thread);
+
+  /* iterator thread */
   g_object_unref(G_OBJECT(play->iterator_thread[0]));
   g_object_unref(G_OBJECT(play->iterator_thread[1]));
   g_object_unref(G_OBJECT(play->iterator_thread[2]));
 
   free(play->iterator_thread);
+
+  /* recycling thread */
+  g_object_unref(G_OBJECT(play->recycling_thread[0]));
+  g_object_unref(G_OBJECT(play->recycling_thread[1]));
+  g_object_unref(G_OBJECT(play->recycling_thread[2]));
+
+  free(play->recycling_thread);
 }
 
 /**
