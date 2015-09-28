@@ -675,7 +675,7 @@ ags_recycling_thread_play_audio_worker(AgsRecyclingThread *recycling_thread,
 
 AgsRecyclingThread*
 ags_recycling_thread_find_child(AgsRecyclingThread *recycling_thread,
-				GObject *parent_recycling)
+				GObject *first_recycling)
 {
   //TODO:JK: implement me
   

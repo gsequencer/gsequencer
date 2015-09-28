@@ -126,7 +126,7 @@ void ags_recycling_thread_play_audio(AgsRecyclingThread *recycling_thread,
 				     gint stage);
 
 AgsRecyclingThread* ags_recycling_thread_find_child(AgsRecyclingThread *recycling_thread,
-						    GObject *parent_recycling);
+						    GObject *first_recycling);
 
 void ags_recycling_thread_fifo(AgsRecyclingThread *recycling_thread);
 
