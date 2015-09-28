@@ -214,7 +214,16 @@ ags_recycling_thread_init(AgsRecyclingThread *recycling_thread)
   recycling_thread->iteration_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(recycling_thread->iteration_cond, NULL);
 
-  recycling_thread->recycling_container = NULL;
+  recycling_thread->worker_queue = (pthread_t *) malloc(sizeof(pthread_t));
+
+  recycling_thread->worker_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(recycling_thread->worker_mutex, NULL);
+
+  recycling_thread->worker_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(recycling_thread->worker_cond, NULL);
+
+  recycling_thread->first_recycling = NULL;
+  recycling_thread->last_recycling = NULL;
   recycling_thread->worker = NULL;
 }
 
@@ -319,10 +328,7 @@ ags_recycling_thread_queue(void *data)
   recycling_thread = AGS_RECYCLING_THREAD(data);
 
   while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(recycling_thread->flags)))) != 0){
-    /* wait for next run */
-    ags_recycling_thread_fifo(recycling_thread);
-
-    /* wait until lock is available */
+    /* wait until fifo is available */
     pthread_mutex_lock(recycling_thread->worker_mutex);
 
     g_atomic_int_and(&(recycling_thread->flags),
@@ -347,7 +353,10 @@ ags_recycling_thread_queue(void *data)
 		     AGS_RECYCLING_THREAD_WORKER_DONE));
     
     pthread_mutex_unlock(recycling_thread->worker_mutex);
-    
+
+    /* lock context */
+    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(recycling_thread->first_recycling));
+        
     /* process worker */
     list = g_list_reverse(recycling_thread->worker);
   
@@ -374,12 +383,22 @@ ags_recycling_thread_queue(void *data)
 		     free);
   
     recycling_thread->worker = NULL;
+
+    /* unlock context */
+    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(recycling_thread->first_recycling));
   }
 }
 
 void
 ags_recycling_thread_start(AgsThread *thread)
 {
+  AgsRecyclingThread *recycling_thread;
+
+  recycling_thread = AGS_RECYCLING_THREAD(thread);
+
+  pthread_create(recycling_thread->worker_queue, NULL,
+		 &ags_recycling_thread_queue, thread);
+  
   AGS_THREAD_CLASS(ags_recycling_thread_parent_class)->start(thread);
 }
 
@@ -394,8 +413,8 @@ ags_recycling_thread_run(AgsThread *thread)
   recycling_thread = AGS_RECYCLING_THREAD(thread);
 
   for(i = 0; i < 3; i++){
-    /* lock context */
-    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(recycling_thread->recycling_container));
+    /* wait for next run */
+    ags_recycling_thread_fifo(recycling_thread);
 
     /* signal worker */
     pthread_mutex_lock(recycling_thread->worker_mutex);
@@ -525,8 +544,6 @@ ags_recycling_thread_play_channel_worker(AgsRecyclingThread *recycling_thread,
 					 AgsRecallID *recall_id,
 					 gint stage)
 {
-  ags_recycling_thread_fifo(recycling_thread);
-
   ags_channel_play(AGS_CHANNEL(channel),
 		   recall_id,
 		   stage);
