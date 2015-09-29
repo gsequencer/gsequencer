@@ -307,7 +307,7 @@ ags_channel_thread_start(AgsThread *thread)
   g_atomic_int_and(&(AGS_CHANNEL_THREAD(thread)->flags),
 		   (~(AGS_CHANNEL_THREAD_WAKEUP |
 		      AGS_CHANNEL_THREAD_WAITING |
-		      AGS_CHANNEL_THREAD_NOTIFY |
+		      AGS_CHANNEL_THREAD_WAIT |
   		      AGS_CHANNEL_THREAD_DONE)));
   
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->start(thread);
@@ -394,10 +394,10 @@ ags_channel_thread_run(AgsThread *thread)
   /* sync */
   pthread_mutex_lock(channel_thread->done_mutex);
 
-  g_atomic_int_or(&(channel_thread->flags),
-		  AGS_CHANNEL_THREAD_DONE);
+  g_atomic_int_and(&(channel_thread->flags),
+		   (~AGS_CHANNEL_THREAD_WAIT));
 	    
-  if((AGS_CHANNEL_THREAD_NOTIFY & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
+  if((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0){
     pthread_cond_signal(channel_thread->done_cond);
   }
 	    

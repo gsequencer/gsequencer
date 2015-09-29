@@ -847,7 +847,9 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 								audio_recall_id->recycling_container);
     }
   }
-  
+
+  //TODO:JK: remove because run order isn't used anymore
+  /*
   if(recall_id->recycling_container->parent != NULL){
     copy->run_order = g_list_index(recall_id->recycling_container->parent->children,
 				   recall_id->recycling_container);
@@ -860,6 +862,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
     copy->run_order = AGS_CHANNEL(recycling->channel)->audio_channel;
   }
+  */
 
   return((AgsRecall *) copy);
 }
