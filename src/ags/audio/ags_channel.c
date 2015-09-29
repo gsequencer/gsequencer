@@ -6197,7 +6197,51 @@ ags_channel_recursive_play(AgsChannel *channel,
       input_start =
 	input = ags_channel_nth(input,
 				audio_channel);
-      
+
+      /* play recalls on input */
+      while(input != NULL){
+	/* lookup mutex */
+	pthread_mutex_lock(&(ags_application_mutex));
+
+	input_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       input);
+    
+	pthread_mutex_unlock(&(ags_application_mutex));
+
+	/* get first recycling */
+	pthread_mutex_lock(input_mutex);
+	
+	first_recycling = input->first_recycling;
+
+	pthread_mutex_unlock(input_mutex);
+	
+	/* lock context */
+	ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+	
+	/* find input recall id */
+	pthread_mutex_lock(input_mutex);
+	
+	input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
+								 recycling_container);
+
+	pthread_mutex_unlock(input_mutex);
+
+	/* play input */
+	ags_channel_play(input,
+			 input_recall_id,
+			 stage);
+
+	/* unlock context */
+	ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
+
+	/* iterate */
+	pthread_mutex_lock(input_mutex);
+	
+	input = input->next_pad;
+
+	pthread_mutex_unlock(input_mutex);
+      }
+
       /* traverse the tree */
       input = input_start;
 
@@ -6247,50 +6291,6 @@ ags_channel_recursive_play(AgsChannel *channel,
 
 	pthread_mutex_unlock(input_mutex);
       }
-
-      /* play recalls on input */
-      while(input != NULL){
-	/* lookup mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
-
-	input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       input);
-    
-	pthread_mutex_unlock(&(ags_application_mutex));
-
-	/* get first recycling */
-	pthread_mutex_lock(input_mutex);
-	
-	first_recycling = input->first_recycling;
-
-	pthread_mutex_unlock(input_mutex);
-	
-	/* lock context */
-	ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
-	
-	/* find input recall id */
-	pthread_mutex_lock(input_mutex);
-	
-	input_recall_id = ags_recall_id_find_recycling_container(input->recall_id,
-								 recycling_container);
-
-	pthread_mutex_unlock(input_mutex);
-
-	/* play input */
-	ags_channel_play(input,
-			 input_recall_id,
-			 stage);
-
-	/* unlock context */
-	ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
-
-	/* iterate */
-	pthread_mutex_lock(input_mutex);
-	
-	input = input->next_pad;
-
-	pthread_mutex_unlock(input_mutex);
-      }
     }else{ /* sync order of channels within audio */
       /* retrieve input */
       input = ags_channel_nth(input,
@@ -6315,12 +6315,6 @@ ags_channel_recursive_play(AgsChannel *channel,
 
       pthread_mutex_unlock(input_mutex);
 
-      /* traverse the tree */
-      if(link != NULL){
-	ags_channel_recursive_play_down(link,
-					input_recall_id);
-      }
-
       /* lock context */
       ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
       
@@ -6329,8 +6323,14 @@ ags_channel_recursive_play(AgsChannel *channel,
 		       input_recall_id,
 		       stage);
 
-      /* lock context */
+      /* unlock context */
       ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
+      
+      /* traverse the tree */
+      if(link != NULL){
+	ags_channel_recursive_play_down(link,
+					input_recall_id);
+      }
     }
   }
 
@@ -6386,21 +6386,26 @@ ags_channel_recursive_play(AgsChannel *channel,
 
     flags = audio->flags; 
 
-    if(recall_id->recycling_container->parent != NULL){
-      list = output->recall_id;
-
-      while(list != NULL){
-	if(AGS_RECALL_ID(list->data)->recycling_container->parent == recall_id->recycling_container){
-	  recall_id = list->data;
-	  break;
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (flags)) != 0){
+      if(recall_id->recycling_container->parent != NULL){
+	list = output->recall_id;
+	
+	while(list != NULL){
+	  if(AGS_RECALL_ID(list->data)->recycling_container->parent == recall_id->recycling_container){
+	    recall_id = list->data;
+	    break;
+	  }
+	  
+	  list = list->next;
 	}
-
-	list = list->next;
+	
+	if(list == NULL){
+	  recall_id = NULL;
+	}
       }
-
-      if(list == NULL){
-	recall_id = NULL;
-      }
+    }else{
+      recall_id = ags_recall_id_find_recycling_container(output->recall_id,
+							 recall_id->recycling_container);
     }
 
     pthread_mutex_unlock(mutex);
@@ -6434,6 +6439,11 @@ ags_channel_recursive_play(AgsChannel *channel,
       pthread_mutex_unlock(audio_mutex);
     }
     
+    /* play output */
+    ags_channel_play((GObject *) output,
+		     recall_id,
+		     stage);
+
     /* unlock context */
     ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
     
@@ -6466,11 +6476,6 @@ ags_channel_recursive_play(AgsChannel *channel,
 		     audio_recall_id,
 		     stage);
     }
-
-    /* play output */
-    ags_channel_play((GObject *) output,
-		     recall_id,
-		     stage);
 
     /* unlock context */
     ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));    

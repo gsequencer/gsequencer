@@ -45,7 +45,7 @@ typedef enum{
   AGS_AUDIO_THREAD_WAITING    = 1,
   AGS_AUDIO_THREAD_WAKEUP     = 1 <<  1,
   AGS_AUDIO_THREAD_DONE       = 1 <<  2,
-  AGS_AUDIO_THREAD_NOTIFY     = 1 <<  3,
+  AGS_AUDIO_THREAD_WAIT       = 1 <<  3,
 }AgsAudioThreadFlags;
 
 struct _AgsAudioThread
