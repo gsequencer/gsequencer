@@ -78,7 +78,9 @@ struct _AgsAudioLoop
   AgsThread *gui_thread;
   AgsThread *devout_thread;
   AgsThread *export_thread;
-
+  
+  pthread_mutexattr_t tree_lock_mutexattr;
+  pthread_mutex_t *tree_lock;
   pthread_mutex_t *recall_mutex;
 
   guint play_recall_ref;

@@ -829,6 +829,23 @@ main(int argc, char **argv)
       /* start thread tree */
       ags_thread_start(ags_main->main_loop);
 
+      /* wait thread */
+      pthread_mutex_lock(AGS_THREAD(ags_main->main_loop)->start_mutex);
+
+      g_atomic_int_set(&(AGS_THREAD(ags_main->main_loop)->start_wait),
+		       TRUE);
+	
+      if(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
+	 g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
+	while(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
+	      g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
+	  pthread_cond_wait(AGS_THREAD(ags_main->main_loop)->start_cond,
+			    AGS_THREAD(ags_main->main_loop)->start_mutex);
+	}
+      }
+	
+      pthread_mutex_unlock(AGS_THREAD(ags_main->main_loop)->start_mutex);
+      
       /* complete thread pool */
       ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
       ags_thread_pool_start(ags_main->thread_pool);

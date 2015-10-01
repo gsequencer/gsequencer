@@ -189,19 +189,21 @@ ags_export_output_launch(AgsTask *task)
   ags_thread_start((AgsThread *) export_thread);
 
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(export_thread)->flags)) == 0){
+    /* wait thread */
     pthread_mutex_lock(AGS_THREAD(export_thread)->start_mutex);
 
-    val = g_atomic_int_get(&(AGS_THREAD(export_thread)->flags));
-
-    if((AGS_THREAD_INITIAL_RUN & val) != 0){
-      while((AGS_THREAD_INITIAL_RUN & val) != 0){
+    g_atomic_int_set(&(AGS_THREAD(export_thread)->start_wait),
+		     TRUE);
+	
+    if(g_atomic_int_get(&(AGS_THREAD(export_thread)->start_wait)) == TRUE &&
+       g_atomic_int_get(&(AGS_THREAD(export_thread)->start_done)) == FALSE){
+      while(g_atomic_int_get(&(AGS_THREAD(export_thread)->start_wait)) == TRUE &&
+	    g_atomic_int_get(&(AGS_THREAD(export_thread)->start_done)) == FALSE){
 	pthread_cond_wait(AGS_THREAD(export_thread)->start_cond,
 			  AGS_THREAD(export_thread)->start_mutex);
-	
-	val = g_atomic_int_get(&(AGS_THREAD(export_thread)->flags));
       }
     }
-    
+	
     pthread_mutex_unlock(AGS_THREAD(export_thread)->start_mutex);
   }else{
     g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),

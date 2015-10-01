@@ -61,6 +61,28 @@ ags_main_loop_base_init(AgsMainLoopInterface *interface)
 }
 
 /**
+ * ags_main_loop_get_tree_lock:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Retrieve the tree mutex.
+ *
+ * Returns: the mutex
+ *
+ * Since: 0.6
+ */
+pthread_mutex_t*
+ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), NULL);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->get_tree_lock, NULL);
+
+  return(main_loop_interface->get_tree_lock(main_loop));
+}
+
+/**
  * ags_main_loop_set_async_queue:
  * @main_loop: the #AgsMainLoop
  * @async_queue: the #AgsAsyncQueue

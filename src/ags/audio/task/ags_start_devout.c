@@ -189,21 +189,23 @@ ags_start_devout_launch(AgsTask *task)
       
       g_message("starting devout failed\0");
     }else{
+      /* wait thread */
       pthread_mutex_lock(AGS_THREAD(devout_thread)->start_mutex);
 
-      val = g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags));
-
-      if((AGS_THREAD_INITIAL_RUN & val) != 0){
-	while((AGS_THREAD_INITIAL_RUN & val) != 0){
+      g_atomic_int_set(&(AGS_THREAD(devout_thread)->start_wait),
+		       TRUE);
+	
+      if(g_atomic_int_get(&(AGS_THREAD(devout_thread)->start_wait)) == TRUE &&
+	 g_atomic_int_get(&(AGS_THREAD(devout_thread)->start_done)) == FALSE){
+	while(g_atomic_int_get(&(AGS_THREAD(devout_thread)->start_wait)) == TRUE &&
+	      g_atomic_int_get(&(AGS_THREAD(devout_thread)->start_done)) == FALSE){
 	  pthread_cond_wait(AGS_THREAD(devout_thread)->start_cond,
 			    AGS_THREAD(devout_thread)->start_mutex);
-
-	  val = g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags));
 	}
       }
-    
+	
       pthread_mutex_unlock(AGS_THREAD(devout_thread)->start_mutex);
-
+      
       g_message("started devout\0");
     }
   }

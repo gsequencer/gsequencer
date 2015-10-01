@@ -352,26 +352,28 @@ ags_channel_thread_run(AgsThread *thread)
   //  g_message("----a\0");
   
   /* start - wait until signaled */
-  pthread_mutex_lock(channel_thread->wakeup_mutex);
+  if(thread != devout_play->channel_thread[0]){
+    pthread_mutex_lock(channel_thread->wakeup_mutex);
 
-  g_atomic_int_and(&(channel_thread->flags),
-		   (~AGS_CHANNEL_THREAD_DONE));
+    g_atomic_int_and(&(channel_thread->flags),
+		     (~AGS_CHANNEL_THREAD_DONE));
   
-  if((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
-     (AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
-    while((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
-	  (AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
-      pthread_cond_wait(channel_thread->wakeup_cond,
-			channel_thread->wakeup_mutex);
+    if((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
+       (AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
+      while((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
+	    (AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
+	pthread_cond_wait(channel_thread->wakeup_cond,
+			  channel_thread->wakeup_mutex);
+      }
     }
+  
+    g_atomic_int_or(&(channel_thread->flags),
+		    (AGS_CHANNEL_THREAD_DONE |
+		     AGS_CHANNEL_THREAD_WAIT));
+  
+    pthread_mutex_unlock(channel_thread->wakeup_mutex);
   }
   
-  g_atomic_int_or(&(channel_thread->flags),
-		  (AGS_CHANNEL_THREAD_DONE |
-		   AGS_CHANNEL_THREAD_WAIT));
-  
-  pthread_mutex_unlock(channel_thread->wakeup_mutex);
-
   /* channel mutex */
   pthread_mutex_lock(&(ags_application_mutex));
 
