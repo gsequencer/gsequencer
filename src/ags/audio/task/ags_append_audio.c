@@ -167,7 +167,7 @@ ags_append_audio_launch(AgsTask *task)
   audio = append_audio->audio;
   audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);
 
-  /* append to AgsDevout */
+  /* append to AgsAudioLoop */
   ags_audio_loop_add_audio(audio_loop,
 			   audio);
 
