@@ -1844,7 +1844,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
       AgsChannel *current;
 
       guint i, j;
-      
+
+      /* instantiate notation */
+      if(pads_old == 0){
+	if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) == 0){
+	  ags_audio_set_pads_alloc_notation();
+	}
+      }
+
+      /* grow channels */
       ags_audio_set_pads_grow();
 
       /* alloc devout play domain */
@@ -1927,7 +1935,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     /* grow or shrink */
     if(pads > pads_old){	 
-     /* grow channels */
+      /* instantiate notation */
+      if(pads_old == 0){
+	if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+	  ags_audio_set_pads_alloc_notation();
+	}
+      }
+
+      /* grow channels */
       ags_audio_set_pads_grow();
     }else if(pads < pads_old){
       if(pads == 0){
