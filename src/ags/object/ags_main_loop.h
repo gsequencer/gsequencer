@@ -36,6 +36,8 @@ struct _AgsMainLoopInterface
 {
   GTypeInterface interface;
 
+  pthread_mutex_t* (*get_tree_lock)(AgsMainLoop *main_loop);
+  
   void (*set_async_queue)(AgsMainLoop *main_loop, GObject *async_queue);
   GObject* (*get_async_queue)(AgsMainLoop *main_loop);
   
@@ -47,6 +49,8 @@ struct _AgsMainLoopInterface
 };
 
 GType ags_main_loop_get_type();
+
+pthread_mutex_t* ags_main_loop_get_tree_lock(AgsMainLoop *main_loop);
 
 void ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
 GObject* ags_main_loop_get_async_queue(AgsMainLoop *main_loop);

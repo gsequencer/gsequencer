@@ -1,3 +1,9 @@
+ags (0.6.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed startup dead-lock
+	* implemented ags_main_loop_get_tree_lock()
+
 ags (0.6.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
