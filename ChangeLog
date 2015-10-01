@@ -1,10 +1,17 @@
+ags (0.6.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing notation due to refactoring of 0.6.8
+
 ags (0.6.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed super-threaded scope audio and channel to be thread-safe
 	* refactored ags_audio_set_audio_channels() and ags_audio_set_pads()
 	* improved ags_channel_set_recycling() to instantiate AgsRecallID
+	* enhanced super-threaded scope recycling but is probably not yet ready
 	* enhanced ags_recycling.c to use mutices in view of super-threaded computing
-	* enhanced ags_audio.c to use mutices
+	* enhanced ags_audio.c and ags_channel.c the use of mutices
 
 ags (0.6.7)
 
