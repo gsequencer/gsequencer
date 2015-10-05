@@ -1,3 +1,8 @@
+ags (0.6.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added more mutices to guarantee thread-safety
+
 ags (0.6.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

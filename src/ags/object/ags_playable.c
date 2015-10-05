@@ -519,23 +519,26 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
       g_error("%s\0", error->message);
     }
 
-    stream = audio_signal->stream_beginning;
+    if(buffer != NULL){
+      stream = audio_signal->stream_beginning;
     
-    for(j = 0; j < j_stop; j++){
-      for(k = 0; k < buffer_size; k++){
-	((short *) stream->data)[k] = buffer[j * buffer_size + k];
+      for(j = 0; j < j_stop; j++){
+	for(k = 0; k < buffer_size; k++){
+	  ((short *) stream->data)[k] = buffer[j * buffer_size + k];
+	}
+
+	stream = stream->next;
+      }
+    
+      if(frames % buffer_size != 0){
+	for(k = 0; k < frames % buffer_size; k++){
+	  ((short *) stream->data)[k] = buffer[j * buffer_size + k];
+	}
       }
 
-      stream = stream->next;
+      free(buffer);
     }
     
-    if(frames % buffer_size != 0){
-      for(k = 0; k < frames % buffer_size; k++){
-	((short *) stream->data)[k] = buffer[j * buffer_size + k];
-      }
-    }
-
-    free(buffer);
     list = list->next;
   }
 

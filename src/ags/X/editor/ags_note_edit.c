@@ -757,9 +757,28 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
 
       if((AGS_NOTE_EDIT_DRAW_FADER & (note_edit->flags)) != 0){
 	AgsCountBeatsAudioRun *count_beats_audio_run;
-	GList *recall;
-	gdouble position;
+
+	AgsMutexManager *mutex_manager;
 	
+	GList *recall;
+
+	gdouble position;
+
+	pthread_mutex_t *audio_mutex;
+
+	/* lookup audio mutex */
+	pthread_mutex_lock(&(ags_application_mutex));
+  
+	mutex_manager = ags_mutex_manager_get_instance();
+
+	audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) editor->selected_machine->audio);
+  
+	pthread_mutex_unlock(&(ags_application_mutex));
+
+	/* retrieve position */
+	pthread_mutex_lock(audio_mutex);
+
 	recall = editor->selected_machine->audio->play;
 
 	while((recall = ags_recall_find_type(recall,
@@ -775,7 +794,12 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
 	  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
 
 	  position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width;
+	}
 	
+	pthread_mutex_unlock(audio_mutex);
+
+	/* draw fader */
+	if(recall != NULL){
 	  ags_note_edit_draw_scroll(note_edit, cr,
 				    position);
 	}
@@ -934,9 +958,28 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
       /* fader */
       if((AGS_NOTE_EDIT_DRAW_FADER & (note_edit->flags)) != 0){
 	AgsCountBeatsAudioRun *count_beats_audio_run;
-	GList *recall;
-	gdouble position;
+
+	AgsMutexManager *mutex_manager;
 	
+	GList *recall;
+
+	gdouble position;
+
+	pthread_mutex_t *audio_mutex;
+	
+	/* lookup audio mutex */
+	pthread_mutex_lock(&(ags_application_mutex));
+  
+	mutex_manager = ags_mutex_manager_get_instance();
+
+	audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) editor->selected_machine->audio);
+  
+	pthread_mutex_unlock(&(ags_application_mutex));
+
+	/* retrieve position */
+	pthread_mutex_lock(audio_mutex);
+
 	recall = editor->selected_machine->audio->play;
 
 	while((recall = ags_recall_find_type(recall,
@@ -952,7 +995,12 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
 	  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
 
 	  position = count_beats_audio_run->notation_counter * note_edit->control_unit.control_width;
+	}
 	
+	pthread_mutex_unlock(audio_mutex);
+
+	/* draw fader */
+	if(recall != NULL){
 	  ags_note_edit_draw_scroll(note_edit, cr,
 				    position);
 	}
@@ -1208,6 +1256,14 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
+  if(editor->selected_machine == NULL ||
+     (machine = editor->selected_machine) == NULL){
+    return;
+  }
+
+  widget = (GtkWidget *) note_edit->drawing_area;
+
+  /* lookup audio mutex */
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
@@ -1217,14 +1273,9 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
-  if(editor->selected_machine == NULL ||
-     (machine = editor->selected_machine) == NULL ||
-     machine->audio->notation == NULL)
-    return;
-
-  widget = (GtkWidget *) note_edit->drawing_area;
-
   /* draw */
+  pthread_mutex_lock(audio_mutex);
+
   cairo_set_source_rgb(cr,
 		       note_edit_style->fg[0].red / white_gc,
 		       note_edit_style->fg[0].green / white_gc,
@@ -1479,6 +1530,8 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
 
     i++;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**

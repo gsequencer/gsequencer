@@ -120,40 +120,118 @@ ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 int
 ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   GtkContainer *container;
-  AgsTaskThread *task_thread;
-  AgsChannel *current;
+
+  AgsChannel *current, *next_pad;
+
   AgsSetMuted *set_muted;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsMain *ags_main;
+
   GList *list, *list_start, *tasks;
 
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(pad->channel->audio)->devout)->ags_main)->main_loop)->task_thread);
+  gboolean is_output;
+  
+  pthread_mutex_t *current_mutex;
+  pthread_mutex_t *audio_loop_mutex;
 
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
+						   AGS_TYPE_MACHINE);
+  window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+  
+  ags_main = window->ags_main;
+
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* lookup audio loop mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+    
+  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      (GObject *) audio_loop);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get task thread */
+  pthread_mutex_lock(audio_loop_mutex);
+
+  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+
+  pthread_mutex_unlock(audio_loop_mutex);
+
+  /*  */
   current = pad->channel;
   tasks = NULL;
 
+  /* lookup current mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) current);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
   if(gtk_toggle_button_get_active(pad->mute)){
-    if(gtk_toggle_button_get_active(pad->solo))
+    if(gtk_toggle_button_get_active(pad->solo)){
       gtk_toggle_button_set_active(pad->solo, FALSE);
-
+    }
+    
     /* mute */
-    while(current != pad->channel->next_pad){
-      set_muted = ags_set_muted_new(G_OBJECT(current),
-				    TRUE);
-      tasks = g_list_prepend(tasks, set_muted);
+    pthread_mutex_lock(current_mutex);
 
+    next_pad = pad->channel->next_pad;
+
+    pthread_mutex_lock(current_mutex);
+
+    while(current != next_pad){
+      /* lookup current mutex */
+      pthread_mutex_lock(&(ags_application_mutex));
+
+      current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) current);
+  
+      pthread_mutex_unlock(&(ags_application_mutex));
+
+      /* instantiate set muted task */
+      set_muted = ags_set_muted_new((GObject *) current,
+				    TRUE);
+      tasks = g_list_prepend(tasks,
+			     set_muted);
+
+      /* iterate */
+      pthread_mutex_lock(current_mutex);
+      
       current = current->next;
+      
+      pthread_mutex_unlock(current_mutex);
     }
   }else{
-    machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
-
     if((AGS_MACHINE_SOLO & (machine->flags)) != 0){
-      container = (GtkContainer *) (AGS_IS_OUTPUT(pad->channel) ? machine->output: machine->input);
+      pthread_mutex_lock(current_mutex);
+
+      is_output = (AGS_IS_OUTPUT(pad->channel))? TRUE: FALSE;
+      
+      pthread_mutex_unlock(current_mutex);
+
+      container = (GtkContainer *) (is_output ? machine->output: machine->input);
       list_start = 
 	list = gtk_container_get_children(container);
 
-      while(!gtk_toggle_button_get_active(AGS_PAD(list->data)->solo))
+      while(!gtk_toggle_button_get_active(AGS_PAD(list->data)->solo)){
 	list = list->next;
+      }
 
       g_list_free(list_start);
 
@@ -163,12 +241,33 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
 
     /* unmute */
-    while(current != pad->channel->next_pad){
-      set_muted = ags_set_muted_new(G_OBJECT(current),
-				    FALSE);
-      tasks = g_list_prepend(tasks, set_muted);
+    pthread_mutex_lock(current_mutex);
 
+    next_pad = pad->channel->next_pad;
+
+    pthread_mutex_unlock(current_mutex);
+    
+    while(current != next_pad){
+      /* lookup current mutex */
+      pthread_mutex_lock(&(ags_application_mutex));
+
+      current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) current);
+  
+      pthread_mutex_unlock(&(ags_application_mutex));
+
+      /* instantiate set muted task */
+      set_muted = ags_set_muted_new((GObject *) current,
+				    FALSE);
+      tasks = g_list_prepend(tasks,
+			     set_muted);
+
+      /* iterate */
+      pthread_mutex_lock(current_mutex);
+      
       current = current->next;
+      
+      pthread_mutex_unlock(current_mutex);
     }
   }
 
@@ -183,6 +282,7 @@ ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
   AgsMachine *machine;
   GtkContainer *container;
+
   GList *list, *list_start;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);

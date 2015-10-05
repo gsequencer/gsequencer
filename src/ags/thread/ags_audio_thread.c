@@ -356,6 +356,14 @@ ags_audio_thread_run(AgsThread *thread)
 
     pthread_mutex_unlock(audio_thread->done_mutex);
 
+    pthread_mutex_lock(audio_thread->wakeup_mutex);
+    
+    g_atomic_int_or(&(audio_thread->flags),
+		    (AGS_AUDIO_THREAD_WAIT |
+		   AGS_AUDIO_THREAD_DONE));
+  
+    pthread_mutex_unlock(audio_thread->wakeup_mutex);
+    
     return;
   }
   

@@ -315,14 +315,40 @@ ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 void
 ags_audio_loop_init(AgsAudioLoop *audio_loop)
 {
+  AgsMutexManager *mutex_manager;
   AgsThread *thread;
   AgsGuiThread *gui_thread;
 
   gchar *str0, *str1;
+
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  /* insert audio loop mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) audio_loop,
+			   mutex);
   
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* calculate frequency */
   thread = (AgsThread *) audio_loop;
 
   //  thread->flags |= AGS_THREAD_WAIT_FOR_CHILDREN;
+  pthread_mutex_lock(&(ags_application_mutex));
 
   str0 = ags_config_get(config,
 			AGS_CONFIG_DEVOUT,
@@ -330,6 +356,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   str0 = ags_config_get(config,
 			AGS_CONFIG_DEVOUT,
 			"buffer_size\0");
+
+  pthread_mutex_unlock(&(ags_application_mutex));
 
   if(str0 == NULL || str1 == NULL){
     thread->freq = AGS_AUDIO_LOOP_DEFAULT_JIFFIE;

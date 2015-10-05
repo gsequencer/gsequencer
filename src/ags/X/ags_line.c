@@ -27,6 +27,8 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/X/ags_pad.h>
 
 #include <ags/audio/ags_channel.h>
@@ -87,6 +89,8 @@ enum{
 
 static gpointer ags_line_parent_class = NULL;
 static guint line_signals[LAST_SIGNAL];
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_line_get_type(void)
@@ -409,7 +413,9 @@ ags_line_connect(AgsConnectable *connectable)
   /* set connected flag */
   line->flags |= AGS_LINE_CONNECTED;
 
+#ifdef AGS_DEBUG
   g_message("line connect\0");
+#endif
   
   if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
     if((AGS_LINE_MAPPED_RECALL & (line->flags)) == 0){
@@ -478,6 +484,10 @@ ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
 void
 ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *channel_mutex;
+  
   if(line->channel == channel){
     return;
   }
@@ -495,9 +505,21 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
   }
   
   line->channel = channel;
+
+  /* lookup channel mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
   
+  pthread_mutex_unlock(&(ags_application_mutex));
+
   /* set label */
-  gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
+  pthread_mutex_lock(channel_mutex);
+  
+  gtk_label_set_label(line->label, g_strdup_printf("channel %d\0", channel->audio_channel));
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 /**
@@ -579,8 +601,13 @@ GList*
 ags_line_real_find_port(AgsLine *line)
 {
   AgsChannel *channel, *next_pad;
+
+  AgsMutexManager *mutex_manager;
+  
   GList *list, *tmp;
   GList *line_member, *line_member_start;
+  
+  pthread_mutex_t *channel_mutex;
 
   if(line == NULL || line->expander == NULL){
     return(NULL);
@@ -601,15 +628,37 @@ ags_line_real_find_port(AgsLine *line)
     g_list_free(line_member_start);
   }
   
-  /*  */
   channel = line->channel;
-
+  list = NULL;
+  
   if(channel != NULL){
+    /* get mutex manager */
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    /* find ports */
+    pthread_mutex_lock(channel_mutex);
+
     next_pad = channel->next_pad;
 
-    list = NULL;
-  
+    pthread_mutex_unlock(channel_mutex);
+
     while(channel != next_pad){
+      /* lookup channel mutex */
+      pthread_mutex_lock(&(ags_application_mutex));
+      
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel);
+      
+      pthread_mutex_unlock(&(ags_application_mutex));
+
+      /* do it so */
       if(list == NULL){
 	list = ags_channel_find_port(channel);
       }else{
@@ -621,12 +670,16 @@ ags_line_real_find_port(AgsLine *line)
 	}
       }
       
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
+
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
   }
   
   return(list);
-
 }
 
 /**
