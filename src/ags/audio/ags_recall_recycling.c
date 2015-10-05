@@ -767,8 +767,11 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 				       //"destination\0", recall_recycling->child_destination,
 				       "source\0", audio_signal,
 				       NULL);
-    //    g_message("%s\0", G_OBJECT_TYPE_NAME(recall_audio_signal));
 
+#ifdef AGS_DEBUG
+    g_message("%s\0", G_OBJECT_TYPE_NAME(recall_audio_signal));
+#endif
+    
     ags_recall_add_child(AGS_RECALL(recall_recycling), AGS_RECALL(recall_audio_signal));
   }
   

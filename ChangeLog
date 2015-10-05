@@ -1,6 +1,7 @@
 ags (0.6.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash while unlink channel and then do playback because recycling wasn't updated properly
 	* fixed dead-lock while muting pad
 	* enhaced AgsMachineEditor to be thread-safe
 	* modified ags_audio_loop.c and ags_gui_thread.c to process in parallel

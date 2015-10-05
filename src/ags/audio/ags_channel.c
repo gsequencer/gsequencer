@@ -2990,7 +2990,8 @@ ags_channel_set_recycling(AgsChannel *channel,
 	  first_recycling = nth_channel_next->first_recycling;
 
 	  /* do it so */
-	  output->first_recycling = first_recycling;
+	  replace_with_first_recycling = 
+	    output->first_recycling = first_recycling;
 	}else{
 	  /* do it so */
 	  output->first_recycling = NULL;
@@ -3014,7 +3015,8 @@ ags_channel_set_recycling(AgsChannel *channel,
 	  last_recycling = nth_channel_prev->last_recycling;
 
 	  /* do it so */
-	  output->last_recycling = last_recycling;
+	  replace_with_last_recycling =
+	    output->last_recycling = last_recycling;
 	}else{
 	  /* do it so */
 	  output->last_recycling = NULL;
@@ -3233,77 +3235,50 @@ ags_channel_set_recycling(AgsChannel *channel,
 
   channel->first_recycling = first_recycling;
   channel->last_recycling = last_recycling;
-  
-  /* join now the retrieved recyclings */
-  if(first_recycling != NULL){
-    /* prev channel */
-    if(prev_channel != NULL){  
-      if(prev_channel->last_recycling != NULL){
-	/* set next of prev channel's last recycling */
-	prev_channel->last_recycling->next = first_recycling;
 
-	/* set prev of first recycling */
-	first_recycling->prev = prev_channel->last_recycling;
-      }
+    /* join now the retrieved recyclings */
+  if(first_recycling != NULL){
+    if(prev_channel != NULL &&
+       prev_channel->last_recycling != NULL){
+      prev_channel->last_recycling->next = first_recycling;
+      first_recycling->prev = prev_channel->last_recycling;
     }else{
-      /* set prev of first recycling */
       first_recycling->prev = NULL;
     }
-
-    /* next channel */
-    if(next_channel != NULL){  
-      if(next_channel->first_recycling != NULL){
-	/* set prev of next channel's first recycling */
-	next_channel->first_recycling->prev = last_recycling;
-
-	/* set next of first recycling */
-	last_recycling->next = next_channel->first_recycling;
-      }
+    
+    if(next_channel != NULL &&
+       next_channel->first_recycling != NULL){
+      next_channel->first_recycling->prev = last_recycling;
+      last_recycling->next = next_channel->first_recycling;
     }else{
-      /* set next of first recycling */
       last_recycling->next = NULL;
     }
   }else{
-    AgsRecycling *prev_recycling, *next_recycling;
     gboolean link_next, link_prev;
 
-    /* decide if link next */
-    if(prev_channel != NULL){
-      if(prev_channel->last_recycling != NULL){
-	link_next = TRUE;
-      }
+    if(prev_channel != NULL &&
+       prev_channel->last_recycling != NULL){
+      link_next = TRUE;
     }else{
       link_next = FALSE;
     }
-
-    /* decide if link prev */
-    if(next_channel != NULL){
-      if(next_channel->first_recycling != NULL){
-	link_prev = TRUE;
-      }
+    
+    if(next_channel != NULL &&
+       next_channel->first_recycling != NULL){
+      link_prev = TRUE;
     }else{
       link_prev = FALSE;
     }
-
-    /* link */
-    if(link_next){
-      next_recycling = next_channel->first_recycling;
-
-      if(link_prev){
-	prev_recycling = prev_channel->last_recycling;
-
-	/* next - do it so */
-	next_recycling->prev = prev_recycling;
-
-	/* prev - do it so */
-	prev_recycling->next = next_recycling;
-      }else{
-	prev_recycling = prev_channel->last_recycling;
     
-	prev_recycling->next = NULL;
+    if(link_next){
+      if(link_prev){
+	next_channel->first_recycling->prev = prev_channel->last_recycling;
+	prev_channel->last_recycling->next = next_channel->first_recycling;
+      }else{
+	prev_channel->last_recycling->next = NULL;
       }
     }else if(link_prev){
-      next_recycling->prev = NULL;
+      next_channel->first_recycling->prev = NULL;
     }
   }
 
@@ -3444,6 +3419,7 @@ ags_channel_set_recycling(AgsChannel *channel,
     recycling_container = ags_recycling_container_reset_recycling(old_recycling_container,
 								  old_first_recycling, old_last_recycling,
 								  first_recycling, last_recycling);
+    
     if(recycling_container != NULL){
       recycling_container->parent = old_recycling_container->parent;
 

@@ -486,7 +486,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
       /* get audio */
       pthread_mutex_lock(link_channel_mutex);
 
-      link_audio = channel->audio;
+      link_audio = link_channel->audio;
 
       pthread_mutex_unlock(link_channel_mutex);
 
