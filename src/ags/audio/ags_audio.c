@@ -3190,11 +3190,15 @@ ags_audio_open_files(AgsAudio *audio,
   AgsChannel *channel;
   AgsAudioFile *audio_file;
   AgsAudioSignal *audio_signal_source_old;
+
+  AgsMutexManager *mutex_manager;
+
   GList *audio_signal_list;
+
   guint i, j;
   guint list_length;
+
   GError *error;
-  AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *mutex, *channel_mutex, *recycling_mutex;
 

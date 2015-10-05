@@ -26,6 +26,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
@@ -78,6 +80,8 @@ void ags_drum_output_line_map_recall(AgsLine *line,
 
 static gpointer ags_drum_output_line_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_output_line_parent_connectable_interface;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_drum_output_line_get_type()
@@ -227,29 +231,69 @@ ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
+  AgsMachine *machine;
   AgsDrumOutputLine *drum_output_line;
+
+  AgsDevout *devout;
+  AgsAudio *audio;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
 
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
 
   drum_output_line = AGS_DRUM_OUTPUT_LINE(line);
 
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
+						   AGS_TYPE_MACHINE);
+
+  audio = machine->audio;
+  
+  /* lookup audio mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get devout */
+  pthread_mutex_lock(audio_mutex);
+	
+  devout = audio->devout;
+  
+  pthread_mutex_unlock(audio_mutex);
+
   if(channel != NULL){
-    AgsDevout *devout;
+    AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
-    gdouble delay;
-    guint stop;
 
-    if(channel->audio != NULL &&
-       AGS_AUDIO(channel->audio)->devout != NULL){
-      devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
+    /* lookup channel mutex */
+    pthread_mutex_lock(&(ags_application_mutex));
 
-      audio_signal = ags_audio_signal_new((GObject *) devout,
-					  (GObject *) channel->first_recycling,
-					  NULL);
-      audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-      ags_recycling_add_audio_signal(channel->first_recycling,
-				     audio_signal);
-    }
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    /* get recycling */
+    pthread_mutex_lock(channel_mutex);
+
+    recycling = channel->first_recycling;
+
+    pthread_mutex_unlock(channel_mutex);
+
+    /* instantiate template audio signal */
+    audio_signal = ags_audio_signal_new((GObject *) devout,
+					(GObject *) recycling,
+					NULL);
+    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+    ags_recycling_add_audio_signal(channel->first_recycling,
+				   audio_signal);
   }
 }
 

@@ -321,7 +321,9 @@ ags_channel_thread_run(AgsThread *thread)
 
   AgsMutexManager *mutex_manager;
   AgsChannelThread *channel_thread;
-
+  AgsRecallID *current_recall_id;
+  AgsThread *current_thread;
+  
   gint stage;
   
   pthread_mutex_t *channel_mutex;
@@ -364,12 +366,27 @@ ags_channel_thread_run(AgsThread *thread)
   //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
 
   channel = channel_thread->channel;
-  devout_play = channel->devout_play;
   
-  //  g_message("----a\0");
+  /* lookup channel mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+      
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get devout play */
+  pthread_mutex_lock(channel_mutex);
+
+  devout_play = channel->devout_play;
+  current_thread = devout_play->channel_thread[0];
+  
+  pthread_mutex_unlock(channel_mutex);
   
   /* start - wait until signaled */
-  if(thread != devout_play->channel_thread[0]){
+  if(thread != current_thread){
     pthread_mutex_lock(channel_thread->wakeup_mutex);
 
     g_atomic_int_and(&(channel_thread->flags),
@@ -390,28 +407,43 @@ ags_channel_thread_run(AgsThread *thread)
   
     pthread_mutex_unlock(channel_thread->wakeup_mutex);
   }
-  
-  /* channel mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) channel);
-      
-  pthread_mutex_unlock(&(ags_application_mutex));
-  
+    
   /* do channel processing */
   for(stage = 0; stage < 3; stage++){
-    if(thread == devout_play->channel_thread[0]){
-      ags_channel_recursive_play(channel, devout_play->recall_id[0], stage);
+    /* playback */
+    pthread_mutex_lock(channel_mutex);
+
+    current_thread = devout_play->channel_thread[0];
+    current_recall_id = devout_play->recall_id[0];
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    if(thread == current_thread){
+      ags_channel_recursive_play(channel, current_recall_id, stage);
     }
 
-    if(thread == devout_play->channel_thread[1]){
-      ags_channel_recursive_play(channel, devout_play->recall_id[1], stage);
+    /* sequencer */
+    pthread_mutex_lock(channel_mutex);
+
+    current_thread = devout_play->channel_thread[1];
+    current_recall_id = devout_play->recall_id[1];
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    if(thread == current_thread){
+      ags_channel_recursive_play(channel, current_recall_id, stage);
     }
 
-    if(thread == devout_play->channel_thread[2]){
-      ags_channel_recursive_play(channel, devout_play->recall_id[2], stage);
+    /* notation */
+    pthread_mutex_lock(channel_mutex);
+
+    current_thread = devout_play->channel_thread[2];
+    current_recall_id = devout_play->recall_id[2];
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    if(thread == current_thread){
+      ags_channel_recursive_play(channel, current_recall_id, stage);
     }
   }
 

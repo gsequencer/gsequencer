@@ -802,6 +802,7 @@ ags_drum_set_audio_channels(AgsAudio *audio,
 			    guint audio_channels, guint audio_channels_old,
 			    AgsDrum *drum)
 {
+  /* empty */
 }
 
 void

@@ -438,21 +438,46 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 {
   AgsMachine *machine;
   AgsMatrix *matrix;
+
   AgsChannel *channel, *source;
   AgsAudioSignal *audio_signal;
+
+  AgsMutexManager *mutex_manager;
+
   guint i, j;
   gboolean grow;
 
   GValue value = {0,};
 
+  pthread_mutex_t *devout_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *source_mutex;
+
   if(pads == pads_old){
     return;
   }
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get machine */
+  pthread_mutex_lock(audio_mutex);
   
   matrix = (AgsMatrix *) audio->machine;
+
+  pthread_mutex_unlock(audio_mutex);
+
   machine = AGS_MACHINE(matrix);
 
-  if(type == AGS_TYPE_INPUT){
+  /* set size request if needed */
+  if(g_type_is_a(type, AGS_TYPE_INPUT)){
     if(pads < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
       gtk_widget_set_size_request((GtkWidget *) matrix->cell_pattern,
 				  -1,
@@ -464,20 +489,38 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     }
   }
 
-  if(pads_old < pads)
+  if(pads_old < pads){
     grow = TRUE;
-  else
+  }else{
     grow = FALSE;
-
-  if(type == AGS_TYPE_INPUT){
+  }
+  
+  if(g_type_is_a(type, AGS_TYPE_INPUT)){
     AgsPattern *pattern;
     GList *list, *notation;
 
+    pthread_mutex_lock(audio_mutex);
+
+    source = audio->input;
+
+    pthread_mutex_unlock(audio_mutex);
+
     if(grow){
       /* create pattern */
-      source = ags_channel_nth(audio->input, pads_old);
+      source = ags_channel_nth(source, pads_old);
       
       while(source != NULL){
+	/* lookup source mutex */
+	pthread_mutex_lock(&(ags_application_mutex));
+
+	source_mutex = ags_mutex_manager_lookup(mutex_manager,
+						(GObject *) source);
+  
+	pthread_mutex_unlock(&(ags_application_mutex));
+
+	/* instantiate pattern */
+	pthread_mutex_lock(source_mutex);
+
 	if(source->pattern == NULL){
 	  source->pattern = g_list_alloc();
 	  source->pattern->data = (gpointer) ags_pattern_new();
@@ -485,6 +528,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	}
 	
 	source = source->next;
+
+	pthread_mutex_unlock(source_mutex);
       }
 
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
@@ -492,6 +537,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 				    pads_old);
       }
     }else{
+      /* empty */
     }
   }else{
     if(grow){
@@ -500,33 +546,53 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       GList *list;
       guint stop;
 
+      pthread_mutex_lock(audio_mutex);
+
+      source = audio->output;
+
+      pthread_mutex_unlock(audio_mutex);
+
       source = ags_channel_nth(audio->output, pads_old);
 
       if(source != NULL){
 	AgsDevout *devout;
+	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
-	gdouble delay;
-	guint stop;
+
+	pthread_mutex_lock(audio_mutex);
 	
-	devout = AGS_DEVOUT(AGS_AUDIO(source->audio)->devout);
+	devout = audio->devout;
 
-	delay = (1.0 / devout->frequency / devout->buffer_size) * (60.0 / AGS_DEVOUT_DEFAULT_BPM);
+	pthread_mutex_unlock(audio_mutex);
 
-	stop = (guint) ceil(16.0 * delay * exp2(8.0 - 4.0) + 1.0);
+	/* lookup source mutex */
+	pthread_mutex_lock(&(ags_application_mutex));
 
+	source_mutex = ags_mutex_manager_lookup(mutex_manager,
+						(GObject *) source);
+  
+	pthread_mutex_unlock(&(ags_application_mutex));
+
+	/* get recycling */
+	pthread_mutex_lock(source_mutex);
+
+	recycling = source->first_recycling;
+
+	pthread_mutex_unlock(source_mutex);
+
+	/* instantiate template audio signal */
 	audio_signal = ags_audio_signal_new((GObject *) devout,
-					    (GObject *) source->first_recycling,
+					    (GObject *) recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	//	ags_audio_signal_stream_resize(audio_signal,
-	//			       stop);
-	ags_recycling_add_audio_signal(source->first_recycling,
+	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
 
 	ags_matrix_output_map_recall(matrix,
 				     pads_old);
       }
     }else{
+      /* empty */
     }
   }
 }
