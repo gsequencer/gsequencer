@@ -903,7 +903,21 @@ ags_editor_copy(AgsEditor *editor)
   gint i;
 
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
+    AgsMutexManager *mutex_manager;
+
+    pthread_mutex_t *audio_mutex;
+
     machine = editor->selected_machine;
+
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) machine->audio);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
@@ -917,11 +931,15 @@ ags_editor_copy(AgsEditor *editor)
 
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
 							   i)) != -1){
+      pthread_mutex_lock(audio_mutex);
+
       list_notation = g_list_nth(machine->audio->notation,
 				 i);
 
       notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
-      
+
+      pthread_mutex_unlock(audio_mutex);
+
       xmlAddChild(audio_node, notation_node);
 
       i++;
@@ -963,7 +981,20 @@ ags_editor_cut(AgsEditor *editor)
   gint i;
 
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
+    AgsMutexManager *mutex_manager;
+
+    pthread_mutex_t *audio_mutex;
+
     machine = editor->selected_machine;
+
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) machine->audio);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
 
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -973,7 +1004,12 @@ ags_editor_cut(AgsEditor *editor)
     xmlDocSetRootElement(clipboard, audio_node);
 
     /* create notation nodes */
+    pthread_mutex_lock(audio_mutex);
+
     list_notation = machine->audio->notation;
+
+    pthread_mutex_unlock(audio_mutex);
+
     i = 0;
 
     if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
@@ -986,10 +1022,16 @@ ags_editor_cut(AgsEditor *editor)
     
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					    i)) != -1){
+      pthread_mutex_lock(audio_mutex);
+      
       list_notation = g_list_nth(machine->audio->notation,
 				 i);
 
+
       notation_node = ags_notation_cut_selection(AGS_NOTATION(list_notation->data));
+
+      pthread_mutex_unlock(audio_mutex);
+
       xmlAddChild(audio_node, notation_node);
 
       if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){

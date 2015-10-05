@@ -23,6 +23,7 @@
 
 #include <ags/main.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/ags_config.h>
@@ -53,6 +54,7 @@ static gpointer ags_devout_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_devout_thread_parent_connectable_interface;
 
 extern AgsConfig *config;
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_devout_thread_get_type()
@@ -244,21 +246,40 @@ void
 ags_devout_thread_run(AgsThread *thread)
 {
   AgsDevout *devout;
+
+  AgsMutexManager *mutex_manager;
   AgsDevoutThread *devout_thread;
+  
   long delay;
+  
+  pthread_mutex_t *mutex;
+  
   GError *error;
 
   //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
 
   devout_thread = AGS_DEVOUT_THREAD(thread);
 
-  devout = AGS_DEVOUT(thread->devout);
+  devout = (AgsDevout *) thread->devout;
+
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
 
   //  delay = (long) floor(NSEC_PER_SEC / devout->frequency * devout->buffer_size);
 
+  pthread_mutex_lock(mutex);
+  
   if((AGS_THREAD_INITIAL_RUN & (thread->flags)) != 0){
     //    time(&(devout_thread->time_val));
   }
+
+  pthread_mutex_unlock(mutex);
 
   //  g_message("play\0");
   if((AGS_DEVOUT_PLAY & (devout->flags)) != 0){

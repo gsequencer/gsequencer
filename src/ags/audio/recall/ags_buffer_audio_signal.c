@@ -53,6 +53,7 @@ AgsRecall* ags_buffer_audio_signal_duplicate(AgsRecall *recall,
 					     guint *n_params, GParameter *parameter);
 
 extern AgsConfig *config;
+extern pthread_mutex_t ags_application_mutex;
 
 /**
  * SECTION:ags_buffer_audio_signal
@@ -246,6 +247,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 
   devout = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->devout);
 
+  pthread_mutex_lock(&(ags_application_mutex));
+  
   str = ags_config_get(config,
 		       AGS_CONFIG_DEVOUT,
 		       "buffer-size\0");
@@ -261,6 +264,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 				NULL,
 				10);
   free(str);
+
+  pthread_mutex_unlock(&(ags_application_mutex));
   
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;

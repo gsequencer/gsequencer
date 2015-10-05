@@ -349,6 +349,15 @@ ags_channel_thread_run(AgsThread *thread)
 
     pthread_mutex_unlock(channel_thread->done_mutex);
 
+
+    pthread_mutex_lock(channel_thread->wakeup_mutex);
+
+    g_atomic_int_or(&(channel_thread->flags),
+		    (AGS_CHANNEL_THREAD_DONE |
+		     AGS_CHANNEL_THREAD_WAIT));
+
+    pthread_mutex_unlock(channel_thread->wakeup_mutex);
+
     return;
   }
   
@@ -417,8 +426,6 @@ ags_channel_thread_run(AgsThread *thread)
   }
   
   pthread_mutex_unlock(channel_thread->done_mutex);
-
-  //  g_message("----b\0");
 }
 
 void

@@ -699,6 +699,57 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 	ags_pattern_edit_draw_position(pattern_edit, cr);
       }
 
+      /* fader */
+      if((AGS_PATTERN_EDIT_DRAW_FADER & (pattern_edit->flags)) != 0){
+	AgsCountBeatsAudioRun *count_beats_audio_run;
+
+	AgsMutexManager *mutex_manager;
+	
+	GList *recall;
+	
+	gdouble position;
+
+	pthread_mutex_t *audio_mutex;
+	
+	/* lookup audio mutex */
+	pthread_mutex_lock(&(ags_application_mutex));
+  
+	mutex_manager = ags_mutex_manager_get_instance();
+
+	audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) editor->selected_machine->audio);
+  
+	pthread_mutex_unlock(&(ags_application_mutex));
+
+	/* retrieve position */
+	pthread_mutex_lock(audio_mutex);
+
+	recall = editor->selected_machine->audio->play;
+
+	while((recall = ags_recall_find_type(recall,
+					     AGS_TYPE_COUNT_BEATS_AUDIO_RUN)) != NULL){
+	  if(AGS_RECALL(recall->data)->recall_id != NULL && (AGS_RECALL_NOTATION & (AGS_RECALL(recall->data)->recall_id->flags)) != 0){
+	    break;
+	  }
+
+	  recall = recall->next;
+	}
+
+	if(recall != NULL){
+	  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+
+	  position = count_beats_audio_run->notation_counter * pattern_edit->control_unit.control_width;
+	}
+	
+	pthread_mutex_unlock(audio_mutex);
+
+	/* draw fader */
+	if(recall != NULL){
+	  ags_pattern_edit_draw_scroll(pattern_edit, cr,
+				       position);
+	}
+      }
+
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
 
@@ -848,18 +899,31 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
 	ags_pattern_edit_draw_position(pattern_edit, cr);
       }
 
-      //TODO:JK: implement me
-      //      position = gtk_range_get_value(GTK_RANGE(pattern_edit->hscrollbar));
-      //      position -= floor(position / pattern_edit->control_current.control_width);
-      //      ags_pattern_edit_draw_scroll(pattern_edit, cr,
-      //				position);
-
       /* fader */
       if((AGS_PATTERN_EDIT_DRAW_FADER & (pattern_edit->flags)) != 0){
 	AgsCountBeatsAudioRun *count_beats_audio_run;
-	GList *recall;
-	gdouble position;
+
+	AgsMutexManager *mutex_manager;
 	
+	GList *recall;
+	
+	gdouble position;
+
+	pthread_mutex_t *audio_mutex;
+	
+	/* lookup audio mutex */
+	pthread_mutex_lock(&(ags_application_mutex));
+  
+	mutex_manager = ags_mutex_manager_get_instance();
+
+	audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) editor->selected_machine->audio);
+  
+	pthread_mutex_unlock(&(ags_application_mutex));
+
+	/* retrieve position */
+	pthread_mutex_lock(audio_mutex);
+
 	recall = editor->selected_machine->audio->play;
 
 	while((recall = ags_recall_find_type(recall,
@@ -875,7 +939,12 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
 	  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
 
 	  position = count_beats_audio_run->notation_counter * pattern_edit->control_unit.control_width;
+	}
 	
+	pthread_mutex_unlock(audio_mutex);
+
+	/* draw fader */
+	if(recall != NULL){
 	  ags_pattern_edit_draw_scroll(pattern_edit, cr,
 				       position);
 	}
@@ -1133,7 +1202,15 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
   
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
+  
+  if(editor->selected_machine == NULL ||
+     (machine = editor->selected_machine) == NULL){
+    return;
+  }
 
+  widget = (GtkWidget *) pattern_edit->drawing_area;
+
+  /* lookup audio mutex */
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
@@ -1143,19 +1220,9 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
-  pthread_mutex_lock(audio_mutex);
-  
-  if(editor->selected_machine == NULL ||
-     (machine = editor->selected_machine) == NULL ||
-     machine->audio->notation == NULL){
-    pthread_mutex_unlock(audio_mutex);
-    
-    return;
-  }
-
-  widget = (GtkWidget *) pattern_edit->drawing_area;
-
   /* draw */
+  pthread_mutex_lock(audio_mutex);
+
   cairo_set_source_rgb(cr,
 		       pattern_edit_style->fg[0].red / white_gc,
 		       pattern_edit_style->fg[0].green / white_gc,

@@ -80,8 +80,6 @@ void ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lo
 void ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 						       GObject *recall);
 
-extern AgsConfig *config;
-
 /**
  * SECTION:ags_play_notation_audio_run
  * @short_description: play notation
@@ -103,6 +101,7 @@ static AgsConnectableInterface* ags_play_notation_audio_run_parent_connectable_i
 static AgsDynamicConnectableInterface *ags_play_notation_audio_run_parent_dynamic_connectable_interface;
 static AgsPluginInterface *ags_play_notation_audio_run_parent_plugin_interface;
 
+extern AgsConfig *config;
 extern pthread_mutex_t ags_application_mutex;
 
 GType
@@ -672,12 +671,16 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   GValue value = {0,};
 
   pthread_mutex_t *audio_mutex;
-
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
+  
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
 
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
-  devout = AGS_DEVOUT(audio->devout);
 
+  /* read config and audio mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+  
   str = ags_config_get(config,
 		       AGS_CONFIG_DEVOUT,
 		       "buffer-size\0");
@@ -693,9 +696,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 				NULL,
 				10);
   free(str);
-  
-  pthread_mutex_lock(&(ags_application_mutex));
-  
+
   mutex_manager = ags_mutex_manager_get_instance();
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -705,6 +706,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   pthread_mutex_lock(audio_mutex);
 
+  devout = (AgsDevout *) audio->devout;
   list = audio->notation;//(GList *) g_value_get_pointer(&value);
   
   if(list == NULL){
@@ -746,16 +748,37 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	if(selected_channel == NULL){
 	  continue;
 	}
+
+	/* lookup channel mutex */
+	pthread_mutex_unlock(&(ags_application_mutex));
+
+	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) channel);
 	
+	pthread_mutex_unlock(&(ags_application_mutex));
+
 	/* recycling */
+	pthread_mutex_lock(channel_mutex);
+	
 	recycling = selected_channel->first_recycling;
 
+	pthread_mutex_unlock(channel_mutex);
+	
 	//#ifdef AGS_DEBUG	
 	g_message("playing[%u]: %u | %u\n\0", audio_channel, note->x[0], note->y);
 	//#endif
 
 	while(recycling != selected_channel->last_recycling->next){
-	  audio_signal = ags_audio_signal_new((GObject *) audio->devout,
+	  /* lookup recycling mutex */
+	  pthread_mutex_unlock(&(ags_application_mutex));
+
+	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						     (GObject *) recycling);
+	
+	  pthread_mutex_unlock(&(ags_application_mutex));
+
+	  /* create audio signal */
+	  audio_signal = ags_audio_signal_new((GObject *) devout,
 					      (GObject *) recycling,
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
 
@@ -769,14 +792,21 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 							       samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
 							       delay, attack);
 	  }
+	  
 	  ags_audio_signal_connect(audio_signal);
 
 	  audio_signal->stream_current = audio_signal->stream_beginning;
+	  
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
 	  g_object_unref(audio_signal);
 
+	  /* iterate */
+	  pthread_mutex_lock(recycling_mutex);
+
 	  recycling = recycling->next;
+
+	  pthread_mutex_unlock(recycling_mutex);
 	}
       }else if(note->x[0] > play_notation_audio_run->count_beats_audio_run->notation_counter){
 	break;

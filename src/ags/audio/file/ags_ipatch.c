@@ -713,6 +713,10 @@ ags_ipatch_info(AgsPlayable *playable,
   AgsIpatch *ipatch;
   IpatchSample *sample;
 
+  if(ipatch == NULL){
+    return;
+  }
+  
   ipatch = AGS_IPATCH(playable);
 
   if(ipatch->iter == NULL){
@@ -764,6 +768,10 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
   guint i;
   GError *this_error;
 
+  if(ipatch == NULL){
+    return(NULL);
+  }
+  
   ipatch = AGS_IPATCH(playable);
 
   this_error = NULL;

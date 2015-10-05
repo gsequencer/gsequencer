@@ -306,6 +306,7 @@ ags_audio_init(AgsAudio *audio)
   pthread_mutex_t *mutex;
   pthread_mutexattr_t attr;
 
+  /* insert audio mutex */
   //FIXME:JK: memory leak
   pthread_mutexattr_init(&attr);
   pthread_mutexattr_settype(&attr,
@@ -325,6 +326,7 @@ ags_audio_init(AgsAudio *audio)
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
+  /* base init */
   audio->flags = 0;
 
   audio->devout = NULL;
@@ -1699,8 +1701,13 @@ ags_audio_real_set_pads(AgsAudio *audio,
     AgsChannel *current;
 
     guint i;
+
+    if(channel != NULL){
+      channel = channel->prev_pad;
+    }
     
-    current = channel->prev_pad;
+    current = ags_channel_pad_nth(channel,
+				  pads);
 
     ags_audio_set_pads_shrink_zero(channel);
 

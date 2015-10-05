@@ -3444,15 +3444,19 @@ ags_channel_set_recycling(AgsChannel *channel,
     recycling_container = ags_recycling_container_reset_recycling(old_recycling_container,
 								  old_first_recycling, old_last_recycling,
 								  first_recycling, last_recycling);
-    recycling_container->parent = old_recycling_container->parent;
+    if(recycling_container != NULL){
+      recycling_container->parent = old_recycling_container->parent;
+
+      ags_audio_add_recycling_container(audio,
+					recycling_container);
+    }
     
+    ags_audio_remove_recycling_container(audio,
+					 (GObject *) old_recycling_container);
+
     g_object_set(recall_id->data,
 		 "recycling-container\0", recycling_container,
 		 NULL);
-    ags_audio_add_recycling_container(audio,
-				      recycling_container);
-    ags_audio_remove_recycling_container(audio,
-					 (GObject *) old_recycling_container);
     
     ags_channel_recursive_reset_recycling_container(channel,
 						    old_recycling_container,
@@ -6018,6 +6022,8 @@ ags_channel_recursive_play(AgsChannel *channel,
     current = channel;
 
     if(is_output){
+      pthread_mutex_lock(current_mutex);
+      
       goto ags_channel_recursive_play_up_OUTPUT;
     }
     

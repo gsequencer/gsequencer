@@ -635,9 +635,13 @@ ags_recycling_container_reset_recycling(AgsRecyclingContainer *recycling_contain
   }
   
   /* retrieve new length of recycling array */
-  new_length = ags_recycling_position(new_first_recycling, new_last_recycling->next,
-				      new_last_recycling);
-  new_length++;
+  if(new_first_recycling != NULL){
+    new_length = ags_recycling_position(new_first_recycling, new_last_recycling->next,
+					new_last_recycling);
+    new_length++;
+  }else{
+    return(NULL);
+  }
   
   /* retrieve indices to replace */
   if(new_context){
