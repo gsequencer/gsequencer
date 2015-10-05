@@ -231,7 +231,6 @@ ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
-  AgsMachine *machine;
   AgsDrumOutputLine *drum_output_line;
 
   AgsDevout *devout;
@@ -246,10 +245,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   drum_output_line = AGS_DRUM_OUTPUT_LINE(line);
 
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
-						   AGS_TYPE_MACHINE);
-
-  audio = machine->audio;
+  audio = channel->audio;
   
   /* lookup audio mutex */
   pthread_mutex_lock(&(ags_application_mutex));

@@ -509,6 +509,8 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
   /* lookup channel mutex */
   pthread_mutex_lock(&(ags_application_mutex));
 
+  mutex_manager = ags_mutex_manager_get_instance();
+
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) channel);
   

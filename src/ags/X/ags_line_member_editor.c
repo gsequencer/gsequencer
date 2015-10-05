@@ -23,6 +23,8 @@
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_recall_ladspa.h>
 
 #include <ags/X/ags_machine.h>
@@ -51,6 +53,8 @@ void ags_line_member_editor_finalize(GObject *gobject);
  * editor should be packed by a #AgsLineEditor. You may add/remove plugins with this
  * editor.
  */
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_line_member_editor_get_type(void)
@@ -205,8 +209,13 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   GtkHBox *hbox;
   GtkCheckButton *check_button;
   GtkLabel *label;
+
+  AgsMutexManager *mutex_manager;
+
   GList *recall_ladspa;
   gchar *filename, *effect;
+
+  pthread_mutex_t *channel_mutex;
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
 
@@ -214,6 +223,19 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 								AGS_TYPE_MACHINE_EDITOR);
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
+
+  /* lookup channel mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) line_editor->channel);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* reset */
+  pthread_mutex_lock(channel_mutex);
 
   recall_ladspa = line_editor->channel->recall;
 
@@ -247,6 +269,8 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 
     recall_ladspa = recall_ladspa->next;
   }
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 /**

@@ -193,7 +193,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
     next_pad = pad->channel->next_pad;
 
-    pthread_mutex_lock(current_mutex);
+    pthread_mutex_unlock(current_mutex);
 
     while(current != next_pad){
       /* lookup current mutex */

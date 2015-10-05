@@ -219,7 +219,7 @@ ags_gui_thread_run(AgsThread *thread)
     }
 
     /*  */
-    pthread_mutex_lock(audio_loop->recall_mutex);
+    //    pthread_mutex_lock(audio_loop->recall_mutex);
 
     if(success){
       /*  */
@@ -239,7 +239,7 @@ ags_gui_thread_run(AgsThread *thread)
     //    success = pthread_mutex_trylock(thread->suspend_mutex);
       
     /*  */
-    pthread_mutex_unlock(audio_loop->recall_mutex);
+    //    pthread_mutex_unlock(audio_loop->recall_mutex);
 
     /*  */
     //    g_atomic_int_set(&(thread->critical_region),

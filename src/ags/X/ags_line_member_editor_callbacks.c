@@ -27,6 +27,7 @@
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
@@ -62,6 +63,8 @@
 
 #include <ladspa.h>
 
+extern pthread_mutex_t ags_application_mutex;
+
 void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
@@ -77,8 +80,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
   switch(response){
   case GTK_RESPONSE_ACCEPT:
     {
-      AgsAudioLoop *audio_loop;
-      AgsTaskThread *task_thread;
+      AgsWindow *window;
       AgsLine *line;
       AgsLineMember *line_member;
       AgsMachineEditor *machine_editor;
@@ -100,6 +102,12 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 
       AgsLadspaPlugin *ladspa_plugin;
 
+      AgsMutexManager *mutex_manager;
+      AgsAudioLoop *audio_loop;
+      AgsTaskThread *task_thread;
+
+      AgsMain *ags_main;
+    
       GList *plugin;
       GList *task;
       GList *port;
@@ -116,6 +124,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       LADSPA_PortDescriptor *port_descriptor;
       LADSPA_Data lower_bound, upper_bound;
       long i;
+
+      pthread_mutex_t *audio_loop_mutex;
 
       machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 								    AGS_TYPE_MACHINE_EDITOR);
@@ -158,9 +168,35 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       if(line == NULL){
 	return;
       }
-      
-      audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(machine_editor->machine)->audio->devout)->ags_main)->main_loop;
+
+      /* get window and ags_main  */
+      window = (AgsWindow *) gtk_widget_get_toplevel(machine_editor->machine);
+  
+      ags_main = window->ags_main;
+
+      /* get audio loop */
+      pthread_mutex_lock(&(ags_application_mutex));
+
+      audio_loop = ags_main->main_loop;
+
+      pthread_mutex_unlock(&(ags_application_mutex));
+
+      /* lookup audio loop mutex */
+      pthread_mutex_lock(&(ags_application_mutex));
+  
+      mutex_manager = ags_mutex_manager_get_instance();
+    
+      audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+						  (GObject *) audio_loop);
+  
+      pthread_mutex_unlock(&(ags_application_mutex));
+
+      /* get task thread */
+      pthread_mutex_lock(audio_loop_mutex);
+
       task_thread = (AgsTaskThread *) audio_loop->task_thread;
+
+      pthread_mutex_unlock(audio_loop_mutex);
 
       /* retrieve plugin */
       filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
