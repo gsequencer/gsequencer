@@ -26,6 +26,7 @@
 
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
@@ -33,6 +34,7 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
 #include <ags/audio/task/ags_link_channel.h>
@@ -65,6 +67,8 @@ void ags_link_editor_show(GtkWidget *widget);
  */
 
 static gpointer ags_link_editor_parent_class = NULL;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_link_editor_get_type(void)
@@ -215,23 +219,100 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
   link_editor = AGS_LINK_EDITOR(applicable);
 
+  /* reset */
   if(gtk_combo_box_get_active_iter(link_editor->combo,
 				   &iter)){
+    AgsWindow *window;
     AgsMachine *link_machine, *machine;
     AgsLineEditor *line_editor;
+
     AgsDevout *devout;
+    AgsAudio *audio;
     AgsChannel *channel, *link;
     AgsLinkChannel *link_channel;
     GtkTreeModel *model;
 
+    AgsMutexManager *mutex_manager;
+    AgsAudioLoop *audio_loop;
+    AgsTaskThread *task_thread;
+
+    AgsMain *ags_main;
+    
+    pthread_mutex_t *audio_loop_mutex;
+    pthread_mutex_t *audio_mutex;
+    pthread_mutex_t *channel_mutex;
+
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 							  AGS_TYPE_LINE_EDITOR));
 
+    /* get channel */
     channel = line_editor->channel;
-    devout = AGS_AUDIO(channel->audio)->devout;	
 
-    machine = AGS_AUDIO(channel->audio)->machine;
+    /* lookup channel mutex */
+    pthread_mutex_lock(&(ags_application_mutex));
     
+    mutex_manager = ags_mutex_manager_get_instance();
+    
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+    
+    pthread_mutex_unlock(&(ags_application_mutex));
+ 
+    /* get audio */
+    pthread_mutex_lock(channel_mutex);
+
+    audio = channel->audio;
+
+    pthread_mutex_unlock(channel_mutex);
+
+    /* lookup audio mutex */
+    pthread_mutex_lock(&(ags_application_mutex));
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+    
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) audio);
+    
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    /* get devout and machine */
+    pthread_mutex_lock(audio_mutex);
+
+    devout = audio->devout;
+    machine = audio->machine;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    /* get window and ags_main  */
+    window = (AgsWindow *) gtk_widget_get_toplevel(machine);
+  
+    ags_main = window->ags_main;
+
+    /* get audio loop */
+    pthread_mutex_lock(&(ags_application_mutex));
+
+    audio_loop = ags_main->main_loop;
+
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    /* lookup audio loop mutex */
+    pthread_mutex_lock(&(ags_application_mutex));
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+    
+    audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+						(GObject *) audio_loop);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    /* get task thread */
+    pthread_mutex_lock(audio_loop_mutex);
+
+    task_thread = (AgsTaskThread *) audio_loop->task_thread;
+
+    pthread_mutex_unlock(audio_loop_mutex);
+
+    /* get model */
     model = gtk_combo_box_get_model(link_editor->combo);
     gtk_tree_model_get(model,
 		       &iter,
@@ -261,7 +342,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
 						      (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button),
 						      1);
 	  /* append AgsLinkChannel */
-	  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+	  ags_task_thread_append_task(task_thread,
 				      AGS_TASK(open_single_file));
 	}
       }else{
@@ -269,27 +350,52 @@ ags_link_editor_apply(AgsApplicable *applicable)
 	link_channel = ags_link_channel_new(channel, NULL);
 	
 	/* append AgsLinkChannel */
-	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+	ags_task_thread_append_task(task_thread,
 				    AGS_TASK(link_channel));
       }
     }else{
       guint link_line;
+      gboolean is_output;
+      
+      pthread_mutex_t *link_audio_mutex;
 
       link_line = (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button);
 
-      if(AGS_IS_INPUT(channel)){
-	link = ags_channel_nth(link_machine->audio->output,
-			       link_line);
+      pthread_mutex_lock(channel_mutex);
+      
+      is_output = (AGS_IS_OUTPUT(channel)) ? TRUE: FALSE;
+      
+      pthread_mutex_unlock(channel_mutex);
+      
+      /* lookup link's audio mutex */
+      pthread_mutex_lock(&(ags_application_mutex));
+      
+      mutex_manager = ags_mutex_manager_get_instance();
+      
+      link_audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+						  (GObject *) link_machine->audio);
+      
+      pthread_mutex_unlock(&(ags_application_mutex));
+
+      /* get link */
+      pthread_mutex_lock(link_audio_mutex);
+
+      if(!is_output){
+	link = link_machine->audio->output;
       }else{
-	link = ags_channel_nth(link_machine->audio->input,
-			       link_line);
+	link = link_machine->audio->input;
       }
+
+      pthread_mutex_unlock(link_audio_mutex);
+      
+      link = ags_channel_nth(link,
+			     link_line);
       
       /* create task */
       link_channel = ags_link_channel_new(channel, link);
       
       /* append AgsLinkChannel */
-      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread),
+      ags_task_thread_append_task(task_thread,
 				  AGS_TASK(link_channel));
     }
   }
@@ -310,18 +416,95 @@ ags_link_editor_reset(AgsApplicable *applicable)
 				   &iter)){
     AgsMachine *machine, *link_machine, *link;
     AgsLineEditor *line_editor;
-    AgsChannel *channel;
+
+    AgsAudio *audio;
+    AgsChannel *channel, *link_channel;
+
+    AgsMutexManager *mutex_manager;
+
     gint i;
     gboolean found;
+
+    pthread_mutex_t *audio_mutex;
+    pthread_mutex_t *channel_mutex;
+    pthread_mutex_t *link_channel_mutex;
 
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_editor),
 							  AGS_TYPE_LINE_EDITOR));
 
     channel = line_editor->channel;
-    machine = AGS_MACHINE(AGS_AUDIO(channel->audio)->machine);
+
+    /* lookup channel mutex */
+    pthread_mutex_lock(&(ags_application_mutex));
     
-    if(channel->link != NULL){
-      link_machine = AGS_MACHINE(AGS_AUDIO(channel->link->audio)->machine);
+    mutex_manager = ags_mutex_manager_get_instance();
+    
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+    
+    pthread_mutex_unlock(&(ags_application_mutex));
+ 
+    /* get audio and channel's link */
+    pthread_mutex_lock(channel_mutex);
+
+    audio = channel->audio;
+    link_channel = channel->link;
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    /* lookup audio mutex */
+    pthread_mutex_lock(&(ags_application_mutex));
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) audio);
+  
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    /* get machine */
+    pthread_mutex_lock(audio_mutex);
+  
+    machine = (AgsMachine *) audio->machine;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    /*  */
+    if(link_channel != NULL){
+      AgsAudio *link_audio;
+      
+      pthread_mutex_t *link_audio_mutex;
+      
+      /* lookup channel mutex */
+      pthread_mutex_lock(&(ags_application_mutex));
+    
+      mutex_manager = ags_mutex_manager_get_instance();
+    
+      link_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) link_channel);
+    
+      pthread_mutex_unlock(&(ags_application_mutex));
+ 
+      /* get audio */
+      pthread_mutex_lock(link_channel_mutex);
+
+      link_audio = channel->audio;
+
+      pthread_mutex_unlock(link_channel_mutex);
+
+      /* lookup audio mutex */
+      pthread_mutex_lock(&(ags_application_mutex));
+
+      link_audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+						  (GObject *) link_audio);
+      
+      pthread_mutex_unlock(&(ags_application_mutex));
+
+      /* get machine */
+      pthread_mutex_lock(link_audio_mutex);
+  
+      link_machine = link_audio->machine;
+
+      pthread_mutex_unlock(link_audio_mutex);
+
     }else{
       link_machine = NULL;
     }
@@ -353,10 +536,14 @@ ags_link_editor_reset(AgsApplicable *applicable)
       /* set channel link */
       gtk_combo_box_set_active(link_editor->combo, i);
 
-      if(channel->link == NULL){
+      if(link_channel == NULL){
 	gtk_spin_button_set_value(link_editor->spin_button, 0);
       }else{
-	gtk_spin_button_set_value(link_editor->spin_button, channel->link->line);
+	pthread_mutex_lock(link_channel_mutex);
+	
+	gtk_spin_button_set_value(link_editor->spin_button, link_channel->line);
+
+	pthread_mutex_unlock(link_channel_mutex);
       }
     }else{
       gtk_combo_box_set_active(link_editor->combo,
@@ -364,6 +551,8 @@ ags_link_editor_reset(AgsApplicable *applicable)
     }
 
     /* set file link */
+    pthread_mutex_lock(channel_mutex);
+
     if((AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
      ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
       (AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0) &&
@@ -405,6 +594,8 @@ ags_link_editor_reset(AgsApplicable *applicable)
 			   -1);
       }
     }
+    
+    pthread_mutex_unlock(channel_mutex);
   }
 }
 

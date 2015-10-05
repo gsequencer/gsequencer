@@ -1,3 +1,16 @@
+ags (0.6.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dead-lock while muting pad
+	* enhaced AgsMachineEditor to be thread-safe
+	* modified ags_audio_loop.c and ags_gui_thread.c to process in parallel
+
+ags (0.6.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed NULL pointer in ags_line.c as accessing mutex manager
+	* fixed NULL pointer in ags_drum_output_line.c as accessing machine while setting channel
+
 ags (0.6.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

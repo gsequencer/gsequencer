@@ -25,6 +25,7 @@
 
 #include <ags/object/ags_applicable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
@@ -60,6 +61,8 @@ void ags_resize_editor_show(GtkWidget *widget);
  */
 
 AgsConnectableInterface *ags_resize_editor_parent_connectable_interface;
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_resize_editor_get_type(void)
@@ -262,8 +265,9 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
-  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(resize_editor)->flags)) == 0)
+  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(resize_editor)->flags)) == 0){
     return;
+  }
   
   machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(resize_editor),
 							      AGS_TYPE_MACHINE_EDITOR));
@@ -286,7 +290,12 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 {
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
+
   AgsAudio *audio;
+  
+  AgsMutexManager *mutex_manager;
+  
+  pthread_mutex_t *audio_mutex;
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
@@ -295,11 +304,24 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 
   audio = machine_editor->machine->audio;
 
+  /* lookup audio mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+    
+  mutex_manager = ags_mutex_manager_get_instance();
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) audio);
+    
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* reset */
+  pthread_mutex_lock(audio_mutex);
+
   if((AGS_MACHINE_MONO & (machine_editor->machine->mapping_flags)) != 0){
     gtk_spin_button_set_range(resize_editor->audio_channels,
 			      0.0, 1.0);
   }
-  
+
   gtk_spin_button_set_value(resize_editor->audio_channels,
 			    audio->audio_channels);
 
@@ -313,6 +335,8 @@ ags_resize_editor_reset(AgsApplicable *applicable)
   
   gtk_spin_button_set_value(resize_editor->output_pads,
 			    audio->output_pads);
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

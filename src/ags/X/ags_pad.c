@@ -837,9 +837,9 @@ ags_pad_play(AgsPad *pad)
 
   gboolean play_all;
 
+  pthread_mutex_t *audio_loop_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *audio_loop_mutex;
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						   AGS_TYPE_MACHINE);
