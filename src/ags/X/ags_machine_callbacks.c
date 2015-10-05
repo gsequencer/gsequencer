@@ -52,12 +52,13 @@ ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, 
 {
   AgsWindow *window = AGS_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET(handle_box)));
 
-  if(event->button == 3)
+  if(event->button == 3){
     gtk_menu_popup (GTK_MENU (machine->popup),
                     NULL, NULL, NULL, NULL,
                     event->button, event->time);
-  else if(event->button == 1)
+  }else if(event->button == 1){
     window->selected = machine;
+  }
 
   return(0);
 }
