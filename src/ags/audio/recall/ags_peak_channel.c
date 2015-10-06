@@ -390,7 +390,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
       continue;
     }
 
-    current_value +=  (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
+    current_value = current_value + (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
   }
   
   /* break down to scale */
