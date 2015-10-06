@@ -1012,7 +1012,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   gboolean link_recycling; // affects AgsInput
   gboolean set_sync_link, set_async_link; // affects AgsOutput
 
-  pthread_mutex_t *prev_mutex, *prev_pad_mutex;
+  pthread_mutex_t *prev_mutex, *prev_pad_mutex, *current_mutex;
   
   auto void ags_audio_set_audio_channels_init_parameters(GType type);
   auto void ags_audio_set_audio_channels_grow(GType type);
@@ -1065,7 +1065,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   }
   
   void ags_audio_set_audio_channels_grow(GType type){
-    AgsChannel *channel, *start;
+    AgsChannel *channel, *start, *current;
     AgsRecycling *first_recycling, *last_recycling;
 	  
     guint pads;
@@ -1085,7 +1085,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     /* grow */
     for(j = 0; j < pads; j++){
-      for(i = audio->audio_channels; i < audio_channels; i++){
+      for(i = audio_channels_old; i < audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio\0", (GObject *) audio,
 					      "devout\0", audio->devout,
@@ -1135,7 +1135,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  pthread_mutex_lock(prev_pad_mutex);
 	  
 	  channel->prev_pad->next_pad = channel;
-	  
+
 	  pthread_mutex_unlock(prev_pad_mutex);
 	}
 
@@ -1367,14 +1367,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   pthread_mutex_unlock(&(ags_application_mutex));
   
   /* grow / shrink */
-  if(audio_channels > audio->audio_channels){
+  if(audio_channels > audio_channels_old){
     AgsDevoutPlayDomain *devout_play_domain;
     AgsChannel *current;
 
     guint i;
     
-    /* grow audio channels*/
-    if((AGS_AUDIO_HAS_NOTATION & audio->flags) != 0){
+    /* grow audio channels */
+    if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0){
       ags_audio_set_audio_channels_grow_notation();
     }
 
@@ -1405,7 +1405,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	current = current->next;
       }
     }
-  }else if(audio_channels < audio->audio_channels){
+  }else if(audio_channels < audio_channels_old){
     AgsDevoutPlayDomain *devout_play_domain;
     AgsDevoutPlay *devout_play;
     AgsChannel *current;
@@ -1425,6 +1425,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     }
 
     audio->input_lines = audio_channels * audio->input_pads;
+    audio->output_lines = audio_channels * audio->output_pads;
 
     /* shrink devout play domain */
     devout_play_domain = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain);
@@ -1443,7 +1444,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   /* apply new sizes */
   audio->audio_channels = audio_channels;
   // input_lines must be set earlier because set_sync_link needs it
-  audio->output_lines = audio_channels * audio->output_pads;
 }
 
 /**

@@ -1,3 +1,8 @@
+ags (0.6.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed refactored code of ags_channel.c because of bugs
+
 ags (0.6.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
