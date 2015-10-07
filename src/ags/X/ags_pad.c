@@ -30,6 +30,8 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_task_completion.h>
+#include <ags/thread/ags_gui_thread.h>
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
@@ -956,13 +958,33 @@ ags_pad_play(AgsPad *pad)
     }
 
     /* create start task */
-    start_devout = ags_start_devout_new(devout);
-    tasks = g_list_prepend(tasks,
-			   start_devout);
+    if(tasks != NULL){
+      AgsGuiThread *gui_thread;
+      AgsTaskCompletion *task_completion;
 
-    /* perform playback */
-    tasks = g_list_reverse(tasks);
-    ags_task_thread_append_tasks(task_thread, tasks);
+      pthread_mutex_lock(audio_loop_mutex);
+      
+      gui_thread = (AgsGuiThread *) audio_loop->gui_thread;
+
+      pthread_mutex_unlock(audio_loop_mutex);
+
+      start_devout = ags_start_devout_new(window->devout);
+      tasks = g_list_prepend(tasks, start_devout);
+
+      task_completion = ags_task_completion_new((GObject *) start_devout,
+						NULL);
+      g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
+			     G_CALLBACK(ags_pad_start_complete_callback), pad);
+      gui_thread->task_completion = g_list_prepend(gui_thread->task_completion,
+						   task_completion);
+      ags_connectable_connect(AGS_CONNECTABLE(task_completion));
+      
+      /* append AgsStartDevout */
+      tasks = g_list_reverse(tasks);
+
+      ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+				   tasks);
+    }
   }else{
     AgsDevoutPlay *devout_play;
     AgsRecallID *recall_id;

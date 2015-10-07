@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = foreign
 AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = -g -O9 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -ftrapv -msse4
+CFLAGS = -g -O9 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -ftrapv
 LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in

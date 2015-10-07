@@ -35,6 +35,7 @@
 
 #include <ags/audio/recall/ags_play_channel_run.h>
 
+#include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
 
 #include <ags/audio/task/recall/ags_set_muted.h>
@@ -43,6 +44,10 @@
 #include <ags/X/ags_line_callbacks.h>
 
 extern pthread_mutex_t ags_application_mutex;
+
+void ags_pad_start_complete_response(GtkWidget *dialog,
+				     gint response,
+				     AgsPad *pad);
 
 int
 ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pad)
@@ -316,6 +321,41 @@ ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
 }
 
 void
+ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
+				AgsPad *pad)
+{
+  AgsWindow *window;
+  GtkMessageDialog *dialog;
+  
+  AgsDevoutThread *devout_thread;
+  AgsTask *task;
+
+  task = (AgsTask *) task_completion->task;
+  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
+  devout_thread = (AgsDevoutThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->devout_thread;
+
+  if(devout_thread->error != NULL){
+    /* show error message */
+    dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
+							 GTK_DIALOG_DESTROY_WITH_PARENT,
+							 GTK_MESSAGE_ERROR,
+							 GTK_BUTTONS_CLOSE,
+							 "Error: %s\0", devout_thread->error->message);
+    g_signal_connect(dialog, "response\0",
+		     G_CALLBACK(ags_pad_start_complete_response), pad);
+    gtk_widget_show_all((GtkWidget *) dialog);
+  }
+}
+
+void
+ags_pad_start_complete_response(GtkWidget *dialog,
+				gint response,
+				AgsPad *pad)
+{
+  gtk_widget_destroy(dialog);
+}
+
+void
 ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 { 
   AgsDevout *devout;
@@ -357,7 +397,9 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   channel = input_pad->channel;
   next_pad = channel->next_pad;
 
+#ifdef AGS_DEBUG
   g_message("launch\0");
+#endif
   
   while(channel != next_pad){
     if(AGS_DEVOUT_PLAY(channel->devout_play) == NULL ||
