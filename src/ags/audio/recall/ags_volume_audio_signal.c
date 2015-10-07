@@ -240,7 +240,18 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 
     volume = g_value_get_double(&value);
 
-    for(i = 0; i < buffer_size; i++){
+    /* unrolled loop */
+    for(i = 0; i < buffer_size; i += 4){
+      buffer[i] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i]));
+      
+      buffer[i + 1] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 1]));
+      
+      buffer[i + 2] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 2]));
+      
+      buffer[i + 3] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 3]));
+    }
+
+    for(; i < buffer_size; i++){
       buffer[i] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i]));
     }
   }else{
