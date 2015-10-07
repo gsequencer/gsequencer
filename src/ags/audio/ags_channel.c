@@ -2930,8 +2930,9 @@ ags_channel_set_recycling(AgsChannel *channel,
 	nth_channel_prev = ags_channel_prev_with_recycling(input);
 
 	if(nth_channel_prev != NULL){
+#ifdef AGS_DEBUG
 	  g_message("found prev\0");
-
+#endif	  
 	  find_prev = FALSE;
 	  replace_first = FALSE;
 
@@ -2952,7 +2953,9 @@ ags_channel_set_recycling(AgsChannel *channel,
 	nth_channel_next = ags_channel_next_with_recycling(input);
 	
 	if(nth_channel_next != NULL){
+#ifdef AGS_DEBUG
 	  g_message("found next\0");
+#endif	  
 
 	  find_next = FALSE;
 	  replace_last = FALSE;

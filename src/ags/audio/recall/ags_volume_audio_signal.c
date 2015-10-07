@@ -227,6 +227,7 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     signed short *buffer;
     gdouble volume;
     guint buffer_size;
+    guint limit;
     guint i;
     GValue value = {0,};
 
@@ -241,7 +242,9 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     volume = g_value_get_double(&value);
 
     /* unrolled loop */
-    for(i = 0; i < buffer_size; i += 4){
+    limit = buffer_size - 7;
+    
+    for(i = 0; i < limit; i += 8){
       buffer[i] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i]));
       
       buffer[i + 1] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 1]));
@@ -249,6 +252,15 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
       buffer[i + 2] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 2]));
       
       buffer[i + 3] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 3]));
+
+      buffer[i + 4] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 4]));
+
+      buffer[i + 5] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 5]));
+
+      buffer[i + 6] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 6]));
+
+      buffer[i + 7] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 7]));
+
     }
 
     for(; i < buffer_size; i++){

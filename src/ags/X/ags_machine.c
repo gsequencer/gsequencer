@@ -30,6 +30,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_task_completion.h>
 #include <ags/thread/ags_gui_thread.h>
 
 #include <ags/file/ags_file.h>

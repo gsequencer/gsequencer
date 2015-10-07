@@ -323,6 +323,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   double current_value;
   guint buffer_size;
   static const double scale_precision = 10.0;
+  guint limit;
   guint i;
   gchar *str;
   
@@ -384,8 +385,10 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
   /* calculate average value */
   current_value = 0.0;
+  
+  limit = buffer_size - 7;
 
-  for(i = 0; i < buffer_size; i += 4){
+  for(i = 0; i < limit; i += 8){
     /* unrolled loop */
     if(buffer[i] != 0){
       current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
@@ -401,6 +404,22 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
     if(buffer[i + 3] != 0){
       current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 3]));
+    }
+    
+    if(buffer[i + 4] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 4]));
+    }
+
+    if(buffer[i + 5] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 5]));
+    }
+    
+    if(buffer[i + 6] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 6]));
+    }
+
+    if(buffer[i + 7] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 7]));
     }
   }
 
