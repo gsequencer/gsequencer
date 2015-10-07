@@ -385,12 +385,29 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   /* calculate average value */
   current_value = 0.0;
 
-  for(i = 0; i < buffer_size; i++){
-    if(buffer[i] == 0){
-      continue;
+  for(i = 0; i < buffer_size; i += 4){
+    /* unrolled loop */
+    if(buffer[i] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
     }
 
-    current_value = current_value + (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
+    if(buffer[i + 1] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 1]));
+    }
+
+    if(buffer[i + 2] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 2]));
+    }
+
+    if(buffer[i + 3] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 3]));
+    }
+  }
+
+  for(; i < buffer_size; i++){
+    if(buffer[i] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
+    }
   }
   
   /* break down to scale */

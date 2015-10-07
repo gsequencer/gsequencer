@@ -796,7 +796,29 @@ ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannel
 {
   guint i;
 
-  for(i = 0; i < size; i++){
+  for(i = 0; i < size; i += 4){
+    *destination = 0xffff & ((signed long) ((*destination) + (*source)));
+
+    destination += dchannels;
+    source += schannels;
+    
+    *destination = 0xffff & ((signed long) ((*destination) + (*source)));
+
+    destination += dchannels;
+    source += schannels;
+
+    *destination = 0xffff & ((signed long) ((*destination) + (*source)));
+    
+    destination += dchannels;
+    source += schannels;
+
+    *destination = 0xffff & ((signed long) ((*destination) + (*source)));
+
+    destination += dchannels;
+    source += schannels;
+  }
+
+  for(; i < size; i++){
     *destination = 0xffff & ((signed long) ((*destination) + (*source)));
 
     destination += dchannels;
