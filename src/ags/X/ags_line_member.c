@@ -88,6 +88,8 @@ enum{
 static gpointer ags_line_member_parent_class = NULL;
 static guint line_member_signals[LAST_SIGNAL];
 
+extern pthread_mutex_t ags_application_mutex;
+
 GType
 ags_line_member_get_type(void)
 {
@@ -767,14 +769,33 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   }
 
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
+    AgsWindow *window;
     AgsLine *line;
+    
+    AgsThread *audio_loop;
     AgsTaskThread *task_thread;
     AgsTask *task;
 
+    AgsMain *ags_main;
+
     line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 					       AGS_TYPE_LINE);
-    
-    task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(line->channel->devout)->ags_main)->main_loop)->task_thread);
+
+    window = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
+						    AGS_TYPE_WINDOW);
+  
+    ags_main = window->ags_main;
+
+    /* get audio loop */
+    pthread_mutex_lock(&(ags_application_mutex));
+
+    audio_loop = ags_main->main_loop;
+
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    /* get task and devout thread */
+    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_TASK_THREAD);
 
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,

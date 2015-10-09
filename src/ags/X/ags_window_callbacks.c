@@ -25,6 +25,8 @@
 
 #include <ags/audio/task/ags_save_file.h>
 
+extern pthread_mutex_t ags_application_mutex;
+
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 {
@@ -51,7 +53,27 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   if(response == GTK_RESPONSE_YES){
     AgsFile *file;
     AgsSaveFile *save_file;
+
+    AgsThread *audio_loop;
+    AgsThread *task_thread;
+    
+    AgsMain *ags_main;
+    
     char *filename;
+
+    ags_main = window->ags_main;
+
+    /* get audio loop */
+    pthread_mutex_lock(&(ags_application_mutex));
+
+    audio_loop = ags_main->main_loop;
+
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    /* get task thread */
+    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_TASK_THREAD);
+
 
     filename = window->name;
 
@@ -61,7 +83,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 				    NULL);
 
     save_file = ags_save_file_new(file);
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+    ags_task_thread_append_task(task_thread,
 				AGS_TASK(save_file));
 
     g_object_unref(G_OBJECT(file));

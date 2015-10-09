@@ -79,16 +79,37 @@ gboolean
 ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventButton *event, AgsCellPattern *cell_pattern)
 {
   if(event->button == 1){
+    AgsWindow *window;
     AgsMachine *machine;
     
     AgsTogglePatternBit *toggle_pattern_bit;
     AgsChannel *channel;
     
+    AgsThread *audio_loop;
+    AgsTaskThread *task_thread;
+
+    AgsMain *ags_main;
+  
     guint i, j;
     guint index1;
 
     machine = gtk_widget_get_ancestor(cell_pattern,
 				      AGS_TYPE_MACHINE);
+
+    window = gtk_widget_get_ancestor(machine,
+				     AGS_TYPE_WINDOW);
+
+    ags_main = window->ags_main;
+  
+    /* get audio loop */
+    pthread_mutex_lock(&(ags_application_mutex));
+
+    audio_loop = ags_main->main_loop;
+
+    pthread_mutex_unlock(&(ags_application_mutex));
+  
+    task_thread = ags_thread_find_type(audio_loop,
+				       AGS_TYPE_TASK_THREAD);
         
     i = (guint) floor((double) event->y / (double) cell_pattern->cell_height);
     j = (guint) floor((double) event->x / (double) cell_pattern->cell_width);
@@ -104,7 +125,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui\0",
 		     G_CALLBACK(ags_cell_pattern_refresh_gui_callback), cell_pattern);
 
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
+    ags_task_thread_append_task(task_thread,
 				AGS_TASK(toggle_pattern_bit));
   }else if (event->button == 3){
   }
@@ -151,9 +172,13 @@ ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *ev
 gboolean
 ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern)
 {
+  AgsWindow *window;
   AgsMachine *machine;
       
   AgsChannel *channel;
+
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
 
   auto void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel);
 
@@ -188,8 +213,11 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
     audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
-    task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
-    devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
+    
+    task_thread = ags_thread_find_type(audio_loop,
+				       AGS_TYPE_TASK_THREAD);
+    devout_thread = ags_thread_find_type(audio_loop,
+					 AGS_TYPE_DEVOUT_THREAD);
 
     tasks = NULL;
 
@@ -223,6 +251,12 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
   machine = gtk_widget_get_ancestor(cell_pattern,
 				    AGS_TYPE_MACHINE);
+  window = gtk_widget_get_ancestor(cell_pattern,
+				   AGS_TYPE_WINDOW);
+
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop);
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   switch(event->keyval){
   case GDK_KEY_Control_L:
@@ -336,7 +370,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
       }
       
-      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
+      ags_task_thread_append_task(task_thread,
 				  AGS_TASK(toggle_pattern_bit));
     }
     break;
@@ -408,7 +442,8 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
   devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
   audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
-  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   g_message("launch\0");
   

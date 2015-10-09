@@ -511,7 +511,12 @@ ags_main_register_thread_type()
 void
 ags_main_quit(AgsMain *ags_main)
 {
-  ags_thread_stop(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread);
+  AgsThread *gui_thread;
+
+  gui_thread = ags_thread_find_type(ags_main->main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  ags_thread_stop(gui_thread);
 }
 
 AgsMain*
@@ -570,7 +575,11 @@ main(int argc, char **argv)
 {
   AgsDevout *devout;
   AgsWindow *window;
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
+  AgsThread *async_queue;
+  AgsThread *devout_thread;
+  AgsThread *export_thread;
+  
   GFile *autosave_file;
   struct sched_param param;
   struct rlimit rl;
@@ -761,12 +770,15 @@ main(int argc, char **argv)
       exit(EXIT_FAILURE);
     }
 #endif
+
+    gui_thread = ags_thread_find_type(ags_main->main_loop,
+				      AGS_TYPE_GUI_THREAD);
     
 #ifdef _USE_PTH
-    pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
+    pth_join(gui_thread->thread,
 	     NULL);
 #else
-    pthread_join(*(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread),
+    pthread_join(*(gui_thread->thread),
 		 NULL);
 #endif
   }else{
@@ -822,12 +834,43 @@ main(int argc, char **argv)
       ags_main->server = ags_server_new((GObject *) ags_main);
 
       /* AgsMainLoop */
-      ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
+      ags_main->main_loop = (AgsThread *) ags_audio_loop_new((GObject *) devout, (GObject *) ags_main);
+      ags_main->thread_pool->parent = ags_main->main_loop;
       g_object_ref(G_OBJECT(ags_main->main_loop));
       ags_connectable_connect(AGS_CONNECTABLE(G_OBJECT(ags_main->main_loop)));
 
+      /* AgsTaskThread */
+      async_queue = (AgsThread *) ags_task_thread_new(devout);
+      AGS_TASK_THREAD(async_queue)->thread_pool = ags_main->thread_pool;
+      ags_main_loop_set_async_queue(AGS_MAIN_LOOP(ags_main->main_loop),
+				    async_queue);
+      ags_thread_add_child_extended(ags_main->main_loop,
+				    async_queue,
+				    TRUE, TRUE);
+
+      /* AgsGuiThread */
+      gui_thread = (AgsThread *) ags_gui_thread_new();
+      ags_thread_add_child_extended(ags_main->main_loop,
+				    gui_thread,
+				    TRUE, TRUE);
+
+      /* AgsDevoutThread */
+      devout_thread = (AgsThread *) ags_devout_thread_new(devout);
+      ags_thread_add_child_extended(ags_main->main_loop,
+				    devout_thread,
+				    TRUE, TRUE);
+
+      /* AgsExportThread */
+      export_thread = (AgsThread *) ags_export_thread_new(devout, NULL);
+      ags_thread_add_child_extended(ags_main->main_loop,
+				    export_thread,
+				    TRUE, TRUE);
+
       /* start thread tree */
       ags_thread_start(ags_main->main_loop);
+
+      /* complete thread pool */
+      ags_thread_pool_start(ags_main->thread_pool);
 
       /* wait thread */
       pthread_mutex_lock(AGS_THREAD(ags_main->main_loop)->start_mutex);
@@ -845,10 +888,6 @@ main(int argc, char **argv)
       }
 	
       pthread_mutex_unlock(AGS_THREAD(ags_main->main_loop)->start_mutex);
-      
-      /* complete thread pool */
-      ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-      ags_thread_pool_start(ags_main->thread_pool);
     }else{
       AgsSingleThread *single_thread;
 
@@ -905,14 +944,17 @@ main(int argc, char **argv)
       exit(EXIT_FAILURE);
     }
 #endif
-    
+
+    gui_thread = ags_thread_find_type(ags_main->main_loop,
+				      AGS_TYPE_GUI_THREAD);
+
     if(!single_thread){
       /* join gui thread */
 #ifdef _USE_PTH
-      pth_join(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread,
+      pth_join(gui_thread->thread,
 	       NULL);
 #else
-      pthread_join(*(AGS_AUDIO_LOOP(ags_main->main_loop)->gui_thread->thread),
+      pthread_join(*(gui_thread->thread),
 		   NULL);
 #endif
     }

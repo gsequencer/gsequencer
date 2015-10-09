@@ -166,7 +166,8 @@ ags_start_devout_launch(AgsTask *task)
     return;
   }
 
-  devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
+  devout_thread = ags_thread_find_type(audio_loop,
+				       AGS_TYPE_DEVOUT_THREAD);
 
   /* append to AgsDevout */
   audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
@@ -174,8 +175,7 @@ ags_start_devout_launch(AgsTask *task)
 			AGS_AUDIO_LOOP_PLAY_RECALL);
   devout->flags |= (AGS_DEVOUT_START_PLAY |
 		    AGS_DEVOUT_PLAY);
-
-  error = devout_thread->error;
+  
   devout_thread->error = NULL;
 
   g_message("start devout\0");
@@ -183,9 +183,10 @@ ags_start_devout_launch(AgsTask *task)
   ags_thread_start(AGS_THREAD(devout_thread));
   
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(devout_thread)->flags)) == 0){
-    if(devout_thread->error != NULL &&
-       error == NULL){
-      ags_task_failure(AGS_TASK(start_devout), devout_thread->error);
+    if(devout_thread->error != NULL){
+      error = devout_thread->error;
+      devout->flags &= (~AGS_DEVOUT_START_PLAY);
+      ags_task_failure(AGS_TASK(start_devout), error);
       
       g_message("starting devout failed\0");
     }else{

@@ -875,10 +875,11 @@ ags_file_real_write_concurrent(AgsFile *file)
   xmlNode *parent, *node, *child;
   gchar *id;
 
+  /*
   main_loop = AGS_MAIN(file->ags_main)->main_loop;
   gui_thread = AGS_AUDIO_LOOP(main_loop)->gui_thread;
   task_thread = AGS_AUDIO_LOOP(main_loop)->task_thread;
-
+  */
   ags_main = (AgsMain *) file->ags_main;
 
   file->doc = xmlNewDoc("1.0\0");
@@ -1220,6 +1221,9 @@ void
 ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
 {
   AgsMain *gobject;
+  AgsThread *main_loop;
+  AgsTaskThread *async_queue;
+  
   GList *list;
   xmlNode *child;
   int argc;
@@ -1322,14 +1326,18 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
   }
   
   //TODO:JK: should be resolved
-  AGS_TASK_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread)->thread_pool = gobject->thread_pool;
-  AGS_THREAD_POOL(gobject->thread_pool)->parent = AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread);
+  main_loop = gobject->main_loop;
+  async_queue = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
+  async_queue->thread_pool = gobject->thread_pool;
+  AGS_THREAD_POOL(gobject->thread_pool)->parent = (AgsThread *) async_queue;
 
   if(read_thread){
     list = g_atomic_pointer_get(&(AGS_THREAD_POOL(gobject->thread_pool)->returnable_thread));
     
     while(list != NULL){
-      ags_thread_add_child(AGS_THREAD(AGS_AUDIO_LOOP(gobject->main_loop)->task_thread),
+      ags_thread_add_child((AgsThread *) async_queue,
 			   AGS_THREAD(list->data));
       
       list = list->next;

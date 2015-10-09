@@ -144,7 +144,6 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   gboolean is_output;
   
   pthread_mutex_t *current_mutex;
-  pthread_mutex_t *audio_loop_mutex;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad,
 						   AGS_TYPE_MACHINE);
@@ -159,22 +158,9 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
-  /* lookup audio loop mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-    
-  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) audio_loop);
-  
-  pthread_mutex_unlock(&(ags_application_mutex));
-
   /* get task thread */
-  pthread_mutex_lock(audio_loop_mutex);
-
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
-
-  pthread_mutex_unlock(audio_loop_mutex);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /*  */
   current = pad->channel;
@@ -332,7 +318,8 @@ ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
 
   task = (AgsTask *) task_completion->task;
   window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
-  devout_thread = (AgsDevoutThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->devout_thread;
+  devout_thread = (AgsDevoutThread *) ags_thread_find_type(AGS_MAIN(window->ags_main)->main_loop,
+							   AGS_TYPE_DEVOUT_THREAD);
 
   if(devout_thread->error != NULL){
     /* show error message */
@@ -380,6 +367,8 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) input_pad->channel->audio);
+
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -387,9 +376,8 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   
   devout = AGS_DEVOUT(AGS_AUDIO(input_pad->channel->audio)->devout);
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
-  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
-
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   list_start = 
     list = gtk_container_get_children((GtkContainer *) input_pad->expander_set);

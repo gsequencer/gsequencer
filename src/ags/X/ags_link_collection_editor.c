@@ -456,11 +456,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     pthread_mutex_unlock(&(ags_application_mutex));
 
     /* get task and devout thread */
-    pthread_mutex_lock(audio_loop_mutex);
-
-    task_thread = (AgsTaskThread *) audio_loop->task_thread;
-
-    pthread_mutex_unlock(audio_loop_mutex);
+    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_TASK_THREAD);
 
     /* lookup audio mutex */
     pthread_mutex_lock(&(ags_application_mutex));

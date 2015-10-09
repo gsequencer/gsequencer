@@ -742,18 +742,32 @@ ags_cell_pattern_blink_worker(void *data)
 {
   AgsWindow *window;
   AgsCellPattern *cell_pattern;
-  
+
+  AgsBlinkCellPatternCursor *blink_cell_pattern_cursor;
+
+  AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsBlinkCellPatternCursor *blink_cell_pattern_cursor;
+  AgsMain *ags_main;
   
   static const guint blink_delay = 1000000; // blink every second
   
   cell_pattern = AGS_CELL_PATTERN(data);
   window = gtk_widget_get_ancestor(cell_pattern,
 				   AGS_TYPE_WINDOW);
+
+  ags_main = window->ags_main;
   
-  task_thread = AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread);
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+  
+  /* find task thread */
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   while(gtk_widget_has_focus(cell_pattern)){
     /* blink cursor */

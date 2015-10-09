@@ -118,13 +118,16 @@ ags_single_thread_init(AgsSingleThread *single_thread)
     single_thread->audio_loop = ags_audio_loop_new(NULL, NULL);
   AGS_THREAD(single_thread->audio_loop)->flags |= AGS_THREAD_SINGLE_LOOP;
 
-  single_thread->task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+  single_thread->task_thread = ags_thread_find_type(audio_loop,
+						    AGS_TYPE_TASK_THREAD);
   AGS_THREAD(single_thread->task_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
 
-  single_thread->devout_thread = AGS_DEVOUT_THREAD(audio_loop->devout_thread);
+  single_thread->devout_thread = ags_thread_find_type(audio_loop,
+						      AGS_TYPE_DEVOUT_THREAD);
   AGS_THREAD(single_thread->task_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
 
-  single_thread->gui_thread = AGS_GUI_THREAD(audio_loop->gui_thread);
+  single_thread->gui_thread = ags_thread_find_type(audio_loop,
+						   AGS_TYPE_GUI_THREAD);
   AGS_THREAD(single_thread->gui_thread)->flags |= AGS_THREAD_SINGLE_LOOP;
 }
 

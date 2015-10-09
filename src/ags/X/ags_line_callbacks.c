@@ -21,6 +21,9 @@
 
 #include <ags/main.h>
 
+#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
@@ -42,6 +45,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
+
+extern pthread_mutex_t ags_application_mutex;
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
@@ -162,12 +167,19 @@ void
 ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 				AgsLine *line)
 {
-  AgsTaskThread *task_thread;
-  AgsChangeIndicator *change_indicator;
+  AgsWindow *window;
   AgsMachine *machine;
   GtkWidget *child;
+
   AgsPort *port;
 
+  AgsChangeIndicator *change_indicator;
+
+  AgsThread *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsMain *ags_main;
+  
   GList *list, *list_start;
 
   gdouble peak;
@@ -176,7 +188,22 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
-  task_thread = (AgsTaskThread *) AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread;
+  
+  window = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						  AGS_TYPE_WINDOW);
+  
+  ags_main = window->ags_main;
+
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   list_start = 
     list = gtk_container_get_children((GtkContainer *) AGS_LINE(line)->expander->table);

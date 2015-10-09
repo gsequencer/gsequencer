@@ -26,6 +26,9 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
@@ -101,6 +104,8 @@ static AgsDynamicConnectableInterface *ags_play_channel_run_parent_dynamic_conne
 static AgsPluginInterface *ags_play_channel_run_parent_plugin_interface;
 
 static const gchar *ags_play_channel_run_plugin_name = "ags-play\0";
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_play_channel_run_get_type()
@@ -509,12 +514,49 @@ ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
 void
 ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 {
-  AgsThread *task_thread;
+  AgsDevout *devout;
   AgsChannel *channel;
   AgsCancelChannel *cancel_channel;
 
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsThread *async_queue;
+
+  AgsMain *ags_main;
+
+  pthread_mutex_t *devout_mutex;
+
   channel = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
-  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout)->ags_main)->main_loop)->task_thread;
+
+  devout = AGS_AUDIO(channel->audio)->devout;
+  
+  /* lookup devout mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  
+  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+  
+  /* get ags_main */
+  pthread_mutex_lock(devout_mutex);
+  
+  ags_main = devout->ags_main;
+
+  pthread_mutex_unlock(devout_mutex);
+  
+  /* get main loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  main_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get async queue */
+  async_queue = (AgsThread *) ags_thread_find_type(main_loop,
+						   AGS_TYPE_TASK_THREAD);
 
   /* create append task */
   cancel_channel = ags_cancel_channel_new(channel,
@@ -522,7 +564,7 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 					  AGS_DEVOUT_PLAY(channel->devout_play));
   
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+  ags_task_thread_append_task((AgsTaskThread *) async_queue,
 			      (AgsTask *) cancel_channel);
 }
 

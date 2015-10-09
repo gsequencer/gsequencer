@@ -839,7 +839,6 @@ ags_pad_play(AgsPad *pad)
 
   gboolean play_all;
 
-  pthread_mutex_t *audio_loop_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   
@@ -856,23 +855,11 @@ ags_pad_play(AgsPad *pad)
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
-  /* lookup audio loop mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-    
-  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) audio_loop);
-  
-  pthread_mutex_unlock(&(ags_application_mutex));
-
   /* get task and devout thread */
-  pthread_mutex_lock(audio_loop_mutex);
-
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
-  devout_thread = (AgsDevoutThread *) audio_loop->devout_thread;
-
-  pthread_mutex_unlock(audio_loop_mutex);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+  devout_thread = (AgsDevoutThread *) ags_thread_find_type(audio_loop,
+							   AGS_TYPE_DEVOUT_THREAD);
 
   /* lookup audio mutex */
   pthread_mutex_lock(&(ags_application_mutex));
@@ -961,12 +948,9 @@ ags_pad_play(AgsPad *pad)
     if(tasks != NULL){
       AgsGuiThread *gui_thread;
       AgsTaskCompletion *task_completion;
-
-      pthread_mutex_lock(audio_loop_mutex);
       
-      gui_thread = (AgsGuiThread *) audio_loop->gui_thread;
-
-      pthread_mutex_unlock(audio_loop_mutex);
+      gui_thread = (AgsGuiThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_GUI_THREAD);
 
       start_devout = ags_start_devout_new(window->devout);
       tasks = g_list_prepend(tasks, start_devout);

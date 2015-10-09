@@ -180,17 +180,13 @@ ags_gui_thread_start(AgsThread *thread)
   /*  */
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_gui_thread_parent_class)->start(thread);
-
-    //    ags_thread_start(gui_thread->gui_task_thread);
   }
 }
 
 void
 ags_gui_thread_run(AgsThread *thread)
 {
-  AgsAudioLoop *audio_loop;
   AgsGuiThread *gui_thread;
-  AgsTaskThread *task_thread;
   GMainContext *main_context;
   int success;
 
@@ -273,8 +269,6 @@ ags_gui_thread_run(AgsThread *thread)
   }
   
   gui_thread = AGS_GUI_THREAD(thread);
-  audio_loop = AGS_AUDIO_LOOP(thread->parent);
-  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
 
   /*  */
   main_context = g_main_context_default();
@@ -299,19 +293,9 @@ ags_gui_thread_suspend(AgsThread *thread)
   critical_region = g_atomic_int_get(&(thread->critical_region));
 
   if(success || critical_region){
-    AgsAudioLoop *audio_loop;
-    AgsGuiThread *gui_thread;
-    AgsTaskThread *task_thread;
-    
     if(success){
       pthread_mutex_unlock(thread->suspend_mutex);
     }
-
-    gui_thread = AGS_GUI_THREAD(thread);
-    audio_loop = AGS_AUDIO_LOOP(thread->parent);
-    task_thread = AGS_TASK_THREAD(audio_loop->task_thread);  
-
-    pthread_mutex_unlock(task_thread->launch_mutex);
   }
 }
 
@@ -325,19 +309,9 @@ ags_gui_thread_resume(AgsThread *thread)
   critical_region = g_atomic_int_get(&(thread->critical_region));
 
   if(success || critical_region){
-    AgsAudioLoop *audio_loop;
-    AgsGuiThread *gui_thread;
-    AgsTaskThread *task_thread;
-
     if(success){
       pthread_mutex_unlock(thread->suspend_mutex);
     }
-
-    gui_thread = AGS_GUI_THREAD(thread);
-    audio_loop = AGS_AUDIO_LOOP(thread->parent);
-    task_thread = AGS_TASK_THREAD(audio_loop->task_thread);  
-
-    pthread_mutex_lock(task_thread->launch_mutex);
   }
 }
 

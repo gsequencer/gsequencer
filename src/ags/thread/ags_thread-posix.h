@@ -140,12 +140,12 @@ struct _AgsThread
   pthread_mutex_t *timer_mutex;
   pthread_cond_t *timer_cond;
   
-  AgsThread *parent;
+  volatile AgsThread *parent;
 
-  AgsThread *next;
-  AgsThread *prev;
+  volatile AgsThread *next;
+  volatile AgsThread *prev;
 
-  AgsThread *children;
+  volatile AgsThread *children;
 
   gpointer data;
 };
