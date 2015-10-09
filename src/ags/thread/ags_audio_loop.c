@@ -90,10 +90,6 @@ void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsDevou
 
 enum{
   PROP_0,
-  PROP_TASK_THREAD,
-  PROP_GUI_THREAD,
-  PROP_DEVOUT_THREAD,
-  PROP_EXPORT_THREAD,
   PROP_PLAY_RECALL,
   PROP_PLAY_CHANNEL,
   PROP_PLAY_AUDIO,
@@ -170,70 +166,6 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
   gobject->finalize = ags_audio_loop_finalize;
 
   /* properties */
-  /**
-   * AgsAudioLoop:task-thread:
-   *
-   * The assigned #AgsTaskThread.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("task-thread\0",
-				   "task thread to run\0",
-				   "The task thread to run\0",
-				   AGS_TYPE_TASK_THREAD,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TASK_THREAD,
-				  param_spec);
-
-  /**
-   * AgsAudioLoop:devout-thread:
-   *
-   * The assigned #AgsDevoutThread.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("devout-thread\0",
-				   "devout thread to run\0",
-				   "The devout thread to run\0",
-				   AGS_TYPE_DEVOUT_THREAD,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DEVOUT_THREAD,
-				  param_spec);
-
-  /**
-   * AgsAudioLoop:export-thread:
-   *
-   * The assigned #AgsExportThread.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("export-thread\0",
-				   "export thread to run\0",
-				   "The export thread to run\0",
-				   AGS_TYPE_EXPORT_THREAD,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_EXPORT_THREAD,
-				  param_spec);
-
-  /**
-   * AgsAudioLoop:gui-thread:
-   *
-   * The assigned #AgsGuiThread.
-   * 
-   * Since: 0.4
-   */
-  param_spec = g_param_spec_object("gui-thread\0",
-				   "gui thread to run\0",
-				   "The gui thread to run\0",
-				   AGS_TYPE_GUI_THREAD,
-				   G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_GUI_THREAD,
-				  param_spec);
-
   /**
    * AgsAudioLoop:play-recall:
    *
@@ -315,34 +247,9 @@ ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 void
 ags_audio_loop_init(AgsAudioLoop *audio_loop)
 {
-  AgsMutexManager *mutex_manager;
   AgsThread *thread;
-  AgsGuiThread *gui_thread;
 
   gchar *str0, *str1;
-
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
-
-  /* insert audio loop mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     &attr);
-
-  pthread_mutex_lock(&(ags_application_mutex));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) audio_loop,
-			   mutex);
-  
-  pthread_mutex_unlock(&(ags_application_mutex));
 
   /* calculate frequency */
   thread = (AgsThread *) audio_loop;
@@ -392,32 +299,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->tree_lock = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(audio_loop->tree_lock, &(audio_loop->tree_lock_mutexattr));
   
-  /* AgsTaskThread */  
-  audio_loop->async_queue = 
-    audio_loop->task_thread = (AgsThread *) ags_task_thread_new(NULL);
-  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				audio_loop->task_thread,
-				FALSE, FALSE);
-
-  /* AgsGuiThread */
-  audio_loop->gui_thread = (AgsThread *) ags_gui_thread_new();
-  gui_thread = (AgsGuiThread *) audio_loop->gui_thread;
-  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				audio_loop->gui_thread,
-				TRUE, TRUE);
-
-  /* AgsDevoutThread */
-  audio_loop->devout_thread = (AgsThread *) ags_devout_thread_new(NULL);
-  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				audio_loop->devout_thread,
-				TRUE, TRUE);
-
-  /* AgsExportThread */
-  audio_loop->export_thread = (AgsThread *) ags_export_thread_new(NULL, NULL);
-  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				audio_loop->export_thread,
-				TRUE, TRUE);
-
   /* recall mutex */
   audio_loop->recall_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(audio_loop->recall_mutex, NULL);
@@ -447,74 +328,6 @@ ags_audio_loop_set_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
-  case PROP_TASK_THREAD:
-    {
-      AgsThread *thread;
-
-      thread = (AgsThread *) g_value_get_object(value);
-
-      if(audio_loop->task_thread != NULL){
-	g_object_unref(G_OBJECT(audio_loop->task_thread));
-      }
-
-      if(thread != NULL){
-	g_object_ref(G_OBJECT(thread));
-      }
-
-      audio_loop->task_thread = thread;
-    }
-    break;
-  case PROP_GUI_THREAD:
-    {
-      AgsThread *thread;
-
-      thread = (AgsThread *) g_value_get_object(value);
-
-      if(audio_loop->gui_thread != NULL){
-	g_object_unref(G_OBJECT(audio_loop->gui_thread));
-      }
-
-      if(thread != NULL){
-	g_object_ref(G_OBJECT(thread));
-      }
-
-      audio_loop->gui_thread = thread;
-    }
-    break;
-  case PROP_DEVOUT_THREAD:
-    {
-      AgsThread *thread;
-
-      thread = (AgsThread *) g_value_get_object(value);
-
-      if(audio_loop->devout_thread != NULL){
-	g_object_unref(G_OBJECT(audio_loop->devout_thread));
-      }
-
-      if(thread != NULL){
-	g_object_ref(G_OBJECT(thread));
-      }
-
-      audio_loop->devout_thread = thread;
-    }
-    break;
-  case PROP_EXPORT_THREAD:
-    {
-      AgsThread *thread;
-
-      thread = (AgsThread *) g_value_get_object(value);
-
-      if(audio_loop->export_thread != NULL){
-	g_object_unref(G_OBJECT(audio_loop->export_thread));
-      }
-
-      if(thread != NULL){
-	g_object_ref(G_OBJECT(thread));
-      }
-
-      audio_loop->export_thread = thread;
-    }
-    break;
   case PROP_PLAY_RECALL:
     {
       AgsRecall *recall;
@@ -568,26 +381,6 @@ ags_audio_loop_get_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
-  case PROP_TASK_THREAD:
-    {
-      g_value_set_object(value, audio_loop->task_thread);
-    }
-    break;
-  case PROP_GUI_THREAD:
-    {
-      g_value_set_object(value, audio_loop->gui_thread);
-    }
-    break;
-  case PROP_DEVOUT_THREAD:
-    {
-      g_value_set_object(value, audio_loop->devout_thread);
-    }
-    break;
-  case PROP_EXPORT_THREAD:
-    {
-      g_value_set_object(value, audio_loop->export_thread);
-    }
-    break;
   case PROP_PLAY_RECALL:
     {
       g_value_set_pointer(value, audio_loop->play_recall);
@@ -697,9 +490,36 @@ ags_audio_loop_start(AgsThread *thread)
   audio_loop = AGS_AUDIO_LOOP(thread);
 
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+    AgsMutexManager *mutex_manager;
+    
+    AgsThread *async_queue;
+    AgsThread *gui_thread;
+
+    pthread_mutex_t *mutex;
+
+    /* lookup thread mutex */
+    pthread_mutex_lock(&(ags_application_mutex));
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+
+    mutex = ags_mutex_manager_lookup(mutex_manager,
+				     thread);
+
+    pthread_mutex_unlock(&(ags_application_mutex));
+
+    /* get async queue and gui thread */
+    pthread_mutex_lock(mutex);
+    
+    async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(thread));
+
+    pthread_mutex_unlock(mutex);
+
+    gui_thread = ags_thread_find_type(thread,
+				      AGS_TYPE_GUI_THREAD);
+    
     /*  */
-    ags_thread_start(audio_loop->task_thread);
-    ags_thread_start(audio_loop->gui_thread);
+    ags_thread_start(async_queue);
+    ags_thread_start(gui_thread);
 
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
@@ -766,16 +586,25 @@ ags_audio_loop_run(AgsThread *thread)
      audio_loop->play_channel_ref == 0 &&
      audio_loop->play_audio_ref == 0 &&
      audio_loop->play_notation_ref == 0){
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_loop->devout_thread)->flags)))) != 0){
-      ags_thread_stop(AGS_THREAD(audio_loop->devout_thread));
+    AgsThread *devout_thread;
+    AgsThread *export_thread;
 
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_loop->export_thread)->flags)))) != 0){
-	ags_thread_stop(AGS_THREAD(audio_loop->export_thread));
-      }
+    devout_thread = ags_thread_find_type(thread,
+					 AGS_TYPE_DEVOUT_THREAD);
+
+    export_thread = ags_thread_find_type(thread,
+					 AGS_TYPE_EXPORT_THREAD);
+
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_thread->flags)))) != 0){
+      ags_thread_stop(devout_thread);
+    }
+
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
+      ags_thread_stop(export_thread);
     }
   }
 
-  /* wait for task thread */
+  /* wait for task thread * /
   pthread_mutex_lock(AGS_THREAD(audio_loop->task_thread)->start_mutex);
 
   g_atomic_int_set(&(AGS_THREAD(audio_loop->task_thread)->start_wait),
@@ -792,7 +621,7 @@ ags_audio_loop_run(AgsThread *thread)
 	
   pthread_mutex_unlock(AGS_THREAD(audio_loop->task_thread)->start_mutex);
 
-  /* wait for gui thread */
+  /* wait for gui thread * /
   pthread_mutex_lock(AGS_THREAD(audio_loop->gui_thread)->start_mutex);
 
   g_atomic_int_set(&(AGS_THREAD(audio_loop->gui_thread)->start_wait),
@@ -808,7 +637,8 @@ ags_audio_loop_run(AgsThread *thread)
   }
 	
   pthread_mutex_unlock(AGS_THREAD(audio_loop->gui_thread)->start_mutex);
-
+  */
+  
   pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();

@@ -73,12 +73,7 @@ struct _AgsAudioLoop
   GObject *ags_main;
 
   GObject *async_queue;
-  
-  AgsThread *task_thread;
-  AgsThread *gui_thread;
-  AgsThread *devout_thread;
-  AgsThread *export_thread;
-  
+    
   pthread_mutexattr_t tree_lock_mutexattr;
   pthread_mutex_t *tree_lock;
   pthread_mutex_t *recall_mutex;

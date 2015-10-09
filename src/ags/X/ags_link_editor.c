@@ -238,7 +238,6 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
     AgsMain *ags_main;
     
-    pthread_mutex_t *audio_loop_mutex;
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
 
@@ -295,22 +294,9 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
     pthread_mutex_unlock(&(ags_application_mutex));
 
-    /* lookup audio loop mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
-  
-    mutex_manager = ags_mutex_manager_get_instance();
-    
-    audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-						(GObject *) audio_loop);
-  
-    pthread_mutex_unlock(&(ags_application_mutex));
-
     /* get task thread */
-    pthread_mutex_lock(audio_loop_mutex);
-
-    task_thread = (AgsTaskThread *) audio_loop->task_thread;
-
-    pthread_mutex_unlock(audio_loop_mutex);
+    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_TASK_THREAD);
 
     /* get model */
     model = gtk_combo_box_get_model(link_editor->combo);

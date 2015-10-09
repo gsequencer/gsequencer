@@ -31,6 +31,7 @@
 #include <ags/object/ags_seekable.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/file/ags_file_stock.h>
@@ -143,6 +144,8 @@ static AgsDynamicConnectableInterface *ags_count_beats_audio_run_parent_dynamic_
 static AgsPluginInterface *ags_count_beats_audio_run_parent_plugin_interface;
 
 static guint count_beats_audio_run_signals[LAST_SIGNAL];
+
+extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_count_beats_audio_run_get_type()
@@ -954,9 +957,15 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 
   AgsCancelAudio *cancel_audio;
 
-  AgsThread *task_thread;
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsThread *async_queue;
 
+  AgsMain *ags_main;
+  
   gboolean sequencer, notation;
+
+  pthread_mutex_t *devout_mutex;
   
   AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done(recall);
 
@@ -964,7 +973,34 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
 
   devout = AGS_RECALL_AUDIO(count_beats_audio)->audio->devout;
-  task_thread = (AgsThread *) AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread;
+
+  /* lookup devout mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  
+  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  devout);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+  
+  /* get ags_main */
+  pthread_mutex_lock(devout_mutex);
+  
+  ags_main = devout->ags_main;
+
+  pthread_mutex_unlock(devout_mutex);
+  
+  /* get main loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  main_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get async queue */
+  async_queue = (AgsThread *) ags_thread_find_type(main_loop,
+						   AGS_TYPE_TASK_THREAD);
 
   ags_recall_done(count_beats_audio_run->delay_audio_run);
   ags_audio_done(AGS_RECALL_AUDIO(count_beats_audio)->audio,
@@ -985,7 +1021,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 				      FALSE, sequencer, notation);
   
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+  ags_task_thread_append_task((AgsTaskThread *) async_queue,
 			      (AgsTask *) cancel_audio);  
 }
 

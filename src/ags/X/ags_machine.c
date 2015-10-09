@@ -893,12 +893,9 @@ ags_machine_set_run_extended(AgsMachine *machine,
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
-  /* get task thread and devout thread */
-  pthread_mutex_lock(audio_loop_mutex);
-
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
-
-  pthread_mutex_unlock(audio_loop_mutex);
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   if(run){
     AgsInitAudio *init_audio;
@@ -937,7 +934,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
       pthread_mutex_lock(audio_loop_mutex);
       
-      gui_thread = (AgsGuiThread *) audio_loop->gui_thread;
+      gui_thread = (AgsGuiThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_GUI_THREAD);
 
       pthread_mutex_unlock(audio_loop_mutex);
 
@@ -1393,11 +1391,8 @@ ags_machine_open_files(AgsMachine *machine,
   pthread_mutex_unlock(&(ags_application_mutex));
 
   /* get task thread */
-  pthread_mutex_lock(audio_loop_mutex);
-
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
-
-  pthread_mutex_unlock(audio_loop_mutex);
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* instantiate open file task */
   open_file = ags_open_file_new(machine->audio,

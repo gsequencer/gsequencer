@@ -30,7 +30,6 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_audio_thread.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
@@ -877,8 +876,8 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
-				AGS_TASK(audio_set_recycling));
+    //    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
+    //				AGS_TASK(audio_set_recycling));
   }
 
   if(audio == NULL || !AGS_IS_AUDIO(audio)){
@@ -971,8 +970,8 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
-				AGS_TASK(audio_set_recycling));
+    //    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
+    //				AGS_TASK(audio_set_recycling));
   }
 
   if(audio == NULL || !AGS_IS_AUDIO(audio)){

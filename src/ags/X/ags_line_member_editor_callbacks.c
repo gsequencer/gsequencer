@@ -181,22 +181,9 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 
       pthread_mutex_unlock(&(ags_application_mutex));
 
-      /* lookup audio loop mutex */
-      pthread_mutex_lock(&(ags_application_mutex));
-  
-      mutex_manager = ags_mutex_manager_get_instance();
-    
-      audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-						  (GObject *) audio_loop);
-  
-      pthread_mutex_unlock(&(ags_application_mutex));
-
       /* get task thread */
-      pthread_mutex_lock(audio_loop_mutex);
-
-      task_thread = (AgsTaskThread *) audio_loop->task_thread;
-
-      pthread_mutex_unlock(audio_loop_mutex);
+      task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							   AGS_TYPE_TASK_THREAD);
 
       /* retrieve plugin */
       filename = ags_ladspa_browser_get_plugin_filename(line_member_editor->ladspa_browser);
@@ -496,13 +483,19 @@ void
 ags_line_member_editor_remove_callback(GtkWidget *button,
 				       AgsLineMemberEditor *line_member_editor)
 {
-  AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
+  AgsWindow *window;
   AgsLine *line;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
+
   AgsRemoveRecall *remove_recall;
   AgsRemoveRecallContainer *remove_recall_container;
+  
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsMain *ags_main;
+  
   GList *control;
   GList *line_member;
   GList *children;
@@ -521,9 +514,21 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 								AGS_TYPE_MACHINE_EDITOR);
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
+  window = gtk_widget_get_ancestor(machine_editor->machine,
+				   AGS_TYPE_WINDOW);
+  
+  ags_main = window->ags_main;
 
-  audio_loop = (AgsAudioLoop *) AGS_MAIN(AGS_DEVOUT(AGS_MACHINE(machine_editor->machine)->audio->devout)->ags_main)->main_loop;
-  task_thread = (AgsTaskThread *) audio_loop->task_thread;
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = (AgsAudioLoop *) ags_main->main_loop;
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   line_member = gtk_container_get_children(GTK_CONTAINER(line_member_editor->line_member));
   task = NULL;

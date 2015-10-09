@@ -39,6 +39,8 @@
 #include <string.h>
 #include <cairo.h>
 
+extern pthread_mutex_t ags_application_mutex;
+
 void
 ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEditor *editor)
 {
@@ -63,7 +65,25 @@ ags_editor_tic_callback(AgsDevout *devout,
 {
   AgsWindow *window;
 
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsMain *ags_main;
+  
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
+
+  ags_main = window->ags_main;
+
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get task and devout thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   if(gtk_toggle_button_get_active(window->navigation->scroll)){
     AgsScrollOnPlay *scroll_on_play;
@@ -80,7 +100,7 @@ ags_editor_tic_callback(AgsDevout *devout,
       editor->current_tact = devout->tact_counter;
       
       scroll_on_play = ags_scroll_on_play_new(editor, 64.0);
-      ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+      ags_task_thread_append_task(task_thread,
 				  AGS_TASK(scroll_on_play));
     }
   }

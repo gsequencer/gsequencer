@@ -83,6 +83,8 @@ static guint navigation_signals[LAST_SIGNAL];
 
 extern AgsConfig *config;
 
+extern pthread_mutex_t ags_application_mutex;
+
 GType
 ags_navigation_get_type(void)
 {
@@ -455,7 +457,14 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 {
   AgsWindow *window;
   AgsEditor *editor;
+
   AgsSeekDevout *seek_devout;
+  
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsMain *ags_main;
+  
   gchar *timestr;
   double tact_factor, zoom_factor;
   double tact;
@@ -465,6 +474,19 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   editor = window->editor;
+
+  ags_main = window->ags_main;
+
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* seek devout */
   delay = window->devout->delay[window->devout->tic_counter];
@@ -483,7 +505,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 				    steps,
 				    move_forward);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(seek_devout));
 
   /* update GUI */

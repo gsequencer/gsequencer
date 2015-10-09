@@ -615,7 +615,7 @@ gsequencer_SOURCES = \
 	src/ags/thread/ags_channel_thread.c \
 	src/ags/thread/ags_devout_thread.c \
 	src/ags/thread/ags_export_thread.c \
-	src/ags/thread/ags_gui_thread.c \
+2	src/ags/thread/ags_gui_thread.c \
 	src/ags/thread/ags_history.c \
 	src/ags/thread/ags_iterator_thread.c \
 	src/ags/thread/ags_mutex_manager.c \

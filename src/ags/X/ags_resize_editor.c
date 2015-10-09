@@ -258,10 +258,17 @@ ags_resize_editor_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_resize_editor_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
   AgsAudio *audio;
   AgsResizeAudio *resize_audio;
+    
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsMain *ags_main;
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
@@ -274,6 +281,22 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 
   audio = machine_editor->machine->audio;
 
+  /* get window and ags_main  */
+  window = (AgsWindow *) gtk_widget_get_toplevel(machine_editor->machine);
+  
+  ags_main = window->ags_main;
+
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+
   /* create task */
   resize_audio = ags_resize_audio_new(audio,
 				      (guint) gtk_spin_button_get_value_as_int(resize_editor->output_pads),
@@ -281,7 +304,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 				      (guint) gtk_spin_button_get_value_as_int(resize_editor->audio_channels));
       
   /* append AgsResizeAudio */
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(resize_audio));
 }
 
@@ -292,9 +315,9 @@ ags_resize_editor_reset(AgsApplicable *applicable)
   AgsResizeEditor *resize_editor;
 
   AgsAudio *audio;
-  
+
   AgsMutexManager *mutex_manager;
-  
+
   pthread_mutex_t *audio_mutex;
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);

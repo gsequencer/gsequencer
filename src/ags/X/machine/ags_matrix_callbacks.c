@@ -126,17 +126,37 @@ void
 ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsWindow *window;
+
   AgsApplySequencerLength *apply_sequencer_length;
+  
+  AgsThread *audio_loop;
+  AgsTaskThread *task_thread;
+  
+  AgsMain *ags_main;
+  
   gdouble length;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
+
+  ags_main = window->ags_main;
+  
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+  
+  /* find task thread */
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
   apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
 							  length);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(apply_sequencer_length));
 }
 
@@ -186,6 +206,10 @@ ags_matrix_tact_callback(AgsAudio *audio,
   AgsToggleLed *toggle_led;
   
   AgsMutexManager *mutex_manager;
+  AgsThread *audio_loop;
+  AgsTaskThread *task_thread;
+  
+  AgsMain *ags_main;
 
   GList *list;
 
@@ -200,6 +224,23 @@ ags_matrix_tact_callback(AgsAudio *audio,
     return;
   }
 
+  window = gtk_widget_get_ancestor(matrix,
+				   AGS_TYPE_WINDOW);
+
+  ags_main = window->ags_main;
+  
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+  
+  /* find task thread */
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  /* get audio mutex */
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
@@ -209,12 +250,9 @@ ags_matrix_tact_callback(AgsAudio *audio,
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
+  /* get some recalls */
   pthread_mutex_lock(audio_mutex);
 
-  /*  */
-  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) matrix, AGS_TYPE_WINDOW));
-
-  /* get some recalls */
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
   
@@ -250,7 +288,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(toggle_led));
 
   pthread_mutex_unlock(audio_mutex);

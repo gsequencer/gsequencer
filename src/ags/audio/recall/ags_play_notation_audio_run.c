@@ -655,6 +655,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   AgsPlayNotationAudio *play_notation_audio;
 
+  AgsThread *main_loop;
   AgsTimestampThread *timestamp_thread;
 
   AgsMutexManager *mutex_manager;
@@ -726,7 +727,14 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			      audio_channel);
   }
 
-  timestamp_thread = (AgsTimestampThread *) AGS_DEVOUT_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->devout_thread)->timestamp_thread;
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  main_loop = AGS_MAIN(devout->ags_main)->main_loop;
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  timestamp_thread = (AgsTimestampThread *) ags_thread_find_type(main_loop,
+								 AGS_TYPE_TIMESTAMP_THREAD);
   
   //TODO:JK: make it advanced
   notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,

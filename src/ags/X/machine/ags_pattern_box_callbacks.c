@@ -81,6 +81,7 @@ ags_pattern_box_focus_out_callback(GtkWidget *widget, GdkEvent *event, AgsPatter
 void
 ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box)
 {
+  AgsWindow *window;
   AgsMachine *machine;
   AgsLine *selected_line;
 
@@ -89,6 +90,10 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   AgsTogglePatternBit *toggle_pattern_bit;
 
   AgsMutexManager *mutex_manager;
+  AgsThread *audio_loop;
+  AgsTaskThread *task_thread;
+  
+  AgsMain *ags_main;
 
   GList *list, *list_start;
   GList *line, *line_start;
@@ -99,11 +104,12 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
   machine = gtk_widget_get_ancestor(pattern_box,
 				    AGS_TYPE_MACHINE);
-  
+
   if(machine->selected_input_pad == NULL){
     return;
   }
 
+  /*  */
   if((AGS_PATTERN_BOX_BLOCK_PATTERN & (pattern_box->flags)) != 0){
 #ifdef AGS_DEBUG
     g_message("AgsPatternBox pattern is blocked\n\0");
@@ -111,7 +117,24 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
     return;
   }
+
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  ags_main = window->ags_main;
   
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+  
+  /* find task thread */
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  /* get audio mutex */
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
@@ -121,9 +144,9 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
+  /* calculate offset */
   pthread_mutex_lock(audio_mutex);
 
-  /* calculate offset */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
@@ -172,7 +195,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   g_list_free(line_start);
 
   /* append AgsTogglePatternBit */
-  ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_tasks(task_thread,
 			       tasks);
 
   pthread_mutex_unlock(audio_mutex);
@@ -223,14 +246,37 @@ ags_pattern_box_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsPatter
 gboolean
 ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatternBox *pattern_box)
 {
+  AgsWindow *window;
   AgsMachine *machine;
+
+  AgsThread *audio_loop;
+  AgsTaskThread *task_thread;
   
+  AgsMain *ags_main;
+
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
   }
   
   machine = gtk_widget_get_ancestor(pattern_box,
 				    AGS_TYPE_MACHINE);
+
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  ags_main = window->ags_main;
+  
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = ags_main->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+  
+  /* find task thread */
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
+
   
   switch(event->keyval){
   case GDK_KEY_Control_L:
@@ -411,7 +457,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       g_list_free(line_start);
 
       /* append tasks to task thread */
-      ags_task_thread_append_tasks(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(machine->audio->devout)->ags_main)->main_loop)->task_thread),
+      ags_task_thread_append_tasks(task_thread,
 				   tasks);
 
       /* give audible feedback */

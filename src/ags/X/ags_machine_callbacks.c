@@ -41,11 +41,13 @@
 #include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_file_selection.h>
 
+#define AGS_RENAME_ENTRY "AgsRenameEntry"
+
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_start_complete_response(GtkWidget *dialog, gint response, AgsMachine *machine);
 
-#define AGS_RENAME_ENTRY "AgsRenameEntry"
+extern pthread_mutex_t ags_application_mutex;
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
@@ -128,13 +130,32 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 {
   AgsWindow *window;
   AgsRemoveAudio *remove_audio;
+
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsMain *ags_main;
+
   GList *list, *list_start;
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
+  ags_main = window->ags_main;
+
+  /* get audio loop */
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  audio_loop = (AgsAudioLoop *) ags_main->main_loop;
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+
   remove_audio = ags_remove_audio_new(window->devout,
 				      machine->audio);
-  ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->task_thread),
+  ags_task_thread_append_task(task_thread,
 			      AGS_TASK(remove_audio));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
@@ -521,7 +542,8 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
 
   task = (AgsTask *) task_completion->task;
   window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
-  devout_thread = (AgsDevoutThread *) AGS_AUDIO_LOOP(AGS_MAIN(window->ags_main)->main_loop)->devout_thread;
+  devout_thread = (AgsDevoutThread *) ags_thread_find_type(AGS_MAIN(window->ags_main)->main_loop,
+							   AGS_TYPE_DEVOUT_THREAD);
 
   if(devout_thread->error != NULL){
     /* show error message */

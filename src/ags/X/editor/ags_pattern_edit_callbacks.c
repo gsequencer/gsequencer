@@ -1139,8 +1139,6 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
 
-    pthread_mutex_t *audio_loop_mutex;
-    
     /* lookup channel mutex */
     pthread_mutex_lock(&(ags_application_mutex));
   
@@ -1195,21 +1193,11 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     pthread_mutex_unlock(&(ags_application_mutex));
 
-    /* lookup audio loop mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
-    
-    audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-						(GObject *) audio_loop);
-  
-    pthread_mutex_unlock(&(ags_application_mutex));
-
     /* get task thread and devout thread */
-    pthread_mutex_lock(audio_loop_mutex);
-
-    task_thread = (AgsTaskThread *) audio_loop->task_thread;
-    devout_thread = (AgsDevoutThread *) audio_loop->devout_thread;
-
-    pthread_mutex_unlock(audio_loop_mutex);
+    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_TASK_THREAD);
+    devout_thread = (AgsDevoutThread *) ags_thread_find_type(audio_loop,
+							     AGS_TYPE_DEVOUT_THREAD);
 
     /* create tasks */
     tasks = NULL;
@@ -1508,7 +1496,8 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
   devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
   audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
-  task_thread = AGS_TASK_THREAD(audio_loop->task_thread);
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
 
 #ifdef AGS_DEBUG
   g_message("launch\0");
