@@ -2214,7 +2214,7 @@ ags_channel_cancel(AgsChannel *channel,
     g_object_ref(recall_id);
     g_object_ref(recall);
     ags_recall_cancel(recall);
-
+    
     list = list_next;
   }
 
@@ -3103,11 +3103,13 @@ ags_channel_set_recycling(AgsChannel *channel,
     input_last_recycling = input->last_recycling;
     
     /* emit changed */
-    ags_channel_recycling_changed(input,
-				  changed_old_first_recycling, changed_old_last_recycling,
-				  input_first_recycling, input_last_recycling,
-				  old_first_recycling, old_last_recycling,
-				  first_recycling, last_recycling);
+    if(input != channel){
+      ags_channel_recycling_changed(input,
+				    changed_old_first_recycling, changed_old_last_recycling,
+				    input_first_recycling, input_last_recycling,
+				    old_first_recycling, old_last_recycling,
+				    first_recycling, last_recycling);
+    }
   }
 
   void ags_channel_set_recycling_emit_changed_output(AgsChannel *output){
@@ -3125,11 +3127,13 @@ ags_channel_set_recycling(AgsChannel *channel,
     output_last_recycling = output->last_recycling;
       
     /* emit changed */
-    ags_channel_recycling_changed(output,
-				  changed_old_first_recycling, changed_old_last_recycling,
-				  output_first_recycling, output_last_recycling,
-				  old_first_recycling, old_last_recycling,
-				  first_recycling, last_recycling);
+    if(output != channel){
+      ags_channel_recycling_changed(output,
+				    changed_old_first_recycling, changed_old_last_recycling,
+				    output_first_recycling, output_last_recycling,
+				    old_first_recycling, old_last_recycling,
+				    first_recycling, last_recycling);
+    }
     
     if(link != NULL){
       ags_channel_set_recycling_emit_changed(link);
