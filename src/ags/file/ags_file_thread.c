@@ -137,28 +137,34 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  AgsThread *devout_thread;
 	  AgsThread *gui_thread;
 	  AgsThread *timestamp_thread;
+	  AgsThread *export_thread;
 	  
 	  xmlXPathContext *xpath_context;
 	  xmlXPathObject *xpath_object;
     
 	  /* task thread */
+	  async_queue = NULL;
+	  
 	  xpath_context = xmlXPathNewContext(file->doc);
 	  xpath_context->node = child;
 	  //	  xmlXPathSetContextNode(child,
 	  //			 xpath_context);
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsTaskThread']\0"),
 					      xpath_context);
-	    //xmlXPathNodeEval(child,
-	    //		  "./ags-thread[@type='AgsTaskThread']\0",
-	    //		  xpath_context);
+	  //	  xmlXPathNodeEval(child,
+	  //		   "./ags-thread[@type='AgsTaskThread']\0",
+	  //		   xpath_context);
 
 	  ags_file_read_thread(file,
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(async_queue));
+	  AGS_AUDIO_LOOP(gobject)->async_queue = async_queue;
 	  ags_thread_add_child(gobject,
 			       async_queue);
 
 	  /* devout thread */
+	  devout_thread = NULL;
+	  
 	  xpath_context = xmlXPathNewContext(file->doc);
 	  xpath_context->node = child;
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsDevoutThread']\0"),
@@ -171,6 +177,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 			       devout_thread);
 
 	  /* timestamp thread */
+	  timestamp_thread = NULL;
+	  
 	  xpath_context = xmlXPathNewContext(file->doc);
 	  xpath_context->node = child;
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsDevoutThread']/ags-thread-list/ags-thread[@type='AgsTimestampThread']\0"),
@@ -183,6 +191,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 			       timestamp_thread);
 
 	  /* gui thread */
+	  gui_thread = NULL;
+
 	  xpath_context = xmlXPathNewContext(file->doc);
 	  xpath_context->node = child;
 	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsGuiThread']\0"),
@@ -193,6 +203,20 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 			       &(gui_thread));
 	  ags_thread_add_child(gobject,
 			       gui_thread);
+
+	  /* export thread */
+	  export_thread = NULL;
+
+	  xpath_context = xmlXPathNewContext(file->doc);
+	  xpath_context->node = child;
+	  xpath_object = xmlXPathCompiledEval(xmlXPathCompile("./ags-thread[@type='AgsExportThread']\0"),
+					      xpath_context);
+
+	  ags_file_read_thread(file,
+			       xpath_object->nodesetval->nodeTab[0],
+			       &(export_thread));
+	  ags_thread_add_child(gobject,
+			       export_thread);
 	}else{
 	  GList *list;
 

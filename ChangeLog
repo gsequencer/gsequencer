@@ -1,3 +1,10 @@
+ags (0.6.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed volatile thread tree accessors
+	* refactored by removing AgsAudioLoop fields and replacing with ags_thread_find_type()
+	* work-around for resetting link and causing crash
+
 ags (0.6.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

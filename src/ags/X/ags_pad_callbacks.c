@@ -345,6 +345,7 @@ ags_pad_start_complete_response(GtkWidget *dialog,
 void
 ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 { 
+  AgsWindow *window;
   AgsDevout *devout;
   AgsChannel *channel, *next_pad;
   AgsRecycling *recycling;
@@ -356,20 +357,26 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 
   AgsMutexManager *mutex_manager;
 
+  AgsMain *ags_main;
+  
   GList *recall, *tmp;
   GList *list, *list_start;
 
   pthread_mutex_t *audio_mutex;
 
+  window = gtk_widget_get_ancestor(input_pad,
+				   AGS_TYPE_WINDOW);
+  ags_main = window->ags_main;
+  
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
 
+  audio_loop = ags_main->main_loop;
+  
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) input_pad->channel->audio);
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
-  
   pthread_mutex_unlock(&(ags_application_mutex));
 
   pthread_mutex_lock(audio_mutex);

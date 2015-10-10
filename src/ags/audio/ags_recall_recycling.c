@@ -34,6 +34,7 @@
 
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -570,8 +571,12 @@ ags_recall_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectab
 {
   AgsRecallRecycling *recall_recycling;
   GObject *gobject;
-
+  
   recall_recycling = AGS_RECALL_RECYCLING(dynamic_connectable);
+
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(recall_recycling)->flags)) == 0){
+    return;
+  }
 
   /* destination */
   if(recall_recycling->destination != NULL &&
@@ -660,6 +665,12 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   }
 
   recall = AGS_RECALL(recall_recycling);
+
+  //FIXME:JK: work-around for crashing while resetting link
+  if(recall->parent == NULL){
+    return;
+  }
+  
   channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
     
   pthread_mutex_lock(&(ags_application_mutex));
@@ -802,7 +813,13 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   }
 
   recall = AGS_RECALL(recall_recycling);
-  channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
+
+  //FIXME:JK: work-around for crashing while resetting link
+  if(recall->parent == NULL){
+    return;
+  }
+
+ channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
 
   pthread_mutex_lock(&(ags_application_mutex));
   
@@ -905,6 +922,12 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
   }
 
   recall = AGS_RECALL(recall_recycling);
+  
+  //FIXME:JK: work-around for crashing while resetting link
+  if(recall->parent == NULL){
+    return;
+  }
+  
   channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
 
   pthread_mutex_lock(&(ags_application_mutex));
@@ -997,7 +1020,13 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
   }
 
   recall = AGS_RECALL(recall_recycling);
-  channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
+
+  //FIXME:JK: work-around for crashing while resetting link
+  if(recall->parent == NULL){
+    return;
+  }
+
+ channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
   
   pthread_mutex_lock(&(ags_application_mutex));
   

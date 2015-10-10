@@ -958,8 +958,11 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	
 	if(AGS_RECALL_RECYCLING(list->data)->source == source_recycling){
 	  recall = AGS_RECALL(list->data);
-
+	  g_message("disconnect\0");
+	  ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
+  
 	  ags_recall_remove(recall);
+	  g_object_unref(recall);
 	}
 
 	list = list_next;

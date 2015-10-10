@@ -28,6 +28,9 @@
 #include <ags/file/ags_file.h>
 
 #include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_devout_thread.h>
+#include <ags/thread/ags_export_thread.h>
 #include <ags/thread/ags_audio_thread.h>
 #include <ags/thread/ags_channel_thread.h>
 #include <ags/thread/ags_gui_thread.h>
@@ -869,9 +872,6 @@ main(int argc, char **argv)
       /* start thread tree */
       ags_thread_start(ags_main->main_loop);
 
-      /* complete thread pool */
-      ags_thread_pool_start(ags_main->thread_pool);
-
       /* wait thread */
       pthread_mutex_lock(AGS_THREAD(ags_main->main_loop)->start_mutex);
 
@@ -888,6 +888,9 @@ main(int argc, char **argv)
       }
 	
       pthread_mutex_unlock(AGS_THREAD(ags_main->main_loop)->start_mutex);
+
+      /* complete thread pool */
+      ags_thread_pool_start(ags_main->thread_pool);
     }else{
       AgsSingleThread *single_thread;
 

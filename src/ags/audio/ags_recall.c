@@ -1024,6 +1024,10 @@ ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 
   recall = AGS_RECALL(dynamic_connectable);
 
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) == 0){
+    return;
+  }
+
   /* disconnect children */
   list = recall->children;
 
@@ -1043,6 +1047,8 @@ ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 
     list = list->next;
   }
+
+  recall->flags &= (~AGS_RECALL_DYNAMIC_CONNECTED);
 }
 
 gchar*
@@ -1590,13 +1596,13 @@ ags_recall_real_cancel(AgsRecall *recall)
   }
 
   /* call cancel for children */
-  //  list = recall->children;
+  list = recall->children;
 
-  //  while(list != NULL){
-  //    ags_recall_cancel(AGS_RECALL(list->data));
-
-  //    list = list->next;
-  //  }
+  while(list != NULL){
+    ags_recall_cancel(AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
      (AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) != 0){
