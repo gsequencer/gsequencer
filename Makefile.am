@@ -4,12 +4,12 @@ AUTOMAKE_OPTIONS = foreign
 AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = -g -O9 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -ftrapv
-LDFLAGS = -fPIE -pie -Wl,-z,relro -Wl,-z,now
+CFLAGS = @CFLAGS@ -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -ftrapv
+LDFLAGS = @LDFLAGS@ -fPIE -pie -Wl,-z,relro -Wl,-z,now
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-noinst_LIBRARIES = 
+lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la libgsequencer.la libgsequencer_test.la 
 bin_PROGRAMS = gsequencer midi2xml
 EXTRA_DIST = gsequencer.share acsite.m4 gsequencer.1 midi2xml.1 README gsequencer-documentation
 CLEANFILES =
@@ -59,17 +59,216 @@ EXTRA_DIST += $(userdoc) $(userdocimages)
 
 EXTRA_DIST += $(top_srcdir)/src/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl
 
-# library
-libags_a_CFLAGS= $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) 
+# library libags
+libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp  $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
-libags_a_SOURCES = 
+# library libags-thread
+libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_thread_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_thread_la_LIBADD = libags.la
 
-# application
+# library libags-server
+libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_server_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_server_la_LIBADD = libags_thread.la libags.la
+
+# library libags-audio
+libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_audio_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la
+
+# library libags-gui
+libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libags_gui_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+
+# library libgsequencer
+libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+libgsequencer_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+
+# application gsequencer
 gsequencer_CFLAGS= $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
 gsequencer_LDFLAGS= -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -pthread
-gsequencer_LDADD = 
+gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
-gsequencerheaders = \
+# libags all files
+deprecated_libags_util_h_sources =
+
+libags_util_h_sources = \
+	$(deprecated_libags_util_h_sources) \
+	src/ags/util/ags_id_generator.h
+
+deprecated_libags_util_c_sources =
+
+libags_util_c_sources = \
+	$(deprecated_libags_util_c_sources) \
+	src/ags/util/ags_id_generator.c
+
+deprecated_libags_h_sources =
+
+libags_h_sources = \
+	$(deprecated_libags_h_sources) \
+	src/ags/lib/ags_combo_box_text.h \
+	src/ags/lib/ags_container.h \
+	src/ags/lib/ags_parameter.h
+
+deprecated_libags_c_sources =
+
+libags_c_sources = \
+	$(deprecated_libags_c_sources) \
+	src/ags/lib/ags_combo_box_text.c \
+	src/ags/lib/ags_container.c \
+	src/ags/lib/ags_parameter.c
+
+deprecated_libags_object_h_sources =
+
+libags_object_h_sources =  \
+	$(deprecated_libags_object_h_sources) \
+	src/ags/object/ags_applicable.h \
+	src/ags/object/ags_async_queue.h \
+	src/ags/object/ags_connectable.h \
+	src/ags/object/ags_countable.h \
+	src/ags/object/ags_concurrent_tree.h \
+	src/ags/object/ags_dynamic_connectable.h \
+	src/ags/object/ags_main_loop.h \
+	src/ags/object/ags_marshal.h \
+	src/ags/object/ags_mutable.h \
+	src/ags/object/ags_packable.h \
+	src/ags/object/ags_playable.h \
+	src/ags/object/ags_plugin.h \
+	src/ags/object/ags_portlet.h \
+	src/ags/object/ags_seekable.h \
+	src/ags/object/ags_soundcard.h \
+	src/ags/object/ags_tactable.h \
+	src/ags/object/ags_tree_iterator.h
+
+deprecated_libags_object_c_sources =
+
+libags_object_c_sources = \
+	$(deprecated_libags_object_c_sources) \
+	src/ags/object/ags_applicable.c \
+	src/ags/object/ags_async_queue.c \
+	src/ags/object/ags_connectable.c \
+	src/ags/object/ags_countable.c \
+	src/ags/object/ags_concurrent_tree.c \
+	src/ags/object/ags_dynamic_connectable.c \
+	src/ags/object/ags_main_loop.c \
+	src/ags/object/ags_marshal.c \
+	src/ags/object/ags_mutable.c \
+	src/ags/object/ags_packable.c \
+	src/ags/object/ags_playable.c \
+	src/ags/object/ags_plugin.c \
+	src/ags/object/ags_portlet.c \
+	src/ags/object/ags_seekable.c \
+	src/ags/object/ags_soundcard.c \
+	src/ags/object/ags_tactable.c \
+	src/ags/object/ags_tree_iterator.c
+
+deprecated_libags_file_h_sources =
+
+libags_file_h_sources = \
+	$(deprecated_libags_file_h_sources) \
+	src/ags/file/ags_file_gui.h \
+	src/ags/file/ags_file.h \
+	src/ags/file/ags_file_id_ref.h \
+	src/ags/file/ags_file_launch.h \
+	src/ags/file/ags_file_link.h \
+	src/ags/file/ags_file_lookup.h \
+	src/ags/file/ags_file_read.h \
+	src/ags/file/ags_file_sound.h \
+	src/ags/file/ags_file_stock.h \
+	src/ags/file/ags_file_thread.h \
+	src/ags/file/ags_file_util.h \
+	src/ags/file/ags_file_write.h
+
+deprecated_libags_file_c_sources =
+
+libags_file_c_sources = \
+	$(deprecated_libags_file_c_sources) \
+	src/ags/file/ags_file.c \
+	src/ags/file/ags_file_gui.c \
+	src/ags/file/ags_file_id_ref.c \
+	src/ags/file/ags_file_launch.c \
+	src/ags/file/ags_file_link.c \
+	src/ags/file/ags_file_lookup.c \
+	src/ags/file/ags_file_sound.c \
+	src/ags/file/ags_file_thread.c \
+	src/ags/file/ags_file_util.c
+
+# libags-thread all files
+deprecated_libags_thread_h_sources =
+
+libags_thread_h_sources = \
+	$(deprecated_libags_thread_h_sources) \
+	src/ags/thread/ags_audio_loop.h \
+	src/ags/thread/ags_audio_thread.h \
+	src/ags/thread/ags_autosave_thread.h \
+	src/ags/thread/ags_channel_thread.h \
+	src/ags/thread/ags_devout_thread.h \
+	src/ags/thread/ags_export_thread.h \
+	src/ags/thread/ags_gui_thread.h \
+	src/ags/thread/ags_history.h \
+	src/ags/thread/ags_iterator_thread.h \
+	src/ags/thread/ags_mutex_manager.h \
+	src/ags/thread/ags_record_thread.h \
+	src/ags/thread/ags_recycling_thread_callbacks.h \
+	src/ags/thread/ags_recycling_thread.h \
+	src/ags/thread/ags_returnable_thread.h \
+	src/ags/thread/ags_single_thread.h \
+	src/ags/thread/ags_task_completion.h \
+	src/ags/thread/ags_task_thread.h \
+	src/ags/thread/ags_thread_pool.h \
+	src/ags/thread/ags_thread-posix.h \
+	src/ags/thread/ags_timestamp_thread.h
+
+deprecated_libags_thread_c_sources =
+
+libags_thread_c_sources = \
+	$(deprecated_libags_thread_c_sources) \
+	src/ags/thread/ags_audio_loop.c \
+	src/ags/thread/ags_audio_thread.c \
+	src/ags/thread/ags_autosave_thread.c \
+	src/ags/thread/ags_channel_thread.c \
+	src/ags/thread/ags_devout_thread.c \
+	src/ags/thread/ags_export_thread.c \
+	src/ags/thread/ags_gui_thread.c \
+	src/ags/thread/ags_history.c \
+	src/ags/thread/ags_iterator_thread.c \
+	src/ags/thread/ags_mutex_manager.c \
+	src/ags/thread/ags_record_thread.c \
+	src/ags/thread/ags_recycling_thread.c \
+	src/ags/thread/ags_recycling_thread_callbacks.c \
+	src/ags/thread/ags_returnable_thread.c \
+	src/ags/thread/ags_single_thread.c \
+	src/ags/thread/ags_task_completion.c \
+	src/ags/thread/ags_task_thread.c \
+	src/ags/thread/ags_thread_pool.c \
+	src/ags/thread/ags_thread-posix.c \
+	src/ags/thread/ags_timestamp_thread.c
+
+# libags-server all files
+deprecated_libags_server_h_sources =
+
+libags_server_h_sources = \
+	$(deprecated_libags_server_h_sources) \
+	src/ags/server/ags_registry.h \
+	src/ags/server/ags_remote_task.h \
+	src/ags/server/ags_server.h
+
+deprecated_libags_server_c_sources =
+
+libags_server_c_sources = \
+	$(deprecated_libags_server_c_sources) \
+	src/ags/server/ags_registry.c \
+	src/ags/server/ags_remote_task.c \
+	src/ags/server/ags_server.c
+
+# libags-audio all files
+deprecated_libags_audio_h_sources =
+
+libags_audio_h_sources = \
+	$(deprecated_libags_audio_h_sources) \
 	src/ags/audio/ags_audio.h \
 	src/ags/audio/ags_audio_signal.h \
 	src/ags/audio/ags_channel.h \
@@ -105,19 +304,94 @@ gsequencerheaders = \
 	src/ags/audio/ags_synths.h \
 	src/ags/audio/ags_task.h \
 	src/ags/audio/ags_timestamp_factory.h \
-	src/ags/audio/ags_timestamp.h \
+	src/ags/audio/ags_timestamp.h
+
+deprecated_libags_audio_c_sources =
+
+libags_audio_c_sources = \
+	$(deprecated_libags_audio_c_sources) \
+	src/ags/audio/ags_audio.c \
+	src/ags/audio/ags_audio_signal.c \
+	src/ags/audio/ags_channel.c \
+	src/ags/audio/ags_channel_iter.c \
+	src/ags/audio/ags_config.c \
+	src/ags/audio/ags_devout.c \
+	src/ags/audio/ags_garbage_collector.c \
+	src/ags/audio/ags_input.c \
+	src/ags/audio/ags_libao.c \
+	src/ags/audio/ags_notation.c \
+	src/ags/audio/ags_note.c \
+	src/ags/audio/ags_output.c \
+	src/ags/audio/ags_pattern.c \
+	src/ags/audio/ags_port.c \
+	src/ags/audio/ags_recall_audio.c \
+	src/ags/audio/ags_recall_audio_run.c \
+	src/ags/audio/ags_recall_audio_signal.c \
+	src/ags/audio/ags_recall.c \
+	src/ags/audio/ags_recall_channel.c \
+	src/ags/audio/ags_recall_channel_run.c \
+	src/ags/audio/ags_recall_channel_run_dummy.c \
+	src/ags/audio/ags_recall_container.c \
+	src/ags/audio/ags_recall_dependency.c \
+	src/ags/audio/ags_recall_factory.c \
+	src/ags/audio/ags_recall_id.c \
+	src/ags/audio/ags_recall_ladspa.c \
+	src/ags/audio/ags_recall_ladspa_run.c \
+	src/ags/audio/ags_recall_recycling.c \
+	src/ags/audio/ags_recall_recycling_dummy.c \
+	src/ags/audio/ags_recycling.c \
+	src/ags/audio/ags_recycling_container.c \
+	src/ags/audio/ags_synths.c \
+	src/ags/audio/ags_task.c \
+	src/ags/audio/ags_timestamp.c \
+	src/ags/audio/ags_timestamp_factory.c
+
+# libags-audio - plugin
+deprecated_libaudio_plugin_h_sources =
+
+libaudio_plugin_h_sources = \
+	$(deprecated_libaudio_plugin_h_sources) \
+	src/ags/plugin/ags_ladspa_manager.h \
+	src/ags/plugin/ags_plugin_factory.h \
+	src/ags/plugin/ags_plugin_stock.h
+
+deprecated_libaudio_plugin_c_sources =
+
+libaudio_plugin_c_sources = \
+	$(deprecated_libaudio_plugin_c_sources) \
+	src/ags/plugin/ags_ladspa_manager.c \
+	src/ags/plugin/ags_plugin_factory.c
+
+# libags-audio - file
+deprecated_libags_audio_file_h_sources =
+
+libags_audio_file_h_sources = \
+	$(deprecated_libags_audio_file_h_sources) \
 	src/ags/audio/file/ags_audio_file.h \
 	src/ags/audio/file/ags_audio_file_xml.h \
 	src/ags/audio/file/ags_ipatch.h \
 	src/ags/audio/file/ags_ipatch_sf2_reader.h \
-	src/ags/audio/file/ags_sndfile.h \
-	src/ags/audio/recall/ags_amplifier.h \
+	src/ags/audio/file/ags_sndfile.h
+
+deprecated_libags_audio_file_c_sources =
+
+libags_audio_file_c_sources = \
+	$(deprecated_libags_audio_file_c_sources) \
+	src/ags/audio/file/ags_audio_file.c \
+	src/ags/audio/file/ags_audio_file_xml.c \
+	src/ags/audio/file/ags_ipatch.c \
+	src/ags/audio/file/ags_ipatch_sf2_reader.c \
+	src/ags/audio/file/ags_sndfile.c
+
+# libags-audio - recall
+deprecated_libags_audio_recall_h_sources =
+
+libags_audio_recall_h_sources = \
+	$(deprecated_libags_audio_recall_h_sources) \
 	src/ags/audio/recall/ags_buffer_audio_signal.h \
 	src/ags/audio/recall/ags_buffer_channel.h \
 	src/ags/audio/recall/ags_buffer_channel_run.h \
 	src/ags/audio/recall/ags_buffer_recycling.h \
-	src/ags/audio/recall/ags_clone_channel.h \
-	src/ags/audio/recall/ags_clone_channel_run.h \
 	src/ags/audio/recall/ags_copy_audio_signal.h \
 	src/ags/audio/recall/ags_copy_channel.h \
 	src/ags/audio/recall/ags_copy_channel_run.h \
@@ -132,8 +406,6 @@ gsequencerheaders = \
 	src/ags/audio/recall/ags_count_beats_audio_run.h \
 	src/ags/audio/recall/ags_delay_audio.h \
 	src/ags/audio/recall/ags_delay_audio_run.h \
-	src/ags/audio/recall/ags_down_mix.h \
-	src/ags/audio/recall/ags_echo.h \
 	src/ags/audio/recall/ags_envelope_audio_signal.h \
 	src/ags/audio/recall/ags_envelope_channel.h \
 	src/ags/audio/recall/ags_envelope_channel_run.h \
@@ -170,7 +442,72 @@ gsequencerheaders = \
 	src/ags/audio/recall/ags_volume_audio_signal.h \
 	src/ags/audio/recall/ags_volume_channel.h \
 	src/ags/audio/recall/ags_volume_channel_run.h \
-	src/ags/audio/recall/ags_volume_recycling.h \
+	src/ags/audio/recall/ags_volume_recycling.h
+
+deprecated_libags_audio_recall_c_sources =
+
+libags_audio_recall_c_sources = \
+	$(deprecated_libags_audio_recall_c_sources) \
+	src/ags/audio/recall/ags_buffer_audio_signal.c \
+	src/ags/audio/recall/ags_buffer_channel.c \
+	src/ags/audio/recall/ags_buffer_channel_run.c \
+	src/ags/audio/recall/ags_buffer_recycling.c \
+	src/ags/audio/recall/ags_copy_audio_signal.c \
+	src/ags/audio/recall/ags_copy_channel.c \
+	src/ags/audio/recall/ags_copy_channel_run.c \
+	src/ags/audio/recall/ags_copy_notation_audio.c \
+	src/ags/audio/recall/ags_copy_notation_audio_run.c \
+	src/ags/audio/recall/ags_copy_pattern_audio.c \
+	src/ags/audio/recall/ags_copy_pattern_audio_run.c \
+	src/ags/audio/recall/ags_copy_pattern_channel.c \
+	src/ags/audio/recall/ags_copy_pattern_channel_run.c \
+	src/ags/audio/recall/ags_copy_recycling.c \
+	src/ags/audio/recall/ags_count_beats_audio.c \
+	src/ags/audio/recall/ags_count_beats_audio_run.c \
+	src/ags/audio/recall/ags_delay_audio.c \
+	src/ags/audio/recall/ags_delay_audio_run.c \
+	src/ags/audio/recall/ags_envelope_audio_signal.c \
+	src/ags/audio/recall/ags_envelope_channel.c \
+	src/ags/audio/recall/ags_envelope_channel_run.c \
+	src/ags/audio/recall/ags_envelope_recycling.c \
+	src/ags/audio/recall/ags_loop_channel.c \
+	src/ags/audio/recall/ags_loop_channel_run.c \
+	src/ags/audio/recall/ags_mute_audio.c \
+	src/ags/audio/recall/ags_mute_audio_run.c \
+	src/ags/audio/recall/ags_mute_audio_signal.c \
+	src/ags/audio/recall/ags_mute_channel.c \
+	src/ags/audio/recall/ags_mute_channel_run.c \
+	src/ags/audio/recall/ags_mute_recycling.c \
+	src/ags/audio/recall/ags_peak_audio_signal.c \
+	src/ags/audio/recall/ags_peak_channel.c \
+	src/ags/audio/recall/ags_peak_channel_run.c \
+	src/ags/audio/recall/ags_peak_recycling.c \
+	src/ags/audio/recall/ags_play_audio.c \
+	src/ags/audio/recall/ags_play_audio_file.c \
+	src/ags/audio/recall/ags_play_audio_signal.c \
+	src/ags/audio/recall/ags_play_channel.c \
+	src/ags/audio/recall/ags_play_channel_run.c \
+	src/ags/audio/recall/ags_play_channel_run_master.c \
+	src/ags/audio/recall/ags_play_notation_audio.c \
+	src/ags/audio/recall/ags_play_notation_audio_run.c \
+	src/ags/audio/recall/ags_play_note.c \
+	src/ags/audio/recall/ags_play_pattern.c \
+	src/ags/audio/recall/ags_play_recycling.c \
+	src/ags/audio/recall/ags_stream_audio_signal.c \
+	src/ags/audio/recall/ags_stream.c \
+	src/ags/audio/recall/ags_stream_channel.c \
+	src/ags/audio/recall/ags_stream_channel_run.c \
+	src/ags/audio/recall/ags_stream_recycling.c \
+	src/ags/audio/recall/ags_volume_audio_signal.c \
+	src/ags/audio/recall/ags_volume_channel.c \
+	src/ags/audio/recall/ags_volume_channel_run.c \
+	src/ags/audio/recall/ags_volume_recycling.c
+
+# libags-audio - task
+deprecated_libags_audio_task_h_sources =
+
+libags_audio_task_h_sources = \
+	$(deprecated_libags_audio_task_h_sources) \
 	src/ags/audio/task/ags_add_audio.h \
 	src/ags/audio/task/ags_add_audio_signal.h \
 	src/ags/audio/task/ags_add_line_member.h \
@@ -224,296 +561,12 @@ gsequencerheaders = \
 	src/ags/audio/task/recall/ags_apply_bpm.h \
 	src/ags/audio/task/recall/ags_apply_sequencer_length.h \
 	src/ags/audio/task/recall/ags_apply_tact.h \
-	src/ags/audio/task/recall/ags_set_muted.h \
-	src/ags/file/ags_file_gui.h \
-	src/ags/file/ags_file.h \
-	src/ags/file/ags_file_id_ref.h \
-	src/ags/file/ags_file_launch.h \
-	src/ags/file/ags_file_link.h \
-	src/ags/file/ags_file_lookup.h \
-	src/ags/file/ags_file_read.h \
-	src/ags/file/ags_file_sound.h \
-	src/ags/file/ags_file_stock.h \
-	src/ags/file/ags_file_thread.h \
-	src/ags/file/ags_file_util.h \
-	src/ags/file/ags_file_write.h \
-	src/ags-lib/object/ags_connectable.h \
-	src/ags/lib/ags_combo_box_text.h \
-	src/ags/lib/ags_container.h \
-	src/ags/lib/ags_list.h \
-	src/ags/lib/ags_log.h \
-	src/ags/lib/ags_parameter.h \
-	src/ags/main.h \
-	src/ags/object/ags_applicable.h \
-	src/ags/object/ags_async_queue.h \
-	src/ags/object/ags_countable.h \
-	src/ags/object/ags_concurrent_tree.h \
-	src/ags/object/ags_dynamic_connectable.h \
-	src/ags/object/ags_effect.h \
-	src/ags/object/ags_main_loop.h \
-	src/ags/object/ags_marshal.h \
-	src/ags/object/ags_mutable.h \
-	src/ags/object/ags_packable.h \
-	src/ags/object/ags_persistable.h \
-	src/ags/object/ags_playable.h \
-	src/ags/object/ags_plugin.h \
-	src/ags/object/ags_portlet.h \
-	src/ags/object/ags_runnable.h \
-	src/ags/object/ags_seekable.h \
-	src/ags/object/ags_soundcard.h \
-	src/ags/object/ags_stackable.h \
-	src/ags/object/ags_tactable.h \
-	src/ags/object/ags_tree_iterator.h \
-	src/ags/plugin/ags_ladspa_manager.h \
-	src/ags/plugin/ags_plugin_factory.h \
-	src/ags/plugin/ags_plugin_stock.h \
-	src/ags/server/ags_registry.h \
-	src/ags/server/ags_remote_task.h \
-	src/ags/server/ags_server.h \
-	src/ags/thread/ags_audio_loop.h \
-	src/ags/thread/ags_audio_thread.h \
-	src/ags/thread/ags_autosave_thread.h \
-	src/ags/thread/ags_channel_thread.h \
-	src/ags/thread/ags_devout_thread.h \
-	src/ags/thread/ags_export_thread.h \
-	src/ags/thread/ags_gui_thread.h \
-	src/ags/thread/ags_history.h \
-	src/ags/thread/ags_iterator_thread.h \
-	src/ags/thread/ags_mutex_manager.h \
-	src/ags/thread/ags_record_thread.h \
-	src/ags/thread/ags_recycling_thread_callbacks.h \
-	src/ags/thread/ags_recycling_thread.h \
-	src/ags/thread/ags_returnable_thread.h \
-	src/ags/thread/ags_single_thread.h \
-	src/ags/thread/ags_task_completion.h \
-	src/ags/thread/ags_task_thread.h \
-	src/ags/thread/ags_thread_pool.h \
-	src/ags/thread/ags_thread-posix.h \
-	src/ags/thread/ags_timestamp_thread.h \
-	src/ags/util/ags_id_generator.h \
-	src/ags/widget/ags_cartesian.h \
-	src/ags/widget/ags_dial.h \
-	src/ags/widget/ags_expander.h \
-	src/ags/widget/ags_expander_set.h \
-	src/ags/widget/ags_hindicator.h \
-	src/ags/widget/ags_htimebar.h \
-	src/ags/widget/ags_indicator.h \
-	src/ags/widget/ags_led.h \
-	src/ags/widget/ags_menu.h \
-	src/ags/widget/ags_menu_item.h \
-	src/ags/widget/ags_option_menu.h \
-	src/ags/widget/ags_ruler.h \
-	src/ags/widget/ags_segment.h \
-	src/ags/widget/ags_table.h \
-	src/ags/widget/ags_timebar.h \
-	src/ags/widget/ags_vindicator.h \
-	src/ags/widget/ags_waveform.h \
-	src/ags/X/ags_audio_preferences_callbacks.h \
-	src/ags/X/ags_audio_preferences.h \
-	src/ags/X/ags_editor_callbacks.h \
-	src/ags/X/ags_editor.h \
-	src/ags/X/ags_export_window_callbacks.h \
-	src/ags/X/ags_export_window.h \
-	src/ags/X/ags_generic_preferences_callbacks.h \
-	src/ags/X/ags_generic_preferences.h \
-	src/ags/X/ags_ladspa_browser_callbacks.h \
-	src/ags/X/ags_ladspa_browser.h \
-	src/ags/X/ags_line_callbacks.h \
-	src/ags/X/ags_line_editor_callbacks.h \
-	src/ags/X/ags_line_editor.h \
-	src/ags/X/ags_line.h \
-	src/ags/X/ags_line_member_callbacks.h \
-	src/ags/X/ags_line_member_editor_callbacks.h \
-	src/ags/X/ags_line_member_editor.h \
-	src/ags/X/ags_line_member.h \
-	src/ags/X/ags_link_collection_editor_callbacks.h \
-	src/ags/X/ags_link_collection_editor.h \
-	src/ags/X/ags_link_editor_callbacks.h \
-	src/ags/X/ags_link_editor.h \
-	src/ags/X/ags_listing_editor_callbacks.h \
-	src/ags/X/ags_listing_editor.h \
-	src/ags/X/ags_machine_callbacks.h \
-	src/ags/X/ags_machine_editor_callbacks.h \
-	src/ags/X/ags_machine_editor.h \
-	src/ags/X/ags_machine.h \
-	src/ags/X/ags_menu_bar_callbacks.h \
-	src/ags/X/ags_menu_bar.h \
-	src/ags/X/ags_navigation_callbacks.h \
-	src/ags/X/ags_navigation.h \
-	src/ags/X/ags_pad_callbacks.h \
-	src/ags/X/ags_pad_editor_callbacks.h \
-	src/ags/X/ags_pad_editor.h \
-	src/ags/X/ags_pad.h \
-	src/ags/X/ags_performance_preferences_callbacks.h \
-	src/ags/X/ags_performance_preferences.h \
-	src/ags/X/ags_plugin_preferences_callbacks.h \
-	src/ags/X/ags_plugin_preferences.h \
-	src/ags/X/ags_preferences_callbacks.h \
-	src/ags/X/ags_preferences.h \
-	src/ags/X/ags_property_collection_editor_callbacks.h \
-	src/ags/X/ags_property_collection_editor.h \
-	src/ags/X/ags_property_editor_callbacks.h \
-	src/ags/X/ags_property_editor.h \
-	src/ags/X/ags_property_listing_editor.h \
-	src/ags/X/ags_resize_editor.h \
-	src/ags/X/ags_server_preferences_callbacks.h \
-	src/ags/X/ags_server_preferences.h \
-	src/ags/X/ags_window_callbacks.h \
-	src/ags/X/ags_window.h \
-	src/ags/X/editor/ags_file_selection_callbacks.h \
-	src/ags/X/editor/ags_file_selection.h \
-	src/ags/X/editor/ags_inline_player_callbacks.h \
-	src/ags/X/editor/ags_inline_player.h \
-	src/ags/X/editor/ags_machine_radio_button.h \
-	src/ags/X/editor/ags_machine_selection.h \
-	src/ags/X/editor/ags_machine_selector_callbacks.h \
-	src/ags/X/editor/ags_machine_selector.h \
-	src/ags/X/editor/ags_meter_callbacks.h \
-	src/ags/X/editor/ags_meter.h \
-	src/ags/X/editor/ags_notebook_callbacks.h \
-	src/ags/X/editor/ags_notebook.h \
-	src/ags/X/editor/ags_note_edit_callbacks.h \
-	src/ags/X/editor/ags_note_edit.h \
-	src/ags/X/editor/ags_pattern_edit_callbacks.h \
-	src/ags/X/editor/ags_pattern_edit.h \
-	src/ags/X/editor/ags_sf2_chooser_callbacks.h \
-	src/ags/X/editor/ags_sf2_chooser.h \
-	src/ags/X/editor/ags_toolbar_callbacks.h \
-	src/ags/X/editor/ags_toolbar.h \
-	src/ags/X/editor/ags_toolbar_mode_stock.h \
-	src/ags/X/machine/ags_cell_pattern_callbacks.h \
-	src/ags/X/machine/ags_cell_pattern.h \
-	src/ags/X/machine/ags_drum_callbacks.h \
-	src/ags/X/machine/ags_drum.h \
-	src/ags/X/machine/ags_drum_input_line_callbacks.h \
-	src/ags/X/machine/ags_drum_input_line.h \
-	src/ags/X/machine/ags_drum_input_pad_callbacks.h \
-	src/ags/X/machine/ags_drum_input_pad.h \
-	src/ags/X/machine/ags_drum_output_line_callbacks.h \
-	src/ags/X/machine/ags_drum_output_line.h \
-	src/ags/X/machine/ags_drum_output_pad_callbacks.h \
-	src/ags/X/machine/ags_drum_output_pad.h \
-	src/ags/X/machine/ags_ffplayer_callbacks.h \
-	src/ags/X/machine/ags_ffplayer.h \
-	src/ags/X/machine/ags_matrix_callbacks.h \
-	src/ags/X/machine/ags_matrix.h \
-	src/ags/X/machine/ags_mixer_callbacks.h \
-	src/ags/X/machine/ags_mixer.h \
-	src/ags/X/machine/ags_mixer_input_line.h \
-	src/ags/X/machine/ags_mixer_input_pad.h \
-	src/ags/X/machine/ags_oscillator_callbacks.h \
-	src/ags/X/machine/ags_oscillator.h \
-	src/ags/X/machine/ags_panel_callbacks.h \
-	src/ags/X/machine/ags_panel.h \
-	src/ags/X/machine/ags_panel_input_line.h \
-	src/ags/X/machine/ags_panel_input_pad.h \
-	src/ags/X/machine/ags_pattern_box_callbacks.h \
-	src/ags/X/machine/ags_pattern_box.h \
-	src/ags/X/machine/ags_synth_callbacks.h \
-	src/ags/X/machine/ags_synth.h \
-	src/ags/X/machine/ags_synth_input_line.h \
-	src/ags/X/machine/ags_synth_input_pad.h
+	src/ags/audio/task/recall/ags_set_muted.h
 
-gsequencer_SOURCES = \
-	$(gsequencerheaders) \
-	src/ags/audio/ags_audio.c \
-	src/ags/audio/ags_audio_signal.c \
-	src/ags/audio/ags_channel.c \
-	src/ags/audio/ags_channel_iter.c \
-	src/ags/audio/ags_config.c \
-	src/ags/audio/ags_devout.c \
-	src/ags/audio/ags_garbage_collector.c \
-	src/ags/audio/ags_input.c \
-	src/ags/audio/ags_libao.c \
-	src/ags/audio/ags_notation.c \
-	src/ags/audio/ags_note.c \
-	src/ags/audio/ags_output.c \
-	src/ags/audio/ags_pattern.c \
-	src/ags/audio/ags_port.c \
-	src/ags/audio/ags_recall_audio.c \
-	src/ags/audio/ags_recall_audio_run.c \
-	src/ags/audio/ags_recall_audio_signal.c \
-	src/ags/audio/ags_recall.c \
-	src/ags/audio/ags_recall_channel.c \
-	src/ags/audio/ags_recall_channel_run.c \
-	src/ags/audio/ags_recall_channel_run_dummy.c \
-	src/ags/audio/ags_recall_container.c \
-	src/ags/audio/ags_recall_dependency.c \
-	src/ags/audio/ags_recall_factory.c \
-	src/ags/audio/ags_recall_id.c \
-	src/ags/audio/ags_recall_ladspa.c \
-	src/ags/audio/ags_recall_ladspa_run.c \
-	src/ags/audio/ags_recall_recycling.c \
-	src/ags/audio/ags_recall_recycling_dummy.c \
-	src/ags/audio/ags_recycling.c \
-	src/ags/audio/ags_recycling_container.c \
-	src/ags/audio/ags_synths.c \
-	src/ags/audio/ags_task.c \
-	src/ags/audio/ags_timestamp.c \
-	src/ags/audio/ags_timestamp_factory.c \
-	src/ags/audio/file/ags_audio_file.c \
-	src/ags/audio/file/ags_audio_file_xml.c \
-	src/ags/audio/file/ags_ipatch.c \
-	src/ags/audio/file/ags_ipatch_sf2_reader.c \
-	src/ags/audio/file/ags_sndfile.c \
-	src/ags/audio/recall/ags_amplifier.c \
-	src/ags/audio/recall/ags_buffer_audio_signal.c \
-	src/ags/audio/recall/ags_buffer_channel.c \
-	src/ags/audio/recall/ags_buffer_channel_run.c \
-	src/ags/audio/recall/ags_buffer_recycling.c \
-	src/ags/audio/recall/ags_clone_channel.c \
-	src/ags/audio/recall/ags_clone_channel_run.c \
-	src/ags/audio/recall/ags_copy_audio_signal.c \
-	src/ags/audio/recall/ags_copy_channel.c \
-	src/ags/audio/recall/ags_copy_channel_run.c \
-	src/ags/audio/recall/ags_copy_notation_audio.c \
-	src/ags/audio/recall/ags_copy_notation_audio_run.c \
-	src/ags/audio/recall/ags_copy_pattern_audio.c \
-	src/ags/audio/recall/ags_copy_pattern_audio_run.c \
-	src/ags/audio/recall/ags_copy_pattern_channel.c \
-	src/ags/audio/recall/ags_copy_pattern_channel_run.c \
-	src/ags/audio/recall/ags_copy_recycling.c \
-	src/ags/audio/recall/ags_count_beats_audio.c \
-	src/ags/audio/recall/ags_count_beats_audio_run.c \
-	src/ags/audio/recall/ags_delay_audio.c \
-	src/ags/audio/recall/ags_delay_audio_run.c \
-	src/ags/audio/recall/ags_echo.c \
-	src/ags/audio/recall/ags_envelope_audio_signal.c \
-	src/ags/audio/recall/ags_envelope_channel.c \
-	src/ags/audio/recall/ags_envelope_channel_run.c \
-	src/ags/audio/recall/ags_envelope_recycling.c \
-	src/ags/audio/recall/ags_loop_channel.c \
-	src/ags/audio/recall/ags_loop_channel_run.c \
-	src/ags/audio/recall/ags_mute_audio.c \
-	src/ags/audio/recall/ags_mute_audio_run.c \
-	src/ags/audio/recall/ags_mute_audio_signal.c \
-	src/ags/audio/recall/ags_mute_channel.c \
-	src/ags/audio/recall/ags_mute_channel_run.c \
-	src/ags/audio/recall/ags_mute_recycling.c \
-	src/ags/audio/recall/ags_peak_audio_signal.c \
-	src/ags/audio/recall/ags_peak_channel.c \
-	src/ags/audio/recall/ags_peak_channel_run.c \
-	src/ags/audio/recall/ags_peak_recycling.c \
-	src/ags/audio/recall/ags_play_audio.c \
-	src/ags/audio/recall/ags_play_audio_file.c \
-	src/ags/audio/recall/ags_play_audio_signal.c \
-	src/ags/audio/recall/ags_play_channel.c \
-	src/ags/audio/recall/ags_play_channel_run.c \
-	src/ags/audio/recall/ags_play_channel_run_master.c \
-	src/ags/audio/recall/ags_play_notation_audio.c \
-	src/ags/audio/recall/ags_play_notation_audio_run.c \
-	src/ags/audio/recall/ags_play_note.c \
-	src/ags/audio/recall/ags_play_pattern.c \
-	src/ags/audio/recall/ags_play_recycling.c \
-	src/ags/audio/recall/ags_stream_audio_signal.c \
-	src/ags/audio/recall/ags_stream.c \
-	src/ags/audio/recall/ags_stream_channel.c \
-	src/ags/audio/recall/ags_stream_channel_run.c \
-	src/ags/audio/recall/ags_stream_recycling.c \
-	src/ags/audio/recall/ags_volume_audio_signal.c \
-	src/ags/audio/recall/ags_volume_channel.c \
-	src/ags/audio/recall/ags_volume_channel_run.c \
-	src/ags/audio/recall/ags_volume_recycling.c \
+deprecated_libags_audio_task_c_sources =
+
+libags_audio_task_c_sources = \
+	$(deprecated_libags_audio_task_c_sources) \
 	src/ags/audio/task/ags_add_audio.c \
 	src/ags/audio/task/ags_add_audio_signal.c \
 	src/ags/audio/task/ags_add_line_member.c \
@@ -567,69 +620,35 @@ gsequencer_SOURCES = \
 	src/ags/audio/task/recall/ags_apply_bpm.c \
 	src/ags/audio/task/recall/ags_apply_sequencer_length.c \
 	src/ags/audio/task/recall/ags_apply_tact.c \
-	src/ags/audio/task/recall/ags_set_muted.c \
-	src/ags/file/ags_file.c \
-	src/ags/file/ags_file_gui.c \
-	src/ags/file/ags_file_id_ref.c \
-	src/ags/file/ags_file_launch.c \
-	src/ags/file/ags_file_link.c \
-	src/ags/file/ags_file_lookup.c \
-	src/ags/file/ags_file_sound.c \
-	src/ags/file/ags_file_thread.c \
-	src/ags/file/ags_file_util.c \
-	src/ags-lib/object/ags_connectable.c \
-	src/ags/lib/ags_combo_box_text.c \
-	src/ags/lib/ags_container.c \
-	src/ags/lib/ags_list.c \
-	src/ags/lib/ags_log.c \
-	src/ags/lib/ags_parameter.c \
-	src/ags/main.c \
-	src/ags/object/ags_applicable.c \
-	src/ags/object/ags_async_queue.c \
-	src/ags/object/ags_countable.c \
-	src/ags/object/ags_concurrent_tree.c \
-	src/ags/object/ags_dynamic_connectable.c \
-	src/ags/object/ags_effect.c \
-	src/ags/object/ags_main_loop.c \
-	src/ags/object/ags_marshal.c \
-	src/ags/object/ags_mutable.c \
-	src/ags/object/ags_packable.c \
-	src/ags/object/ags_persistable.c \
-	src/ags/object/ags_playable.c \
-	src/ags/object/ags_plugin.c \
-	src/ags/object/ags_portlet.c \
-	src/ags/object/ags_runnable.c \
-	src/ags/object/ags_seekable.c \
-	src/ags/object/ags_soundcard.c \
-	src/ags/object/ags_stackable.c \
-	src/ags/object/ags_tactable.c \
-	src/ags/object/ags_tree_iterator.c \
-	src/ags/plugin/ags_ladspa_manager.c \
-	src/ags/plugin/ags_plugin_factory.c \
-	src/ags/server/ags_registry.c \
-	src/ags/server/ags_remote_task.c \
-	src/ags/server/ags_server.c \
-	src/ags/thread/ags_audio_loop.c \
-	src/ags/thread/ags_audio_thread.c \
-	src/ags/thread/ags_autosave_thread.c \
-	src/ags/thread/ags_channel_thread.c \
-	src/ags/thread/ags_devout_thread.c \
-	src/ags/thread/ags_export_thread.c \
-	src/ags/thread/ags_gui_thread.c \
-	src/ags/thread/ags_history.c \
-	src/ags/thread/ags_iterator_thread.c \
-	src/ags/thread/ags_mutex_manager.c \
-	src/ags/thread/ags_record_thread.c \
-	src/ags/thread/ags_recycling_thread.c \
-	src/ags/thread/ags_recycling_thread_callbacks.c \
-	src/ags/thread/ags_returnable_thread.c \
-	src/ags/thread/ags_single_thread.c \
-	src/ags/thread/ags_task_completion.c \
-	src/ags/thread/ags_task_thread.c \
-	src/ags/thread/ags_thread_pool.c \
-	src/ags/thread/ags_thread-posix.c \
-	src/ags/thread/ags_timestamp_thread.c \
-	src/ags/util/ags_id_generator.c \
+	src/ags/audio/task/recall/ags_set_muted.c
+
+# libags-gui all files
+deprecated_libags_gui_h_sources =
+
+libags_gui_h_sources = \
+	$(deprecated_libags_gui_h_sources) \
+	src/ags/widget/ags_cartesian.h \
+	src/ags/widget/ags_dial.h \
+	src/ags/widget/ags_expander.h \
+	src/ags/widget/ags_expander_set.h \
+	src/ags/widget/ags_hindicator.h \
+	src/ags/widget/ags_htimebar.h \
+	src/ags/widget/ags_indicator.h \
+	src/ags/widget/ags_led.h \
+	src/ags/widget/ags_menu.h \
+	src/ags/widget/ags_menu_item.h \
+	src/ags/widget/ags_option_menu.h \
+	src/ags/widget/ags_ruler.h \
+	src/ags/widget/ags_segment.h \
+	src/ags/widget/ags_table.h \
+	src/ags/widget/ags_timebar.h \
+	src/ags/widget/ags_vindicator.h \
+	src/ags/widget/ags_waveform.h
+
+deprecated_libags_gui_c_sources =
+
+libags_gui_c_sources = \
+	$(deprecated_libags_gui_c_sources) \
 	src/ags/widget/ags_cartesian.c \
 	src/ags/widget/ags_dial.c \
 	src/ags/widget/ags_expander.c \
@@ -646,7 +665,70 @@ gsequencer_SOURCES = \
 	src/ags/widget/ags_table.c \
 	src/ags/widget/ags_timebar.c \
 	src/ags/widget/ags_vindicator.c \
-	src/ags/widget/ags_waveform.c \
+	src/ags/widget/ags_waveform.c
+
+# libgsequencer all files
+deprecated_libgsequencer_h_sources =
+
+libgsequencer_h_sources = \
+	$(deprecated_libgsequencer_h_sources) \
+	src/ags/X/ags_audio_preferences_callbacks.h \
+	src/ags/X/ags_audio_preferences.h \
+	src/ags/X/ags_editor_callbacks.h \
+	src/ags/X/ags_editor.h \
+	src/ags/X/ags_export_window_callbacks.h \
+	src/ags/X/ags_export_window.h \
+	src/ags/X/ags_generic_preferences_callbacks.h \
+	src/ags/X/ags_generic_preferences.h \
+	src/ags/X/ags_ladspa_browser_callbacks.h \
+	src/ags/X/ags_ladspa_browser.h \
+	src/ags/X/ags_line_callbacks.h \
+	src/ags/X/ags_line_editor_callbacks.h \
+	src/ags/X/ags_line_editor.h \
+	src/ags/X/ags_line.h \
+	src/ags/X/ags_line_member_callbacks.h \
+	src/ags/X/ags_line_member_editor_callbacks.h \
+	src/ags/X/ags_line_member_editor.h \
+	src/ags/X/ags_line_member.h \
+	src/ags/X/ags_link_collection_editor_callbacks.h \
+	src/ags/X/ags_link_collection_editor.h \
+	src/ags/X/ags_link_editor_callbacks.h \
+	src/ags/X/ags_link_editor.h \
+	src/ags/X/ags_listing_editor_callbacks.h \
+	src/ags/X/ags_listing_editor.h \
+	src/ags/X/ags_machine_callbacks.h \
+	src/ags/X/ags_machine_editor_callbacks.h \
+	src/ags/X/ags_machine_editor.h \
+	src/ags/X/ags_machine.h \
+	src/ags/X/ags_menu_bar_callbacks.h \
+	src/ags/X/ags_menu_bar.h \
+	src/ags/X/ags_navigation_callbacks.h \
+	src/ags/X/ags_navigation.h \
+	src/ags/X/ags_pad_callbacks.h \
+	src/ags/X/ags_pad_editor_callbacks.h \
+	src/ags/X/ags_pad_editor.h \
+	src/ags/X/ags_pad.h \
+	src/ags/X/ags_performance_preferences_callbacks.h \
+	src/ags/X/ags_performance_preferences.h \
+	src/ags/X/ags_plugin_preferences_callbacks.h \
+	src/ags/X/ags_plugin_preferences.h \
+	src/ags/X/ags_preferences_callbacks.h \
+	src/ags/X/ags_preferences.h \
+	src/ags/X/ags_property_collection_editor_callbacks.h \
+	src/ags/X/ags_property_collection_editor.h \
+	src/ags/X/ags_property_editor_callbacks.h \
+	src/ags/X/ags_property_editor.h \
+	src/ags/X/ags_property_listing_editor.h \
+	src/ags/X/ags_resize_editor.h \
+	src/ags/X/ags_server_preferences_callbacks.h \
+	src/ags/X/ags_server_preferences.h \
+	src/ags/X/ags_window.h \
+	src/ags/X/ags_window_callbacks.h
+
+deprecated_libgsequencer_c_sources =
+
+libgsequencer_c_sources = \
+	$(deprecated_libgsequencer_c_sources) \
 	src/ags/X/ags_audio_preferences.c \
 	src/ags/X/ags_audio_preferences_callbacks.c \
 	src/ags/X/ags_editor.c \
@@ -698,27 +780,72 @@ gsequencer_SOURCES = \
 	src/ags/X/ags_server_preferences.c \
 	src/ags/X/ags_server_preferences_callbacks.c \
 	src/ags/X/ags_window.c \
-	src/ags/X/ags_window_callbacks.c \
-	src/ags/X/editor/ags_file_selection.c \
-	src/ags/X/editor/ags_file_selection_callbacks.c \
-	src/ags/X/editor/ags_inline_player.c \
-	src/ags/X/editor/ags_inline_player_callbacks.c \
-	src/ags/X/editor/ags_machine_radio_button.c \
-	src/ags/X/editor/ags_machine_selection.c \
-	src/ags/X/editor/ags_machine_selector.c \
-	src/ags/X/editor/ags_machine_selector_callbacks.c \
-	src/ags/X/editor/ags_meter.c \
-	src/ags/X/editor/ags_meter_callbacks.c \
-	src/ags/X/editor/ags_notebook.c \
-	src/ags/X/editor/ags_notebook_callbacks.c \
-	src/ags/X/editor/ags_note_edit.c \
-	src/ags/X/editor/ags_note_edit_callbacks.c \
-	src/ags/X/editor/ags_pattern_edit.c \
-	src/ags/X/editor/ags_pattern_edit_callbacks.c \
-	src/ags/X/editor/ags_sf2_chooser.c \
-	src/ags/X/editor/ags_sf2_chooser_callbacks.c \
-	src/ags/X/editor/ags_toolbar.c \
-	src/ags/X/editor/ags_toolbar_callbacks.c \
+	src/ags/X/ags_window_callbacks.c
+
+# libgsequencer - file
+deprecated_libgsequencer_file_h_sources =
+
+libgsequencer_file_h_sources = \
+	$(deprecated_libgsequencer_file_h_sources) \
+
+deprecated_libgsequencer_file_c_sources =
+
+libgsequencer_file_c_sources = \
+	$(deprecated_libgsequencer_file_c_sources) \
+
+# libgsequencer - task
+deprecated_libgsequencer_task_h_sources =
+
+libgsequencer_task_h_sources = \
+	$(deprecated_libgsequencer_task_h_sources) \
+
+deprecated_libgsequencer_task_c_sources =
+
+libgsequencer_task_c_sources = \
+	$(deprecated_libgsequencer_task_c_sources) \
+
+# libgsequencer - machine
+deprecated_libgsequencer_machine_h_sources =
+
+libgsequencer_machine_h_sources = \
+	$(deprecated_libgsequencer_machine_h_sources) \
+	src/ags/X/machine/ags_cell_pattern_callbacks.h \
+	src/ags/X/machine/ags_cell_pattern.h \
+	src/ags/X/machine/ags_drum_callbacks.h \
+	src/ags/X/machine/ags_drum.h \
+	src/ags/X/machine/ags_drum_input_line_callbacks.h \
+	src/ags/X/machine/ags_drum_input_line.h \
+	src/ags/X/machine/ags_drum_input_pad_callbacks.h \
+	src/ags/X/machine/ags_drum_input_pad.h \
+	src/ags/X/machine/ags_drum_output_line_callbacks.h \
+	src/ags/X/machine/ags_drum_output_line.h \
+	src/ags/X/machine/ags_drum_output_pad_callbacks.h \
+	src/ags/X/machine/ags_drum_output_pad.h \
+	src/ags/X/machine/ags_ffplayer_callbacks.h \
+	src/ags/X/machine/ags_ffplayer.h \
+	src/ags/X/machine/ags_matrix_callbacks.h \
+	src/ags/X/machine/ags_matrix.h \
+	src/ags/X/machine/ags_mixer_callbacks.h \
+	src/ags/X/machine/ags_mixer.h \
+	src/ags/X/machine/ags_mixer_input_line.h \
+	src/ags/X/machine/ags_mixer_input_pad.h \
+	src/ags/X/machine/ags_oscillator_callbacks.h \
+	src/ags/X/machine/ags_oscillator.h \
+	src/ags/X/machine/ags_panel_callbacks.h \
+	src/ags/X/machine/ags_panel.h \
+	src/ags/X/machine/ags_panel_input_line.h \
+	src/ags/X/machine/ags_panel_input_pad.h \
+	src/ags/X/machine/ags_pattern_box_callbacks.h \
+	src/ags/X/machine/ags_pattern_box.h \
+	src/ags/X/machine/ags_synth_callbacks.h \
+	src/ags/X/machine/ags_synth.h \
+	src/ags/X/machine/ags_synth_input_line.h \
+	src/ags/X/machine/ags_synth_input_pad.h
+
+deprecated_libgsequencer_machine_c_sources =
+
+libgsequencer_machine_c_sources = \
+	$(deprecated_libgsequencer_machine_c_sources) \
 	src/ags/X/machine/ags_cell_pattern.c \
 	src/ags/X/machine/ags_cell_pattern_callbacks.c \
 	src/ags/X/machine/ags_drum.c \
@@ -751,6 +878,66 @@ gsequencer_SOURCES = \
 	src/ags/X/machine/ags_synth_callbacks.c \
 	src/ags/X/machine/ags_synth_input_line.c \
 	src/ags/X/machine/ags_synth_input_pad.c
+
+# libgsequencer - editor
+deprecated_libgsequencer_editor_h_sources =
+
+libgsequencer_editor_h_sources = \
+	$(deprecated_libgsequencer_editor_h_sources) \
+	src/ags/X/editor/ags_file_selection_callbacks.h \
+	src/ags/X/editor/ags_file_selection.h \
+	src/ags/X/editor/ags_inline_player_callbacks.h \
+	src/ags/X/editor/ags_inline_player.h \
+	src/ags/X/editor/ags_machine_radio_button.h \
+	src/ags/X/editor/ags_machine_selection.h \
+	src/ags/X/editor/ags_machine_selector_callbacks.h \
+	src/ags/X/editor/ags_machine_selector.h \
+	src/ags/X/editor/ags_meter_callbacks.h \
+	src/ags/X/editor/ags_meter.h \
+	src/ags/X/editor/ags_notebook_callbacks.h \
+	src/ags/X/editor/ags_notebook.h \
+	src/ags/X/editor/ags_note_edit_callbacks.h \
+	src/ags/X/editor/ags_note_edit.h \
+	src/ags/X/editor/ags_pattern_edit_callbacks.h \
+	src/ags/X/editor/ags_pattern_edit.h \
+	src/ags/X/editor/ags_sf2_chooser_callbacks.h \
+	src/ags/X/editor/ags_sf2_chooser.h \
+	src/ags/X/editor/ags_toolbar_callbacks.h \
+	src/ags/X/editor/ags_toolbar.h \
+	src/ags/X/editor/ags_toolbar_mode_stock.h
+
+deprecated_libgsequencer_editor_c_sources =
+
+libgsequencer_editor_c_sources = \
+	$(deprecated_libgsequencer_editor_c_sources) \
+	src/ags/X/editor/ags_file_selection.c \
+	src/ags/X/editor/ags_file_selection_callbacks.c \
+	src/ags/X/editor/ags_inline_player.c \
+	src/ags/X/editor/ags_inline_player_callbacks.c \
+	src/ags/X/editor/ags_machine_radio_button.c \
+	src/ags/X/editor/ags_machine_selection.c \
+	src/ags/X/editor/ags_machine_selector.c \
+	src/ags/X/editor/ags_machine_selector_callbacks.c \
+	src/ags/X/editor/ags_meter.c \
+	src/ags/X/editor/ags_meter_callbacks.c \
+	src/ags/X/editor/ags_notebook.c \
+	src/ags/X/editor/ags_notebook_callbacks.c \
+	src/ags/X/editor/ags_note_edit.c \
+	src/ags/X/editor/ags_note_edit_callbacks.c \
+	src/ags/X/editor/ags_pattern_edit.c \
+	src/ags/X/editor/ags_pattern_edit_callbacks.c \
+	src/ags/X/editor/ags_sf2_chooser.c \
+	src/ags/X/editor/ags_sf2_chooser_callbacks.c \
+	src/ags/X/editor/ags_toolbar.c \
+	src/ags/X/editor/ags_toolbar_callbacks.c
+
+# libgsequencer all files
+gsequencerheaders = \
+	src/ags/main.h
+
+gsequencer_SOURCES = \
+	$(gsequencerheaders) \
+	src/ags/main.c
 
 midi2xml_CFLAGS= $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
