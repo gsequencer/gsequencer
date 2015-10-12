@@ -798,7 +798,7 @@ ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannel
   guint i;
 
   /* unrolled function */
-  limit = size - 7;
+  limit = size - 8;
   
   for(i = 0; i < limit; i += 8){
     *destination = 0xffff & ((signed long) ((*destination) + (*source)));

@@ -386,7 +386,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   /* calculate average value */
   current_value = 0.0;
   
-  limit = buffer_size - 7;
+  limit = buffer_size - 8;
 
   for(i = 0; i < limit; i += 8){
     /* unrolled loop */

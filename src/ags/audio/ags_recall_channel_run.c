@@ -66,7 +66,7 @@ void ags_recall_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conne
 void ags_recall_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_channel_run_finalize(GObject *gobject);
 
-void ags_recall_channel_run_done(AgsRecall *recall);
+void ags_recall_channel_run_remove(AgsRecall *recall);
 AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id,
 					    guint *n_params, GParameter *parameter);
@@ -287,8 +287,8 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_channel_run;
 
+  recall->remove = ags_recall_channel_run_remove;
   recall->duplicate = ags_recall_channel_run_duplicate;
-  recall->done = ags_recall_channel_run_done;
 
   /* AgsRecallChannelRunClass */
   recall_channel_run->run_order_changed = ags_recall_channel_run_real_run_order_changed;
@@ -758,17 +758,15 @@ ags_recall_channel_run_disconnect_dynamic(AgsConnectable *connectable)
 }
 
 void
-ags_recall_channel_run_done(AgsRecall *recall)
+ags_recall_channel_run_remove(AgsRecall *recall)
 {
-  AgsRecallChannelRun *recall_channel_run;
+  if(AGS_RECALL_CHANNEL_RUN(recall)->source != NULL){
+    ags_channel_remove_recall(AGS_RECALL_CHANNEL_RUN(recall)->source,
+			      recall,
+			      ((recall->recall_id->recycling_container->parent) ? TRUE: FALSE));
+  }
 
-  recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
-  
-  ags_channel_remove_recall(recall_channel_run->source,
-			    (GObject *) recall,
-			    ((recall->recall_id->recycling_container->parent == NULL) ? TRUE: FALSE));
-
-  AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->done(recall);
+  AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->remove(recall);
 }
 
 AgsRecall*
@@ -984,7 +982,6 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 				      "source\0", source_recycling,
 				      "destination\0", ((recall_channel_run->destination != NULL) ? recall_channel_run->destination->first_recycling: NULL),
 				      NULL);
-	
       ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
       
       source_recycling = source_recycling->next;

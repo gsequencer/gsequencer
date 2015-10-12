@@ -1589,7 +1589,7 @@ ags_recall_done(AgsRecall *recall)
 void
 ags_recall_real_cancel(AgsRecall *recall)
 {
-  GList *list;
+  GList *list, *list_next;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     return;
@@ -1599,9 +1599,11 @@ ags_recall_real_cancel(AgsRecall *recall)
   list = recall->children;
 
   while(list != NULL){
+    list_next = list->next;
+    
     ags_recall_cancel(AGS_RECALL(list->data));
     
-    list = list->next;
+    list = list_next;
   }
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
@@ -1741,7 +1743,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 				 NULL);
 
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
-
+  
   ags_recall_set_flags(copy,
 		       (recall->flags & (~ (AGS_RECALL_TEMPLATE |
 					    AGS_RECALL_RUN_INITIALIZED |
@@ -2443,8 +2445,7 @@ ags_recall_child_done(AgsRecall *child,
     return;
   }
   
-  ags_recall_remove_child(parent,
-			  child);
+  ags_recall_remove(child);
 }
 
 /**

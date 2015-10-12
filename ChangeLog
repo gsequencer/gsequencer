@@ -1,3 +1,18 @@
+ags (0.6.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unrolled functions to have correct stop
+	* fixed selection in ags_pattern_edit_callbacks.c and ags_note_edit_callbacks.c because it used wrong context
+	* fixed ags_recall_real_cancel() because children field might have changed
+
+ags (0.6.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed accessing NULL pointer in ags_synth.c
+	* fixed accessing NULL pointer in ags_ipatch.c
+	* fixed accessing NULL pointer in ags_ffplayer_callbacks.c
+	* fixed missing lock of mutex in ags_playable.c
+
 ags (0.6.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

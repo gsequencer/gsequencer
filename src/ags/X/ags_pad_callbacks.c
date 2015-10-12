@@ -154,6 +154,8 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  
   audio_loop = ags_main->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));

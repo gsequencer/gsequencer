@@ -713,7 +713,7 @@ ags_ipatch_info(AgsPlayable *playable,
   AgsIpatch *ipatch;
   IpatchSample *sample;
 
-  if(ipatch == NULL){
+  if(playable == NULL){
     return;
   }
   
@@ -736,11 +736,15 @@ ags_ipatch_info(AgsPlayable *playable,
       *loop_end = 0;
     }
 
-    g_set_error(error,
-		AGS_PLAYABLE_ERROR,
-		AGS_PLAYABLE_ERROR_NO_SAMPLE,
-		"no sample selected for file: %s\0",
-		ipatch->filename);
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_PLAYABLE_ERROR,
+		  AGS_PLAYABLE_ERROR_NO_SAMPLE,
+		  "no sample selected for file: %s\0",
+		  ipatch->filename);
+    }
+
+    return;
   }
 
   sample = IPATCH_SAMPLE(ipatch->iter->data);

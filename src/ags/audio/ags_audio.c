@@ -35,6 +35,8 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
@@ -1147,6 +1149,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	if(alloc_recycling){
 	  first_recycling =
 	    last_recycling = ags_recycling_new(audio->devout);
+	  g_object_ref(first_recycling);
 	  
 	  first_recycling->channel = (GObject *) channel;
 	  
@@ -1626,6 +1629,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	if(alloc_recycling){
 	  first_recycling =
 	    last_recycling = ags_recycling_new(audio->devout);
+	  g_object_ref(first_recycling);
 	  
 	  first_recycling->channel = (GObject *) channel;
 	  

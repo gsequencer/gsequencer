@@ -87,7 +87,7 @@ static guint recycling_signals[LAST_SIGNAL];
 extern pthread_mutex_t ags_application_mutex;
 
 GType
-ags_recycling_get_type (void)
+ags_recycling_get_type(void)
 {
   static GType ags_type_recycling = 0;
 

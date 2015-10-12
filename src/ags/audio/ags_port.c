@@ -499,9 +499,9 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
-  overall_size = port->port_value_length * port->port_value_size;
-
   pthread_mutex_lock(&(port->mutex));
+
+  overall_size = port->port_value_length * port->port_value_size;
 
   if(!port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){
@@ -576,9 +576,9 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
     return;
   }
 
-  overall_size = port->port_value_length * port->port_value_size;
-
   pthread_mutex_lock(&(port->mutex));
+
+  overall_size = port->port_value_length * port->port_value_size;
 
   if(!port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){

@@ -263,7 +263,9 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   /* lookup audio mutex */
   pthread_mutex_lock(&(ags_application_mutex));
-    
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
@@ -337,7 +339,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
       /* create tasks */
       link_channel = ags_link_channel_new(channel, NULL);
       task = g_list_prepend(task,
-			    link_channel);     
+			    link_channel);
+      g_object_ref(link_channel);
       g_signal_connect_after((GObject *) link_channel, "launch\0",
 			     G_CALLBACK(ags_ffplayer_link_channel_launch_callback), list->data);
       
@@ -361,17 +364,25 @@ ags_ffplayer_link_channel_launch_callback(AgsTask *task, AgsAudioSignal *audio_s
   AgsChannel *channel;
   AgsAudioSignal *audio_signal_source_old;
 
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+  
   channel = AGS_LINK_CHANNEL(task)->channel;
   
   /* replace template audio signal */
   audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-  
+
+  g_object_ref(channel->first_recycling);
   ags_recycling_remove_audio_signal(channel->first_recycling,
 				    (gpointer) audio_signal_source_old);
   
   audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
   ags_recycling_add_audio_signal(channel->first_recycling,
-				 audio_signal); 
+				 audio_signal);
+  
+  //  g_object_unref(channel->first_recycling);
+  g_object_unref(task);
 }
 
 gboolean

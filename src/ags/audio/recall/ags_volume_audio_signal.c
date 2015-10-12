@@ -242,7 +242,7 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     volume = g_value_get_double(&value);
 
     /* unrolled loop */
-    limit = buffer_size - 7;
+    limit = buffer_size - 8;
     
     for(i = 0; i < limit; i += 8){
       buffer[i] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i]));

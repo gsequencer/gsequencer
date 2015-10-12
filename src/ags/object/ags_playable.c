@@ -28,6 +28,7 @@
 void ags_playable_base_init(AgsPlayableInterface *interface);
 
 extern AgsConfig *config;
+extern pthread_mutex_t ags_application_mutex;
 
 /**
  * SECTION:ags_playable
@@ -457,11 +458,14 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
 		       NULL);
 
+  error = NULL;
   ags_playable_info(playable,
 		    &channels, &frames,
 		    &loop_start, &loop_end,
 		    &error);
 
+  pthread_mutex_lock(&(ags_application_mutex));
+  
   str = ags_config_get(config,
 		       AGS_CONFIG_DEVOUT,
 		       "samplerate\0");
@@ -477,7 +481,9 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 				 NULL,
 				 10);
   free(str);
-  
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
   length = (guint) ceil((double)(frames) / (double)(buffer_size));
 
 #ifdef AGS_DEBUG

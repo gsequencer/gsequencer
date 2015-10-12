@@ -42,6 +42,7 @@ gboolean ags_recall_audio_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_audio_unpack(AgsPackable *packable);
 void ags_recall_audio_finalize(GObject *gobject);
 
+void ags_recall_audio_remove(AgsRecall *recall);
 AgsRecall* ags_recall_audio_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
 				      guint *n_params, GParameter *parameter);
@@ -149,6 +150,7 @@ ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_audio;
 
+  recall->remove = ags_recall_audio_remove;
   recall->duplicate = ags_recall_audio_duplicate;
 }
 
@@ -336,6 +338,18 @@ ags_recall_audio_finalize(GObject *gobject)
     g_object_unref(G_OBJECT(recall_audio->audio));
 
   G_OBJECT_CLASS(ags_recall_audio_parent_class)->finalize(gobject);
+}
+
+void
+ags_recall_audio_remove(AgsRecall *recall)
+{
+  if(AGS_RECALL_AUDIO(recall)->audio != NULL){
+    ags_audio_remove_recall(AGS_RECALL_AUDIO(recall)->audio,
+			    recall,
+			    ((recall->recall_id->recycling_container->parent) ? TRUE: FALSE));
+  }
+
+  AGS_RECALL_CLASS(ags_recall_audio_parent_class)->remove(recall);
 }
 
 AgsRecall*

@@ -626,7 +626,9 @@ ags_synth_update(AgsSynth *synth)
 
   /* lookup audio mutex */
   pthread_mutex_lock(&(ags_application_mutex));
-    
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
