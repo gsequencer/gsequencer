@@ -491,35 +491,12 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 void
 ags_devout_init(AgsDevout *devout)
 {
-  AgsMutexManager *mutex_manager;
   gchar *segmentation;
   gdouble delay;
   guint default_tact_frames;
   guint default_period;
   guint i;
   gchar *str;
-  
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
-
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-  
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     &attr);
-  
-  pthread_mutex_lock(&(ags_application_mutex));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) devout,
-			   mutex);
-  
-  pthread_mutex_unlock(&(ags_application_mutex));
 
   /* flags */
   devout->flags = (AGS_DEVOUT_ALSA);
@@ -922,14 +899,15 @@ ags_devout_finalize(GObject *gobject)
 
   devout = AGS_DEVOUT(gobject);
 
-  pthread_mutex_lock(&(ags_application_mutex));
+  /* remove devout mutex */
+  pthread_mutex_lock(devout->application_mutex);
   
   mutex_manager = ags_mutex_manager_get_instance();
 
   ags_mutex_manager_remove(mutex_manager,
 			   gobject);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(devout->application_mutex);
 
   /* free output buffer */
   free(devout->buffer[0]);
@@ -956,13 +934,38 @@ void
 ags_devout_connect(AgsConnectable *connectable)
 {
   AgsDevout *devout;
-
-    AgsMutexManager *mutex_manager;
+  
+  AgsMutexManager *mutex_manager;
 
   GList *list;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
   devout = AGS_DEVOUT(connectable);
+
+  /* create devout mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
   
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  /* insert mutex */
+  pthread_mutex_lock(devout->application_mutex);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) devout,
+			   mutex);
+  
+  pthread_mutex_unlock(devout->application_mutex);
+
+  /*  */  
   list = devout->audio;
 
   while(list != NULL){

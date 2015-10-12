@@ -20,22 +20,14 @@
 #ifndef __AGS_DEVOUT_H__
 #define __AGS_DEVOUT_H__
 
-#include <pthread.h>
-
 #include <glib.h>
 #include <glib-object.h>
 
 #include <sys/types.h>
 
+#include <pthread.h>
+
 #include <alsa/asoundlib.h>
-
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_devout_thread.h>
-#include <ags/thread/ags_iterator_thread.h>
-#include <ags/thread/ags_recycling_thread.h>
-
-#include <ags/audio/ags_recall_id.h>
 
 #define AGS_TYPE_DEVOUT                (ags_devout_get_type())
 #define AGS_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVOUT, AgsDevout))
@@ -44,27 +36,8 @@
 #define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
 #define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
 
-#define AGS_DEVOUT_PLAY_DOMAIN(ptr)    ((AgsDevoutPlayDomain *)(ptr))
-#define AGS_DEVOUT_PLAY(ptr)           ((AgsDevoutPlay *)(ptr))
-
-#define AGS_DEVOUT_DEFAULT_SAMPLERATE (44100.0)
-#define AGS_DEVOUT_DEFAULT_FORMAT (AGS_DEVOUT_RESOLUTION_16_BIT)
-#define AGS_DEVOUT_DEFAULT_BUFFER_SIZE (944)
-#define AGS_DEVOUT_DEFAULT_BPM (120.0)
-#define AGS_DEVOUT_DEFAULT_JIFFIE ((double) AGS_DEVOUT_DEFAULT_SAMPLERATE / (double) AGS_DEVOUT_DEFAULT_BUFFER_SIZE)
-
-#define AGS_DEVOUT_DEFAULT_TACT (1.0 / 1.0)
-#define AGS_DEVOUT_DEFAULT_TACT_JIFFIE (60.0 / AGS_DEVOUT_DEFAULT_BPM * AGS_DEVOUT_DEFAULT_TACT)
-#define AGS_DEVOUT_DEFAULT_TACTRATE (1.0 / AGS_DEVOUT_DEFAULT_TACT_JIFFIE)
-
-#define AGS_DEVOUT_DEFAULT_SCALE (1.0)
-#define AGS_DEVOUT_DEFAULT_DELAY (AGS_DEVOUT_DEFAULT_JIFFIE * (60.0 / AGS_DEVOUT_DEFAULT_BPM))
-
-#define AGS_DEVOUT_DEFAULT_PERIOD (64.0)
-
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
-typedef struct _AgsDevoutPlay AgsDevoutPlay;
 typedef struct _AgsDevoutPlayDomain AgsDevoutPlayDomain;
 
 typedef enum
@@ -78,48 +51,15 @@ typedef enum
 
   AGS_DEVOUT_PLAY                           = 1 << 5,
 
-  AGS_DEVOUT_LIBAO                          = 1 << 6,
-  AGS_DEVOUT_OSS                            = 1 << 7,
-  AGS_DEVOUT_ALSA                           = 1 << 8,
+  AGS_DEVOUT_OSS                            = 1 << 6,
+  AGS_DEVOUT_ALSA                           = 1 << 7,
 
-  AGS_DEVOUT_SHUTDOWN                       = 1 << 9,
-  AGS_DEVOUT_START_PLAY                     = 1 << 10,
+  AGS_DEVOUT_SHUTDOWN                       = 1 << 8,
+  AGS_DEVOUT_START_PLAY                     = 1 << 9,
 
-  AGS_DEVOUT_NONBLOCKING                    = 1 << 11,
-
-  AGS_DEVOUT_INITIALIZED                    = 1 << 14,
+  AGS_DEVOUT_NONBLOCKING                    = 1 << 10,
+  AGS_DEVOUT_INITIALIZED                    = 1 << 11,
 }AgsDevoutFlags;
-
-typedef enum
-{
-  AGS_DEVOUT_PLAY_DONE                     = 1,
-  AGS_DEVOUT_PLAY_REMOVE                   = 1 <<  1,
-  AGS_DEVOUT_PLAY_CHANNEL                  = 1 <<  2,
-  AGS_DEVOUT_PLAY_PAD                      = 1 <<  3,
-  AGS_DEVOUT_PLAY_AUDIO                    = 1 <<  4,
-  AGS_DEVOUT_PLAY_PLAYBACK                 = 1 <<  5,
-  AGS_DEVOUT_PLAY_SEQUENCER                = 1 <<  6,
-  AGS_DEVOUT_PLAY_NOTATION                 = 1 <<  7,
-  AGS_DEVOUT_PLAY_SINGLE_THREADED          = 1 <<  8,
-  AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL   = 1 <<  9,
-  AGS_DEVOUT_PLAY_SUPER_THREADED_RECYCLING = 1 << 10,
-}AgsDevoutPlayFlags;
-
-typedef enum{
-  AGS_DEVOUT_PLAY_DOMAIN_PLAYBACK                   = 1,
-  AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER                  = 1 <<  1,
-  AGS_DEVOUT_PLAY_DOMAIN_NOTATION                   = 1 <<  2,
-  AGS_DEVOUT_PLAY_DOMAIN_SINGLE_THREADED            = 1 <<  3,
-  AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  4,
-}AgsDevoutPlayDomainFlags;
-
-typedef enum{
-  AGS_DEVOUT_RESOLUTION_8_BIT    = 8,
-  AGS_DEVOUT_RESOLUTION_16_BIT   = 16,
-  AGS_DEVOUT_RESOLUTION_24_BIT   = 24,
-  AGS_DEVOUT_RESOLUTION_32_BIT   = 32,
-  AGS_DEVOUT_RESOLUTION_64_BIT   = 64,
-}AgsDevoutResolutionMode;
 
 #define AGS_DEVOUT_ERROR (ags_devout_error_quark())
 
@@ -135,9 +75,9 @@ struct _AgsDevout
 
   guint dsp_channels;
   guint pcm_channels;
-  guint bits;
+  guint format;
   guint buffer_size;
-  guint frequency; // sample_rate
+  guint samplerate; // sample_rate
 
   signed short** buffer;
 
@@ -151,6 +91,8 @@ struct _AgsDevout
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
   guint tic_counter; // in the range of default period
 
+  guint note_offset;
+  
   union{
     struct _AgsOss{
       int device_fd;
@@ -165,7 +107,8 @@ struct _AgsDevout
     }alsa;
   }out;
 
-  GObject *ags_main;
+  GObject *application_context;
+  pthread_mutex_t *application_mutex;
   
   GList *audio;
 };
@@ -236,24 +179,6 @@ GType ags_devout_get_type();
 
 GQuark ags_devout_error_quark();
 
-AgsDevoutPlayDomain* ags_devout_play_domain_alloc();
-void ags_devout_play_domain_free(AgsDevoutPlayDomain *devout_play_domain);
-
-AgsDevoutPlay* ags_devout_play_alloc();
-void ags_devout_play_free(AgsDevoutPlay *devout_play);
-AgsDevoutPlay* ags_devout_play_find_source(GList *devout_play,
-					   GObject *source);
-
-void ags_devout_list_cards(GList **card_id, GList **card_name);
-void ags_devout_pcm_info(char *card_id,
-			 guint *channels_min, guint *channels_max,
-			 guint *rate_min, guint *rate_max,
-			 guint *buffer_size_min, guint *buffer_size_max,
-			 GError **error);
-void ags_devout_tic(AgsDevout *devout);
-
-void ags_devout_note_offset_changed(AgsDevout *devout, guint note_offset);
-
-AgsDevout* ags_devout_new(GObject *ags_main);
+AgsDevout* ags_devout_new(GObject *application_context);
 
 #endif /*__AGS_DEVOUT_H__*/
