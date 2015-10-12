@@ -81,8 +81,9 @@ struct _AgsDevout
 
   signed short** buffer;
 
-  gdouble bpm; // beats per minute
-
+  double bpm; // beats per minute
+  gdouble delay_factor;
+  
   gdouble *delay; // count of tics within buffer size
   guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
 
@@ -115,6 +116,53 @@ struct _AgsDevout
 struct _AgsDevoutClass
 {
   GObjectClass object;
+};
+
+/**
+ * AgsDevoutPlayDomain:
+ * @domain: the source
+ * @playback: if %TRUE playback is on
+ * @sequencer: if %TRUE sequencer is on
+ * @notation: if %TRUE notation is on
+ * @devout_play: a #GList of #AgsDevoutPlay-struct
+ *
+ * A #AgsDevoutPlayDomain-struct represents the entire possible play/recall
+ * context.
+ */
+struct _AgsDevoutPlayDomain
+{
+  volatile guint flags;
+  
+  AgsThread **audio_thread;
+
+  GObject *domain;  
+  GList *devout_play;
+};
+
+/**
+ * AgsDevoutPlay:
+ * @flags: the internal state
+ * @iterator_thread: Super-threaded related #AgsThread. Index 0 playback, 1 sequencer and 2 notation.
+ * @source: either #AgsChannel or #AgsRecall
+ * @audio_channel: destination audio channel
+ * @recall_id: array pointing to appropriate #AgsRecallID. Index 0 playback, 1 sequencer and 2 notation.
+ *
+ * A #AgsDevoutPlay-struct represents the play/recall in #AgsChannel or #AgsRecall
+ * scope to do output to device.
+ */
+struct _AgsDevoutPlay
+{
+  volatile guint flags;
+  
+  AgsThread **channel_thread;
+  AgsIteratorThread **iterator_thread;
+
+  AgsThread **recycling_thread;
+
+  GObject *source;
+  guint audio_channel;
+
+  AgsRecallID **recall_id;
 };
 
 GType ags_devout_get_type();

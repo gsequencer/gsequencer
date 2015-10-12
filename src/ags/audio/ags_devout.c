@@ -137,10 +137,19 @@ enum{
   PROP_SAMPLERATE,
   PROP_BUFFER,
   PROP_BPM,
+  PROP_DELAY_FACTOR,
   PROP_ATTACK,
 };
 
+enum{
+  RUN,
+  STOP,
+  TIC,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_devout_parent_class = NULL;
+static guint devout_signals[LAST_SIGNAL];
 
 GType
 ags_devout_get_type (void)
@@ -363,8 +372,27 @@ ags_devout_class_init(AgsDevoutClass *devout)
   g_object_class_install_property(gobject,
 				  PROP_BPM,
 				  param_spec);
+
   /**
-   * AgsDevout:bpm:
+   * AgsDevout:delay-factor:
+   *
+   * tact
+   * 
+   * Since: 0.4.2
+   */
+  param_spec = g_param_spec_double("delay-factor\0",
+				   "delay factor\0",
+				   "The delay factor\0",
+				   0.0,
+				   16.0,
+				   1.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsDevout:attack:
    *
    * Attack of the buffer
    * 
@@ -380,7 +408,28 @@ ags_devout_class_init(AgsDevoutClass *devout)
 
 
   /* AgsDevoutClass */
-  //empty
+  devout->play_init = ags_devout_alsa_init;
+  devout->play = ags_devout_alsa_play;
+  devout->stop = ags_devout_alsa_free;
+
+  devout->tic = NULL;
+  devout->note_offset_changed = NULL;
+
+  /* signals */
+  /**
+   * AgsDevout::tic:
+   * @devout: the object tics
+   *
+   * The ::tic signal is emited during playback after buffer time interval.
+   */
+  devout_signals[TIC] =
+    g_signal_new("tic\0",
+		 G_TYPE_FROM_CLASS (devout),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsDevoutClass, tic),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 GQuark
@@ -442,11 +491,13 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 void
 ags_devout_init(AgsDevout *devout)
 {
+  gchar *segmentation;
   gdouble delay;
   guint default_tact_frames;
   guint default_period;
   guint i;
-  
+  gchar *str;
+
   /* flags */
   devout->flags = (AGS_DEVOUT_ALSA);
 
@@ -471,6 +522,15 @@ ags_devout_init(AgsDevout *devout)
   /* bpm */
   devout->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
 
+  /* delay factor */
+  segmentation = AGS_SOUNDCARD_DEFAULT_SEGMENTATION;
+  
+  sscanf(segmentation, "%d/%d\0",
+	 &discriminante,
+	 &nominante);
+    
+  devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
+
   /* delay and attack */
   devout->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 				     sizeof(gdouble));
@@ -480,7 +540,7 @@ ags_devout_init(AgsDevout *devout)
 
   devout->note_offset = 0;
   
-  delay = ((gdouble) devout->samplerate / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm);
+  delay = ((gdouble) devout->samplerate / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm) * devout->delay_factor;
   //  g_message("delay : %f\0", delay);
   default_tact_frames = (guint) (delay * devout->buffer_size);
   default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
@@ -678,7 +738,72 @@ ags_devout_set_property(GObject *gobject,
     break;
   case PROP_BPM:
     {
-	//TODO:JK: implement me
+      gdouble bpm;
+      gdouble delay;
+      guint default_tact_frames;
+      guint default_period;
+      guint i;
+      
+      bpm = g_value_get_double(value);
+
+      devout->bpm = bpm;
+
+      /* delay and attack */
+      devout->delay = (gdouble *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
+					 sizeof(gdouble));
+  
+      devout->attack = (guint *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
+					sizeof(guint));
+  
+      delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm) * devout->delay_factor;
+      default_tact_frames = (guint) (delay * devout->buffer_size);
+      default_period = (1.0 / AGS_DEVOUT_DEFAULT_PERIOD) * (default_tact_frames);
+
+      devout->attack[0] = 0;
+      devout->delay[0] = delay;
+  
+      for(i = 1; i < (int)  2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
+	devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_DEVOUT_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
+      }
+  
+      for(i = 1; i < (int) 2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
+	devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
+      }
+    }
+    break;
+  case PROP_DELAY_FACTOR:
+    {
+      gdouble delay_factor;
+      gdouble delay;
+      guint default_tact_frames;
+      guint default_period;
+      guint i;
+      
+      delay_factor = g_value_get_double(value);
+
+      devout->delay_factor = delay_factor;
+
+      /* delay and attack */
+      devout->delay = (gdouble *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
+					 sizeof(gdouble));
+  
+      devout->attack = (guint *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
+					sizeof(guint));
+  
+      delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm) * devout->delay_factor;
+      default_tact_frames = (guint) (delay * devout->buffer_size);
+      default_period = (1.0 / AGS_DEVOUT_DEFAULT_PERIOD) * (default_tact_frames);
+
+      devout->attack[0] = 0;
+      devout->delay[0] = delay;
+  
+      for(i = 1; i < (int)  2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
+	devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_DEVOUT_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
+      }
+  
+      for(i = 1; i < (int) 2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
+	devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
+      }
     }
     break;
   default:
@@ -747,6 +872,11 @@ ags_devout_get_property(GObject *gobject,
       g_value_set_double(value, devout->bpm);
     }
     break;
+  case PROP_DELAY_FACTOR:
+    {
+      g_value_set_double(value, devout->delay_factor);
+    }
+    break;
   case PROP_ATTACK:
     {
       g_value_set_pointer(value, devout->attack);
@@ -762,9 +892,22 @@ void
 ags_devout_finalize(GObject *gobject)
 {
   AgsDevout *devout;
+
+  AgsMutexManager *mutex_manager;
+  
   GList *list, *list_next;
 
   devout = AGS_DEVOUT(gobject);
+
+  /* remove devout mutex */
+  pthread_mutex_lock(devout->application_mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(devout->application_mutex);
 
   /* free output buffer */
   free(devout->buffer[0]);
@@ -791,10 +934,38 @@ void
 ags_devout_connect(AgsConnectable *connectable)
 {
   AgsDevout *devout;
+  
+  AgsMutexManager *mutex_manager;
+
   GList *list;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
   devout = AGS_DEVOUT(connectable);
+
+  /* create devout mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
   
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  /* insert mutex */
+  pthread_mutex_lock(devout->application_mutex);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) devout,
+			   mutex);
+  
+  pthread_mutex_unlock(devout->application_mutex);
+
+  /*  */  
   list = devout->audio;
 
   while(list != NULL){
