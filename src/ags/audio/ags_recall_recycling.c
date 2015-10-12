@@ -21,11 +21,10 @@
 
 #include <ags/main.h>
 
-#include <ags/lib/ags_list.h>
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_marshal.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
@@ -80,9 +79,6 @@ void ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *de
 void ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *destination,
 								   AgsAudioSignal *audio_signal,
 								   AgsRecallRecycling *recall_recycling);
-
-void ags_recall_recycling_duplicate_list(GList *list,
-					 GList **target);
 
 /**
  * SECTION:ags_recall_recycling
@@ -490,18 +486,23 @@ ags_recall_recycling_finalize(GObject *gobject)
 
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
 
-  if(recall_recycling->destination != NULL)
+  if(recall_recycling->destination != NULL){
     g_object_unref(G_OBJECT(recall_recycling->destination));
-
-  if(recall_recycling->source != NULL)
+  }
+  
+  if(recall_recycling->source != NULL){
     g_object_unref(G_OBJECT(recall_recycling->source));
-
-  if(recall_recycling->child_destination != NULL)
+  }
+  
+  if(recall_recycling->child_destination != NULL){
     g_object_unref(G_OBJECT(recall_recycling->child_destination));
-
-  if(recall_recycling->child_source != NULL)
-    ags_list_free_and_unref_link(recall_recycling->child_source);
-
+  }
+  
+  if(recall_recycling->child_source != NULL){
+    g_list_free_full(recall_recycling->child_source,
+		     g_object_unref);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_recall_recycling_parent_class)->finalize(gobject);
 }
@@ -633,13 +634,7 @@ ags_recall_recycling_get_child_source(AgsRecallRecycling *recall_recycling)
 {
   GList *child_source;
 
-  child_source = NULL;
-
-  g_list_foreach(recall_recycling->child_source,
-		 (GFunc) ags_list_duplicate_list,
-		 &child_source);
-
-  child_source = g_list_reverse(child_source);
+  child_source = g_list_copy(recall_recycling->child_source);
 
   return(child_source);
 }

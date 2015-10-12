@@ -18,8 +18,7 @@
  */
 #include <ags/main.h>
 
-#include <ags-lib/object/ags_connectable.h>
-#include <ags/lib/ags_log.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_main_loop.h>
 
@@ -191,10 +190,6 @@ ags_main_init(AgsMain *ags_main)
   ags_main->version = AGS_VERSION;
   ags_main->build_id = AGS_BUILD_ID;
 
-  log_file = fopen("/dev/stdout\0", "a\0");
-  ags_main->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
-					  "file\0", log_file,
-					  NULL);
   ags_colors_alloc();
 
   ags_main->main_loop = NULL;

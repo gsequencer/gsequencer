@@ -20,7 +20,7 @@
 #include <ags/audio/ags_audio_signal.h>
 
 #include <ags/object/ags_marshal.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
@@ -1168,7 +1168,8 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   audio_signal_stream = g_list_reverse(audio_signal_stream);
 
   if(audio_signal->stream_beginning != NULL){
-    ags_list_free_and_free_link(audio_signal->stream_beginning);
+    g_list_free_full(audio_signal->stream_beginning,
+		     g_free);
   }
 
   audio_signal->stream_beginning = audio_signal_stream;

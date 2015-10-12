@@ -20,7 +20,7 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_delay_audio.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

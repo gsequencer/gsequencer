@@ -19,7 +19,7 @@
 
 #include <ags/audio/ags_devout.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 

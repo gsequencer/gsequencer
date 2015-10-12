@@ -20,7 +20,7 @@
 #include <ags/audio/ags_recall_channel_run_dummy.h>
 #include <ags/audio/ags_recall_recycling_dummy.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

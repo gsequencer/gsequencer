@@ -20,7 +20,7 @@
 #include <ags/X/editor/ags_note_edit.h>
 #include <ags/X/editor/ags_note_edit_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 

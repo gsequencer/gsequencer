@@ -100,7 +100,6 @@ struct _AgsMain
   AgsWindow *window;
 
   AgsConfig *config;
-  AgsLog *log;
 };
 
 struct _AgsMainClass

@@ -19,7 +19,7 @@
 
 #include <ags/audio/task/ags_blink_cell_pattern_cursor.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/widget/ags_led.h>
 

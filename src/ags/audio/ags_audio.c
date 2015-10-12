@@ -21,9 +21,7 @@
 
 #include <ags/main.h>
 
-#include <ags/lib/ags_list.h>
-
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_marshal.h>
 
@@ -493,15 +491,21 @@ ags_audio_finalize(GObject *gobject)
   }
 
   /* free some lists */
-  ags_list_free_and_unref_link(audio->notation);
+  g_list_free_full(audio->notation,
+		   g_object_unref);
 
-  ags_list_free_and_unref_link(audio->recall_id);
+  g_list_free_full(audio->recall_id,
+		   g_object_unref);
 
-  ags_list_free_and_unref_link(audio->recall);
-  ags_list_free_and_unref_link(audio->play);
+  g_list_free_full(audio->recall,
+		   g_object_unref);
+  g_list_free_full(audio->play,
+		   g_object_unref);
 
-  ags_list_free_and_unref_link(audio->recall_remove);
-  ags_list_free_and_unref_link(audio->play_remove);
+  g_list_free_full(audio->recall_remove,
+		   g_object_unref);
+  g_list_free_full(audio->play_remove,
+		   g_object_unref);
 
   /* call parent */
   G_OBJECT_CLASS(ags_audio_parent_class)->finalize(gobject);

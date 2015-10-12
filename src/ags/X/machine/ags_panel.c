@@ -20,7 +20,7 @@
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_panel_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/util/ags_id_generator.h>
 

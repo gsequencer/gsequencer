@@ -20,7 +20,7 @@
 #include <ags/audio/recall/ags_envelope_audio_signal.h>
 #include <ags/audio/recall/ags_envelope_channel.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

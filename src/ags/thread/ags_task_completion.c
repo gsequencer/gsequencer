@@ -19,7 +19,7 @@
 
 #include <ags/thread/ags_task_completion.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_task.h>
 
