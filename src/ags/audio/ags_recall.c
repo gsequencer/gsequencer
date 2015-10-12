@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_recall.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/main.h>
 
 #include <ags/util/ags_id_generator.h>
@@ -28,6 +26,7 @@
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_marshal.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
@@ -1178,9 +1177,11 @@ ags_recall_finalize(GObject *gobject)
   //  if(recall->name != NULL)
   //    g_free(recall->name);
 
-  ags_list_free_and_unref_link(recall->dependencies);
+  g_list_free_full(recall->dependencies,
+		   g_object_unref);
 
-  ags_list_free_and_unref_link(recall->children);
+  g_list_free_full(recall->children,
+		   g_object_unref);
 
   if(recall->container != NULL){
     ags_packable_unpack(recall);

@@ -19,7 +19,7 @@
 
 #include <ags/thread/ags_thread_pool.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_returnable_thread.h>
 
@@ -302,7 +302,8 @@ ags_thread_pool_finalize(GObject *gobject)
 
   thread_pool = AGS_THREAD_POOL(gobject);
 
-  ags_list_free_and_unref_link(g_atomic_pointer_get(&(thread_pool->returnable_thread)));
+  g_list_free_full(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
+		   g_object_unref);
 
   /* call parent */
   G_OBJECT_CLASS(ags_thread_pool_parent_class)->finalize(gobject);

@@ -12,6 +12,12 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
 
+# libtool
+LT_PREREQ([2.4.2])
+LT_INIT
+AC_SUBST([LIBTOOL_DEPS])
+AC_ENABLE_SHARED
+
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
 AC_CHECK_LIB([X11], [main])

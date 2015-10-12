@@ -20,7 +20,7 @@
 #include <ags/X/ags_plugin_preferences.h>
 #include <ags/X/ags_plugin_preferences_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 

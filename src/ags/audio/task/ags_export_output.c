@@ -19,7 +19,7 @@
 
 #include <ags/audio/task/ags_export_output.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 

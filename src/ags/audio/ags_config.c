@@ -21,7 +21,7 @@
 
 #include <ags/main.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_autosave_thread.h>

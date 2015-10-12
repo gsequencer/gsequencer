@@ -20,7 +20,7 @@
 #include <ags/X/editor/ags_file_selection.h>
 #include <ags/X/editor/ags_file_selection_callbacks.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/ags_window.h>
 
@@ -223,7 +223,8 @@ ags_file_selection_finalize(GObject *gobject)
     free(file_selection->directory);
 
   /* free entries */
-  ags_list_free_and_free_link(file_selection->entry);
+  g_list_free_full(file_selection->entry,
+		   g_free);
 
   /* call finalize of parent class */
   G_OBJECT_CLASS(ags_file_selection_parent_class)->finalize(gobject);

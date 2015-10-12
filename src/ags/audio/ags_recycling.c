@@ -19,10 +19,8 @@
 
 #include <ags/audio/ags_recycling.h>
 
-#include <ags/lib/ags_list.h>
-
 #include <ags/object/ags_marshal.h>
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_concurrent_tree.h>
 
 #include <ags/thread/ags_mutex_manager.h>
@@ -427,7 +425,8 @@ ags_recycling_finalize(GObject *gobject)
   recycling = AGS_RECYCLING(gobject);
 
   /* AgsAudioSignal */
-  ags_list_free_and_unref_link(recycling->audio_signal);
+  g_list_free_full(recycling->audio_signal,
+		   g_object_unref);
 
   /* call parent */
   G_OBJECT_CLASS(ags_recycling_parent_class)->finalize(gobject);

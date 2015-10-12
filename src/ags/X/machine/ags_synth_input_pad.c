@@ -19,7 +19,7 @@
 
 #include <ags/X/machine/ags_synth_input_pad.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/util/ags_id_generator.h>
 

@@ -19,13 +19,10 @@
 
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/main.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_async_queue.h>
-
-#include <ags/lib/ags_list.h>
 
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_returnable_thread.h>
@@ -238,8 +235,10 @@ ags_task_thread_finalize(GObject *gobject)
   task_thread = AGS_TASK_THREAD(gobject);
 
   /* free AgsTask lists */
-  ags_list_free_and_unref_link(g_atomic_pointer_get(&(task_thread->exec)));
-  ags_list_free_and_unref_link(g_atomic_pointer_get(&(task_thread->queue)));
+  g_list_free_full(g_atomic_pointer_get(&(task_thread->exec)),
+		   g_object_unref);
+  g_list_free_full(g_atomic_pointer_get(&(task_thread->queue)),
+		   g_object_unref);
 
   /*  */
   G_OBJECT_CLASS(ags_task_thread_parent_class)->finalize(gobject);

@@ -19,7 +19,7 @@
 
 #include <ags/audio/task/ags_save_file.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_save_file_class_init(AgsSaveFileClass *save_file);
 void ags_save_file_connectable_interface_init(AgsConnectableInterface *connectable);

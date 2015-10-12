@@ -4,15 +4,24 @@ AUTOMAKE_OPTIONS = foreign
 AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = @CFLAGS@ -g -O2 -fPIE -fstack-protector-strong -Wformat -Werror=format-security -ftrapv
-LDFLAGS = @LDFLAGS@ -fPIE -pie -Wl,-z,relro -Wl,-z,now
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+
+# 
+TARGETS = gsequencer
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la libgsequencer.la libgsequencer_test.la 
+lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la libgsequencer.la
+noinst_LIBRARIES = libgsequencer_test.a
+
 bin_PROGRAMS = gsequencer midi2xml
+
 EXTRA_DIST = gsequencer.share acsite.m4 gsequencer.1 midi2xml.1 README gsequencer-documentation
+
 CLEANFILES =
+
 man1_MANS = gsequencer.1 midi2xml.1
 
 appdatadir = $(datadir)/applications
@@ -59,6 +68,20 @@ EXTRA_DIST += $(userdoc) $(userdocimages)
 
 EXTRA_DIST += $(top_srcdir)/src/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl
 
+# libraries and gsequencer
+libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object_c_sources) $(libags_file_c_sources) $(libags_file_task_c_sources)
+libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sources) $(libags_thread_task_c_sources)
+libags_server_la_SOURCES = $(libags_server_c_sources)
+libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
+libags_gui_la_SOURCES = $(libags_gui_c_sources)
+libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+gsequencer_SOURCES = $(gsequencer_src)
+
+include_HEADERS = $(libags_util_c_headers) $(libags_lib_c_headers) $(libags_object_c_headers) $(libags_file_c_headers) $(libags_file_task_c_headers) $(libags_thread_c_headers) $(libags_thread_file_c_headers) $(libags_thread_task_c_headers) $(libags_server_c_headers) $(libags_audio_c_headers) $(libags_audio_thread_c_headers) $(libags_audio_file_c_headers) $(libags_audio_midi_c_headers) $(libags_audio_task_c_headers) $(libags_audio_task_recall_c_headers) $(libags_audio_recall_c_headers)  $(libags_plugin_c_headers) $(libags_widget_c_headers)
+
+# testing
+libgsequencer_test_a_SOURCES = $(gsequencer_functional_test_runtime_sources) $(gsequencer_functional_test_x_util_sources)
+
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libags_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp  $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
@@ -93,18 +116,6 @@ gsequencer_LDFLAGS= -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS
 gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # libags all files
-deprecated_libags_util_h_sources =
-
-libags_util_h_sources = \
-	$(deprecated_libags_util_h_sources) \
-	src/ags/util/ags_id_generator.h
-
-deprecated_libags_util_c_sources =
-
-libags_util_c_sources = \
-	$(deprecated_libags_util_c_sources) \
-	src/ags/util/ags_id_generator.c
-
 deprecated_libags_h_sources =
 
 libags_h_sources = \
@@ -121,8 +132,22 @@ libags_c_sources = \
 	src/ags/lib/ags_container.c \
 	src/ags/lib/ags_parameter.c
 
+deprecated_libags_util_h_sources =
+
+# libags - util
+libags_util_h_sources = \
+	$(deprecated_libags_util_h_sources) \
+	src/ags/util/ags_id_generator.h
+
+deprecated_libags_util_c_sources =
+
+libags_util_c_sources = \
+	$(deprecated_libags_util_c_sources) \
+	src/ags/util/ags_id_generator.c
+
 deprecated_libags_object_h_sources =
 
+# libags - object
 libags_object_h_sources =  \
 	$(deprecated_libags_object_h_sources) \
 	src/ags/object/ags_applicable.h \
@@ -167,6 +192,7 @@ libags_object_c_sources = \
 
 deprecated_libags_file_h_sources =
 
+# libags - file
 libags_file_h_sources = \
 	$(deprecated_libags_file_h_sources) \
 	src/ags/file/ags_file_gui.h \
@@ -247,6 +273,17 @@ libags_thread_c_sources = \
 	src/ags/thread/ags_thread-posix.c \
 	src/ags/thread/ags_timestamp_thread.c
 
+# libags-thread - file
+deprecated_libags_thread_file_h_sources =
+
+libags_thread_file_h_sources = \
+	$(deprecated_libags_thread_file_h_sources)
+
+deprecated_libags_thread_file_c_sources =
+
+libags_thread_file_c_sources = \
+	$(deprecated_libags_thread_file_c_sources)
+
 # libags-server all files
 deprecated_libags_server_h_sources =
 
@@ -263,6 +300,17 @@ libags_server_c_sources = \
 	src/ags/server/ags_registry.c \
 	src/ags/server/ags_remote_task.c \
 	src/ags/server/ags_server.c
+
+# libags-server - file
+deprecated_libags_server_file_h_sources =
+
+libags_server_file_h_sources = \
+	$(deprecated_libags_server_file_h_sources)
+
+deprecated_libags_server_file_c_sources =
+
+libags_server_file_c_sources = \
+	$(deprecated_libags_server_file_c_sources)
 
 # libags-audio all files
 deprecated_libags_audio_h_sources =
@@ -347,18 +395,18 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_timestamp_factory.c
 
 # libags-audio - plugin
-deprecated_libaudio_plugin_h_sources =
+deprecated_libags_plugin_h_sources =
 
-libaudio_plugin_h_sources = \
-	$(deprecated_libaudio_plugin_h_sources) \
+libags_plugin_h_sources = \
+	$(deprecated_libags_plugin_h_sources) \
 	src/ags/plugin/ags_ladspa_manager.h \
 	src/ags/plugin/ags_plugin_factory.h \
 	src/ags/plugin/ags_plugin_stock.h
 
-deprecated_libaudio_plugin_c_sources =
+deprecated_libags_plugin_c_sources =
 
-libaudio_plugin_c_sources = \
-	$(deprecated_libaudio_plugin_c_sources) \
+libags_plugin_c_sources = \
+	$(deprecated_libags_plugin_c_sources) \
 	src/ags/plugin/ags_ladspa_manager.c \
 	src/ags/plugin/ags_plugin_factory.c
 
@@ -786,23 +834,23 @@ libgsequencer_c_sources = \
 deprecated_libgsequencer_file_h_sources =
 
 libgsequencer_file_h_sources = \
-	$(deprecated_libgsequencer_file_h_sources) \
+	$(deprecated_libgsequencer_file_h_sources)
 
 deprecated_libgsequencer_file_c_sources =
 
 libgsequencer_file_c_sources = \
-	$(deprecated_libgsequencer_file_c_sources) \
+	$(deprecated_libgsequencer_file_c_sources)
 
 # libgsequencer - task
 deprecated_libgsequencer_task_h_sources =
 
 libgsequencer_task_h_sources = \
-	$(deprecated_libgsequencer_task_h_sources) \
+	$(deprecated_libgsequencer_task_h_sources)
 
 deprecated_libgsequencer_task_c_sources =
 
 libgsequencer_task_c_sources = \
-	$(deprecated_libgsequencer_task_c_sources) \
+	$(deprecated_libgsequencer_task_c_sources)
 
 # libgsequencer - machine
 deprecated_libgsequencer_machine_h_sources =
@@ -935,7 +983,7 @@ libgsequencer_editor_c_sources = \
 gsequencerheaders = \
 	src/ags/main.h
 
-gsequencer_SOURCES = \
+gsequencer_src = \
 	$(gsequencerheaders) \
 	src/ags/main.c
 
@@ -943,6 +991,9 @@ midi2xml_CFLAGS= $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 midi2xml_SOURCES = src/midi2ags/main.c src/midi2ags/midi/ags_midi_parser.c src/midi2ags/midi/ags_midi_parser.h src/midi2ags/object/ags_marshal.c src/midi2ags/object/ags_marshal.h
+
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status libtool
 
 gsequencer.1:
 	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 -o ./ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl gsequencer.1.xml

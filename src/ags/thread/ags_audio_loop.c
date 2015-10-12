@@ -19,10 +19,9 @@
 
 #include <ags/thread/ags_audio_loop.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
 #include <ags/main.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/thread/ags_mutex_manager.h>
@@ -473,10 +472,15 @@ ags_audio_loop_finalize(GObject *gobject)
 
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
-  /* free AgsDevoutPlay lists */
-  ags_list_free_and_free_link(audio_loop->play_recall);
-  ags_list_free_and_free_link(audio_loop->play_channel);
-  ags_list_free_and_free_link(audio_loop->play_audio);
+  /* unref AgsPlayback lists */
+  g_list_free_full(audio_loop->play_recall,
+		   g_object_unref);
+  
+  g_list_free_full(audio_loop->play_channel,
+		   g_object_unref);
+  
+  g_list_free_full(audio_loop->play_audio,
+		   g_object_unref);
 
   /* call parent */
   G_OBJECT_CLASS(ags_audio_loop_parent_class)->finalize(gobject);

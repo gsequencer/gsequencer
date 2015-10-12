@@ -23,7 +23,7 @@
 #include <ags/file/ags_file_gui.h>
 #include <ags/file/ags_file_stock.h>
 
-#include <ags-lib/object/ags_connectable.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/main.h>
 
