@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+ * Copyright (C) 2015 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_LADSPA_BROWSER_CALLBACKS_H__
-#define __AGS_LADSPA_BROWSER_CALLBACKS_H__
+#ifndef __AGS_PLUGIN_BROWSER_CALLBACKS_H__
+#define __AGS_PLUGIN_BROWSER_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_ladspa_browser.h>
+#include <ags/X/ags_plugin_browser.h>
+void ags_plugin_browser_plugin_type_changed_callback(GtkWidget *combo_box,
+						     AgsPluginBrowser *plugin_browser);
 
-void ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
-						 AgsLadspaBrowser *ladspa_browser);
-void ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
-					       AgsLadspaBrowser *ladspa_browser);
+void ags_plugin_browser_ok_callback(GtkWidget *button,
+				    AgsPluginBrowser *plugin_browser);
+void ags_plugin_browser_cancel_callback(GtkWidget *button,
+					AgsPluginBrowser *plugin_browser);
 
-#endif /*__AGS_LADSPA_BROWSER_CALLBACKS_H__*/
+#endif /*__AGS_PLUGIN_BROWSER_CALLBACKS_H__*/

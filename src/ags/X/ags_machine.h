@@ -33,8 +33,8 @@
 #define AGS_IS_MACHINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MACHINE))
 #define AGS_MACHINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MACHINE, AgsMachineClass))
 
-#define AGS_MACHINE_DEFAULT_VERSION "0.4.2\0"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_MACHINE_DEFAULT_VERSION "0.7.0\0"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 30-10-2015 02:37\0"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineClass AgsMachineClass;
@@ -66,6 +66,7 @@ typedef enum{
 typedef enum{
   AGS_MACHINE_POPUP_COPY_PATTERN          = 1,
   AGS_MACHINE_POPUP_PASTE_PATTERN         = 1 <<  1,
+  AGS_MACHINE_POPUP_CONNECTION            = 1 <<  2,
 }AgsMachineEditOptions;
 
 struct _AgsMachine
@@ -110,6 +111,7 @@ struct _AgsMachine
   GtkMenu *popup;
   GtkDialog *properties;
   GtkDialog *rename;
+  GtkDialog *connection;
 };
 
 struct _AgsMachineClass

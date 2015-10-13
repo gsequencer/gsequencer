@@ -207,9 +207,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::midi-getc:
    * @midi_parser: the parser
    *
-   * Returns: The XML node representing the event
-   *
    * The ::midi-getc signal is emited during parsing of event.
+   *
+   * Returns: The character read
+   *
+   * Since: 0.5.0
    */
   midi_parser_signals[MIDI_GETC] =
     g_signal_new("midi-getc\0",
@@ -224,9 +226,9 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::on-error:
    * @midi_parser: the parser
    *
-   * Returns: The XML node representing the event
+   * The ::on-error signal is emited as error occurs.
    *
-   * The ::on-error signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[ON_ERROR] =
     g_signal_new("on-error\0",
@@ -243,9 +245,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::parse-full:
    * @midi_parser: the parser
    *
+   * The ::parse-full signal is emited during parsing of midi file.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::parse-full signal is emited during parsing of midi file.
+   * Since: 0.5.0
    */
   midi_parser_signals[PARSE_FULL] =
     g_signal_new("parse-full\0",
@@ -260,9 +264,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::parse-header:
    * @midi_parser: the parser
    *
+   * The ::parse-header signal is emited during parsing of header.
+   *
    * Returns: The XML node representing the header
    *
-   * The ::parse-header signal is emited during parsing of header.
+   * Since: 0.5.0
    */
   midi_parser_signals[PARSE_HEADER] =
     g_signal_new("parse-header\0",
@@ -277,9 +283,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::parse-track:
    * @midi_parser: the parser
    *
+   * The ::parse-track signal is emited during parsing of track.
+   *
    * Returns: The XML node representing the track
    *
-   * The ::parse-track signal is emited during parsing of track.
+   * Since: 0.5.0
    */
   midi_parser_signals[PARSE_TRACK] =
     g_signal_new("parse-track\0",
@@ -294,9 +302,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::key-on:
    * @midi_parser: the parser
    *
+   * The ::key-on signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::key-on signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[KEY_ON] =
     g_signal_new("key-on\0",
@@ -312,9 +322,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::key-off:
    * @midi_parser: the parser
    *
+   * The ::key-off signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::key-off signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[KEY_OFF] =
     g_signal_new("key-off\0",
@@ -330,9 +342,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::key-pressure:
    * @midi_parser: the parser
    *
+   * The ::key-pressure signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::key-pressure signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[KEY_PRESSURE] =
     g_signal_new("key-pressure\0",
@@ -348,9 +362,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::change-parameter:
    * @midi_parser: the parser
    *
+   * The ::change-parameter signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::change-parameter signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[CHANGE_PARAMETER] =
     g_signal_new("change-parameter\0",
@@ -366,9 +382,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::change-pitch-bend:
    * @midi_parser: the parser
    *
+   * The ::change-pitch-bend signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::change-pitch-bend signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[CHANGE_PITCH_BEND] =
     g_signal_new("change-pitch-bend\0",
@@ -384,9 +402,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::change-program:
    * @midi_parser: the parser
    *
+   * The ::change-program signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::change-program signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program\0",
@@ -402,9 +422,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::change-channel-pressure:
    * @midi_parser: the parser
    *
+   * The ::change-channel-pressure signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::change-channel-pressure signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[CHANGE_CHANNEL_PRESSURE] =
     g_signal_new("change-channel-pressure\0",
@@ -420,9 +442,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::not-defined:
    * @midi_parser: the parser
    *
+   * The ::not-defined signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::not-defined signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[NOT_DEFINED] =
     g_signal_new("not-defined\0",
@@ -438,9 +462,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::sysex:
    * @midi_parser: the parser
    *
+   * The ::sysex signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::sysex signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[SYSEX] =
     g_signal_new("sysex\0",
@@ -456,9 +482,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::system-common:
    * @midi_parser: the parser
    *
+   * The ::system-common signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::system-common signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[SYSTEM_COMMON] =
     g_signal_new("system-common\0",
@@ -474,9 +502,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::meta-event:
    * @midi_parser: the parser
    *
+   * The ::meta-event signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::meta-event signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[META_EVENT] =
     g_signal_new("meta-event\0",
@@ -492,9 +522,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::sequence-number:
    * @midi_parser: the parser
    *
+   * The ::sequence-number signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::sequence-number signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[SEQUENCE_NUMBER] =
     g_signal_new("sequence-number\0",
@@ -510,9 +542,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::end-of-track:
    * @midi_parser: the parser
    *
+   * The ::end-of-track signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::end-of-track signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[END_OF_TRACK] =
     g_signal_new("end-of-track\0",
@@ -528,9 +562,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::smtpe:
    * @midi_parser: the parser
    *
+   * The ::smtpe signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::smtpe signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[SMTPE] =
     g_signal_new("smtpe\0",
@@ -546,9 +582,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::tempo:
    * @midi_parser: the parser
    *
+   * The ::tempo signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::tempo signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[TEMPO] =
     g_signal_new("tempo\0",
@@ -564,9 +602,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::time-signature:
    * @midi_parser: the parser
    *
+   * The ::time-signature signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::time-signature signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[TIME_SIGNATURE] =
     g_signal_new("time-signature\0",
@@ -582,9 +622,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::key-signature:
    * @midi_parser: the parser
    *
+   * The ::key-signature signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::key-signature signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[KEY_SIGNATURE] =
     g_signal_new("key-signature\0",
@@ -600,9 +642,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::sequencer-meta-event:
    * @midi_parser: the parser
    *
+   * The ::sequencer-meta-event signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::sequencer-meta-event signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[SEQUENCER_META_EVENT] =
     g_signal_new("sequencer-meta-event\0",
@@ -618,9 +662,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::text-event:
    * @midi_parser: the parser
    *
+   * The ::text-event signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::text-event signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[TEXT_EVENT] =
     g_signal_new("text-event\0",
