@@ -112,11 +112,15 @@ void ags_devout_set_bpm(AgsSoundcard *soundcard,
 			gdouble bpm);
 gdouble ags_devout_get_bpm(AgsSoundcard *soundcard);
 
+void ags_devout_set_delay_factor(AgsSoundcard *soundcard,
+				 gdouble delay_factor);
+gdouble ags_devout_get_delay_factor(AgsSoundcard *soundcard);
+
 gdouble ags_devout_get_delay(AgsSoundcard *soundcard);
 guint ags_devout_get_attack(AgsSoundcard *soundcard);
 
-signed short* ags_devout_get_buffer(AgsSoundcard *soundcard);
-signed short* ags_devout_get_next_buffer(AgsSoundcard *soundcard);
+void* ags_devout_get_buffer(AgsSoundcard *soundcard);
+void* ags_devout_get_next_buffer(AgsSoundcard *soundcard);
 
 void ags_devout_set_note_offset(AgsSoundcard *soundcard,
 				guint note_offset);
@@ -474,6 +478,9 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
     
   soundcard->set_bpm = ags_devout_set_bpm;
   soundcard->get_bpm = ags_devout_get_bpm;
+
+  soundcard->set_delay_factor = ags_devout_set_delay_factor;
+  soundcard->get_delay_factor = ags_devout_get_delay_factor;
   
   soundcard->get_delay = ags_devout_get_delay;
   soundcard->get_attack = ags_devout_get_attack;
@@ -491,13 +498,6 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 void
 ags_devout_init(AgsDevout *devout)
 {
-  gchar *segmentation;
-  gdouble delay;
-  guint default_tact_frames;
-  guint default_period;
-  guint i;
-  gchar *str;
-
   /* flags */
   devout->flags = (AGS_DEVOUT_ALSA);
 
@@ -513,24 +513,21 @@ ags_devout_init(AgsDevout *devout)
   devout->out.alsa.device = AGS_SOUNDCARD_DEFAULT_DEVICE;
 
   /* buffer */
-  devout->buffer = (signed short **) malloc(4 * sizeof(signed short*));
-  devout->buffer[0] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-  devout->buffer[1] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-  devout->buffer[2] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-  devout->buffer[3] = (signed short *) malloc(devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  devout->buffer = (void **) malloc(4 * sizeof(void*));
 
+  devout->buffer[0] = NULL;
+  devout->buffer[1] = NULL;
+  devout->buffer[2] = NULL;
+  devout->buffer[3] = NULL;
+  
+  ags_devout_realloc_buffer(devout);
+  
   /* bpm */
   devout->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
 
   /* delay factor */
-  segmentation = AGS_SOUNDCARD_DEFAULT_SEGMENTATION;
+  devout->delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
   
-  sscanf(segmentation, "%d/%d\0",
-	 &discriminante,
-	 &nominante);
-    
-  devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
-
   /* delay and attack */
   devout->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 				     sizeof(gdouble));
@@ -538,27 +535,10 @@ ags_devout_init(AgsDevout *devout)
   devout->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 				    sizeof(guint));
 
+  ags_devout_adjust_delay_and_attack(devout);
+  
+  /* counters */
   devout->note_offset = 0;
-  
-  delay = ((gdouble) devout->samplerate / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm) * devout->delay_factor;
-  //  g_message("delay : %f\0", delay);
-  default_tact_frames = (guint) (delay * devout->buffer_size);
-  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
-
-  devout->attack[0] = 0;
-  devout->delay[0] = delay;
-  
-  for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_SOUNDCARD_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
-    //    g_message("%d\0", devout->attack[i]);
-  }
-  
-  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
-    //    g_message("%f\0", devout->delay[i]);
-  }
-
-  /*  */
   devout->tact_counter = 0.0;
   devout->delay_counter = 0;
   devout->tic_counter = 0;
@@ -600,10 +580,13 @@ ags_devout_set_property(GObject *gobject,
 
       if(application_context != NULL){
 	AgsConfig *config;
+
+	gchar *segmentation;
+	guint discriminante, nominante;
 	
 	g_object_ref(G_OBJECT(application_context));
 
-	devout->application_mutex = &(application_context->mutex);
+	devout->application_mutex = application_context->mutex;
 	
 	config = application_context->config;
 	
@@ -629,11 +612,22 @@ ags_devout_set_property(GObject *gobject,
 					     NULL,
 					     10);
 
+	segmentation = AGS_SOUNDCARD_DEFAULT_SEGMENTATION;
+  
+	sscanf(segmentation, "%d/%d\0",
+	       &discriminante,
+	       &nominante);
+    
+	devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
+
 	//  devout->out.oss.device = NULL;
 	devout->out.alsa.handle = NULL;
 	devout->out.alsa.device = g_strdup(ags_config_get_value(config,
 								AGS_CONFIG_SOUNDCARD,
 								"alsa-handle\0"));
+
+	ags_devout_adjust_delay_and_attack(devout);
+	ags_devout_realloc_buffer(devout);
       }else{
 	devout->application_mutex = NULL;
       }
@@ -679,20 +673,22 @@ ags_devout_set_property(GObject *gobject,
 
       devout->pcm_channels = pcm_channels;
 
-      free(devout->buffer[0]);
-      free(devout->buffer[1]);
-      free(devout->buffer[2]);
-      free(devout->buffer[3]);
-
-      devout->buffer[0] = (signed short *) malloc((pcm_channels * devout->buffer_size) * sizeof(signed short));
-      devout->buffer[1] = (signed short *) malloc((pcm_channels * devout->buffer_size) * sizeof(signed short));
-      devout->buffer[2] = (signed short *) malloc((pcm_channels * devout->buffer_size) * sizeof(signed short));
-      devout->buffer[3] = (signed short *) malloc((pcm_channels * devout->buffer_size) * sizeof(signed short));
+      ags_devout_realloc_buffer(devout);
     }
     break;
   case PROP_FORMAT:
     {
-	//TODO:JK: implement me
+      guint format;
+
+      format = g_value_get_uint(value);
+
+      if(format == devout->format){
+	return;
+      }
+
+      devout->format = format;
+
+      ags_devout_realloc_buffer(devout);
     }
     break;
   case PROP_BUFFER_SIZE:
@@ -707,15 +703,7 @@ ags_devout_set_property(GObject *gobject,
 
       devout->buffer_size = buffer_size;
 
-      free(devout->buffer[0]);
-      free(devout->buffer[1]);
-      free(devout->buffer[2]);
-      free(devout->buffer[3]);
-
-      devout->buffer[0] = (signed short *) malloc((devout->pcm_channels * buffer_size) * sizeof(signed short));
-      devout->buffer[1] = (signed short *) malloc((devout->pcm_channels * buffer_size) * sizeof(signed short));
-      devout->buffer[2] = (signed short *) malloc((devout->pcm_channels * buffer_size) * sizeof(signed short));
-      devout->buffer[3] = (signed short *) malloc((devout->pcm_channels * buffer_size) * sizeof(signed short));
+      ags_devout_realloc_buffer(devout);
     }
     break;
   case PROP_SAMPLERATE:
@@ -729,6 +717,8 @@ ags_devout_set_property(GObject *gobject,
       }
 
       devout->samplerate = samplerate;
+
+      ags_devout_realloc_buffer(devout);
     }
     break;
   case PROP_BUFFER:
@@ -739,71 +729,23 @@ ags_devout_set_property(GObject *gobject,
   case PROP_BPM:
     {
       gdouble bpm;
-      gdouble delay;
-      guint default_tact_frames;
-      guint default_period;
-      guint i;
       
       bpm = g_value_get_double(value);
 
       devout->bpm = bpm;
 
-      /* delay and attack */
-      devout->delay = (gdouble *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
-					 sizeof(gdouble));
-  
-      devout->attack = (guint *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
-					sizeof(guint));
-  
-      delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm) * devout->delay_factor;
-      default_tact_frames = (guint) (delay * devout->buffer_size);
-      default_period = (1.0 / AGS_DEVOUT_DEFAULT_PERIOD) * (default_tact_frames);
-
-      devout->attack[0] = 0;
-      devout->delay[0] = delay;
-  
-      for(i = 1; i < (int)  2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
-	devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_DEVOUT_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
-      }
-  
-      for(i = 1; i < (int) 2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
-	devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
-      }
+      ags_devout_adjust_delay_and_attack(devout);
     }
     break;
   case PROP_DELAY_FACTOR:
     {
       gdouble delay_factor;
-      gdouble delay;
-      guint default_tact_frames;
-      guint default_period;
-      guint i;
       
       delay_factor = g_value_get_double(value);
 
       devout->delay_factor = delay_factor;
 
-      /* delay and attack */
-      devout->delay = (gdouble *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
-					 sizeof(gdouble));
-  
-      devout->attack = (guint *) malloc((int) 2 * AGS_DEVOUT_DEFAULT_PERIOD *
-					sizeof(guint));
-  
-      delay = ((gdouble) devout->frequency / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm) * devout->delay_factor;
-      default_tact_frames = (guint) (delay * devout->buffer_size);
-      default_period = (1.0 / AGS_DEVOUT_DEFAULT_PERIOD) * (default_tact_frames);
-
-      devout->attack[0] = 0;
-      devout->delay[0] = delay;
-  
-      for(i = 1; i < (int)  2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
-	devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_DEVOUT_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
-      }
-  
-      for(i = 1; i < (int) 2.0 * AGS_DEVOUT_DEFAULT_PERIOD; i++){
-	devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
-      }
+      ags_devout_adjust_delay_and_attack(devout);
     }
     break;
   default:
@@ -1267,10 +1209,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
-  
-  int rc;
+
   snd_pcm_t *handle;
   snd_pcm_hw_params_t *hwparams;
+  snd_pcm_sw_params_t *swparams;
+
+  int rc;
   unsigned int val;
   snd_pcm_uframes_t frames;
   unsigned int rate;
@@ -1279,13 +1223,16 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   snd_pcm_uframes_t size;
   snd_pcm_sframes_t buffer_size;
   snd_pcm_sframes_t period_size;
-  snd_pcm_sw_params_t *swparams;
-  int period_event = 0;
+  guint word_size;
+  snd_pcm_format_t format;
+
+  int period_event;
+
   int err, dir;
+  
   pthread_mutex_t *mutex;
   
   static unsigned int period_time = 100000;
-  static snd_pcm_format_t format = SND_PCM_FORMAT_S16;
 
   devout = AGS_DEVOUT(soundcard);
 
@@ -1300,9 +1247,48 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(application_context->mutex);
 
+  /* retrieve word size */
   pthread_mutex_lock(mutex);
 
-  /*  */
+  switch(devout->format){
+  case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+    {
+      format = SND_PCM_FORMAT_S8;
+
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+    {
+      format = SND_PCM_FORMAT_S16;
+      
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+    {
+      format = SND_PCM_FORMAT_S24;
+      
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    g_warning("ags_devout_alsa_init(): unsupported word size\0");
+    return;
+  }
+  
+  /* prepare for playback */
   devout->flags |= (AGS_DEVOUT_BUFFER3 |
 		    AGS_DEVOUT_START_PLAY |
 		    AGS_DEVOUT_PLAY |
@@ -1310,11 +1296,14 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   devout->note_offset = 0;
 
-  memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-  memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-  memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
-  memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+  memset(devout->buffer[0], 0, devout->dsp_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[1], 0, devout->dsp_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[2], 0, devout->dsp_channels * devout->buffer_size * word_size);
+  memset(devout->buffer[3], 0, devout->dsp_channels * devout->buffer_size * word_size);
 
+  /*  */
+  period_event = 0;
+  
   /* Open PCM device for playback. */
   if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
     pthread_mutex_unlock(mutex);
@@ -1481,7 +1470,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   AgsApplicationContext *application_context;
 
   gdouble delay;
-
+  guint word_size;
+  
   pthread_mutex_t *mutex;
   
   devout = AGS_DEVOUT(soundcard);
@@ -1498,9 +1488,41 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(application_context->mutex);
 
+  /* retrieve word size */
   pthread_mutex_lock(mutex);
 
-  /*  */
+  switch(devout->format){
+  case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+    {
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    g_warning("ags_devout_alsa_play(): unsupported word size\0");
+    return;
+  }
+
+  /* do playback */
   devout->flags &= (~AGS_DEVOUT_START_PLAY);
 
   if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
@@ -1509,9 +1531,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     return;
   }
   
-  /*  */
+  /* check buffer flag */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
-    memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+    memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * word_size);
       
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[0],
@@ -1546,7 +1568,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     }      
     //      g_message("ags_devout_play 0\0");
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
-    memset(devout->buffer[0], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+    memset(devout->buffer[0], 0, (size_t) devout->dsp_channels * devout->buffer_size * word_size);
 
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[1],
@@ -1581,7 +1603,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     }      
     //      g_message("ags_devout_play 1\0");
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
-    memset(devout->buffer[1], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+    memset(devout->buffer[1], 0, (size_t) devout->dsp_channels * devout->buffer_size * word_size);
       
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[2],
@@ -1616,7 +1638,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     }
     //      g_message("ags_devout_play 2\0");
   }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
-    memset(devout->buffer[2], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));
+    memset(devout->buffer[2], 0, (size_t) devout->dsp_channels * devout->buffer_size * word_size);
       
     devout->out.alsa.rc = snd_pcm_writei(devout->out.alsa.handle,
 					 devout->buffer[3],
@@ -1744,31 +1766,12 @@ ags_devout_set_bpm(AgsSoundcard *soundcard,
 		   gdouble bpm)
 {
   AgsDevout *devout;
-  gdouble delay;
-  guint default_tact_frames;
-  guint default_period;
-  guint i;  
 
   devout = AGS_DEVOUT(soundcard);
 
   devout->bpm = bpm;
 
-  /* delay and attack */
-  delay = ((gdouble) devout->samplerate / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm);
-  default_tact_frames = (guint) (delay * devout->buffer_size);
-  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
-
-  devout->attack[0] = 0;
-  devout->delay[0] = delay;
-  
-  for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_SOUNDCARD_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
-  }
-  
-  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
-  }
-
+  ags_devout_adjust_delay_and_attack(devout);
 }
 
 gdouble
@@ -1779,6 +1782,29 @@ ags_devout_get_bpm(AgsSoundcard *soundcard)
   devout = AGS_DEVOUT(soundcard);
 
   return(devout->bpm);
+}
+
+void
+ags_devout_set_delay_factor(AgsSoundcard *soundcard,
+			    gdouble delay_factor)
+{
+  AgsDevout *devout;
+
+  devout = AGS_DEVOUT(soundcard);
+
+  devout->delay_factor = delay_factor;
+
+  ags_devout_adjust_delay_and_attack(devout);
+}
+
+gdouble
+ags_devout_get_delay_factor(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+  
+  devout = AGS_DEVOUT(soundcard);
+
+  return(devout->delay_factor);
 }
 
 gdouble
@@ -1882,6 +1908,120 @@ ags_devout_get_audio(AgsSoundcard *soundcard)
   devout = AGS_DEVOUT(soundcard);
 
   return(devout->audio);
+}
+
+void
+ags_devout_adjust_delay_and_attack(AgsDevout *devout)
+{
+  gdouble delay;
+  guint default_tact_frames;
+  guint default_period;
+  guint i;
+
+  if(devout == NULL){
+    return;
+  }
+  
+  delay = ((gdouble) devout->samplerate / (gdouble) devout->buffer_size) * (gdouble)(60.0 / devout->bpm) * devout->delay_factor;
+
+#ifdef AGS_DEBUG
+  g_message("delay : %f\0", delay);
+#endif
+  
+  default_tact_frames = (guint) (delay * devout->buffer_size);
+  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
+
+  devout->attack[0] = 0;
+  devout->delay[0] = delay;
+  
+  for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
+    devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_SOUNDCARD_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
+    
+#ifdef AGS_DEBUG
+    g_message("%d\0", devout->attack[i]);
+#endif
+  }
+  
+  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
+    devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
+    
+#ifdef AGS_DEBUG
+    g_message("%f\0", devout->delay[i]);
+#endif
+  }
+}
+
+void
+ags_devout_realloc_buffer(AgsDevout *devout)
+{
+  guint word_size;
+
+  if(devout == NULL){
+    return;
+  }
+
+  switch(devout->format){
+  case AGS_SOUNDCARD_RESOLUTION_8_BIT:
+    {
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_24_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_RESOLUTION_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    g_warning("ags_devout_realloc_buffer(): unsupported word size\0");
+    return;
+  }
+  
+  /* AGS_DEVOUT_BUFFER_0 */
+  if(devout->buffer[0] != NULL){
+    free(devout->buffer[0]);
+  }
+  
+  devout->buffer[0] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
+
+  if(devout->buffer[0] != NULL){
+    free(devout->buffer[0]);
+  }
+  
+  /* AGS_DEVOUT_BUFFER_1 */
+  devout->buffer[1] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
+
+  if(devout->buffer[1] != NULL){
+    free(devout->buffer[1]);
+  }
+  
+  /* AGS_DEVOUT_BUFFER_2 */
+  devout->buffer[2] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
+
+  if(devout->buffer[2] != NULL){
+    free(devout->buffer[2]);
+  }
+  
+  /* AGS_DEVOUT_BUFFER_3 */
+  devout->buffer[3] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
+
+  if(devout->buffer[3] != NULL){
+    free(devout->buffer[3]);
+  }
 }
 
 /**
