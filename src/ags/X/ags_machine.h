@@ -72,7 +72,7 @@ struct _AgsMachine
 {
   GtkHandleBox handle_box;
 
-  GObject *ags_main;
+  GObject *application_context;
 
   char *name;
 

@@ -729,7 +729,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   pthread_mutex_lock(&(ags_application_mutex));
 
-  main_loop = AGS_MAIN(devout->ags_main)->main_loop;
+  main_loop = AGS_MAIN(devout->application_context)->main_loop;
   
   pthread_mutex_unlock(&(ags_application_mutex));
 

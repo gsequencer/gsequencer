@@ -17,16 +17,16 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/ags_config.h>
+#include <ags/object/ags_config.h>
 
 #include <ags/main.h>
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_autosave_thread.h>
+#include <ags/object/ags_marshal.h>
+#include <ags/object/ags_application_context.h>
 
-#include <ags/audio/ags_devout.h>
+#include <gio/gio.h>
 
 #include <sys/types.h>
 #include <stdlib.h>
@@ -37,6 +37,14 @@
 void ags_config_class_init(AgsConfigClass *config_class);
 void ags_config_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_config_init(AgsConfig *config);
+void ags_config_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec);
+void ags_config_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec);
 void ags_config_add_to_registry(AgsConnectable *connectable);
 void ags_config_remove_from_registry(AgsConnectable *connectable);
 gboolean ags_config_is_connected(AgsConnectable *connectable);
@@ -48,6 +56,10 @@ void ags_config_set_version(AgsConfig *config, gchar *version);
 gchar* ags_config_get_build_id(AgsConfig *config);
 void ags_config_set_build_id(AgsConfig *config, gchar *build_id);
 
+void ags_config_real_load_defaults(AgsConfig *config);
+void ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+gchar* ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key);
+
 /**
  * SECTION:ags_config
  * @short_description: Config Advanced Gtk+ Sequencer
@@ -58,13 +70,21 @@ void ags_config_set_build_id(AgsConfig *config, gchar *build_id);
  * #AgsConfig provides configuration to Advanced Gtk+ Sequencer.
  */
 
-AgsConfig *config;
-static gpointer ags_config_parent_class = NULL;
+enum{
+  LOAD_DEFAULTS,
+  SET_VALUE,
+  GET_VALUE,
+  LAST_SIGNAL,
+};
 
-static const gchar *ags_config_generic = AGS_CONFIG_GENERIC;
-static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
-static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
-static const gchar *ags_config_recall = AGS_CONFIG_RECALL;
+enum{
+  PROP_0,
+  PROP_APPLICATION_CONTEXT,
+};
+
+extern AgsConfig *ags_config = NULL;
+static gpointer ags_config_parent_class = NULL;
+static guint config_signals[LAST_SIGNAL];
 
 GType
 ags_config_get_type (void)
@@ -108,13 +128,93 @@ void
 ags_config_class_init(AgsConfigClass *config)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_config_parent_class = g_type_class_peek_parent(config);
 
   /* GObjectClass */
   gobject = (GObjectClass *) config;
 
+  gobject->set_property = ags_config_set_property;
+  gobject->get_property = ags_config_get_property;
+
   gobject->finalize = ags_config_finalize;
+
+  /* properties */
+  /**
+   * AgsConfig:soundcard:
+   *
+   * The assigned soundcard.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("application context\0",
+				   "application context of config\0",
+				   "The application context which this config is packed into\0",
+				   AGS_TYPE_APPLICATION_CONTEXT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
+  /* AgsConfigClass */
+  config->load_defaults = ags_config_real_load_defaults;
+  config->set_value = ags_config_real_set_value;
+  config->get_value = ags_config_real_get_value;
+
+  /* signals */
+  /**
+   * AgsConfig::load-defaults:
+   * @config: the object to resolve
+   *
+   * The ::load-defaults signal notifies about loading defaults
+   */
+  config_signals[LOAD_DEFAULTS] =
+    g_signal_new("load-defaults\0",
+		 G_TYPE_FROM_CLASS (config),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsConfigClass, load_defaults),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsConfig::set-value:
+   * @config: the object to resolve
+   * @group: the group to apply to
+   * @key: the key to set
+   * @value: the value to apply
+   *
+   * The ::set-value signal notifies about value been setting.
+   */
+  config_signals[SET_VALUE] =
+    g_signal_new("set-value\0",
+		 G_TYPE_FROM_CLASS (config),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsConfigClass, set_value),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__STRING_STRING_STRING,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
+  /**
+   * AgsConfig::get-value:
+   * @config: the object to resolve
+   * @group: the group to retrieve from
+   * @key: the key to get
+   * Returns: the value
+   *
+   * The ::get-value signal notifies about value been getting.
+   */
+  config_signals[GET_VALUE] =
+    g_signal_new("get-value\0",
+		 G_TYPE_FROM_CLASS (config),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsConfigClass, get_value),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_STRING__STRING_STRING,
+		 G_TYPE_STRING, 2,
+		 G_TYPE_STRING, G_TYPE_STRING);
 }
 
 void
@@ -135,9 +235,66 @@ ags_config_init(AgsConfig *config)
   config->version = AGS_CONFIG_DEFAULT_VERSION;
   config->build_id = AGS_CONFIG_DEFAULT_BUILD_ID;
 
-  config->ags_main == NULL;
+  config->application_context == NULL;
 
   config->key_file = g_key_file_new();
+}
+
+void
+ags_config_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsConfig *config;
+
+  config = AGS_CONFIG(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+      
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      if(application_context == ((AgsApplicationContext *) config->application_context))
+	return;
+
+      if(config->application_context != NULL)
+	g_object_unref(config->application_context);
+
+      if(application_context != NULL)
+	g_object_ref(G_OBJECT(application_context));
+
+      config->application_context = (GObject *) application_context;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_config_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsConfig *config;
+
+  config = AGS_CONFIG(gobject);
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, config->application_context);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -203,33 +360,41 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
   config->build_id = build_id;
 }
 
+void
+ags_config_real_load_defaults(AgsConfig *config)
+{
+  ags_config_set_value(config, AGS_CONFIG_GENERIC, "autosave-thread\0", "false\0");
+
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "model\0", "multi-threaded\0");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global\0", "ags-thread\0");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent\0", "ags-recycling-thread\0");
+
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "samplerate\0", "44100\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "buffer-size\0", "940\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "pcm-channels\0", "2\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "dsp-channels\0", "2\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "alsa-handle\0", "hw:0,0\0");
+
+  ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense\0", "true\0");
+}
+
 /**
  * ags_config_load_defaults:
  * @config: the #AgsConfig
  *
  * Load configuration from default values.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_config_load_defaults(AgsConfig *config)
 {
-  ags_config_set(config, ags_config_generic, "builtin-theme\0", "false\0");
-  ags_config_set(config, ags_config_generic, "autosave-thread\0", "false\0");
-  ags_config_set(config, ags_config_generic, "segmentation\0", "4/4\0");
+  g_return_if_fail(AGS_IS_CONFIG(config));
 
-  ags_config_set(config, ags_config_thread, "model\0", "super-threaded\0");
-  ags_config_set(config, ags_config_thread, "super-threaded-scope\0", "channel\0");
-  ags_config_set(config, ags_config_thread, "lock-global\0", "ags-thread\0");
-  ags_config_set(config, ags_config_thread, "lock-parent\0", "ags-recycling-thread\0");
-
-  ags_config_set(config, ags_config_devout, "samplerate\0", "44100\0");
-  ags_config_set(config, ags_config_devout, "buffer-size\0", "940\0");
-  ags_config_set(config, ags_config_devout, "pcm-channels\0", "2\0");
-  ags_config_set(config, ags_config_devout, "dsp-channels\0", "2\0");
-  ags_config_set(config, ags_config_devout, "alsa-handle\0", "hw:0,0\0");
-
-  ags_config_set(config, ags_config_recall, "auto-sense\0", "true\0");
+  g_object_ref(G_OBJECT(config));
+  g_signal_emit(G_OBJECT(config),
+		config_signals[LOAD_DEFAULTS], 0);
+  g_object_unref(G_OBJECT(config));
 }
 
 /**
@@ -239,7 +404,7 @@ ags_config_load_defaults(AgsConfig *config)
  *
  * Load configuration from @filename.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_config_load_from_file(AgsConfig *config, gchar *filename)
@@ -287,7 +452,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 				     *keys,
 				     NULL);
 
-	ags_config_set(config,
+	ags_config_set_value(config,
 		       *groups,
 		       *keys,
 		       value);
@@ -308,119 +473,12 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 }
 
 /**
- * ags_config_load_from_data:
- * @config: the #AgsConfig
- * @buffer: the data buffer
- * @buffer_length: the size of the buffer
- *
- * Read configuration in memory.
- *
- * Since: 0.5.4
- */
-void
-ags_config_load_from_data(AgsConfig *config,
-			  char *buffer, gsize buffer_length)
-{
-  g_message("loading preferences from data[0x%x]\0", buffer);
-
-  if(buffer == NULL){
-    ags_config_load_defaults(config);
-  }else{
-    GKeyFile *key_file;
-    gchar **groups, **groups_start;
-    gchar **keys, **keys_start;
-    gchar *value;
-
-    GError *error;
-
-    error = NULL;
-
-    key_file = g_key_file_new();
-    g_key_file_load_from_data(key_file,
-			      buffer,
-			      buffer_length,
-			      G_KEY_FILE_NONE,
-			      &error);
-
-    groups =
-      groups_start = g_key_file_get_groups(key_file,
-					   NULL);
-
-    while(*groups != NULL){
-      keys =
-	keys_start = g_key_file_get_keys(key_file,
-					 *groups,
-					 NULL,
-					 NULL);
-
-      while(*keys != NULL){
-	value = g_key_file_get_value(key_file,
-				     *groups,
-				     *keys,
-				     NULL);
-
-	ags_config_set(config,
-		       *groups,
-		       *keys,
-		       value);
-	
-	keys++;
-      }
-
-      g_strfreev(keys_start);
-
-      groups++;
-    }
-
-    g_strfreev(groups_start);
-    g_key_file_unref(key_file);
-  }
-}
-
-/**
- * ags_config_to_data:
- * @config: the #AgsConfig
- * @buffer: the data buffer
- * @buffer_length: the size of the buffer
- *
- * Save configuration.
- *
- * Since: 0.5.4
- */
-void
-ags_config_to_data(AgsConfig *config,
-		   char **buffer, gsize *buffer_length)
-{
-  char *data;
-  gsize length;
-
-  GError *error;
-
-  error = NULL;
-  data = g_key_file_to_data(config->key_file,
-			    &length,
-			    &error);
-
-  if(error != NULL){
-    g_warning("%s\0", error->message);
-  }
-
-  if(buffer != NULL){
-    *buffer = data;
-  }
-
-  if(buffer_length != NULL){
-    *buffer_length = length;
-  }
-}
-
-/**
  * ags_config_save:
  * @config: the #AgsConfig
  *
  * Save configuration.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_config_save(AgsConfig *config)
@@ -454,7 +512,6 @@ ags_config_save(AgsConfig *config)
 				 &error);
     
     if(error != NULL){
-      g_warning("%s\0", error->message);
       //TODO:JK: do recovery
       goto ags_config_save_END;
     }
@@ -474,8 +531,18 @@ ags_config_save(AgsConfig *config)
   g_free(path);
 }
 
+void
+ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = config->application_context;
+
+  g_key_file_set_value(config->key_file, group, key, value);
+}
+
 /**
- * ags_config_set:
+ * ags_config_set_value:
  * @config: the #AgsConfig
  * @group: the config group identifier
  * @key: the key of the property
@@ -483,180 +550,27 @@ ags_config_save(AgsConfig *config)
  *
  * Set config by @group and @key, applying @value.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
-ags_config_set(AgsConfig *config, gchar *group, gchar *key, gchar *value)
+ags_config_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 {
-  AgsMain *ags_main;
-  gchar *old_value;
-  GError *error;
-  
-  ags_main = (AgsMain *) config->ags_main;
+  g_return_if_fail(AGS_IS_CONFIG(config));
 
-  error = NULL;
-  old_value = g_key_file_get_value(config->key_file, group, key, &error);
-
-  if(error != NULL && old_value != NULL){
-    g_free(old_value);
-  }
-  
-  g_key_file_set_value(config->key_file, group, key, g_strdup(value));
-
-  if(!strncmp(group,
-	      ags_config_generic,
-	      8)){
-    if(!strncmp(key,
-		"autosave-thread\0",
-		15)){
-      AgsAutosaveThread *autosave_thread;
-
-      if(ags_main == NULL ||
-	 ags_main->autosave_thread == NULL){
-	return;
-      }
-      
-      autosave_thread = (AgsAutosaveThread *) ags_main->autosave_thread;
-
-      if(!strncmp(value,
-		  "true\0",
-		  5)){
-	ags_thread_start((AgsThread *) autosave_thread);
-      }else{
-	ags_thread_stop((AgsThread *) autosave_thread);
-      }
-    }else if(!strncmp(key,
-		      "segmentation\0",
-		      13)){
-      
-      AgsDevout *devout;
-      guint discriminante, nominante;
-      gdouble factor;
-
-      if(ags_main == NULL ||
-	 ags_main->devout == NULL){
-	return;
-      }
-
-      devout = ags_main->devout->data;
-      sscanf(value, "%d/%d\0",
-	     &discriminante,
-	     &nominante);
-      
-      factor = 1.0 / nominante * (nominante / discriminante);
-
-      g_object_set(devout,
-		   "delay-factor\0", factor,
-		   NULL);
-    }
-  }else if(!strncmp(group,
-		    ags_config_thread,
-		    7)){
-    if(!strncmp(key,
-		"model\0",
-		6)){
-      //TODO:JK: implement me
-    }else if(!strncmp(key,
-		      "lock-global\0",
-		      11)){
-      //TODO:JK: implement me
-    }else if(!strncmp(key,
-		      "lock-parent\0",
-		      11)){
-      //TODO:JK: implement me
-    }
-  }else if(!strncmp(group,
-		    ags_config_devout,
-		    7)){
-    AgsDevout *devout;
-
-    if(ags_main == NULL ||
-       ags_main->devout == NULL){
-      return;
-    }
-
-    devout = ags_main->devout->data;
-
-    if(!strncmp(key,
-		"samplerate\0",
-		10)){    
-      guint samplerate;
-
-      samplerate = strtoul(value,
-			   NULL,
-			   10);
-
-      g_object_set(G_OBJECT(devout),
-		   "frequency\0", samplerate,
-		   NULL);
-    }else if(!strncmp(key,
-		      "buffer-size\0",
-		      11)){
-      guint buffer_size;
-    
-      buffer_size = strtoul(value,
-			    NULL,
-			    10);
-
-      g_object_set(G_OBJECT(devout),
-		   "buffer-size\0", buffer_size,
-		   NULL);
-    }else if(!strncmp(key,
-		      "pcm-channels\0",
-		      12)){
-      guint pcm_channels;
-
-      pcm_channels = strtoul(value,
-			     NULL,
-			     10);
-      
-      g_object_set(G_OBJECT(devout),
-		   "pcm-channels\0", pcm_channels,
-		   NULL);
-    }else if(!strncmp(key,
-		      "dsp-channels\0",
-		      12)){
-      guint dsp_channels;
-
-      dsp_channels = strtoul(value,
-			     NULL,
-			     10);
-      
-      g_object_set(G_OBJECT(devout),
-		   "dsp-channels\0", dsp_channels,
-		   NULL);
-    }else if(!strncmp(key,
-		      "alsa-handle\0",
-		      11)){
-      gchar *alsa_handle;
-
-      alsa_handle = value;
-      g_object_set(G_OBJECT(devout),
-		   "device\0", g_strdup_printf("%s\0", alsa_handle),
-		   NULL);
-    }
-  }
+  g_object_ref(G_OBJECT(config));
+  g_signal_emit(G_OBJECT(config),
+		config_signals[SET_VALUE], 0,
+		group, key, value);
+  g_object_unref(G_OBJECT(config));
 }
 
-/**
- * ags_config_get:
- * @config: the #AgsConfig
- * @group: the config group identifier
- * @key: the key of the property
- *
- * Retrieve config by @group and @key.
- *
- * Returns: the property's value
- *
- * Since: 0.4
- */
 gchar*
-ags_config_get(AgsConfig *config, gchar *group, gchar *key)
+ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
 {
   gchar *str;
   GError *error;
   
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   pthread_mutex_lock(&mutex);
   
@@ -670,20 +584,50 @@ ags_config_get(AgsConfig *config, gchar *group, gchar *key)
 }
 
 /**
+ * ags_config_get_value:
+ * @config: the #AgsConfig
+ * @group: the config group identifier
+ * @key: the key of the property
+ *
+ * Retrieve config by @group and @key.
+ *
+ * Returns: the property's value
+ *
+ * Since: 0.4.2
+ */
+gchar*
+ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
+{
+  gchar *value;
+  
+  g_return_val_if_fail(AGS_IS_CONFIG(config), NULL);
+
+  g_object_ref(G_OBJECT(config));
+  g_signal_emit(G_OBJECT(config),
+		config_signals[GET_VALUE], 0,
+		group, key,
+		&value);
+  g_object_unref(G_OBJECT(config));
+
+  return(value);
+}
+
+/**
  * ags_config_new:
  *
  * Creates an #AgsConfig.
  *
  * Returns: a new #AgsConfig.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsConfig*
-ags_config_new()
+ags_config_new(GObject *application_context)
 {
   AgsConfig *config;
 
   config = (AgsConfig *) g_object_new(AGS_TYPE_CONFIG,
+				      "application-context\0", application_context,
 				      NULL);
 
   return(config);

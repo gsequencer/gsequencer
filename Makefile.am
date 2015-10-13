@@ -73,8 +73,8 @@ libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object
 libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sources) $(libags_thread_task_c_sources)
 libags_server_la_SOURCES = $(libags_server_c_sources)
 libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
-libags_gui_la_SOURCES = $(libags_gui_c_sources)
-libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+libags_gui_la_SOURCES = $(libags_gui_c_sources) $(libags_gui_thread_c_sources)
+libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 gsequencer_SOURCES = $(gsequencer_src)
 
 include_HEADERS = $(libags_util_c_headers) $(libags_lib_c_headers) $(libags_object_c_headers) $(libags_file_c_headers) $(libags_file_task_c_headers) $(libags_thread_c_headers) $(libags_thread_file_c_headers) $(libags_thread_task_c_headers) $(libags_server_c_headers) $(libags_audio_c_headers) $(libags_audio_thread_c_headers) $(libags_audio_file_c_headers) $(libags_audio_midi_c_headers) $(libags_audio_task_c_headers) $(libags_audio_task_recall_c_headers) $(libags_audio_recall_c_headers)  $(libags_plugin_c_headers) $(libags_widget_c_headers)
@@ -151,6 +151,7 @@ deprecated_libags_object_h_sources =
 libags_object_h_sources =  \
 	$(deprecated_libags_object_h_sources) \
 	src/ags/object/ags_applicable.h \
+	src/ags/object/ags_application_context.h \
 	src/ags/object/ags_async_queue.h \
 	src/ags/object/ags_connectable.h \
 	src/ags/object/ags_countable.h \
@@ -160,7 +161,6 @@ libags_object_h_sources =  \
 	src/ags/object/ags_marshal.h \
 	src/ags/object/ags_mutable.h \
 	src/ags/object/ags_packable.h \
-	src/ags/object/ags_playable.h \
 	src/ags/object/ags_plugin.h \
 	src/ags/object/ags_portlet.h \
 	src/ags/object/ags_seekable.h \
@@ -173,6 +173,7 @@ deprecated_libags_object_c_sources =
 libags_object_c_sources = \
 	$(deprecated_libags_object_c_sources) \
 	src/ags/object/ags_applicable.c \
+	src/ags/object/ags_application_context.c \
 	src/ags/object/ags_async_queue.c \
 	src/ags/object/ags_connectable.c \
 	src/ags/object/ags_countable.c \
@@ -182,7 +183,6 @@ libags_object_c_sources = \
 	src/ags/object/ags_marshal.c \
 	src/ags/object/ags_mutable.c \
 	src/ags/object/ags_packable.c \
-	src/ags/object/ags_playable.c \
 	src/ags/object/ags_plugin.c \
 	src/ags/object/ags_portlet.c \
 	src/ags/object/ags_seekable.c \
@@ -195,16 +195,13 @@ deprecated_libags_file_h_sources =
 # libags - file
 libags_file_h_sources = \
 	$(deprecated_libags_file_h_sources) \
-	src/ags/file/ags_file_gui.h \
 	src/ags/file/ags_file.h \
 	src/ags/file/ags_file_id_ref.h \
 	src/ags/file/ags_file_launch.h \
 	src/ags/file/ags_file_link.h \
 	src/ags/file/ags_file_lookup.h \
 	src/ags/file/ags_file_read.h \
-	src/ags/file/ags_file_sound.h \
 	src/ags/file/ags_file_stock.h \
-	src/ags/file/ags_file_thread.h \
 	src/ags/file/ags_file_util.h \
 	src/ags/file/ags_file_write.h
 
@@ -213,13 +210,10 @@ deprecated_libags_file_c_sources =
 libags_file_c_sources = \
 	$(deprecated_libags_file_c_sources) \
 	src/ags/file/ags_file.c \
-	src/ags/file/ags_file_gui.c \
 	src/ags/file/ags_file_id_ref.c \
 	src/ags/file/ags_file_launch.c \
 	src/ags/file/ags_file_link.c \
 	src/ags/file/ags_file_lookup.c \
-	src/ags/file/ags_file_sound.c \
-	src/ags/file/ags_file_thread.c \
 	src/ags/file/ags_file_util.c
 
 # libags-thread all files
@@ -227,23 +221,16 @@ deprecated_libags_thread_h_sources =
 
 libags_thread_h_sources = \
 	$(deprecated_libags_thread_h_sources) \
-	src/ags/thread/ags_audio_loop.h \
-	src/ags/thread/ags_audio_thread.h \
 	src/ags/thread/ags_autosave_thread.h \
-	src/ags/thread/ags_channel_thread.h \
-	src/ags/thread/ags_devout_thread.h \
-	src/ags/thread/ags_export_thread.h \
-	src/ags/thread/ags_gui_thread.h \
+	src/ags/thread/ags_concurrency_provider.h \
 	src/ags/thread/ags_history.h \
-	src/ags/thread/ags_iterator_thread.h \
 	src/ags/thread/ags_mutex_manager.h \
-	src/ags/thread/ags_record_thread.h \
-	src/ags/thread/ags_recycling_thread_callbacks.h \
-	src/ags/thread/ags_recycling_thread.h \
 	src/ags/thread/ags_returnable_thread.h \
 	src/ags/thread/ags_single_thread.h \
 	src/ags/thread/ags_task_completion.h \
 	src/ags/thread/ags_task_thread.h \
+	src/ags/thread/ags_thread_application_context.h \
+	src/ags/thread/ags_thread_file_xml.h \
 	src/ags/thread/ags_thread_pool.h \
 	src/ags/thread/ags_thread-posix.h \
 	src/ags/thread/ags_timestamp_thread.h
@@ -252,23 +239,16 @@ deprecated_libags_thread_c_sources =
 
 libags_thread_c_sources = \
 	$(deprecated_libags_thread_c_sources) \
-	src/ags/thread/ags_audio_loop.c \
-	src/ags/thread/ags_audio_thread.c \
 	src/ags/thread/ags_autosave_thread.c \
-	src/ags/thread/ags_channel_thread.c \
-	src/ags/thread/ags_devout_thread.c \
-	src/ags/thread/ags_export_thread.c \
-	src/ags/thread/ags_gui_thread.c \
+	src/ags/thread/ags_concurrency_provider.c \
 	src/ags/thread/ags_history.c \
-	src/ags/thread/ags_iterator_thread.c \
 	src/ags/thread/ags_mutex_manager.c \
-	src/ags/thread/ags_record_thread.c \
-	src/ags/thread/ags_recycling_thread.c \
-	src/ags/thread/ags_recycling_thread_callbacks.c \
 	src/ags/thread/ags_returnable_thread.c \
 	src/ags/thread/ags_single_thread.c \
 	src/ags/thread/ags_task_completion.c \
 	src/ags/thread/ags_task_thread.c \
+	src/ags/thread/ags_thread_application_context.c \
+	src/ags/thread/ags_thread_file_xml.c \
 	src/ags/thread/ags_thread_pool.c \
 	src/ags/thread/ags_thread-posix.c \
 	src/ags/thread/ags_timestamp_thread.c
@@ -291,7 +271,9 @@ libags_server_h_sources = \
 	$(deprecated_libags_server_h_sources) \
 	src/ags/server/ags_registry.h \
 	src/ags/server/ags_remote_task.h \
-	src/ags/server/ags_server.h
+	src/ags/server/ags_server.h \
+	src/ags/thread/ags_server_application_context.h \
+	src/ags/thread/ags_service_provider.h
 
 deprecated_libags_server_c_sources =
 
@@ -299,7 +281,9 @@ libags_server_c_sources = \
 	$(deprecated_libags_server_c_sources) \
 	src/ags/server/ags_registry.c \
 	src/ags/server/ags_remote_task.c \
-	src/ags/server/ags_server.c
+	src/ags/server/ags_server.c \
+	src/ags/thread/ags_server_application_context.c \
+	src/ags/thread/ags_service_provider.c
 
 # libags-server - file
 deprecated_libags_server_file_h_sources =
@@ -318,6 +302,7 @@ deprecated_libags_audio_h_sources =
 libags_audio_h_sources = \
 	$(deprecated_libags_audio_h_sources) \
 	src/ags/audio/ags_audio.h \
+	src/ags/audio/ags_audio_application_context.h \
 	src/ags/audio/ags_audio_signal.h \
 	src/ags/audio/ags_channel.h \
 	src/ags/audio/ags_channel_iter.h \
@@ -331,6 +316,9 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_note.h \
 	src/ags/audio/ags_output.h \
 	src/ags/audio/ags_pattern.h \
+	src/ags/audio/ags_playable.h \
+	src/ags/audio/ags_playback.h \
+	src/ags/audio/ags_playback_domain.h \
 	src/ags/audio/ags_port.h \
 	src/ags/audio/ags_recall_audio.h \
 	src/ags/audio/ags_recall_audio_run.h \
@@ -349,6 +337,7 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_recall_recycling.h \
 	src/ags/audio/ags_recycling_container.h \
 	src/ags/audio/ags_recycling.h \
+	src/ags/audio/ags_sound_provider.h \
 	src/ags/audio/ags_synths.h \
 	src/ags/audio/ags_task.h \
 	src/ags/audio/ags_timestamp_factory.h \
@@ -359,6 +348,7 @@ deprecated_libags_audio_c_sources =
 libags_audio_c_sources = \
 	$(deprecated_libags_audio_c_sources) \
 	src/ags/audio/ags_audio.c \
+	src/ags/audio/ags_audio_application_context.c \
 	src/ags/audio/ags_audio_signal.c \
 	src/ags/audio/ags_channel.c \
 	src/ags/audio/ags_channel_iter.c \
@@ -371,6 +361,9 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_note.c \
 	src/ags/audio/ags_output.c \
 	src/ags/audio/ags_pattern.c \
+	src/ags/audio/ags_playable.c \
+	src/ags/audio/ags_playback.c \
+	src/ags/audio/ags_playback_domain.c \
 	src/ags/audio/ags_port.c \
 	src/ags/audio/ags_recall_audio.c \
 	src/ags/audio/ags_recall_audio_run.c \
@@ -389,10 +382,40 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_recall_recycling_dummy.c \
 	src/ags/audio/ags_recycling.c \
 	src/ags/audio/ags_recycling_container.c \
+	src/ags/audio/ags_sound_provider.c \
 	src/ags/audio/ags_synths.c \
 	src/ags/audio/ags_task.c \
 	src/ags/audio/ags_timestamp.c \
 	src/ags/audio/ags_timestamp_factory.c
+
+# libags-audio - thread
+deprecated_libags_audio_thread_h_sources =
+
+libags_audio_thread_h_sources = \
+	$(deprecated_libags_audio_thread_h_sources) \
+	src/ags/audio/thread/ags_audio_loop.h \
+	src/ags/audio/thread/ags_audio_thread.h \
+	src/ags/audio/thread/ags_channel_thread.h \
+	src/ags/audio/thread/ags_devout_thread.h \
+	src/ags/audio/thread/ags_export_thread.h \
+	src/ags/audio/thread/ags_iterator_thread.h \
+	src/ags/audio/thread/ags_record_thread.h \
+	src/ags/audio/thread/ags_recycling_thread_callbacks.h \
+	src/ags/audio/thread/ags_recycling_thread.h
+
+deprecated_libags_audio_thread_c_sources =
+
+libags_audio_thread_c_sources = \
+	$(deprecated_libags_audio_thread_c_sources) \
+	src/ags/audio/thread/ags_audio_loop.c \
+	src/ags/audio/thread/ags_audio_thread.c \
+	src/ags/audio/thread/ags_channel_thread.c \
+	src/ags/audio/thread/ags_devout_thread.c \
+	src/ags/audio/thread/ags_export_thread.c \
+	src/ags/audio/thread/ags_iterator_thread.c \
+	src/ags/audio/thread/ags_record_thread.c \
+	src/ags/audio/thread/ags_recycling_thread.c \
+	src/ags/audio/thread/ags_recycling_thread_callbacks.c
 
 # libags-audio - plugin
 deprecated_libags_plugin_h_sources =
@@ -691,7 +714,8 @@ libags_gui_h_sources = \
 	src/ags/widget/ags_table.h \
 	src/ags/widget/ags_timebar.h \
 	src/ags/widget/ags_vindicator.h \
-	src/ags/widget/ags_waveform.h
+	src/ags/widget/ags_waveform.h \
+	src/ags/widget/ags_xorg_application_context.h
 
 deprecated_libags_gui_c_sources =
 
@@ -713,7 +737,21 @@ libags_gui_c_sources = \
 	src/ags/widget/ags_table.c \
 	src/ags/widget/ags_timebar.c \
 	src/ags/widget/ags_vindicator.c \
-	src/ags/widget/ags_waveform.c
+	src/ags/widget/ags_waveform.c \
+	src/ags/widget/ags_xorg_application_context.c
+
+# libags-gui - thread
+deprecated_libags_gui_thread_h_sources =
+
+libags_gui_thread_h_sources = \
+	$(deprecated_libags_gui_thread_h_sources) \
+	src/ags/widget/thread/ags_gui_thread.h
+
+deprecated_libags_gui_thread_c_sources =
+
+libags_gui_thread_c_sources = \
+	$(deprecated_libags_gui_thread_c_sources) \
+	src/ags/widget/thread/ags_gui_thread.c
 
 # libgsequencer all files
 deprecated_libgsequencer_h_sources =
@@ -728,6 +766,7 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_export_window.h \
 	src/ags/X/ags_generic_preferences_callbacks.h \
 	src/ags/X/ags_generic_preferences.h \
+	src/ags/X/ags_gui_file_xml.h \
 	src/ags/X/ags_ladspa_browser_callbacks.h \
 	src/ags/X/ags_ladspa_browser.h \
 	src/ags/X/ags_line_callbacks.h \
@@ -785,6 +824,7 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_export_window_callbacks.c \
 	src/ags/X/ags_generic_preferences.c \
 	src/ags/X/ags_generic_preferences_callbacks.c \
+	src/ags/X/ags_gui_file_xml.c \
 	src/ags/X/ags_ladspa_browser.c \
 	src/ags/X/ags_ladspa_browser_callbacks.c \
 	src/ags/X/ags_line.c \

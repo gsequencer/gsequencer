@@ -22,8 +22,6 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_devout.h>
-
 #define AGS_TYPE_PLAYABLE                    (ags_playable_get_type())
 #define AGS_PLAYABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAYABLE, AgsPlayable))
 #define AGS_PLAYABLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_PLAYABLE, AgsPlayableInterface))
@@ -132,7 +130,7 @@ void ags_playable_seek(AgsPlayable *playable,
 void ags_playable_close(AgsPlayable *playable);
 
 GList* ags_playable_read_audio_signal(AgsPlayable *playable,
-				      AgsDevout *devout,
+				      GObject *soundcard,
 				      guint start_channel, guint channels);
 
 #endif /*__AGS_PLAYABLE_H__*/

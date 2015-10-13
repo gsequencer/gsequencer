@@ -52,7 +52,7 @@ struct _AgsAutosaveThread
   volatile guint tic;
   volatile guint last_sync;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   guint delay;
   guint counter;
@@ -65,6 +65,6 @@ struct _AgsAutosaveThreadClass
 
 GType ags_autosave_thread_get_type();
 
-AgsAutosaveThread* ags_autosave_thread_new(GObject *devout, AgsMain *ags_main);
+AgsAutosaveThread* ags_autosave_thread_new(GObject *devout, AgsMain *application_context);
 
 #endif /*__AGS_AUTOSAVE_THREAD_H__*/

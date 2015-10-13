@@ -446,7 +446,7 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -537,7 +537,7 @@ ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -594,7 +594,7 @@ ags_synth_update(AgsSynth *synth)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   GList *input_pad, *input_pad_start;
   GList *input_line, *input_line_start;
@@ -610,13 +610,13 @@ ags_synth_update(AgsSynth *synth)
   pthread_mutex_t *channel_mutex;
   
   window = (AgsWindow *) gtk_widget_get_toplevel(synth);
-  ags_main = window->ags_main;
+  application_context = window->application_context;
   audio = AGS_MACHINE(synth)->audio;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

@@ -868,18 +868,18 @@ ags_machine_set_run_extended(AgsMachine *machine,
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   pthread_mutex_t *audio_loop_mutex;
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  ags_main = (AgsMain *) window->ags_main;
+  application_context = (AgsMain *) window->application_context;
 
   /* get threads */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = (AgsAudioLoop *) ags_main->main_loop;
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -1365,18 +1365,18 @@ ags_machine_open_files(AgsMachine *machine,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   pthread_mutex_t *audio_loop_mutex;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(machine);
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

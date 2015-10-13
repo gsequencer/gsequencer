@@ -200,7 +200,7 @@ ags_append_channel_launch(AgsTask *task)
   free(str1);
   
   /* add to server registry */
-  server = AGS_MAIN(audio_loop->ags_main)->server;
+  server = AGS_MAIN(audio_loop->application_context)->server;
 
   if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
     ags_connectable_add_to_registry(AGS_CONNECTABLE(append_channel->channel));

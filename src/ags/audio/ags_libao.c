@@ -336,7 +336,7 @@ ags_libao_init(AgsLibao *libao)
   libao->tic_counter = 0;
 
   /* parent */
-  libao->ags_main = NULL;
+  libao->application_context = NULL;
 
   /* all AgsAudio */
   libao->audio = NULL;
@@ -357,23 +357,23 @@ ags_libao_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_MAIN:
     {
-      AgsMain *ags_main;
+      AgsMain *application_context;
 
-      ags_main = (AgsMain *) g_value_get_object(value);
+      application_context = (AgsMain *) g_value_get_object(value);
 
-      if((AgsMain *) libao->ags_main == ags_main){
+      if((AgsMain *) libao->application_context == application_context){
 	return;
       }
 
-      if(libao->ags_main != NULL){
-	g_object_unref(G_OBJECT(libao->ags_main));
+      if(libao->application_context != NULL){
+	g_object_unref(G_OBJECT(libao->application_context));
       }
 
-      if(ags_main != NULL){
-	g_object_ref(G_OBJECT(ags_main));
+      if(application_context != NULL){
+	g_object_ref(G_OBJECT(application_context));
       }
 
-      libao->ags_main = (AgsMain *) ags_main;
+      libao->application_context = (AgsMain *) application_context;
     }
     break;
   case PROP_DEVICE:
@@ -814,15 +814,15 @@ ags_libao_output_free(AgsLibao *libao)
 }
 
 AgsLibao*
-ags_libao_new(GObject *ags_main)
+ags_libao_new(GObject *application_context)
 {
   AgsLibao *libao;
 
   libao = (AgsLibao *) g_object_new(AGS_TYPE_LIBAO, NULL);
   
-  if(ags_main != NULL){
-    g_object_ref(G_OBJECT(ags_main));
-    libao->ags_main = ags_main;
+  if(application_context != NULL){
+    g_object_ref(G_OBJECT(application_context));
+    libao->application_context = application_context;
   }
 
   return(libao);

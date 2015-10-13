@@ -57,16 +57,16 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     AgsThread *audio_loop;
     AgsThread *task_thread;
     
-    AgsMain *ags_main;
+    AgsMain *application_context;
     
     char *filename;
 
-    ags_main = window->ags_main;
+    application_context = window->application_context;
 
     /* get audio loop */
     pthread_mutex_lock(&(ags_application_mutex));
 
-    audio_loop = ags_main->main_loop;
+    audio_loop = application_context->main_loop;
 
     pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -78,7 +78,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     filename = window->name;
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->ags_main,
+				    "main\0", window->application_context,
 				    "filename\0", g_strdup(filename),
 				    NULL);
 
@@ -90,7 +90,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    ags_main_quit(AGS_MAIN(window->ags_main));
+    application_context_quit(AGS_MAIN(window->application_context));
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }

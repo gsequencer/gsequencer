@@ -178,7 +178,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   GList *list, *list_start;
 
@@ -192,12 +192,12 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   window = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						  AGS_TYPE_WINDOW);
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

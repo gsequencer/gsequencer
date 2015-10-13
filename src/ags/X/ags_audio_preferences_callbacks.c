@@ -86,7 +86,7 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   gchar *str;
   guint channels, channels_min, channels_max;
@@ -100,12 +100,12 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 							      AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -182,18 +182,18 @@ ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -221,18 +221,18 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -260,18 +260,18 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 									 AGS_TYPE_PREFERENCES))->window);
   devout = AGS_DEVOUT(window->devout);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

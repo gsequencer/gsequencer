@@ -463,7 +463,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   gchar *timestr;
   double tact_factor, zoom_factor;
@@ -475,12 +475,12 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   editor = window->editor;
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

@@ -133,9 +133,9 @@ ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread)
   gobject->finalize = ags_autosave_thread_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("ags_main\0",
-				   "ags_main to check against\0",
-				   "The ags_main to check against serialization.\0",
+  param_spec = g_param_spec_object("application_context\0",
+				   "application_context to check against\0",
+				   "The application_context to check against serialization.\0",
 				   AGS_TYPE_MAIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -183,7 +183,7 @@ ags_autosave_thread_init(AgsAutosaveThread *autosave_thread)
   g_atomic_int_set(&(autosave_thread->tic), 0);
   g_atomic_int_set(&(autosave_thread->last_sync), 0);
 
-  autosave_thread->ags_main = NULL;
+  autosave_thread->application_context = NULL;
   autosave_thread->counter = 0;
 }
 
@@ -200,23 +200,23 @@ ags_autosave_thread_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_AGS_MAIN:
     {
-      AgsMain *ags_main;
+      AgsMain *application_context;
 
-      ags_main = g_value_get_object(value);
+      application_context = g_value_get_object(value);
 
-      if(autosave_thread->ags_main == ags_main){
+      if(autosave_thread->application_context == application_context){
 	return;
       }
 
-      if(autosave_thread->ags_main != NULL){
-	g_object_unref(autosave_thread->ags_main);
+      if(autosave_thread->application_context != NULL){
+	g_object_unref(autosave_thread->application_context);
       }
 
-      if(ags_main != NULL){
-	g_object_ref(ags_main);
+      if(application_context != NULL){
+	g_object_ref(application_context);
       }
 
-      autosave_thread->ags_main = ags_main;
+      autosave_thread->application_context = application_context;
     }
     break;
   default:
@@ -238,7 +238,7 @@ ags_autosave_thread_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_AGS_MAIN:
     {
-      g_value_set_object(value, autosave_thread->ags_main);
+      g_value_set_object(value, autosave_thread->application_context);
     }
     break;
   default:
@@ -339,7 +339,7 @@ ags_autosave_thread_run(AgsThread *thread)
 			       AGS_AUTOSAVE_THREAD_DEFAULT_FILENAME);
     
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", autosave_thread->ags_main,
+				    "main\0", autosave_thread->application_context,
 				    "filename\0", filename,
 				    NULL);
     ags_file_write_concurrent(file);
@@ -352,7 +352,7 @@ ags_autosave_thread_run(AgsThread *thread)
 /**
  * ags_autosave_thread_new:
  * @devout: the #AgsDevout
- * @ags_main: the #AgsMain
+ * @application_context: the #AgsMain
  *
  * Create a new #AgsAutosaveThread.
  *
@@ -361,13 +361,13 @@ ags_autosave_thread_run(AgsThread *thread)
  * Since: 0.4
  */
 AgsAutosaveThread*
-ags_autosave_thread_new(GObject *devout, AgsMain *ags_main)
+ags_autosave_thread_new(GObject *devout, AgsMain *application_context)
 {
   AgsAutosaveThread *autosave_thread;
 
   autosave_thread = (AgsAutosaveThread *) g_object_new(AGS_TYPE_AUTOSAVE_THREAD,
 						       "devout\0", devout,
-						       "ags-main\0", ags_main,
+						       "ags-main\0", application_context,
 						       NULL);
 
   return(autosave_thread);

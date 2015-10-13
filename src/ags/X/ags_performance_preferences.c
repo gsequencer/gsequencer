@@ -185,7 +185,7 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
 							   AGS_TYPE_PREFERENCES);
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main)->config);
+  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->application_context)->config);
 
   /* auto-sense */
   str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true\0": "false\0"));
@@ -213,7 +213,7 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
-  config = AGS_CONFIG(AGS_MAIN(window->ags_main)->config);
+  config = AGS_CONFIG(AGS_MAIN(window->application_context)->config);
 
   str = ags_config_get(config,
 		       AGS_CONFIG_RECALL,

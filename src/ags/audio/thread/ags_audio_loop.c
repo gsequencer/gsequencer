@@ -17,10 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_audio_loop.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
@@ -30,7 +29,6 @@
 #include <ags/thread/ags_audio_thread.h>
 #include <ags/thread/ags_channel_thread.h>
 
-#include <ags/audio/ags_config.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -96,9 +94,6 @@ enum{
 
 static gpointer ags_audio_loop_parent_class = NULL;
 static AgsConnectableInterface *ags_audio_loop_parent_connectable_interface;
-
-extern pthread_mutex_t ags_application_mutex;
-extern AgsConfig *config;
 
 GType
 ags_audio_loop_get_type()
@@ -289,7 +284,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   g_atomic_int_set(&(audio_loop->tic), 0);
   g_atomic_int_set(&(audio_loop->last_sync), 0);
 
-  audio_loop->ags_main = NULL;
+  audio_loop->application_context = NULL;
 
   /* tree lock mutex */
   pthread_mutexattr_init(&(audio_loop->tree_lock_mutexattr));
@@ -1587,7 +1582,7 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play)
 /**
  * ags_audio_loop_new:
  * @devout: the #AgsDevout
- * @ags_main: the #AgsMain
+ * @application_context: the #AgsMain
  *
  * Create a new #AgsAudioLoop.
  *
@@ -1596,7 +1591,7 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play)
  * Since: 0.4
  */
 AgsAudioLoop*
-ags_audio_loop_new(GObject *devout, GObject *ags_main)
+ags_audio_loop_new(GObject *devout, GObject *application_context)
 {
   AgsAudioLoop *audio_loop;
 
@@ -1604,9 +1599,9 @@ ags_audio_loop_new(GObject *devout, GObject *ags_main)
 					     "devout\0", devout,
 					     NULL);
 
-  if(ags_main != NULL){
-    g_object_ref(G_OBJECT(ags_main));
-    audio_loop->ags_main = ags_main;
+  if(application_context != NULL){
+    g_object_ref(G_OBJECT(application_context));
+    audio_loop->application_context = application_context;
   }
 
   return(audio_loop);

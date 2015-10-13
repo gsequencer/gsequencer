@@ -22,11 +22,14 @@
 
 #include <glib-object.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
 #else
 #include <ags/thread/ags_thread-posix.h>
 #endif
+
 #include <ags/thread/ags_thread_pool.h>
 
 #define AGS_TYPE_CONCURRENCY_PROVIDER                    (ags_concurrency_provider_get_type())
@@ -43,15 +46,21 @@ struct _AgsConcurrencyProviderInterface
 {
   GTypeInterface interface;
 
+  AgsMutexManager* (*get_mutex_manager)(AgsConcurrencyProvider *concurrency_provider);
+  
   AgsThread* (*get_main_loop)(AgsConcurrencyProvider *concurrency_provider);
   AgsThread* (*get_task_thread)(AgsConcurrencyProvider *concurrency_provider);
+  
   AgsThreadPool* (*get_thread_pool)(AgsConcurrencyProvider *concurrency_provider);
 };
 
 GType ags_concurrency_provider_get_type();
 
+AgsMutexManager* ags_concurrency_provider_get_mutex_manager(AgsConcurrencyProvider *concurrency_provider);
+
 AgsThread* ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
 AgsThread* ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
+
 AgsThreadPool* ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 
 #endif /*__AGS_CONCURRENCY_PROVIDER_H__*/

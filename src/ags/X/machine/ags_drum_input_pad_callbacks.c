@@ -136,7 +136,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
   AgsThread *main_loop;
   AgsThread *task_thread;
   
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   GList *list, *tasks;
   gchar *name0, *name1;
@@ -150,12 +150,12 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 
   devout = AGS_DEVOUT(AGS_AUDIO(AGS_PAD(drum_input_pad)->channel->audio)->devout);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get main loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  main_loop = ags_main->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -221,7 +221,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       devout_play->flags = AGS_DEVOUT_PLAY_PLAYBACK;
       devout_play->source = G_OBJECT(play_audio_signal);
 
-      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->ags_main)->main_loop),
+      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->application_context)->main_loop),
 					    devout_play);
     
       tasks = g_list_prepend(tasks, append_recall);
@@ -242,7 +242,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       devout_play->flags = AGS_DEVOUT_PLAY_PLAYBACK;
       devout_play->source = G_OBJECT(stream_audio_signal);
 
-      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->ags_main)->main_loop),
+      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->application_context)->main_loop),
 					    devout_play);
     
       tasks = g_list_prepend(tasks, append_recall);
@@ -328,7 +328,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   AgsThread *main_loop;
   AgsThread *task_thread;
   
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   char *name0, *name1;
 
@@ -340,12 +340,12 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   file_chooser = drum_input_pad->file_chooser;
 
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get main loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  main_loop = ags_main->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

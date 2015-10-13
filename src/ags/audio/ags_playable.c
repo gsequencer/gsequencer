@@ -17,17 +17,16 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/object/ags_playable.h>
+#include <ags/audio/ags_playable.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_config.h>
+#include <ags/audio/ags_audio_signal.h>
 
 #include <math.h>
 
 void ags_playable_base_init(AgsPlayableInterface *interface);
-
-extern AgsConfig *config;
 
 /**
  * SECTION:ags_playable
@@ -74,6 +73,31 @@ ags_playable_base_init(AgsPlayableInterface *interface)
 }
 
 /**
+ * ags_playable_open:
+ * @playable: the #AgsPlayable
+ * @name: the filename 
+ * 
+ * Opens a file in read-only mode.
+ *
+ * Returns: %TRUE on success
+ *
+ * Since: 0.4.2
+ */
+gboolean
+ags_playable_open(AgsPlayable *playable, gchar *name)
+{
+  AgsPlayableInterface *playable_interface;
+  gboolean ret_val;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable), FALSE);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->open, FALSE);
+  ret_val = playable_interface->open(playable, name);
+
+  return(ret_val);
+}
+
+/**
  * ags_playable_rw_open:
  * @playable: the #AgsPlayable
  * @name: the filename 
@@ -86,6 +110,8 @@ ags_playable_base_init(AgsPlayableInterface *interface)
  * Opens a file in read/write mode.
  *
  * Returns: %TRUE on success.
+ *
+ * Since: 0.4.2
  */
 gboolean
 ags_playable_rw_open(AgsPlayable *playable, gchar *name,
@@ -110,35 +136,14 @@ ags_playable_rw_open(AgsPlayable *playable, gchar *name,
 }
 
 /**
- * ags_playable_open:
- * @playable: the #AgsPlayable
- * @name: the filename 
- * 
- * Opens a file in read-only mode.
- *
- * Returns: %TRUE on success
- */
-gboolean
-ags_playable_open(AgsPlayable *playable, gchar *name)
-{
-  AgsPlayableInterface *playable_interface;
-  gboolean ret_val;
-
-  g_return_val_if_fail(AGS_IS_PLAYABLE(playable), FALSE);
-  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
-  g_return_val_if_fail(playable_interface->open, FALSE);
-  ret_val = playable_interface->open(playable, name);
-
-  return(ret_val);
-}
-
-/**
  * ags_playable_level_count:
  * @playable: the #AgsPlayable
  * 
  * Retrieve the count of levels.
  *
  * Returns: level count
+ *
+ * Since: 0.4.2
  */
 guint
 ags_playable_level_count(AgsPlayable *playable)
@@ -161,6 +166,8 @@ ags_playable_level_count(AgsPlayable *playable)
  * Retrieve the selected level.
  *
  * Returns: nth level
+ *
+ * Since: 0.4.2
  */
 guint
 ags_playable_nth_level(AgsPlayable *playable)
@@ -183,6 +190,8 @@ ags_playable_nth_level(AgsPlayable *playable)
  * Retrieve the selected level's name.
  *
  * Returns: nth level name
+ *
+ * Since: 0.4.2
  */
 gchar*
 ags_playable_selected_level(AgsPlayable *playable)
@@ -206,6 +215,8 @@ ags_playable_selected_level(AgsPlayable *playable)
  * Retrieve the all sub-level's name.
  *
  * Returns: sub-level names
+ *
+ * Since: 0.4.2
  */
 gchar**
 ags_playable_sublevel_names(AgsPlayable *playable)
@@ -230,6 +241,8 @@ ags_playable_sublevel_names(AgsPlayable *playable)
  *
  * Select a level in an monolythic file where @nth_level and @sublevel_name are equivalent.
  * If @sublevel_name is NULL @nth_level will be chosen.
+ *
+ * Since: 0.4.2
  */
 void
 ags_playable_level_select(AgsPlayable *playable,
@@ -251,6 +264,8 @@ ags_playable_level_select(AgsPlayable *playable,
  * @error: returned error
  *
  * Move up in hierarchy.
+ *
+ * Since: 0.4.2
  */
 void
 ags_playable_level_up(AgsPlayable *playable,
@@ -270,6 +285,8 @@ ags_playable_level_up(AgsPlayable *playable,
  * @playable: an #AgsPlayable
  *
  * Start iterating current level.
+ *
+ * Since: 0.4.2
  */
 void
 ags_playable_iter_start(AgsPlayable *playable)
@@ -287,6 +304,8 @@ ags_playable_iter_start(AgsPlayable *playable)
  * @playable: an #AgsPlayable
  *
  * Iterating next on current level.
+ *
+ * Since: 0.4.2
  */
 gboolean
 ags_playable_iter_next(AgsPlayable *playable)
@@ -312,6 +331,8 @@ ags_playable_iter_next(AgsPlayable *playable)
  * @error: returned error
  *
  * Retrieve information about selected audio data.
+ *
+ * Since: 0.4.2
  */
 void
 ags_playable_info(AgsPlayable *playable,
@@ -336,6 +357,8 @@ ags_playable_info(AgsPlayable *playable,
  * Read audio buffer of playable audio data.
  * 
  * Returns: audio buffer
+ *
+ * Since: 0.4.2
  */
 short*
 ags_playable_read(AgsPlayable *playable,
@@ -357,6 +380,8 @@ ags_playable_read(AgsPlayable *playable,
  * @buffer_length: frame count
  *
  * Write @buffer_length of @buffer audio data.
+ *
+ * Since: 0.4.2
  */
 void
 ags_playable_write(AgsPlayable *playable,
@@ -375,6 +400,8 @@ ags_playable_write(AgsPlayable *playable,
  * @playable: an #AgsPlayable
  *
  * Flush internal audio buffer.
+ *
+ * Since: 0.4.2
  */
 void
 ags_playable_flush(AgsPlayable *playable)
@@ -394,6 +421,8 @@ ags_playable_flush(AgsPlayable *playable)
  * @whence: SEEK_SET, SEEK_CUR, or SEEK_END
  *
  * Seek @playable to address.
+ *
+ * Since: 0.4.2
  */
 void
 ags_playable_seek(AgsPlayable *playable,
@@ -412,6 +441,8 @@ ags_playable_seek(AgsPlayable *playable,
  * @playable: an #AgsPlayable
  *
  * Close audio file.
+ *
+ * Since: 0.4.2
  */
 void
 ags_playable_close(AgsPlayable *playable)
@@ -427,20 +458,27 @@ ags_playable_close(AgsPlayable *playable)
 /**
  * ags_playable_read_audio_signal:
  * @playable: an #AgsPlayable
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #AgsSoundcar defaulting to
  * @start_channel: read from channel
  * @channels_to_read: n-times
  *
  * Read the audio signal of @AgsPlayable.
  *
  * Returns: a #GList of #AgsAudioSignal
+ *
+ * Since: 0.4.2
  */
 GList*
 ags_playable_read_audio_signal(AgsPlayable *playable,
-			       AgsDevout *devout,
+			       GObject *soundcard,
 			       guint start_channel, guint channels_to_read)
 {
   AgsAudioSignal *audio_signal;
+
+  AgsApplicationContext *application_context;
+
+  AgsMutexManager *mutex_manager;
+  
   GList *stream, *list, *list_beginning;
   short *buffer;
   guint channels;
@@ -452,8 +490,12 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   guint samplerate;
   guint i, j, k, i_stop, j_stop;
   gchar *str;
+
   GError *error;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  
   g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
 		       NULL);
 
@@ -462,21 +504,34 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 		    &loop_start, &loop_end,
 		    &error);
 
-  str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
-		       "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
+  if(soundcard == NULL){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }else{
+    application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+    application_mutex = ags_soundcard_get_application_mutex(AGS_SOUNDCARD(soundcard));
 
-  str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
-		       "buffer-size\0");
-  buffer_size = g_ascii_strtoull(str,
-				 NULL,
-				 10);
-  free(str);
+    /* lookup soundcard mutex */
+    pthread_mutex_lock(application_mutex);
+
+    mutex_manager = ags_concurrency_provider_get_mutex_manager(AGS_CONCURRENCY_PROVIDER(application_context));
+    
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       soundcard);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* get presets */
+    pthread_mutex_lock(soundcard_mutex);
+    
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			      NULL,
+			      &samplerate,
+			      &buffer_size,
+			      NULL);
+
+    pthread_mutex_unlock(soundcard_mutex);
+  }
   
   length = (guint) ceil((double)(frames) / (double)(buffer_size));
 
@@ -489,7 +544,7 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   i_stop = start_channel + channels_to_read;
 
   for(; i < i_stop; i++){
-    audio_signal = ags_audio_signal_new((GObject *) devout,
+    audio_signal = ags_audio_signal_new(soundcard,
 					NULL,
 					NULL);
     audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

@@ -93,7 +93,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   GList *list, *list_start;
   GList *line, *line_start;
@@ -121,12 +121,12 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
   
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
   
@@ -252,7 +252,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
@@ -264,12 +264,12 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
   
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
   

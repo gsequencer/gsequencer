@@ -228,7 +228,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   AgsPlayable *playable;
   
@@ -247,13 +247,13 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   pthread_mutex_t *channel_mutex;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(ffplayer);
-  ags_main = window->ags_main;
+  application_context = window->application_context;
   audio = AGS_MACHINE(ffplayer)->audio;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

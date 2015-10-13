@@ -268,7 +268,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
@@ -281,15 +281,15 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 
   audio = machine_editor->machine->audio;
 
-  /* get window and ags_main  */
+  /* get window and application_context  */
   window = (AgsWindow *) gtk_widget_get_toplevel(machine_editor->machine);
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

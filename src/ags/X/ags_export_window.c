@@ -388,22 +388,22 @@ ags_export_window_set_property(GObject *gobject,
     break;
   case PROP_MAIN:
     {
-      AgsMain *ags_main;
+      AgsMain *application_context;
 
-      ags_main = (AgsMain *) g_value_get_object(value);
+      application_context = (AgsMain *) g_value_get_object(value);
 
-      if((AgsMain *) export_window->ags_main == ags_main)
+      if((AgsMain *) export_window->application_context == application_context)
 	return;
 
-      if(export_window->ags_main != NULL){
-	g_object_unref(export_window->ags_main);
+      if(export_window->application_context != NULL){
+	g_object_unref(export_window->application_context);
       }
 
-      if(ags_main != NULL){
-	g_object_ref(ags_main);
+      if(application_context != NULL){
+	g_object_ref(application_context);
       }
 
-      export_window->ags_main = (GObject *) ags_main;
+      export_window->application_context = (GObject *) application_context;
     }
     break;
   default:
@@ -427,7 +427,7 @@ ags_export_window_get_property(GObject *gobject,
     g_value_set_object(value, export_window->devout);
     break;
   case PROP_MAIN:
-    g_value_set_object(value, export_window->ags_main);
+    g_value_set_object(value, export_window->application_context);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

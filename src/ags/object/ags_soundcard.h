@@ -24,6 +24,8 @@
 
 #include <ags/object/ags_application_context.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_SOUNDCARD                    (ags_soundcard_get_type())
 #define AGS_SOUNDCARD(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUNDCARD, AgsSoundcard))
 #define AGS_SOUNDCARD_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SOUNDCARD, AgsSoundcardInterface))
@@ -38,7 +40,7 @@
 #define AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE (944)
 #define AGS_SOUNDCARD_DEFAULT_DEVICE "hw:0"
 #define AGS_SOUNDCARD_DEFAULT_BPM (120.0)
-#define AGS_SOUNDCARD_DEFAULT_SEGMENTATION "4/4\0"
+#define AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR (1.0 / 4.0)
 #define AGS_SOUNDCARD_DEFAULT_JIFFIE ((double) AGS_SOUNDCARD_DEFAULT_SAMPLERATE / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE)
 
 #define AGS_SOUNDCARD_DEFAULT_TACT (1.0 / 1.0)
@@ -68,6 +70,10 @@ struct _AgsSoundcardInterface
   void (*set_application_context)(AgsSoundcard *soundcard,
 				  AgsApplicationContext *application_context);
   AgsApplicationContext* (*get_application_context)(AgsSoundcard *soundcard);
+
+  void (*set_application_mutex)(AgsSoundcard *soundcard,
+				pthread_mutex_t *application_mutex);
+  pthread_mutex_t* (*get_application_mutex)(AgsSoundcard *soundcard);
 
   void (*set_device)(AgsSoundcard *soundcard,
 		     gchar *card_id);
@@ -105,12 +111,16 @@ struct _AgsSoundcardInterface
   void (*offset_changed)(AgsSoundcard *soundcard,
 			 guint note_offset);
 
-  signed short* (*get_buffer)(AgsSoundcard *soundcard);
-  signed short* (*get_next_buffer)(AgsSoundcard *soundcard);  
+  void* (*get_buffer)(AgsSoundcard *soundcard);
+  void* (*get_next_buffer)(AgsSoundcard *soundcard);  
 
   void (*set_bpm)(AgsSoundcard *soundcard,
 		  gdouble bpm);
   gdouble (*get_bpm)(AgsSoundcard *soundcard);
+
+  void (*set_delay_factor)(AgsSoundcard *soundcard,
+			   gdouble delay_factor);
+  gdouble (*get_delay_factor)(AgsSoundcard *soundcard);
   
   gdouble (*get_delay)(AgsSoundcard *soundcard);
   guint (*get_attack)(AgsSoundcard *soundcard);
@@ -129,6 +139,10 @@ GType ags_soundcard_get_type();
 void ags_soundcard_set_application_context(AgsSoundcard *soundcard,
 					   AgsApplicationContext *application_context);
 AgsApplicationContext* ags_soundcard_get_application_context(AgsSoundcard *soundcard);
+
+void ags_soundcard_set_application_mutex(AgsSoundcard *soundcard,
+					 pthread_mutex_t *application_mutex);
+pthread_mutex_t* ags_soundcard_get_application_mutex(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_device(AgsSoundcard *soundcard,
 			      gchar *device_id);
@@ -166,13 +180,18 @@ void ags_soundcard_tic(AgsSoundcard *soundcard);
 void ags_soundcard_offset_changed(AgsSoundcard *soundcard,
 				  guint note_offset);
 
-signed short* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
-signed short* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
+void* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
+void* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
 			   gdouble bpm);
 
 gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
+
+void ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
+				    gdouble delay_factor);
+
+gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
 
 gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);
 guint ags_soundcard_get_attack(AgsSoundcard *soundcard);

@@ -1158,7 +1158,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     AgsTaskThread *task_thread;
     AgsDevoutThread *devout_thread;
 
-    AgsMain *ags_main;
+    AgsMain *application_context;
     
     GList *tasks;
 
@@ -1198,17 +1198,17 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
     pthread_mutex_unlock(audio_mutex);
 
-    /* get ags_main */
+    /* get application_context */
     pthread_mutex_lock(devout_mutex);
 
-    ags_main = (AgsMain *) devout->ags_main;
+    application_context = (AgsMain *) devout->application_context;
 
     pthread_mutex_unlock(devout_mutex);
 
     /* get threads */
     pthread_mutex_lock(&(ags_application_mutex));
 
-    audio_loop = (AgsAudioLoop *) ags_main->main_loop;
+    audio_loop = (AgsAudioLoop *) application_context->main_loop;
 
     pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -1604,7 +1604,7 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 
   devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop);
+  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->application_context)->main_loop);
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
 

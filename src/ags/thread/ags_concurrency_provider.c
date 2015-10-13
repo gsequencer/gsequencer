@@ -45,6 +45,38 @@ ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_concurrency_provider_get_mutex_manager:
+ * @concurrency_provider: the #AgsConcurrencyProvider
+ *
+ * Get mutex manager of application context.
+ *
+ * Returns: the assigned #AgsMutexManager
+ *
+ * Since: 0.7.0
+ */
+AgsMutexManager*
+ags_concurrency_provider_get_mutex_manager(AgsConcurrencyProvider *concurrency_provider)
+{
+  AgsConcurrencyProviderInterface *concurrency_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_CONCURRENCY_PROVIDER(concurrency_provider), NULL);
+  concurrency_provider_interface = AGS_CONCURRENCY_PROVIDER_GET_INTERFACE(concurrency_provider);
+  g_return_val_if_fail(concurrency_provider_interface->get_mutex_manager, NULL);
+
+  return(concurrency_provider_interface->get_mutex_manager(concurrency_provider));
+}
+
+/**
+ * ags_concurrency_provider_get_main_loop:
+ * @concurrency_provider: the #AgsConcurrencyProvider
+ *
+ * Get main loop of application context.
+ *
+ * Returns: the #AgsThread implementing #AgsMainLoop interface
+ *
+ * Since: 0.7.0
+ */
 AgsThread*
 ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
 {
@@ -57,6 +89,16 @@ ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provi
   return(concurrency_provider_interface->get_main_loop(concurrency_provider));
 }
 
+/**
+ * ags_concurrency_provider_get_task_thread:
+ * @concurrency_provider: the #AgsConcurrencyProvider
+ *
+ * Get task thread of application context.
+ *
+ * Returns: the #AgsThread implementing #AgsAsyncQueue interface
+ * 
+ * Since: 0.7.0
+ */
 AgsThread*
 ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
 {
@@ -69,6 +111,16 @@ ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_pro
   return(concurrency_provider_interface->get_task_thread(concurrency_provider));
 }
 
+/**
+ * ags_concurrency_provider_get_thread_pool:
+ * @concurrency_provider: the #AgsConcurrencyProvider
+ *
+ * Get thread pool of application context.
+ *
+ * Returns: the #AgsThreadPool
+ * 
+ * Since: 0.7.0
+ */
 AgsThreadPool*
 ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
 {
