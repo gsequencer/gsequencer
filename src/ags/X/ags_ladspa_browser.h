@@ -1,20 +1,19 @@
-/* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2014 Joël Krähemann
  *
- * This file is part of GSequencer.
- *
- * GSequencer is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * GSequencer is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
 #ifndef __AGS_LADSPA_BROWSER_H__
@@ -36,9 +35,7 @@ typedef struct _AgsLadspaBrowserClass AgsLadspaBrowserClass;
 
 struct _AgsLadspaBrowser
 {
-  GtkDialog dialog;
-
-  GtkWidget *parent;
+  GtkVBox vbox;
 
   gchar *path;
 
@@ -46,15 +43,11 @@ struct _AgsLadspaBrowser
   GtkVBox *description;
 
   GtkWidget *preview;
-
-  GtkButton *apply;
-  GtkButton *ok;
-  GtkButton *cancel;
 };
 
 struct _AgsLadspaBrowserClass
 {
-  GtkDialogClass dialog;
+  GtkVBoxClass vbox;
 };
 
 GType ags_ladspa_browser_get_type(void);
@@ -62,10 +55,9 @@ GType ags_ladspa_browser_get_type(void);
 gchar* ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser);
 gchar* ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser);
 
-GtkWidget* ags_ladspa_browser_combo_box_boolean_controls_new();
-GtkWidget* ags_ladspa_browser_combo_box_float_controls_new();
-
+GtkWidget* ags_ladspa_browser_combo_box_controls_new();
 GtkWidget* ags_ladspa_browser_preview_new();
-AgsLadspaBrowser* ags_ladspa_browser_new(GtkWidget *parent);
+
+AgsLadspaBrowser* ags_ladspa_browser_new();
 
 #endif /*__AGS_LADSPA_BROWSER_H__*/

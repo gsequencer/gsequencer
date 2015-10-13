@@ -142,7 +142,8 @@ libags_h_sources = \
 	$(deprecated_libags_h_sources) \
 	src/ags/lib/ags_combo_box_text.h \
 	src/ags/lib/ags_container.h \
-	src/ags/lib/ags_parameter.h
+	src/ags/lib/ags_parameter.h \
+	src/ags/lib/ags_turtle.h
 
 deprecated_libags_c_sources =
 
@@ -150,7 +151,8 @@ libags_c_sources = \
 	$(deprecated_libags_c_sources) \
 	src/ags/lib/ags_combo_box_text.c \
 	src/ags/lib/ags_container.c \
-	src/ags/lib/ags_parameter.c
+	src/ags/lib/ags_parameter.c \
+	src/ags/lib/ags_turtle.c
 
 deprecated_libags_util_h_sources =
 
@@ -365,6 +367,8 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_recall_id.h \
 	src/ags/audio/ags_recall_ladspa.h \
 	src/ags/audio/ags_recall_ladspa_run.h \
+	src/ags/audio/ags_recall_lv2.h \
+	src/ags/audio/ags_recall_lv2_run.h \
 	src/ags/audio/ags_recall_recycling_dummy.h \
 	src/ags/audio/ags_recall_recycling.h \
 	src/ags/audio/ags_recycling_context.h \
@@ -409,6 +413,8 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_recall_id.c \
 	src/ags/audio/ags_recall_ladspa.c \
 	src/ags/audio/ags_recall_ladspa_run.c \
+	src/ags/audio/ags_recall_lv2.c \
+	src/ags/audio/ags_recall_lv2_run.c \
 	src/ags/audio/ags_recall_recycling.c \
 	src/ags/audio/ags_recall_recycling_dummy.c \
 	src/ags/audio/ags_recycling.c \
@@ -454,6 +460,8 @@ libags_plugin_h_sources = \
 	$(deprecated_libags_plugin_h_sources) \
 	src/ags/plugin/ags_ladspa_manager.h \
 	src/ags/plugin/ags_plugin_factory.h \
+	src/ags/plugin/ags_lv2_manager.h \
+	src/ags/plugin/ags_lv2ui_manager.h \
 	src/ags/plugin/ags_plugin_stock.h
 
 deprecated_libags_plugin_c_sources =
@@ -461,6 +469,8 @@ deprecated_libags_plugin_c_sources =
 libags_plugin_c_sources = \
 	$(deprecated_libags_plugin_c_sources) \
 	src/ags/plugin/ags_ladspa_manager.c \
+	src/ags/plugin/ags_lv2_manager.c \
+	src/ags/plugin/ags_lv2ui_manager.c \
 	src/ags/plugin/ags_plugin_factory.c
 
 # libags-audio - file
@@ -485,6 +495,27 @@ libags_audio_file_c_sources = \
 	src/ags/audio/file/ags_ipatch.c \
 	src/ags/audio/file/ags_ipatch_sf2_reader.c \
 	src/ags/audio/file/ags_sndfile.c
+
+# libags-audio - midi
+deprecated_libags_audio_midi_h_sources =
+
+libags_audio_midi_h_sources = \
+	$(deprecated_libags_audio_midi_h_sources) \
+	src/ags/audio/midi/ags_midi_builder.h \
+	src/ags/audio/midi/ags_midi_file.h \
+	src/ags/audio/midi/ags_midi_parser.h \
+	src/ags/audio/midi/ags_midi_reader.h \
+	src/ags/audio/midi/ags_midi_writer.h
+
+deprecated_libags_audio_midi_c_sources =
+
+libags_audio_midi_c_sources = \
+	$(deprecated_libags_audio_midi_c_sources) \
+	src/ags/audio/midi/ags_midi_builder.c \
+	src/ags/audio/midi/ags_midi_file.c \
+	src/ags/audio/midi/ags_midi_parser.c \
+	src/ags/audio/midi/ags_midi_reader.c \
+	src/ags/audio/midi/ags_midi_writer.c
 
 # libags-audio - recall
 deprecated_libags_audio_recall_h_sources =
@@ -767,8 +798,18 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_automation_window.h \
 	src/ags/X/ags_audio_preferences_callbacks.h \
 	src/ags/X/ags_audio_preferences.h \
+	src/ags/X/ags_bulk_member_callbacks.h \
+	src/ags/X/ags_bulk_member.h \
 	src/ags/X/ags_editor_callbacks.h \
 	src/ags/X/ags_editor.h \
+	src/ags/X/ags_effect_bridge_callbacks.h \
+	src/ags/X/ags_effect_bridge.h \
+	src/ags/X/ags_effect_bulk_callbacks.h \
+	src/ags/X/ags_effect_bulk.h \
+	src/ags/X/ags_effect_line_callbacks.h \
+	src/ags/X/ags_effect_line.h \
+	src/ags/X/ags_effect_pad_callbacks.h \
+	src/ags/X/ags_effect_pad.h \
 	src/ags/X/ags_export_window_callbacks.h \
 	src/ags/X/ags_export_window.h \
 	src/ags/X/ags_generic_preferences_callbacks.h \
@@ -829,8 +870,18 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_automation_window_callbacks.c \
 	src/ags/X/ags_audio_preferences.c \
 	src/ags/X/ags_audio_preferences_callbacks.c \
+	src/ags/X/ags_bulk_member.c \
+	src/ags/X/ags_bulk_member_callbacks.c \
 	src/ags/X/ags_editor.c \
 	src/ags/X/ags_editor_callbacks.c \
+	src/ags/X/ags_effect_bridge.c \
+	src/ags/X/ags_effect_bridge_callbacks.c \
+	src/ags/X/ags_effect_bulk.c \
+	src/ags/X/ags_effect_bulk_callbacks.c \
+	src/ags/X/ags_effect_line.c \
+	src/ags/X/ags_effect_line_callbacks.c \
+	src/ags/X/ags_effect_pad.c \
+	src/ags/X/ags_effect_pad_callbacks.c \
 	src/ags/X/ags_export_window.c \
 	src/ags/X/ags_export_window_callbacks.c \
 	src/ags/X/ags_generic_preferences.c \
@@ -949,6 +1000,10 @@ libgsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_drum_output_pad.h \
 	src/ags/X/machine/ags_ffplayer_callbacks.h \
 	src/ags/X/machine/ags_ffplayer.h \
+	src/ags/X/machine/ags_ladspa_bridge_callbacks.h \
+	src/ags/X/machine/ags_ladspa_bridge.h \
+	src/ags/X/machine/ags_lv2_bridge_callbacks.h \
+	src/ags/X/machine/ags_lv2_bridge.h \
 	src/ags/X/machine/ags_matrix_callbacks.h \
 	src/ags/X/machine/ags_matrix.h \
 	src/ags/X/machine/ags_mixer_callbacks.h \
@@ -986,6 +1041,10 @@ libgsequencer_machine_c_sources = \
 	src/ags/X/machine/ags_drum_output_pad_callbacks.c \
 	src/ags/X/machine/ags_ffplayer.c \
 	src/ags/X/machine/ags_ffplayer_callbacks.c \
+	src/ags/X/machine/ags_ladspa_bridge.c \
+	src/ags/X/machine/ags_ladspa_bridge_callbacks.c \
+	src/ags/X/machine/ags_lv2_bridge.c \
+	src/ags/X/machine/ags_lv2_bridge_callbacks.c \
 	src/ags/X/machine/ags_matrix.c \
 	src/ags/X/machine/ags_matrix_callbacks.c \
 	src/ags/X/machine/ags_mixer.c \

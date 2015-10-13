@@ -1,5 +1,5 @@
 /* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+ * Copyright (C) 2015 Joël Krähemann
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __AGS_LADSPA_BROWSER_CALLBACKS_H__
-#define __AGS_LADSPA_BROWSER_CALLBACKS_H__
+#include <ags/X/ags_effect_bridge_callbacks.h>
 
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
+void
+ags_effect_bridge_set_audio_channels_callback(AgsAudio *audio,
+					      guint audio_channels, guint audio_channels_old,
+					      AgsEffectBridge *effect_bridge)
+{
+  ags_effect_bridge_resize_audio_channels(effect_bridge,
+					  audio_channels, audio_channels_old);
+}
 
-#include <ags/X/ags_ladspa_browser.h>
+void
+ags_effect_bridge_set_pads_callback(AgsAudio *audio,
+				    GType channel_type,
+				    guint pads, guint pads_old,
+				    AgsEffectBridge *effect_bridge)
+{  
+  ags_effect_bridge_resize_pads(effect_bridge,
+				channel_type,
+				pads, pads_old);
+}
 
-void ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
-						 AgsLadspaBrowser *ladspa_browser);
-void ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
-					       AgsLadspaBrowser *ladspa_browser);
-
-#endif /*__AGS_LADSPA_BROWSER_CALLBACKS_H__*/
