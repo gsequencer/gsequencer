@@ -833,7 +833,7 @@ ags_pad_play(AgsPad *pad)
   AgsTaskThread *task_thread;
   AgsDevoutThread *devout_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   GList *tasks;
 
@@ -846,12 +846,12 @@ ags_pad_play(AgsPad *pad)
 						   AGS_TYPE_MACHINE);
   window = (AgsWindow *) gtk_widget_get_toplevel(machine);
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

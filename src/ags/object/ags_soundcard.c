@@ -126,11 +126,55 @@ ags_soundcard_get_application_context(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_set_application_mutex:
+ * @soundcard: an #AgsSoundcard
+ * @application_mutex: the application mutex to set
+ *
+ * Set application mutex.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_soundcard_set_application_mutex(AgsSoundcard *soundcard,
+				    pthread_mutex_t *application_mutex)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_application_mutex);
+  soundcard_interface->set_application_mutex(soundcard,
+					       application_mutex);
+}
+
+/**
+ * ags_soundcard_get_application_mutex:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get application mutex. 
+ *
+ * Returns: #AgsApplicationMutex
+ *
+ * Since: 0.7.0
+ */
+pthread_mutex_t*
+ags_soundcard_get_application_mutex(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_application_mutex, NULL);
+
+  return(soundcard_interface->get_application_mutex(soundcard));
+}
+
+/**
  * ags_soundcard_set_device:
  * @soundcard: an #AgsSoundcard
  * @device_id: the device to set
  *
- * Set application context.
+ * Set device.
  *
  * Since: 0.4.3
  */
@@ -151,7 +195,7 @@ ags_soundcard_set_device(AgsSoundcard *soundcard,
  * ags_soundcard_get_device:
  * @soundcard: an #AgsSoundcard
  *
- * Get application context. 
+ * Get device.
  *
  * Returns: the device's identifier
  *
@@ -439,7 +483,7 @@ ags_soundcard_offset_changed(AgsSoundcard *soundcard,
  *
  * Since: 0.4.2
  */
-signed short*
+void*
 ags_soundcard_get_buffer(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
@@ -461,7 +505,7 @@ ags_soundcard_get_buffer(AgsSoundcard *soundcard)
  *
  * Since: 0.4.2
  */
-signed short*
+void*
 ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
 {
   AgsSoundcardInterface *soundcard_interface;
@@ -515,6 +559,50 @@ ags_soundcard_get_bpm(AgsSoundcard *soundcard)
   g_return_val_if_fail(soundcard_interface->get_bpm, G_MAXUINT);
 
   return(soundcard_interface->get_bpm(soundcard));
+}
+
+/**
+ * ags_soundcard_set_delay_factor:
+ * @soundcard: an #AgsSoundcard
+ * @delay_factor: the delay factor to set
+ *
+ * Set current playback delay factor. 
+ *
+ * Since: 0.7.0
+ */
+void
+ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
+			       gdouble delay_factor)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_delay_factor);
+  soundcard_interface->set_delay_factor(soundcard,
+					delay_factor);
+}
+
+/**
+ * ags_soundcard_get_delay_factor:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get current playback delay factor. 
+ *
+ * Returns: delay factor
+ *
+ * Since: 0.7.0
+ */
+gdouble
+ags_soundcard_get_delay_factor(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_delay_factor, G_MAXUINT);
+
+  return(soundcard_interface->get_delay_factor(soundcard));
 }
 
 /**

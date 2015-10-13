@@ -137,7 +137,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   GList *list, *list_start, *tasks;
 
@@ -149,12 +149,12 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 						   AGS_TYPE_MACHINE);
   window = (AgsWindow *) gtk_widget_get_toplevel(machine);
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -317,8 +317,8 @@ ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
   AgsTask *task;
 
   task = (AgsTask *) task_completion->task;
-  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
-  devout_thread = (AgsDevoutThread *) ags_thread_find_type(AGS_MAIN(window->ags_main)->main_loop,
+  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->application_context)->window;
+  devout_thread = (AgsDevoutThread *) ags_thread_find_type(AGS_MAIN(window->application_context)->main_loop,
 							   AGS_TYPE_DEVOUT_THREAD);
 
   if(devout_thread->error != NULL){
@@ -357,7 +357,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 
   AgsMutexManager *mutex_manager;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   GList *recall, *tmp;
   GList *list, *list_start;
@@ -366,13 +366,13 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 
   window = gtk_widget_get_ancestor(input_pad,
 				   AGS_TYPE_WINDOW);
-  ags_main = window->ags_main;
+  application_context = window->application_context;
   
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
   
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) input_pad->channel->audio);

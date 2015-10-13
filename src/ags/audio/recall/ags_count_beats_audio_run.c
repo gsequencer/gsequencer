@@ -961,7 +961,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   AgsThread *main_loop;
   AgsThread *async_queue;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   gboolean sequencer, notation;
 
@@ -984,17 +984,17 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   
   pthread_mutex_unlock(&(ags_application_mutex));
   
-  /* get ags_main */
+  /* get application_context */
   pthread_mutex_lock(devout_mutex);
   
-  ags_main = devout->ags_main;
+  application_context = devout->application_context;
 
   pthread_mutex_unlock(devout_mutex);
   
   /* get main loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  main_loop = ags_main->main_loop;
+  main_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

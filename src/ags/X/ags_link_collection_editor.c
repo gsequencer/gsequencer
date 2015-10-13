@@ -417,7 +417,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     AgsAudioLoop *audio_loop;
     AgsTaskThread *task_thread;
 
-    AgsMain *ags_main;
+    AgsMain *application_context;
 
     GList *task;
     guint first_line, count;
@@ -433,15 +433,15 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     machine = machine_editor->machine;
     audio = machine_editor->machine->audio;
 
-    /* get window and ags_main  */
+    /* get window and application_context  */
     window = (AgsWindow *) gtk_widget_get_toplevel(machine);
   
-    ags_main = window->ags_main;
+    application_context = window->application_context;
 
     /* get audio loop */
     pthread_mutex_lock(&(ags_application_mutex));
 
-    audio_loop = ags_main->main_loop;
+    audio_loop = application_context->main_loop;
 
     pthread_mutex_unlock(&(ags_application_mutex));
 

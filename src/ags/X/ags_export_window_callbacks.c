@@ -67,7 +67,7 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 {
   AgsWindow *window;
 
-  window = AGS_MAIN(export_window->ags_main)->window;
+  window = AGS_MAIN(export_window->application_context)->window;
 
   gtk_label_set_text(export_window->duration,
 		     ags_navigation_absolute_tact_to_time_string(gtk_spin_button_get_value(export_window->tact) * 16.0,
@@ -85,19 +85,19 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   GList *machines_start;
   gboolean success;
 
-  window = AGS_MAIN(export_window->ags_main)->window;
+  window = AGS_MAIN(export_window->application_context)->window;
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

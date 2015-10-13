@@ -39,7 +39,7 @@ struct _AgsFileLaunch
 {
   GObject object;
 
-  GObject *ags_main;
+  GObject *application_context;
 
   xmlNode *node;
   GObject *file;

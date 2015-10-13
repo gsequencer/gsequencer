@@ -76,17 +76,17 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
-  AgsMain *ags_main;
+  AgsMain *application_context;
   AgsThread *audio_loop;
   AgsReturnableThread *thread;
   AgsThreadPool *thread_pool;
 
   gtk_init(&argc, &argv);
 
-  ags_main = ags_main_new();
+  application_context = application_context_new();
 
-  ags_main->main_loop = 
-    audio_loop = ags_audio_loop_new(NULL, ags_main);
+  application_context->main_loop = 
+    audio_loop = ags_audio_loop_new(NULL, application_context);
   g_object_ref(G_OBJECT(audio_loop));
   ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
 
@@ -94,7 +94,7 @@
   ags_thread_start(audio_loop);
   
   /* complete thread pool */
-  thread_pool = ags_thread_pool_new(ags_main);
+  thread_pool = ags_thread_pool_new(application_context);
 
   thread_pool->parent = audio_loop;
   ags_thread_pool_start(thread_pool);

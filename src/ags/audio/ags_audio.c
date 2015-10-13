@@ -514,7 +514,7 @@ ags_audio_finalize(GObject *gobject)
 void
 ags_audio_add_to_registry(AgsConnectable *connectable)
 {
-  AgsMain *ags_main;
+  AgsMain *application_context;
   AgsServer *server;
   AgsAudio *audio;
   AgsChannel *channel;
@@ -523,9 +523,9 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
   
   audio = AGS_AUDIO(connectable);
 
-  ags_main = AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main);
+  application_context = AGS_MAIN(AGS_DEVOUT(audio->devout)->application_context);
 
-  server = ags_main->server;
+  server = application_context->server;
 
   entry = ags_registry_entry_alloc(server->registry);
   g_value_set_object(&(entry->entry),
@@ -880,7 +880,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    //    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
+    //    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->application_context)->main_loop)->task_thread),
     //				AGS_TASK(audio_set_recycling));
   }
 
@@ -974,7 +974,7 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    //    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->ags_main)->main_loop)->task_thread),
+    //    ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(audio->devout)->application_context)->main_loop)->task_thread),
     //				AGS_TASK(audio_set_recycling));
   }
 

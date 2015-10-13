@@ -748,7 +748,7 @@ ags_cell_pattern_blink_worker(void *data)
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   static const guint blink_delay = 1000000; // blink every second
   
@@ -756,12 +756,12 @@ ags_cell_pattern_blink_worker(void *data)
   window = gtk_widget_get_ancestor(cell_pattern,
 				   AGS_TYPE_WINDOW);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
   
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
   

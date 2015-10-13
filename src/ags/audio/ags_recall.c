@@ -839,7 +839,7 @@ ags_recall_get_property(GObject *gobject,
 void
 ags_recall_add_to_registry(AgsConnectable *connectable)
 {
-  AgsMain *ags_main;
+  AgsMain *application_context;
   AgsServer *server;
   AgsRecall *recall;
   AgsRegistryEntry *entry;
@@ -847,9 +847,9 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
   
   recall = AGS_RECALL(connectable);
 
-  ags_main = AGS_MAIN(AGS_DEVOUT(recall->devout)->ags_main);
+  application_context = AGS_MAIN(AGS_DEVOUT(recall->devout)->application_context);
 
-  server = ags_main->server;
+  server = application_context->server;
 
   entry = ags_registry_entry_alloc(server->registry);
   g_value_set_object(&(entry->entry),
@@ -1113,7 +1113,7 @@ ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "main\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall,
@@ -1139,7 +1139,7 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->ags_main,
+				   "main\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", recall,

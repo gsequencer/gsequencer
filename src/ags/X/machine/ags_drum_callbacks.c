@@ -212,19 +212,19 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   AgsThread *audio_loop;
   AgsThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   gdouble length;
 
-  /* get window and ags_main  */
+  /* get window and application_context  */
   window = (AgsWindow *) gtk_widget_get_toplevel(drum);
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -412,7 +412,7 @@ ags_drum_tact_callback(AgsAudio *audio,
   AgsThread *audio_loop;
   AgsThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   GList *list;
   guint counter, active_led;
@@ -437,15 +437,15 @@ ags_drum_tact_callback(AgsAudio *audio,
 
   pthread_mutex_lock(audio_mutex);
 
-  /* get window and ags_main  */
+  /* get window and application_context  */
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

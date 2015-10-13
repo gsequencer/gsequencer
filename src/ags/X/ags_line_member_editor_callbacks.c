@@ -106,7 +106,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       AgsAudioLoop *audio_loop;
       AgsTaskThread *task_thread;
 
-      AgsMain *ags_main;
+      AgsMain *application_context;
     
       GList *plugin;
       GList *task;
@@ -169,15 +169,15 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 	return;
       }
 
-      /* get window and ags_main  */
+      /* get window and application_context  */
       window = (AgsWindow *) gtk_widget_get_toplevel(machine_editor->machine);
   
-      ags_main = window->ags_main;
+      application_context = window->application_context;
 
       /* get audio loop */
       pthread_mutex_lock(&(ags_application_mutex));
 
-      audio_loop = ags_main->main_loop;
+      audio_loop = application_context->main_loop;
 
       pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -494,7 +494,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   GList *control;
   GList *line_member;
@@ -517,12 +517,12 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   window = gtk_widget_get_ancestor(machine_editor->machine,
 				   AGS_TYPE_WINDOW);
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = (AgsAudioLoop *) ags_main->main_loop;
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
   
   pthread_mutex_unlock(&(ags_application_mutex));
 

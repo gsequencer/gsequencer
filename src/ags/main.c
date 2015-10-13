@@ -59,12 +59,12 @@
 
 #include "config.h"
 
-void ags_main_class_init(AgsMainClass *ags_main);
-void ags_main_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_main_init(AgsMain *ags_main);
-void ags_main_connect(AgsConnectable *connectable);
-void ags_main_disconnect(AgsConnectable *connectable);
-void ags_main_finalize(GObject *gobject);
+void application_context_class_init(AgsMainClass *application_context);
+void application_context_connectable_interface_init(AgsConnectableInterface *connectable);
+void application_context_init(AgsMain *application_context);
+void application_context_connect(AgsConnectable *connectable);
+void application_context_disconnect(AgsConnectable *connectable);
+void application_context_finalize(GObject *gobject);
 
 void ags_colors_alloc();
 
@@ -72,12 +72,12 @@ static void ags_signal_cleanup();
 void ags_signal_handler(int signr);
 void ags_signal_handler_timer(int sig, siginfo_t *si, void *uc);
 
-static gpointer ags_main_parent_class = NULL;
+static gpointer application_context_parent_class = NULL;
 static sigset_t ags_wait_mask;
 static sigset_t ags_timer_mask;
 
 pthread_mutex_t ags_application_mutex;
-AgsMain *ags_main;
+AgsMain *application_context;
 
 static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
 static const gchar *ags_config_devout = AGS_CONFIG_DEVOUT;
@@ -106,32 +106,32 @@ struct sigevent ags_sev_timer;
 struct itimerspec its;
 
 GType
-ags_main_get_type()
+application_context_get_type()
 {
   static GType ags_type_main = 0;
 
   if(!ags_type_main){
-    static const GTypeInfo ags_main_info = {
+    static const GTypeInfo application_context_info = {
       sizeof (AgsMainClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_main_class_init,
+      (GClassInitFunc) application_context_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
       sizeof (AgsMain),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_main_init,
+      (GInstanceInitFunc) application_context_init,
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_main_connectable_interface_init,
+      (GInterfaceInitFunc) application_context_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
 
     ags_type_main = g_type_register_static(G_TYPE_OBJECT,
 					   "AgsMain\0",
-					   &ags_main_info,
+					   &application_context_info,
 					   0);
 
     g_type_add_interface_static(ags_type_main,
@@ -143,27 +143,27 @@ ags_main_get_type()
 }
 
 void
-ags_main_class_init(AgsMainClass *ags_main)
+application_context_class_init(AgsMainClass *application_context)
 {
   GObjectClass *gobject;
 
-  ags_main_parent_class = g_type_class_peek_parent(ags_main);
+  application_context_parent_class = g_type_class_peek_parent(application_context);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) ags_main;
+  gobject = (GObjectClass *) application_context;
 
-  gobject->finalize = ags_main_finalize;
+  gobject->finalize = application_context_finalize;
 }
 
 void
-ags_main_connectable_interface_init(AgsConnectableInterface *connectable)
+application_context_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  connectable->connect = ags_main_connect;
-  connectable->disconnect = ags_main_disconnect;
+  connectable->connect = application_context_connect;
+  connectable->disconnect = application_context_disconnect;
 }
 
 void
-ags_main_init(AgsMain *ags_main)
+application_context_init(AgsMain *application_context)
 {
   GFile *file;
   FILE *log_file;
@@ -185,25 +185,25 @@ ags_main_init(AgsMain *ags_main)
 			NULL,
 			NULL);
 
-  ags_main->flags = 0;
+  application_context->flags = 0;
 
-  ags_main->version = AGS_VERSION;
-  ags_main->build_id = AGS_BUILD_ID;
+  application_context->version = AGS_VERSION;
+  application_context->build_id = AGS_BUILD_ID;
 
   ags_colors_alloc();
 
-  ags_main->main_loop = NULL;
+  application_context->main_loop = NULL;
 
   /* AgsAutosaveThread */
-  ags_main->autosave_thread = NULL;
-  ags_main->autosave_thread = (AgsThread *) ags_autosave_thread_new(NULL, ags_main);
-  g_object_ref(G_OBJECT(ags_main->autosave_thread));
-  ags_connectable_connect(AGS_CONNECTABLE(ags_main->autosave_thread));
+  application_context->autosave_thread = NULL;
+  application_context->autosave_thread = (AgsThread *) ags_autosave_thread_new(NULL, application_context);
+  g_object_ref(G_OBJECT(application_context->autosave_thread));
+  ags_connectable_connect(AGS_CONNECTABLE(application_context->autosave_thread));
   
-  ags_main->thread_pool = ags_thread_pool_new(NULL);
-  ags_main->server = NULL;
-  ags_main->devout = NULL;
-  ags_main->window = NULL;
+  application_context->thread_pool = ags_thread_pool_new(NULL);
+  application_context->server = NULL;
+  application_context->devout = NULL;
+  application_context->window = NULL;
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 
   sigfillset(&(ags_wait_mask));
@@ -223,33 +223,33 @@ ags_main_init(AgsMain *ags_main)
 			     wdir,
 			     AGS_DEFAULT_CONFIG);
 
-  ags_main->config = config;
+  application_context->config = config;
   //TODO:JK: ugly
-  config->ags_main = ags_main;
+  config->application_context = application_context;
 
   g_free(filename);
   g_free(wdir);
 }
 
 void
-ags_main_connect(AgsConnectable *connectable)
+application_context_connect(AgsConnectable *connectable)
 {
-  AgsMain *ags_main;
+  AgsMain *application_context;
   GList *list;
 
-  ags_main = AGS_MAIN(connectable);
+  application_context = AGS_MAIN(connectable);
 
-  if((AGS_MAIN_CONNECTED & (ags_main->flags)) != 0)
+  if((AGS_MAIN_CONNECTED & (application_context->flags)) != 0)
     return;
 
-  ags_main->flags |= AGS_MAIN_CONNECTED;
+  application_context->flags |= AGS_MAIN_CONNECTED;
 
-  ags_connectable_connect(AGS_CONNECTABLE(G_OBJECT(ags_main->main_loop)));
-  ags_connectable_connect(AGS_CONNECTABLE(ags_main->thread_pool));
+  ags_connectable_connect(AGS_CONNECTABLE(G_OBJECT(application_context->main_loop)));
+  ags_connectable_connect(AGS_CONNECTABLE(application_context->thread_pool));
 
   g_message("connected threads\0");
 
-  list = ags_main->devout;
+  list = application_context->devout;
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -259,24 +259,24 @@ ags_main_connect(AgsConnectable *connectable)
 
   g_message("connected audio\0");
 
-  ags_connectable_connect(AGS_CONNECTABLE(ags_main->window));
+  ags_connectable_connect(AGS_CONNECTABLE(application_context->window));
   g_message("connected gui\0");
 }
 
 void
-ags_main_disconnect(AgsConnectable *connectable)
+application_context_disconnect(AgsConnectable *connectable)
 {
   /* empty */
 }
 
 void
-ags_main_finalize(GObject *gobject)
+application_context_finalize(GObject *gobject)
 {
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
-  ags_main = AGS_MAIN(gobject);
+  application_context = AGS_MAIN(gobject);
 
-  G_OBJECT_CLASS(ags_main_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(application_context_parent_class)->finalize(gobject);
 }
 
 void
@@ -286,15 +286,15 @@ ags_colors_alloc()
 }
 
 void
-ags_main_load_config(AgsMain *ags_main)
+application_context_load_config(AgsMain *application_context)
 {
   AgsConfig *config;
   GList *list;
 
-  auto void ags_main_load_config_thread(AgsThread *thread);
-  auto void ags_main_load_config_devout(AgsDevout *devout);
+  auto void application_context_load_config_thread(AgsThread *thread);
+  auto void application_context_load_config_devout(AgsDevout *devout);
 
-  void ags_main_load_config_thread(AgsThread *thread){
+  void application_context_load_config_thread(AgsThread *thread){
     gchar *model;
     
     model = ags_config_get(config,
@@ -318,7 +318,7 @@ ags_main_load_config(AgsMain *ags_main)
       }
     }
   }
-  void ags_main_load_config_devout(AgsDevout *devout){
+  void application_context_load_config_devout(AgsDevout *devout){
     gchar *alsa_handle;
     guint samplerate;
     guint buffer_size;
@@ -361,45 +361,45 @@ ags_main_load_config(AgsMain *ags_main)
 		 NULL);
   }
   
-  if(ags_main == NULL){
+  if(application_context == NULL){
     return;
   }
 
-  config = ags_main->config;
+  config = application_context->config;
 
   if(config == NULL){
     return;
   }
 
   /* thread */
-  ags_main_load_config_thread(ags_main->main_loop);
+  application_context_load_config_thread(application_context->main_loop);
 
   /* devout */
-  list = ags_main->devout;
+  list = application_context->devout;
 
   while(list != NULL){
-    ags_main_load_config_devout(AGS_DEVOUT(list->data));
+    application_context_load_config_devout(AGS_DEVOUT(list->data));
 
     list = list->next;
   }
 }
 
 void
-ags_main_add_devout(AgsMain *ags_main,
+application_context_add_devout(AgsMain *application_context,
 		    AgsDevout *devout)
 {
-  if(ags_main == NULL ||
+  if(application_context == NULL ||
      devout == NULL){
     return;
   }
 
   g_object_ref(G_OBJECT(devout));
-  ags_main->devout = g_list_prepend(ags_main->devout,
+  application_context->devout = g_list_prepend(application_context->devout,
 				    devout);
 }
 
 void
-ags_main_register_recall_type()
+application_context_register_recall_type()
 {
   ags_play_audio_get_type();
   ags_play_channel_get_type();
@@ -449,19 +449,19 @@ ags_main_register_recall_type()
 }
 
 void
-ags_main_register_task_type()
+application_context_register_task_type()
 {
   //TODO:JK: implement me
 }
 
 void
-ags_main_register_widget_type()
+application_context_register_widget_type()
 {
   ags_dial_get_type();
 }
 
 void
-ags_main_register_machine_type()
+application_context_register_machine_type()
 {
   ags_panel_get_type();
   ags_panel_input_pad_get_type();
@@ -487,7 +487,7 @@ ags_main_register_machine_type()
 }
 
 void
-ags_main_register_thread_type()
+application_context_register_thread_type()
 {
   ags_thread_get_type();
 
@@ -507,25 +507,25 @@ ags_main_register_thread_type()
 }
 
 void
-ags_main_quit(AgsMain *ags_main)
+application_context_quit(AgsMain *application_context)
 {
   AgsThread *gui_thread;
 
-  gui_thread = ags_thread_find_type(ags_main->main_loop,
+  gui_thread = ags_thread_find_type(application_context->main_loop,
 				    AGS_TYPE_GUI_THREAD);
 
   ags_thread_stop(gui_thread);
 }
 
 AgsMain*
-ags_main_new()
+application_context_new()
 {
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
-  ags_main = (AgsMain *) g_object_new(AGS_TYPE_MAIN,
+  application_context = (AgsMain *) g_object_new(AGS_TYPE_MAIN,
 				      NULL);
 
-  return(ags_main);
+  return(application_context);
 }
 
 void
@@ -547,16 +547,16 @@ ags_signal_handler(int signr)
 void
 ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
 {
-  pthread_mutex_lock(ags_main->main_loop->timer_mutex);
+  pthread_mutex_lock(application_context->main_loop->timer_mutex);
 
-  g_atomic_int_set(&(ags_main->main_loop->timer_expired),
+  g_atomic_int_set(&(application_context->main_loop->timer_expired),
 		   TRUE);
   
-  if(ags_main->main_loop->timer_wait){
-    pthread_cond_signal(ags_main->main_loop->timer_cond);
+  if(application_context->main_loop->timer_wait){
+    pthread_cond_signal(application_context->main_loop->timer_cond);
   }
   
-  pthread_mutex_unlock(ags_main->main_loop->timer_mutex);
+  pthread_mutex_unlock(application_context->main_loop->timer_mutex);
 
   //  g_message("sig\0");
   //  signal(sig, SIG_IGN);
@@ -741,14 +741,14 @@ main(int argc, char **argv)
     ags_file_open(file);
     ags_file_read(file);
 
-    ags_main = AGS_MAIN(file->ags_main);
+    application_context = AGS_MAIN(file->application_context);
     ags_file_close(file);
 
-    ags_thread_start(ags_main->main_loop);
+    ags_thread_start(application_context->main_loop);
 
     /* complete thread pool */
-    ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-    ags_thread_pool_start(ags_main->thread_pool);
+    application_context->thread_pool->parent = AGS_THREAD(application_context->main_loop);
+    ags_thread_pool_start(application_context->thread_pool);
 
 #ifdef AGS_USE_TIMER
     /* Start the timer */
@@ -769,7 +769,7 @@ main(int argc, char **argv)
     }
 #endif
 
-    gui_thread = ags_thread_find_type(ags_main->main_loop,
+    gui_thread = ags_thread_find_type(application_context->main_loop,
 				      AGS_TYPE_GUI_THREAD);
     
 #ifdef _USE_PTH
@@ -780,10 +780,10 @@ main(int argc, char **argv)
 		 NULL);
 #endif
   }else{
-    ags_main = ags_main_new();
+    application_context = application_context_new();
 
     if(single_thread){
-      ags_main->flags = AGS_MAIN_SINGLE_THREAD;
+      application_context->flags = AGS_MAIN_SINGLE_THREAD;
     }
 
     /* Declare ourself as a real time task */
@@ -795,28 +795,28 @@ main(int argc, char **argv)
 
     mlockall(MCL_CURRENT | MCL_FUTURE);
 
-    if((AGS_MAIN_SINGLE_THREAD & (ags_main->flags)) == 0){
+    if((AGS_MAIN_SINGLE_THREAD & (application_context->flags)) == 0){
       //      GdkFrameClock *frame_clock;
 
 #ifdef AGS_WITH_XMLRPC_C
       AbyssInit(&error);
 
-      xmlrpc_env_init(&(ags_main->env));
+      xmlrpc_env_init(&(application_context->env));
 #endif /* AGS_WITH_XMLRPC_C */
 
       /* AgsDevout */
-      devout = ags_devout_new((GObject *) ags_main);
-      ags_main_add_devout(ags_main,
+      devout = ags_devout_new((GObject *) application_context);
+      application_context_add_devout(application_context,
 			  devout);
 
       /*  */
-      g_object_set(G_OBJECT(ags_main->autosave_thread),
+      g_object_set(G_OBJECT(application_context->autosave_thread),
 		   "devout\0", devout,
 		   NULL);
 
       /* AgsWindow */
-      ags_main->window =
-	window = ags_window_new((GObject *) ags_main);
+      application_context->window =
+	window = ags_window_new((GObject *) application_context);
       g_object_set(G_OBJECT(window),
 		   "devout\0", devout,
 		   NULL);
@@ -829,71 +829,71 @@ main(int argc, char **argv)
       gtk_widget_show_all((GtkWidget *) window);
 
       /* AgsServer */
-      ags_main->server = ags_server_new((GObject *) ags_main);
+      application_context->server = ags_server_new((GObject *) application_context);
 
       /* AgsMainLoop */
-      ags_main->main_loop = (AgsThread *) ags_audio_loop_new((GObject *) devout, (GObject *) ags_main);
-      ags_main->thread_pool->parent = ags_main->main_loop;
-      g_object_ref(G_OBJECT(ags_main->main_loop));
-      ags_connectable_connect(AGS_CONNECTABLE(G_OBJECT(ags_main->main_loop)));
+      application_context->main_loop = (AgsThread *) ags_audio_loop_new((GObject *) devout, (GObject *) application_context);
+      application_context->thread_pool->parent = application_context->main_loop;
+      g_object_ref(G_OBJECT(application_context->main_loop));
+      ags_connectable_connect(AGS_CONNECTABLE(G_OBJECT(application_context->main_loop)));
 
       /* AgsTaskThread */
       async_queue = (AgsThread *) ags_task_thread_new(devout);
-      AGS_TASK_THREAD(async_queue)->thread_pool = ags_main->thread_pool;
-      ags_main_loop_set_async_queue(AGS_MAIN_LOOP(ags_main->main_loop),
+      AGS_TASK_THREAD(async_queue)->thread_pool = application_context->thread_pool;
+      ags_main_loop_set_async_queue(AGS_MAIN_LOOP(application_context->main_loop),
 				    async_queue);
-      ags_thread_add_child_extended(ags_main->main_loop,
+      ags_thread_add_child_extended(application_context->main_loop,
 				    async_queue,
 				    TRUE, TRUE);
 
       /* AgsGuiThread */
       gui_thread = (AgsThread *) ags_gui_thread_new();
-      ags_thread_add_child_extended(ags_main->main_loop,
+      ags_thread_add_child_extended(application_context->main_loop,
 				    gui_thread,
 				    TRUE, TRUE);
 
       /* AgsDevoutThread */
       devout_thread = (AgsThread *) ags_devout_thread_new(devout);
-      ags_thread_add_child_extended(ags_main->main_loop,
+      ags_thread_add_child_extended(application_context->main_loop,
 				    devout_thread,
 				    TRUE, TRUE);
 
       /* AgsExportThread */
       export_thread = (AgsThread *) ags_export_thread_new(devout, NULL);
-      ags_thread_add_child_extended(ags_main->main_loop,
+      ags_thread_add_child_extended(application_context->main_loop,
 				    export_thread,
 				    TRUE, TRUE);
 
       /* start thread tree */
-      ags_thread_start(ags_main->main_loop);
+      ags_thread_start(application_context->main_loop);
 
       /* wait thread */
-      pthread_mutex_lock(AGS_THREAD(ags_main->main_loop)->start_mutex);
+      pthread_mutex_lock(AGS_THREAD(application_context->main_loop)->start_mutex);
 
-      g_atomic_int_set(&(AGS_THREAD(ags_main->main_loop)->start_wait),
+      g_atomic_int_set(&(AGS_THREAD(application_context->main_loop)->start_wait),
 		       TRUE);
 	
-      if(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
-	 g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
-	while(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
-	      g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
-	  pthread_cond_wait(AGS_THREAD(ags_main->main_loop)->start_cond,
-			    AGS_THREAD(ags_main->main_loop)->start_mutex);
+      if(g_atomic_int_get(&(AGS_THREAD(application_context->main_loop)->start_wait)) == TRUE &&
+	 g_atomic_int_get(&(AGS_THREAD(application_context->main_loop)->start_done)) == FALSE){
+	while(g_atomic_int_get(&(AGS_THREAD(application_context->main_loop)->start_wait)) == TRUE &&
+	      g_atomic_int_get(&(AGS_THREAD(application_context->main_loop)->start_done)) == FALSE){
+	  pthread_cond_wait(AGS_THREAD(application_context->main_loop)->start_cond,
+			    AGS_THREAD(application_context->main_loop)->start_mutex);
 	}
       }
 	
-      pthread_mutex_unlock(AGS_THREAD(ags_main->main_loop)->start_mutex);
+      pthread_mutex_unlock(AGS_THREAD(application_context->main_loop)->start_mutex);
 
       /* complete thread pool */
-      ags_thread_pool_start(ags_main->thread_pool);
+      ags_thread_pool_start(application_context->thread_pool);
     }else{
       AgsSingleThread *single_thread;
 
-      devout = ags_devout_new((GObject *) ags_main);
-      ags_main_add_devout(ags_main,
+      devout = ags_devout_new((GObject *) application_context);
+      application_context_add_devout(application_context,
 			  devout);
 
-      g_object_set(G_OBJECT(ags_main->autosave_thread),
+      g_object_set(G_OBJECT(application_context->autosave_thread),
 		   "devout\0", devout,
 		   NULL);
 
@@ -901,8 +901,8 @@ main(int argc, char **argv)
       single_thread = ags_single_thread_new((GObject *) devout);
 
       /* AgsWindow */
-      ags_main->window = 
-	window = ags_window_new((GObject *) ags_main);
+      application_context->window = 
+	window = ags_window_new((GObject *) application_context);
       g_object_set(G_OBJECT(window),
 		   "devout\0", devout,
 		   NULL);
@@ -913,12 +913,12 @@ main(int argc, char **argv)
       gtk_widget_show_all((GtkWidget *) window);
 
       /* AgsMainLoop */
-      ags_main->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) ags_main));
-      g_object_ref(G_OBJECT(ags_main->main_loop));
+      application_context->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) application_context));
+      g_object_ref(G_OBJECT(application_context->main_loop));
 
       /* complete thread pool */
-      ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-      ags_thread_pool_start(ags_main->thread_pool);
+      application_context->thread_pool->parent = AGS_THREAD(application_context->main_loop);
+      ags_thread_pool_start(application_context->thread_pool);
 
       /* start thread tree */
       ags_thread_start((AgsThread *) single_thread);
@@ -943,7 +943,7 @@ main(int argc, char **argv)
     }
 #endif
 
-    gui_thread = ags_thread_find_type(ags_main->main_loop,
+    gui_thread = ags_thread_find_type(application_context->main_loop,
 				      AGS_TYPE_GUI_THREAD);
 
     if(!single_thread){

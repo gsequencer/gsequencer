@@ -134,18 +134,18 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   GList *list, *list_start;
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = (AgsAudioLoop *) ags_main->main_loop;
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -541,8 +541,8 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
   AgsTask *task;
 
   task = (AgsTask *) task_completion->task;
-  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
-  devout_thread = (AgsDevoutThread *) ags_thread_find_type(AGS_MAIN(window->ags_main)->main_loop,
+  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->application_context)->window;
+  devout_thread = (AgsDevoutThread *) ags_thread_find_type(AGS_MAIN(window->application_context)->main_loop,
 							   AGS_TYPE_DEVOUT_THREAD);
 
   if(devout_thread->error != NULL){

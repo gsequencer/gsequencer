@@ -132,18 +132,18 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   gdouble length;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
   
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
   
@@ -209,7 +209,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *ags_main;
+  AgsMain *application_context;
 
   GList *list;
 
@@ -227,12 +227,12 @@ ags_matrix_tact_callback(AgsAudio *audio,
   window = gtk_widget_get_ancestor(matrix,
 				   AGS_TYPE_WINDOW);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
   
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
   

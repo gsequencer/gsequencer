@@ -124,7 +124,7 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   //TODO:JK: revise me
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", window->ags_main,
+				  "main\0", window->application_context,
 				  "filename\0", g_strdup(window->name),
 				  NULL);
   ags_file_rw_open(file,
@@ -143,7 +143,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   gint response;
       
@@ -166,12 +166,12 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     AgsSaveFile *save_file;
     char *filename;
 
-    ags_main = window->ags_main;
+    application_context = window->application_context;
 
     /* get audio loop */
     pthread_mutex_lock(&(ags_application_mutex));
 
-    audio_loop = ags_main->main_loop;
+    audio_loop = application_context->main_loop;
 
     pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -183,7 +183,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->ags_main,
+				    "main\0", window->application_context,
 				    "filename\0", filename,
 				    NULL);
 
@@ -242,7 +242,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     //TODO:JK: revise me
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->ags_main,
+				    "main\0", window->application_context,
 				    "filename\0", g_strdup(window->name),
 				    NULL);
 
@@ -251,7 +251,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    ags_main_quit(AGS_MAIN(window->ags_main));
+    application_context_quit(AGS_MAIN(window->application_context));
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }
@@ -275,16 +275,16 @@ ags_menu_bar_add_panel_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -326,16 +326,16 @@ ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -376,16 +376,16 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -429,18 +429,18 @@ ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   matrix = ags_matrix_new(G_OBJECT(window->devout));
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -482,18 +482,18 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   synth = ags_synth_new(G_OBJECT(window->devout));
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -530,18 +530,18 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
 
   ffplayer = ags_ffplayer_new(G_OBJECT(window->devout));
 
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 

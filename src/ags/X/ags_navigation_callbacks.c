@@ -107,17 +107,17 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));
   
-  ags_main = window->ags_main;
+  application_context = window->application_context;
 
   /* get audio loop */
   pthread_mutex_lock(&(ags_application_mutex));
 
-  audio_loop = ags_main->main_loop;
+  audio_loop = application_context->main_loop;
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -493,7 +493,7 @@ ags_navigation_tic_callback(AgsDevout *devout,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *ags_main;
+  AgsMain *application_context;
   
   if((AGS_NAVIGATION_BLOCK_TIC & (navigation->flags)) != 0){
     navigation->flags &= (~AGS_NAVIGATION_BLOCK_TIC);
@@ -503,12 +503,12 @@ ags_navigation_tic_callback(AgsDevout *devout,
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
   if(window->devout->delay_counter == 0.0){    
-    ags_main = window->ags_main;
+    application_context = window->application_context;
 
     /* get audio loop */
     pthread_mutex_lock(&(ags_application_mutex));
 
-    audio_loop = ags_main->main_loop;
+    audio_loop = application_context->main_loop;
 
     pthread_mutex_unlock(&(ags_application_mutex));
 
