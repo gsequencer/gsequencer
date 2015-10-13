@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_main_loop.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
@@ -518,7 +519,7 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
 }
 
 AgsThreadApplicationContext*
-ags_thread_application_context_new(AgsMainLoop *main_loop,
+ags_thread_application_context_new(AgsThread *main_loop,
 				   AgsConfig *config)
 {
   AgsThreadApplicationContext *thread_application_context;

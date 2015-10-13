@@ -29,11 +29,6 @@
 #include <ags/thread/ags_thread-posix.h>
 #endif 
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_devout_thread.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_gui_thread.h>
-
 #include <unistd.h>
 
 #define AGS_TYPE_SINGLE_THREAD                (ags_single_thread_get_type())
@@ -43,7 +38,7 @@
 #define AGS_IS_SINGLE_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SINGLE_THREAD))
 #define AGS_SINGLE_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SINGLE_THREAD, AgsSingleThreadClass))
 
-#define AGS_SINGLE_THREAD_DEFAULT_GUI_JIFFIE (30)
+#define AGS_SINGLE_THREAD_DEFAULT_JIFFIE (48.0)
 
 typedef struct _AgsSingleThread AgsSingleThread;
 typedef struct _AgsSingleThreadClass AgsSingleThreadClass;
@@ -51,11 +46,6 @@ typedef struct _AgsSingleThreadClass AgsSingleThreadClass;
 struct _AgsSingleThread
 {
   AgsThread thread;
-
-  AgsAudioLoop *audio_loop;
-  AgsDevoutThread *devout_thread;
-  AgsTaskThread *task_thread;
-  AgsGuiThread *gui_thread;
 };
 
 struct _AgsSingleThreadClass
@@ -68,4 +58,3 @@ GType ags_single_thread_get_type();
 AgsSingleThread* ags_single_thread_new();
 
 #endif /*__AGS_SINGLE_THREAD_H__*/
-
