@@ -25,10 +25,6 @@
 #include <ags/object/ags_async_queue.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_export_thread.h>
-#include <ags/thread/ags_devout_thread.h>
-#include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <ags/audio/ags_devout.h>

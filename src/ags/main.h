@@ -23,13 +23,6 @@
 #define _GNU_SOURCE
 #define ALSA_PCM_NEW_HW_PARAMS_API
 
-#ifndef PACKAGE_VERSION
-#define AGS_VERSION "0.4.2\0"
-#else
-#define AGS_VERSION PACKAGE_VERSION
-#endif
-
-#define AGS_BUILD_ID "CEST 13-10-2015 04:33\0"
 #define AGS_DEFAULT_DIRECTORY ".gsequencer\0"
 #define AGS_DEFAULT_CONFIG "ags.conf\0"
 #define AGS_PRIORITY (5)

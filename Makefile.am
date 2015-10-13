@@ -230,7 +230,6 @@ libags_thread_h_sources = \
 	src/ags/thread/ags_task_completion.h \
 	src/ags/thread/ags_task_thread.h \
 	src/ags/thread/ags_thread_application_context.h \
-	src/ags/thread/ags_thread_file_xml.h \
 	src/ags/thread/ags_thread_pool.h \
 	src/ags/thread/ags_thread-posix.h \
 	src/ags/thread/ags_timestamp_thread.h
@@ -248,7 +247,6 @@ libags_thread_c_sources = \
 	src/ags/thread/ags_task_completion.c \
 	src/ags/thread/ags_task_thread.c \
 	src/ags/thread/ags_thread_application_context.c \
-	src/ags/thread/ags_thread_file_xml.c \
 	src/ags/thread/ags_thread_pool.c \
 	src/ags/thread/ags_thread-posix.c \
 	src/ags/thread/ags_timestamp_thread.c
@@ -257,12 +255,14 @@ libags_thread_c_sources = \
 deprecated_libags_thread_file_h_sources =
 
 libags_thread_file_h_sources = \
-	$(deprecated_libags_thread_file_h_sources)
+	$(deprecated_libags_thread_file_h_sources) \
+	src/ags/thread/file/ags_thread_file_xml.h
 
 deprecated_libags_thread_file_c_sources =
 
 libags_thread_file_c_sources = \
-	$(deprecated_libags_thread_file_c_sources)
+	$(deprecated_libags_thread_file_c_sources) \
+	src/ags/thread/file/ags_thread_file_xml.c
 
 # libags-server all files
 deprecated_libags_server_h_sources =

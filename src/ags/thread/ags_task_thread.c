@@ -19,17 +19,14 @@
 
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_async_queue.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_returnable_thread.h>
 
-#include <ags/audio/ags_devout.h>
-
-#include <ags/audio/ags_config.h>
+#include <sys/types.h>
 
 #include <fontconfig/fontconfig.h>
 #include <math.h>
@@ -54,9 +51,6 @@ void ags_task_thread_run(AgsThread *thread);
 void ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpointer data);
 void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpointer data);
 
-extern pthread_mutex_t ags_application_mutex;
-extern AgsConfig *config;
-
 /**
  * SECTION:ags_task_thread
  * @short_description: task thread
@@ -69,8 +63,6 @@ extern AgsConfig *config;
 
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
-
-static gboolean DEBUG;
 
 GType
 ags_task_thread_get_type()
@@ -210,12 +202,19 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 void
 ags_task_thread_connect(AgsConnectable *connectable)
 {
+  AgsThread *main_loop;
   AgsTaskThread *task_thread;
+
+  GObject *application_context;
 
   ags_task_thread_parent_connectable_interface->connect(connectable);
 
   task_thread = AGS_TASK_THREAD(connectable);
-  task_thread->thread_pool = AGS_MAIN(AGS_AUDIO_LOOP(AGS_THREAD(task_thread)->parent)->application_context)->thread_pool;
+
+  main_loop = ags_thread_get_toplevel((AgsThread *) task_thread);
+  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
+
+  task_thread->thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
   task_thread->thread_pool->parent = (AgsThread *) task_thread;
 }
 
@@ -304,33 +303,12 @@ ags_task_thread_start(AgsThread *thread)
 void
 ags_task_thread_run(AgsThread *thread)
 {
-  AgsDevout *devout;
   AgsTaskThread *task_thread;
   GList *list;
-  guint buffer_size;
-  guint samplerate;
-  static struct timespec play_idle;
-  static useconds_t idle;
   guint prev_pending;
   static gboolean initialized = FALSE;
-
-  pthread_mutex_lock(&(ags_application_mutex));
   
   task_thread = AGS_TASK_THREAD(thread);
-  devout = AGS_DEVOUT(thread->devout);
-
-  /*
-  buffer_size = g_ascii_strtoull(ags_config_get(config,
-						AGS_CONFIG_DEVOUT,
-						"buffer-size\0"),
-				 NULL,
-				 10);
-  samplerate = g_ascii_strtoull(ags_config_get(config,
-					       AGS_CONFIG_DEVOUT,
-					       "samplerate\0"),
-				NULL,
-				10);
-  */
   
   if(!initialized){
     //    play_idle.tv_sec = 0;
@@ -339,8 +317,6 @@ ags_task_thread_run(AgsThread *thread)
 
     initialized = TRUE;
   }
-
-  pthread_mutex_unlock(&(ags_application_mutex));
 
   /*  */
   pthread_mutex_lock(task_thread->read_mutex);

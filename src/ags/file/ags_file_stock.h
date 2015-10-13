@@ -64,6 +64,7 @@
 #define AGS_FILE_BUILD_ID_PROP "build-id\0"
 #define AGS_FILE_XPATH_PROP "xpath\0"
 #define AGS_FILE_FLAGS_PROP "flags\0"
+#define AGS_FILE_CONTEXT_PROP "context\0"
 
 #define AGS_FILE_DYNAMIC_WIDGET_LED (g_type_name(AgsTypeLed))
 #define AGS_FILE_DYNAMIC_WIDGET_VINDICATOR (g_type_name(AgsTypeVIndicator))
