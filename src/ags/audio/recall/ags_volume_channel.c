@@ -21,8 +21,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_plugin.h>
 
 void ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel);

@@ -210,9 +210,7 @@ am__objects_6 = $(am__objects_1) libags_audio_la-ags_audio.lo \
 	libags_audio_la-ags_recycling.lo \
 	libags_audio_la-ags_recycling_container.lo \
 	libags_audio_la-ags_sound_provider.lo \
-	libags_audio_la-ags_synths.lo libags_audio_la-ags_task.lo \
-	libags_audio_la-ags_timestamp.lo \
-	libags_audio_la-ags_timestamp_factory.lo
+	libags_audio_la-ags_synths.lo
 am__objects_7 = $(am__objects_1) libags_audio_la-ags_audio_loop.lo \
 	libags_audio_la-ags_audio_thread.lo \
 	libags_audio_la-ags_channel_thread.lo \
@@ -386,11 +384,14 @@ am__objects_15 = $(am__objects_1) \
 	libags_thread_la-ags_returnable_thread.lo \
 	libags_thread_la-ags_single_thread.lo \
 	libags_thread_la-ags_task_completion.lo \
+	libags_thread_la-ags_task.lo \
 	libags_thread_la-ags_task_thread.lo \
 	libags_thread_la-ags_thread_application_context.lo \
 	libags_thread_la-ags_thread_pool.lo \
 	libags_thread_la-ags_thread-posix.lo \
-	libags_thread_la-ags_timestamp_thread.lo
+	libags_thread_la-ags_timestamp_factory.lo \
+	libags_thread_la-ags_timestamp_thread.lo \
+	libags_thread_la-ags_timestamp.lo
 am__objects_16 = $(am__objects_1) \
 	libags_thread_la-ags_thread_file_xml.lo
 am_libags_thread_la_OBJECTS = $(am__objects_15) $(am__objects_16)
@@ -981,11 +982,14 @@ libags_thread_h_sources = \
 	src/ags/thread/ags_returnable_thread.h \
 	src/ags/thread/ags_single_thread.h \
 	src/ags/thread/ags_task_completion.h \
+	src/ags/thread/ags_task.h \
 	src/ags/thread/ags_task_thread.h \
 	src/ags/thread/ags_thread_application_context.h \
 	src/ags/thread/ags_thread_pool.h \
 	src/ags/thread/ags_thread-posix.h \
-	src/ags/thread/ags_timestamp_thread.h
+	src/ags/thread/ags_timestamp_factory.h \
+	src/ags/thread/ags_timestamp_thread.h \
+	src/ags/thread/ags_timestamp.h
 
 deprecated_libags_thread_c_sources = 
 libags_thread_c_sources = \
@@ -997,11 +1001,14 @@ libags_thread_c_sources = \
 	src/ags/thread/ags_returnable_thread.c \
 	src/ags/thread/ags_single_thread.c \
 	src/ags/thread/ags_task_completion.c \
+	src/ags/thread/ags_task.c \
 	src/ags/thread/ags_task_thread.c \
 	src/ags/thread/ags_thread_application_context.c \
 	src/ags/thread/ags_thread_pool.c \
 	src/ags/thread/ags_thread-posix.c \
-	src/ags/thread/ags_timestamp_thread.c
+	src/ags/thread/ags_timestamp_factory.c \
+	src/ags/thread/ags_timestamp_thread.c \
+	src/ags/thread/ags_timestamp.c
 
 
 # libags-thread - file
@@ -1023,8 +1030,8 @@ libags_server_h_sources = \
 	src/ags/server/ags_registry.h \
 	src/ags/server/ags_remote_task.h \
 	src/ags/server/ags_server.h \
-	src/ags/thread/ags_server_application_context.h \
-	src/ags/thread/ags_service_provider.h
+	src/ags/server/ags_server_application_context.h \
+	src/ags/server/ags_service_provider.h
 
 deprecated_libags_server_c_sources = 
 libags_server_c_sources = \
@@ -1032,8 +1039,8 @@ libags_server_c_sources = \
 	src/ags/server/ags_registry.c \
 	src/ags/server/ags_remote_task.c \
 	src/ags/server/ags_server.c \
-	src/ags/thread/ags_server_application_context.c \
-	src/ags/thread/ags_service_provider.c
+	src/ags/server/ags_server_application_context.c \
+	src/ags/server/ags_service_provider.c
 
 
 # libags-server - file
@@ -1087,10 +1094,7 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_recycling_container.h \
 	src/ags/audio/ags_recycling.h \
 	src/ags/audio/ags_sound_provider.h \
-	src/ags/audio/ags_synths.h \
-	src/ags/audio/ags_task.h \
-	src/ags/audio/ags_timestamp_factory.h \
-	src/ags/audio/ags_timestamp.h
+	src/ags/audio/ags_synths.h
 
 deprecated_libags_audio_c_sources = 
 libags_audio_c_sources = \
@@ -1131,10 +1135,7 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_recycling.c \
 	src/ags/audio/ags_recycling_container.c \
 	src/ags/audio/ags_sound_provider.c \
-	src/ags/audio/ags_synths.c \
-	src/ags/audio/ags_task.c \
-	src/ags/audio/ags_timestamp.c \
-	src/ags/audio/ags_timestamp_factory.c
+	src/ags/audio/ags_synths.c
 
 
 # libags-audio - thread
@@ -2100,9 +2101,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_stream_channel_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_stream_recycling.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_synths.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_task.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_timestamp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_timestamp_factory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_toggle_led.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_toggle_pattern_bit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_unref_audio_signal.Plo@am__quote@
@@ -2167,12 +2165,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_mutex_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_returnable_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_single_thread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_task.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_task_completion.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_task_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_thread-posix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_thread_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_thread_file_xml.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_thread_pool.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_timestamp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_timestamp_factory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_thread_la-ags_timestamp_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_audio_preferences.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_audio_preferences_callbacks.Plo@am__quote@
@@ -2751,27 +2752,6 @@ libags_audio_la-ags_synths.lo: src/ags/audio/ags_synths.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_synths.c' object='libags_audio_la-ags_synths.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_synths.lo `test -f 'src/ags/audio/ags_synths.c' || echo '$(srcdir)/'`src/ags/audio/ags_synths.c
-
-libags_audio_la-ags_task.lo: src/ags/audio/ags_task.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_task.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_task.Tpo -c -o libags_audio_la-ags_task.lo `test -f 'src/ags/audio/ags_task.c' || echo '$(srcdir)/'`src/ags/audio/ags_task.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_task.Tpo $(DEPDIR)/libags_audio_la-ags_task.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_task.c' object='libags_audio_la-ags_task.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_task.lo `test -f 'src/ags/audio/ags_task.c' || echo '$(srcdir)/'`src/ags/audio/ags_task.c
-
-libags_audio_la-ags_timestamp.lo: src/ags/audio/ags_timestamp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_timestamp.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_timestamp.Tpo -c -o libags_audio_la-ags_timestamp.lo `test -f 'src/ags/audio/ags_timestamp.c' || echo '$(srcdir)/'`src/ags/audio/ags_timestamp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_timestamp.Tpo $(DEPDIR)/libags_audio_la-ags_timestamp.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_timestamp.c' object='libags_audio_la-ags_timestamp.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_timestamp.lo `test -f 'src/ags/audio/ags_timestamp.c' || echo '$(srcdir)/'`src/ags/audio/ags_timestamp.c
-
-libags_audio_la-ags_timestamp_factory.lo: src/ags/audio/ags_timestamp_factory.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_timestamp_factory.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_timestamp_factory.Tpo -c -o libags_audio_la-ags_timestamp_factory.lo `test -f 'src/ags/audio/ags_timestamp_factory.c' || echo '$(srcdir)/'`src/ags/audio/ags_timestamp_factory.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_timestamp_factory.Tpo $(DEPDIR)/libags_audio_la-ags_timestamp_factory.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_timestamp_factory.c' object='libags_audio_la-ags_timestamp_factory.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_timestamp_factory.lo `test -f 'src/ags/audio/ags_timestamp_factory.c' || echo '$(srcdir)/'`src/ags/audio/ags_timestamp_factory.c
 
 libags_audio_la-ags_audio_loop.lo: src/ags/audio/thread/ags_audio_loop.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_audio_loop.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_audio_loop.Tpo -c -o libags_audio_la-ags_audio_loop.lo `test -f 'src/ags/audio/thread/ags_audio_loop.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_audio_loop.c
@@ -3795,19 +3775,19 @@ libags_server_la-ags_server.lo: src/ags/server/ags_server.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o libags_server_la-ags_server.lo `test -f 'src/ags/server/ags_server.c' || echo '$(srcdir)/'`src/ags/server/ags_server.c
 
-libags_server_la-ags_server_application_context.lo: src/ags/thread/ags_server_application_context.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT libags_server_la-ags_server_application_context.lo -MD -MP -MF $(DEPDIR)/libags_server_la-ags_server_application_context.Tpo -c -o libags_server_la-ags_server_application_context.lo `test -f 'src/ags/thread/ags_server_application_context.c' || echo '$(srcdir)/'`src/ags/thread/ags_server_application_context.c
+libags_server_la-ags_server_application_context.lo: src/ags/server/ags_server_application_context.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT libags_server_la-ags_server_application_context.lo -MD -MP -MF $(DEPDIR)/libags_server_la-ags_server_application_context.Tpo -c -o libags_server_la-ags_server_application_context.lo `test -f 'src/ags/server/ags_server_application_context.c' || echo '$(srcdir)/'`src/ags/server/ags_server_application_context.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_server_la-ags_server_application_context.Tpo $(DEPDIR)/libags_server_la-ags_server_application_context.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/ags_server_application_context.c' object='libags_server_la-ags_server_application_context.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/server/ags_server_application_context.c' object='libags_server_la-ags_server_application_context.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o libags_server_la-ags_server_application_context.lo `test -f 'src/ags/thread/ags_server_application_context.c' || echo '$(srcdir)/'`src/ags/thread/ags_server_application_context.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o libags_server_la-ags_server_application_context.lo `test -f 'src/ags/server/ags_server_application_context.c' || echo '$(srcdir)/'`src/ags/server/ags_server_application_context.c
 
-libags_server_la-ags_service_provider.lo: src/ags/thread/ags_service_provider.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT libags_server_la-ags_service_provider.lo -MD -MP -MF $(DEPDIR)/libags_server_la-ags_service_provider.Tpo -c -o libags_server_la-ags_service_provider.lo `test -f 'src/ags/thread/ags_service_provider.c' || echo '$(srcdir)/'`src/ags/thread/ags_service_provider.c
+libags_server_la-ags_service_provider.lo: src/ags/server/ags_service_provider.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT libags_server_la-ags_service_provider.lo -MD -MP -MF $(DEPDIR)/libags_server_la-ags_service_provider.Tpo -c -o libags_server_la-ags_service_provider.lo `test -f 'src/ags/server/ags_service_provider.c' || echo '$(srcdir)/'`src/ags/server/ags_service_provider.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_server_la-ags_service_provider.Tpo $(DEPDIR)/libags_server_la-ags_service_provider.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/ags_service_provider.c' object='libags_server_la-ags_service_provider.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/server/ags_service_provider.c' object='libags_server_la-ags_service_provider.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o libags_server_la-ags_service_provider.lo `test -f 'src/ags/thread/ags_service_provider.c' || echo '$(srcdir)/'`src/ags/thread/ags_service_provider.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o libags_server_la-ags_service_provider.lo `test -f 'src/ags/server/ags_service_provider.c' || echo '$(srcdir)/'`src/ags/server/ags_service_provider.c
 
 libags_thread_la-ags_autosave_thread.lo: src/ags/thread/ags_autosave_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT libags_thread_la-ags_autosave_thread.lo -MD -MP -MF $(DEPDIR)/libags_thread_la-ags_autosave_thread.Tpo -c -o libags_thread_la-ags_autosave_thread.lo `test -f 'src/ags/thread/ags_autosave_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_autosave_thread.c
@@ -3858,6 +3838,13 @@ libags_thread_la-ags_task_completion.lo: src/ags/thread/ags_task_completion.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o libags_thread_la-ags_task_completion.lo `test -f 'src/ags/thread/ags_task_completion.c' || echo '$(srcdir)/'`src/ags/thread/ags_task_completion.c
 
+libags_thread_la-ags_task.lo: src/ags/thread/ags_task.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT libags_thread_la-ags_task.lo -MD -MP -MF $(DEPDIR)/libags_thread_la-ags_task.Tpo -c -o libags_thread_la-ags_task.lo `test -f 'src/ags/thread/ags_task.c' || echo '$(srcdir)/'`src/ags/thread/ags_task.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_la-ags_task.Tpo $(DEPDIR)/libags_thread_la-ags_task.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/ags_task.c' object='libags_thread_la-ags_task.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o libags_thread_la-ags_task.lo `test -f 'src/ags/thread/ags_task.c' || echo '$(srcdir)/'`src/ags/thread/ags_task.c
+
 libags_thread_la-ags_task_thread.lo: src/ags/thread/ags_task_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT libags_thread_la-ags_task_thread.lo -MD -MP -MF $(DEPDIR)/libags_thread_la-ags_task_thread.Tpo -c -o libags_thread_la-ags_task_thread.lo `test -f 'src/ags/thread/ags_task_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_task_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_la-ags_task_thread.Tpo $(DEPDIR)/libags_thread_la-ags_task_thread.Plo
@@ -3886,12 +3873,26 @@ libags_thread_la-ags_thread-posix.lo: src/ags/thread/ags_thread-posix.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o libags_thread_la-ags_thread-posix.lo `test -f 'src/ags/thread/ags_thread-posix.c' || echo '$(srcdir)/'`src/ags/thread/ags_thread-posix.c
 
+libags_thread_la-ags_timestamp_factory.lo: src/ags/thread/ags_timestamp_factory.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT libags_thread_la-ags_timestamp_factory.lo -MD -MP -MF $(DEPDIR)/libags_thread_la-ags_timestamp_factory.Tpo -c -o libags_thread_la-ags_timestamp_factory.lo `test -f 'src/ags/thread/ags_timestamp_factory.c' || echo '$(srcdir)/'`src/ags/thread/ags_timestamp_factory.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_la-ags_timestamp_factory.Tpo $(DEPDIR)/libags_thread_la-ags_timestamp_factory.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/ags_timestamp_factory.c' object='libags_thread_la-ags_timestamp_factory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o libags_thread_la-ags_timestamp_factory.lo `test -f 'src/ags/thread/ags_timestamp_factory.c' || echo '$(srcdir)/'`src/ags/thread/ags_timestamp_factory.c
+
 libags_thread_la-ags_timestamp_thread.lo: src/ags/thread/ags_timestamp_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT libags_thread_la-ags_timestamp_thread.lo -MD -MP -MF $(DEPDIR)/libags_thread_la-ags_timestamp_thread.Tpo -c -o libags_thread_la-ags_timestamp_thread.lo `test -f 'src/ags/thread/ags_timestamp_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_timestamp_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_la-ags_timestamp_thread.Tpo $(DEPDIR)/libags_thread_la-ags_timestamp_thread.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/ags_timestamp_thread.c' object='libags_thread_la-ags_timestamp_thread.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o libags_thread_la-ags_timestamp_thread.lo `test -f 'src/ags/thread/ags_timestamp_thread.c' || echo '$(srcdir)/'`src/ags/thread/ags_timestamp_thread.c
+
+libags_thread_la-ags_timestamp.lo: src/ags/thread/ags_timestamp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT libags_thread_la-ags_timestamp.lo -MD -MP -MF $(DEPDIR)/libags_thread_la-ags_timestamp.Tpo -c -o libags_thread_la-ags_timestamp.lo `test -f 'src/ags/thread/ags_timestamp.c' || echo '$(srcdir)/'`src/ags/thread/ags_timestamp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_thread_la-ags_timestamp.Tpo $(DEPDIR)/libags_thread_la-ags_timestamp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/thread/ags_timestamp.c' object='libags_thread_la-ags_timestamp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o libags_thread_la-ags_timestamp.lo `test -f 'src/ags/thread/ags_timestamp.c' || echo '$(srcdir)/'`src/ags/thread/ags_timestamp.c
 
 libags_thread_la-ags_thread_file_xml.lo: src/ags/thread/file/ags_thread_file_xml.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT libags_thread_la-ags_thread_file_xml.lo -MD -MP -MF $(DEPDIR)/libags_thread_la-ags_thread_file_xml.Tpo -c -o libags_thread_la-ags_thread_file_xml.lo `test -f 'src/ags/thread/file/ags_thread_file_xml.c' || echo '$(srcdir)/'`src/ags/thread/file/ags_thread_file_xml.c

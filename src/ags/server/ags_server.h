@@ -36,10 +36,10 @@
 #include <xmlrpc-c/server_abyss.h>
 #endif
 
-//#include "config.h"
-
 #include <ags/server/ags_registry.h>
 #include <ags/server/ags_remote_task.h>
+
+#include <pthread.h>
 
 #define AGS_TYPE_SERVER                (ags_server_get_type())
 #define AGS_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER, AgsServer))
@@ -71,8 +71,9 @@ struct _AgsServer
 
   void *server_info;
   
-  GObject *main;
-
+  GObject *application_context;
+  pthread_mutex_t  *application_mutex;
+  
   AgsRegistry *registry;
   AgsRemoteTask *remote_task;
 };
@@ -100,6 +101,6 @@ xmlrpc_value* ags_server_object_set_property(xmlrpc_env *env,
 					     void *server_info);
 #endif
 
-AgsServer* ags_server_new(GObject *main);
+AgsServer* ags_server_new(GObject *application_context);
 
 #endif /*__AGS_SERVER_H__*/

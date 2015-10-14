@@ -19,7 +19,10 @@
 
 #include <ags/file/ags_file_link.h>
 
+#include <ags/object/ags_plugin.h>
+
 void ags_file_link_class_init(AgsFileLinkClass *file_link);
+void ags_file_link_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_file_link_init(AgsFileLink *file_link);
 void ags_file_link_set_property(GObject *gobject,
 				guint prop_id,
@@ -29,6 +32,16 @@ void ags_file_link_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
+gchar* ags_file_link_get_name(AgsPlugin *plugin);
+void ags_file_link_set_name(AgsPlugin *plugin, gchar *name);
+gchar* ags_file_link_get_version(AgsPlugin *plugin);
+void ags_file_link_set_version(AgsPlugin *plugin, gchar *version);
+gchar* ags_file_link_get_build_id(AgsPlugin *plugin);
+void ags_file_link_set_build_id(AgsPlugin *plugin, gchar *build_id);
+gchar* ags_file_link_get_xml_type(AgsPlugin *plugin);
+void ags_file_link_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_file_link_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+xmlNode* ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_file_link_finalize(GObject *gobject);
 
 /**
@@ -44,9 +57,7 @@ void ags_file_link_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_FILENAME,
-  PROP_AUDIO_CHANNEL,
   PROP_DATA,
-  PROP_TIMESTAMP,
 };
 
 static gpointer ags_file_link_parent_class = NULL;
@@ -69,10 +80,20 @@ ags_file_link_get_type()
       (GInstanceInitFunc) ags_file_link_init,
     };
 
+    static const GInterfaceInfo ags_plugin_interface_info = {
+      (GInterfaceInitFunc) ags_file_link_plugin_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_file_link = g_type_register_static(G_TYPE_OBJECT,
 						"AgsFileLink\0",
 						&ags_file_link_info,
 						0);
+
+    g_type_add_interface_static(ags_type_file_link,
+				AGS_TYPE_PLUGIN,
+				&ags_plugin_interface_info);
   }
 
   return (ags_type_file_link);
@@ -104,16 +125,6 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
 				  PROP_FILENAME,
 				  param_spec);
 
-    param_spec = g_param_spec_uint("audio-channel\0",
-				   "audio channel to read\0",
-				   "The selected audio channel to read\0",
-				   0, 256,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
-				  param_spec);
-
   param_spec = g_param_spec_string("data\0",
 				   "the data\0",
 				   "The embedded data\0",
@@ -122,25 +133,38 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
   g_object_class_install_property(gobject,
 				  PROP_DATA,
 				  param_spec);
+}
 
-  param_spec = g_param_spec_object("timestamp\0",
-				   "timestamp\0",
-				   "The timestamp\0",
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TIMESTAMP,
-				  param_spec);
+void
+ags_file_link_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->get_name = ags_file_link_get_name;
+  plugin->set_name = ags_file_link_set_name;
+  plugin->get_version = ags_file_link_get_version;
+  plugin->set_version = ags_file_link_set_version;
+  plugin->get_build_id = ags_file_link_get_build_id;
+  plugin->set_build_id = ags_file_link_set_build_id;
+  plugin->get_xml_type = ags_file_link_get_xml_type;
+  plugin->set_xml_type = ags_file_link_set_xml_type;
+  plugin->get_ports = NULL;
+  plugin->read = ags_file_link_read;
+  plugin->write = ags_file_link_write;
+  plugin->set_ports = NULL;
 }
 
 void
 ags_file_link_init(AgsFileLink *file_link)
 {
+  file_link->version = NULL;
+  file_link->build_id = NULL;
+
+  file_link->name = NULL;
+
+  file_link->xml_type = NULL;
+
   file_link->filename = NULL;
-  file_link->audio_channel = 0;
   
   file_link->data = NULL;
-  file_link->timestamp = NULL;
 }
 
 void
@@ -167,11 +191,6 @@ ags_file_link_set_property(GObject *gobject,
       file_link->filename = g_strdup(filename);
     }
     break;
-  case PROP_AUDIO_CHANNEL:
-    {
-      file_link->audio_channel = g_value_get_uint(value);
-    }
-    break;
   case PROP_DATA:
     {
       char *data;
@@ -183,27 +202,6 @@ ags_file_link_set_property(GObject *gobject,
       }
 
       file_link->data = data;
-    }
-    break;
-  case PROP_TIMESTAMP:
-    {
-      GObject *timestamp;
-
-      timestamp = (GObject *) g_value_get_object(value);
-
-      if((AgsTimestamp *) timestamp == file_link->timestamp){
-	return;
-      }
-
-      if(file_link->timestamp != NULL){
-	g_object_unref(file_link->timestamp);
-      }
-
-      if(timestamp != NULL){
-	g_object_ref(timestamp);
-      }
-
-      file_link->timestamp = (AgsTimestamp *) timestamp;
     }
     break;
   default:
@@ -228,25 +226,110 @@ ags_file_link_get_property(GObject *gobject,
       g_value_set_string(value, file_link->filename);
     }
     break;
-  case PROP_AUDIO_CHANNEL:
-    {
-      g_value_set_uint(value, file_link->audio_channel);
-    }
-    break;
   case PROP_DATA:
     {
       g_value_set_string(value, file_link->data);
-    }
-    break;
-  case PROP_TIMESTAMP:
-    {
-      g_value_set_object(value, file_link->timestamp);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+gchar*
+ags_file_link_get_name(AgsPlugin *plugin)
+{
+  return(AGS_FILE_LINK(plugin)->name);
+}
+
+void
+ags_file_link_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_FILE_LINK(plugin)->name = name;
+}
+
+gchar*
+ags_file_link_get_version(AgsPlugin *plugin)
+{
+  return(AGS_FILE_LINK(plugin)->version);
+}
+
+void
+ags_file_link_set_version(AgsPlugin *plugin, gchar *version)
+{
+  AGS_FILE_LINK(plugin)->version = version;
+}
+
+gchar*
+ags_file_link_get_build_id(AgsPlugin *plugin)
+{
+  return(AGS_FILE_LINK(plugin)->build_id);
+}
+
+void
+ags_file_link_set_build_id(AgsPlugin *plugin, gchar *build_id)
+{
+  AGS_FILE_LINK(plugin)->build_id = build_id;
+}
+
+gchar*
+ags_file_link_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_FILE_LINK(plugin)->xml_type);
+}
+
+void
+ags_file_link_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_FILE_LINK(plugin)->xml_type = xml_type;
+}
+
+void
+ags_file_link_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsFile_Link *file_link;
+
+  file_link = AGS_FILE_LINK(plugin);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->application_context,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", file_link,
+				   NULL));
+}
+
+xmlNode*
+ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsFile_Link *file_link;
+  xmlNode *node;
+  gchar *id;
+
+  file_link = AGS_FILE_LINK(plugin);
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    AGS_FILE_LINK(plugin)->xml_type);
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->application_context,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", file_link,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
 }
 
 void
