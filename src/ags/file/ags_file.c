@@ -189,8 +189,8 @@ ags_file_class_init(AgsFileClass *file)
 				  param_spec);
 
   param_spec = g_param_spec_object("application-context\0",
-				   "main object of file\0",
-				   "The main object to write to file.\0",
+				   "application context of file\0",
+				   "The application context to write to file.\0",
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -808,7 +808,7 @@ ags_file_real_write(AgsFile *file)
   /* write server */
   //TODO:JK: implement me
 
-  /* write main */
+  /* write application context */
   ags_file_write_application_context(file,
 				     file->root_node,
 				     file->application_context);

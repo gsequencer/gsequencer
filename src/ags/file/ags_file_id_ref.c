@@ -53,7 +53,7 @@ enum{
   PROP_XPATH,
   PROP_REFERENCE,
   PROP_FILE,
-  PROP_MAIN,
+  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_file_id_ref_parent_class = NULL;
@@ -138,13 +138,13 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 				  PROP_FILE,
 				  param_spec);
 
-  param_spec = g_param_spec_object("main\0",
-				   "main access\0",
-				   "The main object to access the tree\0",
+  param_spec = g_param_spec_object("application-context\0",
+				   "application context access\0",
+				   "The application-context object to access the tree\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
   /* signals */
@@ -226,7 +226,7 @@ ags_file_id_ref_set_property(GObject *gobject,
       file_id_ref->file = file;
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
       GObject *application_context;
 
@@ -278,7 +278,7 @@ ags_file_id_ref_get_property(GObject *gobject,
       g_value_set_object(value, file_id_ref->file);
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
       g_value_set_object(value, file_id_ref->application_context);
     }
