@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_FILE_SOUND_H__
-#define __AGS_FILE_SOUND_H__
+#ifndef __AGS_AUDIO_FILE_XML_H__
+#define __AGS_AUDIO_FILE_XML_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -33,16 +33,20 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_timestamp.h>
+
+#include <ags/audio/file/ags_audio_file.h>
 
 /* AgsDevout */
 void ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout);
@@ -51,11 +55,11 @@ xmlNode* ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout
 void ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout);
 xmlNode* ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout);
 
-void ags_file_read_devout_play(AgsFile *file, xmlNode *node, AgsDevoutPlay **play);
-xmlNode* ags_file_write_devout_play(AgsFile *file, xmlNode *parent, AgsDevoutPlay *play);
+void ags_file_read_playback(AgsFile *file, xmlNode *node, AgsPlayback **playback);
+xmlNode* ags_file_write_playback(AgsFile *file, xmlNode *parent, AgsPlayback *playback);
 
-void ags_file_read_devout_play_list(AgsFile *file, xmlNode *node, GList **play);
-xmlNode* ags_file_write_devout_play_list(AgsFile *file, xmlNode *parent, GList *play);
+void ags_file_read_playback_list(AgsFile *file, xmlNode *node, GList **playback);
+xmlNode* ags_file_write_playback_list(AgsFile *file, xmlNode *parent, GList *playback);
 
 /* AgsAudio */
 void ags_file_read_audio(AgsFile *file, xmlNode *node, AgsAudio **audio);
@@ -76,10 +80,6 @@ xmlNode* ags_file_write_input(AgsFile *file, xmlNode *parent, AgsChannel *input)
 
 void ags_file_read_output(AgsFile *file, xmlNode *node, AgsChannel *output);
 xmlNode* ags_file_write_output(AgsFile *file, xmlNode *parent, AgsChannel *output);
-
-/* AgsFileLink */
-void ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink *file_link);
-xmlNode* ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link);
 
 /* AgsRecall */
 void ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall);
@@ -196,4 +196,18 @@ xmlNode* ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *
 void ags_file_read_timestamp_list(AgsFile *file, xmlNode *node, GList **timestamp);
 xmlNode* ags_file_write_timestamp_list(AgsFile *file, xmlNode *parent, GList *timestamp);
 
-#endif /*__AGS_FILE_SOUND_H__*/
+/* embedded audio */
+void ags_file_read_embedded_audio(AgsFile *file, xmlNode *node, gchar **embedded_audio);
+xmlNode* ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, gchar *embedded_audio);
+
+void ags_file_read_embedded_audio_list(AgsFile *file, xmlNode *node, GList **embedded_audio);
+xmlNode* ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedded_audio);
+
+/* file link */
+void ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link);
+xmlNode* ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link);
+
+void ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link);
+xmlNode* ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link);
+
+#endif /*__AGS_AUDIO_FILE_XML_H__*/

@@ -71,7 +71,7 @@ struct _AgsAudio
   AgsChannel *output;
   AgsChannel *input;
 
-  gpointer devout_play_domain;
+  GObject *playback_domain;
 
   GList *notation;
 

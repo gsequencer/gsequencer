@@ -228,11 +228,14 @@ libags_thread_h_sources = \
 	src/ags/thread/ags_returnable_thread.h \
 	src/ags/thread/ags_single_thread.h \
 	src/ags/thread/ags_task_completion.h \
+	src/ags/thread/ags_task.h \
 	src/ags/thread/ags_task_thread.h \
 	src/ags/thread/ags_thread_application_context.h \
 	src/ags/thread/ags_thread_pool.h \
 	src/ags/thread/ags_thread-posix.h \
-	src/ags/thread/ags_timestamp_thread.h
+	src/ags/thread/ags_timestamp_factory.h \
+	src/ags/thread/ags_timestamp_thread.h \
+	src/ags/thread/ags_timestamp.h
 
 deprecated_libags_thread_c_sources =
 
@@ -245,11 +248,14 @@ libags_thread_c_sources = \
 	src/ags/thread/ags_returnable_thread.c \
 	src/ags/thread/ags_single_thread.c \
 	src/ags/thread/ags_task_completion.c \
+	src/ags/thread/ags_task.c \
 	src/ags/thread/ags_task_thread.c \
 	src/ags/thread/ags_thread_application_context.c \
 	src/ags/thread/ags_thread_pool.c \
 	src/ags/thread/ags_thread-posix.c \
-	src/ags/thread/ags_timestamp_thread.c
+	src/ags/thread/ags_timestamp_factory.c \
+	src/ags/thread/ags_timestamp_thread.c \
+	src/ags/thread/ags_timestamp.c
 
 # libags-thread - file
 deprecated_libags_thread_file_h_sources =
@@ -272,8 +278,8 @@ libags_server_h_sources = \
 	src/ags/server/ags_registry.h \
 	src/ags/server/ags_remote_task.h \
 	src/ags/server/ags_server.h \
-	src/ags/thread/ags_server_application_context.h \
-	src/ags/thread/ags_service_provider.h
+	src/ags/server/ags_server_application_context.h \
+	src/ags/server/ags_service_provider.h
 
 deprecated_libags_server_c_sources =
 
@@ -282,8 +288,8 @@ libags_server_c_sources = \
 	src/ags/server/ags_registry.c \
 	src/ags/server/ags_remote_task.c \
 	src/ags/server/ags_server.c \
-	src/ags/thread/ags_server_application_context.c \
-	src/ags/thread/ags_service_provider.c
+	src/ags/server/ags_server_application_context.c \
+	src/ags/server/ags_service_provider.c
 
 # libags-server - file
 deprecated_libags_server_file_h_sources =
@@ -338,10 +344,7 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_recycling_container.h \
 	src/ags/audio/ags_recycling.h \
 	src/ags/audio/ags_sound_provider.h \
-	src/ags/audio/ags_synths.h \
-	src/ags/audio/ags_task.h \
-	src/ags/audio/ags_timestamp_factory.h \
-	src/ags/audio/ags_timestamp.h
+	src/ags/audio/ags_synths.h
 
 deprecated_libags_audio_c_sources =
 
@@ -383,10 +386,7 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_recycling.c \
 	src/ags/audio/ags_recycling_container.c \
 	src/ags/audio/ags_sound_provider.c \
-	src/ags/audio/ags_synths.c \
-	src/ags/audio/ags_task.c \
-	src/ags/audio/ags_timestamp.c \
-	src/ags/audio/ags_timestamp_factory.c
+	src/ags/audio/ags_synths.c
 
 # libags-audio - thread
 deprecated_libags_audio_thread_h_sources =
