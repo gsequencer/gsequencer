@@ -24,7 +24,7 @@
 #include <glib-object.h>
 #include <libinstpatch/libinstpatch.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_IPATCH                (ags_ipatch_get_type())
 #define AGS_IPATCH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_IPATCH, AgsIpatch))

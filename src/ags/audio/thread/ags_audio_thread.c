@@ -17,19 +17,20 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_audio_thread.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_channel_thread.h>
 
-#include <ags/audio/ags_config.h>
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
+#include <ags/audio/thread/ags_channel_thread.h>
 
 void ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread);
 void ags_audio_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -50,8 +51,8 @@ void ags_audio_thread_start(AgsThread *thread);
 void ags_audio_thread_run(AgsThread *thread);
 void ags_audio_thread_stop(AgsThread *thread);
 
-void ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsDevoutPlay *devout_play);
-void ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsDevoutPlay *devout_play);
+void ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPlayback *playback);
+void ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPlayback *playback);
 
 /**
  * SECTION:ags_audio_thread
@@ -172,10 +173,10 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   thread = (AgsThread *) audio_thread;
 
   str0 = ags_config_get(config,
-			AGS_CONFIG_DEVOUT,
+			AGS_CONFIG_SOUNDCARD,
 			"samplerate\0");
   str0 = ags_config_get(config,
-			AGS_CONFIG_DEVOUT,
+			AGS_CONFIG_SOUNDCARD,
 			"buffer_size\0");
 
   if(str0 == NULL || str1 == NULL){
@@ -323,8 +324,8 @@ ags_audio_thread_run(AgsThread *thread)
 {
   AgsAudio *audio;
   AgsChannel *output;
-  AgsDevoutPlayDomain *devout_play_domain;
-  AgsDevoutPlay *devout_play;
+  AgsPlaybackDomain *playback_domain;
+  AgsPlayback *playback;
   
   AgsMutexManager *mutex_manager;
   AgsAudioThread *audio_thread;
@@ -368,10 +369,10 @@ ags_audio_thread_run(AgsThread *thread)
     return;
   }
   
-  //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
+  //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
   
   audio = audio_thread->audio;
-  devout_play_domain = audio->devout_play_domain;
+  playback_domain = audio->playback_domain;
   
   //  g_message(" --- a");
   
@@ -424,27 +425,27 @@ ags_audio_thread_run(AgsThread *thread)
       
     pthread_mutex_unlock(&(ags_application_mutex));
 
-    /* get devout play */
+    /* get playback */
     pthread_mutex_lock(output_mutex);
     
-    devout_play = output->devout_play;
+    playback = output->playback;
       
     pthread_mutex_unlock(output_mutex);
 
-    if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
-      ags_audio_thread_play_channel_super_threaded(audio_thread, devout_play);
+    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+      ags_audio_thread_play_channel_super_threaded(audio_thread, playback);
     }else{
       for(stage = 0; stage < 3; stage++){
-	if(audio_thread == devout_play_domain->audio_thread[0]){
-	  ags_channel_recursive_play(output, devout_play->recall_id[0], stage);
+	if(audio_thread == playback_domain->audio_thread[0]){
+	  ags_channel_recursive_play(output, playback->recall_id[0], stage);
 	}
 
-	if(audio_thread == devout_play_domain->audio_thread[1]){
-	  ags_channel_recursive_play(output, devout_play->recall_id[1], stage);
+	if(audio_thread == playback_domain->audio_thread[1]){
+	  ags_channel_recursive_play(output, playback->recall_id[1], stage);
 	}
 
-	if(audio_thread == devout_play_domain->audio_thread[2]){
-	  ags_channel_recursive_play(output, devout_play->recall_id[2], stage);
+	if(audio_thread == playback_domain->audio_thread[2]){
+	  ags_channel_recursive_play(output, playback->recall_id[2], stage);
 	}
       }
     }
@@ -471,15 +472,15 @@ ags_audio_thread_run(AgsThread *thread)
       
     pthread_mutex_unlock(&(ags_application_mutex));
 
-    /* get devout play */
+    /* get playback */
     pthread_mutex_lock(output_mutex);
     
-    devout_play = output->devout_play;
+    playback = output->playback;
       
     pthread_mutex_unlock(output_mutex);
 
-    if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
-      ags_audio_thread_sync_channel_super_threaded(audio_thread, devout_play);
+    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+      ags_audio_thread_sync_channel_super_threaded(audio_thread, playback);
     }
     
     output = output->next;
@@ -532,29 +533,29 @@ ags_audio_thread_stop(AgsThread *thread)
 }
 
 void
-ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsDevoutPlay *devout_play)
+ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPlayback *playback)
 {
   AgsAudio *audio;
-  AgsDevoutPlayDomain *devout_play_domain;
+  AgsPlaybackDomain *playback_domain;
 
-  gboolean playback, sequencer, notation;
+  gboolean do_playback, do_sequencer, do_notation;
 
   audio = audio_thread->audio;
-  devout_play_domain = audio->devout_play_domain;
+  playback_domain = audio->playback_domain;
 
   /* super threaded audio level */
-  sequencer = FALSE;
-  notation = FALSE;
+  do_sequencer = FALSE;
+  do_notation = FALSE;
 
   /* sequencer */
-  if(audio_thread == devout_play_domain->audio_thread[1]){
+  if(audio_thread == playback_domain->audio_thread[1]){
     AgsThread *thread;
     AgsChannelThread *channel_thread;
 
-    thread = devout_play->channel_thread[1];
+    thread = playback->channel_thread[1];
     channel_thread = (AgsThread *) thread;
     
-    sequencer = TRUE;
+    do_sequencer = TRUE;
 
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
       guint val;
@@ -593,14 +594,14 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsDe
   }
 
   /* notation */
-  if(audio_thread == devout_play_domain->audio_thread[2]){
+  if(audio_thread == playback_domain->audio_thread[2]){
     AgsThread *thread;
     AgsChannelThread *channel_thread;
 
-    thread = devout_play->channel_thread[2];
+    thread = playback->channel_thread[2];
     channel_thread = (AgsThread *) thread;
 
-    notation = TRUE;
+    do_notation = TRUE;
 
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
       guint val;
@@ -640,30 +641,30 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsDe
 }
 
 void
-ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsDevoutPlay *devout_play)
+ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPlayback *playback)
 {
   AgsAudio *audio;
-  AgsDevoutPlayDomain *devout_play_domain;
+  AgsPlaybackDomain *playback_domain;
 
-  gboolean sequencer, notation;
+  gboolean do_sequencer, do_notation;
 
   audio = audio_thread->audio;
-  devout_play_domain = audio->devout_play_domain;
+  playback_domain = audio->playback_domain;
   
-  sequencer = FALSE;
-  notation = FALSE;
+  do_sequencer = FALSE;
+  do_notation = FALSE;
 
   /* sequencer */
-  if(audio_thread == devout_play_domain->audio_thread[1]){
+  if(audio_thread == playback_domain->audio_thread[1]){
     AgsChannelThread *channel_thread;
 
-    channel_thread = (AgsChannelThread *) devout_play->channel_thread[1];
-    sequencer = TRUE;
+    channel_thread = (AgsChannelThread *) playback->channel_thread[1];
+    do_sequencer = TRUE;
 
     pthread_mutex_lock(channel_thread->done_mutex);
   
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play->channel_thread[1]->flags)))) != 0 &&
-       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(devout_play->channel_thread[1]->flags)))) == 0){
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback->channel_thread[1]->flags)))) != 0 &&
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(playback->channel_thread[1]->flags)))) == 0){
 
       g_atomic_int_and(&(channel_thread->flags),
 		       (~AGS_CHANNEL_THREAD_DONE_SYNC));
@@ -686,16 +687,16 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsDe
   }
 
   /* notation */
-  if(audio_thread == devout_play_domain->audio_thread[2]){
+  if(audio_thread == playback_domain->audio_thread[2]){
     AgsChannelThread *channel_thread;
     
-    channel_thread = (AgsChannelThread *) devout_play->channel_thread[2];
-    notation = TRUE;
+    channel_thread = (AgsChannelThread *) playback->channel_thread[2];
+    do_notation = TRUE;
 
     pthread_mutex_lock(channel_thread->done_mutex);
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(devout_play->channel_thread[2]->flags)))) != 0 &&
-       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(devout_play->channel_thread[2]->flags)))) == 0){
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback->channel_thread[2]->flags)))) != 0 &&
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(playback->channel_thread[2]->flags)))) == 0){
 
       g_atomic_int_and(&(channel_thread->flags),
 		       (~AGS_CHANNEL_THREAD_DONE_SYNC));
@@ -721,7 +722,7 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsDe
 
 /**
  * ags_audio_thread_new:
- * @devout: the #AgsDevout
+ * @soundcard: the #GObject
  * @audio: the #AgsAudio
  *
    * Create a new #AgsAudioThread.
@@ -731,13 +732,13 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsDe
  * Since: 0.4.2
  */
 AgsAudioThread*
-ags_audio_thread_new(GObject *devout,
+ags_audio_thread_new(GObject *soundcard,
 		     GObject *audio)
 {
   AgsAudioThread *audio_thread;
 
   audio_thread = (AgsAudioThread *) g_object_new(AGS_TYPE_AUDIO_THREAD,
-						 "devout\0", devout,
+						 "soundcard\0", soundcard,
 						 "audio\0", audio,
 						 NULL);
 

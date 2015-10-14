@@ -25,9 +25,9 @@
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_config.h>
+#include <ags/object/ags_config.h>
 
 void ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio);
 void ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable);
@@ -44,7 +44,7 @@ void ags_delay_audio_get_property(GObject *gobject,
 void ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_delay_audio_finalize(GObject *gobject);
 
-void ags_delay_audio_notify_devout_callback(GObject *gobject,
+void ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 					    GParamSpec *pspec,
 					    gpointer user_data);
 
@@ -321,8 +321,8 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
   AGS_RECALL(delay_audio)->build_id = AGS_BUILD_ID;
   AGS_RECALL(delay_audio)->xml_type = "ags-delay-audio\0";
 
-  g_signal_connect_after(delay_audio, "notify::devout",
-			 G_CALLBACK(ags_delay_audio_notify_devout_callback), NULL);
+  g_signal_connect_after(delay_audio, "notify::soundcard",
+			 G_CALLBACK(ags_delay_audio_notify_soundcard_callback), NULL);
 }
 
 void
@@ -585,7 +585,7 @@ ags_delay_audio_finalize(GObject *gobject)
 }
 
 void
-ags_delay_audio_notify_devout_callback(GObject *gobject,
+ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 				       GParamSpec *pspec,
 				       gpointer user_data)
 {
@@ -594,14 +594,14 @@ ags_delay_audio_notify_devout_callback(GObject *gobject,
   guint buffer_size;
   guint samplerate;
 
-  AgsDevout *devout;
+  GObject *soundcard;
   gdouble bpm;
   gdouble delay;
   gchar *str;
   
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
-  devout = AGS_RECALL(delay_audio)->devout;
+  soundcard = AGS_RECALL(delay_audio)->soundcard;
   port = NULL;
 
   str = ags_config_get(config,
@@ -620,8 +620,8 @@ ags_delay_audio_notify_devout_callback(GObject *gobject,
 				10);
   free(str);
   
-  bpm = devout->bpm;
-  delay = devout->delay[devout->tic_counter];
+  bpm = soundcard->bpm;
+  delay = soundcard->delay[soundcard->tic_counter];
 
   /* bpm */
   delay_audio->bpm = g_object_new(AGS_TYPE_PORT,
@@ -720,7 +720,7 @@ ags_delay_audio_notify_devout_callback(GObject *gobject,
 void
 ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsDelayAudio *delay_audio;
   gdouble old_bpm;
   gdouble sequencer_delay, notation_delay;
@@ -729,7 +729,7 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm)
 
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
-  devout = AGS_DEVOUT(AGS_RECALL(delay_audio)->devout);
+  soundcard = AGS_DEVOUT(AGS_RECALL(delay_audio)->soundcard);
 
   /* retrieve old bpm */
   g_value_init(&value, G_TYPE_DOUBLE);
@@ -801,7 +801,7 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm)
 void
 ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsDelayAudio *delay_audio;
   gdouble old_tact;
   gdouble sequencer_delay, notation_delay;
@@ -811,7 +811,7 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact)
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
-  devout = AGS_DEVOUT(AGS_RECALL(delay_audio)->devout);
+  soundcard = AGS_DEVOUT(AGS_RECALL(delay_audio)->soundcard);
 
   /* retrieve old tact */
   g_value_init(&value, G_TYPE_DOUBLE);

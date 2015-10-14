@@ -26,7 +26,7 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_export_thread.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/task/ags_export_output.h>
 

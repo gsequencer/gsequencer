@@ -65,7 +65,7 @@ gchar* ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key);
  * @short_description: Config Advanced Gtk+ Sequencer
  * @title: AgsConfig
  * @section_id:
- * @include: ags/audio/ags_config.h
+ * @include: ags/object/ags_config.h
  *
  * #AgsConfig provides configuration to Advanced Gtk+ Sequencer.
  */
@@ -82,9 +82,10 @@ enum{
   PROP_APPLICATION_CONTEXT,
 };
 
-extern AgsConfig *ags_config = NULL;
 static gpointer ags_config_parent_class = NULL;
 static guint config_signals[LAST_SIGNAL];
+
+AgsConfig *ags_config = NULL;
 
 GType
 ags_config_get_type (void)
@@ -610,6 +611,21 @@ ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
   g_object_unref(G_OBJECT(config));
 
   return(value);
+}
+
+AgsConfig*
+ags_config_get_instance()
+{
+  if(ags_config == NULL){
+    AgsApplicationContext *application_context;
+
+    application_context = ags_application_context_get_instance();
+    
+    ags_config = ags_config_new(application_context);
+    application_context->config = ags_config;
+  }
+
+  return(ags_config);
 }
 
 /**

@@ -25,8 +25,8 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_task.h>
+#include <ags/object/ags_soundcard.h>
+#include <ags/thread/ags_task.h>
 
 #include <ags/audio/task/ags_set_output_device.h>
 #include <ags/audio/task/ags_set_audio_channels.h>

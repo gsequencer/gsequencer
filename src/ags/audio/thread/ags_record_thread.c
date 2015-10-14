@@ -17,11 +17,11 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/thread/ags_record_thread.h>
+#include <ags/audio/thread/ags_record_thread.h>
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_record_thread_class_init(AgsRecordThreadClass *record_thread);
 void ags_record_thread_connectable_interface_init(AgsConnectableInterface *connectable);

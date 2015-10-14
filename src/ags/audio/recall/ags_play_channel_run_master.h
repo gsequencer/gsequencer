@@ -25,7 +25,7 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_channel.h>
 
 #include <ags/audio/recall/ags_stream_channel_run.h>

@@ -26,14 +26,14 @@
 
 #include <ags/object/ags_dynamic_connectable.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
 
-#include <ags/audio/ags_config.h>
+#include <ags/object/ags_config.h>
  
 void ags_buffer_audio_signal_class_init(AgsBufferAudioSignalClass *buffer_audio_signal);
 void ags_buffer_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -225,7 +225,7 @@ ags_buffer_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connec
 void
 ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsRecycling *recycling;
   AgsAudioSignal *destination;
   AgsRecallID *parent_recall_id;
@@ -245,7 +245,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
 
-  devout = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->devout);
+  soundcard = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->soundcard);
 
   pthread_mutex_lock(&(ags_application_mutex));
   
@@ -279,13 +279,13 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   delay = 0.0;
 
   /* create new audio signal */
-  destination = ags_audio_signal_new((GObject *) devout,
+  destination = ags_audio_signal_new((GObject *) soundcard,
 				     (GObject *) recycling,
 				     (GObject *) parent_recall_id);
   ags_recycling_create_audio_signal_with_defaults(recycling,
 						  destination,
 						  delay, attack);
-  length = 3; //(guint) (2.0 * devout->delay[devout->tic_counter]) + 1;
+  length = 3; //(guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
   ags_audio_signal_stream_resize(destination,
 				 length);
 
@@ -316,7 +316,7 @@ ags_buffer_audio_signal_run_pre(AgsRecall *recall)
 void
 ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsRecycling *recycling;
   AgsAudioSignal *source, *destination;
   AgsBufferChannel *buffer_channel;
@@ -336,7 +336,7 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
   buffer_channel = AGS_BUFFER_CHANNEL(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(buffer_recycling)->parent)->recall_channel);
 
-  devout = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->devout);
+  soundcard = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->soundcard);
   source = AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->source;
   stream_source = source->stream_current;
 
@@ -374,17 +374,17 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
       AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
       ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
 					     (signed short *) stream_source->data, 1,
-					     devout->buffer_size - source->attack);
+					     soundcard->buffer_size - source->attack);
     }else{
       if(source->attack != 0 && stream_source->prev != NULL){
 	ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
-					       &(((signed short *) stream_source->prev->data)[devout->buffer_size - source->attack]), 1,
+					       &(((signed short *) stream_source->prev->data)[soundcard->buffer_size - source->attack]), 1,
 					       source->attack);
       }
 
       ags_audio_signal_copy_buffer_to_buffer(&(((signed short *) stream_destination->data)[source->attack]), 1,
 					     (signed short *) stream_source->data, 1,
-					     devout->buffer_size - source->attack);
+					     soundcard->buffer_size - source->attack);
     }
   }
 }

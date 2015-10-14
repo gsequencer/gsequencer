@@ -30,8 +30,8 @@
 #define AGS_IS_FILE_LINK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_LINK))
 #define AGS_FILE_LINK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_LINK, AgsFileLinkClass))
 
-#define AGS_RECALL_DEFAULT_VERSION "0.7.0\0"
-#define AGS_RECALL_DEFAULT_BUILD_ID "CEST 13-10-2015 15:53\0"
+#define AGS_FILE_LINK_DEFAULT_VERSION "0.7.0\0"
+#define AGS_FILE_LINK_DEFAULT_BUILD_ID "CEST 13-10-2015 15:53\0"
 
 typedef struct _AgsFileLink AgsFileLink;
 typedef struct _AgsFileLinkClass AgsFileLinkClass;

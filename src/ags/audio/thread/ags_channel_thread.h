@@ -72,7 +72,7 @@ struct _AgsChannelThreadClass
 
 GType ags_channel_thread_get_type();
 
-AgsChannelThread* ags_channel_thread_new(GObject *devout,
+AgsChannelThread* ags_channel_thread_new(GObject *soundcard,
 					 GObject *channel);
 
 #endif /*__AGS_CHANNEL_THREAD_H__*/

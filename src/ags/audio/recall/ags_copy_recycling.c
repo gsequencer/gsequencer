@@ -262,7 +262,7 @@ ags_copy_recycling_duplicate(AgsRecall *recall,
  * ags_copy_recycling_new:
  * @destination: the destination #AgsRecycling
  * @source: the source #AgsRecycling
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #GObject defaulting to
  *
  * Creates an #AgsCopyRecycling
  *
@@ -273,12 +273,12 @@ ags_copy_recycling_duplicate(AgsRecall *recall,
 AgsCopyRecycling*
 ags_copy_recycling_new(AgsRecycling *destination,
 		       AgsRecycling *source,
-		       AgsDevout *devout)
+		       GObject *soundcard)
 {
   AgsCopyRecycling *copy_recycling;
 
   copy_recycling = (AgsCopyRecycling *) g_object_new(AGS_TYPE_COPY_RECYCLING,
-						     "devout\0", devout,
+						     "soundcard\0", soundcard,
 						     "destination\0", destination,
 						     "source\0", source,
 						     NULL);

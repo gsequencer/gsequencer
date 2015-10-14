@@ -33,6 +33,7 @@ void ags_mutex_manager_destroy_data(gpointer data);
 static gpointer ags_mutex_manager_parent_class = NULL;
 
 AgsMutexManager *ags_mutex_manager = NULL;
+pthread_mutex_t ags_application_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_mutex_manager_get_type()
@@ -126,6 +127,12 @@ void
 ags_mutex_manager_destroy_data(gpointer data)
 {
   pthread_mutex_destroy((pthread_mutex_t *) data);
+}
+
+pthread_mutex_t*
+ags_mutex_manager_get_application_mutex(AgsMutexManager *mutex_manager)
+{
+  return(&ags_application_mutex);
 }
 
 gboolean

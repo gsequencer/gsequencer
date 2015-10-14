@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_recall_id.h>
 
 #define AGS_TYPE_ADD_AUDIO_SIGNAL                (ags_add_audio_signal_get_type())

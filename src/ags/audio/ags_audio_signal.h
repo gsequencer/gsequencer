@@ -50,14 +50,14 @@ struct _AgsAudioSignal
 
   guint flags;
 
-  GObject *devout;
+  GObject *soundcard;
 
   GObject *recycling;
   GObject *recall_id; // AGS_TYPE_RECALL_ID to identify the AgsAudioSignal
 
   guint samplerate;
   guint buffer_size;
-  guint resolution;
+  guint format;
 
   guint length;
   guint last_frame; // the last frame at stream_end
@@ -132,11 +132,11 @@ void ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
 			       gdouble release,
 			       gdouble ratio);
 
-AgsAudioSignal* ags_audio_signal_new(GObject *devout,
+AgsAudioSignal* ags_audio_signal_new(GObject *soundcard,
 				     GObject *recycling,
 				     GObject *recall_id);
 
-AgsAudioSignal* ags_audio_signal_new_with_length(GObject *devout,
+AgsAudioSignal* ags_audio_signal_new_with_length(GObject *soundcard,
 						 GObject *recycling,
 						 GObject *recall_id,
 						 guint length);

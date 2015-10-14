@@ -33,7 +33,7 @@
 #include <ags/thread/ags_task_completion.h>
 #include <ags/thread/ags_gui_thread.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>

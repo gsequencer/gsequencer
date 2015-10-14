@@ -83,7 +83,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <stdio.h>
 #include <math.h>

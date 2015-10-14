@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_recall_ladspa.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_connectable.h>
 
 #include <ags/util/ags_id_generator.h>
@@ -33,8 +31,8 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/audio/ags_config.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_port.h>
 
 #include <dlfcn.h>
@@ -230,8 +228,8 @@ void
 ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
 {
   AGS_RECALL(recall_ladspa)->name = "ags-ladspa\0";
-  AGS_RECALL(recall_ladspa)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(recall_ladspa)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(recall_ladspa)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(recall_ladspa)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(recall_ladspa)->xml_type = "ags-recall-ladspa\0";
   AGS_RECALL(recall_ladspa)->port = NULL;
 
@@ -261,7 +259,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      AgsDevout *devout;
+      GObject *soundcard;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -780,17 +778,17 @@ ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *effect,
 		      unsigned long index)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsRecallLadspa *recall_ladspa;
 
   if(source != NULL){
-    devout = (AgsDevout *) AGS_AUDIO(source->audio)->devout;
+    soundcard = (GObject *) source->soundcard;
   }else{
-    devout = NULL;
+    soundcard = NULL;
   }
 
   recall_ladspa = (AgsRecallLadspa *) g_object_new(AGS_TYPE_RECALL_LADSPA,
-						   "devout\0", devout,
+						   "soundcard\0", soundcard,
 						   "source\0", source,
 						   "filename\0", filename,
 						   "effect\0", effect,

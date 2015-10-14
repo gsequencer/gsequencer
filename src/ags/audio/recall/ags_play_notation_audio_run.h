@@ -22,7 +22,7 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_notation.h>

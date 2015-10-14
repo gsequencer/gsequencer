@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_timestamp.h>
+#include <ags/thread/ags_timestamp.h>
 
 #define AGS_TYPE_TIMESTAMP_FACTORY                (ags_timestamp_factory_get_type())
 #define AGS_TIMESTAMP_FACTORY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TIMESTAMP_FACTORY, AgsTimestampFactory))

@@ -73,6 +73,7 @@ gchar* ags_config_get_value(AgsConfig *config, gchar *group, gchar *key);
 
 void ags_config_save(AgsConfig *config);
 
+AgsConfig* ags_config_get_instance();
 AgsConfig* ags_config_new(GObject *application_context);
 
 #endif /*__AGS_CONFIG_H__*/

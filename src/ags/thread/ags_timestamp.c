@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/ags_timestamp.h>
+#include <ags/thread/ags_timestamp.h>
 
 void ags_timestamp_class_init(AgsTimestampClass *timestamp);
 void ags_timestamp_init (AgsTimestamp *timestamp);
@@ -28,7 +28,7 @@ void ags_timestamp_finalize(GObject *gobject);
  * @short_description: Timestamp unix and alike
  * @title: AgsTimestamp
  * @section_id:
- * @include: ags/audio/ags_timestamp.h
+ * @include: ags/thread/ags_timestamp.h
  *
  * #AgsTimestamp measure of time.
  */

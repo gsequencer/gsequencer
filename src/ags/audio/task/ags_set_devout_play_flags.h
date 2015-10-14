@@ -23,8 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/thread/ags_task.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_SET_DEVOUT_PLAY_FLAGS                (ags_set_devout_play_flags_get_type())
 #define AGS_SET_DEVOUT_PLAY_FLAGS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_DEVOUT_PLAY_FLAGS, AgsSetDevoutPlayFlags))

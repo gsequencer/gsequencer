@@ -21,6 +21,10 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+
 void ags_file_link_class_init(AgsFileLinkClass *file_link);
 void ags_file_link_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_file_link_init(AgsFileLink *file_link);
@@ -288,7 +292,7 @@ ags_file_link_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 void
 ags_file_link_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
-  AgsFile_Link *file_link;
+  AgsFileLink *file_link;
 
   file_link = AGS_FILE_LINK(plugin);
 
@@ -304,7 +308,7 @@ ags_file_link_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 xmlNode*
 ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
-  AgsFile_Link *file_link;
+  AgsFileLink *file_link;
   xmlNode *node;
   gchar *id;
 
@@ -338,10 +342,6 @@ ags_file_link_finalize(GObject *gobject)
   AgsFileLink *file_link;
 
   file_link = AGS_FILE_LINK(gobject);
-
-  if(file_link->timestamp != NULL){
-    g_object_unref(file_link->timestamp);
-  }
 }
 
 /**

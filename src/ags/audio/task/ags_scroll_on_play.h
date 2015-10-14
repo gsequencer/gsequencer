@@ -23,8 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/thread/ags_task.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_SCROLL_ON_PLAY                (ags_scroll_on_play_get_type())
 #define AGS_SCROLL_ON_PLAY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCROLL_ON_PLAY, AgsScrollOnPlay))

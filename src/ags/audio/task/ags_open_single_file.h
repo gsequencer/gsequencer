@@ -22,9 +22,9 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_OPEN_SINGLE_FILE                (ags_open_single_file_get_type())
 #define AGS_OPEN_SINGLE_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SINGLE_FILE, AgsOpenSingleFile))

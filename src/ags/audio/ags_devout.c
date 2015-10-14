@@ -45,7 +45,7 @@
  * @short_description: Outputting to soundcard
  * @title: AgsDevout
  * @section_id:
- * @include: ags/audio/ags_devout.h
+ * @include: ags/object/ags_soundcard.h
  *
  * #AgsDevout represents a soundcard and supports output.
  */
@@ -151,9 +151,6 @@ enum{
 };
 
 enum{
-  RUN,
-  STOP,
-  TIC,
   LAST_SIGNAL,
 };
 
@@ -432,28 +429,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
 
 
   /* AgsDevoutClass */
-  devout->play_init = ags_devout_alsa_init;
-  devout->play = ags_devout_alsa_play;
-  devout->stop = ags_devout_alsa_free;
-
-  devout->tic = NULL;
-  devout->note_offset_changed = NULL;
-
-  /* signals */
-  /**
-   * AgsDevout::tic:
-   * @devout: the object tics
-   *
-   * The ::tic signal is emited during playback after buffer time interval.
-   */
-  devout_signals[TIC] =
-    g_signal_new("tic\0",
-		 G_TYPE_FROM_CLASS (devout),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsDevoutClass, tic),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
 }
 
 GQuark
@@ -635,7 +610,9 @@ ags_devout_set_property(GObject *gobject,
 					     NULL,
 					     10);
 
-	segmentation = AGS_SOUNDCARD_DEFAULT_SEGMENTATION;
+	segmentation = ags_config_get_value(config,
+					    AGS_CONFIG_GENERIC,
+					    "segmentation\0");
   
 	sscanf(segmentation, "%d/%d\0",
 	       &discriminante,
@@ -1891,7 +1868,7 @@ ags_devout_get_attack(AgsSoundcard *soundcard)
   return(devout->attack[index]);
 }
 
-signed short*
+void*
 ags_devout_get_buffer(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
@@ -1914,7 +1891,7 @@ ags_devout_get_buffer(AgsSoundcard *soundcard)
   return(buffer);
 }
 
-signed short*
+void*
 ags_devout_get_next_buffer(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;

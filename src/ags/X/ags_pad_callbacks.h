@@ -26,7 +26,7 @@
 
 #include <ags/X/ags_pad.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 #include <ags/thread/ags_task_completion.h>
 
 int ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pad);

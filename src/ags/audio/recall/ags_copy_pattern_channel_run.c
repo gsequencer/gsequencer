@@ -433,13 +433,13 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   
   /*  */
   if(current_bit){
-    AgsDevout *devout;
+    GObject *soundcard;
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
     gdouble delay;
     guint attack;
   
-    devout = AGS_DEVOUT(AGS_RECALL(copy_pattern_channel_run)->devout);
+    soundcard = AGS_DEVOUT(AGS_RECALL(copy_pattern_channel_run)->soundcard);
 
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
@@ -480,7 +480,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 	}
 
-	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->devout,
+	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
 					    (GObject *) recycling,
 					    child_recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,

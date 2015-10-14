@@ -17,12 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/thread/ags_iterator_thread.h>
+#include <ags/audio/thread/ags_iterator_thread.h>
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 
-#include <ags/thread/ags_recycling_thread.h>
+#include <ags/audio/thread/ags_recycling_thread.h>
 
 void ags_iterator_thread_class_init(AgsIteratorThreadClass *iterator_thread);
 void ags_iterator_thread_connectable_interface_init(AgsConnectableInterface *connectable);

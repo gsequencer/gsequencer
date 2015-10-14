@@ -25,7 +25,7 @@
 
 #include <ags/audio/ags_recall.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
@@ -53,6 +53,6 @@ GType ags_copy_recycling_get_type();
 
 AgsCopyRecycling* ags_copy_recycling_new(AgsRecycling *destination,
 					 AgsRecycling *source,
-					 AgsDevout *devout);
+					 GObject *soundcard);
 
 #endif /*__AGS_COPY_RECYCLING_H__*/

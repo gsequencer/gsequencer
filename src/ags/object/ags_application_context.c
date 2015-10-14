@@ -64,6 +64,8 @@ enum{
 static gpointer ags_application_context_parent_class = NULL;
 static guint application_context_signals[LAST_SIGNAL];
 
+AgsApplicationContext *ags_application_context = NULL;
+
 GType
 ags_application_context_get_type()
 {
@@ -444,6 +446,17 @@ ags_application_context_find_main_loop(GList *application_context)
   }
   
   return(application_context);
+}
+
+AgsApplicationContext*
+ags_application_context_get_instance()
+{
+  if(ags_application_context == NULL){
+    ags_application_context = ags_application_context_new(NULL,
+							  NULL);
+  }
+
+  return(ags_application_context);
 }
 
 AgsApplicationContext*

@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/ags_timestamp_factory.h>
+#include <ags/thread/ags_timestamp_factory.h>
 
 #include <ags/object/ags_marshal.h>
 
@@ -30,7 +30,7 @@ void ags_timestamp_factory_finalize(GObject *gobject);
  * @short_description: Factory pattern
  * @title: AgsTimestampFactory
  * @section_id:
- * @include: ags/audio/ags_timestamp_factory.h
+ * @include: ags/thread/ags_timestamp_factory.h
  *
  * #AgsTimestampFactory pattern.
  */

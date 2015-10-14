@@ -26,7 +26,7 @@
 #include <ags/server/ags_server.h>
 #include <ags/server/ags_registry.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 void ags_remote_task_class_init(AgsRemoteTaskClass *remote_task);
 void ags_remote_task_connectable_interface_init(AgsConnectableInterface *connectable);

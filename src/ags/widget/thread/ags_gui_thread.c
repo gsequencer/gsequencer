@@ -23,7 +23,7 @@
 
 #include <ags/main.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_task_completion.h>
 

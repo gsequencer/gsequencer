@@ -21,7 +21,7 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device);
 void ags_set_output_device_connectable_interface_init(AgsConnectableInterface *connectable);

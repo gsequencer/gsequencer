@@ -28,7 +28,7 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/widget/ags_dial.h>
 

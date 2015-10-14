@@ -21,7 +21,7 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_timestamp.h>
+#include <ags/thread/ags_timestamp.h>
 
 void ags_timestamp_thread_class_init(AgsTimestampThreadClass *timestamp_thread);
 void ags_timestamp_thread_connectable_interface_init(AgsConnectableInterface *connectable);
