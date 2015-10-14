@@ -50,7 +50,7 @@ enum{
   PROP_0,
   PROP_NODE,
   PROP_FILE,
-  PROP_MAIN,
+  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_file_launch_parent_class = NULL;
@@ -117,13 +117,13 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 				  PROP_FILE,
 				  param_spec);
 
-  param_spec = g_param_spec_object("main\0",
-				   "main access\0",
-				   "The main object to access the tree\0",
+  param_spec = g_param_spec_object("application-context\0",
+				   "application context access\0",
+				   "The application context to access the tree\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
   /* AgsFileLaunchClass */
@@ -182,7 +182,7 @@ ags_file_launch_set_property(GObject *gobject,
       file_launch->file = file;
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
       GObject *application_context;
 
@@ -224,7 +224,7 @@ ags_file_launch_get_property(GObject *gobject,
       g_value_set_object(value, file_launch->file);
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
       g_value_set_object(value, file_launch->application_context);
     }
