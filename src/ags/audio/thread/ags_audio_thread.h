@@ -72,7 +72,7 @@ struct _AgsAudioThreadClass
 
 GType ags_audio_thread_get_type();
 
-AgsAudioThread* ags_audio_thread_new(GObject *devout,
+AgsAudioThread* ags_audio_thread_new(GObject *soundcard,
 				     GObject *audio);
 
 #endif /*__AGS_AUDIO_THREAD_H__*/

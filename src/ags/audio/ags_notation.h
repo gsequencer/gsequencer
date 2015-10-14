@@ -24,7 +24,8 @@
 #include <libxml/tree.h>
 
 #include <ags/thread/ags_timestamp_thread.h>
-#include <ags/audio/ags_timestamp.h>
+#include <ags/thread/ags_timestamp.h>
+
 #include <ags/audio/ags_note.h>
 
 #define AGS_TYPE_NOTATION                (ags_notation_get_type())

@@ -29,7 +29,7 @@
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/task/ags_remove_audio_signal.h>
 
@@ -245,7 +245,7 @@ ags_stream_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   //  AgsTaskThread *task_thread;
   //  AgsUnrefAudioSignal *unref_audio_signal;
 
-  //  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_RECALL(gobject)->devout)->application_context)->main_loop)->task_thread;
+  //  task_thread = AGS_AUDIO_LOOP(AGS_MAIN(AGS_DEVOUT(AGS_RECALL(gobject)->soundcard)->application_context)->main_loop)->task_thread;
 
   //  unref_audio_signal = ags_unref_audio_signal_new(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
   //  ags_task_thread_append_task(task_thread,

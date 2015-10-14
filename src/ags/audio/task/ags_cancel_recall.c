@@ -113,7 +113,7 @@ ags_cancel_recall_init(AgsCancelRecall *cancel_recall)
 {
   cancel_recall->recall = NULL;
 
-  cancel_recall->play = NULL;
+  cancel_recall->playback = NULL;
 }
 
 void
@@ -155,14 +155,16 @@ ags_cancel_recall_launch(AgsTask *task)
   ags_recall_cancel(recall);
 
   /* set remove flag */
-  if(cancel_recall->play != NULL)
-    cancel_recall->play->flags |= AGS_DEVOUT_PLAY_REMOVE;
+  if(cancel_recall->playback != NULL){
+    g_atomic_int_or(&(cancel_recall->playback->flags),
+		    AGS_PLAYBACK_REMOVE);
+  }
 }
 
 /**
  * ags_cancel_recall_new:
  * @recall: the #AgsRecall to cancel
- * @play: the #AgsDevoutPlay-struct
+ * @play: the #AgsPlayback
  *
  * Creates an #AgsCancelRecall.
  *
@@ -172,7 +174,7 @@ ags_cancel_recall_launch(AgsTask *task)
  */
 AgsCancelRecall*
 ags_cancel_recall_new(AgsRecall *recall,
-		      AgsDevoutPlay *play)
+		      AgsPlayback *playback)
 {
   AgsCancelRecall *cancel_recall;
 
@@ -181,7 +183,7 @@ ags_cancel_recall_new(AgsRecall *recall,
 
   cancel_recall->recall = recall;
 
-  cancel_recall->play = play;
+  cancel_recall->playback = playback;
 
   return(cancel_recall);
 }

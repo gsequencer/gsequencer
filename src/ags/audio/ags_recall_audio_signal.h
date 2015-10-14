@@ -25,7 +25,7 @@
 
 #include <ags/audio/ags_recall.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_RECALL_AUDIO_SIGNAL                (ags_recall_audio_signal_get_type())
@@ -64,7 +64,7 @@ GType ags_recall_audio_signal_get_type();
 
 AgsRecallAudioSignal* ags_recall_audio_signal_new(AgsAudioSignal *destination,
 						  AgsAudioSignal *source,
-						  AgsDevout *devout);
+						  GObject *soundcard);
 
 #endif /*__AGS_RECALL_AUDIO_SIGNAL_H__*/
 

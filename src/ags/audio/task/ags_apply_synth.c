@@ -25,7 +25,7 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_synths.h>
 
-#include <ags/audio/ags_config.h>
+#include <ags/object/ags_config.h>
 
 #include <math.h>
 

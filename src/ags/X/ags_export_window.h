@@ -24,7 +24,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_EXPORT_WINDOW                (ags_export_window_get_type())
 #define AGS_EXPORT_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EXPORT_WINDOW, AgsExportWindow))

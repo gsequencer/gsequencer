@@ -21,7 +21,7 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 void ags_task_completion_class_init(AgsTaskCompletionClass *task_completion);
 void ags_task_completion_connectable_interface_init(AgsConnectableInterface *connectable);

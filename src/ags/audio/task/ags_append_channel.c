@@ -25,8 +25,8 @@
 
 #include <ags/thread/ags_channel_thread.h>
 
-#include <ags/audio/ags_config.h>
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_append_channel_class_init(AgsAppendChannelClass *append_channel);
 void ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectable);

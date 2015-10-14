@@ -36,12 +36,12 @@
 #include <ags/file/ags_file_lookup.h>
 
 #include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_devout_thread.h>
+#include <ags/thread/ags_soundcard_thread.h>
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_config.h>
+#include <ags/object/ags_config.h>
 
 void ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notation_audio_run);
 void ags_play_notation_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -645,7 +645,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 						 gdouble delay, guint attack,
 						 AgsPlayNotationAudioRun *play_notation_audio_run)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsAudio *audio;
   AgsChannel *selected_channel, *channel, *next_pad;
   AgsRecycling *recycling;
@@ -707,7 +707,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   pthread_mutex_lock(audio_mutex);
 
-  devout = (AgsDevout *) audio->devout;
+  soundcard = (GObject *) audio->soundcard;
   list = audio->notation;//(GList *) g_value_get_pointer(&value);
   
   if(list == NULL){
@@ -729,7 +729,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   pthread_mutex_lock(&(ags_application_mutex));
 
-  main_loop = AGS_MAIN(devout->application_context)->main_loop;
+  main_loop = AGS_MAIN(soundcard->application_context)->main_loop;
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -786,7 +786,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  pthread_mutex_unlock(&(ags_application_mutex));
 
 	  /* create audio signal */
-	  audio_signal = ags_audio_signal_new((GObject *) devout,
+	  audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					      (GObject *) recycling,
 					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
 

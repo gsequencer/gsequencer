@@ -25,7 +25,7 @@
 
 #include <ags/thread/ags_export_thread.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 

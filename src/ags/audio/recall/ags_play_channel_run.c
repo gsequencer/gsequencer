@@ -29,7 +29,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -514,7 +514,7 @@ ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
 void
 ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsChannel *channel;
   AgsCancelChannel *cancel_channel;
 
@@ -524,28 +524,28 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 
   AgsMain *application_context;
 
-  pthread_mutex_t *devout_mutex;
+  pthread_mutex_t *soundcard_mutex;
 
   channel = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
 
-  devout = AGS_AUDIO(channel->audio)->devout;
+  soundcard = AGS_AUDIO(channel->audio)->soundcard;
   
-  /* lookup devout mutex */
+  /* lookup soundcard mutex */
   pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
   
-  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  devout);
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  soundcard);
   
   pthread_mutex_unlock(&(ags_application_mutex));
   
   /* get application_context */
-  pthread_mutex_lock(devout_mutex);
+  pthread_mutex_lock(soundcard_mutex);
   
-  application_context = devout->application_context;
+  application_context = soundcard->application_context;
 
-  pthread_mutex_unlock(devout_mutex);
+  pthread_mutex_unlock(soundcard_mutex);
   
   /* get main loop */
   pthread_mutex_lock(&(ags_application_mutex));
@@ -560,8 +560,8 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 
   /* create append task */
   cancel_channel = ags_cancel_channel_new(channel,
-					  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0],
-					  AGS_DEVOUT_PLAY(channel->devout_play));
+					  AGS_DEVOUT_PLAY(channel->soundcard_play)->recall_id[0],
+					  AGS_DEVOUT_PLAY(channel->soundcard_play));
   
   /* append AgsCancelAudio */
   ags_task_thread_append_task((AgsTaskThread *) async_queue,

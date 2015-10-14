@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -33,7 +33,7 @@ void ags_task_finalize(GObject *gobject);
  * @short_description: Perform operations in a thread safe context.
  * @title: AgsTask
  * @section_id: 
- * @include: ags/audio/ags_task.h
+ * @include: ags/thread/ags_task.h
  *
  * #AgsTask object acts an interceptor in a thread safe context.
  */

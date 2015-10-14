@@ -39,6 +39,10 @@
 
 #define MSEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
+
+#define AGS_PRIORITY (5)
+#define AGS_RT_PRIORITY (49)
+
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
 #define AGS_THREAD_DEFAULT_JIFFIE (250)
@@ -99,8 +103,6 @@ struct _AgsThread
   gboolean rt_setup;
   
   sigset_t wait_mask;
-
-  GObject *devout;
   
   pthread_t *thread;
   pthread_attr_t thread_attr;

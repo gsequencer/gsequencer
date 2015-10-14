@@ -153,6 +153,7 @@ libags_object_h_sources =  \
 	src/ags/object/ags_applicable.h \
 	src/ags/object/ags_application_context.h \
 	src/ags/object/ags_async_queue.h \
+	src/ags/object/ags_config.h \
 	src/ags/object/ags_connectable.h \
 	src/ags/object/ags_countable.h \
 	src/ags/object/ags_concurrent_tree.h \
@@ -175,6 +176,7 @@ libags_object_c_sources = \
 	src/ags/object/ags_applicable.c \
 	src/ags/object/ags_application_context.c \
 	src/ags/object/ags_async_queue.c \
+	src/ags/object/ags_config.c \
 	src/ags/object/ags_connectable.c \
 	src/ags/object/ags_countable.c \
 	src/ags/object/ags_concurrent_tree.c \
@@ -312,7 +314,6 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_audio_signal.h \
 	src/ags/audio/ags_channel.h \
 	src/ags/audio/ags_channel_iter.h \
-	src/ags/audio/ags_config.h \
 	src/ags/audio/ags_devout.h \
 	src/ags/audio/ags_effect.h \
 	src/ags/audio/ags_garbage_collector.h \
@@ -355,7 +356,6 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_audio_signal.c \
 	src/ags/audio/ags_channel.c \
 	src/ags/audio/ags_channel_iter.c \
-	src/ags/audio/ags_config.c \
 	src/ags/audio/ags_devout.c \
 	src/ags/audio/ags_garbage_collector.c \
 	src/ags/audio/ags_input.c \
@@ -396,7 +396,7 @@ libags_audio_thread_h_sources = \
 	src/ags/audio/thread/ags_audio_loop.h \
 	src/ags/audio/thread/ags_audio_thread.h \
 	src/ags/audio/thread/ags_channel_thread.h \
-	src/ags/audio/thread/ags_devout_thread.h \
+	src/ags/audio/thread/ags_soundcard_thread.h \
 	src/ags/audio/thread/ags_export_thread.h \
 	src/ags/audio/thread/ags_iterator_thread.h \
 	src/ags/audio/thread/ags_record_thread.h \
@@ -410,7 +410,7 @@ libags_audio_thread_c_sources = \
 	src/ags/audio/thread/ags_audio_loop.c \
 	src/ags/audio/thread/ags_audio_thread.c \
 	src/ags/audio/thread/ags_channel_thread.c \
-	src/ags/audio/thread/ags_devout_thread.c \
+	src/ags/audio/thread/ags_soundcard_thread.c \
 	src/ags/audio/thread/ags_export_thread.c \
 	src/ags/audio/thread/ags_iterator_thread.c \
 	src/ags/audio/thread/ags_record_thread.c \

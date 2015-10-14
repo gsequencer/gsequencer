@@ -26,8 +26,8 @@
 
 #include <ags/object/ags_applicable.h>
 
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_config.h>
+#include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_config.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>

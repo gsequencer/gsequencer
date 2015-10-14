@@ -36,7 +36,7 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_id.h>
@@ -577,7 +577,7 @@ ags_loop_channel_run_duplicate(AgsRecall *recall,
 void
 ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
   gdouble delay;
@@ -586,24 +586,24 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 
   //  g_message("debug\0");
 
-  devout = AGS_DEVOUT(AGS_RECALL(loop_channel_run)->devout);
+  soundcard = AGS_DEVOUT(AGS_RECALL(loop_channel_run)->soundcard);
 
   /* recycling */
   recycling = AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->first_recycling;
 
   /* delay and attack */
-  tic_counter_incr = devout->tic_counter + 1;
+  tic_counter_incr = soundcard->tic_counter + 1;
 
   //TODO:JK: unclear
-  attack = 0;// devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+  attack = 0;// soundcard->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
   //		   0:
   //			   tic_counter_incr)];
-  delay = 0.0; //devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+  delay = 0.0; //soundcard->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
   //		 0:
   //			 tic_counter_incr)];
 
   while(recycling != AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->last_recycling->next){
-    audio_signal = ags_audio_signal_new((GObject *) devout,
+    audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					(GObject *) recycling,
 					(GObject *) AGS_RECALL(loop_channel_run)->recall_id);
     audio_signal->stream_current = audio_signal->stream_beginning;

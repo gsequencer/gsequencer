@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <ags/thread/ags_recycling_thread_callbacks.h>
+#include <ags/audio/thread/ags_recycling_thread_callbacks.h>
 
 void
 ags_recycling_thread_iterate_callback(AgsRecyclingThread *thread, gpointer user_data)

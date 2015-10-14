@@ -19,7 +19,7 @@
 
 #include <ags/X/ags_link_editor_callbacks.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 

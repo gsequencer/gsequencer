@@ -69,7 +69,7 @@
 
 #include <ags/X/machine/ags_drum.h>
 
-#include <ags/audio/ags_config.h>
+#include <ags/object/ags_config.h>
 
 void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);

@@ -5438,7 +5438,7 @@ ags_file_read_file_link_launch(AgsFileLaunch *file_launch,
 			       AgsFileLink *file_link)
 {
   AgsFileIdRef *id_ref;
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsChannel *input;
   AgsAudioFile *audio_file;
   GList *audio_signal;
@@ -5452,7 +5452,7 @@ ags_file_read_file_link_launch(AgsFileLaunch *file_launch,
 
   /*  */
   xpath = xmlGetProp(node,
-		     "devout\0");
+		     "soundcard\0");
   
   /*  */
   input = NULL;

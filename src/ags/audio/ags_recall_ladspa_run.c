@@ -25,7 +25,7 @@
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/audio/ags_config.h>
+#include <ags/object/ags_config.h>
 #include <ags/audio/ags_port.h>
 
 #include <dlfcn.h>

@@ -17,17 +17,16 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/thread/ags_channel_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
-#include <ags/audio/ags_config.h>
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback.h>
 
 void ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread);
 void ags_channel_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -167,10 +166,10 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   thread = (AgsThread *) channel_thread;
 
   str0 = ags_config_get(config,
-			AGS_CONFIG_DEVOUT,
+			AGS_CONFIG_SOUNDCARD,
 			"samplerate\0");
   str0 = ags_config_get(config,
-			AGS_CONFIG_DEVOUT,
+			AGS_CONFIG_SOUNDCARD,
 			"buffer_size\0");
 
   if(str0 == NULL || str1 == NULL){
@@ -317,7 +316,7 @@ void
 ags_channel_thread_run(AgsThread *thread)
 {
   AgsChannel *channel;
-  AgsDevoutPlay *devout_play;
+  AgsPlayback *playback;
 
   AgsMutexManager *mutex_manager;
   AgsChannelThread *channel_thread;
@@ -363,7 +362,7 @@ ags_channel_thread_run(AgsThread *thread)
     return;
   }
   
-  //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
+  //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
 
   channel = channel_thread->channel;
   
@@ -377,11 +376,11 @@ ags_channel_thread_run(AgsThread *thread)
       
   pthread_mutex_unlock(&(ags_application_mutex));
 
-  /* get devout play */
+  /* get soundcard play */
   pthread_mutex_lock(channel_mutex);
 
-  devout_play = channel->devout_play;
-  current_thread = devout_play->channel_thread[0];
+  playback = channel->playback;
+  current_thread = playback->channel_thread[0];
   
   pthread_mutex_unlock(channel_mutex);
   
@@ -413,8 +412,8 @@ ags_channel_thread_run(AgsThread *thread)
     /* playback */
     pthread_mutex_lock(channel_mutex);
 
-    current_thread = devout_play->channel_thread[0];
-    current_recall_id = devout_play->recall_id[0];
+    current_thread = playback->channel_thread[0];
+    current_recall_id = playback->recall_id[0];
     
     pthread_mutex_unlock(channel_mutex);
 
@@ -425,8 +424,8 @@ ags_channel_thread_run(AgsThread *thread)
     /* sequencer */
     pthread_mutex_lock(channel_mutex);
 
-    current_thread = devout_play->channel_thread[1];
-    current_recall_id = devout_play->recall_id[1];
+    current_thread = playback->channel_thread[1];
+    current_recall_id = playback->recall_id[1];
     
     pthread_mutex_unlock(channel_mutex);
 
@@ -437,8 +436,8 @@ ags_channel_thread_run(AgsThread *thread)
     /* notation */
     pthread_mutex_lock(channel_mutex);
 
-    current_thread = devout_play->channel_thread[2];
-    current_recall_id = devout_play->recall_id[2];
+    current_thread = playback->channel_thread[2];
+    current_recall_id = playback->recall_id[2];
     
     pthread_mutex_unlock(channel_mutex);
 
@@ -486,7 +485,7 @@ ags_channel_thread_stop(AgsThread *thread)
 
 /**
  * ags_channel_thread_new:
- * @devout: the #AgsDevout
+ * @soundcard: the #GObject
  * @channel: the #AgsChannel
  *
  * Create a new #AgsChannelThread.
@@ -496,13 +495,13 @@ ags_channel_thread_stop(AgsThread *thread)
  * Since: 0.4.2
  */
 AgsChannelThread*
-ags_channel_thread_new(GObject *devout,
+ags_channel_thread_new(GObject *soundcard,
 		       GObject *channel)
 {
   AgsChannelThread *channel_thread;
 
   channel_thread = (AgsChannelThread *) g_object_new(AGS_TYPE_CHANNEL_THREAD,
-						     "devout\0", devout,
+						     "soundcard\0", soundcard,
 						     "channel\0", channel,
 						     NULL);
 

@@ -25,6 +25,8 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_plugin.h>
+
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
@@ -47,10 +49,10 @@ ags_file_util_read_value(AgsFile *file,
   xmlChar *value_str;
   xmlChar *content;
 
-
-  if(id != NULL)
+  if(id != NULL){
     *id = xmlGetProp(node, AGS_FILE_ID_PROP);
-
+  }
+  
   type_str = xmlGetProp(node, "type\0");
 
   content = xmlNodeGetContent(node);
@@ -1048,7 +1050,8 @@ void
 ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
 {
   AgsFileLink *gobject;
-
+  xmlNode *child;
+  
   if(*file_link == NULL){
     gobject = g_object_new(AGS_TYPE_FILE_LINK,
 			   NULL);
@@ -1068,15 +1071,12 @@ ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
 
   /* iterate children */
   child = node->children;
-  list = NULL;
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrcmp(child->name,
 		    ags_plugin_get_xml_type(AGS_PLUGIN(gobject)))){
-	/* read current plugin file link */
-	current = NULL;
-	
+	/* read current plugin file link */	
 	ags_plugin_read(file,
 			child,
 			AGS_PLUGIN(gobject));
@@ -1145,7 +1145,7 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
   /* children */
   ags_plugin_write(file,
 		   node,
-		   AGS_PLUGIN(gobject));
+		   AGS_PLUGIN(file_link));
 }
 
 void

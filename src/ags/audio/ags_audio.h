@@ -55,7 +55,7 @@ struct _AgsAudio
 
   guint flags;
 
-  GObject *devout;
+  GObject *soundcard;
   guint level;
   
   guint sequence_length;
@@ -105,7 +105,7 @@ struct _AgsAudioClass
 
 GType ags_audio_get_type();
 
-void ags_audio_set_devout(AgsAudio *audio, GObject *devout);
+void ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard);
 
 void ags_audio_set_flags(AgsAudio *audio, guint flags);
 void ags_audio_unset_flags(AgsAudio *audio, guint flags);

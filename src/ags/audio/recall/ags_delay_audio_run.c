@@ -32,7 +32,7 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
 
@@ -422,7 +422,7 @@ ags_delay_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 void
 ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
 
@@ -433,7 +433,7 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
   delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(recall)->recall_audio);
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
-  devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
+  soundcard = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->soundcard);
 
   /* run order */
   delay_audio_run->hide_ref_counter = 0;
@@ -491,24 +491,24 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   }
 
   if(delay_audio_run->notation_counter == 0){
-    AgsDevout *devout;
+    GObject *soundcard;
     guint run_order;
     gdouble delay;
     guint attack;
 
-    devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
+    soundcard = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->soundcard);
 
     run_order = 0; //NOTE:JK: old hide_ref style
 
     /* delay and attack */
     //TODO:JK: unclear
-    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+    attack = 0; // soundcard->attack[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
       //	     0:
-      //		     devout->tic_counter + 1)];
+      //		     soundcard->tic_counter + 1)];
       
-    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+    delay = 0.0; // soundcard->delay[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
       //		   0:
-      //		   devout->tic_counter + 1)];
+      //		   soundcard->tic_counter + 1)];
 
     //    g_message("ags_delay_audio_run_run_pre@%llu: alloc notation[%u]\0",
     //	      delay_audio_run,
@@ -527,21 +527,21 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
   }
 
   if(delay_audio_run->sequencer_counter == 0){
-    AgsDevout *devout;
+    GObject *soundcard;
     guint run_order;
     gdouble delay;
     guint attack;
 
-    devout = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->devout);
+    soundcard = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->soundcard);
 
     /* delay and attack */
     //TODO:JK: unclear
-    attack = 0; // devout->attack[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+    attack = 0; // soundcard->attack[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
       //	     0:
-      //		     devout->tic_counter + 1)];
-    delay = 0.0; // devout->delay[((devout->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
+      //		     soundcard->tic_counter + 1)];
+    delay = 0.0; // soundcard->delay[((soundcard->tic_counter + 1 == AGS_NOTATION_TICS_PER_BEAT) ?
       //		   0:
-      //		   devout->tic_counter + 1)];
+      //		   soundcard->tic_counter + 1)];
 
     run_order = 0;
 

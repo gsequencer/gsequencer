@@ -22,7 +22,7 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_MUTABLE                    (ags_mutable_get_type())
 #define AGS_MUTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MUTABLE, AgsMutable))

@@ -17,21 +17,22 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/thread/ags_recycling_thread.h>
+#include <ags/audio/thread/ags_recycling_thread.h>
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_concurrent_tree.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/thread/ags_iterator_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
+
+#include <ags/audio/thread/ags_iterator_thread.h>
 
 #include <math.h>
 

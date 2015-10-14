@@ -25,7 +25,5 @@
 
 #define AGS_DEFAULT_DIRECTORY ".gsequencer\0"
 #define AGS_DEFAULT_CONFIG "ags.conf\0"
-#define AGS_PRIORITY (5)
-#define AGS_RT_PRIORITY (49)
 
 #endif /*__AGS_MAIN_H__*/

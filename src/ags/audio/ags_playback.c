@@ -122,6 +122,13 @@ ags_playback_init(AgsPlayback *playback)
   playback->iterator_thread[1] = ags_iterator_thread_new();
   playback->iterator_thread[2] = ags_iterator_thread_new();
 
+  /* super threaded recycling */
+  playback->recycling_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
+
+  playback->recycling_thread[0] = NULL;
+  playback->recycling_thread[1] = NULL;
+  playback->recycling_thread[2] = NULL;
+
   /*  */
   playback->source = NULL;
   playback->audio_channel = 0;

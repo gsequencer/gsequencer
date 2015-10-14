@@ -66,6 +66,8 @@ struct _AgsPlayback
 
   AgsThread **channel_thread;
   AgsIteratorThread **iterator_thread;
+
+  AgsThread **recycling_thread;
   
   GObject *source;
   guint audio_channel;

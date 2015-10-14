@@ -25,7 +25,7 @@
 
 #include <ags/thread/ags_task_completion.h>
 
-#include <ags/audio/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #include <ags/X/ags_machine.h>
 
