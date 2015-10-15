@@ -24,8 +24,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/object/ags_soundcard.h>
-
 #define AGS_TYPE_NAVIGATION                (ags_navigation_get_type())
 #define AGS_NAVIGATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NAVIGATION, AgsNavigation))
 #define AGS_NAVIGATION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NAVIGATION, AgsNavigationClass))
@@ -52,8 +50,9 @@ struct _AgsNavigation
 
   guint flags;
 
-  AgsDevout *devout;
+  GObject *soundcard;
   gdouble start_tact;
+  gdouble note_offset;
   
   GtkToggleButton *expander;
 

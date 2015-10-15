@@ -19,14 +19,13 @@
 
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
-
-#include <ags/object/ags_soundcard.h>
 #include <ags/thread/ags_task.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/task/ags_set_output_device.h>
 #include <ags/audio/task/ags_set_audio_channels.h>
@@ -36,20 +35,28 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
-extern pthread_mutex_t ags_application_mutex;
-
 int
 ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences)
 {
+  AgsWindow *window;
+
+  AgsSoundcard *soundcard;
   GtkListStore *model;
+
   GtkTreeIter iter;
   GList *card_id, *card_name;
   
-  if(old_parent != NULL)
+  if(old_parent != NULL){
     return(0);
+  }
+
+  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
+							      AGS_TYPE_PREFERENCES))->window);
+  soundcard = AGS_SOUNDCARD(window->soundcard);
 
   /* refresh */
-  ags_devout_list_cards(&card_id, &card_name);
+  ags_soundcard_list_cards(soundcard,
+			   &card_id, &card_name);
   model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
   
   while(card_id != NULL){
@@ -78,15 +85,16 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 {
   AgsWindow *window;
 
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsSetOutputDevice *set_output_device;
   GtkListStore *model;
   GtkTreeIter current;
 
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   gchar *str;
   guint channels, channels_min, channels_max;
@@ -96,20 +104,25 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
 
   GError *error;
 
+  pthread_mutex_t *application_mutex;
+  
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
-  devout = AGS_DEVOUT(window->devout);
+  soundcard = AGS_SOUNDCARD(window->soundcard);
 
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
-  /* get task and devout thread */
+  /* get task and soundcard thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
@@ -129,7 +142,7 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   str = g_strdup(g_value_get_string(&value));
   
   /* create set output device task */
-  set_output_device = ags_set_output_device_new((GObject *) devout,
+  set_output_device = ags_set_output_device_new((GObject *) soundcard,
 						str);
 
   /* append AgsSetOutputDevice */
@@ -138,11 +151,12 @@ ags_audio_preferences_card_changed_callback(GtkComboBox *combo,
   
   /* reset dialog */
   error = NULL;
-  ags_devout_pcm_info(str,
-  		      &channels_min, &channels_max,
-  		      &rate_min, &rate_max,
-  		      &buffer_size_min, &buffer_size_max,
-  		      &error);
+  ags_soundcard_pcm_info(soundcard,
+			 str,
+			 &channels_min, &channels_max,
+			 &rate_min, &rate_max,
+			 &buffer_size_min, &buffer_size_max,
+			 &error);
 
   if(error != NULL){
     GtkMessageDialog *dialog;
@@ -176,33 +190,39 @@ ags_audio_preferences_audio_channels_changed(GtkSpinButton *spin_button,
 					     AgsAudioPreferences *audio_preferences)
 {
   AgsWindow *window;
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsSetAudioChannels *set_audio_channels;
 
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;  
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
-  devout = AGS_DEVOUT(window->devout);
+  soundcard = AGS_SOUNDCARD(window->soundcard);
 
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
-  /* get task and devout thread */
+  /* get task and soundcard thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */
-  set_audio_channels = ags_set_audio_channels_new(devout,
+  set_audio_channels = ags_set_audio_channels_new(soundcard,
 						  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetAudioChannels */
@@ -215,33 +235,39 @@ ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
 					 AgsAudioPreferences *audio_preferences)
 {
   AgsWindow *window;
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsSetSamplerate *set_samplerate;
 
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
 
+  pthread_mutex_t *application_mutex;
+  
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
-  devout = AGS_DEVOUT(window->devout);
+  soundcard = AGS_SOUNDCARD(window->soundcard);
 
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
-  /* get task and devout thread */
+  /* get task and soundcard thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */
-  set_samplerate = ags_set_samplerate_new((GObject *) devout,
+  set_samplerate = ags_set_samplerate_new((GObject *) soundcard,
 					  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetSamplerate */
@@ -254,33 +280,39 @@ ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
 					  AgsAudioPreferences *audio_preferences)
 {
   AgsWindow *window;
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsSetBufferSize *set_buffer_size;
 
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
 
+  pthread_mutex_t *application_mutex;
+  
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 									 AGS_TYPE_PREFERENCES))->window);
-  devout = AGS_DEVOUT(window->devout);
+  soundcard = AGS_SOUNDCARD(window->soundcard);
 
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
-  /* get task and devout thread */
+  /* get task and soundcard thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */
-  set_buffer_size = ags_set_buffer_size_new((GObject *) devout,
+  set_buffer_size = ags_set_buffer_size_new((GObject *) soundcard,
 					    (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetBufferSize */

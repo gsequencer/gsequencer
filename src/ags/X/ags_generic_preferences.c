@@ -20,13 +20,9 @@
 #include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_applicable.h>
-
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -208,7 +204,7 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->application_context)->config);
+  config = ags_config_get_instance();
   
   if(gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->autosave_thread)){
     ags_config_set(config,
@@ -239,7 +235,7 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->application_context)->config);
+  config = ags_config_get_instance();
   
   gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
 			       ((!strncmp(ags_config_get(config,

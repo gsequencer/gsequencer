@@ -20,16 +20,15 @@
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_ladspa_browser_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_ladspa_browser_class_init(AgsLadspaBrowserClass *ladspa_browser);
 void ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser);

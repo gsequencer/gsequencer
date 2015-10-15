@@ -19,7 +19,7 @@
 
 #include <ags/X/machine/ags_cell_pattern_callbacks.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
@@ -88,7 +88,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     AgsThread *audio_loop;
     AgsTaskThread *task_thread;
 
-    AgsMain *application_context;
+    AgsApplicationContext *application_context;
   
     guint i, j;
     guint index1;
@@ -212,7 +212,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   
     devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
-    audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->application_context)->main_loop);
+    audio_loop = AGS_AUDIO_LOOP(AGS_APPLLICATION_CONTEXT(devout->application_context)->main_loop);
     
     task_thread = ags_thread_find_type(audio_loop,
 				       AGS_TYPE_TASK_THREAD);
@@ -254,7 +254,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   window = gtk_widget_get_ancestor(cell_pattern,
 				   AGS_TYPE_WINDOW);
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(window->application_context)->main_loop);
+  audio_loop = AGS_AUDIO_LOOP(AGS_APPLLICATION_CONTEXT(window->application_context)->main_loop);
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
 
@@ -441,7 +441,7 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
   
   devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->application_context)->main_loop);
+  audio_loop = AGS_AUDIO_LOOP(AGS_APPLLICATION_CONTEXT(devout->application_context)->main_loop);
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
 

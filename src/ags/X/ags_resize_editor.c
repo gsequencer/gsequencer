@@ -19,7 +19,7 @@
 
 #include <ags/X/ags_resize_editor.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/object/ags_connectable.h>
 
@@ -268,7 +268,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 

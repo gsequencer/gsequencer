@@ -20,16 +20,17 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/object/ags_config.h>
+#include <ags/audio/thread/ags_audio_loop.h>
 
-#include <ags/audio/task/ags_seek_devout.h>
+#include <ags/audio/task/ags_seek_soundcard.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
@@ -70,7 +71,7 @@ void ags_navigation_real_change_position(AgsNavigation *navigation,
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
 };
 
 enum{
@@ -80,10 +81,6 @@ enum{
 
 static gpointer ags_navigation_parent_class = NULL;
 static guint navigation_signals[LAST_SIGNAL];
-
-extern AgsConfig *config;
-
-extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_navigation_get_type(void)
@@ -140,19 +137,19 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
 
   /* properties */
   /**
-   * AgsNavigation:devout:
+   * AgsNavigation:soundcard:
    *
-   * The assigned #AgsDevout to use as default sink.
+   * The assigned #AgsSoundcard to use as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /* AgsNavigationClass */
@@ -194,13 +191,14 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->flags = AGS_NAVIGATION_BLOCK_TIC;
 
-  navigation->devout = NULL;
+  navigation->soundcard = NULL;
 
   g_signal_connect_after(G_OBJECT(navigation), "parent-set\0",
 			 G_CALLBACK(ags_navigation_parent_set_callback), NULL);
 
   navigation->start_tact = 0.0;
-
+  navigation->note_offset = 0.0;
+  
   /* GtkWidget */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) navigation, (GtkWidget *) hbox, FALSE, FALSE, 2);
@@ -321,19 +319,19 @@ ags_navigation_set_property(GObject *gobject,
   navigation = AGS_NAVIGATION(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      AgsSoundcard *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (AgsSoundcard *) g_value_get_object(value);
 
-      if(navigation->devout == devout)
+      if(navigation->soundcard == soundcard)
 	return;
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      navigation->devout = devout;
+      navigation->soundcard = soundcard;
     }
     break;
   default:
@@ -353,8 +351,8 @@ ags_navigation_get_property(GObject *gobject,
   navigation = AGS_NAVIGATION(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    g_value_set_object(value, navigation->devout);
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, navigation->soundcard);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -408,12 +406,12 @@ ags_navigation_connect(AgsConnectable *connectable)
   //  g_signal_connect((GObject *) navigation->duration_tact, "value-changed\0",
   //		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
-  /* devout */
-  g_signal_connect_after((GObject *) navigation->devout, "tic\0",
+  /* soundcard */
+  g_signal_connect_after((GObject *) navigation->soundcard, "tic\0",
   			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
-  g_signal_connect_after((GObject *) navigation->devout, "stop\0",
-  			 G_CALLBACK(ags_navigation_devout_stop_callback), (gpointer) navigation);
+  g_signal_connect_after((GObject *) navigation->soundcard, "stop\0",
+  			 G_CALLBACK(ags_navigation_soundcard_stop_callback), (gpointer) navigation);
 
   /* expansion */
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",
@@ -458,12 +456,13 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   AgsWindow *window;
   AgsEditor *editor;
 
-  AgsSeekDevout *seek_devout;
-  
+  AgsSeekSoundcard *seek_soundcard;
+
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   gchar *timestr;
   double tact_factor, zoom_factor;
@@ -471,27 +470,32 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   gdouble delay;
   guint steps;
   gboolean move_forward;
+
+  pthread_mutex_t *application_mutex;
   
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   editor = window->editor;
 
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
-  /* seek devout */
-  delay = window->devout->delay[window->devout->tic_counter];
+  /* seek soundcard */
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
 
-  tact = window->devout->tact_counter - navigation->start_tact;
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
   
   if(tact < tact_counter){
     steps = (guint) ((tact_counter - tact) * delay);
@@ -501,12 +505,12 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
     move_forward = FALSE;
   }
   
-  seek_devout = ags_seek_devout_new(window->devout,
+  seek_soundcard = ags_seek_soundcard_new(window->soundcard,
 				    steps,
 				    move_forward);
 
   ags_task_thread_append_task(task_thread,
-			      AGS_TASK(seek_devout));
+			      AGS_TASK(seek_soundcard));
 
   /* update GUI */
   zoom_factor = 0.25;
@@ -524,7 +528,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   
   timestr = ags_navigation_absolute_tact_to_time_string(16.0 * tact_counter,
 							navigation->bpm->adjustment->value,
-							window->devout->delay_factor);
+							ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard)));
   gtk_label_set_text(navigation->position_time, timestr);
   
   g_free(timestr);
@@ -680,6 +684,8 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
 					    gdouble bpm,
 					    gdouble delay_factor)
 {
+  AgsConfig *config;
+  
   gchar *str;
   guint samplerate;
   guint buffer_size;
@@ -689,9 +695,11 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
   gdouble tact_redux;
   guint min, sec, msec;
 
+  config = ags_config_get_instance();
+  
   /* retrieve some presets */
   str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,
 				NULL,
@@ -699,7 +707,7 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
   free(str);
 
   str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
 				 NULL,

@@ -21,7 +21,7 @@
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 #include <ags/X/machine/ags_drum.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
@@ -136,7 +136,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
   AgsThread *main_loop;
   AgsThread *task_thread;
   
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   GList *list, *tasks;
   gchar *name0, *name1;
@@ -221,7 +221,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       devout_play->flags = AGS_DEVOUT_PLAY_PLAYBACK;
       devout_play->source = G_OBJECT(play_audio_signal);
 
-      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->application_context)->main_loop),
+      append_recall = ags_append_recall_new(G_OBJECT(AGS_APPLLICATION_CONTEXT(devout->application_context)->main_loop),
 					    devout_play);
     
       tasks = g_list_prepend(tasks, append_recall);
@@ -242,7 +242,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
       devout_play->flags = AGS_DEVOUT_PLAY_PLAYBACK;
       devout_play->source = G_OBJECT(stream_audio_signal);
 
-      append_recall = ags_append_recall_new(G_OBJECT(AGS_MAIN(devout->application_context)->main_loop),
+      append_recall = ags_append_recall_new(G_OBJECT(AGS_APPLLICATION_CONTEXT(devout->application_context)->main_loop),
 					    devout_play);
     
       tasks = g_list_prepend(tasks, append_recall);
@@ -328,7 +328,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   AgsThread *main_loop;
   AgsThread *task_thread;
   
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   char *name0, *name1;
 

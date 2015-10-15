@@ -19,7 +19,7 @@
 
 #include <ags/X/editor/ags_pattern_edit_callbacks.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
@@ -1131,7 +1131,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     AgsMutexManager *mutex_manager;
 
-    AgsMain *application_context;
+    AgsApplicationContext *application_context;
     
     GList *tasks;
 
@@ -1182,7 +1182,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     /* get application_context */
     pthread_mutex_lock(devout_mutex);
 
-    application_context = (AgsMain *) devout->application_context;
+    application_context = (AgsApplicationContext *) devout->application_context;
 
     pthread_mutex_unlock(devout_mutex);
 
@@ -1495,7 +1495,7 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 
   devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_MAIN(devout->application_context)->main_loop);
+  audio_loop = AGS_AUDIO_LOOP(AGS_APPLLICATION_CONTEXT(devout->application_context)->main_loop);
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
 

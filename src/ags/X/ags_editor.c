@@ -21,6 +21,7 @@
 #include <ags/X/ags_editor_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
@@ -80,13 +81,11 @@ enum{
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
+  PROP_SOUNDCARD,
 };
 
 static gpointer ags_editor_parent_class = NULL;
 static guint editor_signals[LAST_SIGNAL];
-
-extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_editor_get_type(void)
@@ -143,19 +142,19 @@ ags_editor_class_init(AgsEditorClass *editor)
 
   /* properties */
   /**
-   * AgsEditor:devout:
+   * AgsEditor:soundcard:
    *
-   * The assigned #AgsDevout acting as default sink.
+   * The assigned #AgsSoundcard acting as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /* AgsEditorClass */
@@ -203,7 +202,7 @@ ags_editor_init(AgsEditor *editor)
   editor->version = AGS_EDITOR_DEFAULT_VERSION;
   editor->build_id = AGS_EDITOR_DEFAULT_BUILD_ID;
 
-  editor->devout = NULL;
+  editor->soundcard = NULL;
 
   editor->toolbar = ags_toolbar_new();
   gtk_box_pack_start((GtkBox *) editor,
@@ -250,19 +249,19 @@ ags_editor_set_property(GObject *gobject,
   editor = AGS_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      AgsSoundcard *soundcard;
 
-      devout = (AgsDevout *) g_value_get_object(value);
+      soundcard = (AgsSoundcard *) g_value_get_object(value);
 
-      if(editor->devout == devout)
+      if(editor->soundcard == soundcard)
 	return;
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      editor->devout = devout;
+      editor->soundcard = soundcard;
     }
     break;
   default:
@@ -282,8 +281,8 @@ ags_editor_get_property(GObject *gobject,
   editor = AGS_EDITOR(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    g_value_set_object(value, editor->devout);
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, editor->soundcard);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -308,7 +307,7 @@ ags_editor_connect(AgsConnectable *connectable)
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
 
   /*  */
-  g_signal_connect(window->devout, "tic\0",
+  g_signal_connect(window->soundcard, "tic\0",
 		   ags_editor_tic_callback, editor);
 
   
@@ -362,7 +361,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
   child = editor->editor_child;
 
   while(child != NULL){
-    if(AGS_EDITOR_CHILD(child->data) == machine){
+    if(AGS_EDITOR_CHILD(child->data)->machine == machine){
       break;
     }
     
@@ -535,16 +534,18 @@ ags_editor_select_all(AgsEditor *editor)
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
     AgsMutexManager *mutex_manager;
 
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
-
-    pthread_mutex_lock(&(ags_application_mutex));
   
     mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    pthread_mutex_lock(application_mutex);
 
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) editor->selected_machine->audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     pthread_mutex_lock(audio_mutex);
     
@@ -755,16 +756,18 @@ ags_editor_paste(AgsEditor *editor)
   if((machine = editor->selected_machine) != NULL && editor->current_edit_widget != NULL){
     AgsMutexManager *mutex_manager;
 
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
-    pthread_mutex_lock(&(ags_application_mutex));
-  
     mutex_manager = ags_mutex_manager_get_instance();
-
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    pthread_mutex_lock(application_mutex);  
+    
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) editor->selected_machine->audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     pthread_mutex_lock(audio_mutex);
 
@@ -905,18 +908,20 @@ ags_editor_copy(AgsEditor *editor)
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
     AgsMutexManager *mutex_manager;
 
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
     machine = editor->selected_machine;
-
-    pthread_mutex_lock(&(ags_application_mutex));
   
     mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    pthread_mutex_lock(application_mutex);
 
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) machine->audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -983,18 +988,20 @@ ags_editor_cut(AgsEditor *editor)
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
     AgsMutexManager *mutex_manager;
 
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
     machine = editor->selected_machine;
 
-    pthread_mutex_lock(&(ags_application_mutex));
-  
     mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    pthread_mutex_lock(application_mutex);
 
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) machine->audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -1117,16 +1124,18 @@ ags_editor_invert(AgsEditor *editor)
   if(editor->selected_machine != NULL && editor->current_edit_widget != NULL){
     AgsMutexManager *mutex_manager;
 
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
-    pthread_mutex_lock(&(ags_application_mutex));
-  
     mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    pthread_mutex_lock(application_mutex);
 
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) editor->selected_machine->audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     pthread_mutex_lock(audio_mutex);
 

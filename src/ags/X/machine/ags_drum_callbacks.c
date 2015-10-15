@@ -22,7 +22,7 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/widget/ags_led.h>
 
@@ -212,7 +212,7 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   AgsThread *audio_loop;
   AgsThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   gdouble length;
 
@@ -412,7 +412,7 @@ ags_drum_tact_callback(AgsAudio *audio,
   AgsThread *audio_loop;
   AgsThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   GList *list;
   guint counter, active_led;

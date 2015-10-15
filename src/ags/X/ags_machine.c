@@ -20,18 +20,14 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
-#include <ags/thread/ags_gui_thread.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
@@ -41,16 +37,20 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_pattern.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_open_file.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -103,8 +103,6 @@ enum{
 
 static gpointer ags_machine_parent_class = NULL;
 static guint machine_signals[LAST_SIGNAL];
-
-extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_machine_get_type(void)
@@ -337,10 +335,20 @@ ags_machine_set_property(GObject *gobject,
       reset = TRUE;
 
       if(machine->audio != NULL){
+	AgsSoundcard *soundcard;
 	GList *pad;
+	GList *list;
 
-	ags_devout_remove_audio(window->devout,
-				machine->audio);
+	/* remove from soundcard */
+	soundcard = AGS_SOUNDCARD(audio->soundcard);
+	
+	list = ags_soundcard_get_audio(soundcard);
+	list = g_list_remove(list,
+			     G_OBJECT(audio));
+	ags_soundcard_set_audio(soundcard,
+				list);
+	audio->soundcard = NULL;
+	
 	g_object_unref(G_OBJECT(machine->audio));
 
 	if(audio == NULL){
@@ -868,30 +876,32 @@ ags_machine_set_run_extended(AgsMachine *machine,
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_loop_mutex;
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  application_context = (AgsMain *) window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get threads */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = (AgsAudioLoop *) application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* lookup audio loop mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-    
   audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
 					      (GObject *) audio_loop);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
@@ -900,7 +910,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
   if(run){
     AgsInitAudio *init_audio;
     AgsAppendAudio *append_audio;
-    AgsStartDevout *start_devout;
+    AgsStartSoundcard *start_soundcard;
     GList *list;
 
     list = NULL;
@@ -939,10 +949,10 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
       pthread_mutex_unlock(audio_loop_mutex);
 
-      start_devout = ags_start_devout_new(window->devout);
-      list = g_list_prepend(list, start_devout);
+      start_soundcard = ags_start_soundcard_new(window->soundcard);
+      list = g_list_prepend(list, start_soundcard);
 
-      task_completion = ags_task_completion_new((GObject *) start_devout,
+      task_completion = ags_task_completion_new((GObject *) start_soundcard,
 						NULL);
       g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
 			     G_CALLBACK(ags_machine_start_complete_callback), machine);
@@ -950,7 +960,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
 						   task_completion);
       ags_connectable_connect(AGS_CONNECTABLE(task_completion));
       
-      /* append AgsStartDevout */
+      /* append AgsStartSoundcard */
       list = g_list_reverse(list);
 
       ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
@@ -985,18 +995,20 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 
   guint i, j;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
     
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   if(audio_channels > audio_channels_old){
     /* grow lines */
@@ -1026,12 +1038,12 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 
       for(i = 0; i < input_pads; i++){
 	/* lookup channel mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
+	pthread_mutex_lock(application_mutex);
 
 	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						 (GObject *) channel);
   
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	/* create AgsPad's if necessary or resize */
 	if(audio_channels_old == 0){
@@ -1080,12 +1092,12 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 
       for(i = 0; i < output_pads; i++){
 	/* lookup channel mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
+	pthread_mutex_lock(application_mutex);
 
 	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						 (GObject *) channel);
   
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	/* create AgsPad's if necessary or resize */
 	if(audio_channels_old == 0){
@@ -1188,18 +1200,20 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
 
   guint i, j;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
     
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   if(pads_old < pads){
     pthread_mutex_lock(audio_mutex);
@@ -1217,12 +1231,12 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
       
 	for(i = pads_old; i < pads; i++){
 	  /* lookup channel mutex */
-	  pthread_mutex_lock(&(ags_application_mutex));
+	  pthread_mutex_lock(application_mutex);
 
 	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						   (GObject *) channel);
   
-	  pthread_mutex_unlock(&(ags_application_mutex));
+	  pthread_mutex_unlock(application_mutex);
 
 	  /* instantiate pad */
 	  pad = g_object_new(machine->input_pad_type,
@@ -1251,12 +1265,12 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
     
 	for(i = pads_old; i < pads; i++){
 	  /* lookup channel mutex */
-	  pthread_mutex_lock(&(ags_application_mutex));
+	  pthread_mutex_lock(application_mutex);
 
 	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						   (GObject *) channel);
   
-	  pthread_mutex_unlock(&(ags_application_mutex));
+	  pthread_mutex_unlock(application_mutex);
 
 	  /* instantiate pad */
 	  pad = g_object_new(machine->output_pad_type,
@@ -1365,30 +1379,32 @@ ags_machine_open_files(AgsMachine *machine,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_loop_mutex;
 
   window = (AgsWindow *) gtk_widget_get_toplevel(machine);
   
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* lookup audio loop mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
+  pthread_mutex_lock(application_mutex);
     
   audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
 					      (GObject *) audio_loop);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
@@ -1420,6 +1436,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
   int size;
   gint i;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *current_mutex;
 
@@ -1501,15 +1518,16 @@ ags_machine_copy_pattern(AgsMachine *machine)
 
   audio = machine->audio;
 
-  /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  mutex_manager = ags_mutex_manager_get_instance();  
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-  mutex_manager = ags_mutex_manager_get_instance();
-    
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+  
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* copy to clipboard */
   pthread_mutex_lock(audio_mutex);
@@ -1520,12 +1538,12 @@ ags_machine_copy_pattern(AgsMachine *machine)
 
   for(i = 0; i < machine->audio->audio_channels; i++){
     /* lookup channel mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
 
     current_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) channel);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* do it so */
     pthread_mutex_lock(current_mutex);
@@ -1549,7 +1567,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
 
 /**
  * ags_machine_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsMachine
  *
@@ -1558,7 +1576,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
  * Since: 0.3
  */
 AgsMachine*
-ags_machine_new(GObject *devout)
+ags_machine_new(GObject *soundcard)
 {
   AgsMachine *machine;
   GValue value;
@@ -1567,9 +1585,9 @@ ags_machine_new(GObject *devout)
 					NULL);
   
   g_value_init(&value, G_TYPE_OBJECT);
-  g_value_set_object(&value, devout);
+  g_value_set_object(&value, soundcard);
   g_object_set_property(G_OBJECT(machine->audio),
-			"devout\0", &value);
+			"soundcard\0", &value);
   g_value_unset(&value);
 
   return(machine);

@@ -20,7 +20,7 @@
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/object/ags_connectable.h>
 

@@ -21,7 +21,7 @@
 
 #include <ags/file/ags_file.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/audio/task/ags_save_file.h>
 
@@ -57,7 +57,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     AgsThread *audio_loop;
     AgsThread *task_thread;
     
-    AgsMain *application_context;
+    AgsApplicationContext *application_context;
     
     char *filename;
 
@@ -90,7 +90,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    application_context_quit(AGS_MAIN(window->application_context));
+    application_context_quit(AGS_APPLLICATION_CONTEXT(window->application_context));
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }

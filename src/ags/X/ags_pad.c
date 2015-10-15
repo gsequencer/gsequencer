@@ -20,28 +20,28 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_pad_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
-#include <ags/thread/ags_gui_thread.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
 
-#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
+
+#include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_init_channel.h>
 #include <ags/audio/task/ags_append_channel.h>
 #include <ags/audio/task/ags_append_recall.h>
@@ -49,7 +49,10 @@
 #include <ags/audio/task/ags_open_single_file.h>
 #include <ags/audio/task/ags_cancel_channel.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_pad_class_init(AgsPadClass *pad);
 void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -105,8 +108,6 @@ enum{
 
 static gpointer ags_pad_parent_class = NULL;
 static guint pad_signals[LAST_SIGNAL];
-
-extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_pad_get_type(void)
@@ -491,6 +492,7 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 
   GList *line, *line_start;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *current_mutex;
 
   if(pad->channel == channel){
@@ -512,22 +514,19 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
   current = channel;
 
   /* get mutex manager */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
-
-  pthread_mutex_unlock(&(ags_application_mutex));
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* set channel */
   while(line != NULL){
     if(current != NULL){
       /* lookup current mutex */
-      pthread_mutex_lock(&(ags_application_mutex));
+      pthread_mutex_lock(application_mutex);
       
       current_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) current);
   
-      pthread_mutex_unlock(&(ags_application_mutex));
+      pthread_mutex_unlock(application_mutex);
     }
     
     g_object_set(G_OBJECT(line->data),
@@ -582,7 +581,8 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   AgsMutexManager *mutex_manager;
 
   guint i, j;
-
+  
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
 #ifdef AGS_DEBUG
@@ -592,11 +592,8 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pad, AGS_TYPE_MACHINE);
 
   /* get mutex manager */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
-
-  pthread_mutex_unlock(&(ags_application_mutex));
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);  
 
   /* resize */
   if(audio_channels > audio_channels_old){
@@ -607,12 +604,12 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
       for(j = audio_channels_old % pad->cols; j < pad->cols && i < audio_channels; j++, i++){
 	/* lookup channel mutex */
 	if(channel != NULL){
-	  pthread_mutex_lock(&(ags_application_mutex));
+	  pthread_mutex_lock(application_mutex);
       
 	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						   (GObject *) channel);
   
-	  pthread_mutex_unlock(&(ags_application_mutex));
+	  pthread_mutex_unlock(application_mutex);
 	}
 
 	/* instantiate line */
@@ -734,21 +731,23 @@ ags_pad_real_find_port(AgsPad *pad)
   
   GList *list, *tmp;
   
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
   channel = pad->channel;
   list = NULL;
   
   if(channel != NULL){
-    /* get mutex manager */
-    pthread_mutex_lock(&(ags_application_mutex));
-  
     mutex_manager = ags_mutex_manager_get_instance();
-
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    /* get mutex manager */
+    pthread_mutex_lock(application_mutex);
+  
     channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) channel);
 
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* find ports */
     pthread_mutex_lock(channel_mutex);
@@ -759,12 +758,12 @@ ags_pad_real_find_port(AgsPad *pad)
 
     while(channel != next_pad){
       /* lookup channel mutex */
-      pthread_mutex_lock(&(ags_application_mutex));
+      pthread_mutex_lock(application_mutex);
       
       channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) channel);
       
-      pthread_mutex_unlock(&(ags_application_mutex));
+      pthread_mutex_unlock(application_mutex);
 
       /* do it so */
       if(list != NULL){
@@ -821,24 +820,25 @@ ags_pad_play(AgsPad *pad)
   AgsWindow *window;
   AgsMachine *machine;
 
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsChannel *channel;
 
-  AgsStartDevout *start_devout;
+  AgsStartSoundcard *start_soundcard;
   AgsInitChannel *init_channel;
   AgsAppendChannel *append_channel;
 
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
-  AgsDevoutThread *devout_thread;
+  AgsSoundcardThread *soundcard_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   GList *tasks;
 
   gboolean play_all;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   
@@ -847,34 +847,35 @@ ags_pad_play(AgsPad *pad)
   window = (AgsWindow *) gtk_widget_get_toplevel(machine);
   
   application_context = window->application_context;
-
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
-  /* get task and devout thread */
+  /* get task and soundcard thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
-  devout_thread = (AgsDevoutThread *) ags_thread_find_type(audio_loop,
-							   AGS_TYPE_DEVOUT_THREAD);
+  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(audio_loop,
+							   AGS_TYPE_SOUNDCARD_THREAD);
 
   /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
+  pthread_mutex_lock(application_mutex);
   
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) machine->audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
-  /* get devout */
+  /* get soundcard */
   pthread_mutex_lock(audio_mutex);
   
-  devout = machine->audio->devout;
+  soundcard = machine->audio->soundcard;
 
   pthread_mutex_unlock(audio_mutex);
 
@@ -886,12 +887,12 @@ ags_pad_play(AgsPad *pad)
   channel = pad->channel;
 
   /* lookup channel mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) channel);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   if(pad->play->active){
     /* init channel for playback */
@@ -912,12 +913,12 @@ ags_pad_play(AgsPad *pad)
 
       while(channel != next_pad){
 	/* lookup channel mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
+	pthread_mutex_lock(application_mutex);
 
 	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						 (GObject *) channel);
   
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	/* append channel for playback */
 	append_channel = ags_append_channel_new(audio_loop,
@@ -954,10 +955,10 @@ ags_pad_play(AgsPad *pad)
       gui_thread = (AgsGuiThread *) ags_thread_find_type(audio_loop,
 							 AGS_TYPE_GUI_THREAD);
 
-      start_devout = ags_start_devout_new(window->devout);
-      tasks = g_list_prepend(tasks, start_devout);
+      start_soundcard = ags_start_soundcard_new(window->soundcard);
+      tasks = g_list_prepend(tasks, start_soundcard);
 
-      task_completion = ags_task_completion_new((GObject *) start_devout,
+      task_completion = ags_task_completion_new((GObject *) start_soundcard,
 						NULL);
       g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
 			     G_CALLBACK(ags_pad_start_complete_callback), pad);
@@ -965,14 +966,14 @@ ags_pad_play(AgsPad *pad)
 						   task_completion);
       ags_connectable_connect(AGS_CONNECTABLE(task_completion));
       
-      /* append AgsStartDevout */
+      /* append AgsStartSoundcard */
       tasks = g_list_reverse(tasks);
 
       ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 				   tasks);
     }
   }else{
-    AgsDevoutPlay *devout_play;
+    AgsPlayback *playback;
     AgsRecallID *recall_id;
     
     AgsCancelChannel *cancel_channel;
@@ -982,29 +983,29 @@ ags_pad_play(AgsPad *pad)
     channel = pad->channel;
 
     /* lookup channel mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
 
     channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) channel);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* return if not playing */
     pthread_mutex_lock(channel_mutex);
 
-    devout_play = channel->devout_play;
-    flags = g_atomic_int_get(&(devout_play->flags));
+    playback = channel->playback;
+    flags = g_atomic_int_get(&(playback->flags));
 
-    recall_id = devout_play->recall_id[0];
+    recall_id = playback->recall_id[0];
 
     pthread_mutex_unlock(channel_mutex);
     
     if(recall_id == NULL ||
-       (AGS_DEVOUT_PLAY_DONE & (flags)) != 0){
+       (AGS_PLAYBACK_DONE & (flags)) != 0){
       return;
     }
 
-    if((AGS_DEVOUT_PLAY_PAD & (flags)) != 0){
+    if((AGS_PLAYBACK_PAD & (flags)) != 0){
       AgsChannel *next_pad;
 
       pthread_mutex_lock(channel_mutex);
@@ -1013,27 +1014,27 @@ ags_pad_play(AgsPad *pad)
 
       pthread_mutex_unlock(channel_mutex);
 
-      if((AGS_DEVOUT_PLAY_DONE & (flags)) == 0){
+      if((AGS_PLAYBACK_DONE & (flags)) == 0){
 	/* cancel request */
 	while(channel != next_pad){
 	  /* lookup channel mutex */
-	  pthread_mutex_lock(&(ags_application_mutex));
+	  pthread_mutex_lock(application_mutex);
 
 	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						   (GObject *) channel);
   
-	  pthread_mutex_unlock(&(ags_application_mutex));
+	  pthread_mutex_unlock(application_mutex);
 
 	  /* create cancel task */
 	  pthread_mutex_lock(channel_mutex);
 
-	  devout_play = channel->devout_play;
-	  recall_id = devout_play->recall_id[0];
+	  playback = channel->playback;
+	  recall_id = playback->recall_id[0];
 
 	  pthread_mutex_unlock(channel_mutex);
 
 	  cancel_channel = ags_cancel_channel_new(channel, recall_id,
-						  devout_play);
+						  playback);
 
 	  ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
 
@@ -1043,20 +1044,20 @@ ags_pad_play(AgsPad *pad)
 	/* done */
 	while(channel != next_pad){
 	  /* lookup channel mutex */
-	  pthread_mutex_lock(&(ags_application_mutex));
+	  pthread_mutex_lock(application_mutex);
 
 	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						   (GObject *) channel);
   
-	  pthread_mutex_unlock(&(ags_application_mutex));
+	  pthread_mutex_unlock(application_mutex);
 
 	  /* set flags */
 	  pthread_mutex_lock(channel_mutex);
 	  
-	  g_atomic_int_or(&(devout_play->flags),
-			  AGS_DEVOUT_PLAY_REMOVE);
-	  g_atomic_int_and(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-			   (~AGS_DEVOUT_PLAY_DONE));
+	  g_atomic_int_or(&(playback->flags),
+			  AGS_PLAYBACK_REMOVE);
+	  g_atomic_int_and(&(AGS_PLAYBACK(channel->playback)->flags),
+			   (~AGS_PLAYBACK_DONE));
 
 	  channel = channel->next;
 
@@ -1076,35 +1077,35 @@ ags_pad_play(AgsPad *pad)
       channel = line->channel;
 
       /* lookup channel mutex */
-      pthread_mutex_lock(&(ags_application_mutex));
+      pthread_mutex_lock(application_mutex);
 
       channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) channel);
   
-      pthread_mutex_unlock(&(ags_application_mutex));
+      pthread_mutex_unlock(application_mutex);
 
       /* create cancel task or set flags */
       pthread_mutex_lock(channel_mutex);
 
-      devout_play = channel->devout_play;
-      flags = g_atomic_int_get(&(devout_play->flags));
+      playback = channel->playback;
+      flags = g_atomic_int_get(&(playback->flags));
 
-      recall_id = devout_play->recall_id[0];
+      recall_id = playback->recall_id[0];
 	  
       pthread_mutex_unlock(channel_mutex);
 
-      if((AGS_DEVOUT_PLAY_DONE & (flags)) == 0){
+      if((AGS_PLAYBACK_DONE & (flags)) == 0){
 	/* cancel request */
 	cancel_channel = ags_cancel_channel_new(channel, recall_id,
-						devout_play);
+						playback);
 
 	ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
       }else{
 	/* done */
 	pthread_mutex_lock(channel_mutex);
 	
-	AGS_DEVOUT_PLAY(channel->devout_play)->flags |= AGS_DEVOUT_PLAY_REMOVE;
-	AGS_DEVOUT_PLAY(channel->devout_play)->flags &= (~AGS_DEVOUT_PLAY_DONE);
+	AGS_PLAYBACK(channel->playback)->flags |= AGS_PLAYBACK_REMOVE;
+	AGS_PLAYBACK(channel->playback)->flags &= (~AGS_PLAYBACK_DONE);
 
 	pthread_mutex_unlock(channel_mutex);
       }

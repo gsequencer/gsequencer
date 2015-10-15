@@ -20,7 +20,7 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_callbacks.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/object/ags_connectable.h>
 
@@ -594,7 +594,7 @@ ags_synth_update(AgsSynth *synth)
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   GList *input_pad, *input_pad_start;
   GList *input_line, *input_line_start;

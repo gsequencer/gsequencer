@@ -19,7 +19,7 @@
 
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_autosave_thread.h>
@@ -31,13 +31,13 @@ void
 ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button,
 							 AgsGenericPreferences *generic_preferences)
 {
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   AgsAutosaveThread *autosave_thread;
   AgsPreferences *preferences;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
-  application_context = (AgsMain *) AGS_WINDOW(preferences->window)->application_context;
+  application_context = (AgsApplicationContext *) AGS_WINDOW(preferences->window)->application_context;
   autosave_thread = (AgsAutosaveThread *) application_context->autosave_thread;
 
   if(gtk_toggle_button_get_active(check_button)){

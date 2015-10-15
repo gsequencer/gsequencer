@@ -19,7 +19,7 @@
 
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/widget/ags_led.h>
 
@@ -132,7 +132,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   gdouble length;
 
@@ -209,7 +209,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
 
   GList *list;
 

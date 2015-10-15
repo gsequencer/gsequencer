@@ -19,7 +19,7 @@
 
 #include <ags/audio/task/ags_change_tact.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/object/ags_connectable.h>
 
