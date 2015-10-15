@@ -20,7 +20,7 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/object/ags_connectable.h>
 
@@ -244,7 +244,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   preferences = AGS_PREFERENCES(applicable);
 
-  config = AGS_CONFIG(AGS_MAIN(AGS_WINDOW(preferences->window)->application_context)->config);
+  config = AGS_CONFIG(AGS_APPLLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context)->config);
 
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
@@ -262,7 +262,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 			     AGS_PREFERENCES_DEFAULT_FILENAME);
     
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", AGS_MAIN(AGS_WINDOW(preferences->window)->application_context),
+				  "main\0", AGS_APPLLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context),
 				  "filename\0", filename,
 				  NULL);
   ags_file_write_concurrent(file);
@@ -274,7 +274,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 					     filename),
 			     &error);
 
-  application_context_quit(AGS_MAIN(AGS_WINDOW(preferences->window)->application_context));
+  application_context_quit(AGS_APPLLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context));
 }
 
 void

@@ -20,7 +20,7 @@
 #include <ags/X/machine/ags_cell_pattern.h>
 #include <ags/X/machine/ags_cell_pattern_callbacks.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/object/ags_connectable.h>
 
@@ -748,7 +748,7 @@ ags_cell_pattern_blink_worker(void *data)
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   static const guint blink_delay = 1000000; // blink every second
   

@@ -17,13 +17,13 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/file/ags_file_gui.h>
+#include <ags/X/ags_gui_file_xml.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/plugin/ags_plugin_factory.h>
 
@@ -52,9 +52,9 @@
 
 #define AGS_FILE_READ_EDITOR_PARAMETER_NAME "ags-file-read-editor-parameter-name\0"
 
-void ags_file_read_window_resolve_devout(AgsFileLookup *file_lookup,
+void ags_file_read_window_resolve_soundcard(AgsFileLookup *file_lookup,
 					 AgsWindow *window);
-void ags_file_write_window_resolve_devout(AgsFileLookup *file_lookup,
+void ags_file_write_window_resolve_soundcard(AgsFileLookup *file_lookup,
 					  AgsWindow *window);
 
 void ags_file_read_machine_resolve_machine_editor(AgsFileLookup *file_lookup,
@@ -87,7 +87,7 @@ void ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 void ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
 						      AgsMachineSelector *machine_selector);
 
-void ags_file_read_navigation_resolve_devout(AgsFileLookup *file_lookup,
+void ags_file_read_navigation_resolve_soundcard(AgsFileLookup *file_lookup,
 					     AgsNavigation *navigation);
 
 void
@@ -144,7 +144,7 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
     gobject->name = (gchar *) g_strdup(file->filename);
   }
   
-  /* devout */
+  /* soundcard */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
 					       "node\0", node,
@@ -152,7 +152,7 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_window_resolve_devout), gobject);
+		   G_CALLBACK(ags_file_read_window_resolve_soundcard), gobject);
 
   /* child elements */
   child = node->children;
@@ -210,20 +210,20 @@ ags_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
 }
 
 void
-ags_file_read_window_resolve_devout(AgsFileLookup *file_lookup,
+ags_file_read_window_resolve_soundcard(AgsFileLookup *file_lookup,
 				    AgsWindow *window)
 {
   AgsFileIdRef *id_ref;
   gchar *xpath;
 
   xpath = (gchar *) xmlGetProp(file_lookup->node,
-			       "devout\0");
+			       "soundcard\0");
 
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(id_ref != NULL){
     g_object_set(G_OBJECT(window),
-		 "devout\0", (AgsWindow *) id_ref->ref,
+		 "soundcard\0", (AgsWindow *) id_ref->ref,
 		 NULL);
   }
 }
@@ -260,7 +260,7 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
 	     "name\0",
 	     g_strdup(window->name));
 
-  /* devout */
+  /* soundcard */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
 					       "node\0", node,
@@ -268,7 +268,7 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_write_window_resolve_devout), window);
+		   G_CALLBACK(ags_file_write_window_resolve_soundcard), window);
 
   xmlAddChild(parent,
 	      node);
@@ -292,19 +292,19 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
 }
 
 void
-ags_file_write_window_resolve_devout(AgsFileLookup *file_lookup,
+ags_file_write_window_resolve_soundcard(AgsFileLookup *file_lookup,
 				     AgsWindow *window)
 {
   AgsFileIdRef *id_ref;
   gchar *id;
 
-  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, window->devout);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, window->soundcard);
 
   id = xmlGetProp(id_ref->node, AGS_FILE_ID_PROP);
 
   xmlNewProp(file_lookup->node,
-	     "devout\0",
-	     g_strdup_printf("xpath=//ags-devout[@id='%s']\0", id));
+	     "soundcard\0",
+	     g_strdup_printf("xpath=//ags-soundcard[@id='%s']\0", id));
 }
 
 void
@@ -3155,7 +3155,7 @@ ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigatio
 			    g_strtod(str,
 				     NULL));
 
-  /* devout */
+  /* soundcard */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
 					       "node\0", node,
@@ -3163,26 +3163,26 @@ ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigatio
 					       NULL);
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_file_read_navigation_resolve_devout), gobject);
+		   G_CALLBACK(ags_file_read_navigation_resolve_soundcard), gobject);
 }
 
 void
-ags_file_read_navigation_resolve_devout(AgsFileLookup *file_lookup,
+ags_file_read_navigation_resolve_soundcard(AgsFileLookup *file_lookup,
 					AgsNavigation *navigation)
 {
   AgsFileIdRef *id_ref;
   gchar *xpath;
 
-  xpath = "xpath=//ags-devout";
+  xpath = "xpath=//ags-soundcard";
   
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
 
   if(id_ref != NULL){
     g_object_set(G_OBJECT(navigation),
-		 "devout\0", id_ref->ref,
+		 "soundcard\0", id_ref->ref,
 		 NULL);
     gtk_spin_button_set_value(navigation->bpm,
-			      AGS_DEVOUT(id_ref->ref)->bpm);
+			      ags_soundcard_get_bpm(AGS_SOUNDCARD(id_ref->ref)));
   }
 }
 

@@ -20,19 +20,23 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_line_member_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/widget/ags_dial.h>
 
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
 
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
 void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -87,8 +91,6 @@ enum{
 
 static gpointer ags_line_member_parent_class = NULL;
 static guint line_member_signals[LAST_SIGNAL];
-
-extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_line_member_get_type(void)
@@ -771,13 +773,16 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
     AgsWindow *window;
     AgsLine *line;
-    
+
+    AgsMutexManager *mutex_manager;
     AgsThread *audio_loop;
     AgsTaskThread *task_thread;
     AgsTask *task;
 
-    AgsMain *application_context;
+    AgsApplicationContext *application_context;
 
+    pthread_mutex_t *application_mutex;
+    
     line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 					       AGS_TYPE_LINE);
 
@@ -786,12 +791,15 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   
     application_context = window->application_context;
 
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
     /* get audio loop */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
 
     audio_loop = application_context->main_loop;
 
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get task and devout thread */
     task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,

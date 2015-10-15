@@ -156,8 +156,9 @@ ags_display_tact_launch(AgsTask *task)
   navigation = AGS_NAVIGATION(display_tact->navigation);
   window = gtk_widget_get_ancestor(navigation,
 				   AGS_TYPE_WINDOW);
-  
-  tact = window->devout->tact_counter - navigation->start_tact;
+
+  navigation->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
+  tact = navigation->note_offset - navigation->start_tact;
 
   gdk_window_flush(GTK_WIDGET(navigation->duration_time)->window);
   timestr = ags_navigation_absolute_tact_to_time_string(tact,

@@ -21,7 +21,7 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/object/ags_soundcard.h>
 

@@ -35,7 +35,7 @@
 #include <ags/X/editor/ags_pattern_edit.h>
 #include <ags/X/editor/ags_note_edit.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <fontconfig/fontconfig.h>
 

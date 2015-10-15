@@ -20,9 +20,9 @@
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_export_window_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_notation.h>
 
@@ -58,8 +58,8 @@ gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 enum{
   PROP_0,
-  PROP_DEVOUT,
-  PROP_MAIN,
+  PROP_SOUNDCARD,
+  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_export_window_parent_class = NULL;
@@ -119,35 +119,35 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
 
   /* properties */
   /**
-   * AgsExportWindow:devout:
+   * AgsExportWindow:soundcard:
    *
-   * The assigned #AgsDevout acting as default sink.
+   * The assigned #AgsSoundcard acting as default sink.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("devout\0",
-				   "assigned devout\0",
-				   "The devout it is assigned with\0",
+  param_spec = g_param_spec_object("soundcard\0",
+				   "assigned soundcard\0",
+				   "The soundcard it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEVOUT,
+				  PROP_SOUNDCARD,
 				  param_spec);
 
   /**
-   * AgsExportWindow:ags-main:
+   * AgsExportWindow:application-context:
    *
-   * The assigned #AgsMain to give control of application.
+   * The assigned #AgsApplicationContext to give control of application.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("ags-main\0",
-				   "assigned ags main\0",
-				   "The AgsMain it is assigned with\0",
+  param_spec = g_param_spec_object("application-context\0",
+				   "assigned application context\0",
+				   "The AgsApplicationContext it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
 
@@ -314,7 +314,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   0, 0);
 
   export_window->duration = (GtkLabel *) gtk_label_new(ags_navigation_tact_to_time_string(0.0,
-											  AGS_DEVOUT_DEFAULT_BPM,
+											  AGS_SOUNDCARD_DEFAULT_BPM,
 											  1.0));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->duration),
@@ -371,28 +371,28 @@ ags_export_window_set_property(GObject *gobject,
   export_window = AGS_EXPORT_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
+  case PROP_SOUNDCARD:
     {
-      AgsDevout *devout;
+      AgsSoundcard *soundcard;
 
-      devout = g_value_get_object(value);
+      soundcard = g_value_get_object(value);
 
-      if(export_window->devout == devout)
+      if(export_window->soundcard == soundcard)
 	return;
 
-      if(devout != NULL)
-	g_object_ref(devout);
+      if(soundcard != NULL)
+	g_object_ref(soundcard);
 
-      export_window->devout = devout;
+      export_window->soundcard = soundcard;
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
-      AgsMain *application_context;
+      AgsApplicationContext *application_context;
 
-      application_context = (AgsMain *) g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if((AgsMain *) export_window->application_context == application_context)
+      if((AgsApplicationContext *) export_window->application_context == application_context)
 	return;
 
       if(export_window->application_context != NULL){
@@ -423,10 +423,10 @@ ags_export_window_get_property(GObject *gobject,
   export_window = AGS_EXPORT_WINDOW(gobject);
 
   switch(prop_id){
-  case PROP_DEVOUT:
-    g_value_set_object(value, export_window->devout);
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, export_window->soundcard);
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     g_value_set_object(value, export_window->application_context);
     break;
   default:

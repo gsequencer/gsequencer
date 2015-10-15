@@ -347,28 +347,26 @@ am__objects_12 = $(am__objects_1) libags_gui_la-ags_cartesian.lo \
 	libags_gui_la-ags_option_menu.lo libags_gui_la-ags_ruler.lo \
 	libags_gui_la-ags_segment.lo libags_gui_la-ags_table.lo \
 	libags_gui_la-ags_timebar.lo libags_gui_la-ags_vindicator.lo \
-	libags_gui_la-ags_waveform.lo \
-	libags_gui_la-ags_xorg_application_context.lo
-am__objects_13 = $(am__objects_1) libags_gui_la-ags_gui_thread.lo
-am_libags_gui_la_OBJECTS = $(am__objects_12) $(am__objects_13)
+	libags_gui_la-ags_waveform.lo
+am_libags_gui_la_OBJECTS = $(am__objects_12)
 libags_gui_la_OBJECTS = $(am_libags_gui_la_OBJECTS)
 libags_gui_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libags_gui_la_CFLAGS) \
 	$(CFLAGS) $(libags_gui_la_LDFLAGS) $(LDFLAGS) -o $@
 libags_server_la_DEPENDENCIES = libags_thread.la libags.la
-am__objects_14 = $(am__objects_1) libags_server_la-ags_registry.lo \
+am__objects_13 = $(am__objects_1) libags_server_la-ags_registry.lo \
 	libags_server_la-ags_remote_task.lo \
 	libags_server_la-ags_server.lo \
 	libags_server_la-ags_server_application_context.lo \
 	libags_server_la-ags_service_provider.lo
-am_libags_server_la_OBJECTS = $(am__objects_14)
+am_libags_server_la_OBJECTS = $(am__objects_13)
 libags_server_la_OBJECTS = $(am_libags_server_la_OBJECTS)
 libags_server_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libags_server_la_CFLAGS) $(CFLAGS) \
 	$(libags_server_la_LDFLAGS) $(LDFLAGS) -o $@
 libags_thread_la_DEPENDENCIES = libags.la
-am__objects_15 = $(am__objects_1) \
+am__objects_14 = $(am__objects_1) \
 	libags_thread_la-ags_autosave_thread.lo \
 	libags_thread_la-ags_concurrency_provider.lo \
 	libags_thread_la-ags_history.lo \
@@ -384,9 +382,9 @@ am__objects_15 = $(am__objects_1) \
 	libags_thread_la-ags_timestamp_factory.lo \
 	libags_thread_la-ags_timestamp_thread.lo \
 	libags_thread_la-ags_timestamp.lo
-am__objects_16 = $(am__objects_1) \
+am__objects_15 = $(am__objects_1) \
 	libags_thread_la-ags_thread_file_xml.lo
-am_libags_thread_la_OBJECTS = $(am__objects_15) $(am__objects_16)
+am_libags_thread_la_OBJECTS = $(am__objects_14) $(am__objects_15)
 libags_thread_la_OBJECTS = $(am_libags_thread_la_OBJECTS)
 libags_thread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -394,7 +392,7 @@ libags_thread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(libags_thread_la_LDFLAGS) $(LDFLAGS) -o $@
 libgsequencer_la_DEPENDENCIES = libags_audio.la libags_server.la \
 	libags_gui.la libags_thread.la libags.la
-am__objects_17 = $(am__objects_1) \
+am__objects_16 = $(am__objects_1) \
 	libgsequencer_la-ags_audio_preferences.lo \
 	libgsequencer_la-ags_audio_preferences_callbacks.lo \
 	libgsequencer_la-ags_editor.lo \
@@ -447,8 +445,10 @@ am__objects_17 = $(am__objects_1) \
 	libgsequencer_la-ags_server_preferences.lo \
 	libgsequencer_la-ags_server_preferences_callbacks.lo \
 	libgsequencer_la-ags_window.lo \
-	libgsequencer_la-ags_window_callbacks.lo
-am__objects_18 = $(am__objects_1)
+	libgsequencer_la-ags_window_callbacks.lo \
+	libgsequencer_la-ags_xorg_application_context.lo
+am__objects_17 = $(am__objects_1)
+am__objects_18 = $(am__objects_1) libgsequencer_la-ags_gui_thread.lo
 am__objects_19 = $(am__objects_1) libgsequencer_la-ags_cell_pattern.lo \
 	libgsequencer_la-ags_cell_pattern_callbacks.lo \
 	libgsequencer_la-ags_drum.lo \
@@ -502,8 +502,9 @@ am__objects_20 = $(am__objects_1) \
 	libgsequencer_la-ags_sf2_chooser_callbacks.lo \
 	libgsequencer_la-ags_toolbar.lo \
 	libgsequencer_la-ags_toolbar_callbacks.lo
-am_libgsequencer_la_OBJECTS = $(am__objects_17) $(am__objects_18) \
-	$(am__objects_18) $(am__objects_19) $(am__objects_20)
+am_libgsequencer_la_OBJECTS = $(am__objects_16) $(am__objects_17) \
+	$(am__objects_18) $(am__objects_17) $(am__objects_19) \
+	$(am__objects_20)
 libgsequencer_la_OBJECTS = $(am_libgsequencer_la_OBJECTS)
 libgsequencer_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -825,8 +826,8 @@ libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object
 libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sources) $(libags_thread_task_c_sources)
 libags_server_la_SOURCES = $(libags_server_c_sources)
 libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
-libags_gui_la_SOURCES = $(libags_gui_c_sources) $(libags_gui_thread_c_sources)
-libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+libags_gui_la_SOURCES = $(libags_gui_c_sources)
+libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 gsequencer_SOURCES = $(gsequencer_src)
 include_HEADERS = $(libags_util_c_headers) $(libags_lib_c_headers) $(libags_object_c_headers) $(libags_file_c_headers) $(libags_file_task_c_headers) $(libags_thread_c_headers) $(libags_thread_file_c_headers) $(libags_thread_task_c_headers) $(libags_server_c_headers) $(libags_audio_c_headers) $(libags_audio_thread_c_headers) $(libags_audio_file_c_headers) $(libags_audio_midi_c_headers) $(libags_audio_task_c_headers) $(libags_audio_task_recall_c_headers) $(libags_audio_recall_c_headers)  $(libags_plugin_c_headers) $(libags_widget_c_headers)
 
@@ -1434,8 +1435,7 @@ libags_gui_h_sources = \
 	src/ags/widget/ags_table.h \
 	src/ags/widget/ags_timebar.h \
 	src/ags/widget/ags_vindicator.h \
-	src/ags/widget/ags_waveform.h \
-	src/ags/widget/ags_xorg_application_context.h
+	src/ags/widget/ags_waveform.h
 
 deprecated_libags_gui_c_sources = 
 libags_gui_c_sources = \
@@ -1456,20 +1456,7 @@ libags_gui_c_sources = \
 	src/ags/widget/ags_table.c \
 	src/ags/widget/ags_timebar.c \
 	src/ags/widget/ags_vindicator.c \
-	src/ags/widget/ags_waveform.c \
-	src/ags/widget/ags_xorg_application_context.c
-
-
-# libags-gui - thread
-deprecated_libags_gui_thread_h_sources = 
-libags_gui_thread_h_sources = \
-	$(deprecated_libags_gui_thread_h_sources) \
-	src/ags/widget/thread/ags_gui_thread.h
-
-deprecated_libags_gui_thread_c_sources = 
-libags_gui_thread_c_sources = \
-	$(deprecated_libags_gui_thread_c_sources) \
-	src/ags/widget/thread/ags_gui_thread.c
+	src/ags/widget/ags_waveform.c
 
 
 # libgsequencer all files
@@ -1528,7 +1515,8 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_server_preferences_callbacks.h \
 	src/ags/X/ags_server_preferences.h \
 	src/ags/X/ags_window.h \
-	src/ags/X/ags_window_callbacks.h
+	src/ags/X/ags_window_callbacks.h \
+	src/ags/widget/ags_xorg_application_context.h
 
 deprecated_libgsequencer_c_sources = 
 libgsequencer_c_sources = \
@@ -1585,7 +1573,8 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_server_preferences.c \
 	src/ags/X/ags_server_preferences_callbacks.c \
 	src/ags/X/ags_window.c \
-	src/ags/X/ags_window_callbacks.c
+	src/ags/X/ags_window_callbacks.c \
+	src/ags/widget/ags_xorg_application_context.c
 
 
 # libgsequencer - file
@@ -1596,6 +1585,18 @@ libgsequencer_file_h_sources = \
 deprecated_libgsequencer_file_c_sources = 
 libgsequencer_file_c_sources = \
 	$(deprecated_libgsequencer_file_c_sources)
+
+
+# libgsequencer-thread - thread
+deprecated_libgsequencer_thread_h_sources = 
+libgsequencer_thread_h_sources = \
+	$(deprecated_libgsequencer_thread_h_sources) \
+	src/ags/X/thread/ags_gui_thread.h
+
+deprecated_libgsequencer_thread_c_sources = 
+libgsequencer_thread_c_sources = \
+	$(deprecated_libgsequencer_thread_c_sources) \
+	src/ags/X/thread/ags_gui_thread.c
 
 
 # libgsequencer - task
@@ -2079,7 +2080,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_dial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_expander.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_expander_set.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_gui_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_hindicator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_htimebar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_indicator.Plo@am__quote@
@@ -2093,7 +2093,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_timebar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_vindicator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_waveform.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_gui_la-ags_xorg_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_applicable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_async_queue.Plo@am__quote@
@@ -2168,6 +2167,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_generic_preferences.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_generic_preferences_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_gui_file_xml.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_gui_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_inline_player.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_inline_player_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ladspa_browser.Plo@am__quote@
@@ -2248,6 +2248,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_toolbar_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_window.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_window_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_xorg_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi2xml-ags_marshal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi2xml-ags_midi_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi2xml-main.Po@am__quote@
@@ -3652,20 +3653,6 @@ libags_gui_la-ags_waveform.lo: src/ags/widget/ags_waveform.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o libags_gui_la-ags_waveform.lo `test -f 'src/ags/widget/ags_waveform.c' || echo '$(srcdir)/'`src/ags/widget/ags_waveform.c
 
-libags_gui_la-ags_xorg_application_context.lo: src/ags/widget/ags_xorg_application_context.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT libags_gui_la-ags_xorg_application_context.lo -MD -MP -MF $(DEPDIR)/libags_gui_la-ags_xorg_application_context.Tpo -c -o libags_gui_la-ags_xorg_application_context.lo `test -f 'src/ags/widget/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/widget/ags_xorg_application_context.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_gui_la-ags_xorg_application_context.Tpo $(DEPDIR)/libags_gui_la-ags_xorg_application_context.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/widget/ags_xorg_application_context.c' object='libags_gui_la-ags_xorg_application_context.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o libags_gui_la-ags_xorg_application_context.lo `test -f 'src/ags/widget/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/widget/ags_xorg_application_context.c
-
-libags_gui_la-ags_gui_thread.lo: src/ags/widget/thread/ags_gui_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT libags_gui_la-ags_gui_thread.lo -MD -MP -MF $(DEPDIR)/libags_gui_la-ags_gui_thread.Tpo -c -o libags_gui_la-ags_gui_thread.lo `test -f 'src/ags/widget/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/widget/thread/ags_gui_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_gui_la-ags_gui_thread.Tpo $(DEPDIR)/libags_gui_la-ags_gui_thread.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/widget/thread/ags_gui_thread.c' object='libags_gui_la-ags_gui_thread.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o libags_gui_la-ags_gui_thread.lo `test -f 'src/ags/widget/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/widget/thread/ags_gui_thread.c
-
 libags_server_la-ags_registry.lo: src/ags/server/ags_registry.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT libags_server_la-ags_registry.lo -MD -MP -MF $(DEPDIR)/libags_server_la-ags_registry.Tpo -c -o libags_server_la-ags_registry.lo `test -f 'src/ags/server/ags_registry.c' || echo '$(srcdir)/'`src/ags/server/ags_registry.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_server_la-ags_registry.Tpo $(DEPDIR)/libags_server_la-ags_registry.Plo
@@ -4183,6 +4170,20 @@ libgsequencer_la-ags_window_callbacks.lo: src/ags/X/ags_window_callbacks.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_window_callbacks.c' object='libgsequencer_la-ags_window_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_window_callbacks.lo `test -f 'src/ags/X/ags_window_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_window_callbacks.c
+
+libgsequencer_la-ags_xorg_application_context.lo: src/ags/widget/ags_xorg_application_context.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_xorg_application_context.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_xorg_application_context.Tpo -c -o libgsequencer_la-ags_xorg_application_context.lo `test -f 'src/ags/widget/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/widget/ags_xorg_application_context.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_xorg_application_context.Tpo $(DEPDIR)/libgsequencer_la-ags_xorg_application_context.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/widget/ags_xorg_application_context.c' object='libgsequencer_la-ags_xorg_application_context.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_xorg_application_context.lo `test -f 'src/ags/widget/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/widget/ags_xorg_application_context.c
+
+libgsequencer_la-ags_gui_thread.lo: src/ags/X/thread/ags_gui_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_gui_thread.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_gui_thread.Tpo -c -o libgsequencer_la-ags_gui_thread.lo `test -f 'src/ags/X/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/X/thread/ags_gui_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_gui_thread.Tpo $(DEPDIR)/libgsequencer_la-ags_gui_thread.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/thread/ags_gui_thread.c' object='libgsequencer_la-ags_gui_thread.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_gui_thread.lo `test -f 'src/ags/X/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/X/thread/ags_gui_thread.c
 
 libgsequencer_la-ags_cell_pattern.lo: src/ags/X/machine/ags_cell_pattern.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_cell_pattern.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_cell_pattern.Tpo -c -o libgsequencer_la-ags_cell_pattern.lo `test -f 'src/ags/X/machine/ags_cell_pattern.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_cell_pattern.c

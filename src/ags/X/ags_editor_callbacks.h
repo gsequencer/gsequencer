@@ -31,7 +31,7 @@
 void ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent,
 				    AgsEditor *editor);
 
-void ags_editor_tic_callback(AgsDevout *devout,
+void ags_editor_tic_callback(GObject *soundcard,
 			     AgsEditor *editor);
 
 void ags_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,

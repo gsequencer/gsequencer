@@ -20,22 +20,22 @@
 #include <ags/X/ags_link_collection_editor.h>
 #include <ags/X/ags_link_collection_editor_callbacks.h>
 
-#include <ags/main.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 #include <ags/audio/task/ags_link_channel.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
 
@@ -76,8 +76,6 @@ enum{
 };
 
 static gpointer ags_link_collection_editor_parent_class = NULL;
-
-extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_link_collection_editor_get_type(void)
@@ -417,13 +415,14 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     AgsAudioLoop *audio_loop;
     AgsTaskThread *task_thread;
 
-    AgsMain *application_context;
+    AgsApplicationContext *application_context;
 
     GList *task;
     guint first_line, count;
     guint i;
     GError *error;
 
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_loop_mutex;
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
@@ -437,37 +436,38 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     window = (AgsWindow *) gtk_widget_get_toplevel(machine);
   
     application_context = window->application_context;
-
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
     /* get audio loop */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
 
     audio_loop = application_context->main_loop;
 
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* lookup audio loop mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
-  
-    mutex_manager = ags_mutex_manager_get_instance();
-    
+    pthread_mutex_lock(application_mutex);
+      
     audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
 						(GObject *) audio_loop);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get task and devout thread */
     task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 							 AGS_TYPE_TASK_THREAD);
 
     /* lookup audio mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
     
     mutex_manager = ags_mutex_manager_get_instance();
     
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) audio);
     
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get first line */
     first_line = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->first_line);
@@ -505,14 +505,14 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     if(link_machine == NULL){
       for(i = 0; i < count; i++){
 	/* lookup channel mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
+	pthread_mutex_lock(application_mutex);
     
 	mutex_manager = ags_mutex_manager_get_instance();
     
 	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						 (GObject *) channel);
     
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
  
 	/* create task */
 	link_channel = ags_link_channel_new(channel, NULL);
@@ -539,14 +539,14 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       first_link = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->first_link);
 
       /* lookup link's audio mutex */
-      pthread_mutex_lock(&(ags_application_mutex));
+      pthread_mutex_lock(application_mutex);
       
       mutex_manager = ags_mutex_manager_get_instance();
       
       link_audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 						  (GObject *) link_machine->audio);
       
-      pthread_mutex_unlock(&(ags_application_mutex));
+      pthread_mutex_unlock(application_mutex);
 
       /* get link */
       pthread_mutex_lock(link_audio_mutex);
@@ -563,24 +563,24 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       
       for(i = 0; i < count; i++){
 	/* lookup channel mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
+	pthread_mutex_lock(application_mutex);
     
 	mutex_manager = ags_mutex_manager_get_instance();
     
 	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						 (GObject *) channel);
     
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	/* lookup link mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
+	pthread_mutex_lock(application_mutex);
     
 	mutex_manager = ags_mutex_manager_get_instance();
     
 	link_mutex = ags_mutex_manager_lookup(mutex_manager,
 					      (GObject *) link);
     
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
  
 	/* create task */
 	link_channel = ags_link_channel_new(channel, link);

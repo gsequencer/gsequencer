@@ -19,12 +19,12 @@
 
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
@@ -33,18 +33,22 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recycling_container.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 #include <ags/audio/recall/ags_peak_channel.h>
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/audio/task/ags_change_indicator.h>
-
 #include <ags/widget/ags_vindicator.h>
 
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
+
+#include <ags/X/task/ags_change_indicator.h>
 
 extern pthread_mutex_t ags_application_mutex;
 
@@ -178,7 +182,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   GList *list, *list_start;
 
@@ -246,7 +250,7 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
 			       AgsLine *line)
 {
   AgsChannel *channel;
-  AgsDevoutPlay *devout_play;
+  AgsPlayback *playback;
   AgsChannel *next_pad;
   GList *current_recall;
   gboolean all_done;
@@ -258,9 +262,9 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
 
   while(channel != next_pad){
     current_recall = channel->play;
-    devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
+    playback = AGS_PLAYBACK(channel->playback);
     
-    if(devout_play->recall_id[0] != NULL){
+    if(playback->recall_id[0] != NULL){
       all_done = FALSE;
       break;
     }

@@ -267,7 +267,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /* AgsServer */
   xorg_application_context->server = ags_server_new(xorg_application_context);
 
-  /* AgsMainLoop */
+  /* AgsApplicationContextLoop */
   audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
 						xorg_application_context);
   g_object_set(xorg_application_context,

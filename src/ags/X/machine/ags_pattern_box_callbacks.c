@@ -19,7 +19,7 @@
 
 #include <ags/X/machine/ags_pattern_box_callbacks.h>
 
-#include <ags/main.h>
+#include <<ags/object/ags_application_context.h>>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
@@ -93,7 +93,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
 
   GList *list, *list_start;
   GList *line, *line_start;
@@ -252,7 +252,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
 
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);

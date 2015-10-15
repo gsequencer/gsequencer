@@ -19,24 +19,23 @@
 
 #include <ags/X/ags_export_window_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_export_thread.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/audio/task/ags_export_output.h>
 
+#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 
 void ags_export_window_stop_callback(AgsThread *thread,
 				     AgsExportWindow *export_window);
-
-extern pthread_mutex_t ags_application_mutex;
 
 void
 ags_export_window_file_chooser_button_callback(GtkWidget *file_chooser_button,
@@ -67,12 +66,12 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 {
   AgsWindow *window;
 
-  window = AGS_MAIN(export_window->application_context)->window;
+  window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
 
   gtk_label_set_text(export_window->duration,
 		     ags_navigation_absolute_tact_to_time_string(gtk_spin_button_get_value(export_window->tact) * 16.0,
 								 window->navigation->bpm->adjustment->value,
-								 window->devout->delay_factor));
+								 ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard))));
 }
 
 void
@@ -81,27 +80,34 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 {
   AgsWindow *window;
   AgsMachine *machine;
-
+  
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   GList *machines_start;
   gboolean success;
 
-  window = AGS_MAIN(export_window->application_context)->window;
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
 
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+      
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
-  /* get task and devout thread */
+  /* get task and soundcard thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
   
@@ -177,40 +183,34 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
     /* start export thread */
     if(success){
-      AgsMutexManager *mutex_manager;
-
       guint tic;
       gdouble delay;
+      
+      pthread_mutex_lock(application_mutex);
 
-      pthread_mutex_t *devout_mutex;
-
-      pthread_mutex_lock(&(ags_application_mutex));
+      soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      (GObject *) window->soundcard);
   
-      mutex_manager = ags_mutex_manager_get_instance();
+      pthread_mutex_unlock(application_mutex);
 
-      devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) window->devout);
-  
-      pthread_mutex_unlock(&(ags_application_mutex));
-
-      pthread_mutex_lock(devout_mutex);
+      pthread_mutex_lock(soundcard_mutex);
 
       /* create task */
-      delay = (window->devout->delay[window->devout->tic_counter]);
+      delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
 
       tic = (gtk_spin_button_get_value(export_window->tact) + 1) * delay * 16.0;
 
       export_output = ags_export_output_new(export_thread,
-					    window->devout,
+					    window->soundcard,
 					    filename,
 					    tic,
 					    live_performance);
       g_signal_connect(export_thread, "stop\0",
 		       G_CALLBACK(ags_export_window_stop_callback), export_window);
 
-      pthread_mutex_unlock(devout_mutex);
+      pthread_mutex_unlock(soundcard_mutex);
 
-      /* append AgsStartDevout */
+      /* append AgsStartSoundcard */
       ags_task_thread_append_task(task_thread,
 				  (AgsTask *) export_output);
 

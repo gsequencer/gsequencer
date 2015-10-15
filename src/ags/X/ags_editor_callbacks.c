@@ -19,15 +19,18 @@
 
 #include <ags/X/ags_editor_callbacks.h>
 
-#include <ags/main.h>
+#include <ags/object/ags_application_context.h>
 
-#include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_notation.h>
-#include <ags/audio/task/ags_scroll_on_play.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/X/ags_window.h>
+
+#include <ags/X/task/ags_scroll_on_play.h>
 
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_notebook.h>
@@ -38,8 +41,6 @@
 #include <math.h>
 #include <string.h>
 #include <cairo.h>
-
-extern pthread_mutex_t ags_application_mutex;
 
 void
 ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEditor *editor)
@@ -59,29 +60,35 @@ ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsEdi
 }
 
 void
-ags_editor_tic_callback(AgsDevout *devout,
+ags_editor_tic_callback(GObject *soundcard,
 			AgsEditor *editor)
 
 {
   AgsWindow *window;
 
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
   
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
 
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
-  /* get task and devout thread */
+  /* get task and soundcard thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
@@ -96,8 +103,8 @@ ags_editor_tic_callback(AgsDevout *devout,
     tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) window->editor->toolbar->zoom));
     tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) window->editor->toolbar->zoom) - 2.0);
 
-    if(devout->tact_counter > editor->current_tact){
-      editor->current_tact = devout->tact_counter;
+    if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard)) > editor->current_tact){
+      editor->current_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
       
       scroll_on_play = ags_scroll_on_play_new(editor, 64.0);
       ags_task_thread_append_task(task_thread,

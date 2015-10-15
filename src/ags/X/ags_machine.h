@@ -152,6 +152,6 @@ void ags_machine_open_files(AgsMachine *machine,
 
 void ags_machine_copy_pattern(AgsMachine *machine);
 
-AgsMachine* ags_machine_new(GObject *devout);
+AgsMachine* ags_machine_new(GObject *soundcard);
 
 #endif /*__AGS_MACHINE_H__*/

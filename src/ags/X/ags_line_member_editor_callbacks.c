@@ -19,19 +19,17 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
-#include <ags/main.h>
-
 #include <ags/plugin/ags_ladspa_manager.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/widget/ags_dial.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_recall_container.h>
@@ -41,12 +39,15 @@
 #include <ags/audio/ags_recall_ladspa_run.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 #include <ags/audio/task/ags_add_recall_container.h>
 #include <ags/audio/task/ags_add_recall.h>
 #include <ags/audio/task/ags_add_line_member.h>
 #include <ags/audio/task/ags_remove_recall.h>
 #include <ags/audio/task/ags_remove_recall_container.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
@@ -106,7 +107,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       AgsAudioLoop *audio_loop;
       AgsTaskThread *task_thread;
 
-      AgsMain *application_context;
+      AgsApplicationContext *application_context;
     
       GList *plugin;
       GList *task;
@@ -260,7 +261,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 					    effect,
 					    index);
       g_object_set(G_OBJECT(recall_ladspa),
-		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "soundcard\0", AGS_AUDIO(line_editor->channel->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -279,7 +280,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 								  AGS_TYPE_RECALL_LADSPA_RUN);
       AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "soundcard\0", AGS_AUDIO(line_editor->channel->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   "recall-channel\0", recall_ladspa,
 		   NULL);
@@ -303,7 +304,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 					    effect,
 					    index);
       g_object_set(G_OBJECT(recall_ladspa),
-		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "soundcard\0", AGS_AUDIO(line_editor->channel->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -322,7 +323,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 								  AGS_TYPE_RECALL_LADSPA_RUN);
       AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
       g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "devout\0", AGS_AUDIO(line_editor->channel->audio)->devout,
+		   "soundcard\0", AGS_AUDIO(line_editor->channel->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   "recall-channel\0", recall_ladspa,
 		   NULL);
@@ -494,7 +495,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   GList *control;
   GList *line_member;

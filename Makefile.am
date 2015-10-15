@@ -73,8 +73,8 @@ libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object
 libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sources) $(libags_thread_task_c_sources)
 libags_server_la_SOURCES = $(libags_server_c_sources)
 libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
-libags_gui_la_SOURCES = $(libags_gui_c_sources) $(libags_gui_thread_c_sources)
-libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+libags_gui_la_SOURCES = $(libags_gui_c_sources)
+libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 gsequencer_SOURCES = $(gsequencer_src)
 
 include_HEADERS = $(libags_util_c_headers) $(libags_lib_c_headers) $(libags_object_c_headers) $(libags_file_c_headers) $(libags_file_task_c_headers) $(libags_thread_c_headers) $(libags_thread_file_c_headers) $(libags_thread_task_c_headers) $(libags_server_c_headers) $(libags_audio_c_headers) $(libags_audio_thread_c_headers) $(libags_audio_file_c_headers) $(libags_audio_midi_c_headers) $(libags_audio_task_c_headers) $(libags_audio_task_recall_c_headers) $(libags_audio_recall_c_headers)  $(libags_plugin_c_headers) $(libags_widget_c_headers)
@@ -698,8 +698,7 @@ libags_gui_h_sources = \
 	src/ags/widget/ags_table.h \
 	src/ags/widget/ags_timebar.h \
 	src/ags/widget/ags_vindicator.h \
-	src/ags/widget/ags_waveform.h \
-	src/ags/widget/ags_xorg_application_context.h
+	src/ags/widget/ags_waveform.h
 
 deprecated_libags_gui_c_sources =
 
@@ -721,21 +720,7 @@ libags_gui_c_sources = \
 	src/ags/widget/ags_table.c \
 	src/ags/widget/ags_timebar.c \
 	src/ags/widget/ags_vindicator.c \
-	src/ags/widget/ags_waveform.c \
-	src/ags/widget/ags_xorg_application_context.c
-
-# libags-gui - thread
-deprecated_libags_gui_thread_h_sources =
-
-libags_gui_thread_h_sources = \
-	$(deprecated_libags_gui_thread_h_sources) \
-	src/ags/widget/thread/ags_gui_thread.h
-
-deprecated_libags_gui_thread_c_sources =
-
-libags_gui_thread_c_sources = \
-	$(deprecated_libags_gui_thread_c_sources) \
-	src/ags/widget/thread/ags_gui_thread.c
+	src/ags/widget/ags_waveform.c
 
 # libgsequencer all files
 deprecated_libgsequencer_h_sources =
@@ -794,7 +779,8 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_server_preferences_callbacks.h \
 	src/ags/X/ags_server_preferences.h \
 	src/ags/X/ags_window.h \
-	src/ags/X/ags_window_callbacks.h
+	src/ags/X/ags_window_callbacks.h \
+	src/ags/widget/ags_xorg_application_context.h
 
 deprecated_libgsequencer_c_sources =
 
@@ -852,7 +838,8 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_server_preferences.c \
 	src/ags/X/ags_server_preferences_callbacks.c \
 	src/ags/X/ags_window.c \
-	src/ags/X/ags_window_callbacks.c
+	src/ags/X/ags_window_callbacks.c \
+	src/ags/widget/ags_xorg_application_context.c
 
 # libgsequencer - file
 deprecated_libgsequencer_file_h_sources =
@@ -864,6 +851,19 @@ deprecated_libgsequencer_file_c_sources =
 
 libgsequencer_file_c_sources = \
 	$(deprecated_libgsequencer_file_c_sources)
+
+# libgsequencer-thread - thread
+deprecated_libgsequencer_thread_h_sources =
+
+libgsequencer_thread_h_sources = \
+	$(deprecated_libgsequencer_thread_h_sources) \
+	src/ags/X/thread/ags_gui_thread.h
+
+deprecated_libgsequencer_thread_c_sources =
+
+libgsequencer_thread_c_sources = \
+	$(deprecated_libgsequencer_thread_c_sources) \
+	src/ags/X/thread/ags_gui_thread.c
 
 # libgsequencer - task
 deprecated_libgsequencer_task_h_sources =
