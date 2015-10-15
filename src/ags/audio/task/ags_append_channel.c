@@ -19,14 +19,21 @@
 
 #include <ags/audio/task/ags_append_channel.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
-#include <ags/thread/ags_channel_thread.h>
-
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_soundcard.h>
+
+#include <ags/server/ags_server.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
 
 void ags_append_channel_class_init(AgsAppendChannelClass *append_channel);
 void ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -186,12 +193,12 @@ ags_append_channel_launch(AgsTask *task)
     if(!g_ascii_strncasecmp(str1,
 			    "channel\0",
 			    8)){
-      if(AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[0]->parent == NULL &&
-	 (AGS_DEVOUT_PLAY_PLAYBACK & (g_atomic_int_get(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags)))) != 0){
+      if(AGS_PLAYBACK(channel->playback)->channel_thread[0]->parent == NULL &&
+	 (AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) != 0){
 	ags_thread_add_child_extended(audio_loop,
-				      AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[0],
+				      AGS_PLAYBACK(channel->playback)->channel_thread[0],
 				      TRUE, TRUE);
-	ags_connectable_connect(AGS_CONNECTABLE(AGS_DEVOUT_PLAY(channel->devout_play)->channel_thread[0]));
+	ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(channel->playback)->channel_thread[0]));
       }
     }
   }
@@ -200,7 +207,7 @@ ags_append_channel_launch(AgsTask *task)
   free(str1);
   
   /* add to server registry */
-  server = AGS_MAIN(audio_loop->application_context)->server;
+  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
 
   if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
     ags_connectable_add_to_registry(AGS_CONNECTABLE(append_channel->channel));

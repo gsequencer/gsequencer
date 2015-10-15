@@ -41,7 +41,7 @@ struct _AgsAppendAudioThreaded
   AgsTask task;
 
   GObject *audio_loop;
-  AgsDevoutPlay *devout_play;
+  GObject *playback;
 };
 
 struct _AgsAppendAudioThreadedClass
@@ -52,6 +52,6 @@ struct _AgsAppendAudioThreadedClass
 GType ags_append_audio_threaded_get_type();
 
 AgsAppendAudioThreaded* ags_append_audio_threaded_new(GObject *audio_loop,
-						      AgsDevoutPlay *play);
+						      GObject *playback);
 
 #endif /*__AGS_APPEND_AUDIO_THREADED_H__*/

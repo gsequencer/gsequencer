@@ -162,7 +162,7 @@ ags_apply_synth_finalize(GObject *gobject)
 void
 ags_apply_synth_launch(AgsTask *task)
 {
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
 
@@ -193,20 +193,20 @@ ags_apply_synth_launch(AgsTask *task)
 				    double volume){
     switch(wave){
     case AGS_APPLY_SYNTH_SIN:
-      ags_synth_sin(devout, (signed short *) stream->data,
+      ags_synth_sin(soundcard, (signed short *) stream->data,
 		    offset, frequency, phase, frame_count,
 		    volume);
       break;
     case AGS_APPLY_SYNTH_SAW:
-      ags_synth_saw(devout, (signed short *) stream->data,
+      ags_synth_saw(soundcard, (signed short *) stream->data,
 		    offset, frequency, phase, frame_count,
 		    volume);
       break;
     case AGS_APPLY_SYNTH_SQUARE:
-      ags_synth_square(devout, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
+      ags_synth_square(soundcard, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
       break;
     case AGS_APPLY_SYNTH_TRIANGLE:
-      ags_synth_triangle(devout, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
+      ags_synth_triangle(soundcard, (signed short *) stream->data, offset, frequency, phase, frame_count, volume);
       break;
     default:
       g_warning("ags_apply_synth_launch_write: warning no wave selected\n\0");
@@ -215,10 +215,10 @@ ags_apply_synth_launch(AgsTask *task)
 
   apply_synth = AGS_APPLY_SYNTH(task);
   channel = apply_synth->start_channel;
-  devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
+  soundcard = AGS_SOUNDCARD(channel>soundcard);
 
   str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
 				 NULL,
@@ -226,7 +226,7 @@ ags_apply_synth_launch(AgsTask *task)
   free(str);
 
   str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,
 				NULL,

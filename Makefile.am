@@ -594,14 +594,10 @@ libags_audio_task_h_sources = \
 	src/ags/audio/task/ags_apply_synth.h \
 	src/ags/audio/task/ags_apply_wavetable.h \
 	src/ags/audio/task/ags_audio_set_recycling.h \
-	src/ags/audio/task/ags_blink_cell_pattern_cursor.h \
 	src/ags/audio/task/ags_cancel_audio.h \
 	src/ags/audio/task/ags_cancel_channel.h \
 	src/ags/audio/task/ags_cancel_recall.h \
-	src/ags/audio/task/ags_change_indicator.h \
-	src/ags/audio/task/ags_change_tact.h \
 	src/ags/audio/task/ags_channel_set_recycling.h \
-	src/ags/audio/task/ags_display_tact.h \
 	src/ags/audio/task/ags_export_output.h \
 	src/ags/audio/task/ags_free_selection.h \
 	src/ags/audio/task/ags_init_audio.h \
@@ -618,7 +614,6 @@ libags_audio_task_h_sources = \
 	src/ags/audio/task/ags_remove_region_from_selection.h \
 	src/ags/audio/task/ags_resize_audio.h \
 	src/ags/audio/task/ags_save_file.h \
-	src/ags/audio/task/ags_scroll_on_play.h \
 	src/ags/audio/task/ags_seek_devout.h \
 	src/ags/audio/task/ags_set_audio_channels.h \
 	src/ags/audio/task/ags_set_buffer_size.h \
@@ -626,7 +621,6 @@ libags_audio_task_h_sources = \
 	src/ags/audio/task/ags_set_output_device.h \
 	src/ags/audio/task/ags_set_samplerate.h \
 	src/ags/audio/task/ags_start_devout.h \
-	src/ags/audio/task/ags_toggle_led.h \
 	src/ags/audio/task/ags_toggle_pattern_bit.h \
 	src/ags/audio/task/ags_unref_audio_signal.h \
 	src/ags/audio/task/recall/ags_apply_bpm.h \
@@ -653,14 +647,10 @@ libags_audio_task_c_sources = \
 	src/ags/audio/task/ags_apply_synth.c \
 	src/ags/audio/task/ags_apply_wavetable.c \
 	src/ags/audio/task/ags_audio_set_recycling.c \
-	src/ags/audio/task/ags_blink_cell_pattern_cursor.c \
 	src/ags/audio/task/ags_cancel_audio.c \
 	src/ags/audio/task/ags_cancel_channel.c \
 	src/ags/audio/task/ags_cancel_recall.c \
-	src/ags/audio/task/ags_change_indicator.c \
-	src/ags/audio/task/ags_change_tact.c \
 	src/ags/audio/task/ags_channel_set_recycling.c \
-	src/ags/audio/task/ags_display_tact.c \
 	src/ags/audio/task/ags_export_output.c \
 	src/ags/audio/task/ags_free_selection.c \
 	src/ags/audio/task/ags_init_audio.c \
@@ -677,7 +667,6 @@ libags_audio_task_c_sources = \
 	src/ags/audio/task/ags_remove_region_from_selection.c \
 	src/ags/audio/task/ags_resize_audio.c \
 	src/ags/audio/task/ags_save_file.c \
-	src/ags/audio/task/ags_scroll_on_play.c \
 	src/ags/audio/task/ags_seek_devout.c \
 	src/ags/audio/task/ags_set_audio_channels.c \
 	src/ags/audio/task/ags_set_buffer_size.c \
@@ -685,7 +674,6 @@ libags_audio_task_c_sources = \
 	src/ags/audio/task/ags_set_output_device.c \
 	src/ags/audio/task/ags_set_samplerate.c \
 	src/ags/audio/task/ags_start_devout.c \
-	src/ags/audio/task/ags_toggle_led.c \
 	src/ags/audio/task/ags_toggle_pattern_bit.c \
 	src/ags/audio/task/ags_unref_audio_signal.c \
 	src/ags/audio/task/recall/ags_apply_bpm.c \
@@ -886,11 +874,23 @@ deprecated_libgsequencer_task_h_sources =
 
 libgsequencer_task_h_sources = \
 	$(deprecated_libgsequencer_task_h_sources)
+	src/ags/X/task/ags_blink_cell_pattern_cursor.c \
+	src/ags/X/task/ags_change_indicator.h \
+	src/ags/X/task/ags_change_tact.h \
+	src/ags/X/task/ags_display_tact.h \
+	src/ags/X/task/ags_scroll_on_play.h \
+	src/ags/X/task/ags_toggle_led.h
 
 deprecated_libgsequencer_task_c_sources =
 
 libgsequencer_task_c_sources = \
 	$(deprecated_libgsequencer_task_c_sources)
+	src/ags/X/task/ags_blink_cell_pattern_cursor.h \
+	src/ags/X/task/ags_change_indicator.c \
+	src/ags/X/task/ags_change_tact.c \
+	src/ags/X/task/ags_display_tact.c \
+	src/ags/X/task/ags_scroll_on_play.c \
+	src/ags/X/task/ags_toggle_led.c
 
 # libgsequencer - machine
 deprecated_libgsequencer_machine_h_sources =

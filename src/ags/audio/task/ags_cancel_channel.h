@@ -45,7 +45,7 @@ struct _AgsCancelChannel
   AgsChannel *channel;
   AgsRecallID *recall_id;
 
-  AgsDevoutPlay *play;
+  GObject *playback;
 };
 
 struct _AgsCancelChannelClass
@@ -56,6 +56,6 @@ struct _AgsCancelChannelClass
 GType ags_cancel_channel_get_type();
 
 AgsCancelChannel* ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
-					 AgsDevoutPlay *play);
+					 GObject *playback);
 
 #endif /*__AGS_CANCEL_CHANNEL_H__*/

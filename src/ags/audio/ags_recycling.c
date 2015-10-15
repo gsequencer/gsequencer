@@ -659,7 +659,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 
   audio_signal->samplerate = template->samplerate;
   audio_signal->buffer_size = template->buffer_size;
-  audio_signal->resolution = template->resolution;
+  audio_signal->format = template->format;
 
   audio_signal->last_frame = (((guint)(delay *
 				       template->buffer_size) +

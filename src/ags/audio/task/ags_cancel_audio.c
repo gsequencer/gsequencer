@@ -20,10 +20,12 @@
 #include <ags/audio/task/ags_cancel_audio.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_soundcard.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 
 void ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio);
 void ags_cancel_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -117,9 +119,9 @@ ags_cancel_audio_init(AgsCancelAudio *cancel_audio)
 {
   cancel_audio->audio = NULL;
 
-  cancel_audio->playback = FALSE;
-  cancel_audio->sequencer = FALSE;
-  cancel_audio->notation = FALSE;
+  cancel_audio->do_playback = FALSE;
+  cancel_audio->do_sequencer = FALSE;
+  cancel_audio->do_notation = FALSE;
 }
 
 void
@@ -150,7 +152,7 @@ ags_cancel_audio_finalize(GObject *gobject)
 void
 ags_cancel_audio_launch(AgsTask *task)
 {
-  AgsDevoutPlayDomain *devout_play_domain;
+  AgsPlaybackDomain *playback_domain;
   AgsAudio *audio;
   AgsChannel *channel;
 
@@ -159,86 +161,86 @@ ags_cancel_audio_launch(AgsTask *task)
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
   audio = cancel_audio->audio;
-  devout_play_domain = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain);
+  playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
   
   /* cancel playback */
-  if(cancel_audio->playback){
-    g_atomic_int_and(&(devout_play_domain->flags),
-		     (~AGS_DEVOUT_PLAY_DOMAIN_PLAYBACK));
+  if(cancel_audio->do_playback){
+    g_atomic_int_and(&(playback_domain->flags),
+		     (~AGS_PLAYBACK_DOMAIN_PLAYBACK));
 
     channel = audio->output;
 
     while(channel != NULL){
-      if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){
+      if(AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){
 	channel = channel->next;
 	
 	continue;
       }
 
-      g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+      g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+				       AGS_PLAYBACK(channel->playback)->recall_id[0]);
+      AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
 
       channel = channel->next;
     }
 
-    if((AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(devout_play_domain->flags)))) != 0){
-      //      ags_thread_stop(devout_play_domain->audio_thread[0]);
+    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+      //      ags_thread_stop(playback_domain->audio_thread[0]);
     }
   }
 
   /* cancel sequencer */
-  if(cancel_audio->sequencer){
-    g_atomic_int_and(&(devout_play_domain->flags),
-		     (~AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER));
+  if(cancel_audio->do_sequencer){
+    g_atomic_int_and(&(playback_domain->flags),
+		     (~AGS_PLAYBACK_DOMAIN_SEQUENCER));
 
     channel = audio->output;
 
     while(channel != NULL){
-      if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] == NULL){
+      if(AGS_PLAYBACK(channel->playback)->recall_id[1] == NULL){
 	channel = channel->next;
 	
 	continue;
       }
 
-      g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+      g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[1]);
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = NULL;
+				       AGS_PLAYBACK(channel->playback)->recall_id[1]);
+      AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
       
       channel = channel->next;
     }
 
-    if((AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(devout_play_domain->flags)))) != 0){
-      //      ags_thread_stop(devout_play_domain->audio_thread[1]);
+    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+      //      ags_thread_stop(playback_domain->audio_thread[1]);
     }
   }
 
   /* cancel notation */
-  if(cancel_audio->notation){
-    g_atomic_int_and(&(devout_play_domain->flags),
-		     (~AGS_DEVOUT_PLAY_DOMAIN_NOTATION));
+  if(cancel_audio->do_notation){
+    g_atomic_int_and(&(playback_domain->flags),
+		     (~AGS_PLAYBACK_DOMAIN_NOTATION));
 
     channel = audio->output;
 
     while(channel != NULL){
-      if(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] == NULL){
+      if(AGS_PLAYBACK(channel->playback)->recall_id[2] == NULL){
 	channel = channel->next;
 	
 	continue;
       }
 
-      g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+      g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[2]);
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
-      AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = NULL;
+				       AGS_PLAYBACK(channel->playback)->recall_id[2]);
+      AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
       
       channel = channel->next;
     }
 
-    if((AGS_DEVOUT_PLAY_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(devout_play_domain->flags)))) != 0){
-      //      ags_thread_stop(devout_play_domain->audio_thread[2]);
+    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
+      //      ags_thread_stop(playback_domain->audio_thread[2]);
     }
   }
 }
@@ -246,9 +248,9 @@ ags_cancel_audio_launch(AgsTask *task)
 /**
  * ags_cancel_audio_new:
  * @audio: the #AgsAudio to cancel
- * @playback: if %TRUE playback is canceld
- * @sequencer: if %TRUE sequencer is canceld
- * @notation: if %TRUE notation is canceld
+ * @do_playback: if %TRUE playback is canceld
+ * @do_sequencer: if %TRUE sequencer is canceld
+ * @do_notation: if %TRUE notation is canceld
  *
  * Creates an #AgsCancelAudio.
  *
@@ -258,7 +260,7 @@ ags_cancel_audio_launch(AgsTask *task)
  */
 AgsCancelAudio*
 ags_cancel_audio_new(AgsAudio *audio,
-		     gboolean playback, gboolean sequencer, gboolean notation)
+		     gboolean do_playback, gboolean do_sequencer, gboolean do_notation)
 {
   AgsCancelAudio *cancel_audio;
 
@@ -267,9 +269,9 @@ ags_cancel_audio_new(AgsAudio *audio,
 
   cancel_audio->audio = audio;
 
-  cancel_audio->playback = playback;
-  cancel_audio->sequencer = sequencer;
-  cancel_audio->notation = notation;
+  cancel_audio->do_playback = do_playback;
+  cancel_audio->do_sequencer = do_sequencer;
+  cancel_audio->do_notation = do_notation;
 
   return(cancel_audio);
 }

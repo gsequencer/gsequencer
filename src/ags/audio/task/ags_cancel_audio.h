@@ -44,9 +44,9 @@ struct _AgsCancelAudio
 
   AgsAudio *audio;
 
-  gboolean playback;
-  gboolean sequencer;
-  gboolean notation;
+  gboolean do_playback;
+  gboolean do_sequencer;
+  gboolean do_notation;
 };
 
 struct _AgsCancelAudioClass
@@ -57,6 +57,6 @@ struct _AgsCancelAudioClass
 GType ags_cancel_audio_get_type();
 
 AgsCancelAudio* ags_cancel_audio_new(AgsAudio *audio,
-				     gboolean playback, gboolean sequencer, gboolean notation);
+				     gboolean do_playback, gboolean do_sequencer, gboolean do_notation);
 
 #endif /*__AGS_CANCEL_AUDIO_H__*/
