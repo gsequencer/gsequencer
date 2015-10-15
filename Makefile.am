@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-# SUBDIRS = src doc
+# SUBDIRS = docs/
 
 AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
 
@@ -30,7 +30,7 @@ appdata_DATA = gsequencer.desktop
 EXTRA_DIST += gsequencer.desktop.in
 CLEANFILES += $(appdata_DATA)
 
-docdir = $(datadir)/doc/gsequencer
+docdir = $(datadir)/docs/gsequencer
 doc_DATA = README
 
 # documentation
@@ -735,7 +735,6 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_export_window.h \
 	src/ags/X/ags_generic_preferences_callbacks.h \
 	src/ags/X/ags_generic_preferences.h \
-	src/ags/X/ags_gui_file_xml.h \
 	src/ags/X/ags_ladspa_browser_callbacks.h \
 	src/ags/X/ags_ladspa_browser.h \
 	src/ags/X/ags_line_callbacks.h \
@@ -780,7 +779,7 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_server_preferences.h \
 	src/ags/X/ags_window.h \
 	src/ags/X/ags_window_callbacks.h \
-	src/ags/widget/ags_xorg_application_context.h
+	src/ags/X/ags_xorg_application_context.h
 
 deprecated_libgsequencer_c_sources =
 
@@ -794,7 +793,6 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_export_window_callbacks.c \
 	src/ags/X/ags_generic_preferences.c \
 	src/ags/X/ags_generic_preferences_callbacks.c \
-	src/ags/X/ags_gui_file_xml.c \
 	src/ags/X/ags_ladspa_browser.c \
 	src/ags/X/ags_ladspa_browser_callbacks.c \
 	src/ags/X/ags_line.c \
@@ -839,18 +837,20 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_server_preferences_callbacks.c \
 	src/ags/X/ags_window.c \
 	src/ags/X/ags_window_callbacks.c \
-	src/ags/widget/ags_xorg_application_context.c
+	src/ags/X/ags_xorg_application_context.c
 
 # libgsequencer - file
 deprecated_libgsequencer_file_h_sources =
 
 libgsequencer_file_h_sources = \
-	$(deprecated_libgsequencer_file_h_sources)
+	$(deprecated_libgsequencer_file_h_sources) \
+	src/ags/X/file/ags_gui_file_xml.h
 
 deprecated_libgsequencer_file_c_sources =
 
 libgsequencer_file_c_sources = \
-	$(deprecated_libgsequencer_file_c_sources)
+	$(deprecated_libgsequencer_file_c_sources) \
+	src/ags/X/file/ags_gui_file_xml.c
 
 # libgsequencer-thread - thread
 deprecated_libgsequencer_thread_h_sources =

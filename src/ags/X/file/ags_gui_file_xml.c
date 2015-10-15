@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/ags_gui_file_xml.h>
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>

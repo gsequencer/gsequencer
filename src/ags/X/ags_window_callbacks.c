@@ -21,11 +21,12 @@
 
 #include <ags/file/ags_file.h>
 
-#include <<ags/object/ags_application_context.h>>
+#include <ags/object/ags_application_context.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/task/ags_save_file.h>
-
-extern pthread_mutex_t ags_application_mutex;
 
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
@@ -33,9 +34,17 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   AgsWindow *window;
   GtkDialog *dialog;
   GtkWidget *cancel_button;
+
+  AgsMutexManager *mutex_manager;
+  
   gint response;
 
+  pthread_mutex_t *application_mutex;
+  
   window = AGS_WINDOW(widget);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* ask the user if he wants save to a file */
   dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
@@ -64,11 +73,11 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     application_context = window->application_context;
 
     /* get audio loop */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
 
     audio_loop = application_context->main_loop;
 
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get task thread */
     task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,

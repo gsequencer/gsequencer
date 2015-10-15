@@ -6,11 +6,18 @@ AC_INIT([gsequencer],[0.6.18],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR(m4)
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_CPP
 AC_PROG_INSTALL
+
+# check for gtk-doc
+m4_ifdef([GTK_DOC_CHECK], [
+GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC], false)
+])
 
 # libtool
 LT_PREREQ([2.4.2])

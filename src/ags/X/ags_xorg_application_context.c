@@ -26,15 +26,13 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/log/ags_log.h>
-
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_thread_pool.h>
 
 #include <ags/audio/ags_sound_provider.h>
 
-#include <ags/X/file/ags_gsequencer_file_xml.h>
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 
@@ -216,9 +214,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   uid_t uid;
   gchar *wdir, *config_file;
 
-  AGS_APPLICATION_CONTEXT(xorg_application_context)->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
-										   "file\0", stderr,
-										   NULL);
+  AGS_APPLICATION_CONTEXT(xorg_application_context)->log = NULL;
 
   /**/
   config = ags_config_new(NULL);
