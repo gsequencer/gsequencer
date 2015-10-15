@@ -20,16 +20,14 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_countable.h>
 #include <ags/object/ags_seekable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
@@ -38,7 +36,8 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -459,8 +458,8 @@ void
 ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AGS_RECALL(count_beats_audio_run)->name = "ags-count-beats\0";
-  AGS_RECALL(count_beats_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(count_beats_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(count_beats_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(count_beats_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(count_beats_audio_run)->xml_type = "ags-count-beats-audio-run\0";
   AGS_RECALL(count_beats_audio_run)->port = NULL;
 
@@ -708,9 +707,9 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   delay_audio_run = count_beats_audio_run->delay_audio_run;
   delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
 
-  soundcard = AGS_DEVOUT(AGS_RECALL(count_beats_audio_run)->soundcard);
+  soundcard = AGS_RECALL(count_beats_audio_run)->soundcard;
   
-  delay = soundcard->delay[soundcard->tic_counter];
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
   seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
   
   if(move_forward){
@@ -961,7 +960,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   AgsThread *main_loop;
   AgsThread *async_queue;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
   
   gboolean sequencer, notation;
 
@@ -980,14 +979,14 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   mutex_manager = ags_mutex_manager_get_instance();
   
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  soundcard);
+					     soundcard);
   
   pthread_mutex_unlock(&(ags_application_mutex));
   
   /* get application_context */
   pthread_mutex_lock(soundcard_mutex);
   
-  application_context = soundcard->application_context;
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
   pthread_mutex_unlock(soundcard_mutex);
   
@@ -1338,28 +1337,28 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   }else{      
     if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
       AgsAudio *audio;
-      GList *soundcard_play;
+      GList *playback;
 
       count_beats_audio_run->sequencer_counter = 0;
 
       audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio->audio;
-      soundcard_play = AGS_DEVOUT_PLAY_DOMAIN(audio->soundcard_play_domain)->soundcard_play;
+      playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
       /* emit stop signals */
       ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
 					       FALSE);
 
       /* set done flag in soundcard play */
-      while(soundcard_play != NULL){
-	if(AGS_DEVOUT_PLAY(soundcard_play->data)->recall_id[1] != NULL &&
-	   AGS_DEVOUT_PLAY(soundcard_play->data)->recall_id[1]->recycling_container == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container){
+      while(playback != NULL){
+	if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL &&
+	   AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_container == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container){
 	  AgsChannel *channel;
 	  AgsStreamChannelRun *stream_channel_run;
 	  GList *list;
 	  GList *recall_recycling_list, *recall_audio_signal_list;
 	  gboolean found;
 
-	  //	    AGS_DEVOUT_PLAY(soundcard_play->data)->flags |= AGS_DEVOUT_PLAY_DONE;
+	  //	    AGS_PLAYBACK(playback->data)->flags |= AGS_PLAYBACK_DONE;
 
 	  /* check if to stop audio processing */
 	  channel = audio->output;
@@ -1401,7 +1400,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	  break;
 	}
 
-	soundcard_play = soundcard_play->next;
+	playback = playback->next;
       }
 
       return;

@@ -37,7 +37,7 @@ void ags_set_audio_channels_launch(AgsTask *task);
  * @section_id:
  * @include: ags/audio/task/ags_set_audio_channels.h
  *
- * The #AgsSetAudioChannels task resizes audio channels of #AgsDevout.
+ * The #AgsSetAudioChannels task resizes audio channels of #AgsSoundcard.
  */
 
 static gpointer ags_set_audio_channels_parent_class = NULL;
@@ -111,7 +111,7 @@ ags_set_audio_channels_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_set_audio_channels_init(AgsSetAudioChannels *set_audio_channels)
 {
-  set_audio_channels->devout = NULL;
+  set_audio_channels->soundcard = NULL;
   set_audio_channels->audio_channels = 0;
 }
 
@@ -144,16 +144,29 @@ ags_set_audio_channels_launch(AgsTask *task)
 {
   AgsSetAudioChannels *set_audio_channels;
 
+  guint channels;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+  
   set_audio_channels = AGS_SET_AUDIO_CHANNELS(task);
 
-  g_object_set(G_OBJECT(set_audio_channels->devout),
-	       "pcm_channels\0", set_audio_channels->audio_channels,
-	       NULL);
+  ags_soundcard_get_presets(AGS_SOUNDCARD(set_audio_channels->soundcard),
+			    &channels,
+			    &samplerate,
+			    &buffer_size,
+			    &format);
+  
+  ags_soundcard_set_presets(AGS_SOUNDCARD(set_audio_channels->soundcard),
+			    set_audio_channels->audio_channels,
+			    samplerate,
+			    buffer_size,
+			    format);
 }
 
 /**
  * ags_set_audio_channels_new:
- * @devout: the #AgsDevout to reset
+ * @soundcard: the #AgsSoundcard to reset
  * @audio_channels: the new count of audio channels
  *
  * Creates an #AgsSetAudioChannels.
@@ -163,7 +176,7 @@ ags_set_audio_channels_launch(AgsTask *task)
  * Since: 0.4
  */
 AgsSetAudioChannels*
-ags_set_audio_channels_new(AgsDevout *devout, guint audio_channels)
+ags_set_audio_channels_new(GObject *soundcard, guint audio_channels)
 {
   AgsSetAudioChannels *set_audio_channels;
 
@@ -171,7 +184,7 @@ ags_set_audio_channels_new(AgsDevout *devout, guint audio_channels)
 							    NULL);
 
 
-  set_audio_channels->devout = devout;
+  set_audio_channels->soundcard = soundcard;
   set_audio_channels->audio_channels = audio_channels;
 
   return(set_audio_channels);

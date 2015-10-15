@@ -20,17 +20,14 @@
 #include <ags/audio/recall/ags_peak_channel_run.h>
 #include <ags/audio/recall/ags_peak_recycling.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
-#include <ags/lib/ags_list.h>
 #include <ags/lib/ags_parameter.h>
+
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
-
 #include <ags/object/ags_soundcard.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -151,8 +148,8 @@ void
 ags_peak_channel_run_init(AgsPeakChannelRun *peak_channel_run)
 {
   AGS_RECALL(peak_channel_run)->name = "ags-peak\0";
-  AGS_RECALL(peak_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(peak_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(peak_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(peak_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(peak_channel_run)->xml_type = "ags-peak-channel-run\0";
   AGS_RECALL(peak_channel_run)->port = NULL;
 

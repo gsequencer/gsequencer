@@ -19,10 +19,7 @@
 
 #include <ags/audio/recall/ags_mute_audio.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -178,8 +175,8 @@ ags_mute_audio_init(AgsMuteAudio *mute_audio)
   GList *port;
 
   AGS_RECALL(mute_audio)->name = "ags-mute\0";
-  AGS_RECALL(mute_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(mute_audio)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(mute_audio)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(mute_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(mute_audio)->xml_type = "ags-mute-audio\0";
 
   port = NULL;

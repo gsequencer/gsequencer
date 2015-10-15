@@ -20,12 +20,10 @@
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -35,13 +33,13 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_soundcard_thread.h>
 #include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
-#include <ags/object/ags_config.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
 
 void ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notation_audio_run);
 void ags_play_notation_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -235,8 +233,8 @@ void
 ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_run)
 {
   AGS_RECALL(play_notation_audio_run)->name = "ags-play-notation\0";
-  AGS_RECALL(play_notation_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(play_notation_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_notation_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(play_notation_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(play_notation_audio_run)->xml_type = "ags-play-notation-audio-run\0";
   AGS_RECALL(play_notation_audio_run)->port = NULL;
 
@@ -655,11 +653,12 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   AgsPlayNotationAudio *play_notation_audio;
 
+  AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
   AgsTimestampThread *timestamp_thread;
 
-  AgsMutexManager *mutex_manager;
-
+  AgsApplicationContext *application_context;
+  
   GList *current_position;
   GList *list;
 
@@ -671,6 +670,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   
   GValue value = {0,};
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *recycling_mutex;
@@ -679,11 +680,14 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* read config and audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
   
   str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
 				 NULL,
@@ -691,19 +695,17 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   free(str);
 
   str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
   free(str);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(audio_mutex);
 
@@ -727,11 +729,26 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			      audio_channel);
   }
 
-  pthread_mutex_lock(&(ags_application_mutex));
+  /*  */
+  pthread_mutex_lock(application_mutex);
 
-  main_loop = AGS_MAIN(soundcard->application_context)->main_loop;
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(soundcard_mutex);
+
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+
+  pthread_mutex_unlock(soundcard_mutex);
+  
+  /*  */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
 
   timestamp_thread = (AgsTimestampThread *) ags_thread_find_type(main_loop,
 								 AGS_TYPE_TIMESTAMP_THREAD);
@@ -758,12 +775,12 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	}
 
 	/* lookup channel mutex */
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						 (GObject *) channel);
 	
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	/* recycling */
 	pthread_mutex_lock(channel_mutex);
@@ -778,12 +795,12 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	while(recycling != selected_channel->last_recycling->next){
 	  /* lookup recycling mutex */
-	  pthread_mutex_unlock(&(ags_application_mutex));
+	  pthread_mutex_unlock(application_mutex);
 
 	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 						     (GObject *) recycling);
 	
-	  pthread_mutex_unlock(&(ags_application_mutex));
+	  pthread_mutex_unlock(application_mutex);
 
 	  /* create audio signal */
 	  audio_signal = ags_audio_signal_new((GObject *) soundcard,

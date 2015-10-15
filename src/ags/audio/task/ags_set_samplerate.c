@@ -20,8 +20,8 @@
 #include <ags/audio/task/ags_set_samplerate.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_soundcard.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -40,7 +40,7 @@ void ags_set_samplerate_audio_signal(AgsSetSamplerate *set_samplerate, AgsAudioS
 void ags_set_samplerate_recycling(AgsSetSamplerate *set_samplerate, AgsRecycling *recycling);
 void ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *channel);
 void ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio);
-void ags_set_samplerate_devout(AgsSetSamplerate *set_samplerate, AgsDevout *devout);
+void ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcard);
 
 /**
  * SECTION:ags_set_samplerate
@@ -49,7 +49,7 @@ void ags_set_samplerate_devout(AgsSetSamplerate *set_samplerate, AgsDevout *devo
  * @section_id:
  * @include: ags/audio/task/ags_set_samplerate.h
  *
- * The #AgsSetSamplerate task modifies samplerate of #AgsDevout.
+ * The #AgsSetSamplerate task modifies samplerate of #AgsSoundcard.
  */
 
 static gpointer ags_set_samplerate_parent_class = NULL;
@@ -161,8 +161,8 @@ ags_set_samplerate_launch(AgsTask *task)
 
   gobject = set_samplerate->gobject;
 
-  if(AGS_IS_DEVOUT(gobject)){
-    ags_set_samplerate_devout(set_samplerate, AGS_DEVOUT(gobject));
+  if(AGS_IS_SOUNDCARD(gobject)){
+    ags_set_samplerate_soundcard(set_samplerate, AGS_SOUNDCARD(gobject));
   }else if(AGS_IS_AUDIO(gobject)){
     ags_set_samplerate_audio(set_samplerate, AGS_AUDIO(gobject));
   }else if(AGS_IS_CHANNEL(gobject)){
@@ -234,16 +234,29 @@ ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio)
 }
 
 void
-ags_set_samplerate_devout(AgsSetSamplerate *set_samplerate, AgsDevout *devout)
+ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcard)
 {
   GList *list;
 
-  g_object_set(G_OBJECT(devout),
-	       "frequency\0", (guint) set_samplerate->samplerate,
-	       NULL);
+  guint channels;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    &channels,
+			    &samplerate,
+			    &buffer_size,
+			    &format);
+  
+  ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+			    channels,
+			    set_samplerate->samplerate,
+			    buffer_size,
+			    format);
 
   /* AgsAudio */
-  list = devout->audio;
+  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
 
   while(list != NULL){
     ags_set_samplerate_audio(set_samplerate, AGS_AUDIO(list->data));
@@ -254,7 +267,7 @@ ags_set_samplerate_devout(AgsSetSamplerate *set_samplerate, AgsDevout *devout)
 
 /**
  * ags_set_samplerate_new:
- * @devout: the #AgsDevout to reset
+ * @soundcard: the #AgsSoundcard to reset
  * @samplerate: the new samplerate
  *
  * Creates an #AgsSetSamplerate.

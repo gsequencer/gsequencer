@@ -21,9 +21,6 @@
 #include <ags/audio/recall/ags_mute_audio.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -159,8 +156,8 @@ void
 ags_mute_audio_run_init(AgsMuteAudioRun *mute_audio_run)
 {
   AGS_RECALL(mute_audio_run)->name = "ags-mute\0";
-  AGS_RECALL(mute_audio_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(mute_audio_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(mute_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(mute_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(mute_audio_run)->xml_type = "ags-mute-audio-run\0";
   AGS_RECALL(mute_audio_run)->port = NULL;
 }

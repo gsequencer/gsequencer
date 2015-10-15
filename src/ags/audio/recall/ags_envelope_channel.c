@@ -20,9 +20,6 @@
 #include <ags/audio/recall/ags_envelope_channel.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_plugin.h>
 
 void ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel);
@@ -195,8 +192,8 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
   GList *port;
 
   AGS_RECALL(envelope_channel)->name = "ags-envelope\0";
-  AGS_RECALL(envelope_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(envelope_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(envelope_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(envelope_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(envelope_channel)->xml_type = "ags-envelope-channel\0";
 
   /* ports */

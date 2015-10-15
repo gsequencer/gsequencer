@@ -20,8 +20,6 @@
 #include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -262,8 +260,8 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
   GList *port;
 
   AGS_RECALL(count_beats_audio)->name = "ags-count-beats\0";
-  AGS_RECALL(count_beats_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(count_beats_audio)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(count_beats_audio)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(count_beats_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(count_beats_audio)->xml_type = "ags-count-beats-audio\0";
 
   port = NULL;

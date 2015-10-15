@@ -20,7 +20,6 @@
 #include <ags/audio/task/ags_set_output_device.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_soundcard.h>
 
 void ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device);
@@ -39,7 +38,7 @@ void ags_set_output_device_launch(AgsTask *task);
  * @section_id:
  * @include: ags/audio/task/ags_set_output_device.h
  *
- * The #AgsSetOutputDevice task resets soundcard of #AgsDevout.
+ * The #AgsSetOutputDevice task resets soundcard of #AgsSoundcard.
  */
 
 static gpointer ags_set_output_device_parent_class = NULL;
@@ -113,7 +112,7 @@ ags_set_output_device_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_set_output_device_init(AgsSetOutputDevice *set_output_device)
 {
-  set_output_device->devout = NULL;
+  set_output_device->soundcard = NULL;
   set_output_device->card_id = NULL;
 }
 
@@ -144,24 +143,23 @@ ags_set_output_device_finalize(GObject *gobject)
 void
 ags_set_output_device_launch(AgsTask *task)
 {
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsSetOutputDevice *set_output_device;
   char *card_id;
 
   set_output_device = AGS_SET_OUTPUT_DEVICE(task);
 
-  devout = AGS_DEVOUT(set_output_device->devout);
+  soundcard = AGS_SOUNDCARD(set_output_device->soundcard);
   card_id = set_output_device->card_id;
 
   /* perform task */
-  g_object_set(G_OBJECT(devout),
-	       "device\0", card_id,
-	       NULL);
+  ags_soundcard_set_device(soundcard,
+			   card_id);
 }
 
 /**
  * ags_set_output_device_new:
- * @devout: the #AgsDevout to reset
+ * @soundcard: the #AgsSoundcard to reset
  * @card_id: the new soundcard
  *
  * Creates an #AgsSetOutputDevice.
@@ -171,7 +169,7 @@ ags_set_output_device_launch(AgsTask *task)
  * Since: 0.4
  */
 AgsSetOutputDevice*
-ags_set_output_device_new(GObject *devout,
+ags_set_output_device_new(GObject *soundcard,
 			  char *card_id)
 {
   AgsSetOutputDevice *set_output_device;
@@ -179,7 +177,7 @@ ags_set_output_device_new(GObject *devout,
   set_output_device = (AgsSetOutputDevice *) g_object_new(AGS_TYPE_SET_OUTPUT_DEVICE,
 							  NULL);
 
-  set_output_device->devout = devout;
+  set_output_device->soundcard = soundcard;
   set_output_device->card_id = card_id;
 
   return(set_output_device);

@@ -19,19 +19,18 @@
 
 #include <ags/audio/recall/ags_play_channel_run.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 
@@ -104,8 +103,6 @@ static AgsDynamicConnectableInterface *ags_play_channel_run_parent_dynamic_conne
 static AgsPluginInterface *ags_play_channel_run_parent_plugin_interface;
 
 static const gchar *ags_play_channel_run_plugin_name = "ags-play\0";
-
-extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_play_channel_run_get_type()
@@ -231,8 +228,8 @@ void
 ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run)
 {
   AGS_RECALL(play_channel_run)->name = "ags-play\0";
-  AGS_RECALL(play_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(play_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(play_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(play_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(play_channel_run)->xml_type = "ags-play-channel-run\0";
   AGS_RECALL(play_channel_run)->port = NULL;
 
@@ -522,37 +519,39 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   AgsThread *main_loop;
   AgsThread *async_queue;
 
-  AgsMain *application_context;
+  AgsApplicationContext *application_context;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
 
   channel = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
 
   soundcard = AGS_AUDIO(channel->audio)->soundcard;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* lookup soundcard mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  
+  pthread_mutex_lock(application_mutex);
+ 
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
 					  soundcard);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
   
   /* get application_context */
   pthread_mutex_lock(soundcard_mutex);
   
-  application_context = soundcard->application_context;
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
   pthread_mutex_unlock(soundcard_mutex);
   
   /* get main loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   main_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get async queue */
   async_queue = (AgsThread *) ags_thread_find_type(main_loop,
@@ -560,8 +559,8 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 
   /* create append task */
   cancel_channel = ags_cancel_channel_new(channel,
-					  AGS_DEVOUT_PLAY(channel->soundcard_play)->recall_id[0],
-					  AGS_DEVOUT_PLAY(channel->soundcard_play));
+					  AGS_PLAYBACK(channel->playback)->recall_id[0],
+					  AGS_PLAYBACK(channel->playback));
   
   /* append AgsCancelAudio */
   ags_task_thread_append_task((AgsTaskThread *) async_queue,

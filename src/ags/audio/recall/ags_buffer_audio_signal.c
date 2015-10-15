@@ -161,8 +161,8 @@ void
 ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal)
 {
   AGS_RECALL(buffer_audio_signal)->name = "ags-buffer\0";
-  AGS_RECALL(buffer_audio_signal)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(buffer_audio_signal)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(buffer_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(buffer_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(buffer_audio_signal)->xml_type = "ags-buffer-audio-signal\0";
   AGS_RECALL(buffer_audio_signal)->port = NULL;
 
@@ -245,12 +245,12 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
 
-  soundcard = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->soundcard);
+  soundcard = AGS_RECALL(buffer_audio_signal)->soundcard;
 
   pthread_mutex_lock(&(ags_application_mutex));
   
   str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
 				 NULL,
@@ -258,7 +258,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   free(str);
 
   str = ags_config_get(config,
-		       AGS_CONFIG_DEVOUT,
+		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,
 				NULL,
@@ -324,8 +324,10 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   AgsBufferAudioSignal *buffer_audio_signal;
   
   GList *stream_source, *stream_destination;
-  gboolean muted;
 
+  gboolean muted;
+  guint soundcard_buffer_size;
+  
   GValue value = {0,};
 
   /* call parent */
@@ -336,7 +338,13 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
   buffer_channel = AGS_BUFFER_CHANNEL(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(buffer_recycling)->parent)->recall_channel);
 
-  soundcard = AGS_DEVOUT(AGS_RECALL(buffer_audio_signal)->soundcard);
+  soundcard = AGS_RECALL(buffer_audio_signal)->soundcard;
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    NULL,
+			    &soundcard_buffer_size,
+			    NULL);
+  
   source = AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->source;
   stream_source = source->stream_current;
 
@@ -374,17 +382,17 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
       AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
       ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
 					     (signed short *) stream_source->data, 1,
-					     soundcard->buffer_size - source->attack);
+					     soundcard_buffer_size - source->attack);
     }else{
       if(source->attack != 0 && stream_source->prev != NULL){
 	ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
-					       &(((signed short *) stream_source->prev->data)[soundcard->buffer_size - source->attack]), 1,
+					       &(((signed short *) stream_source->prev->data)[soundcard_buffer_size - source->attack]), 1,
 					       source->attack);
       }
 
       ags_audio_signal_copy_buffer_to_buffer(&(((signed short *) stream_destination->data)[source->attack]), 1,
 					     (signed short *) stream_source->data, 1,
-					     soundcard->buffer_size - source->attack);
+					     soundcard_buffer_size - source->attack);
     }
   }
 }
