@@ -20,15 +20,15 @@
 #include <ags/X/machine/ags_pattern_box.h>
 #include <ags/X/machine/ags_pattern_box_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_pattern.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/widget/ags_led.h>
 
@@ -80,8 +80,6 @@ gchar* ags_accessible_pattern_box_get_localized_name(AtkAction *action,
 
 static gpointer ags_pattern_box_parent_class = NULL;
 static GQuark quark_accessible_object = 0;
-
-extern pthread_mutex_t ags_application_mutex;
 
 GtkStyle *pattern_box_style;
 

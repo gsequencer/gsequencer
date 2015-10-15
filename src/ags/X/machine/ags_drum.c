@@ -20,7 +20,7 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_drum_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -35,12 +35,14 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_audio_loop.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/widget/ags_led.h>
+
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_drum_input_pad.h>
 #include <ags/X/machine/ags_drum_input_line.h>
@@ -532,7 +534,7 @@ ags_drum_map_recall(AgsMachine *machine)
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      window->navigation->position_tact->adjustment->value * AGS_DEVOUT(audio->devout)->delay[AGS_DEVOUT(audio->devout)->tic_counter],
+		      window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
 		      TRUE);
   }
 

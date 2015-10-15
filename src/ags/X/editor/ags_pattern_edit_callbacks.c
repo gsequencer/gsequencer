@@ -19,21 +19,25 @@
 
 #include <ags/X/editor/ags_pattern_edit_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_playback.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
 
 #include <ags/audio/recall/ags_play_channel_run.h>
 
-#include <ags/audio/task/ags_start_devout.h>
+#include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_init_channel.h>
 #include <ags/audio/task/ags_append_channel.h>
 #include <ags/audio/task/ags_append_recall.h>
@@ -51,8 +55,6 @@
 #include <gdk/gdkkeysyms.h>
 
 void ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data);
-
-extern pthread_mutex_t ags_application_mutex;
 
 void
 ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
@@ -361,19 +363,21 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     guint note_offset_x1;
     gint history;
 
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
     audio = machine->audio;
-    
-    /* lookup audio mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
 
     mutex_manager = ags_mutex_manager_get_instance();
-    
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+     
+    /* lookup audio mutex */
+    pthread_mutex_lock(application_mutex);
+   
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get offset x1 */
     if(pattern_edit->control.x0 >= pattern_edit->map_width){
@@ -499,19 +503,21 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     gint history;
     gint i;
 
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
     audio = machine->audio;
-    
-    /* lookup audio mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
 
     mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
     
+    /* lookup audio mutex */
+    pthread_mutex_lock(application_mutex);
+
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* retrieve point */
     x = pattern_edit->control.x0_offset + pattern_edit->control.x0 - 1;
@@ -571,19 +577,21 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
     guint x0, x1, y0, y1;
     gint i;
     
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
     audio = machine->audio;
-    
-    /* lookup audio mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
 
     mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* lookup audio mutex */
+    pthread_mutex_lock(application_mutex);
     
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get real size and offset */
     x0 = pattern_edit->control.x0_offset + pattern_edit->control.x0;
@@ -663,16 +671,18 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 
     cairo_t *cr;
 
+    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
-    pthread_mutex_lock(&(ags_application_mutex));
-  
     mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    pthread_mutex_lock(application_mutex);
 
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) editor->selected_machine->audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     if(event->x >= 0.0){
       pattern_edit->control.x1 = (guint) event->x;
@@ -1118,16 +1128,16 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   auto void ags_pattern_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel);
 
   void ags_pattern_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel){
-    AgsDevout *devout;
+    GObject *soundcard;
     AgsAudio *audio;
 
-    AgsStartDevout *start_devout;
+    AgsStartSoundcard *start_soundcard;
     AgsInitChannel *init_channel;
     AgsAppendChannel *append_channel;
 
     AgsAudioLoop *audio_loop;
     AgsTaskThread *task_thread;
-    AgsDevoutThread *devout_thread;
+    AgsSoundcardThread *soundcard_thread;
 
     AgsMutexManager *mutex_manager;
 
@@ -1135,19 +1145,21 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     
     GList *tasks;
 
-    pthread_mutex_t *devout_mutex;
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *soundcard_mutex;
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
 
-    /* lookup channel mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
-  
     mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+  
     channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) channel);
 
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get audio */
     pthread_mutex_lock(channel_mutex);
@@ -1157,47 +1169,47 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     pthread_mutex_unlock(channel_mutex);
     
     /* lookup audio mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
     
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) audio);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
-    /* get devout */
+    /* get soundcard */
     pthread_mutex_lock(audio_mutex);
 
-    devout = (AgsDevout *) audio->devout;
+    soundcard = audio->soundcard;
 
     pthread_mutex_unlock(audio_mutex);
 
     /* lookup audio mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
     
-    devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) devout);
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) soundcard);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get application_context */
-    pthread_mutex_lock(devout_mutex);
+    pthread_mutex_lock(soundcard_mutex);
 
-    application_context = (AgsApplicationContext *) devout->application_context;
+    application_context = (AgsApplicationContext *) ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
-    pthread_mutex_unlock(devout_mutex);
+    pthread_mutex_unlock(soundcard_mutex);
 
     /* get threads */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
 
     audio_loop = (AgsAudioLoop *) application_context->main_loop;
 
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
-    /* get task thread and devout thread */
+    /* get task thread and soundcard thread */
     task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 							 AGS_TYPE_TASK_THREAD);
-    devout_thread = (AgsDevoutThread *) ags_thread_find_type(audio_loop,
-							     AGS_TYPE_DEVOUT_THREAD);
+    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(audio_loop,
+							     AGS_TYPE_SOUNDCARD_THREAD);
 
     /* create tasks */
     tasks = NULL;
@@ -1215,9 +1227,9 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     tasks = g_list_prepend(tasks, append_channel);
 
     /* create start task */
-    start_devout = ags_start_devout_new(devout);
+    start_soundcard = ags_start_soundcard_new(soundcard);
     tasks = g_list_prepend(tasks,
-			   start_devout);
+			   start_soundcard);
 
     /* perform playback */
     tasks = g_list_reverse(tasks);
@@ -1411,18 +1423,20 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     gboolean has_note;
     
     pthread_mutex_t *audio_mutex;
-
+    pthread_mutex_t *application_mutex;
+    
     audio = machine->audio;
 
-    /* lookup audio mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
-    
     mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+	
+    /* lookup audio mutex */
+    pthread_mutex_lock(application_mutex);
     
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) audio);
     
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
  
     /* audible feedback */
     i = 0;
@@ -1476,16 +1490,17 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 void
 ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 {
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsChannel *channel;
   AgsRecycling *recycling;
 
   AgsAddAudioSignal *add_audio_signal;
 
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
-  AgsMutexManager *mutex_manager;
+  AgsApplicationContext *application_context;
 
   GList *recall, *tmp;
 
@@ -1493,9 +1508,11 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 
   channel = AGS_INIT_CHANNEL(task)->channel;
 
-  devout = AGS_DEVOUT(AGS_AUDIO(channel->audio)->devout);
+  soundcard = AGS_SOUNDCARD(AGS_AUDIO(channel->audio)->soundcard);
 
-  audio_loop = AGS_AUDIO_LOOP(AGS_APPLLICATION_CONTEXT(devout->application_context)->main_loop);
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+  
+  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
 
@@ -1503,15 +1520,15 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
   g_message("launch\0");
 #endif
   
-  if(AGS_DEVOUT_PLAY(channel->devout_play) == NULL ||
-     AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] == NULL){    
+  if(AGS_PLAYBACK(channel->playback) == NULL ||
+     AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){    
     return;
   }
 
   /* connect done */
   recall = ags_recall_find_provider_with_recycling_container(channel->play,
 							     G_OBJECT(channel),
-							     G_OBJECT(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]->recycling_container));
+							     G_OBJECT(AGS_PLAYBACK(channel->playback)->recall_id[0]->recycling_container));
   
   tmp = recall;
   recall = ags_recall_find_type(recall,
@@ -1526,7 +1543,7 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
     recycling = channel->first_recycling;
 
     while(recycling != channel->last_recycling->next){
-      audio_signal = ags_audio_signal_new((GObject *) devout,
+      audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					  (GObject *) recycling,
 					  (GObject *) AGS_RECALL(recall->data)->recall_id);
       /* add audio signal */

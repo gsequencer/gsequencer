@@ -20,16 +20,16 @@
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
-
-#include <ags/object/ags_playable.h>
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playable.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/task/ags_link_channel.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
@@ -50,8 +50,6 @@ void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response
 						AgsMachine *machine);
 void ags_ffplayer_link_channel_launch_callback(AgsTask *task, AgsAudioSignal *audio_signal);
 
-extern pthread_mutex_t ags_application_mutex;
-
 void
 ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFFPlayer *ffplayer)
 {
@@ -63,7 +61,7 @@ ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFF
 
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
   audio = ffplayer->machine.audio;
-  audio->devout = (GObject *) window->devout;
+  audio->soundcard = (GObject *) window->soundcard;
   
   AGS_MACHINE(ffplayer)->name = g_strdup_printf("Default %d\0",
 						ags_window_find_machine_counter(window, AGS_TYPE_FFPLAYER)->counter);
@@ -102,7 +100,7 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
   AgsWindow *window;
   AgsFFPlayer *ffplayer;
   GtkFileChooserDialog *file_chooser;
-  AgsDevout *devout;
+  GObject *soundcard;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(machine)));
   ffplayer = AGS_FFPLAYER(machine);
@@ -129,7 +127,7 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 			    "filename\0", filename,
 			    NULL);
       ffplayer->ipatch = ipatch;
-      ipatch->devout = window->devout;
+      ipatch->soundcard = window->soundcard;
 
       playable = AGS_PLAYABLE(ipatch);
 
@@ -216,7 +214,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 {
   AgsWindow *window;
   
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsAudio *audio;
   AgsChannel *channel;
   AgsRecycling *recycling;
@@ -243,6 +241,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   
   GError *error;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
@@ -250,24 +249,27 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   application_context = window->application_context;
   audio = AGS_MACHINE(ffplayer)->audio;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
     
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /*  */
   playable = AGS_PLAYABLE(ffplayer->ipatch);
@@ -320,7 +322,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   pthread_mutex_lock(audio_mutex);
 
-  devout = audio->devout;
+  soundcard = audio->soundcard;
   channel = audio->input;
 
   pthread_mutex_unlock(audio_mutex);
@@ -330,7 +332,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   while(channel != NULL && has_more){
     list = ags_playable_read_audio_signal(playable,
-					  (AgsDevout *) AGS_MACHINE(ffplayer)->audio->devout,
+					  AGS_MACHINE(ffplayer)->audio->soundcard,
 					  channel->audio_channel, AGS_IPATCH_DEFAULT_CHANNELS);
 
     for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS && list != NULL; i++){

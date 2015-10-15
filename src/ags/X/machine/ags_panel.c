@@ -20,10 +20,9 @@
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_panel_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -31,7 +30,6 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -44,6 +42,8 @@
 #include <ags/audio/recall/ags_play_channel_run_master.h>
 
 #include <ags/X/ags_window.h>
+
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_panel_input_pad.h>
 #include <ags/X/machine/ags_panel_input_line.h>

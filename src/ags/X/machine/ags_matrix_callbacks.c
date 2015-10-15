@@ -19,21 +19,22 @@
 
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/widget/ags_led.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/audio/task/ags_toggle_led.h>
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
@@ -48,6 +49,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
+
+#include <ags/X/task/ags_toggle_led.h>
 
 #include <math.h>
 
@@ -299,21 +302,21 @@ ags_matrix_done_callback(AgsAudio *audio,
 			 AgsRecallID *recall_id,
 			 AgsMatrix *matrix)
 {
-  GList *devout_play;
+  GList *playback;
   gboolean all_done;
 
-  devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
   /* check unset */
   all_done = TRUE;
 
-  while(devout_play != NULL){
-    if(AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] != NULL){
+  while(playback != NULL){
+    if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL){
       all_done = FALSE;
       break;
     }
 
-    devout_play = devout_play->next;
+    playback = playback->next;
   }
 
   if(all_done){

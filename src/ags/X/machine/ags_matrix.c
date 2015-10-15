@@ -20,7 +20,7 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -35,11 +35,9 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_audio_loop.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -49,6 +47,8 @@
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -70,6 +70,8 @@
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/X/ags_menu_bar.h>
+
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <math.h>
 
@@ -119,8 +121,6 @@ static AgsConnectableInterface *ags_matrix_parent_connectable_interface;
 
 extern const char *AGS_COPY_PATTERN;
 const char *AGS_MATRIX_INDEX = "AgsMatrixIndex\0";
-
-extern pthread_mutex_t ags_application_mutex;
 
 GType
 ags_matrix_get_type(void)
@@ -449,7 +449,8 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
   GValue value = {0,};
 
-  pthread_mutex_t *devout_mutex;
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *source_mutex;
 
@@ -457,15 +458,16 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     return;
   }
 
-  /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
     
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get machine */
   pthread_mutex_lock(audio_mutex);
@@ -511,12 +513,12 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       
       while(source != NULL){
 	/* lookup source mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
+	pthread_mutex_lock(application_mutex);
 
 	source_mutex = ags_mutex_manager_lookup(mutex_manager,
 						(GObject *) source);
   
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	/* instantiate pattern */
 	pthread_mutex_lock(source_mutex);
@@ -555,23 +557,23 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
       source = ags_channel_nth(audio->output, pads_old);
 
       if(source != NULL){
-	AgsDevout *devout;
+	AgsSoundcard *soundcard;
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
 
 	pthread_mutex_lock(audio_mutex);
 	
-	devout = audio->devout;
+	soundcard = audio->soundcard;
 
 	pthread_mutex_unlock(audio_mutex);
 
 	/* lookup source mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
+	pthread_mutex_lock(application_mutex);
 
 	source_mutex = ags_mutex_manager_lookup(mutex_manager,
 						(GObject *) source);
   
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	/* get recycling */
 	pthread_mutex_lock(source_mutex);
@@ -581,7 +583,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	pthread_mutex_unlock(source_mutex);
 
 	/* instantiate template audio signal */
-	audio_signal = ags_audio_signal_new((GObject *) devout,
+	audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					    (GObject *) recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -675,7 +677,7 @@ ags_matrix_map_recall(AgsMachine *machine)
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      window->navigation->position_tact->adjustment->value * AGS_DEVOUT(audio->devout)->delay[AGS_DEVOUT(audio->devout)->tic_counter],
+		      window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(audio->soundcard),
 		      TRUE);
 
     g_value_init(&value, G_TYPE_BOOLEAN);
