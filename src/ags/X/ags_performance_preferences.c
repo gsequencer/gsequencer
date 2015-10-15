@@ -20,7 +20,7 @@
 #include <ags/X/ags_performance_preferences.h>
 #include <ags/X/ags_performance_preferences_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -185,7 +185,7 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
 							   AGS_TYPE_PREFERENCES);
-  config = AGS_CONFIG(AGS_APPLLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context)->config);
+  config = ags_config_get_instance();
 
   /* auto-sense */
   str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true\0": "false\0"));
@@ -213,7 +213,7 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
-  config = AGS_CONFIG(AGS_APPLLICATION_CONTEXT(window->application_context)->config);
+  config = ags_config_get_instance();
 
   str = ags_config_get(config,
 		       AGS_CONFIG_RECALL,

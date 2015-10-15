@@ -20,13 +20,10 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
-
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_applicable.h>
-
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>
 
@@ -244,7 +241,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   preferences = AGS_PREFERENCES(applicable);
 
-  config = AGS_CONFIG(AGS_APPLLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context)->config);
+  config = ags_config_get_instance();
 
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));

@@ -545,7 +545,6 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 
 /**
  * ags_task_thread_new:
- * @devout: the #AgsDevout
  *
  * Create a new #AgsTaskThread.
  *
@@ -554,12 +553,11 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
  * Since: 0.4
  */ 
 AgsTaskThread*
-ags_task_thread_new(GObject *devout)
+ags_task_thread_new()
 {
   AgsTaskThread *task_thread;
 
   task_thread = (AgsTaskThread *) g_object_new(AGS_TYPE_TASK_THREAD,
-					       "devout\0", devout,
 					       NULL);
 
 

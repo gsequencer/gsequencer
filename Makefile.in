@@ -95,7 +95,10 @@ host_triplet = @host@
 bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -401,7 +404,6 @@ am__objects_16 = $(am__objects_1) \
 	libgsequencer_la-ags_export_window_callbacks.lo \
 	libgsequencer_la-ags_generic_preferences.lo \
 	libgsequencer_la-ags_generic_preferences_callbacks.lo \
-	libgsequencer_la-ags_gui_file_xml.lo \
 	libgsequencer_la-ags_ladspa_browser.lo \
 	libgsequencer_la-ags_ladspa_browser_callbacks.lo \
 	libgsequencer_la-ags_line.lo \
@@ -447,9 +449,10 @@ am__objects_16 = $(am__objects_1) \
 	libgsequencer_la-ags_window.lo \
 	libgsequencer_la-ags_window_callbacks.lo \
 	libgsequencer_la-ags_xorg_application_context.lo
-am__objects_17 = $(am__objects_1)
+am__objects_17 = $(am__objects_1) libgsequencer_la-ags_gui_file_xml.lo
 am__objects_18 = $(am__objects_1) libgsequencer_la-ags_gui_thread.lo
-am__objects_19 = $(am__objects_1) libgsequencer_la-ags_cell_pattern.lo \
+am__objects_19 = $(am__objects_1)
+am__objects_20 = $(am__objects_1) libgsequencer_la-ags_cell_pattern.lo \
 	libgsequencer_la-ags_cell_pattern_callbacks.lo \
 	libgsequencer_la-ags_drum.lo \
 	libgsequencer_la-ags_drum_callbacks.lo \
@@ -481,7 +484,7 @@ am__objects_19 = $(am__objects_1) libgsequencer_la-ags_cell_pattern.lo \
 	libgsequencer_la-ags_synth_callbacks.lo \
 	libgsequencer_la-ags_synth_input_line.lo \
 	libgsequencer_la-ags_synth_input_pad.lo
-am__objects_20 = $(am__objects_1) \
+am__objects_21 = $(am__objects_1) \
 	libgsequencer_la-ags_file_selection.lo \
 	libgsequencer_la-ags_file_selection_callbacks.lo \
 	libgsequencer_la-ags_inline_player.lo \
@@ -503,16 +506,16 @@ am__objects_20 = $(am__objects_1) \
 	libgsequencer_la-ags_toolbar.lo \
 	libgsequencer_la-ags_toolbar_callbacks.lo
 am_libgsequencer_la_OBJECTS = $(am__objects_16) $(am__objects_17) \
-	$(am__objects_18) $(am__objects_17) $(am__objects_19) \
-	$(am__objects_20)
+	$(am__objects_18) $(am__objects_19) $(am__objects_20) \
+	$(am__objects_21)
 libgsequencer_la_OBJECTS = $(am_libgsequencer_la_OBJECTS)
 libgsequencer_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libgsequencer_la_CFLAGS) $(CFLAGS) \
 	$(libgsequencer_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_21 = $(am__objects_1) gsequencer-main.$(OBJEXT)
-am_gsequencer_OBJECTS = $(am__objects_21)
+am__objects_22 = $(am__objects_1) gsequencer-main.$(OBJEXT)
+am_gsequencer_OBJECTS = $(am__objects_22)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
 	libags_server.la libags_gui.la libags_thread.la libags.la
@@ -660,8 +663,15 @@ GDKPIXBUF_LIBS = @GDKPIXBUF_LIBS@
 GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GREP = @GREP@
+GTKDOC_CHECK = @GTKDOC_CHECK@
+GTKDOC_CHECK_PATH = @GTKDOC_CHECK_PATH@
+GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
+GTKDOC_DEPS_LIBS = @GTKDOC_DEPS_LIBS@
+GTKDOC_MKPDF = @GTKDOC_MKPDF@
+GTKDOC_REBASE = @GTKDOC_REBASE@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
+HTML_DIR = @HTML_DIR@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -736,7 +746,7 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-docdir = $(datadir)/doc/gsequencer
+docdir = $(datadir)/docs/gsequencer
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
@@ -769,7 +779,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-# SUBDIRS = src doc
+# SUBDIRS = docs/
 AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
 
 # 
@@ -1471,7 +1481,6 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_export_window.h \
 	src/ags/X/ags_generic_preferences_callbacks.h \
 	src/ags/X/ags_generic_preferences.h \
-	src/ags/X/ags_gui_file_xml.h \
 	src/ags/X/ags_ladspa_browser_callbacks.h \
 	src/ags/X/ags_ladspa_browser.h \
 	src/ags/X/ags_line_callbacks.h \
@@ -1516,7 +1525,7 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_server_preferences.h \
 	src/ags/X/ags_window.h \
 	src/ags/X/ags_window_callbacks.h \
-	src/ags/widget/ags_xorg_application_context.h
+	src/ags/X/ags_xorg_application_context.h
 
 deprecated_libgsequencer_c_sources = 
 libgsequencer_c_sources = \
@@ -1529,7 +1538,6 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_export_window_callbacks.c \
 	src/ags/X/ags_generic_preferences.c \
 	src/ags/X/ags_generic_preferences_callbacks.c \
-	src/ags/X/ags_gui_file_xml.c \
 	src/ags/X/ags_ladspa_browser.c \
 	src/ags/X/ags_ladspa_browser_callbacks.c \
 	src/ags/X/ags_line.c \
@@ -1574,17 +1582,19 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_server_preferences_callbacks.c \
 	src/ags/X/ags_window.c \
 	src/ags/X/ags_window_callbacks.c \
-	src/ags/widget/ags_xorg_application_context.c
+	src/ags/X/ags_xorg_application_context.c
 
 
 # libgsequencer - file
 deprecated_libgsequencer_file_h_sources = 
 libgsequencer_file_h_sources = \
-	$(deprecated_libgsequencer_file_h_sources)
+	$(deprecated_libgsequencer_file_h_sources) \
+	src/ags/X/file/ags_gui_file_xml.h
 
 deprecated_libgsequencer_file_c_sources = 
 libgsequencer_file_c_sources = \
-	$(deprecated_libgsequencer_file_c_sources)
+	$(deprecated_libgsequencer_file_c_sources) \
+	src/ags/X/file/ags_gui_file_xml.c
 
 
 # libgsequencer-thread - thread
@@ -3856,13 +3866,6 @@ libgsequencer_la-ags_generic_preferences_callbacks.lo: src/ags/X/ags_generic_pre
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_generic_preferences_callbacks.lo `test -f 'src/ags/X/ags_generic_preferences_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_generic_preferences_callbacks.c
 
-libgsequencer_la-ags_gui_file_xml.lo: src/ags/X/ags_gui_file_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_gui_file_xml.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_gui_file_xml.Tpo -c -o libgsequencer_la-ags_gui_file_xml.lo `test -f 'src/ags/X/ags_gui_file_xml.c' || echo '$(srcdir)/'`src/ags/X/ags_gui_file_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_gui_file_xml.Tpo $(DEPDIR)/libgsequencer_la-ags_gui_file_xml.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_gui_file_xml.c' object='libgsequencer_la-ags_gui_file_xml.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_gui_file_xml.lo `test -f 'src/ags/X/ags_gui_file_xml.c' || echo '$(srcdir)/'`src/ags/X/ags_gui_file_xml.c
-
 libgsequencer_la-ags_ladspa_browser.lo: src/ags/X/ags_ladspa_browser.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ladspa_browser.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ladspa_browser.Tpo -c -o libgsequencer_la-ags_ladspa_browser.lo `test -f 'src/ags/X/ags_ladspa_browser.c' || echo '$(srcdir)/'`src/ags/X/ags_ladspa_browser.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_ladspa_browser.Tpo $(DEPDIR)/libgsequencer_la-ags_ladspa_browser.Plo
@@ -4171,12 +4174,19 @@ libgsequencer_la-ags_window_callbacks.lo: src/ags/X/ags_window_callbacks.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_window_callbacks.lo `test -f 'src/ags/X/ags_window_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_window_callbacks.c
 
-libgsequencer_la-ags_xorg_application_context.lo: src/ags/widget/ags_xorg_application_context.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_xorg_application_context.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_xorg_application_context.Tpo -c -o libgsequencer_la-ags_xorg_application_context.lo `test -f 'src/ags/widget/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/widget/ags_xorg_application_context.c
+libgsequencer_la-ags_xorg_application_context.lo: src/ags/X/ags_xorg_application_context.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_xorg_application_context.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_xorg_application_context.Tpo -c -o libgsequencer_la-ags_xorg_application_context.lo `test -f 'src/ags/X/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/X/ags_xorg_application_context.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_xorg_application_context.Tpo $(DEPDIR)/libgsequencer_la-ags_xorg_application_context.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/widget/ags_xorg_application_context.c' object='libgsequencer_la-ags_xorg_application_context.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_xorg_application_context.c' object='libgsequencer_la-ags_xorg_application_context.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_xorg_application_context.lo `test -f 'src/ags/widget/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/widget/ags_xorg_application_context.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_xorg_application_context.lo `test -f 'src/ags/X/ags_xorg_application_context.c' || echo '$(srcdir)/'`src/ags/X/ags_xorg_application_context.c
+
+libgsequencer_la-ags_gui_file_xml.lo: src/ags/X/file/ags_gui_file_xml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_gui_file_xml.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_gui_file_xml.Tpo -c -o libgsequencer_la-ags_gui_file_xml.lo `test -f 'src/ags/X/file/ags_gui_file_xml.c' || echo '$(srcdir)/'`src/ags/X/file/ags_gui_file_xml.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_gui_file_xml.Tpo $(DEPDIR)/libgsequencer_la-ags_gui_file_xml.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/file/ags_gui_file_xml.c' object='libgsequencer_la-ags_gui_file_xml.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_gui_file_xml.lo `test -f 'src/ags/X/file/ags_gui_file_xml.c' || echo '$(srcdir)/'`src/ags/X/file/ags_gui_file_xml.c
 
 libgsequencer_la-ags_gui_thread.lo: src/ags/X/thread/ags_gui_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_gui_thread.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_gui_thread.Tpo -c -o libgsequencer_la-ags_gui_thread.lo `test -f 'src/ags/X/thread/ags_gui_thread.c' || echo '$(srcdir)/'`src/ags/X/thread/ags_gui_thread.c
