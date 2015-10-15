@@ -21,10 +21,10 @@
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
@@ -227,8 +227,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   GList *stream;
   signed short *buffer0, *buffer1;
-  guint audio_channel;
-  guint buffer_size;
+  guint audio_channel, pcm_channels;
+  guint buffer_size, soundcard_buffer_size;
   gboolean muted;
 
   pthread_mutex_t *soundcard_mutex;
@@ -259,6 +259,12 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   pthread_mutex_lock(soundcard_mutex);
 
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    &pcm_channels,
+			    NULL,
+			    &soundcard_buffer_size,
+			    NULL);
+  
   if(stream == NULL){
     pthread_mutex_unlock(soundcard_mutex);
     ags_recall_done(recall);
@@ -266,19 +272,11 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  if((AGS_DEVOUT_BUFFER0 & soundcard->flags) != 0){
-    buffer0 = soundcard->buffer[1];
-    buffer1 = soundcard->buffer[2];
-  }else if((AGS_DEVOUT_BUFFER1 & soundcard->flags) != 0){
-    buffer0 = soundcard->buffer[2];
-    buffer1 = soundcard->buffer[3];
-  }else if((AGS_DEVOUT_BUFFER2 & soundcard->flags) != 0){
-    buffer0 = soundcard->buffer[3];
-    buffer1 = soundcard->buffer[0];
-  }else if((AGS_DEVOUT_BUFFER3 & soundcard->flags) != 0){
-    buffer0 = soundcard->buffer[0];
-    buffer1 = soundcard->buffer[1];
-  }else{
+  buffer0 = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
+  buffer1 = ags_soundcard_get_next_buffer(AGS_SOUNDCARD(soundcard));
+  
+  if(buffer0 == NULL ||
+     buffer1 == NULL){
     g_warning("no output buffer\0");
     return;
   }
@@ -314,19 +312,19 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
-    ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), soundcard->pcm_channels,
+    ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), pcm_channels,
 					   (signed short *) stream->data, 1,
-					   buffer_size - source->attack);
+					   soundcard_buffer_size - source->attack);
   }else{
     if(source->attack != 0 && stream->prev != NULL){
-      ags_audio_signal_copy_buffer_to_buffer((signed short *) &(buffer0[audio_channel]), soundcard->pcm_channels,
-					     &(((signed short *) stream->prev->data)[soundcard->buffer_size - source->attack]), 1,
+      ags_audio_signal_copy_buffer_to_buffer((signed short *) &(buffer0[audio_channel]), pcm_channels,
+					     &(((signed short *) stream->prev->data)[soundcard_buffer_size - source->attack]), 1,
 					     source->attack);
     }
 
-    ags_audio_signal_copy_buffer_to_buffer((signed short *) &(buffer0[audio_channel + source->attack * soundcard->pcm_channels]), soundcard->pcm_channels,
+    ags_audio_signal_copy_buffer_to_buffer((signed short *) &(buffer0[audio_channel + source->attack * pcm_channels]), pcm_channels,
 					   (signed short *) stream->data, 1,
-					   soundcard->buffer_size - source->attack);
+					   soundcard_buffer_size - source->attack);
   }
   
   pthread_mutex_unlock(soundcard_mutex);

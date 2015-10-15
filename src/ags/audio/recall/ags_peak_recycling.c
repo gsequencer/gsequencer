@@ -21,12 +21,9 @@
 #include <ags/audio/recall/ags_peak_channel.h>
 #include <ags/audio/recall/ags_peak_audio_signal.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/lib/ags_parameter.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_audio_signal.h>
@@ -149,8 +146,8 @@ void
 ags_peak_recycling_init(AgsPeakRecycling *peak_recycling)
 {
   AGS_RECALL(peak_recycling)->name = "ags-peak\0";
-  AGS_RECALL(peak_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(peak_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(peak_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(peak_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(peak_recycling)->xml_type = "ags-peak-recycling\0";
   AGS_RECALL(peak_recycling)->port = NULL;
 

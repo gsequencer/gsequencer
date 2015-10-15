@@ -21,9 +21,6 @@
 #include <ags/audio/recall/ags_envelope_recycling.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_audio.h>
@@ -137,8 +134,8 @@ void
 ags_envelope_channel_run_init(AgsEnvelopeChannelRun *envelope_channel_run)
 {
   AGS_RECALL(envelope_channel_run)->name = "ags-envelope\0";
-  AGS_RECALL(envelope_channel_run)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(envelope_channel_run)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(envelope_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(envelope_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(envelope_channel_run)->xml_type = "ags-envelope-channel-run\0";
   AGS_RECALL(envelope_channel_run)->port = NULL;
 

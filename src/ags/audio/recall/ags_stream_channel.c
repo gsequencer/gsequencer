@@ -19,10 +19,8 @@
 
 #include <ags/audio/recall/ags_stream_channel.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_plugin.h>
 
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
@@ -167,12 +165,15 @@ ags_stream_channel_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_stream_channel_init(AgsStreamChannel *stream_channel)
 {
+  AgsConfig *config;
+  
   GList *port;
+  
   gchar *str;
   
   AGS_RECALL(stream_channel)->name = "ags-stream\0";
-  AGS_RECALL(stream_channel)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(stream_channel)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(stream_channel)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(stream_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(stream_channel)->xml_type = "ags-stream-channel\0";
 
   port = NULL;
@@ -187,6 +188,8 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
 				     "port-value-length\0", 1,
 				     NULL);
 
+  config = ags_config_get_instance();
+  
   str = ags_config_get(config,
 		       AGS_CONFIG_RECALL,
 		       "auto-sense\0");

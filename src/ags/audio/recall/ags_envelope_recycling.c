@@ -20,9 +20,6 @@
 #include <ags/audio/recall/ags_envelope_recycling.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/recall/ags_envelope_audio_signal.h>
@@ -157,8 +154,8 @@ void
 ags_envelope_recycling_init(AgsEnvelopeRecycling *envelope_recycling)
 {
   AGS_RECALL(envelope_recycling)->name = "ags-envelope\0";
-  AGS_RECALL(envelope_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(envelope_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(envelope_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(envelope_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(envelope_recycling)->xml_type = "ags-envelope-recycling\0";
   AGS_RECALL(envelope_recycling)->port = NULL;
 

@@ -22,8 +22,6 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_plugin.h>
 
 void ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio);
@@ -153,8 +151,8 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
   GList *port;
 
   AGS_RECALL(copy_pattern_audio)->name = "ags-copy-pattern\0";
-  AGS_RECALL(copy_pattern_audio)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(copy_pattern_audio)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(copy_pattern_audio)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(copy_pattern_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(copy_pattern_audio)->xml_type = "ags-copy-pattern-audio\0";
 
   port = NULL;

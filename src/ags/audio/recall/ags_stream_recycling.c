@@ -20,15 +20,8 @@
 #include <ags/audio/recall/ags_stream_recycling.h>
 #include <ags/audio/recall/ags_stream_audio_signal.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
-
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
-
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/task/ags_remove_audio_signal.h>
@@ -157,8 +150,8 @@ void
 ags_stream_recycling_init(AgsStreamRecycling *stream_recycling)
 {
   AGS_RECALL(stream_recycling)->name = "ags-stream\0";
-  AGS_RECALL(stream_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(stream_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(stream_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(stream_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(stream_recycling)->xml_type = "ags-stream-recycling\0";
   AGS_RECALL(stream_recycling)->port = NULL;
 

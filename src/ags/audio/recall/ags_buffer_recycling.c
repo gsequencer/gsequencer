@@ -20,18 +20,9 @@
 #include <ags/audio/recall/ags_buffer_recycling.h>
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
-
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
-
 #include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/task/ags_remove_audio_signal.h>
 
 void ags_buffer_recycling_class_init(AgsBufferRecyclingClass *buffer_recycling);
 void ags_buffer_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -151,8 +142,8 @@ void
 ags_buffer_recycling_init(AgsBufferRecycling *buffer_recycling)
 {
   AGS_RECALL(buffer_recycling)->name = "ags-buffer\0";
-  AGS_RECALL(buffer_recycling)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(buffer_recycling)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(buffer_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(buffer_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(buffer_recycling)->xml_type = "ags-buffer-recycling\0";
   AGS_RECALL(buffer_recycling)->port = NULL;
 

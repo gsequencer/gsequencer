@@ -316,7 +316,6 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_channel_iter.h \
 	src/ags/audio/ags_devout.h \
 	src/ags/audio/ags_effect.h \
-	src/ags/audio/ags_garbage_collector.h \
 	src/ags/audio/ags_input.h \
 	src/ags/audio/ags_libao.h \
 	src/ags/audio/ags_notation.h \
@@ -357,7 +356,6 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_channel.c \
 	src/ags/audio/ags_channel_iter.c \
 	src/ags/audio/ags_devout.c \
-	src/ags/audio/ags_garbage_collector.c \
 	src/ags/audio/ags_input.c \
 	src/ags/audio/ags_libao.c \
 	src/ags/audio/ags_notation.c \
@@ -614,13 +612,12 @@ libags_audio_task_h_sources = \
 	src/ags/audio/task/ags_remove_region_from_selection.h \
 	src/ags/audio/task/ags_resize_audio.h \
 	src/ags/audio/task/ags_save_file.h \
-	src/ags/audio/task/ags_seek_devout.h \
+	src/ags/audio/task/ags_seek_soundcard.h \
 	src/ags/audio/task/ags_set_audio_channels.h \
 	src/ags/audio/task/ags_set_buffer_size.h \
-	src/ags/audio/task/ags_set_devout_play_flags.h \
 	src/ags/audio/task/ags_set_output_device.h \
 	src/ags/audio/task/ags_set_samplerate.h \
-	src/ags/audio/task/ags_start_devout.h \
+	src/ags/audio/task/ags_start_soundcard.h \
 	src/ags/audio/task/ags_toggle_pattern_bit.h \
 	src/ags/audio/task/ags_unref_audio_signal.h \
 	src/ags/audio/task/recall/ags_apply_bpm.h \
@@ -667,13 +664,12 @@ libags_audio_task_c_sources = \
 	src/ags/audio/task/ags_remove_region_from_selection.c \
 	src/ags/audio/task/ags_resize_audio.c \
 	src/ags/audio/task/ags_save_file.c \
-	src/ags/audio/task/ags_seek_devout.c \
+	src/ags/audio/task/ags_seek_soundcard.c \
 	src/ags/audio/task/ags_set_audio_channels.c \
 	src/ags/audio/task/ags_set_buffer_size.c \
-	src/ags/audio/task/ags_set_devout_play_flags.c \
 	src/ags/audio/task/ags_set_output_device.c \
 	src/ags/audio/task/ags_set_samplerate.c \
-	src/ags/audio/task/ags_start_devout.c \
+	src/ags/audio/task/ags_start_soundcard.c \
 	src/ags/audio/task/ags_toggle_pattern_bit.c \
 	src/ags/audio/task/ags_unref_audio_signal.c \
 	src/ags/audio/task/recall/ags_apply_bpm.c \

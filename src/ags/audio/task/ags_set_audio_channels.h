@@ -41,7 +41,7 @@ struct _AgsSetAudioChannels
 {
   AgsTask task;
 
-  AgsDevout *devout;
+  GObject *soundcard;
   guint audio_channels;
 };
 
@@ -52,6 +52,6 @@ struct _AgsSetAudioChannelsClass
 
 GType ags_set_audio_channels_get_type();
 
-AgsSetAudioChannels* ags_set_audio_channels_new(AgsDevout *devout, guint audio_channels);
+AgsSetAudioChannels* ags_set_audio_channels_new(GObject *soundcard, guint audio_channels);
 
 #endif /*__AGS_SET_AUDIO_CHANNELS_H__*/

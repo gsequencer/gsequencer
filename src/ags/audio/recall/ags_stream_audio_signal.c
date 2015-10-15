@@ -23,9 +23,6 @@
 #include <ags/audio/recall/ags_stream_audio_signal.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/task/ags_unref_audio_signal.h>
@@ -151,8 +148,8 @@ void
 ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 {
   AGS_RECALL(stream_audio_signal)->name = "ags-stream\0";
-  AGS_RECALL(stream_audio_signal)->version = AGS_EFFECTS_DEFAULT_VERSION;
-  AGS_RECALL(stream_audio_signal)->build_id = AGS_BUILD_ID;
+  AGS_RECALL(stream_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
+  AGS_RECALL(stream_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(stream_audio_signal)->xml_type = "ags-stream-audio-signal\0";
   AGS_RECALL(stream_audio_signal)->port = NULL;
 
