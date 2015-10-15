@@ -20,12 +20,11 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
-
-#include <ags/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -33,13 +32,10 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -49,6 +45,8 @@
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -63,6 +61,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
+
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_synth_input_pad.h>
 #include <ags/X/machine/ags_synth_input_line.h>
@@ -584,7 +584,7 @@ ags_synth_update(AgsSynth *synth)
   AgsWindow *window;
   AgsOscillator *oscillator;
   
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsAudio *audio;
   AgsChannel *channel;
   
@@ -608,29 +608,34 @@ ags_synth_update(AgsSynth *synth)
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
-  
+  pthread_mutex_t *application_mutex;
+    
   window = (AgsWindow *) gtk_widget_get_toplevel(synth);
   application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   audio = AGS_MACHINE(synth)->audio;
 
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
   /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
     
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
   
   /*  */
   start = (guint) gtk_spin_button_get_value_as_int(synth->lower);
@@ -642,10 +647,10 @@ ags_synth_update(AgsSynth *synth)
   input_pad_start = 
     input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
 
-  /* get devout */
+  /* get soundcard */
   pthread_mutex_lock(audio_mutex);
 
-  devout = (AgsDevout *) audio->devout;
+  soundcard = audio->soundcard;
 
   channel = audio->input;
   
@@ -653,12 +658,12 @@ ags_synth_update(AgsSynth *synth)
 
   while(input_pad != NULL){
     /* lookup channel mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
 
     channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) channel);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* do it so */
     input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
@@ -734,7 +739,7 @@ ags_synth_update(AgsSynth *synth)
 
 /**
  * ags_synth_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsSynth
  *
@@ -743,7 +748,7 @@ ags_synth_update(AgsSynth *synth)
  * Since: 0.3
  */
 AgsSynth*
-ags_synth_new(GObject *devout)
+ags_synth_new(GObject *soundcard)
 {
   AgsSynth *synth;
 
@@ -751,7 +756,7 @@ ags_synth_new(GObject *devout)
 				    NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(synth)->audio),
-	       "devout\0", devout,
+	       "soundcard\0", soundcard,
 	       NULL);
 
   return(synth);

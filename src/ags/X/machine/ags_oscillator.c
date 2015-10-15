@@ -20,11 +20,10 @@
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_oscillator_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
-
-#include <ags/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
+
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_plugin.h>
 

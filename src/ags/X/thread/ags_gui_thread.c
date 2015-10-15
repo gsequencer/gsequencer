@@ -17,12 +17,10 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/thread/ags_gui_thread.h>
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <<ags/object/ags_application_context.h>>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_task_completion.h>

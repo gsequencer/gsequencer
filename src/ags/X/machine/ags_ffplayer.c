@@ -20,13 +20,10 @@
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
-
-#include <ags/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_playable.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_seekable.h>
 
@@ -35,7 +32,6 @@
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -43,6 +39,7 @@
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_playable.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
@@ -61,6 +58,8 @@
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/X/ags_editor.h>
+
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <math.h>
 
@@ -397,7 +396,7 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      window->navigation->position_tact->adjustment->value * AGS_DEVOUT(audio->devout)->delay[AGS_DEVOUT(audio->devout)->tic_counter],
+		      window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
 		      TRUE);
 
     g_value_init(&value, G_TYPE_BOOLEAN);
@@ -659,7 +658,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			    "mode\0", AGS_IPATCH_READ,
 			    "filename\0", filename,
 			    NULL);
-    ipatch->devout = window->devout;
+    ipatch->soundcard = window->soundcard;
     ags_ipatch_open(ipatch, filename);
 
     playable = AGS_PLAYABLE(ipatch);
@@ -1124,7 +1123,7 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
 
 /**
  * ags_ffplayer_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsFFPlayer
  *
@@ -1133,7 +1132,7 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
  * Since: 0.3
  */
 AgsFFPlayer*
-ags_ffplayer_new(GObject *devout)
+ags_ffplayer_new(GObject *soundcard)
 {
   AgsFFPlayer *ffplayer;
   GValue value = {0,};
@@ -1141,11 +1140,11 @@ ags_ffplayer_new(GObject *devout)
   ffplayer = (AgsFFPlayer *) g_object_new(AGS_TYPE_FFPLAYER,
 					  NULL);
 
-  if(devout != NULL){
+  if(soundcard != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, devout);
+    g_value_set_object(&value, soundcard);
     g_object_set_property(G_OBJECT(ffplayer->machine.audio),
-			  "devout\0", &value);
+			  "soundcard\0", &value);
     g_value_unset(&value);
   }
 

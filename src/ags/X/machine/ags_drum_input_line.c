@@ -343,11 +343,11 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   if(channel != NULL){
     if(channel->audio != NULL &&
-       AGS_AUDIO(channel->audio)->devout != NULL &&
+       AGS_AUDIO(channel->audio)->soundcard != NULL &&
        ags_audio_signal_get_template(channel->first_recycling->audio_signal) == NULL){
       AgsAudioSignal *audio_signal;
 
-      audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->devout,
+      audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->soundcard,
 					  (GObject *) channel->first_recycling,
 					  NULL);
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

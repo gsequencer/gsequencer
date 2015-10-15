@@ -20,10 +20,9 @@
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum_output_line_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_mutex_manager.h>
@@ -233,7 +232,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsDrumOutputLine *drum_output_line;
 
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsAudio *audio;
   
   AgsMutexManager *mutex_manager;
@@ -257,10 +256,10 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
   
   pthread_mutex_unlock(&(ags_application_mutex));
 
-  /* get devout */
+  /* get soundcard */
   pthread_mutex_lock(audio_mutex);
 	
-  devout = audio->devout;
+  soundcard = audio->soundcard;
   
   pthread_mutex_unlock(audio_mutex);
 
@@ -284,7 +283,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     pthread_mutex_unlock(channel_mutex);
 
     /* instantiate template audio signal */
-    audio_signal = ags_audio_signal_new((GObject *) devout,
+    audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					(GObject *) recycling,
 					NULL);
     audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

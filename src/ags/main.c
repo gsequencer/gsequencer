@@ -18,41 +18,52 @@
  */
 #include <ags/main.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/object/ags_main_loop.h>
+#include <ags/thread/ags_concurrency_provider.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif
+#include <ags/thread/ags_single_thread.h>
+#include <ags/thread/ags_autosave_thread.h>
+#include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_thread_pool.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
+
+#include <ags/server/ags_server.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/file/ags_file.h>
+#include <ags/audio/ags_sound_provider.h>
 
-#include <ags/thread/ags_audio_loop.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_devout_thread.h>
-#include <ags/thread/ags_export_thread.h>
-#include <ags/thread/ags_audio_thread.h>
-#include <ags/thread/ags_channel_thread.h>
-#include <ags/thread/ags_gui_thread.h>
-#include <ags/thread/ags_autosave_thread.h>
-#include <ags/thread/ags_single_thread.h>
+#include <ags/X/ags_xorg_application_context.h>
+#include <ags/X/ags_window.h>
 
-#include <ags/object/ags_config.h>
+#include <ags/X/thread/ags_gui_thread.h>
 
-#include <sys/mman.h>
-
-#include <gtk/gtk.h>
-
-#include <stdlib.h>
 #include <libintl.h>
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
 #include <sys/resource.h>
-#include <mcheck.h>
-#include <signal.h>
-#include <time.h>
+#include <sys/mman.h>
 
-#include <gdk/gdk.h>
+#include <ao/ao.h>
+
+#include <glib.h>
+#include <glib-object.h>
+#include <gio/gio.h>
+
+#include <gtk/gtk.h>
+
+#include <pthread.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -75,6 +86,9 @@ struct sigaction ags_sigact_timer;
 struct sigevent ags_sev_timer;
 struct itimerspec its;
 
+AgsApplicationContext *application_context;
+AgsLadspaManager *ladspa_manager;
+
 void
 ags_signal_handler(int signr)
 {
@@ -94,16 +108,16 @@ ags_signal_handler(int signr)
 void
 ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
 {
-  pthread_mutex_lock(application_context->main_loop->timer_mutex);
+  pthread_mutex_lock(AGS_THREAD(application_context->main_loop)->timer_mutex);
 
-  g_atomic_int_set(&(application_context->main_loop->timer_expired),
+  g_atomic_int_set(&(AGS_THREAD(application_context->main_loop)->timer_expired),
 		   TRUE);
   
-  if(application_context->main_loop->timer_wait){
-    pthread_cond_signal(application_context->main_loop->timer_cond);
+  if(AGS_THREAD(application_context->main_loop)->timer_wait){
+    pthread_cond_signal(AGS_THREAD(application_context->main_loop)->timer_cond);
   }
   
-  pthread_mutex_unlock(application_context->main_loop->timer_mutex);
+  pthread_mutex_unlock(AGS_THREAD(application_context->main_loop)->timer_mutex);
 
   //  g_message("sig\0");
   //  signal(sig, SIG_IGN);
@@ -118,30 +132,25 @@ ags_signal_cleanup()
 int
 main(int argc, char **argv)
 {
-  AgsDevout *devout;
-  AgsWindow *window;
-  AgsThread *gui_thread;
-  AgsThread *async_queue;
-  AgsThread *devout_thread;
-  AgsThread *export_thread;
-  
+  AgsThread *audio_loop, *gui_thread, *task_thread;
+  AgsThreadPool *thread_pool;
+  AgsApplicationContext *application_context;
   GFile *autosave_file;
-  struct sched_param param;
-  struct rlimit rl;
-  timer_t timerid;
+    
   gchar *filename, *autosave_filename;
-
-  struct passwd *pw;
-  uid_t uid;
-  gchar *wdir, *config_file;
-  int result;
   gboolean single_thread = FALSE;
   guint i;
 
-  const char *error;
-  const rlim_t kStackSize = 256L * 1024L * 1024L;   // min stack size = 128 Mb
+  struct passwd *pw;
+  uid_t uid;
 
-  pthread_mutexattr_t attr;
+  struct sched_param param;
+  struct rlimit rl;
+  struct sigaction sa;
+
+  int result;
+
+  const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
   
   //  mtrace();
   atexit(ags_signal_cleanup);
@@ -173,13 +182,6 @@ main(int argc, char **argv)
   ags_sigact.sa_flags = 0;
   sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
-
-  /**/
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-  pthread_mutex_init(&ags_application_mutex,
-		     &attr);
 
 #ifdef AGS_USE_TIMER
   /* create timer */
@@ -215,6 +217,13 @@ main(int argc, char **argv)
   /* parse gtkrc */
   uid = getuid();
   pw = getpwuid(uid);
+
+  /* init gsequencer */
+  gtk_init(&argc, &argv);
+
+  application_context = ags_xorg_application_context_new();
+  application_context->argc = argc;
+  application_context->argv = argv;
   
   gtk_rc_parse(g_strdup_printf("%s/%s/ags.rc",
 			       pw->pw_dir,
@@ -228,9 +237,14 @@ main(int argc, char **argv)
 
   gtk_init(&argc, &argv);
   ipatch_init();
+    
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
 
   ao_initialize();
 
+  /* parse command line parameter */
   filename = NULL;
 
   for(i = 0; i < argc; i++){
@@ -263,39 +277,35 @@ main(int argc, char **argv)
     }
   }
 
-  config = ags_config_new();
-  
-  wdir = g_strdup_printf("%s/%s\0",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
-
-  config_file = g_strdup_printf("%s/%s\0",
-				wdir,
-				AGS_DEFAULT_CONFIG);
-
-  ags_config_load_from_file(config,
-			    config_file);
-
-  g_free(wdir);
-  g_free(config_file);
-
   if(filename != NULL){
     AgsFile *file;
 
     file = g_object_new(AGS_TYPE_FILE,
+			"application-context\0", application_context,
 			"filename\0", filename,
 			NULL);
     ags_file_open(file);
     ags_file_read(file);
-
-    application_context = AGS_MAIN(file->application_context);
     ags_file_close(file);
+    
+    gui_thread = ags_thread_find_type(application_context->main_loop,
+				      AGS_TYPE_GUI_THREAD);
+  }else{
+    guint val;
 
-    ags_thread_start(application_context->main_loop);
+    /* wait for audio loop */
+    thread_pool->parent = audio_loop;
+    ags_thread_pool_start(thread_pool);
 
-    /* complete thread pool */
-    application_context->thread_pool->parent = AGS_THREAD(application_context->main_loop);
-    ags_thread_pool_start(application_context->thread_pool);
+    task_thread = ags_thread_find_type(audio_loop,
+				       AGS_TYPE_TASK_THREAD);
+
+    gui_thread = ags_thread_find_type(audio_loop,
+				      AGS_TYPE_GUI_THREAD);
+
+    ags_thread_start(task_thread);
+    ags_thread_start(audio_loop);
+    ags_thread_start(gui_thread);
 
 #ifdef AGS_USE_TIMER
     /* Start the timer */
@@ -316,9 +326,31 @@ main(int argc, char **argv)
     }
 #endif
 
-    gui_thread = ags_thread_find_type(application_context->main_loop,
-				      AGS_TYPE_GUI_THREAD);
-    
+    /* wait for audio loop */
+    pthread_mutex_lock(audio_loop->start_mutex);
+  
+    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags)))) != 0){
+      pthread_cond_wait(audio_loop->start_cond,
+			audio_loop->start_mutex);
+      val = g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags));
+    }
+  
+    pthread_mutex_unlock(audio_loop->start_mutex);
+
+    /* wait for audio loop */
+    pthread_mutex_lock(gui_thread->start_mutex);
+  
+    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags)))) != 0){
+      pthread_cond_wait(gui_thread->start_cond,
+			gui_thread->start_mutex);
+      val = g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags));
+    }
+  
+    pthread_mutex_unlock(gui_thread->start_mutex);
+  }
+
+  if(!single_thread){
+    /* join gui thread */
 #ifdef _USE_PTH
     pth_join(gui_thread->thread,
 	     NULL);
@@ -327,193 +359,25 @@ main(int argc, char **argv)
 		 NULL);
 #endif
   }else{
-    application_context = application_context_new();
+    AgsSingleThread *single_thread;
 
-    if(single_thread){
-      application_context->flags = AGS_MAIN_SINGLE_THREAD;
-    }
+    /* single thread */
+    single_thread = ags_single_thread_new((GObject *) ags_sound_provider_get_soundcard(application_context)->data);
 
-    /* Declare ourself as a real time task */
-    param.sched_priority = AGS_PRIORITY;
-
-    if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-      perror("sched_setscheduler failed\0");
-    }
-
-    mlockall(MCL_CURRENT | MCL_FUTURE);
-
-    if((AGS_MAIN_SINGLE_THREAD & (application_context->flags)) == 0){
-      //      GdkFrameClock *frame_clock;
-
-#ifdef AGS_WITH_XMLRPC_C
-      AbyssInit(&error);
-
-      xmlrpc_env_init(&(application_context->env));
-#endif /* AGS_WITH_XMLRPC_C */
-
-      /* AgsDevout */
-      devout = ags_devout_new((GObject *) application_context);
-      application_context_add_devout(application_context,
-			  devout);
-
-      /*  */
-      g_object_set(G_OBJECT(application_context->autosave_thread),
-		   "devout\0", devout,
-		   NULL);
-
-      /* AgsWindow */
-      application_context->window =
-	window = ags_window_new((GObject *) application_context);
-      g_object_set(G_OBJECT(window),
-		   "devout\0", devout,
-		   NULL);
-      g_object_ref(G_OBJECT(window));
-
-      gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-      gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-      ags_connectable_connect(window);
-      gtk_widget_show_all((GtkWidget *) window);
-
-      /* AgsServer */
-      application_context->server = ags_server_new((GObject *) application_context);
-
-      /* AgsMainLoop */
-      application_context->main_loop = (AgsThread *) ags_audio_loop_new((GObject *) devout, (GObject *) application_context);
-      application_context->thread_pool->parent = application_context->main_loop;
-      g_object_ref(G_OBJECT(application_context->main_loop));
-      ags_connectable_connect(AGS_CONNECTABLE(G_OBJECT(application_context->main_loop)));
-
-      /* AgsTaskThread */
-      async_queue = (AgsThread *) ags_task_thread_new(devout);
-      AGS_TASK_THREAD(async_queue)->thread_pool = application_context->thread_pool;
-      ags_main_loop_set_async_queue(AGS_MAIN_LOOP(application_context->main_loop),
-				    async_queue);
-      ags_thread_add_child_extended(application_context->main_loop,
-				    async_queue,
-				    TRUE, TRUE);
-
-      /* AgsGuiThread */
-      gui_thread = (AgsThread *) ags_gui_thread_new();
-      ags_thread_add_child_extended(application_context->main_loop,
-				    gui_thread,
-				    TRUE, TRUE);
-
-      /* AgsDevoutThread */
-      devout_thread = (AgsThread *) ags_devout_thread_new(devout);
-      ags_thread_add_child_extended(application_context->main_loop,
-				    devout_thread,
-				    TRUE, TRUE);
-
-      /* AgsExportThread */
-      export_thread = (AgsThread *) ags_export_thread_new(devout, NULL);
-      ags_thread_add_child_extended(application_context->main_loop,
-				    export_thread,
-				    TRUE, TRUE);
-
-      /* start thread tree */
-      ags_thread_start(application_context->main_loop);
-      ags_thread_start(gui_thread);
-
-      /* wait thread */
-      pthread_mutex_lock(AGS_THREAD(application_context->main_loop)->start_mutex);
-
-      g_atomic_int_set(&(AGS_THREAD(application_context->main_loop)->start_wait),
-		       TRUE);
-	
-      if(g_atomic_int_get(&(AGS_THREAD(application_context->main_loop)->start_wait)) == TRUE &&
-	 g_atomic_int_get(&(AGS_THREAD(application_context->main_loop)->start_done)) == FALSE){
-	while(g_atomic_int_get(&(AGS_THREAD(application_context->main_loop)->start_wait)) == TRUE &&
-	      g_atomic_int_get(&(AGS_THREAD(application_context->main_loop)->start_done)) == FALSE){
-	  pthread_cond_wait(AGS_THREAD(application_context->main_loop)->start_cond,
-			    AGS_THREAD(application_context->main_loop)->start_mutex);
-	}
-      }
-	
-      pthread_mutex_unlock(AGS_THREAD(application_context->main_loop)->start_mutex);
-
-      /* complete thread pool */
-      ags_thread_pool_start(application_context->thread_pool);
-    }else{
-      AgsSingleThread *single_thread;
-
-      devout = ags_devout_new((GObject *) application_context);
-      application_context_add_devout(application_context,
-			  devout);
-
-      g_object_set(G_OBJECT(application_context->autosave_thread),
-		   "devout\0", devout,
-		   NULL);
-
-      /* threads */
-      single_thread = ags_single_thread_new((GObject *) devout);
-
-      /* AgsWindow */
-      application_context->window = 
-	window = ags_window_new((GObject *) application_context);
-      g_object_set(G_OBJECT(window),
-		   "devout\0", devout,
-		   NULL);
-      gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-      gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-      ags_connectable_connect(window);
-      gtk_widget_show_all((GtkWidget *) window);
-
-      /* AgsMainLoop */
-      application_context->main_loop = AGS_MAIN_LOOP(ags_audio_loop_new((GObject *) devout, (GObject *) application_context));
-      g_object_ref(G_OBJECT(application_context->main_loop));
-
-      /* complete thread pool */
-      application_context->thread_pool->parent = AGS_THREAD(application_context->main_loop);
-      ags_thread_pool_start(application_context->thread_pool);
-
-      /* start thread tree */
-      ags_thread_start((AgsThread *) single_thread);
-    }
-
-#ifdef AGS_USE_TIMER
-    /* Start the timer */
-    its.it_value.tv_sec = 0;
-    its.it_value.tv_nsec = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION; // / AGS_AUDIO_LOOP_DEFAULT_JIFFIE;
-    its.it_interval.tv_sec = its.it_value.tv_sec;
-    its.it_interval.tv_nsec = its.it_value.tv_nsec;
-
-    if(timer_settime(timerid, 0, &its, NULL) == -1){
-      perror("timer_settime\0");
-      exit(EXIT_FAILURE);
+    /* add known threads to single_thread */
+    ags_thread_add_child(AGS_THREAD(single_thread),
+			 audio_loop);
     
-    }
-    
-    if(sigprocmask(SIG_UNBLOCK, &ags_timer_mask, NULL) == -1){
-      perror("sigprocmask\0");
-      exit(EXIT_FAILURE);
-    }
-#endif
-
-    gui_thread = ags_thread_find_type(application_context->main_loop,
-				      AGS_TYPE_GUI_THREAD);
-
-    if(!single_thread){
-      /* join gui thread */
-#ifdef _USE_PTH
-      pth_join(gui_thread->thread,
-	       NULL);
-#else
-      pthread_join(*(gui_thread->thread),
-		   NULL);
-#endif
-    }
+    /* start thread tree */
+    ags_thread_start((AgsThread *) single_thread);
   }
-
+    
   /* free managers */
-  if(ags_ladspa_manager != NULL){
+  if(ladspa_manager != NULL){
     g_object_unref(ags_ladspa_manager_get_instance());
   }
-
-  uid = getuid();
-  pw = getpwuid(uid);
   
+  /* delete autosave file */  
   autosave_filename = g_strdup_printf("%s/%s/%d-%s\0",
 				      pw->pw_dir,
 				      AGS_DEFAULT_DIRECTORY,

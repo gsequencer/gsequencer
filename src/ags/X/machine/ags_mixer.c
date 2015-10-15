@@ -20,19 +20,16 @@
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_mixer_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
-
-#include <ags/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_gui.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -42,6 +39,8 @@
 
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
+
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_mixer_input_pad.h>
 #include <ags/X/machine/ags_mixer_input_line.h>

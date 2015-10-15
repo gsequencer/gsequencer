@@ -20,22 +20,22 @@
 #include <ags/X/machine/ags_cell_pattern.h>
 #include <ags/X/machine/ags_cell_pattern_callbacks.h>
 
-#include <<ags/object/ags_application_context.h>>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_pattern.h>
 
-#include <ags/audio/task/ags_blink_cell_pattern_cursor.h>
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/widget/ags_led.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+
+#include <ags/X/task/ags_blink_cell_pattern_cursor.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -80,8 +80,6 @@ gchar* ags_accessible_cell_pattern_get_localized_name(AtkAction *action,
 
 static gpointer ags_cell_pattern_parent_class = NULL;
 static GQuark quark_accessible_object = 0;
-
-extern pthread_mutex_t ags_application_mutex;
 
 GtkStyle *cell_pattern_style;
 
@@ -581,19 +579,21 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
   guint gutter;
   int i, j;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   machine = gtk_widget_get_ancestor(cell_pattern,
 				    AGS_TYPE_MACHINE);
-  
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) machine->audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(audio_mutex);
 
@@ -640,19 +640,21 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
   guint gutter;
   int i, j;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   machine = gtk_widget_get_ancestor(cell_pattern,
 				    AGS_TYPE_MACHINE);
 
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
-
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) machine->audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(audio_mutex);
 
@@ -745,10 +747,13 @@ ags_cell_pattern_blink_worker(void *data)
 
   AgsBlinkCellPatternCursor *blink_cell_pattern_cursor;
 
+  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
   
   static const guint blink_delay = 1000000; // blink every second
   
@@ -757,13 +762,16 @@ ags_cell_pattern_blink_worker(void *data)
 				   AGS_TYPE_WINDOW);
 
   application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
   task_thread = ags_thread_find_type(audio_loop,
