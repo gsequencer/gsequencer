@@ -24,7 +24,6 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_REMOVE_AUDIO                (ags_remove_audio_get_type())
@@ -41,7 +40,7 @@ struct _AgsRemoveAudio
 {
   AgsTask task;
 
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsAudio *audio;
 };
 
@@ -52,7 +51,7 @@ struct _AgsRemoveAudioClass
 
 GType ags_remove_audio_get_type();
 
-AgsRemoveAudio* ags_remove_audio_new(AgsDevout *devout,
+AgsRemoveAudio* ags_remove_audio_new(GObject *soundcard,
 				     AgsAudio *audio);
 
 #endif /*__AGS_REMOVE_AUDIO_H__*/

@@ -20,8 +20,12 @@
 #include <ags/audio/task/ags_init_channel.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 
 void ags_init_channel_class_init(AgsInitChannelClass *init_channel);
 void ags_init_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -116,9 +120,9 @@ ags_init_channel_init(AgsInitChannel *init_channel)
   init_channel->channel = NULL;
   init_channel->play_pad = FALSE;
 
-  init_channel->playback = FALSE;
-  init_channel->sequencer = FALSE;
-  init_channel->notation = FALSE;
+  init_channel->do_playback = FALSE;
+  init_channel->do_sequencer = FALSE;
+  init_channel->do_notation = FALSE;
 }
 
 void
@@ -186,46 +190,46 @@ ags_init_channel_launch(AgsTask *task)
       
       while(channel != next_pad){
 	if(stage == 0){
-	  if(init_channel->playback){
-	    g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-			    AGS_DEVOUT_PLAY_PLAYBACK);
+	  if(init_channel->do_playback){
+	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			    AGS_PLAYBACK_PLAYBACK);
 
 	    recall_id = ags_channel_recursive_play_init(channel, stage,
 							arrange_recall_id, duplicate_templates,
 							TRUE, FALSE, FALSE,
 							resolve_dependencies,
 							NULL);
-	    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id;
+	    AGS_PLAYBACK(channel->playback)->recall_id[0] = recall_id;
 	  }
 	  
-	  if(init_channel->sequencer){
-	    g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-			      AGS_DEVOUT_PLAY_SEQUENCER);
+	  if(init_channel->do_sequencer){
+	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			      AGS_PLAYBACK_SEQUENCER);
 
 	    recall_id = ags_channel_recursive_play_init(channel, stage,
 							arrange_recall_id, duplicate_templates,
 							FALSE, TRUE, FALSE,
 							resolve_dependencies,
 							NULL);
-	    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = recall_id;
+	    AGS_PLAYBACK(channel->playback)->recall_id[1] = recall_id;
 	  }
 	  
-	  if(init_channel->notation){
-	    g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-			    AGS_DEVOUT_PLAY_NOTATION);
+	  if(init_channel->do_notation){
+	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			    AGS_PLAYBACK_NOTATION);
 
 	    recall_id = ags_channel_recursive_play_init(channel, stage,
 							arrange_recall_id, duplicate_templates,
 							FALSE, FALSE, TRUE,
 							resolve_dependencies,
 							NULL);
-	    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = recall_id;
+	    AGS_PLAYBACK(channel->playback)->recall_id[2] = recall_id;
 	  }
 
 	  list_start = g_list_append(list_start,
 				     recall_id);
 	}else{
-	  if(init_channel->playback){
+	  if(init_channel->do_playback){
 	    ags_channel_recursive_play_init(channel, stage,
 					    arrange_recall_id, duplicate_templates,
 					    TRUE, FALSE, FALSE,
@@ -233,7 +237,7 @@ ags_init_channel_launch(AgsTask *task)
 					    AGS_RECALL_ID(list->data));
 	  }
 
-	  if(init_channel->sequencer){
+	  if(init_channel->do_sequencer){
 	    ags_channel_recursive_play_init(channel, stage,
 					    arrange_recall_id, duplicate_templates,
 					    FALSE, TRUE, FALSE,
@@ -241,7 +245,7 @@ ags_init_channel_launch(AgsTask *task)
 					    AGS_RECALL_ID(list->data));
 	  }
 
-	  if(init_channel->notation){
+	  if(init_channel->do_notation){
 	    ags_channel_recursive_play_init(channel, stage,
 					    arrange_recall_id, duplicate_templates,
 					    FALSE, FALSE, TRUE,
@@ -277,46 +281,46 @@ ags_init_channel_launch(AgsTask *task)
       }
       
       if(stage == 0){
-	if(init_channel->playback){
-	  g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-			  AGS_DEVOUT_PLAY_PLAYBACK);
+	if(init_channel->do_playback){
+	  g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			  AGS_PLAYBACK_PLAYBACK);
 
 	  recall_id = ags_channel_recursive_play_init(channel, stage,
 						      arrange_recall_id, duplicate_templates,
 						      TRUE, FALSE, FALSE,
 						      resolve_dependencies,
 						      NULL);
-	  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = recall_id;
+	  AGS_PLAYBACK(channel->playback)->recall_id[0] = recall_id;
 	}
 	  
-	if(init_channel->sequencer){
-	  g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-			  AGS_DEVOUT_PLAY_SEQUENCER);
+	if(init_channel->do_sequencer){
+	  g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			  AGS_PLAYBACK_SEQUENCER);
 
 	  recall_id = ags_channel_recursive_play_init(channel, stage,
 						      arrange_recall_id, duplicate_templates,
 						      FALSE, TRUE, FALSE,
 						      resolve_dependencies,
 						      NULL);
-	  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = recall_id;
+	  AGS_PLAYBACK(channel->playback)->recall_id[1] = recall_id;
 	}
 	  
-	if(init_channel->notation){
-	  g_atomic_int_or(&(AGS_DEVOUT_PLAY(channel->devout_play)->flags),
-			  AGS_DEVOUT_PLAY_NOTATION);
+	if(init_channel->do_notation){
+	  g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			  AGS_PLAYBACK_NOTATION);
 
 	  recall_id = ags_channel_recursive_play_init(channel, stage,
 						      arrange_recall_id, duplicate_templates,
 						      FALSE, FALSE, TRUE,
 						      resolve_dependencies,
 						      NULL);
-	  AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = recall_id;
+	  AGS_PLAYBACK(channel->playback)->recall_id[2] = recall_id;
 	}
 
 	list_start = g_list_append(list_start,
 				   recall_id);
       }else{
-	if(init_channel->playback){
+	if(init_channel->do_playback){
 	  ags_channel_recursive_play_init(channel, stage,
 					  arrange_recall_id, duplicate_templates,
 					  TRUE, FALSE, FALSE,
@@ -324,7 +328,7 @@ ags_init_channel_launch(AgsTask *task)
 					  AGS_RECALL_ID(list->data));
 	}
 
-	if(init_channel->sequencer){
+	if(init_channel->do_sequencer){
 	  ags_channel_recursive_play_init(channel, stage,
 					  arrange_recall_id, duplicate_templates,
 					  FALSE, TRUE, FALSE,
@@ -332,7 +336,7 @@ ags_init_channel_launch(AgsTask *task)
 					  AGS_RECALL_ID(list->data));
 	}
 
-	if(init_channel->notation){
+	if(init_channel->do_notation){
 	  ags_channel_recursive_play_init(channel, stage,
 					  arrange_recall_id, duplicate_templates,
 					  FALSE, FALSE, TRUE,
@@ -349,9 +353,9 @@ ags_init_channel_launch(AgsTask *task)
  * ags_init_channel_new:
  * @channel: the #AgsChannel
  * @play_pad: %TRUE all channels of accordig pad are initialized
- * @playback: init playback
- * @sequencer: init sequencer
- * @notation: init notation
+ * @do_playback: init playback
+ * @do_sequencer: init sequencer
+ * @do_notation: init notation
  *
  * Creates an #AgsInitChannel.
  *
@@ -361,7 +365,7 @@ ags_init_channel_launch(AgsTask *task)
  */
 AgsInitChannel*
 ags_init_channel_new(AgsChannel *channel, gboolean play_pad,
-		     gboolean playback, gboolean sequencer, gboolean notation)
+		     gboolean do_playback, gboolean do_sequencer, gboolean do_notation)
 {
   AgsInitChannel *init_channel;
 
@@ -371,9 +375,9 @@ ags_init_channel_new(AgsChannel *channel, gboolean play_pad,
   init_channel->channel = channel;
   init_channel->play_pad = play_pad;
 
-  init_channel->playback = playback;
-  init_channel->sequencer = sequencer;
-  init_channel->notation = notation;
+  init_channel->do_playback = do_playback;
+  init_channel->do_sequencer = do_sequencer;
+  init_channel->do_notation = do_notation;
 
   return(init_channel);
 }

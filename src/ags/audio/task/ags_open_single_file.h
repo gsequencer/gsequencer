@@ -41,7 +41,7 @@ struct _AgsOpenSingleFile
   AgsTask task;
 
   AgsChannel *channel;
-  AgsDevout *devout;
+  GObject *soundcard;
 
   gchar *filename;
   guint start_channel;
@@ -56,7 +56,7 @@ struct _AgsOpenSingleFileClass
 GType ags_open_single_file_get_type();
 
 AgsOpenSingleFile* ags_open_single_file_new(AgsChannel *channel,
-					    AgsDevout *devout,
+					    GObject *soundcard,
 					    gchar *filename,
 					    guint start_channel,
 					    guint audio_channels);

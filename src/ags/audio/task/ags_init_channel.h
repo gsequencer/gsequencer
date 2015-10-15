@@ -44,9 +44,9 @@ struct _AgsInitChannel
   AgsChannel *channel;
   gboolean play_pad;
 
-  gboolean playback;
-  gboolean sequencer;
-  gboolean notation;
+  gboolean do_playback;
+  gboolean do_sequencer;
+  gboolean do_notation;
 };
 
 struct _AgsInitChannelClass
@@ -57,6 +57,6 @@ struct _AgsInitChannelClass
 GType ags_init_channel_get_type();
 
 AgsInitChannel* ags_init_channel_new(AgsChannel *channel, gboolean play_pad,
-				     gboolean playback, gboolean sequencer, gboolean notation);
+				     gboolean do_playback, gboolean do_sequencer, gboolean do_notation);
 
 #endif /*__AGS_INIT_CHANNEL_H__*/

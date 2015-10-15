@@ -53,7 +53,7 @@ struct _AgsIpatch
 
   guint flags;
 
-  AgsDevout *devout;
+  GObject *soundcard;
   GList *audio_signal;
 
   IpatchFile *file;

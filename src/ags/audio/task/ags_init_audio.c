@@ -20,8 +20,12 @@
 #include <ags/audio/task/ags_init_audio.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 
 void ags_init_audio_class_init(AgsInitAudioClass *init_audio);
 void ags_init_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -115,9 +119,9 @@ ags_init_audio_init(AgsInitAudio *init_audio)
 {
   init_audio->audio = NULL;
 
-  init_audio->playback = FALSE;
-  init_audio->sequencer = FALSE;
-  init_audio->notation = FALSE;
+  init_audio->do_playback = FALSE;
+  init_audio->do_sequencer = FALSE;
+  init_audio->do_notation = FALSE;
 }
 
 void
@@ -150,7 +154,7 @@ ags_init_audio_launch(AgsTask *task)
   AgsInitAudio *init_audio;
   AgsAudio *audio;
   AgsRecallID *recall_id;
-  GList *devout_play;
+  GList *playback;
   GList *list;
 
   init_audio = AGS_INIT_AUDIO(task);
@@ -160,56 +164,56 @@ ags_init_audio_launch(AgsTask *task)
   g_message("init\0");
   
   /* init audio */
-  if(init_audio->playback){
-    g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
-		    AGS_DEVOUT_PLAY_DOMAIN_PLAYBACK);
-    devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+  if(init_audio->do_playback){
+    g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+		    AGS_PLAYBACK_DOMAIN_PLAYBACK);
+    playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
     
     list = ags_audio_recursive_play_init(audio,
 					 TRUE, FALSE, FALSE);
 
     while(list != NULL){
-      //      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[0] = list->data;
-      g_atomic_int_or(&(AGS_DEVOUT_PLAY(devout_play->data)->flags),
-		      AGS_DEVOUT_PLAY_PLAYBACK);
+      //      AGS_PLAYBACK(playback->data)->recall_id[0] = list->data;
+      g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
+		      AGS_PLAYBACK_PLAYBACK);
 
-      devout_play = devout_play->next;
+      playback = playback->next;
       list = list->next;
     }
   }
 
-  if(init_audio->sequencer){
-    g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
-		    AGS_DEVOUT_PLAY_DOMAIN_SEQUENCER);
-    devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+  if(init_audio->do_sequencer){
+    g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+		    AGS_PLAYBACK_DOMAIN_SEQUENCER);
+    playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
     list = ags_audio_recursive_play_init(audio,
 					 FALSE, TRUE, FALSE);
 
     while(list != NULL){
-      //      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[1] = list->data;
-      g_atomic_int_or(&(AGS_DEVOUT_PLAY(devout_play->data)->flags),
-		      AGS_DEVOUT_PLAY_SEQUENCER);
+      //      AGS_PLAYBACK(playback->data)->recall_id[1] = list->data;
+      g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
+		      AGS_PLAYBACK_SEQUENCER);
       
-      devout_play = devout_play->next;
+      playback = playback->next;
       list = list->next;
     }
   }
 
-  if(init_audio->notation){
-    g_atomic_int_or(&(AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->flags),
-		    AGS_DEVOUT_PLAY_DOMAIN_NOTATION);
-    devout_play = AGS_DEVOUT_PLAY_DOMAIN(audio->devout_play_domain)->devout_play;
+  if(init_audio->do_notation){
+    g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+		    AGS_PLAYBACK_DOMAIN_NOTATION);
+    playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
     list = ags_audio_recursive_play_init(audio,
 					 FALSE, FALSE, TRUE);
 
     while(list != NULL){
-      //      AGS_DEVOUT_PLAY(devout_play->data)->recall_id[2] = list->data;
-      g_atomic_int_or(&(AGS_DEVOUT_PLAY(devout_play->data)->flags),
-		      AGS_DEVOUT_PLAY_NOTATION);
+      //      AGS_PLAYBACK(playback->data)->recall_id[2] = list->data;
+      g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
+		      AGS_PLAYBACK_NOTATION);
 
-      devout_play = devout_play->next;
+      playback = playback->next;
       list = list->next;
     }
   }
@@ -218,9 +222,9 @@ ags_init_audio_launch(AgsTask *task)
 /**
  * ags_init_audio_new:
  * @audio: the #AgsAudio
- * @playback: init playback
- * @sequencer: init sequencer
- * @notation: init notation
+ * @do_playback: init playback
+ * @do_sequencer: init sequencer
+ * @do_notation: init notation
  *
  * Creates an #AgsInitAudio.
  *
@@ -230,7 +234,7 @@ ags_init_audio_launch(AgsTask *task)
  */
 AgsInitAudio*
 ags_init_audio_new(AgsAudio *audio,
-		   gboolean playback, gboolean sequencer, gboolean notation)
+		   gboolean do_playback, gboolean do_sequencer, gboolean do_notation)
 {
   AgsInitAudio *init_audio;
 
@@ -239,9 +243,9 @@ ags_init_audio_new(AgsAudio *audio,
 
   init_audio->audio = audio;
 
-  init_audio->playback = playback;
-  init_audio->sequencer = sequencer;
-  init_audio->notation = notation;
+  init_audio->do_playback = do_playback;
+  init_audio->do_sequencer = do_sequencer;
+  init_audio->do_notation = do_notation;
 
   return(init_audio);
 }

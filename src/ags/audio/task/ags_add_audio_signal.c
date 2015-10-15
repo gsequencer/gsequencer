@@ -113,7 +113,7 @@ ags_add_audio_signal_init(AgsAddAudioSignal *add_audio_signal)
 {
   add_audio_signal->recycling = NULL;
   add_audio_signal->audio_signal = NULL;
-  add_audio_signal->devout = NULL;
+  add_audio_signal->soundcard = NULL;
   add_audio_signal->recall_id = NULL;
   add_audio_signal->audio_signal_flags = 0;
 }
@@ -145,17 +145,16 @@ ags_add_audio_signal_finalize(GObject *gobject)
 void
 ags_add_audio_signal_launch(AgsTask *task)
 {
-  AgsDevout *devout;
+  AgsSoundcard *soundcard;
   AgsAddAudioSignal *add_audio_signal;
   AgsAudioSignal *audio_signal, *old_template;
   AgsRecallID *recall_id;
   gdouble delay;
   guint attack;
-  guint tic_counter_incr;
 
   add_audio_signal = AGS_ADD_AUDIO_SIGNAL(task);
 
-  devout = AGS_DEVOUT(add_audio_signal->devout);
+  soundcard = AGS_SOUNDCARD(add_audio_signal->soundcard);
 
   /* check for template to remove */
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (add_audio_signal->audio_signal_flags)) != 0){
@@ -169,7 +168,7 @@ ags_add_audio_signal_launch(AgsTask *task)
   /* create audio signal */
   if(add_audio_signal->audio_signal == NULL){
     add_audio_signal->audio_signal = 
-      audio_signal = ags_audio_signal_new((GObject *) devout,
+      audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					  (GObject *) add_audio_signal->recycling,
 					  (GObject *) recall_id);
     audio_signal->flags = add_audio_signal->audio_signal_flags;
@@ -178,13 +177,11 @@ ags_add_audio_signal_launch(AgsTask *task)
   }
 
   /* delay and attack */
-  tic_counter_incr = devout->tic_counter + 1;
-
   //TODO:JK: unclear
-  attack = 0; //devout->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+  attack = 0; //soundcard->attack[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
     //		   0:
     //			   tic_counter_incr)];
-  delay = 0.0; //devout->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
+  delay = 0.0; //soundcard->delay[((tic_counter_incr == AGS_NOTATION_TICS_PER_BEAT) ?
   //		 0:
   //			 tic_counter_incr)];
   
@@ -212,7 +209,7 @@ ags_add_audio_signal_launch(AgsTask *task)
  * ags_add_audio_signal_new:
  * @recycling: the #AgsRecycling
  * @audio_signal: the #AgsAudioSignal to add
- * @devout: the #AgsDevout defaulting to
+ * @soundcard: the #GObject defaulting to
  * @recall_id: the #AgsRecallID, may be %NULL if %AGS_AUDIO_SIGNAL_TEMPLATE set
  * @audio_signal_flags: the flags to set
  *
@@ -225,7 +222,7 @@ ags_add_audio_signal_launch(AgsTask *task)
 AgsAddAudioSignal*
 ags_add_audio_signal_new(AgsRecycling *recycling,
 			 AgsAudioSignal *audio_signal,
-			 AgsDevout *devout,
+			 GObject *soundcard,
 			 AgsRecallID *recall_id,
 			 guint audio_signal_flags)
 {
@@ -236,7 +233,7 @@ ags_add_audio_signal_new(AgsRecycling *recycling,
 
   add_audio_signal->recycling = recycling;
   add_audio_signal->audio_signal = audio_signal;
-  add_audio_signal->devout = devout;
+  add_audio_signal->soundcard = soundcard;
   add_audio_signal->recall_id = recall_id;
   add_audio_signal->audio_signal_flags = audio_signal_flags;
 

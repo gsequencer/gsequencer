@@ -20,10 +20,10 @@
 #include <ags/audio/task/ags_open_file.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file_link.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -230,7 +230,7 @@ ags_open_file_launch(AgsTask *task)
     current_filename = (gchar *) current->data;
 
     audio_file = ags_audio_file_new((gchar *) current_filename,
-				    AGS_DEVOUT(audio->devout),
+				    audio->soundcard,
 				    0, open_file->audio->audio_channels);
 
     ags_audio_file_open(audio_file);

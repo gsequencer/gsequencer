@@ -21,6 +21,9 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
 void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);
 void ags_cancel_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_channel_init(AgsCancelChannel *cancel_channel);
@@ -114,7 +117,7 @@ ags_cancel_channel_init(AgsCancelChannel *cancel_channel)
   cancel_channel->channel = NULL;
   cancel_channel->recall_id = NULL;
 
-  cancel_channel->play = NULL;
+  cancel_channel->playback = NULL;
 }
 
 void
@@ -144,7 +147,7 @@ ags_cancel_channel_finalize(GObject *gobject)
 void
 ags_cancel_channel_launch(AgsTask *task)
 {
-  AgsDevoutPlay *devout_play;
+  AgsPlayback *playback;
   AgsChannel *channel;
 
   AgsCancelChannel *cancel_channel;
@@ -152,50 +155,50 @@ ags_cancel_channel_launch(AgsTask *task)
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
   channel = cancel_channel->channel;
-  devout_play = AGS_DEVOUT_PLAY(channel->devout_play);
+  playback = AGS_PLAYBACK(channel->playback);
   
   /* cancel playback */
-  if(cancel_channel->recall_id == AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]){
-    g_atomic_int_and(&(devout_play->flags),
-		     (~AGS_DEVOUT_PLAY_PLAYBACK));
+  if(cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[0]){
+    g_atomic_int_and(&(playback->flags),
+		     (~AGS_PLAYBACK_PLAYBACK));
 
-    g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
+    g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
     ags_channel_tillrecycling_cancel(channel,
-				     AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0]);
-    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[0] = NULL;
+				     AGS_PLAYBACK(channel->playback)->recall_id[0]);
+    AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
 
-    if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
-      //      ags_thread_stop(devout_play->channel_thread[0]);
+    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+      //      ags_thread_stop(playback->channel_thread[0]);
     }
   }
 
   /* cancel sequencer */
-  if(cancel_channel->recall_id == AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]){
-    g_atomic_int_and(&(devout_play->flags),
-		     (~AGS_DEVOUT_PLAY_SEQUENCER));
+  if(cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[1]){
+    g_atomic_int_and(&(playback->flags),
+		     (~AGS_PLAYBACK_SEQUENCER));
 
-    g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
+    g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[1]);
     ags_channel_tillrecycling_cancel(channel,
-				     AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1]);
-    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[1] = NULL;
+				     AGS_PLAYBACK(channel->playback)->recall_id[1]);
+    AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
 
-    if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
-      //      ags_thread_stop(devout_play->channel_thread[1]);
+    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+      //      ags_thread_stop(playback->channel_thread[1]);
     }
   }
 
   /* cancel notation */
-  if(cancel_channel->recall_id == AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]){
-    g_atomic_int_and(&(devout_play->flags),
-		     (~AGS_DEVOUT_PLAY_NOTATION));
+  if(cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[2]){
+    g_atomic_int_and(&(playback->flags),
+		     (~AGS_PLAYBACK_NOTATION));
 
-    g_object_ref(AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
+    g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[2]);
     ags_channel_tillrecycling_cancel(channel,
-				     AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2]);
-    AGS_DEVOUT_PLAY(channel->devout_play)->recall_id[2] = NULL;
+				     AGS_PLAYBACK(channel->playback)->recall_id[2]);
+    AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
 
-    if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
-      //      ags_thread_stop(devout_play->channel_thread[2]);
+    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
+      //      ags_thread_stop(playback->channel_thread[2]);
     }
   }
 
@@ -217,7 +220,7 @@ ags_cancel_channel_launch(AgsTask *task)
  */
 AgsCancelChannel*
 ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
-		       AgsDevoutPlay *play)
+		       GObject *playback)
 {
   AgsCancelChannel *cancel_channel;
 
@@ -227,7 +230,7 @@ ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
   cancel_channel->channel = channel;
   cancel_channel->recall_id = recall_id;
 
-  cancel_channel->play = play;
+  cancel_channel->playback = playback;
 
   return(cancel_channel);
 }
