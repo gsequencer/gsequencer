@@ -401,7 +401,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
 
 /**
  * ags_panel_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsPanel
  *
@@ -410,7 +410,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
  * Since: 0.3
  */
 AgsPanel*
-ags_panel_new(GObject *devout)
+ags_panel_new(GObject *soundcard)
 {
   AgsPanel *panel;
   GValue value = {0,};
@@ -418,11 +418,11 @@ ags_panel_new(GObject *devout)
   panel = (AgsPanel *) g_object_new(AGS_TYPE_PANEL,
 				    NULL);
 
-  if(devout != NULL){
+  if(soundcard != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, devout);
+    g_value_set_object(&value, soundcard);
     g_object_set_property(G_OBJECT(AGS_MACHINE(panel)->audio),
-			  "devout\0", &value);
+			  "soundcard\0", &value);
     g_value_unset(&value);
   }
 

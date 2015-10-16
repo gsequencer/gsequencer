@@ -848,7 +848,7 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
 
 /**
  * ags_drum_new:
- * @devout: the assigned devout.
+ * @soundcard: the assigned soundcard.
  *
  * Creates an #AgsDrum
  *
@@ -857,7 +857,7 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
  * Since: 0.3
  */
 AgsDrum*
-ags_drum_new(GObject *devout)
+ags_drum_new(GObject *soundcard)
 {
   AgsDrum *drum;
   GValue value = {0,};
@@ -865,12 +865,12 @@ ags_drum_new(GObject *devout)
   drum = (AgsDrum *) g_object_new(AGS_TYPE_DRUM,
 				  NULL);
 
-  if(devout != NULL){
+  if(soundcard != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, devout);
+    g_value_set_object(&value, soundcard);
 
     g_object_set_property(G_OBJECT(drum->machine.audio),
-			  "devout\0", &value);
+			  "soundcard\0", &value);
     g_value_unset(&value);
   }
 

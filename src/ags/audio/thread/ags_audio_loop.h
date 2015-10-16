@@ -65,13 +65,11 @@ struct _AgsAudioLoop
   volatile guint tic;
   volatile guint last_sync;
 
-  GCond cond;
-  GMutex mutex;
-
   gdouble frequency;
 
   GObject *application_context;
-
+  GObject *soundcard;
+  
   GObject *async_queue;
     
   pthread_mutexattr_t tree_lock_mutexattr;

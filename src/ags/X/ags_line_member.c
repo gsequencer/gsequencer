@@ -801,7 +801,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
     pthread_mutex_unlock(application_mutex);
 
-    /* get task and devout thread */
+    /* get task and soundcard thread */
     task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 							 AGS_TYPE_TASK_THREAD);
 

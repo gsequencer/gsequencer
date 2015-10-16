@@ -59,6 +59,7 @@ void ags_channel_thread_stop(AgsThread *thread);
 
 enum{
   PROP_0,
+  PROP_SOUNDCARD,
   PROP_CHANNEL,
 };
 
@@ -120,6 +121,22 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
   gobject->finalize = ags_channel_thread_finalize;
 
   /* properties */
+  /**
+   * AgsChannelThread:soundcard:
+   *
+   * The assigned #AgsChannel.
+   * 
+   * Since: 0.7.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard assigned to\0",
+				   "The AgsSoundcard it is assigned to.\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
   /**
    * AgsChannelThread:channel:
    *
@@ -195,6 +212,8 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   g_atomic_int_set(&(channel_thread->flags),
 		   0);
 
+  channel_thread->soundcard = NULL;
+  
   /* start */
   pthread_mutexattr_init(&(channel_thread->wakeup_attr));
   pthread_mutexattr_settype(&(channel_thread->wakeup_attr),
@@ -231,6 +250,23 @@ ags_channel_thread_set_property(GObject *gobject,
   channel_thread = AGS_CHANNEL_THREAD(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = g_value_get_object(value);
+
+      if(channel_thread->soundcard != NULL){
+	g_object_unref(channel_thread->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      channel_thread->soundcard = soundcard;
+    }
+    break;
   case PROP_CHANNEL:
     {
       AgsChannel *channel;
@@ -265,6 +301,11 @@ ags_channel_thread_get_property(GObject *gobject,
   channel_thread = AGS_CHANNEL_THREAD(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, channel_thread->soundcard);
+    }
+    break;
   case PROP_CHANNEL:
     {
       g_value_set_object(value, G_OBJECT(channel_thread->channel));
