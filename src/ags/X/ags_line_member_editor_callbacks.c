@@ -64,8 +64,6 @@
 
 #include <ladspa.h>
 
-extern pthread_mutex_t ags_application_mutex;
-
 void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
@@ -126,6 +124,7 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
       LADSPA_Data lower_bound, upper_bound;
       long i;
 
+      pthread_mutex_t *application_mutex;
       pthread_mutex_t *audio_loop_mutex;
 
       machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
@@ -175,12 +174,15 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
   
       application_context = window->application_context;
 
+      mutex_manager = ags_mutex_manager_get_instance();
+      application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
       /* get audio loop */
-      pthread_mutex_lock(&(ags_application_mutex));
+      pthread_mutex_lock(application_mutex);
 
       audio_loop = application_context->main_loop;
 
-      pthread_mutex_unlock(&(ags_application_mutex));
+      pthread_mutex_unlock(application_mutex);
 
       /* get task thread */
       task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
@@ -492,6 +494,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   AgsRemoveRecall *remove_recall;
   AgsRemoveRecallContainer *remove_recall_container;
   
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
@@ -505,6 +508,8 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   GList *task;
   GList *list, *list_start, *pad, *pad_start;
   guint index;
+
+  pthread_mutex_t *application_mutex;
 
   if(button == NULL ||
      line_member_editor == NULL){
@@ -520,12 +525,15 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = (AgsAudioLoop *) application_context->main_loop;
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,

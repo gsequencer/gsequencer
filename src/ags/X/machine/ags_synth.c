@@ -113,8 +113,6 @@ static gpointer ags_synth_parent_class = NULL;
 
 static AgsConnectableInterface *ags_synth_parent_connectable_interface;
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_synth_get_type(void)
 {

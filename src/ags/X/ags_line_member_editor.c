@@ -54,8 +54,6 @@ void ags_line_member_editor_finalize(GObject *gobject);
  * editor.
  */
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_line_member_editor_get_type(void)
 {
@@ -215,6 +213,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   GList *recall_ladspa;
   gchar *filename, *effect;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
@@ -224,15 +223,16 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
-  /* lookup channel mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-
   mutex_manager = ags_mutex_manager_get_instance();
+
+  /* lookup channel mutex */
+  pthread_mutex_lock(application_mutex);
 
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) line_editor->channel);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* reset */
   pthread_mutex_lock(channel_mutex);

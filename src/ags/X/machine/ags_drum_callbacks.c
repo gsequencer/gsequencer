@@ -72,9 +72,6 @@
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
 
-extern const char *AGS_DRUM_INDEX;
-extern pthread_mutex_t ags_application_mutex;
-
 void ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum);
 
 void
@@ -164,16 +161,18 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
   GList *list;
   gboolean loop;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
-  
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) AGS_MACHINE(drum)->audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(audio_mutex);
 
@@ -220,17 +219,22 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   
   gdouble length;
 
+  pthread_mutex_t *application_mutex;
+
   /* get window and application_context  */
   window = (AgsWindow *) gtk_widget_get_toplevel(drum);
   
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
@@ -251,16 +255,18 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 {
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
-  
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+  
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) AGS_MACHINE(drum)->audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(audio_mutex);
 
@@ -328,16 +334,18 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 {
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
-  
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+ 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) AGS_MACHINE(drum)->audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(audio_mutex);
 
@@ -424,20 +432,22 @@ ags_drum_tact_callback(AgsAudio *audio,
 
   GValue value = {0,};
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) == 0){
     return;
   }
-  
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) AGS_MACHINE(drum)->audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(audio_mutex);
 
@@ -447,11 +457,11 @@ ags_drum_tact_callback(AgsAudio *audio,
   application_context = window->application_context;
 
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,

@@ -9,14 +9,14 @@ LDFLAGS = @LDFLAGS@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 
 # 
-TARGETS = gsequencer
+# TARGETS = gsequencer
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la libgsequencer.la
 noinst_LIBRARIES = libgsequencer_test.a
 
-bin_PROGRAMS = gsequencer midi2xml
+bin_PROGRAMS = gsequencer gsequencer_static midi2xml
 
 EXTRA_DIST = gsequencer.share acsite.m4 gsequencer.1 midi2xml.1 README gsequencer-documentation
 
@@ -75,7 +75,7 @@ libags_server_la_SOURCES = $(libags_server_c_sources)
 libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
-gsequencer_SOURCES = $(gsequencer_src)
+gsequencer_SOURCES = $(gsequencer_c_sources)
 
 include_HEADERS = $(libags_util_c_headers) $(libags_lib_c_headers) $(libags_object_c_headers) $(libags_file_c_headers) $(libags_file_task_c_headers) $(libags_thread_c_headers) $(libags_thread_file_c_headers) $(libags_thread_task_c_headers) $(libags_server_c_headers) $(libags_audio_c_headers) $(libags_audio_thread_c_headers) $(libags_audio_file_c_headers) $(libags_audio_midi_c_headers) $(libags_audio_task_c_headers) $(libags_audio_task_recall_c_headers) $(libags_audio_recall_c_headers)  $(libags_plugin_c_headers) $(libags_widget_c_headers)
 
@@ -113,7 +113,15 @@ libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_
 # application gsequencer
 gsequencer_CFLAGS= $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
 gsequencer_LDFLAGS= -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -pthread
-gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+gsequencer_LDADD = -dlopen libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+
+# static gsequencer
+gsequencer_static_SOURCES = $(gsequencer_c_sources)
+
+gsequencer_static_CFLAGS= $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
+gsequencer_static_LDFLAGS= -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -pthread
+gsequencer_static_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+gsequencer_static_LDFLAGS = -static
 
 # libags all files
 deprecated_libags_h_sources =
@@ -1021,8 +1029,7 @@ libgsequencer_editor_c_sources = \
 gsequencerheaders = \
 	src/ags/main.h
 
-gsequencer_src = \
-	$(gsequencerheaders) \
+gsequencer_c_sources = \
 	src/ags/main.c
 
 midi2xml_CFLAGS= $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)

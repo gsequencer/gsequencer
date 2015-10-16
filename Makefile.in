@@ -92,7 +92,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
+bin_PROGRAMS = gsequencer$(EXEEXT) gsequencer_static$(EXEEXT) \
+	midi2xml$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
@@ -521,7 +522,7 @@ libgsequencer_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(libgsequencer_la_CFLAGS) $(CFLAGS) \
 	$(libgsequencer_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_22 = $(am__objects_1) gsequencer-main.$(OBJEXT)
+am__objects_22 = gsequencer-main.$(OBJEXT)
 am_gsequencer_OBJECTS = $(am__objects_22)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
@@ -529,6 +530,15 @@ gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
 gsequencer_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(gsequencer_CFLAGS) \
 	$(CFLAGS) $(gsequencer_LDFLAGS) $(LDFLAGS) -o $@
+am__objects_23 = gsequencer_static-main.$(OBJEXT)
+am_gsequencer_static_OBJECTS = $(am__objects_23)
+gsequencer_static_OBJECTS = $(am_gsequencer_static_OBJECTS)
+gsequencer_static_DEPENDENCIES = libgsequencer.la libags_audio.la \
+	libags_server.la libags_gui.la libags_thread.la libags.la
+gsequencer_static_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(gsequencer_static_CFLAGS) $(CFLAGS) \
+	$(gsequencer_static_LDFLAGS) $(LDFLAGS) -o $@
 am_midi2xml_OBJECTS = midi2xml-main.$(OBJEXT) \
 	midi2xml-ags_midi_parser.$(OBJEXT) \
 	midi2xml-ags_marshal.$(OBJEXT)
@@ -575,12 +585,12 @@ SOURCES = $(libgsequencer_test_a_SOURCES) $(libags_la_SOURCES) \
 	$(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES) \
 	$(libags_server_la_SOURCES) $(libags_thread_la_SOURCES) \
 	$(libgsequencer_la_SOURCES) $(gsequencer_SOURCES) \
-	$(midi2xml_SOURCES)
+	$(gsequencer_static_SOURCES) $(midi2xml_SOURCES)
 DIST_SOURCES = $(libgsequencer_test_a_SOURCES) $(libags_la_SOURCES) \
 	$(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES) \
 	$(libags_server_la_SOURCES) $(libags_thread_la_SOURCES) \
 	$(libgsequencer_la_SOURCES) $(gsequencer_SOURCES) \
-	$(midi2xml_SOURCES)
+	$(gsequencer_static_SOURCES) $(midi2xml_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -790,7 +800,7 @@ AUTOMAKE_OPTIONS = foreign
 AM_CPPFLAGS = -I$(top_srcdir)/src -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
 
 # 
-TARGETS = gsequencer
+# TARGETS = gsequencer
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
@@ -845,7 +855,7 @@ libags_server_la_SOURCES = $(libags_server_c_sources)
 libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
-gsequencer_SOURCES = $(gsequencer_src)
+gsequencer_SOURCES = $(gsequencer_c_sources)
 include_HEADERS = $(libags_util_c_headers) $(libags_lib_c_headers) $(libags_object_c_headers) $(libags_file_c_headers) $(libags_file_task_c_headers) $(libags_thread_c_headers) $(libags_thread_file_c_headers) $(libags_thread_task_c_headers) $(libags_server_c_headers) $(libags_audio_c_headers) $(libags_audio_thread_c_headers) $(libags_audio_file_c_headers) $(libags_audio_midi_c_headers) $(libags_audio_task_c_headers) $(libags_audio_task_recall_c_headers) $(libags_audio_recall_c_headers)  $(libags_plugin_c_headers) $(libags_widget_c_headers)
 
 # testing
@@ -882,7 +892,13 @@ libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_
 # application gsequencer
 gsequencer_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
 gsequencer_LDFLAGS = -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -pthread
-gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+gsequencer_LDADD = -dlopen libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+
+# static gsequencer
+gsequencer_static_SOURCES = $(gsequencer_c_sources)
+gsequencer_static_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
+gsequencer_static_LDFLAGS = -static
+gsequencer_static_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # libags all files
 deprecated_libags_h_sources = 
@@ -1769,8 +1785,7 @@ libgsequencer_editor_c_sources = \
 gsequencerheaders = \
 	src/ags/main.h
 
-gsequencer_src = \
-	$(gsequencerheaders) \
+gsequencer_c_sources = \
 	src/ags/main.c
 
 midi2xml_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
@@ -1944,6 +1959,10 @@ gsequencer$(EXEEXT): $(gsequencer_OBJECTS) $(gsequencer_DEPENDENCIES) $(EXTRA_gs
 	@rm -f gsequencer$(EXEEXT)
 	$(AM_V_CCLD)$(gsequencer_LINK) $(gsequencer_OBJECTS) $(gsequencer_LDADD) $(LIBS)
 
+gsequencer_static$(EXEEXT): $(gsequencer_static_OBJECTS) $(gsequencer_static_DEPENDENCIES) $(EXTRA_gsequencer_static_DEPENDENCIES) 
+	@rm -f gsequencer_static$(EXEEXT)
+	$(AM_V_CCLD)$(gsequencer_static_LINK) $(gsequencer_static_OBJECTS) $(gsequencer_static_LDADD) $(LIBS)
+
 midi2xml$(EXEEXT): $(midi2xml_OBJECTS) $(midi2xml_DEPENDENCIES) $(EXTRA_midi2xml_DEPENDENCIES) 
 	@rm -f midi2xml$(EXEEXT)
 	$(AM_V_CCLD)$(midi2xml_LINK) $(midi2xml_OBJECTS) $(midi2xml_LDADD) $(LIBS)
@@ -1955,6 +1974,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer_static-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_audio_signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_line_member.Plo@am__quote@
@@ -4649,6 +4669,20 @@ gsequencer-main.obj: src/ags/main.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/main.c' object='gsequencer-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-main.obj `if test -f 'src/ags/main.c'; then $(CYGPATH_W) 'src/ags/main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/main.c'; fi`
+
+gsequencer_static-main.o: src/ags/main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -MT gsequencer_static-main.o -MD -MP -MF $(DEPDIR)/gsequencer_static-main.Tpo -c -o gsequencer_static-main.o `test -f 'src/ags/main.c' || echo '$(srcdir)/'`src/ags/main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer_static-main.Tpo $(DEPDIR)/gsequencer_static-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/main.c' object='gsequencer_static-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -c -o gsequencer_static-main.o `test -f 'src/ags/main.c' || echo '$(srcdir)/'`src/ags/main.c
+
+gsequencer_static-main.obj: src/ags/main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -MT gsequencer_static-main.obj -MD -MP -MF $(DEPDIR)/gsequencer_static-main.Tpo -c -o gsequencer_static-main.obj `if test -f 'src/ags/main.c'; then $(CYGPATH_W) 'src/ags/main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer_static-main.Tpo $(DEPDIR)/gsequencer_static-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/main.c' object='gsequencer_static-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -c -o gsequencer_static-main.obj `if test -f 'src/ags/main.c'; then $(CYGPATH_W) 'src/ags/main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/main.c'; fi`
 
 midi2xml-main.o: src/midi2ags/main.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-main.o -MD -MP -MF $(DEPDIR)/midi2xml-main.Tpo -c -o midi2xml-main.o `test -f 'src/midi2ags/main.c' || echo '$(srcdir)/'`src/midi2ags/main.c

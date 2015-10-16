@@ -579,6 +579,7 @@ ags_devout_set_property(GObject *gobject,
       if(application_context != NULL){
 	AgsConfig *config;
 
+	gchar *str;
 	gchar *segmentation;
 	guint discriminante, nominante;
 	
@@ -586,40 +587,68 @@ ags_devout_set_property(GObject *gobject,
 
 	devout->application_mutex = application_context->mutex;
 	
-	config = application_context->config;
-	
-	devout->dsp_channels = g_ascii_strtoull(ags_config_get_value(config,
-								     AGS_CONFIG_SOUNDCARD,
-								     "dsp-channels\0"),
-						NULL,
-						10);
-	devout->pcm_channels = g_ascii_strtoull(ags_config_get_value(config,
-								     AGS_CONFIG_SOUNDCARD,
-								     "pcm-channels\0"),
-						NULL,
-						10);
-	devout->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-	devout->buffer_size = g_ascii_strtoull(ags_config_get_value(config,
-								    AGS_CONFIG_SOUNDCARD,
-								    "buffer-size\0"),
-					       NULL,
-					       10);
-	devout->samplerate = g_ascii_strtoull(ags_config_get_value(config,
-								  AGS_CONFIG_SOUNDCARD,
-								  "samplerate\0"),
-					     NULL,
-					     10);
+	config = ags_config_get_instance();
 
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "dsp-channels\0");
+
+	if(str != NULL){
+	  devout->dsp_channels = g_ascii_strtoull(str,
+						  NULL,
+						  10);
+	  g_free(str);
+	}
+
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "pcm-channels\0");
+
+	if(str != NULL){
+	  devout->pcm_channels = g_ascii_strtoull(str,
+						  NULL,
+						  10);
+	  
+	  g_free(str);
+	}
+	
+	devout->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "buffer-size\0");
+
+	if(str != NULL){
+	  devout->buffer_size = g_ascii_strtoull(str,
+						 NULL,
+						 10);
+	  
+	  g_free(str);
+	}
+
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "samplerate\0");
+
+	if(str != NULL){
+	  devout->samplerate = g_ascii_strtoull(str,
+						NULL,
+						10);
+	  
+	  g_free(str);
+	}
+	
 	segmentation = ags_config_get_value(config,
 					    AGS_CONFIG_GENERIC,
 					    "segmentation\0");
-  
-	sscanf(segmentation, "%d/%d\0",
-	       &discriminante,
-	       &nominante);
-    
-	devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
 
+	if(segmentation != NULL){
+	  sscanf(segmentation, "%d/%d\0",
+		 &discriminante,
+		 &nominante);
+    
+	  devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
+	}
+	
 	//  devout->out.oss.device = NULL;
 	devout->out.alsa.handle = NULL;
 	devout->out.alsa.device = g_strdup(ags_config_get_value(config,

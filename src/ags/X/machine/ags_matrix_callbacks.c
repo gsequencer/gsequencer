@@ -54,9 +54,6 @@
 
 #include <math.h>
 
-extern const char *AGS_MATRIX_INDEX;
-extern pthread_mutex_t ags_application_mutex;
-
 void
 ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatrix *matrix)
 {
@@ -132,6 +129,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
   AgsApplySequencerLength *apply_sequencer_length;
   
+  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
   
@@ -139,16 +137,21 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   
   gdouble length;
 
+  pthread_mutex_t *application_mutex;
+
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
 
   application_context = window->application_context;
-  
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
   task_thread = ags_thread_find_type(audio_loop,
@@ -221,6 +224,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   GValue value = {0,};
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) == 0){
@@ -231,27 +235,28 @@ ags_matrix_tact_callback(AgsAudio *audio,
 				   AGS_TYPE_WINDOW);
 
   application_context = window->application_context;
-  
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
 
   /* get audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
   
-  mutex_manager = ags_mutex_manager_get_instance();
-
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) AGS_MACHINE(matrix)->audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get some recalls */
   pthread_mutex_lock(audio_mutex);

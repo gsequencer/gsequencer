@@ -20,6 +20,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
@@ -73,9 +74,6 @@
 void ags_signal_handler(int signr);
 void ags_signal_handler_timer(int sig, siginfo_t *si, void *uc);
 static void ags_signal_cleanup();
-
-extern void ags_thread_resume_handler(int sig);
-extern void ags_thread_suspend_handler(int sig);
 
 static sigset_t ags_wait_mask;
 static sigset_t ags_timer_mask;
@@ -238,9 +236,9 @@ main(int argc, char **argv)
   gtk_init(&argc, &argv);
   ipatch_init();
     
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
-  thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
+  audio_loop = application_context->main_loop;
+  task_thread = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
   ao_initialize();
 

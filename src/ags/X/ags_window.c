@@ -131,7 +131,7 @@ ags_window_class_init(AgsWindowClass *window)
 				  PROP_SOUNDCARD,
 				  param_spec);
 
-  param_spec = g_param_spec_object("ags-main\0",
+  param_spec = g_param_spec_object("application-context\0",
 				   "assigned application_context\0",
 				   "The AgsApplicationContext it is assigned with\0",
 				   G_TYPE_OBJECT,
@@ -280,7 +280,7 @@ ags_window_set_property(GObject *gobject,
       window->application_context = (GObject *) application_context;
 
       g_object_set(G_OBJECT(window->export_window),
-		   "ags-main\0", application_context,
+		   "application-context\0", application_context,
 		   NULL);
     }
     break;
@@ -528,7 +528,7 @@ ags_window_new(GObject *application_context)
   AgsWindow *window;
 
   window = (AgsWindow *) g_object_new(AGS_TYPE_WINDOW,
-				      "ags-main", application_context,
+				      "application-context", application_context,
 				      NULL);
 
   return(window);

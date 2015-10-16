@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_application_context.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
@@ -39,8 +40,6 @@
 
 #include <ags/X/editor/ags_note_edit.h>
 #include <ags/X/editor/ags_pattern_edit.h>
-
-extern pthread_mutex_t ags_application_mutex;
 
 void
 ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
@@ -106,22 +105,28 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   AgsWindow *window;
   AgsApplyBpm *apply_bpm;
 
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
   
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));
   
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
@@ -492,11 +497,14 @@ ags_navigation_tic_callback(GObject *soundcard,
   AgsChangeTact *change_tact;
   AgsDisplayTact *display_tact;
 
+  AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
-  
+
+  pthread_mutex_t *application_mutex;
+
   if((AGS_NAVIGATION_BLOCK_TIC & (navigation->flags)) != 0){
     navigation->flags &= (~AGS_NAVIGATION_BLOCK_TIC);
     return;
@@ -507,12 +515,15 @@ ags_navigation_tic_callback(GObject *soundcard,
   if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) != navigation->note_offset){
     application_context = window->application_context;
 
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
     /* get audio loop */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
 
     audio_loop = application_context->main_loop;
 
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get task thread */
     task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,

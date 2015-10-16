@@ -22,6 +22,7 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_playback.h>
@@ -49,8 +50,6 @@
 #include <ags/X/ags_line_member.h>
 
 #include <ags/X/task/ags_change_indicator.h>
-
-extern pthread_mutex_t ags_application_mutex;
 
 int
 ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
@@ -179,6 +178,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   AgsChangeIndicator *change_indicator;
 
+  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
 
@@ -190,6 +190,8 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   GValue value = {0,};
 
+  pthread_mutex_t *application_mutex;
+  
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
   
@@ -198,12 +200,15 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   
   application_context = window->application_context;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* get audio loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   audio_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,

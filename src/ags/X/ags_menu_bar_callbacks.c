@@ -56,8 +56,6 @@
 
 void ags_menu_bar_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, AgsMenuBar *menu_bar);
 
-extern pthread_mutex_t ags_application_mutex;
-
 gboolean
 ags_menu_bar_destroy_callback(GtkObject *object, AgsMenuBar *menu_bar)
 {

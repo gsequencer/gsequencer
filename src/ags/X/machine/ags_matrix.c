@@ -119,7 +119,6 @@ static gpointer ags_matrix_parent_class = NULL;
 
 static AgsConnectableInterface *ags_matrix_parent_connectable_interface;
 
-extern const char *AGS_COPY_PATTERN;
 const char *AGS_MATRIX_INDEX = "AgsMatrixIndex\0";
 
 GType

@@ -89,8 +89,6 @@ enum{
 static gpointer ags_line_parent_class = NULL;
 static guint line_signals[LAST_SIGNAL];
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_line_get_type(void)
 {
@@ -485,11 +483,15 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
   
   if(line->channel == channel){
     return;
   }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   if(line->channel != NULL){
     g_object_unref(G_OBJECT(line->channel));
@@ -506,14 +508,12 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
   line->channel = channel;
 
   /* lookup channel mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-
-  mutex_manager = ags_mutex_manager_get_instance();
+  pthread_mutex_lock(application_mutex);
 
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) channel);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* set label */
   pthread_mutex_lock(channel_mutex);
@@ -607,7 +607,8 @@ ags_line_real_find_port(AgsLine *line)
   
   GList *list, *tmp;
   GList *line_member, *line_member_start;
-  
+
+  pthread_mutex_t *application_mutex;  
   pthread_mutex_t *channel_mutex;
 
   if(line == NULL || line->expander == NULL){
@@ -616,7 +617,10 @@ ags_line_real_find_port(AgsLine *line)
 
   line_member_start = 
     line_member = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
-
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   while(line_member != NULL){
     if(AGS_IS_LINE_MEMBER(line_member->data)){
       ags_line_member_find_port(AGS_LINE_MEMBER(line_member->data));
@@ -634,14 +638,12 @@ ags_line_real_find_port(AgsLine *line)
   
   if(channel != NULL){
     /* get mutex manager */
-    pthread_mutex_lock(&(ags_application_mutex));
-  
-    mutex_manager = ags_mutex_manager_get_instance();
+    pthread_mutex_lock(application_mutex);
 
     channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) channel);
 
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* find ports */
     pthread_mutex_lock(channel_mutex);
@@ -652,12 +654,12 @@ ags_line_real_find_port(AgsLine *line)
 
     while(channel != next_pad){
       /* lookup channel mutex */
-      pthread_mutex_lock(&(ags_application_mutex));
+      pthread_mutex_lock(application_mutex);
       
       channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) channel);
       
-      pthread_mutex_unlock(&(ags_application_mutex));
+      pthread_mutex_unlock(application_mutex);
 
       /* do it so */
       if(list == NULL){

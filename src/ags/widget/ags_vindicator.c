@@ -41,7 +41,7 @@ void ags_vindicator_draw(AgsVIndicator *indicator);
  */
 
 static gpointer ags_vindicator_parent_class = NULL;
-extern GtkStyle *indicator_style;
+GtkStyle *indicator_style;
 
 GType
 ags_vindicator_get_type(void)
