@@ -220,7 +220,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     pthread_mutex_lock(application_mutex);
 
     channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+					     (GObject *) channel);
 
     pthread_mutex_unlock(application_mutex);
 
@@ -308,7 +308,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - cell_pattern->cursor_y - 1);
 	  
 	if(ags_pattern_get_bit(channel->pattern->data,
-				0, machine->bank_1, cell_pattern->cursor_x)){
+			       0, machine->bank_1, cell_pattern->cursor_x)){
 	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
 	}
       }
@@ -324,7 +324,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - cell_pattern->cursor_y - 1);
 
 	if(ags_pattern_get_bit(channel->pattern->data,
-				0, machine->bank_1, cell_pattern->cursor_x)){
+			       0, machine->bank_1, cell_pattern->cursor_x)){
 	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
 	}
       }
@@ -340,7 +340,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - cell_pattern->cursor_y - 1);
 
 	if(ags_pattern_get_bit(channel->pattern->data,
-				0, machine->bank_1, cell_pattern->cursor_x)){
+			       0, machine->bank_1, cell_pattern->cursor_x)){
 	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
 	}
       }
@@ -361,7 +361,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	channel = ags_channel_nth(machine->audio->input, machine->audio->input_lines - cell_pattern->cursor_y - 1);
 
 	if(ags_pattern_get_bit(channel->pattern->data,
-				0, machine->bank_1, cell_pattern->cursor_x)){
+			       0, machine->bank_1, cell_pattern->cursor_x)){
 	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
 	}
       }
@@ -460,7 +460,7 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
   channel = AGS_INIT_CHANNEL(task)->channel;
   soundcard = channel->soundcard;
 
-  application_context = ags_soundcard_get_Application_context(AGS_SOUNDCARD(soundcard));
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);

@@ -448,6 +448,13 @@ ags_application_context_find_main_loop(GList *application_context)
   return(application_context);
 }
 
+gboolean
+ags_application_context_quit(AgsApplicationContext *application_context)
+{
+  //TODO:JK: enhance me
+  exit(0);
+}
+
 AgsApplicationContext*
 ags_application_context_get_instance()
 {

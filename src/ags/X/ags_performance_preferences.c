@@ -189,7 +189,7 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 
   /* auto-sense */
   str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true\0": "false\0"));
-  ags_config_set(config,
+  ags_config_set_value(config,
 		 AGS_CONFIG_RECALL,
 		 "auto-sense\0",
 		 str);
@@ -215,7 +215,7 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   window = AGS_WINDOW(preferences->window);
   config = ags_config_get_instance();
 
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_RECALL,
 		       "auto-sense\0");
   gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->stream_auto_sense,

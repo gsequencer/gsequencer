@@ -17,9 +17,10 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/ags_scroll_on_play.h>
+#include <ags/X/task/ags_scroll_on_play.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_application_context.h>
 
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
@@ -34,8 +35,6 @@
 #include <ags/X/ags_editor.h>
 #include <ags/X/editor/ags_pattern_edit.h>
 #include <ags/X/editor/ags_note_edit.h>
-
-#include <<ags/object/ags_application_context.h>>
 
 #include <fontconfig/fontconfig.h>
 

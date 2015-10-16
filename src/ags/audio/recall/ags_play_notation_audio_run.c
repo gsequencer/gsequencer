@@ -99,9 +99,6 @@ static AgsConnectableInterface* ags_play_notation_audio_run_parent_connectable_i
 static AgsDynamicConnectableInterface *ags_play_notation_audio_run_parent_dynamic_connectable_interface;
 static AgsPluginInterface *ags_play_notation_audio_run_parent_plugin_interface;
 
-extern AgsConfig *config;
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_play_notation_audio_run_get_type()
 {
@@ -658,6 +655,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsTimestampThread *timestamp_thread;
 
   AgsApplicationContext *application_context;
+  AgsConfig *config;
   
   GList *current_position;
   GList *list;
@@ -682,11 +680,13 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  config = ags_config_get_instance();
   
   /* read config and audio mutex */
   pthread_mutex_lock(application_mutex);
   
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
@@ -694,7 +694,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 				 10);
   free(str);
 
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,

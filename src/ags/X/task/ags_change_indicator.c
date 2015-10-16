@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/ags_change_indicator.h>
+#include <ags/X/task/ags_change_indicator.h>
 
 #include <ags/object/ags_connectable.h>
 

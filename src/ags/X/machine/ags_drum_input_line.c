@@ -90,8 +90,6 @@ void ags_drum_input_line_group_changed(AgsLine *line);
 void ags_drum_input_line_map_recall(AgsLine *line,
 				    guint output_pad_start);
 
-extern AgsConfig *config;
-
 /**
  * SECTION:ags_drum_input_line
  * @short_description: drum sequencer input line

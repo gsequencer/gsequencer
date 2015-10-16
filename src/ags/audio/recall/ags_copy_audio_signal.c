@@ -226,7 +226,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
-  soundcard = AGS_DEVOUT(AGS_RECALL(copy_audio_signal)->soundcard);
+  soundcard = AGS_RECALL(copy_audio_signal)->soundcard;
   source = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->source;
   stream_source = source->stream_current;
 

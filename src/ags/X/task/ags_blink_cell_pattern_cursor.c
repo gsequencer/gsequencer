@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/ags_blink_cell_pattern_cursor.h>
+#include <ags/X/task/ags_blink_cell_pattern_cursor.h>
 
 #include <ags/object/ags_connectable.h>
 

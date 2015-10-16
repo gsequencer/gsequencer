@@ -235,7 +235,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 		       G_CALLBACK(ags_drum_input_pad_open_play_done), drum_input_pad);
 
       /* AgsAppendRecall */
-      playback = ags_playback_alloc();
+      playback = ags_playback_new();
 
       playback->flags = AGS_PLAYBACK_PLAYBACK;
       playback->source = G_OBJECT(play_audio_signal);
@@ -256,7 +256,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 			     G_CALLBACK(ags_drum_input_pad_open_play_done), drum_input_pad);
 
       /* AgsAppendRecall */
-      playback = ags_playback_alloc();
+      playback = ags_playback_new();
 
       playback->flags = AGS_PLAYBACK_PLAYBACK;
       playback->source = G_OBJECT(stream_audio_signal);

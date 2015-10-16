@@ -59,8 +59,6 @@ static gpointer ags_stream_channel_parent_class = NULL;
 static AgsConnectableInterface *ags_stream_channel_parent_connectable_interface;
 static AgsPluginInterface *ags_stream_channel_parent_plugin_interface;
 
-extern AgsConfig *config;
-
 static const gchar *ags_stream_channel_plugin_name = "ags-stream\0";
 static const gchar *ags_stream_channel_plugin_specifier[] = {
   "./auto-sense[0]\0",
@@ -190,9 +188,9 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
 
   config = ags_config_get_instance();
   
-  str = ags_config_get(config,
-		       AGS_CONFIG_RECALL,
-		       "auto-sense\0");
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_RECALL,
+			     "auto-sense\0");
   stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(str, "true\0")
 							      ) ? TRUE: FALSE);
   free(str);

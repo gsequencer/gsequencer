@@ -21,6 +21,23 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
+#include <ags/file/ags_file_link.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_audio_signal.h>
+
+#include <ags/audio/file/ags_audio_file.h>
+
+#include <libxml/xpath.h>
+#include <libxml/tree.h>
+
+
 void ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link);
 void ags_audio_file_link_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_audio_file_link_init(AgsAudioFileLink *audio_file_link);
@@ -40,8 +57,9 @@ xmlNode* ags_audio_file_link_write(AgsFile *file,
 				   AgsPlugin *plugin);
 void ags_audio_file_link_finalize(GObject *gobject);
 
-void ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
-				     AgsFileLink *file_link);
+void
+ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
+				AgsAudioFileLink *audio_file_link);
 
 /**
  * SECTION:ags_audio_file_link
@@ -150,10 +168,8 @@ ags_audio_file_link_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_audio_file_link_init(AgsAudioFileLink *audio_file_link)
 {
-  audio_file_link->filename = NULL;
   audio_file_link->audio_channel = 0;
   
-  audio_file_link->data = NULL;
   audio_file_link->timestamp = NULL;
 }
 
@@ -244,10 +260,10 @@ ags_audio_file_link_read(AgsFile *file,
 		   "audio-channel\0");
 
   if(str != NULL){
-    audio_file_link->audio_channel = g_ascii_strtoull(str,
+    gobject->audio_channel = g_ascii_strtoull(str,
 						      NULL, 10);
   }else{
-    audio_file_link->audio_channel = 0;
+    gobject->audio_channel = 0;
   }
   
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
@@ -255,7 +271,7 @@ ags_audio_file_link_read(AgsFile *file,
 					       "node\0", node,
 					       NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
-		   G_CALLBACK(ags_file_util_read_file_link_launch), gobject);
+		   G_CALLBACK(ags_audio_file_link_read_launch), gobject);
   ags_file_add_launch(file,
 		      (GObject *) file_launch);
 }
@@ -287,7 +303,7 @@ ags_audio_file_link_write(AgsFile *file,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
-				   "reference\0", file_link,
+				   "reference\0", audio_file_link,
 				   NULL));
 
   /* write audio channel */
@@ -348,7 +364,7 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
   }
 
   /* get soundcard */
-  soundcard = (AgsDevout *) input->soundcard;
+  soundcard = input->soundcard;
 
   /* get audio */
   audio = AGS_AUDIO(input->audio);

@@ -44,8 +44,6 @@ void ags_peak_channel_disconnect(AgsConnectable *connectable);
 void ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_peak_channel_finalize(GObject *gobject);
 
-extern AgsConfig *config;
-
 /**
  * SECTION:ags_peak_channel
  * @short_description: peaks channel
@@ -315,6 +313,9 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   AgsRecall *recall;
   AgsChannel *source;
   AgsRecycling *recycling;
+
+  AgsConfig *config;
+  
   GList *audio_signal;
   signed short *buffer;
   double current_value;
@@ -331,10 +332,12 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   recall = (AgsRecall *) peak_channel;
+
+  config = ags_config_get_instance();
   
-  str = ags_config_get(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0");
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);

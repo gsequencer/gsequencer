@@ -82,8 +82,6 @@ enum{
 static gpointer ags_recycling_parent_class = NULL;
 static guint recycling_signals[LAST_SIGNAL];
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_recycling_get_type (void)
 {
@@ -239,6 +237,7 @@ ags_recycling_init(AgsRecycling *recycling)
 {
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t attr;
 
@@ -251,15 +250,16 @@ ags_recycling_init(AgsRecycling *recycling)
   pthread_mutex_init(mutex,
 		     &attr);
 
-  pthread_mutex_lock(&(ags_application_mutex));
-
   mutex_manager = ags_mutex_manager_get_instance();
-
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
   ags_mutex_manager_insert(mutex_manager,
 			   (GObject *) recycling,
 			   mutex);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   recycling->flags = 0;
 
@@ -362,17 +362,19 @@ ags_recycling_get_lock(AgsConcurrentTree *concurrent_tree)
 {
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex;
   
   /* lookup mutex */
-  pthread_mutex_lock(&ags_application_mutex);
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
   
   recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     AGS_RECYCLING(concurrent_tree));
 
-  pthread_mutex_unlock(&ags_application_mutex);
+  pthread_mutex_unlock(application_mutex);
 
   return(recycling_mutex);
 }
@@ -382,12 +384,14 @@ ags_recycling_get_parent_lock(AgsConcurrentTree *concurrent_tree)
 {
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *parent_mutex;
   
   /* lookup mutex */
-  pthread_mutex_lock(&ags_application_mutex);
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   if(AGS_RECYCLING(concurrent_tree)->parent != NULL){
     parent_mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -397,7 +401,7 @@ ags_recycling_get_parent_lock(AgsConcurrentTree *concurrent_tree)
 					    AGS_RECYCLING(concurrent_tree)->soundcard);
   }
   
-  pthread_mutex_unlock(&ags_application_mutex);
+  pthread_mutex_unlock(application_mutex);
 
   return(parent_mutex);
 }
@@ -411,16 +415,19 @@ ags_recycling_finalize(GObject *gobject)
   
   GList *list, *list_next;
 
+  pthread_mutex_t *application_mutex;
+  
   //  g_warning("ags_recycling_finalize\0");
-
-  pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
 
   ags_mutex_manager_remove(mutex_manager,
 			   gobject);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   recycling = AGS_RECYCLING(gobject);
 
@@ -472,6 +479,7 @@ ags_recycling_add_audio_signal(AgsRecycling *recycling,
 {
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex;
 
   if(recycling == NULL){
@@ -479,14 +487,15 @@ ags_recycling_add_audio_signal(AgsRecycling *recycling,
   }
   
   /* lookup mutex */
-  pthread_mutex_lock(&ags_application_mutex);
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
   
   recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) recycling);
 
-  pthread_mutex_unlock(&ags_application_mutex);
+  pthread_mutex_unlock(application_mutex);
   
   pthread_mutex_lock(recycling_mutex);
 
@@ -537,6 +546,7 @@ ags_recycling_remove_audio_signal(AgsRecycling *recycling,
 {
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex;
 
   if(recycling == NULL){
@@ -544,14 +554,15 @@ ags_recycling_remove_audio_signal(AgsRecycling *recycling,
   }
   
   /* lookup mutex */
-  pthread_mutex_lock(&ags_application_mutex);
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
   
   recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) recycling);
 
-  pthread_mutex_unlock(&ags_application_mutex);
+  pthread_mutex_unlock(application_mutex);
   
   pthread_mutex_lock(recycling_mutex);
 
@@ -611,17 +622,19 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex;
 
   /* lookup mutex */
-  pthread_mutex_lock(&ags_application_mutex);
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
   
   recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) recycling);
 
-  pthread_mutex_unlock(&ags_application_mutex);
+  pthread_mutex_unlock(application_mutex);
   
   pthread_mutex_lock(recycling_mutex);
 
@@ -710,23 +723,25 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   AgsMutexManager *mutex_manager;
 
-  pthread_mutex_t *recycling_mutex;
-
   GList *stream, *template_stream, *template_loop;
 
   guint frames_copied;
   guint loop_start, loop_attack;
   gboolean enter_loop, initial_loop;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
   /* lookup mutex */
-  pthread_mutex_lock(&ags_application_mutex);
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
   
   recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) recycling);
 
-  pthread_mutex_unlock(&ags_application_mutex);
+  pthread_mutex_unlock(application_mutex);
   
   pthread_mutex_lock(recycling_mutex);
 
@@ -859,20 +874,22 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex, *start_recycling_mutex, *end_recycling_mutex;
 
   /* lookup mutex */
-  pthread_mutex_lock(&ags_application_mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+  pthread_mutex_lock(application_mutex);
+  
   start_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 						   (GObject *) start_region);
 
   end_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 						 (GObject *) end_region);
 
-  pthread_mutex_unlock(&ags_application_mutex);
+  pthread_mutex_unlock(application_mutex);
 
   /* verify objects and get pointer for safe access */
   pthread_mutex_lock(start_recycling_mutex);
@@ -902,12 +919,12 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
 
   while(recycling != end_recycling){
     /* lock current */
-    pthread_mutex_lock(&ags_application_mutex);
+    pthread_mutex_lock(application_mutex);
     
     recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) recycling);
 
-    pthread_mutex_unlock(&ags_application_mutex);
+    pthread_mutex_unlock(application_mutex);
 
     /* check if new match */
     pthread_mutex_lock(recycling_mutex);
@@ -946,20 +963,18 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
 
   AgsMutexManager *mutex_manager;
 
-  pthread_mutex_t *current_mutex;
-
   gint position;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *current_mutex;
 
   if(start_region == NULL){
     return(-1);
   }
 
   /* lookup mutex */
-  pthread_mutex_lock(&ags_application_mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();  
-
-  pthread_mutex_unlock(&ags_application_mutex);
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* determine position */
   current = start_region;
@@ -969,12 +984,12 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
     position++;
 
     /* lock current */
-    pthread_mutex_lock(&ags_application_mutex);
+    pthread_mutex_lock(application_mutex);
     
     current_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) current);
 
-    pthread_mutex_unlock(&ags_application_mutex);
+    pthread_mutex_unlock(application_mutex);
 
     /* check if new match */
     pthread_mutex_lock(current_mutex);

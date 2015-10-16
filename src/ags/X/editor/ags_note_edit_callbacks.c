@@ -1604,7 +1604,7 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 
   config = ags_config_get_instance();
   
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
@@ -1612,7 +1612,7 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 				 10);
   free(str);
 
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,

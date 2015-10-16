@@ -259,7 +259,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 			     AGS_PREFERENCES_DEFAULT_FILENAME);
     
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", AGS_APPLLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context),
+				  "main\0", AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context),
 				  "filename\0", filename,
 				  NULL);
   ags_file_write_concurrent(file);
@@ -271,7 +271,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 					     filename),
 			     &error);
 
-  application_context_quit(AGS_APPLLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context));
+  ags_application_context_quit(AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context));
 }
 
 void

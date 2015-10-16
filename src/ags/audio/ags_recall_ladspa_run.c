@@ -25,7 +25,6 @@
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/object/ags_config.h>
 #include <ags/audio/ags_port.h>
 
 #include <dlfcn.h>
@@ -59,7 +58,6 @@ void ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run);
 
 static gpointer ags_recall_ladspa_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_run_parent_connectable_interface;
-extern AgsConfig *config;
 
 GType
 ags_recall_ladspa_run_get_type (void)
@@ -187,7 +185,6 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   AgsRecallLadspa *recall_ladspa;
   AgsRecallLadspaRun *recall_ladspa_run;
   AgsAudioSignal *audio_signal;
-  AgsConfig *config;
   unsigned long samplerate;
   unsigned long buffer_size;
   unsigned long i;

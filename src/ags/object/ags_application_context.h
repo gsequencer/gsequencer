@@ -115,6 +115,8 @@ void ags_application_context_remove_sibling(AgsApplicationContext *application_c
 AgsApplicationContext* ags_application_context_find_default(GList *application_context);
 GList* ags_application_context_find_main_loop(GList *application_context);
 
+gboolean ags_application_context_quit(AgsApplicationContext *application_context);
+
 AgsApplicationContext* ags_application_context_get_instance();
 AgsApplicationContext* ags_application_context_new(GObject *main_loop,
 						   AgsConfig *config);

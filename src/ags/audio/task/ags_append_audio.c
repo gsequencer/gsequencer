@@ -25,6 +25,7 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/server/ags_server.h>
+#include <ags/server/ags_service_provider.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -56,8 +57,6 @@ void ags_append_audio_launch(AgsTask *task);
 
 static gpointer ags_append_audio_parent_class = NULL;
 static AgsConnectableInterface *ags_append_audio_parent_connectable_interface;
-
-extern AgsConfig *config;
 
 GType
 ags_append_audio_get_type()
@@ -166,6 +165,8 @@ ags_append_audio_launch(AgsTask *task)
   
   AgsServer *server;
 
+  AgsConfig *config;
+  
   gchar *str0, *str1;
 
   append_audio = AGS_APPEND_AUDIO(task);
@@ -176,13 +177,15 @@ ags_append_audio_launch(AgsTask *task)
   /* append to AgsAudioLoop */
   ags_audio_loop_add_audio(audio_loop,
 			   audio);
-
+  
   /**/
-  str0 = ags_config_get(config,
+  config = ags_config_get_instance();
+  
+  str0 = ags_config_get_value(config,
 			AGS_CONFIG_THREAD,
 			"model\0");
   
-  str1 = ags_config_get(config,
+  str1 = ags_config_get_value(config,
 			AGS_CONFIG_THREAD,
 			"super-threaded-scope\0");
   

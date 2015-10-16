@@ -83,8 +83,6 @@ enum{
   PROP_INDEX,
 };
 
-extern AgsConfig *config;
-
 static gpointer ags_recall_ladspa_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
 static AgsPluginInterface* ags_recall_ladspa_parent_plugin_interface;

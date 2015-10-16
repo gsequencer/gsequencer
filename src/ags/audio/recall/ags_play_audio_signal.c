@@ -68,8 +68,6 @@ static gpointer ags_play_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_play_audio_signal_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_play_audio_signal_parent_dynamic_connectable_interface;
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_play_audio_signal_get_type()
 {
@@ -231,6 +229,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   guint buffer_size, soundcard_buffer_size;
   gboolean muted;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *recycling_mutex;
   
@@ -239,7 +238,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
 
-  soundcard = AGS_DEVOUT(AGS_RECALL(play_audio_signal)->soundcard);
+  soundcard = AGS_RECALL(play_audio_signal)->soundcard;
   source = AGS_AUDIO_SIGNAL(AGS_RECALL_AUDIO_SIGNAL(play_audio_signal)->source);
   stream = source->stream_current;
 
@@ -247,15 +246,16 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     g_warning("no soundcard\0");
     return;
   }
-
-  pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
 					  (GObject *) soundcard);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(soundcard_mutex);
 

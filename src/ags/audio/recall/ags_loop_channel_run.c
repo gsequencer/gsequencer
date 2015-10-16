@@ -579,7 +579,7 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 
   //  g_message("debug\0");
 
-  soundcard = AGS_DEVOUT(AGS_RECALL(loop_channel_run)->soundcard);
+  soundcard = AGS_RECALL(loop_channel_run)->soundcard;
 
   /* recycling */
   recycling = AGS_RECALL_CHANNEL_RUN(loop_channel_run)->source->first_recycling;

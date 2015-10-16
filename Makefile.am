@@ -437,6 +437,7 @@ deprecated_libags_audio_file_h_sources =
 libags_audio_file_h_sources = \
 	$(deprecated_libags_audio_file_h_sources) \
 	src/ags/audio/file/ags_audio_file.h \
+	src/ags/audio/file/ags_audio_file_link.h \
 	src/ags/audio/file/ags_audio_file_xml.h \
 	src/ags/audio/file/ags_ipatch.h \
 	src/ags/audio/file/ags_ipatch_sf2_reader.h \
@@ -447,6 +448,7 @@ deprecated_libags_audio_file_c_sources =
 libags_audio_file_c_sources = \
 	$(deprecated_libags_audio_file_c_sources) \
 	src/ags/audio/file/ags_audio_file.c \
+	src/ags/audio/file/ags_audio_file_link.c \
 	src/ags/audio/file/ags_audio_file_xml.c \
 	src/ags/audio/file/ags_ipatch.c \
 	src/ags/audio/file/ags_ipatch_sf2_reader.c \
@@ -869,8 +871,8 @@ libgsequencer_thread_c_sources = \
 deprecated_libgsequencer_task_h_sources =
 
 libgsequencer_task_h_sources = \
-	$(deprecated_libgsequencer_task_h_sources)
-	src/ags/X/task/ags_blink_cell_pattern_cursor.c \
+	$(deprecated_libgsequencer_task_h_sources) \
+	src/ags/X/task/ags_blink_cell_pattern_cursor.h \
 	src/ags/X/task/ags_change_indicator.h \
 	src/ags/X/task/ags_change_tact.h \
 	src/ags/X/task/ags_display_tact.h \
@@ -880,8 +882,8 @@ libgsequencer_task_h_sources = \
 deprecated_libgsequencer_task_c_sources =
 
 libgsequencer_task_c_sources = \
-	$(deprecated_libgsequencer_task_c_sources)
-	src/ags/X/task/ags_blink_cell_pattern_cursor.h \
+	$(deprecated_libgsequencer_task_c_sources) \
+	src/ags/X/task/ags_blink_cell_pattern_cursor.c \
 	src/ags/X/task/ags_change_indicator.c \
 	src/ags/X/task/ags_change_tact.c \
 	src/ags/X/task/ags_display_tact.c \
