@@ -102,7 +102,10 @@ struct _AgsMachine
   
   GtkWidget *selected_input_pad;
 
+  GtkContainer *bridge;
+
   GList *port;
+  gchar **automation_port;
 
   GtkMenu *popup;
   GtkDialog *properties;

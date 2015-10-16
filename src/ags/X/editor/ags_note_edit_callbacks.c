@@ -1637,9 +1637,9 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
   }
 
   /* connect done */
-  recall = ags_recall_find_provider_with_recycling_container(channel->play,
-							     G_OBJECT(channel),
-							     G_OBJECT(AGS_PLAYBACK(channel->playback)->recall_id[0]->recycling_container));
+  recall = ags_recall_find_provider_with_recycling_context(channel->play,
+							   G_OBJECT(channel),
+							   G_OBJECT(AGS_PLAYBACK(channel->playback)->recall_id[0]->recycling_context));
   
   tmp = recall;
   recall = ags_recall_find_type(recall,

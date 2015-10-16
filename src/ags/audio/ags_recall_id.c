@@ -52,7 +52,7 @@ void ags_recall_id_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_RECYCLING,
-  PROP_RECYCLING_CONTAINER,
+  PROP_RECYCLING_CONTEXT,
 };
 
 static gpointer ags_recall_id_parent_class = NULL;
@@ -128,19 +128,19 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 				  param_spec);
 
   /**
-   * AgsRecallID:recycling-container:
+   * AgsRecallID:recycling-context:
    *
    * The dynamic run context belonging to.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recycling-container\0",
-				   "assigned recycling container\0",
-				   "The recycling container it is assigned with\0",
+  param_spec = g_param_spec_object("recycling-context\0",
+				   "assigned recycling context\0",
+				   "The recycling context it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_RECYCLING_CONTAINER,
+				  PROP_RECYCLING_CONTEXT,
 				  param_spec);
 }
 
@@ -157,7 +157,7 @@ ags_recall_id_init(AgsRecallID *recall_id)
   recall_id->flags = 0;
 
   recall_id->recycling = NULL;
-  recall_id->recycling_container = NULL;
+  recall_id->recycling_context = NULL;
 }
 
 void
@@ -191,24 +191,24 @@ ags_recall_id_set_property(GObject *gobject,
       recall_id->recycling = (GObject *) recycling;
     }
     break;
-  case PROP_RECYCLING_CONTAINER:
+  case PROP_RECYCLING_CONTEXT:
     {
-      AgsRecyclingContainer *recycling_container;
+      AgsRecyclingContext *recycling_context;
 
-      recycling_container = g_value_get_object(value);
+      recycling_context = g_value_get_object(value);
 
-      if(recall_id->recycling_container == recycling_container)
+      if(recall_id->recycling_context == recycling_context)
 	return;
 
-      if(recall_id->recycling_container != NULL){
-	g_object_unref(recall_id->recycling_container);
+      if(recall_id->recycling_context != NULL){
+	g_object_unref(recall_id->recycling_context);
       }
 
-      if(recycling_container != NULL){
-	g_object_ref(recycling_container);
+      if(recycling_context != NULL){
+	g_object_ref(recycling_context);
       }
 
-      recall_id->recycling_container = recycling_container;
+      recall_id->recycling_context = recycling_context;
     }
     break;
   default:
@@ -231,8 +231,8 @@ ags_recall_id_get_property(GObject *gobject,
   case PROP_RECYCLING:
     g_value_set_object(value, recall_id->recycling);
     break;
-  case PROP_RECYCLING_CONTAINER:
-    g_value_set_object(value, recall_id->recycling_container);
+  case PROP_RECYCLING_CONTEXT:
+    g_value_set_object(value, recall_id->recycling_context);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -361,26 +361,26 @@ ags_recall_id_add(GList *recall_id_list,
 }
 
 /**
- * ags_recall_id_find_recycling_container:
+ * ags_recall_id_find_recycling_context:
  * @recall_id_list: a #GList containing #AgsRecallID
- * @recycling_container: the #AgsRecyclingContainer to match
+ * @recycling_context: the #AgsRecyclingContext to match
  *
- * Retrieve recall id by recycling container.
+ * Retrieve recall id by recycling context.
  *
  * Returns: Matching recall id.
  * 
  * Since: 0.4
  */
 AgsRecallID*
-ags_recall_id_find_recycling_container(GList *recall_id_list,
-				       AgsRecyclingContainer *recycling_container)
+ags_recall_id_find_recycling_context(GList *recall_id_list,
+				       AgsRecyclingContext *recycling_context)
 {
   AgsRecallID *recall_id;
 
   while(recall_id_list != NULL){
     recall_id = AGS_RECALL_ID(recall_id_list->data);
 
-    if(recall_id->recycling_container == recycling_container){
+    if(recall_id->recycling_context == recycling_context){
       return(recall_id);
     }
 
@@ -391,26 +391,26 @@ ags_recall_id_find_recycling_container(GList *recall_id_list,
 }
 
 /**
- * ags_recall_id_find_parent_recycling_container:
+ * ags_recall_id_find_parent_recycling_context:
  * @recall_id_list: a #GList containing #AgsRecallID
- * @recycling_container: the #AgsRecyclingContainer to match
+ * @recycling_context: the #AgsRecyclingContext to match
  *
- * Retrieve recall id by recycling container.
+ * Retrieve recall id by recycling context.
  *
  * Returns: Matching recall id.
  * 
  * Since: 0.4
  */
 AgsRecallID*
-ags_recall_id_find_parent_recycling_container(GList *recall_id_list,
-					      AgsRecyclingContainer *parent_recycling_container)
+ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
+					      AgsRecyclingContext *parent_recycling_context)
 {
   AgsRecallID *recall_id;
 
   while(recall_id_list != NULL){
     recall_id = AGS_RECALL_ID(recall_id_list->data);
 
-    if(recall_id->recycling_container->parent == parent_recycling_container){
+    if(recall_id->recycling_context->parent == parent_recycling_context){
       return(recall_id);
     }
 

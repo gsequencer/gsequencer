@@ -645,8 +645,8 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   if(AGS_RECALL(packable)->recall_id != NULL){
     recall_id = AGS_RECALL(packable)->recall_id;
       
-    list = ags_recall_find_recycling_container(list,
-					       (GObject *) recall_id->recycling_container);
+    list = ags_recall_find_recycling_context(list,
+					     (GObject *) recall_id->recycling_context);
 
     if(list != NULL){
       recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
@@ -766,7 +766,7 @@ ags_recall_channel_run_done(AgsRecall *recall)
   
   ags_channel_remove_recall(recall_channel_run->source,
 			    (GObject *) recall,
-			    ((recall->recall_id->recycling_container->parent == NULL) ? TRUE: FALSE));
+			    ((recall->recall_id->recycling_context->parent == NULL) ? TRUE: FALSE));
 
   AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->done(recall);
 }
@@ -784,8 +784,8 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
 
   if(recall_channel_run->destination != NULL &&
-     ags_recall_id_find_recycling_container(recall_channel_run->destination->recall_id,
-					    recall_id->recycling_container->parent) == NULL){
+     ags_recall_id_find_recycling_context(recall_channel_run->destination->recall_id,
+					  recall_id->recycling_context->parent) == NULL){
     return(NULL);
   }
   
@@ -815,8 +815,8 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
   if(AGS_IS_OUTPUT(copy->source)){
     output = copy->source;
-    output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
-							      (GObject *) recall_id->recycling_container);
+    output_recall_id = ags_recall_id_find_recycling_context(output->recall_id,
+							    (GObject *) recall_id->recycling_context);
   }else{
     AgsRecallID *default_recall_id, *audio_recall_id;
 
@@ -830,29 +830,29 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
 
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      default_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
-								 recall_id->recycling_container);
+      default_recall_id = ags_recall_id_find_recycling_context(audio->recall_id,
+							       recall_id->recycling_context);
 
-      audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
-							       default_recall_id->recycling_container);
+      audio_recall_id = ags_recall_id_find_recycling_context(audio->recall_id,
+							     default_recall_id->recycling_context);
 
-      output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
-								audio_recall_id->recycling_container->parent);
+      output_recall_id = ags_recall_id_find_recycling_context(output->recall_id,
+							      audio_recall_id->recycling_context->parent);
     }else{
-      audio_recall_id = ags_recall_id_find_recycling_container(audio->recall_id,
-							       recall_id->recycling_container);
+      audio_recall_id = ags_recall_id_find_recycling_context(audio->recall_id,
+							     recall_id->recycling_context);
 
 
-      output_recall_id = ags_recall_id_find_recycling_container(output->recall_id,
-								audio_recall_id->recycling_container);
+      output_recall_id = ags_recall_id_find_recycling_context(output->recall_id,
+							      audio_recall_id->recycling_context);
     }
   }
 
   //TODO:JK: remove because run order isn't used anymore
   /*
-  if(recall_id->recycling_container->parent != NULL){
-    copy->run_order = g_list_index(recall_id->recycling_container->parent->children,
-				   recall_id->recycling_container);
+    if(recall_id->recycling_context->parent != NULL){
+    copy->run_order = g_list_index(recall_id->recycling_context->parent->children,
+    recall_id->recycling_context);
   }else if(copy->destination != NULL){
     copy->run_order = copy->destination->audio_channel;
   }else{

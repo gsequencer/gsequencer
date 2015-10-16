@@ -39,6 +39,14 @@ typedef struct _AgsNotebookClass AgsNotebookClass;
 typedef struct _AgsNotebookTab AgsNotebookTab;
 
 typedef enum{
+  AGS_NOTEBOOK_SHOW_INPUT            = 1,
+  AGS_NOTEBOOK_SHOW_OUTPUT           = 1 <<  1,
+  AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL    = 1 <<  2,
+  AGS_NOTEBOOK_SHOW_PAD              = 1 <<  3,
+  AGS_NOTEBOOK_SHOW_LINE             = 1 <<  4,
+}AgsNotebookFlags;
+
+typedef enum{
   AGS_NOTEBOOK_TAB_VISIBLE           = 1,
   AGS_NOTEBOOK_TAB_MODE_NORMAL       = 1 << 1,
   AGS_NOTEBOOK_TAB_MODE_OVERLAY      = 1 << 2,

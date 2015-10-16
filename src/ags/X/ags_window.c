@@ -198,6 +198,10 @@ ags_window_init(AgsWindow *window)
   window->machines = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_scrolled_window_add_with_viewport((GtkScrolledWindow *) scrolled_window,
 					(GtkWidget *) window->machines);
+
+  window->machine_counter = ags_window_standard_machine_counter();
+  window->selected = NULL;
+  
   window->editor = g_object_new(AGS_TYPE_EDITOR,
 				"homogeneous\0", FALSE,
 				"spacing\0", 0,
@@ -214,12 +218,12 @@ ags_window_init(AgsWindow *window)
 		     (GtkWidget *) window->navigation,
 		     FALSE, FALSE, 0);
 
+  window->automation_window = NULL;
+  
   window->export_window = ags_export_window_new();
+  window->import_window = NULL;
+  
   window->preferences = NULL;
-
-  window->machine_counter = ags_window_standard_machine_counter();
-
-  window->selected = NULL;
 }
 
 void

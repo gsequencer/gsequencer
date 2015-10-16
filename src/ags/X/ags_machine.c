@@ -296,8 +296,11 @@ ags_machine_init(AgsMachine *machine)
 
   machine->input = NULL;
   machine->selected_input_pad = NULL;
+  
+  machine->bridge = NULL;
 
   machine->port = NULL;
+  machine->automation_port = NULL;
 
   machine->popup = ags_machine_popup_new(machine);
 

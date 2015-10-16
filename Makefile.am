@@ -14,7 +14,6 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la libgsequencer.la
-noinst_LIBRARIES = libgsequencer_test.a
 
 bin_PROGRAMS = gsequencer gsequencer_static midi2xml
 
@@ -317,9 +316,11 @@ deprecated_libags_audio_h_sources =
 
 libags_audio_h_sources = \
 	$(deprecated_libags_audio_h_sources) \
+	src/ags/audio/ags_acceleration.h \
 	src/ags/audio/ags_audio.h \
 	src/ags/audio/ags_audio_application_context.h \
 	src/ags/audio/ags_audio_signal.h \
+	src/ags/audio/ags_automation.h \
 	src/ags/audio/ags_channel.h \
 	src/ags/audio/ags_channel_iter.h \
 	src/ags/audio/ags_devout.h \
@@ -349,7 +350,7 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_recall_ladspa_run.h \
 	src/ags/audio/ags_recall_recycling_dummy.h \
 	src/ags/audio/ags_recall_recycling.h \
-	src/ags/audio/ags_recycling_container.h \
+	src/ags/audio/ags_recycling_context.h \
 	src/ags/audio/ags_recycling.h \
 	src/ags/audio/ags_sound_provider.h \
 	src/ags/audio/ags_synths.h
@@ -358,9 +359,11 @@ deprecated_libags_audio_c_sources =
 
 libags_audio_c_sources = \
 	$(deprecated_libags_audio_c_sources) \
+	src/ags/audio/ags_acceleration.c \
 	src/ags/audio/ags_audio.c \
 	src/ags/audio/ags_audio_application_context.c \
 	src/ags/audio/ags_audio_signal.c \
+	src/ags/audio/ags_automation.c \
 	src/ags/audio/ags_channel.c \
 	src/ags/audio/ags_channel_iter.c \
 	src/ags/audio/ags_devout.c \
@@ -390,7 +393,7 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_recall_recycling.c \
 	src/ags/audio/ags_recall_recycling_dummy.c \
 	src/ags/audio/ags_recycling.c \
-	src/ags/audio/ags_recycling_container.c \
+	src/ags/audio/ags_recycling_context.c \
 	src/ags/audio/ags_sound_provider.c \
 	src/ags/audio/ags_synths.c
 
@@ -737,6 +740,10 @@ deprecated_libgsequencer_h_sources =
 
 libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
+	src/ags/X/ags_automation_editor_callbacks.h \
+	src/ags/X/ags_automation_editor.h \
+	src/ags/X/ags_automation_window_callbacks.h \
+	src/ags/X/ags_automation_window.h \
 	src/ags/X/ags_audio_preferences_callbacks.h \
 	src/ags/X/ags_audio_preferences.h \
 	src/ags/X/ags_editor_callbacks.h \
@@ -795,6 +802,10 @@ deprecated_libgsequencer_c_sources =
 
 libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
+	src/ags/X/ags_automation_editor.c \
+	src/ags/X/ags_automation_editor_callbacks.c \
+	src/ags/X/ags_automation_window.c \
+	src/ags/X/ags_automation_window_callbacks.c \
 	src/ags/X/ags_audio_preferences.c \
 	src/ags/X/ags_audio_preferences_callbacks.c \
 	src/ags/X/ags_editor.c \
@@ -978,6 +989,12 @@ deprecated_libgsequencer_editor_h_sources =
 
 libgsequencer_editor_h_sources = \
 	$(deprecated_libgsequencer_editor_h_sources) \
+	src/ags/X/editor/ags_automation_edit_callbacks.h \
+	src/ags/X/editor/ags_automation_edit.h \
+	src/ags/X/editor/ags_automation_toolbar_callbacks.h \
+	src/ags/X/editor/ags_automation_toolbar.h \
+	src/ags/X/editor/ags_automation_area_callbacks.h \
+	src/ags/X/editor/ags_automation_area.h \
 	src/ags/X/editor/ags_file_selection_callbacks.h \
 	src/ags/X/editor/ags_file_selection.h \
 	src/ags/X/editor/ags_inline_player_callbacks.h \
@@ -994,6 +1011,10 @@ libgsequencer_editor_h_sources = \
 	src/ags/X/editor/ags_note_edit.h \
 	src/ags/X/editor/ags_pattern_edit_callbacks.h \
 	src/ags/X/editor/ags_pattern_edit.h \
+	src/ags/X/editor/ags_scale_area_callbacks.h \
+	src/ags/X/editor/ags_scale_area.h \
+	src/ags/X/editor/ags_scale_callbacks.h \
+	src/ags/X/editor/ags_scale.h \
 	src/ags/X/editor/ags_sf2_chooser_callbacks.h \
 	src/ags/X/editor/ags_sf2_chooser.h \
 	src/ags/X/editor/ags_toolbar_callbacks.h \
@@ -1004,6 +1025,12 @@ deprecated_libgsequencer_editor_c_sources =
 
 libgsequencer_editor_c_sources = \
 	$(deprecated_libgsequencer_editor_c_sources) \
+	src/ags/X/editor/ags_automation_edit.c \
+	src/ags/X/editor/ags_automation_edit_callbacks.c \
+	src/ags/X/editor/ags_automation_toolbar.c \
+	src/ags/X/editor/ags_automation_toolbar_callbacks.c \
+	src/ags/X/editor/ags_automation_area.c \
+	src/ags/X/editor/ags_automation_area_callbacks.c \
 	src/ags/X/editor/ags_file_selection.c \
 	src/ags/X/editor/ags_file_selection_callbacks.c \
 	src/ags/X/editor/ags_inline_player.c \
@@ -1020,6 +1047,10 @@ libgsequencer_editor_c_sources = \
 	src/ags/X/editor/ags_note_edit_callbacks.c \
 	src/ags/X/editor/ags_pattern_edit.c \
 	src/ags/X/editor/ags_pattern_edit_callbacks.c \
+	src/ags/X/editor/ags_scale_area.c \
+	src/ags/X/editor/ags_scale_area_callbacks.c \
+	src/ags/X/editor/ags_scale.c \
+	src/ags/X/editor/ags_scale_callbacks.c \
 	src/ags/X/editor/ags_sf2_chooser.c \
 	src/ags/X/editor/ags_sf2_chooser_callbacks.c \
 	src/ags/X/editor/ags_toolbar.c \
