@@ -80,8 +80,6 @@ void ags_drum_output_line_map_recall(AgsLine *line,
 static gpointer ags_drum_output_line_parent_class = NULL;
 static AgsConnectableInterface *ags_drum_output_line_parent_connectable_interface;
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_drum_output_line_get_type()
 {
@@ -237,6 +235,7 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
@@ -245,16 +244,17 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
   drum_output_line = AGS_DRUM_OUTPUT_LINE(line);
 
   audio = channel->audio;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
   
-  mutex_manager = ags_mutex_manager_get_instance();
-    
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get soundcard */
   pthread_mutex_lock(audio_mutex);
@@ -268,12 +268,12 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     AgsAudioSignal *audio_signal;
 
     /* lookup channel mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
+    pthread_mutex_lock(application_mutex);
 
     channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) channel);
   
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get recycling */
     pthread_mutex_lock(channel_mutex);

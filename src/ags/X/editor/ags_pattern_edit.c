@@ -73,8 +73,6 @@ void ags_pattern_edit_paint(AgsPatternEdit *pattern_edit);
 
 GtkStyle *pattern_edit_style;
 
-extern pthread_mutex_t ags_application_mutex;
-
 static GQuark quark_accessible_object = 0;
 
 GType
@@ -709,17 +707,19 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 	
 	gdouble position;
 
+	pthread_mutex_t *application_mutex;
 	pthread_mutex_t *audio_mutex;
-	
-	/* lookup audio mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
-  
-	mutex_manager = ags_mutex_manager_get_instance();
 
+	mutex_manager = ags_mutex_manager_get_instance();
+	application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+	/* lookup audio mutex */
+	pthread_mutex_lock(application_mutex);
+  
 	audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) editor->selected_machine->audio);
   
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	/* retrieve position */
 	pthread_mutex_lock(audio_mutex);
@@ -909,17 +909,19 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
 	
 	gdouble position;
 
+	pthread_mutex_t *application_mutex;
 	pthread_mutex_t *audio_mutex;
+
+	mutex_manager = ags_mutex_manager_get_instance();
+	application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 	
 	/* lookup audio mutex */
-	pthread_mutex_lock(&(ags_application_mutex));
+	pthread_mutex_lock(application_mutex);
   
-	mutex_manager = ags_mutex_manager_get_instance();
-
 	audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       (GObject *) editor->selected_machine->audio);
   
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_unlock(application_mutex);
 
 	/* retrieve position */
 	pthread_mutex_lock(audio_mutex);
@@ -1194,6 +1196,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
   gint selected_channel;
   gint i;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   static const gdouble white_gc = 65535.0;
@@ -1209,16 +1212,17 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
   }
 
   widget = (GtkWidget *) pattern_edit->drawing_area;
-
-  /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
   
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) editor->selected_machine->audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* draw */
   pthread_mutex_lock(audio_mutex);

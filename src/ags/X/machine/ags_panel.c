@@ -89,8 +89,6 @@ void ags_panel_set_pads(AgsAudio *audio, GType type,
 static gpointer ags_panel_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_parent_connectable_interface;
 
-extern const char *AGS_COPY_INPUT_TO_OUTPUT;
-
 GType
 ags_panel_get_type(void)
 {

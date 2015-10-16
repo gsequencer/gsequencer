@@ -84,8 +84,6 @@ static gpointer ags_mixer_parent_class = NULL;
 
 static AgsConnectableInterface *ags_mixer_parent_connectable_interface;
 
-extern const char *AGS_MIX_VOLUME;
-
 GType
 ags_mixer_get_type(void)
 {

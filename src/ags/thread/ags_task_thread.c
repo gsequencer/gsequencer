@@ -196,26 +196,14 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   g_atomic_pointer_set(&(task_thread->queue),
 		       NULL);
 
-  task_thread->thread_pool = NULL;
+  task_thread->thread_pool = ags_thread_pool_new(task_thread);
+  task_thread->thread_pool->parent = (AgsThread *) task_thread;
 }
 
 void
 ags_task_thread_connect(AgsConnectable *connectable)
 {
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  GObject *application_context;
-
   ags_task_thread_parent_connectable_interface->connect(connectable);
-
-  task_thread = AGS_TASK_THREAD(connectable);
-
-  main_loop = ags_thread_get_toplevel((AgsThread *) task_thread);
-  application_context = ags_main_loop_get_application_context(AGS_MAIN_LOOP(main_loop));
-
-  task_thread->thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
-  task_thread->thread_pool->parent = (AgsThread *) task_thread;
 }
 
 void
@@ -287,7 +275,8 @@ ags_task_thread_start(AgsThread *thread)
 
   task_thread = AGS_TASK_THREAD(thread);
 
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
+  if(task_thread->thread_pool != NULL &&
+     (AGS_THREAD_POOL_RUNNING & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
     ags_thread_pool_start(task_thread->thread_pool);
 
     while((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
@@ -380,8 +369,8 @@ ags_task_thread_run(AgsThread *thread)
   pthread_mutex_unlock(task_thread->run_mutex);
   
   /* clean-up */
-  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-  pango_cairo_font_map_set_default(NULL);
+  //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  //  pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();
   //  FcFini();
 }
