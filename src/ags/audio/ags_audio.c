@@ -61,7 +61,7 @@
  * #AgsAudio organizes #AgsChannel objects either as input or output and
  * is responsible of their alignment. The class can contain #AgsRecall objects
  * in order to perform computation on all channels or in audio context.
- * Therefor exists #AgsRecyclingContainer acting as tree context.
+ * Therefor exists #AgsRecyclingContext acting as tree context.
  *
  * At least one #AgsRecallID is assigned to it and has one more if
  * %AGS_AUDIO_OUTPUT_HAS_RECYCLING is set as flag.
@@ -393,9 +393,10 @@ ags_audio_init(AgsAudio *audio)
   free(str1);
   
   audio->notation = NULL;
+  audio->automation = NULL;
 
   audio->recall_id = NULL;
-  audio->recycling_container = NULL;
+  audio->recycling_context = NULL;
 
   audio->container = NULL;
   audio->recall = NULL;
@@ -886,7 +887,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
     }
   }
 
-  //TODO:JK: automatization of setting recycling_container root
+  //TODO:JK: automatization of setting recycling_context root
 }
     
 
@@ -2016,16 +2017,16 @@ ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
 }
 
 /**
- * ags_audio_add_recycling_container:
+ * ags_audio_add_notation:
  * @audio: an #AgsAudio
- * @recycling_container: the #AgsRecyclingContainer
+ * @notation: the #AgsRecallID
  *
- * Adds a recycling container.
+ * Adds a recall id.
  *
  * Since: 0.4
  */
 void
-ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container)
+ags_audio_add_notation(AgsAudio *audio, GObject *notation)
 {
   AgsMutexManager *mutex_manager;
 
@@ -2043,33 +2044,33 @@ ags_audio_add_recycling_container(AgsAudio *audio, GObject *recycling_container)
   
   pthread_mutex_unlock(application_mutex);
 
-  /* add recycling container */
+  /* add recall id */
   pthread_mutex_lock(mutex);
 
-  g_object_ref(recycling_container);
-  audio->recycling_container = g_list_prepend(audio->recycling_container, recycling_container);
+  g_object_ref(notation);
+  audio->notation = g_list_prepend(audio->notation, notation);
   
   pthread_mutex_unlock(mutex);
 }
 
 /**
- * ags_audio_remove_recycling_container:
+ * ags_audio_remove_notation:
  * @audio: an #AgsAudio
- * @recycling_container: the #AgsRecyclingContainer
+ * @notation: the #AgsRecallID
  *
- * Removes a recycling container.
+ * Removes a recall id.
  *
  * Since: 0.4
  */
 void
-ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_container)
+ags_audio_remove_notation(AgsAudio *audio, GObject *notation)
 {
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  /* lookup mutex */  
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
@@ -2080,11 +2081,85 @@ ags_audio_remove_recycling_container(AgsAudio *audio, GObject *recycling_contain
   
   pthread_mutex_unlock(application_mutex);
 
-  /* remove recycling container */
+  /* remove recall id */
   pthread_mutex_lock(mutex);
 
-  audio->recycling_container = g_list_remove(audio->recycling_container, recycling_container);
-  g_object_unref(recycling_container);
+  audio->notation = g_list_remove(audio->notation, notation);
+  g_object_unref(notation);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_add_automation:
+ * @audio: an #AgsAudio
+ * @automation: the #AgsRecallID
+ *
+ * Adds a recall id.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_audio_add_automation(AgsAudio *audio, GObject *automation)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* add recall id */
+  pthread_mutex_lock(mutex);
+
+  g_object_ref(automation);
+  audio->automation = g_list_prepend(audio->automation, automation);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_remove_automation:
+ * @audio: an #AgsAudio
+ * @automation: the #AgsRecallID
+ *
+ * Removes a recall id.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_audio_remove_automation(AgsAudio *audio, GObject *automation)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* remove recall id */
+  pthread_mutex_lock(mutex);
+
+  audio->automation = g_list_remove(audio->automation, automation);
+  g_object_unref(automation);
   
   pthread_mutex_unlock(mutex);
 }
@@ -2159,6 +2234,80 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
 
   audio->recall_id = g_list_remove(audio->recall_id, recall_id);
   g_object_unref(recall_id);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_add_recycling_context:
+ * @audio: an #AgsAudio
+ * @recycling_context: the #AgsRecyclingContext
+ *
+ * Adds a recycling container.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* add recycling container */
+  pthread_mutex_lock(mutex);
+
+  g_object_ref(recycling_context);
+  audio->recycling_context = g_list_prepend(audio->recycling_context, recycling_context);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_remove_recycling_context:
+ * @audio: an #AgsAudio
+ * @recycling_context: the #AgsRecyclingContext
+ *
+ * Removes a recycling container.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* remove recycling container */
+  pthread_mutex_lock(mutex);
+
+  audio->recycling_context = g_list_remove(audio->recycling_context, recycling_context);
+  g_object_unref(recycling_context);
   
   pthread_mutex_unlock(mutex);
 }
@@ -2434,7 +2583,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   }
   
   /* get the appropriate list */
-  if(recall_id->recycling_container->parent == NULL){
+  if(recall_id->recycling_context->parent == NULL){
     list_recall = g_list_copy(audio->play);
     list_recall_start =
       list_recall = g_list_reverse(list_recall);
@@ -2505,7 +2654,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       /* append to AgsAudio */
       ags_audio_add_recall(audio,
 			   copy,
-			   ((recall_id->recycling_container->parent == NULL) ? TRUE: FALSE));
+			   ((recall_id->recycling_context->parent == NULL) ? TRUE: FALSE));
 
       /* connect */
       ags_connectable_connect(AGS_CONNECTABLE(copy));
@@ -2584,7 +2733,7 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
   }
 
   /* retrieve appropriate recalls */
-  if(recall_id->recycling_container->parent == NULL)
+  if(recall_id->recycling_context->parent == NULL)
     list_recall = audio->play;
   else
     list_recall = audio->recall;
@@ -2594,7 +2743,7 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
     recall = AGS_RECALL(list_recall->data);
     
     if(recall->recall_id == NULL ||
-       recall->recall_id->recycling_container != recall_id->recycling_container ||
+       recall->recall_id->recycling_context != recall_id->recycling_context ||
        AGS_IS_RECALL_AUDIO(recall)){
       list_recall = list_recall->next;
       continue;
@@ -2667,14 +2816,14 @@ void ags_audio_resolve_recall(AgsAudio *audio,
   }
   
   /* get the appropriate lists */
-  if(recall_id->recycling_container->parent == NULL){
+  if(recall_id->recycling_context->parent == NULL){
     list_recall = audio->play;
   }else{
     list_recall = audio->recall;
   }
 
   /* resolve */  
-  while((list_recall = ags_recall_find_recycling_container(list_recall, (GObject *) recall_id->recycling_container)) != NULL){
+  while((list_recall = ags_recall_find_recycling_context(list_recall, (GObject *) recall_id->recycling_context)) != NULL){
     recall = AGS_RECALL(list_recall->data);
     
     ags_recall_resolve_dependencies(recall);
@@ -2822,7 +2971,7 @@ ags_audio_play(AgsAudio *audio,
   ags_recall_id_set_run_stage(recall_id, stage);
 
   /* retrieve appropriate recalls */
-  if(recall_id->recycling_container->parent == NULL)
+  if(recall_id->recycling_context->parent == NULL)
     list = audio->play;
   else
     list = audio->recall;
@@ -2834,7 +2983,7 @@ ags_audio_play(AgsAudio *audio,
     recall = AGS_RECALL(list->data);
 
     if(recall == NULL){
-      if(recall_id->recycling_container->parent != NULL){
+      if(recall_id->recycling_context->parent != NULL){
 	audio->recall = g_list_remove(audio->recall,
 				      recall);
       }else{
@@ -2849,7 +2998,7 @@ ags_audio_play(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
        recall->recall_id == NULL ||
-       (recall->recall_id->recycling_container != recall_id->recycling_container) ||
+       (recall->recall_id->recycling_context != recall_id->recycling_context) ||
        AGS_IS_RECALL_AUDIO(recall)){
       list = list_next;
 
@@ -2999,7 +3148,7 @@ ags_audio_cancel(AgsAudio *audio,
   /* cancel recalls */
   pthread_mutex_lock(mutex);
 
-  if(recall_id->recycling_container->parent == NULL){
+  if(recall_id->recycling_context->parent == NULL){
     list = audio->play;
   }else{
     list = audio->recall;
@@ -3014,7 +3163,7 @@ ags_audio_cancel(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
        recall->recall_id == NULL ||
-       recall->recall_id->recycling_container != recall_id->recycling_container){
+       recall->recall_id->recycling_context != recall_id->recycling_context){
       list = list_next;
 
       continue;
@@ -3069,7 +3218,7 @@ ags_audio_remove(AgsAudio *audio,
   /* remove recalls */
   pthread_mutex_lock(mutex);
 
-  if(recall_id->recycling_container->parent == NULL){
+  if(recall_id->recycling_context->parent == NULL){
     list = audio->play;
     play = TRUE;
   }else{
@@ -3084,7 +3233,7 @@ ags_audio_remove(AgsAudio *audio,
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
        recall->recall_id == NULL ||
-       recall->recall_id->recycling_container != recall_id->recycling_container){
+       recall->recall_id->recycling_context != recall_id->recycling_context){
       list = list_next;
 
       continue;

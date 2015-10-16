@@ -225,7 +225,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   AgsRecycling *recycling;
   AgsAudioSignal *destination;
   AgsRecallID *parent_recall_id;
-  AgsRecyclingContainer *recycling_container;
+  AgsRecyclingContext *recycling_context;
   
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
@@ -257,16 +257,16 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   pthread_mutex_lock(application_mutex);
 
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0");
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
   free(str);
 
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0");
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
   samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
@@ -276,10 +276,10 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
-  recycling_container = recall->recall_id->recycling_container;
+  recycling_context = recall->recall_id->recycling_context;
 
-  parent_recall_id = ags_recall_id_find_recycling_container(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->destination->recall_id,
-							    recycling_container->parent);
+  parent_recall_id = ags_recall_id_find_recycling_context(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->destination->recall_id,
+							  recycling_context->parent);
 
   //TODO:JK: unclear
   attack = 0;

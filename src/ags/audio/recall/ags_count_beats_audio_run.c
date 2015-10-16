@@ -1351,7 +1351,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
       /* set done flag in soundcard play */
       while(playback != NULL){
 	if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL &&
-	   AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_container == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container){
+	   AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
 	  AgsChannel *channel;
 	  AgsStreamChannelRun *stream_channel_run;
 	  GList *list;
@@ -1366,9 +1366,9 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
 	  list = channel->play;
 
-	  list = ags_recall_find_type_with_recycling_container(list,
-							       AGS_TYPE_STREAM_CHANNEL_RUN,
-							       (GObject *) AGS_RECALL(count_beats_audio_run)->recall_id->recycling_container);
+	  list = ags_recall_find_type_with_recycling_context(list,
+							     AGS_TYPE_STREAM_CHANNEL_RUN,
+							     (GObject *) AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context);
 
 	  if(list != NULL){
 	    stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);

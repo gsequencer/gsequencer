@@ -1,0 +1,153 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <ags/X/editor/ags_piano.h>
+#include <ags/X/editor/ags_piano_callbacks.h>
+
+#include <ags/object/ags_connectable.h>
+
+#include <ags/X/ags_editor.h>
+
+#include <math.h>
+
+void ags_piano_class_init(AgsPianoClass *piano);
+void ags_piano_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_piano_init(AgsPiano *piano);
+void ags_piano_connect(AgsConnectable *connectable);
+void ags_piano_disconnect(AgsConnectable *connectable);
+void ags_piano_destroy(GtkObject *object);
+void ags_piano_show(GtkWidget *widget);
+
+/**
+ * SECTION:ags_piano
+ * @short_description: piano widget
+ * @title: AgsPiano
+ * @section_id:
+ * @include: ags/X/editor/ags_piano.h
+ *
+ * The #AgsPiano draws you a piano.
+ */
+
+GtkStyle *piano_style;
+
+GType
+ags_piano_get_type(void)
+{
+  static GType ags_type_piano = 0;
+
+  if (!ags_type_piano){
+    static const GTypeInfo ags_piano_info = {
+      sizeof (AgsPianoClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_piano_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsPiano),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_piano_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_piano_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_piano = g_type_register_static(GTK_TYPE_DRAWING_AREA,
+					    "AgsPiano\0", &ags_piano_info,
+					    0);
+    
+    g_type_add_interface_static(ags_type_piano,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+  }
+
+  return (ags_type_piano);
+}
+
+void
+ags_piano_class_init(AgsPianoClass *piano)
+{
+}
+
+void
+ags_piano_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_piano_connect;
+  connectable->disconnect = ags_piano_disconnect;
+}
+
+void
+ags_piano_init(AgsPiano *piano)
+{
+  GtkWidget *widget;
+
+  widget = (GtkWidget *) piano;
+  gtk_widget_set_style(widget, piano_style);
+  gtk_widget_set_size_request(widget, 60, -1);
+  gtk_widget_set_events (GTK_WIDGET (piano), GDK_EXPOSURE_MASK
+                         | GDK_LEAVE_NOTIFY_MASK
+                         | GDK_BUTTON_PRESS_MASK
+			 | GDK_BUTTON_RELEASE_MASK
+			 );
+}
+
+void
+ags_piano_connect(AgsConnectable *connectable)
+{
+  AgsPiano *piano;
+
+  piano = AGS_PIANO(connectable);
+
+  g_signal_connect((GObject *) piano, "expose_event\0",
+  		   G_CALLBACK(ags_piano_expose_event), (gpointer) piano);
+
+  g_signal_connect((GObject *) piano, "configure_event\0",
+  		   G_CALLBACK(ags_piano_configure_event), (gpointer) piano);
+}
+
+void
+ags_piano_disconnect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_piano_paint(AgsPiano *piano)
+{
+}
+
+/**
+ * ags_piano_new:
+ *
+ * Create a new #AgsPiano.
+ *
+ * Since: 0.4
+ */
+AgsPiano*
+ags_piano_new()
+{
+  AgsPiano *piano;
+
+  piano = (AgsPiano *) g_object_new(AGS_TYPE_PIANO, NULL);
+
+  return(piano);
+}

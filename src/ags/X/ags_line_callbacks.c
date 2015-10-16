@@ -32,7 +32,7 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_recycling_container.h>
+#include <ags/audio/ags_recycling_context.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
@@ -62,7 +62,7 @@ ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *
 void
 ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
 {
-  if(recall->recall_id != NULL && recall->recall_id->recycling_container->parent != NULL){
+  if(recall->recall_id != NULL && recall->recall_id->recycling_context->parent != NULL){
     if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
       ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), (GObject *) recall, FALSE);
     }else{
@@ -232,7 +232,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
       peak = g_value_get_double(&value);
       g_value_unset(&value);
       
-      //      if(peak_channel_run->recall_id->recycling_container->parent == NULL)
+      //      if(peak_channel_run->recall_id->recycling_context->parent == NULL)
 	//	g_message("%f\0", peak);
       
       change_indicator = ags_change_indicator_new((AgsIndicator *) child,
