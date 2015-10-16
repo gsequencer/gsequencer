@@ -260,7 +260,7 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    application_context_quit(AGS_APPLLICATION_CONTEXT(window->application_context));
+    ags_application_context_quit(AGS_APPLICATION_CONTEXT(window->application_context));
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }

@@ -21,12 +21,11 @@
 #include <ags/audio/recall/ags_buffer_channel.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
-
 #include <ags/object/ags_soundcard.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_channel.h>
@@ -51,9 +50,6 @@ void ags_buffer_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_buffer_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, GParameter *parameter);
-
-extern AgsConfig *config;
-extern pthread_mutex_t ags_application_mutex;
 
 /**
  * SECTION:ags_buffer_audio_signal
@@ -233,6 +229,10 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsConfig *config;
   
   GList *stream;
   gdouble delay;
@@ -242,14 +242,21 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   guint length;
   gchar *str;
   
+  pthread_mutex_t *application_mutex;
+
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
 
   soundcard = AGS_RECALL(buffer_audio_signal)->soundcard;
 
-  pthread_mutex_lock(&(ags_application_mutex));
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  config = ags_config_get_instance();
   
-  str = ags_config_get(config,
+  pthread_mutex_lock(application_mutex);
+
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
@@ -257,7 +264,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 				 10);
   free(str);
 
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,
@@ -265,7 +272,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 				10);
   free(str);
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
   
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;

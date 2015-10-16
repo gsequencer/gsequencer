@@ -60,7 +60,7 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
     GType type;
 
     if(!thread_type_is_registered){
-      application_context_register_thread_type();
+      ags_thread_application_context_register_types();
 
       thread_type_is_registered = TRUE;
     }

@@ -20,7 +20,9 @@
 #ifndef __AGS_BLINK_CELL_PATTERN_CURSOR_H__
 #define __AGS_BLINK_CELL_PATTERN_CURSOR_H__
 
+#include <glib.h>
 #include <glib-object.h>
+#include <gtk/gtk.h>
 
 #include <ags/thread/ags_task.h>
 

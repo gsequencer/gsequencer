@@ -76,8 +76,6 @@ enum{
   LAST_SIGNAL,
 };
 
-extern AgsConfig *config;
-
 static gpointer ags_audio_signal_parent_class = NULL;
 static guint audio_signal_signals[LAST_SIGNAL];
 
@@ -235,6 +233,8 @@ ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_audio_signal_init(AgsAudioSignal *audio_signal)
 {
+  AgsConfig *config;
+  
   gchar *str;
   
   audio_signal->flags = 0;
@@ -244,7 +244,9 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->recycling = NULL;
   audio_signal->recall_id = NULL;
 
-  str = ags_config_get(config,
+  config = ags_config_get_instance();
+  
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   audio_signal->samplerate = g_ascii_strtoull(str,
@@ -252,7 +254,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 					      10);
   free(str);
 
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   audio_signal->buffer_size = g_ascii_strtoull(str,

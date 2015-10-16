@@ -264,10 +264,10 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   config = ags_config_get_instance();
   
-  str0 = ags_config_get(config,
+  str0 = ags_config_get_value(config,
 			AGS_CONFIG_SOUNDCARD,
 			"samplerate\0");
-  str0 = ags_config_get(config,
+  str0 = ags_config_get_value(config,
 			AGS_CONFIG_SOUNDCARD,
 			"buffer_size\0");
 

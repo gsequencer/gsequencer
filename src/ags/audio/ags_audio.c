@@ -29,6 +29,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/server/ags_server.h>
+#include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_registry.h>
 
 #include <ags/audio/ags_output.h>
@@ -353,10 +354,10 @@ ags_audio_init(AgsAudio *audio)
   /**/
   config = ags_config_get_instance();
   
-  str0 = ags_config_get(config,
+  str0 = ags_config_get_value(config,
 			AGS_CONFIG_THREAD,
 			"model\0");
-  str1 = ags_config_get(config,
+  str1 = ags_config_get_value(config,
 			AGS_CONFIG_THREAD,
 			"super-threaded-scope\0");
   
@@ -366,12 +367,12 @@ ags_audio_init(AgsAudio *audio)
     if(!g_ascii_strncasecmp(str1,
 			    "audio\0",
 			    6) ||
-       !g_ascii_strncasecmp(ags_config_get(config,
+       !g_ascii_strncasecmp(ags_config_get_value(config,
 					   AGS_CONFIG_THREAD,
 					   "super-threaded-scope\0"),
 			    "channel\0",
 			    8) ||
-       !g_ascii_strncasecmp(ags_config_get(config,
+       !g_ascii_strncasecmp(ags_config_get_value(config,
 					   AGS_CONFIG_THREAD,
 					   "super-threaded-scope\0"),
 			    "recycling\0",

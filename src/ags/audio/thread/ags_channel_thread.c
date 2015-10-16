@@ -65,9 +65,6 @@ enum{
 static gpointer ags_channel_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_channel_thread_parent_connectable_interface;
 
-extern pthread_mutex_t ags_application_mutex;
-extern AgsConfig *config;
-
 GType
 ags_channel_thread_get_type()
 {
@@ -161,16 +158,20 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
 {
   AgsThread *thread;
 
+  AgsConfig *config;
+
   gchar *str0, *str1;
   
   thread = (AgsThread *) channel_thread;
 
-  str0 = ags_config_get(config,
-			AGS_CONFIG_SOUNDCARD,
-			"samplerate\0");
-  str0 = ags_config_get(config,
-			AGS_CONFIG_SOUNDCARD,
-			"buffer_size\0");
+  config = ags_config_get_instance();
+  
+  str0 = ags_config_get_value(config,
+			      AGS_CONFIG_SOUNDCARD,
+			      "samplerate\0");
+  str0 = ags_config_get_value(config,
+			      AGS_CONFIG_SOUNDCARD,
+			      "buffer_size\0");
 
   if(str0 == NULL || str1 == NULL){
     thread->freq = AGS_CHANNEL_THREAD_DEFAULT_JIFFIE;
@@ -325,6 +326,7 @@ ags_channel_thread_run(AgsThread *thread)
   
   gint stage;
   
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
   if(!thread->rt_setup){
@@ -365,16 +367,17 @@ ags_channel_thread_run(AgsThread *thread)
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
 
   channel = channel_thread->channel;
-  
-  /* lookup channel mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
 
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup channel mutex */
+  pthread_mutex_lock(application_mutex);
 
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) channel);
       
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get soundcard play */
   pthread_mutex_lock(channel_mutex);

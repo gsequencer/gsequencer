@@ -38,8 +38,6 @@ void ags_apply_synth_finalize(GObject *gobject);
 
 void ags_apply_synth_launch(AgsTask *task);
 
-extern AgsConfig *config;
-
 /**
  * SECTION:ags_apply_synth
  * @short_description: apply synth to channel
@@ -168,6 +166,8 @@ ags_apply_synth_launch(AgsTask *task)
 
   AgsApplySynth *apply_synth;
 
+  AgsConfig *config;
+  
   GList *stream;
 
   gint wave;
@@ -217,7 +217,9 @@ ags_apply_synth_launch(AgsTask *task)
   channel = apply_synth->start_channel;
   soundcard = AGS_SOUNDCARD(channel>soundcard);
 
-  str = ags_config_get(config,
+  config = ags_config_get_instance();
+  
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
@@ -225,7 +227,7 @@ ags_apply_synth_launch(AgsTask *task)
 				 10);
   free(str);
 
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,

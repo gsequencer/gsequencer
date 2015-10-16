@@ -177,8 +177,6 @@ GList* ags_recall_factory_create_ladspa(AgsAudio *audio,
 
 static gpointer ags_recall_factory_parent_class = NULL;
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_recall_factory_get_type (void)
 {
@@ -2527,16 +2525,18 @@ ags_recall_factory_create(AgsAudio *audio,
   GList *list;
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(audio_mutex);
 

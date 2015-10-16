@@ -529,7 +529,7 @@ ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
 
   if(*machine == NULL){
     if(!machine_type_is_registered){
-      application_context_register_machine_type();
+      ags_xorg_application_context_register_types();
 
       machine_type_is_registered = TRUE;
     }
@@ -1858,7 +1858,7 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 				   NULL));
 
   if(!widget_type_is_registered){
-    application_context_register_widget_type();
+    ags_xorg_application_context_register_types();
 
     widget_type_is_registered = TRUE;
   }

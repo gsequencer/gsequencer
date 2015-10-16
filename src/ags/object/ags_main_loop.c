@@ -31,7 +31,7 @@ void ags_main_loop_base_init(AgsMainLoopInterface *interface);
  * @include: ags/object/ags_main_loop.h
  *
  * The #AgsMainLoop interface gives you a unique access to toplevel
- * threads and has to be implemented for it.
+ * threads.
  */
 
 GType
@@ -80,6 +80,47 @@ ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
   g_return_val_if_fail(main_loop_interface->get_tree_lock, NULL);
 
   return(main_loop_interface->get_tree_lock(main_loop));
+}
+
+/**
+ * ags_main_loop_set_async_queue:
+ * @main_loop: the #AgsMainLoop
+ * @async_queue: the #AgsAsyncQueue
+ *
+ * Sets the asynchronous queue.
+ *
+ * Since: 0.4
+ */
+void
+ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_if_fail(main_loop_interface->set_application_context);
+  main_loop_interface->set_application_context(main_loop, application_context);
+}
+
+/**
+ * ags_main_loop_get_async_queue:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Retrieve the #AgsAsyncQueue.
+ *
+ * Returns: the #AgsAsyncQueue
+ *
+ * Since: 0.4
+ */
+AgsApplicationContext*
+ags_main_loop_get_application_context(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), NULL);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->get_application_context, NULL);
+  return(main_loop_interface->get_application_context(main_loop));
 }
 
 /**

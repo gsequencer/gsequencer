@@ -29,6 +29,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/server/ags_server.h>
+#include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_registry.h>
 
 #include <ags/file/ags_file_link.h>
@@ -308,10 +309,10 @@ ags_channel_init(AgsChannel *channel)
   /* config */
   config = ags_config_get_instance();
   
-  str0 = ags_config_get(config,
+  str0 = ags_config_get_value(config,
 			AGS_CONFIG_THREAD,
 			"model\0");
-  str1 = ags_config_get(config,
+  str1 = ags_config_get_value(config,
 			AGS_CONFIG_THREAD,
 			"super-threaded-scope\0");
   

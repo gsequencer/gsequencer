@@ -102,8 +102,6 @@ static gpointer ags_recall_recycling_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_recycling_parent_connectable_interface;
 static AgsDynamicConnectableInterface *ags_recall_recycling_parent_dynamic_connectable_interface;
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_recall_recycling_get_type()
 {
@@ -650,6 +648,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
   if(source == NULL ||
@@ -666,15 +665,16 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   }
   
   channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
-    
-  pthread_mutex_lock(&(ags_application_mutex));
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+ 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) channel);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(mutex);
 
@@ -798,6 +798,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
   GList *list;
   
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
   if(source == NULL ||
@@ -813,16 +814,17 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
     return;
   }
 
- channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
+  channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
 
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+  pthread_mutex_lock(application_mutex);
+  
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) channel);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(mutex);
 
@@ -907,6 +909,7 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
 
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
   if(destination == NULL ||
@@ -924,14 +927,15 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
   
   channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
 
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+  pthread_mutex_lock(application_mutex);
+  
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) channel);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(mutex);
 
@@ -1005,6 +1009,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
 
   GList *list;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
   if(destination == NULL ||
@@ -1020,16 +1025,17 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
     return;
   }
 
- channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
-  
-  pthread_mutex_lock(&(ags_application_mutex));
-  
+  channel = AGS_RECALL_CHANNEL_RUN(recall->parent)->source;
+    
   mutex_manager = ags_mutex_manager_get_instance();
-
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) channel);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(mutex);
 

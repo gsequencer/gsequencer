@@ -493,7 +493,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     gdouble delay;
     guint attack;
 
-    soundcard = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->soundcard);
+    soundcard = AGS_RECALL_AUDIO(delay_audio)->audio->soundcard;
 
     run_order = 0; //NOTE:JK: old hide_ref style
 
@@ -529,7 +529,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     gdouble delay;
     guint attack;
 
-    soundcard = AGS_DEVOUT(AGS_RECALL_AUDIO(delay_audio)->audio->soundcard);
+    soundcard = AGS_RECALL_AUDIO(delay_audio)->audio->soundcard;
 
     /* delay and attack */
     //TODO:JK: unclear

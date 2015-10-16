@@ -49,8 +49,6 @@ void ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact);
 void ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
 void ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
 
-extern AgsConfig *config;
-
 /**
  * SECTION:ags_delay_audio
  * @short_description: delay audio 
@@ -586,6 +584,9 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 				       gpointer user_data)
 {
   AgsDelayAudio *delay_audio;
+
+  AgsConfig *config;
+  
   GList *port;
   guint buffer_size;
   guint samplerate;
@@ -600,17 +601,19 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
   soundcard = AGS_RECALL(delay_audio)->soundcard;
   port = NULL;
 
-  str = ags_config_get(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0");
+  config = ags_config_get_instance();
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
   free(str);
   
-  str = ags_config_get(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0");
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
   samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
@@ -883,6 +886,8 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
 {
   AgsDelayAudio *delay_audio;
 
+  AgsConfig *config;
+  
   guint buffer_size;
   guint samplerate;
   gdouble delay;
@@ -890,7 +895,9 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
   
   GValue value = {0,};
 
-  str = ags_config_get(config,
+  config = ags_config_get_instance();
+
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
@@ -898,7 +905,7 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
 				 10);
   free(str);
 
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,
@@ -921,6 +928,8 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
 {
   AgsDelayAudio *delay_audio;
 
+  AgsConfig *config;
+  
   guint buffer_size;
   guint samplerate;
   gdouble delay;
@@ -930,7 +939,9 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
-  str = ags_config_get(config,
+  config = ags_config_get_instance();
+
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
@@ -938,7 +949,7 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
 				 10);
   free(str);
 
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,

@@ -207,18 +207,18 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
   config = ags_config_get_instance();
   
   if(gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->autosave_thread)){
-    ags_config_set(config,
+    ags_config_set_value(config,
 		   AGS_CONFIG_GENERIC,
 		   "autosave-thread\0",
 		   "true\0");
   }else{
-    ags_config_set(config,
+    ags_config_set_value(config,
 		   AGS_CONFIG_GENERIC,
 		   "autosave-thread\0",
 		   "false\0");
   }
 
-  ags_config_set(config,
+  ags_config_set_value(config,
 		 AGS_CONFIG_GENERIC,
 		 "segmentation\0",
 		 gtk_combo_box_text_get_active_text(generic_preferences->segmentation));
@@ -238,7 +238,7 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
   config = ags_config_get_instance();
   
   gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
-			       ((!strncmp(ags_config_get(config,
+			       ((!strncmp(ags_config_get_value(config,
 							 AGS_CONFIG_GENERIC,
 							 "autosave-thread\0"),
 					  "true\0",

@@ -698,7 +698,7 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
   config = ags_config_get_instance();
   
   /* retrieve some presets */
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "samplerate\0");
   samplerate = g_ascii_strtoull(str,
@@ -706,7 +706,7 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
 				10);
   free(str);
 
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,

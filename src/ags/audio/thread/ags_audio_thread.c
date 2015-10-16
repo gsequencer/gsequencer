@@ -72,9 +72,6 @@ enum{
 static gpointer ags_audio_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_audio_thread_parent_connectable_interface;
 
-extern pthread_mutex_t ags_application_mutex;
-extern AgsConfig *config;
-
 GType
 ags_audio_thread_get_type()
 {
@@ -168,14 +165,18 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
 {
   AgsThread *thread;
 
+  AgsConfig *config;
+
   gchar *str0, *str1;
   
   thread = (AgsThread *) audio_thread;
 
-  str0 = ags_config_get(config,
+  config = ags_config_get_instance();
+  
+  str0 = ags_config_get_value(config,
 			AGS_CONFIG_SOUNDCARD,
 			"samplerate\0");
-  str0 = ags_config_get(config,
+  str0 = ags_config_get_value(config,
 			AGS_CONFIG_SOUNDCARD,
 			"buffer_size\0");
 
@@ -332,6 +333,7 @@ ags_audio_thread_run(AgsThread *thread)
 
   gint stage;
   
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *output_mutex;
 
@@ -374,6 +376,8 @@ ags_audio_thread_run(AgsThread *thread)
   audio = audio_thread->audio;
   playback_domain = audio->playback_domain;
   
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   //  g_message(" --- a");
   
   /* start - wait until signaled */
@@ -398,14 +402,12 @@ ags_audio_thread_run(AgsThread *thread)
   pthread_mutex_unlock(audio_thread->wakeup_mutex);
 
   /* lookup audio mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-
-  mutex_manager = ags_mutex_manager_get_instance();
+  pthread_mutex_lock(application_mutex);
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
       
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* do audio processing */
   pthread_mutex_lock(audio_mutex);
@@ -416,14 +418,12 @@ ags_audio_thread_run(AgsThread *thread)
   
   while(output != NULL){
     /* lookup output mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
-
-    mutex_manager = ags_mutex_manager_get_instance();
+    pthread_mutex_lock(application_mutex);
 
     output_mutex = ags_mutex_manager_lookup(mutex_manager,
 					    (GObject *) output);
       
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get playback */
     pthread_mutex_lock(output_mutex);
@@ -463,14 +463,12 @@ ags_audio_thread_run(AgsThread *thread)
 
   while(output != NULL){
     /* lookup output mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
-
-    mutex_manager = ags_mutex_manager_get_instance();
+    pthread_mutex_lock(application_mutex);
 
     output_mutex = ags_mutex_manager_lookup(mutex_manager,
 					    (GObject *) output);
       
-    pthread_mutex_unlock(&(ags_application_mutex));
+    pthread_mutex_unlock(application_mutex);
 
     /* get playback */
     pthread_mutex_lock(output_mutex);

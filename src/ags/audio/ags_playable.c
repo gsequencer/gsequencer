@@ -511,12 +511,12 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   }else{
     application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
-    application_mutex = ags_soundcard_get_application_mutex(AGS_SOUNDCARD(soundcard));
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
     /* lookup soundcard mutex */
     pthread_mutex_lock(application_mutex);
-
-    mutex_manager = ags_concurrency_provider_get_mutex_manager(AGS_CONCURRENCY_PROVIDER(application_context));
     
     soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
 					       soundcard);

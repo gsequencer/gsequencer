@@ -32,6 +32,7 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/server/ags_server.h>
+#include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_registry.h>
 
 #include <ags/file/ags_file.h>

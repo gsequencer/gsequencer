@@ -144,8 +144,6 @@ static AgsPluginInterface *ags_count_beats_audio_run_parent_plugin_interface;
 
 static guint count_beats_audio_run_signals[LAST_SIGNAL];
 
-extern pthread_mutex_t ags_application_mutex;
-
 GType
 ags_count_beats_audio_run_get_type()
 {
@@ -963,7 +961,8 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   AgsApplicationContext *application_context;
   
   gboolean sequencer, notation;
-
+  
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
   
   AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done(recall);
@@ -973,15 +972,16 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 
   soundcard = AGS_RECALL_AUDIO(count_beats_audio)->audio->soundcard;
 
-  /* lookup soundcard mutex */
-  pthread_mutex_lock(&(ags_application_mutex));
-  
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* lookup soundcard mutex */
+  pthread_mutex_lock(application_mutex);
   
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     soundcard);
   
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
   
   /* get application_context */
   pthread_mutex_lock(soundcard_mutex);
@@ -991,11 +991,11 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   pthread_mutex_unlock(soundcard_mutex);
   
   /* get main loop */
-  pthread_mutex_lock(&(ags_application_mutex));
+  pthread_mutex_lock(application_mutex);
 
   main_loop = application_context->main_loop;
 
-  pthread_mutex_unlock(&(ags_application_mutex));
+  pthread_mutex_unlock(application_mutex);
 
   /* get async queue */
   async_queue = (AgsThread *) ags_thread_find_type(main_loop,

@@ -312,7 +312,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   //FIXME:JK: work-around for alsa-handle
   str = g_strdup_printf("%s,0", g_value_get_string(&value));
   g_message("%s\0", str);
-  ags_config_set(config,
+  ags_config_set_value(config,
 		 AGS_CONFIG_SOUNDCARD,
 		 "alsa-handle\0",
 		 str);
@@ -321,7 +321,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   /* samplerate */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->samplerate));
-  ags_config_set(config,
+  ags_config_set_value(config,
 		 AGS_CONFIG_SOUNDCARD,
 		 "samplerate\0",
 		 str);
@@ -330,7 +330,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   /* buffer size */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->buffer_size));
-  ags_config_set(config,
+  ags_config_set_value(config,
 		 AGS_CONFIG_SOUNDCARD,
 		 "buffer-size\0",
 		 str);
@@ -339,7 +339,7 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
   /* dsp channels */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->audio_channels));
-  ags_config_set(config,
+  ags_config_set_value(config,
 		 AGS_CONFIG_SOUNDCARD,
 		 "dsp-channels\0",
 		 str);
@@ -384,7 +384,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   /* refresh */
   ags_soundcard_list_cards(soundcard,
 			   &card_id, &card_name);    
-  str = ags_config_get(config,
+  str = ags_config_get_value(config,
 		       AGS_CONFIG_SOUNDCARD,
 		       "alsa-handle\0");
   g_message("%s\0", str);
