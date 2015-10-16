@@ -182,12 +182,12 @@ ags_append_audio_launch(AgsTask *task)
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
-			AGS_CONFIG_THREAD,
-			"model\0");
+			      AGS_CONFIG_THREAD,
+			      "model\0");
   
   str1 = ags_config_get_value(config,
-			AGS_CONFIG_THREAD,
-			"super-threaded-scope\0");
+			      AGS_CONFIG_THREAD,
+			      "super-threaded-scope\0");
   
   if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",

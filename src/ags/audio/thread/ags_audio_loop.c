@@ -90,6 +90,7 @@ void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlayb
 
 enum{
   PROP_0,
+  PROP_SOUNDCARD,
   PROP_PLAY_RECALL,
   PROP_PLAY_CHANNEL,
   PROP_PLAY_AUDIO,
@@ -164,13 +165,29 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 
   /* properties */
   /**
+   * AgsAudioLoop:soundcard:
+   *
+   * The assigned #AgsAudio.
+   * 
+   * Since: 0.7.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard assigned to\0",
+				   "The AgsSoundcard it is assigned to.\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
    * AgsAudioLoop:play-recall:
    *
    * An #AgsRecall to add for playback.
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("play_recall\0",
+  param_spec = g_param_spec_object("play-recall\0",
 				   "recall to run\0",
 				   "A recall to run\0",
 				   AGS_TYPE_RECALL,
@@ -186,7 +203,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("play_channel\0",
+  param_spec = g_param_spec_object("play-channel\0",
 				   "channel to run\0",
 				   "A channel to run\0",
 				   AGS_TYPE_CHANNEL,
@@ -202,7 +219,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    * 
    * Since: 0.4
    */
-  param_spec = g_param_spec_object("play_audio\0",
+  param_spec = g_param_spec_object("play-audio\0",
 				   "audio to run\0",
 				   "A audio to run\0",
 				   AGS_TYPE_AUDIO,
@@ -298,7 +315,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   g_atomic_int_set(&(audio_loop->last_sync), 0);
 
   audio_loop->application_context = NULL;
-
+  audio_loop->soundcard = NULL;
+  
   /* tree lock mutex */
   pthread_mutexattr_init(&(audio_loop->tree_lock_mutexattr));
   pthread_mutexattr_settype(&(audio_loop->tree_lock_mutexattr), PTHREAD_MUTEX_RECURSIVE);
@@ -335,6 +353,23 @@ ags_audio_loop_set_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = g_value_get_object(value);
+
+      if(audio_loop->soundcard != NULL){
+	g_object_unref(audio_loop->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      audio_loop->soundcard = soundcard;
+    }
+    break;
   case PROP_PLAY_RECALL:
     {
       AgsRecall *recall;
@@ -388,6 +423,11 @@ ags_audio_loop_get_property(GObject *gobject,
   audio_loop = AGS_AUDIO_LOOP(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, audio_loop->soundcard);
+    }
+    break;
   case PROP_PLAY_RECALL:
     {
       g_value_set_pointer(value, audio_loop->play_recall);

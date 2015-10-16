@@ -247,20 +247,29 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   config = ags_config_get_instance();
   
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0");
-  audio_signal->samplerate = g_ascii_strtoull(str,
-					      NULL,
-					      10);
-  free(str);
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+  
+  if(str != NULL){
+    audio_signal->samplerate = g_ascii_strtoull(str,
+						NULL,
+						10);
+    free(str);
+  }else{
+    audio_signal->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
 
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0");
-  audio_signal->buffer_size = g_ascii_strtoull(str,
-					       NULL,
-					       10);
-  free(str);
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  if(str != NULL){
+    audio_signal->buffer_size = g_ascii_strtoull(str,
+						 NULL,
+						 10);
+    free(str);
+  }else{
+    audio_signal->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
   
   audio_signal->format = AGS_SOUNDCARD_RESOLUTION_16_BIT;
 

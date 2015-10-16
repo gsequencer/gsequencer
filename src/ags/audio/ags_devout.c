@@ -2063,31 +2063,27 @@ ags_devout_realloc_buffer(AgsDevout *devout)
   }
   
   devout->buffer[0] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
-
-  if(devout->buffer[0] != NULL){
-    free(devout->buffer[0]);
-  }
   
   /* AGS_DEVOUT_BUFFER_1 */
-  devout->buffer[1] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
-
   if(devout->buffer[1] != NULL){
     free(devout->buffer[1]);
   }
+
+  devout->buffer[1] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
   
   /* AGS_DEVOUT_BUFFER_2 */
-  devout->buffer[2] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
-
   if(devout->buffer[2] != NULL){
     free(devout->buffer[2]);
   }
+
+  devout->buffer[2] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
   
   /* AGS_DEVOUT_BUFFER_3 */
-  devout->buffer[3] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
-
   if(devout->buffer[3] != NULL){
     free(devout->buffer[3]);
   }
+  
+  devout->buffer[3] = (void *) malloc(devout->dsp_channels * devout->buffer_size * word_size);
 }
 
 /**

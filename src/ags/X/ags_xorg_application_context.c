@@ -32,6 +32,7 @@
 #include <ags/thread/ags_thread_pool.h>
 
 #include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_devout.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
 
@@ -218,7 +219,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   AGS_APPLICATION_CONTEXT(xorg_application_context)->log = NULL;
 
   /**/
-  config = ags_config_new(NULL);
+  config = ags_config_get_instance();
   AGS_APPLICATION_CONTEXT(xorg_application_context)->config = config;
   g_object_set(config,
 	       "application-context\0", xorg_application_context,
@@ -242,6 +243,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_free(config_file);
   
   /* AgsSoundcard */
+  xorg_application_context->soundcard = NULL;
   soundcard = ags_devout_new(xorg_application_context);
   xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
 						       soundcard);

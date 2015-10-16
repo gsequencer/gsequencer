@@ -66,6 +66,7 @@ void ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, 
 
 enum{
   PROP_0,
+  PROP_SOUNDCARD,
   PROP_AUDIO,
 };
 
@@ -127,6 +128,22 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
   gobject->finalize = ags_audio_thread_finalize;
 
   /* properties */
+  /**
+   * AgsAudioThread:soundcard:
+   *
+   * The assigned #AgsAudio.
+   * 
+   * Since: 0.7.0
+   */
+  param_spec = g_param_spec_object("soundcard\0",
+				   "soundcard assigned to\0",
+				   "The AgsSoundcard it is assigned to.\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
   /**
    * AgsAudioThread:audio:
    *
@@ -201,7 +218,9 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
 
   g_atomic_int_set(&(audio_thread->flags),
 		   0);
-
+  
+  audio_thread->soundcard = NULL;
+  
   /* start */
   pthread_mutexattr_init(&(audio_thread->wakeup_attr));
   pthread_mutexattr_settype(&(audio_thread->wakeup_attr),
@@ -238,6 +257,23 @@ ags_audio_thread_set_property(GObject *gobject,
   audio_thread = AGS_AUDIO_THREAD(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = g_value_get_object(value);
+
+      if(audio_thread->soundcard != NULL){
+	g_object_unref(audio_thread->soundcard);
+      }
+
+      if(soundcard != NULL){
+	g_object_ref(soundcard);
+      }
+
+      audio_thread->soundcard = soundcard;
+    }
+    break;
   case PROP_AUDIO:
     {
       AgsAudio *audio;
@@ -272,6 +308,11 @@ ags_audio_thread_get_property(GObject *gobject,
   audio_thread = AGS_AUDIO_THREAD(gobject);
 
   switch(prop_id){
+  case PROP_SOUNDCARD:
+    {
+      g_value_set_object(value, audio_thread->soundcard);
+    }
+    break;
   case PROP_AUDIO:
     {
       g_value_set_object(value, G_OBJECT(audio_thread->audio));

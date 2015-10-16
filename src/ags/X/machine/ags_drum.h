@@ -84,6 +84,6 @@ struct _AgsDrumClass
 
 GType ags_drum_get_type(void);
 
-AgsDrum* ags_drum_new(GObject *devout);
+AgsDrum* ags_drum_new(GObject *soundcard);
 
 #endif /*__AGS_DRUM_H__*/

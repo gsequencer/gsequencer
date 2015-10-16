@@ -292,7 +292,7 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
 {
   /*
   GtkFileChooserDialog *file_chooser;
-  AgsDevout *devout;
+  AgsDevout *soundcard;
   AgsPlayAudioFile *play_audio_file;
   AgsAudioFile *audio_file;
   char *name;
@@ -301,12 +301,12 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
   file_chooser = link_editor->file_chooser;
   audio_file = link_editor->audio_file;
 
-  devout = AGS_DEVOUT(AGS_AUDIO(AGS_LINE_EDITOR(gtk_widget_get_ancestor((GtkWidget *) link_editor, AGS_TYPE_LINE_EDITOR))->channel->audio)->devout);
+  soundcard = AGS_DEVOUT(AGS_AUDIO(AGS_LINE_EDITOR(gtk_widget_get_ancestor((GtkWidget *) link_editor, AGS_TYPE_LINE_EDITOR))->channel->audio)->soundcard);
 
   if(toggle_button->active){
     /* AgsPlayAudioFile * /
     play_audio_file = ags_play_audio_file_new();
-    play_audio_file->devout = devout;
+    play_audio_file->soundcard = soundcard;
     ags_play_audio_file_connect(play_audio_file);
 
     g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_PLAY_AUDIO_FILE), play_audio_file);
@@ -332,7 +332,7 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
       audio_file->flags |= AGS_AUDIO_FILE_ALL_CHANNELS;
       audio_file->name = (gchar *) name;
 
-      ags_audio_file_set_devout(audio_file, devout);
+      ags_audio_file_set_soundcard(audio_file, soundcard);
 
       ags_audio_file_open(audio_file);
 
@@ -343,10 +343,10 @@ ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLi
 
     /* AgsDevout * /
     g_static_mutex_lock(&mutex);
-    devout->play_recall = g_list_append(devout->play_recall, play_audio_file);
-    devout->flags |= AGS_DEVOUT_PLAY_RECALL;
-    devout->play_recall_ref++;
-    AGS_DEVOUT_GET_CLASS(devout)->run((void *) devout);
+    soundcard->play_recall = g_list_append(soundcard->play_recall, play_audio_file);
+    soundcard->flags |= AGS_DEVOUT_PLAY_RECALL;
+    soundcard->play_recall_ref++;
+    AGS_DEVOUT_GET_CLASS(soundcard)->run((void *) soundcard);
     g_static_mutex_unlock(&mutex);
   }else{
     if((AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE & (link_editor->flags)) == 0){
