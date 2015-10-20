@@ -86,7 +86,13 @@ enum{
 static gpointer ags_thread_parent_class = NULL;
 static guint thread_signals[LAST_SIGNAL];
 
-__thread AgsThread *ags_thread_self = NULL;
+// __thread AgsThread *ags_thread_self = NULL;
+
+/* Key for the thread-specific AgsThread */
+static pthread_key_t ags_thread_key;
+
+/* Once-only initialisation of the key */
+static pthread_once_t ags_thread_key_once = PTHREAD_ONCE_INIT;
 
 GType
 ags_thread_get_type()
@@ -2069,6 +2075,9 @@ ags_thread_loop(void *ptr)
   
   //  ags_thread_self =
   thread = AGS_THREAD(ptr);
+  pthread_key_create(&ags_thread_key, NULL);
+  pthread_once(&ags_thread_key_once, NULL);
+  pthread_setspecific(ags_thread_key, thread);
   
   main_loop = ags_thread_get_toplevel(thread);
 
@@ -2931,6 +2940,11 @@ ags_thread_find_type(AgsThread *thread, GType type)
   return(NULL);
 }
 
+AgsThread*
+ags_thread_self(void)
+{
+  return((AgsThread *) pthread_getspecific(ags_thread_key));
+}
 
 /**
  * ags_thread_new:
