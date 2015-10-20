@@ -86,7 +86,7 @@ enum{
 static gpointer ags_thread_parent_class = NULL;
 static guint thread_signals[LAST_SIGNAL];
 
-//__thread AgsThread *ags_thread_self = NULL;
+__thread AgsThread *ags_thread_self = NULL;
 
 GType
 ags_thread_get_type()
