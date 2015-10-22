@@ -23,6 +23,13 @@ CLEANFILES =
 
 man1_MANS = gsequencer.1 midi2xml.1
 
+libags_ladir = $(datadir)/src
+libags_thread_ladir = $(datadir)/src
+libags_server_ladir = $(datadir)/src
+libags_audio_ladir = $(datadir)/src
+libags_gui_ladir = $(datadir)/src
+libgsequencer_ladir = $(datadir)/src
+
 appdatadir = $(datadir)/applications
 appdata_DATA = gsequencer.desktop
 
@@ -34,34 +41,34 @@ doc_DATA = README
 
 # documentation
 userdoc = \
-	doc/usersBook.xml \
-	doc/appa.xml \
-	doc/usersBook/appb.xml \
-	doc/usersBook/chap1.xml \
-	doc/usersBook/chap2.xml \
-	doc/usersBook/chap3.xml \
-	doc/usersBook/chap4.xml \
-	doc/usersBook/preface.xml
+	docs/usersBook.xml \
+	docs/appa.xml \
+	docs/usersBook/appb.xml \
+	docs/usersBook/chap1.xml \
+	docs/usersBook/chap2.xml \
+	docs/usersBook/chap3.xml \
+	docs/usersBook/chap4.xml \
+	docs/usersBook/preface.xml
 
 userdocimages = \
-	$(top_srcdir)/doc/images/ags_export_window.png \
-	$(top_srcdir)/doc/images/ags_machine_properties-input.png \
-	$(top_srcdir)/doc/images/ags_machine_properties-resize_channels.png \
-	$(top_srcdir)/doc/images/ags_navigation.png \
-	$(top_srcdir)/doc/images/ags_synth.png \
-	$(top_srcdir)/doc/images/ags_audio_preferences.png \
-	$(top_srcdir)/doc/images/ags_ffplayer.png \
-	$(top_srcdir)/doc/images/ags_ladspa_browser.png \
-	$(top_srcdir)/doc/images/ags_machine_properties-link_input.png \
-	$(top_srcdir)/doc/images/ags_matrix.png \
-	$(top_srcdir)/doc/images/ags_panel.png \
-	$(top_srcdir)/doc/images/ags-toolbar.png \
-	$(top_srcdir)/doc/images/ags_drum.png \
-	$(top_srcdir)/doc/images/ags_generic_preferences.png \
-	$(top_srcdir)/doc/images/ags_machine_properties-output.png \
-	$(top_srcdir)/doc/images/ags_mixer.png \
-	$(top_srcdir)/doc/images/ags_performance_preferences.png \
-	$(top_srcdir)/doc/images/ags_server_preferences.png
+	$(top_srcdir)/docs/images/ags_export_window.png \
+	$(top_srcdir)/docs/images/ags_machine_properties-input.png \
+	$(top_srcdir)/docs/images/ags_machine_properties-resize_channels.png \
+	$(top_srcdir)/docs/images/ags_navigation.png \
+	$(top_srcdir)/docs/images/ags_synth.png \
+	$(top_srcdir)/docs/images/ags_audio_preferences.png \
+	$(top_srcdir)/docs/images/ags_ffplayer.png \
+	$(top_srcdir)/docs/images/ags_ladspa_browser.png \
+	$(top_srcdir)/docs/images/ags_machine_properties-link_input.png \
+	$(top_srcdir)/docs/images/ags_matrix.png \
+	$(top_srcdir)/docs/images/ags_panel.png \
+	$(top_srcdir)/docs/images/ags-toolbar.png \
+	$(top_srcdir)/docs/images/ags_drum.png \
+	$(top_srcdir)/docs/images/ags_generic_preferences.png \
+	$(top_srcdir)/docs/images/ags_machine_properties-output.png \
+	$(top_srcdir)/docs/images/ags_mixer.png \
+	$(top_srcdir)/docs/images/ags_performance_preferences.png \
+	$(top_srcdir)/docs/images/ags_server_preferences.png
 
 EXTRA_DIST += $(userdoc) $(userdocimages)
 
@@ -69,14 +76,20 @@ EXTRA_DIST += $(top_srcdir)/src/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl
 
 # libraries and gsequencer
 libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object_c_sources) $(libags_file_c_sources) $(libags_file_task_c_sources)
+libags_la_HEADERS = $(libags_h_headers) $(libags_util_h_headers) $(libags_object_h_headers) $(libags_file_h_headers) $(libags_file_task_h_headers)
 libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sources) $(libags_thread_task_c_sources)
+libags_thread_la_HEADERS = $(libags_thread_h_headers) $(libags_thread_file_h_headers) $(libags_thread_task_h_headers)
 libags_server_la_SOURCES = $(libags_server_c_sources)
+libags_server_la_HEADERS = $(libags_server_h_headers)
 libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
+libags_audio_la_HEADERS = $(libags_audio_h_headers) $(libags_audio_thread_h_headers) $(libags_audio_file_h_headers) $(libags_audio_midi_h_headers) $(libags_audio_task_h_headers) $(libags_audio_task_recall_h_headers) $(libags_audio_recall_h_headers)  $(libags_plugin_h_headers)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
+libags_gui_la_HEADERS = $(libags_gui_h_headers)
 libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+libgsequencer_la_HEADERS = $(libgsequencer_h_headers) $(libgsequencer_file_h_headers) $(libgsequencer_thread_h_headers) $(libgsequencer_task_h_headers) $(libgsequencer_machine_h_headers) $(libgsequencer_editor_h_headers)
 gsequencer_SOURCES = $(gsequencer_c_sources)
 
-include_HEADERS = $(libags_util_c_headers) $(libags_lib_c_headers) $(libags_object_c_headers) $(libags_file_c_headers) $(libags_file_task_c_headers) $(libags_thread_c_headers) $(libags_thread_file_c_headers) $(libags_thread_task_c_headers) $(libags_server_c_headers) $(libags_audio_c_headers) $(libags_audio_thread_c_headers) $(libags_audio_file_c_headers) $(libags_audio_midi_c_headers) $(libags_audio_task_c_headers) $(libags_audio_task_recall_c_headers) $(libags_audio_recall_c_headers)  $(libags_plugin_c_headers) $(libags_widget_c_headers)
+nobase_include_HEADERS = $(libags_h_headers) $(libags_util_h_headers) $(libags_lib_h_headers) $(libags_object_h_headers) $(libags_file_h_headers) $(libags_file_task_h_headers) $(libags_thread_h_headers) $(libags_thread_file_h_headers) $(libags_thread_task_h_headers) $(libags_server_h_headers) $(libags_audio_h_headers) $(libags_audio_thread_h_headers) $(libags_audio_file_h_headers) $(libags_audio_midi_h_headers) $(libags_audio_task_h_headers) $(libags_audio_task_recall_h_headers) $(libags_audio_recall_h_headers)  $(libags_plugin_h_headers) $(libags_widget_h_headers) $(libgsequencer_h_headers) $(libgsequencer_file_h_headers) $(libgsequencer_thread_h_headers) $(libgsequencer_task_h_headers) $(libgsequencer_machine_h_headers) $(libgsequencer_editor_h_headers)
 
 # testing
 libgsequencer_test_a_SOURCES = $(gsequencer_functional_test_runtime_sources) $(gsequencer_functional_test_x_util_sources)
@@ -112,7 +125,7 @@ libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_
 # application gsequencer
 gsequencer_CFLAGS= $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
 gsequencer_LDFLAGS= -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -pthread
-gsequencer_LDADD = -dlopen libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # static gsequencer
 gsequencer_static_SOURCES = $(gsequencer_c_sources)
@@ -241,7 +254,7 @@ libags_thread_h_sources = \
 	src/ags/thread/ags_task_thread.h \
 	src/ags/thread/ags_thread_application_context.h \
 	src/ags/thread/ags_thread_pool.h \
-	src/ags/thread/ags_thread-posix.h \
+	src/ags/thread/ags_thread_posix.h \
 	src/ags/thread/ags_timestamp_factory.h \
 	src/ags/thread/ags_timestamp_thread.h \
 	src/ags/thread/ags_timestamp.h
