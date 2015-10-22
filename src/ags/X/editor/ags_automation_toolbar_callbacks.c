@@ -127,8 +127,8 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
 
   history = gtk_combo_box_get_active(combo_box);
 
-  zoom = exp2((double) history - 4.0);
-  zoom_old = exp2((double) automation_toolbar->zoom_history - 4.0);
+  zoom = exp2((double) history - 2.0);
+  zoom_old = exp2((double) automation_toolbar->zoom_history - 2.0);
 
   automation_toolbar->zoom_history = history;
 

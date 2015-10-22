@@ -53,6 +53,8 @@ typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
 typedef struct _AgsAccountingTable AgsAccountingTable;
 
+static __thread AgsThread *ags_thread_self;
+
 typedef enum{
   AGS_THREAD_RUNNING                 = 1,
   AGS_THREAD_IDLE                    = 1 << 1,
@@ -171,6 +173,9 @@ struct _AgsAccountingTable
 };
 
 GType ags_thread_get_type();
+
+void ags_thread_resume_handler(int sig);
+void ags_thread_suspend_handler(int sig);
 
 AgsAccountingTable* ags_accounting_table_alloc(AgsThread *thread);
 void ags_accounting_table_set_sanity(GList *table,

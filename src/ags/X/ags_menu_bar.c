@@ -168,7 +168,7 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("FPlayer\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REMOVE, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Automation\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
@@ -268,7 +268,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_list_free(list2_start);
 
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
-                    G_CALLBACK (ags_menu_bar_remove_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_bar_automation_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 

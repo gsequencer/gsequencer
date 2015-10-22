@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ags_combo_box_text.h"
+#include <ags/lib/ags_combo_box_text.h>
 
 /**
  * SECTION:ags_combo_box_text

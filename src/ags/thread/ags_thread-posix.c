@@ -32,6 +32,8 @@
 #include <unistd.h>
 #include <math.h>
 
+#include <errno.h>
+
 void ags_thread_class_init(AgsThreadClass *thread);
 void ags_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_thread_init(AgsThread *thread);
@@ -46,9 +48,6 @@ void ags_thread_get_property(GObject *gobject,
 void ags_thread_connect(AgsConnectable *connectable);
 void ags_thread_disconnect(AgsConnectable *connectable);
 void ags_thread_finalize(GObject *gobject);
-
-void ags_thread_resume_handler(int sig);
-void ags_thread_suspend_handler(int sig);
 
 void ags_thread_real_start(AgsThread *thread);
 void* ags_thread_timer(void *ptr);
@@ -86,7 +85,7 @@ enum{
 static gpointer ags_thread_parent_class = NULL;
 static guint thread_signals[LAST_SIGNAL];
 
-//__thread AgsThread *ags_thread_self = NULL;
+extern __thread AgsThread *ags_thread_self;
 
 GType
 ags_thread_get_type()
@@ -527,18 +526,18 @@ ags_thread_finalize(GObject *gobject)
 void
 ags_thread_resume_handler(int sig)
 {
-  //  if(ags_thread_self == NULL)
-  //    return;
+  if(ags_thread_self == NULL){
+    return;
+  }
 
 #ifdef AGS_DEBUG
   g_message("thread resume\0");
 #endif
 
-  //FIXME:JK: 
-  //  g_atomic_int_and(&(ags_thread_self->flags),
-  //		   (~AGS_THREAD_SUSPENDED));
+  g_atomic_int_and(&(ags_thread_self->flags),
+		   (~AGS_THREAD_SUSPENDED));
 
-  //  ags_thread_resume(ags_thread_self);
+  ags_thread_resume(ags_thread_self);
 }
 
 void
@@ -548,18 +547,18 @@ ags_thread_suspend_handler(int sig)
   g_message("thread suspend\0");
 #endif
 
-  //  if(ags_thread_self == NULL)
-  //    return;
+  if(ags_thread_self == NULL){
+    return;
+  }
 
-  //  if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0) return;
+  if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0) return;
 
-  //FIXME:JK: 
-  //  g_atomic_int_or(&(ags_thread_self->flags),
-  //		  AGS_THREAD_SUSPENDED);
+  g_atomic_int_or(&(ags_thread_self->flags),
+		  AGS_THREAD_SUSPENDED);
 
-  //  ags_thread_suspend(ags_thread_self);
+  ags_thread_suspend(ags_thread_self);
 
-  //  do sigsuspend(&(ags_thread_self->wait_mask)); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0);
+  do sigsuspend(&(ags_thread_self->wait_mask)); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0);
 }
 
 AgsAccountingTable*
@@ -2067,8 +2066,8 @@ ags_thread_loop(void *ptr)
     }
   }
   
-  //  ags_thread_self =
-  thread = AGS_THREAD(ptr);
+  ags_thread_self =
+    thread = AGS_THREAD(ptr);
   
   main_loop = ags_thread_get_toplevel(thread);
 
