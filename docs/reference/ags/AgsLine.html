@@ -1,0 +1,582 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLine: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="pt09.html" title="Part IX. Graphical user interface">
+<link rel="prev" href="ags-ags-ladspa-browser-callbacks.html" title="ags_ladspa_browser_callbacks">
+<link rel="next" href="ags-ags-line-callbacks.html" title="ags_line_callbacks">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsLine.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsLine.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsLine.properties" class="shortcut">Properties</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#AgsLine.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="pt09.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-ags-ladspa-browser-callbacks.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-ags-line-callbacks.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsLine"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsLine.top_of_page"></a>AgsLine</span></h2>
+<p>AgsLine — A composite widget to visualize <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a></p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsLine.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsLine.html#ags-line-set-channel" title="ags_line_set_channel ()">ags_line_set_channel</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsLine.html#ags-line-group-changed" title="ags_line_group_changed ()">ags_line_group_changed</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsLine.html#ags-line-find-next-grouped" title="ags_line_find_next_grouped ()">ags_line_find_next_grouped</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsLine.html#ags-line-map-recall" title="ags_line_map_recall ()">ags_line_map_recall</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsLine.html#ags-line-find-port" title="ags_line_find_port ()">ags_line_find_port</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsLine.html" title="AgsLine"><span class="returnvalue">AgsLine</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsLine.html#ags-line-new" title="ags_line_new ()">ags_line_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsLine.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsLine.html#AgsLine--channel" title="The “channel” property">channel</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsPad.html" title="AgsPad"><span class="type">AgsPad</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsLine.html#AgsLine--pad" title="The “pad” property">pad</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsLine.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsLine.html#AgsLine-find-port" title="The “find-port” signal">find-port</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsLine.html#AgsLine-group-changed" title="The “group-changed” signal">group-changed</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsLine.html#AgsLine-map-recall" title="The “map-recall” signal">map-recall</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsLine.html#AgsLine-set-channel" title="The “set-channel” signal">set-channel</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsLine.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsLine.html#AGS-LINE-DEFAULT-VERSION:CAPS" title="AGS_LINE_DEFAULT_VERSION">AGS_LINE_DEFAULT_VERSION</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsLine.html#AGS-LINE-DEFAULT-BUILD-ID:CAPS" title="AGS_LINE_DEFAULT_BUILD_ID">AGS_LINE_DEFAULT_BUILD_ID</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsLine.html#AgsLineFlags" title="enum AgsLineFlags">AgsLineFlags</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsLine.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> <GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+        <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+            <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                    <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkBox">GtkBox</GTKDOCLINK>
+                        <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkVBox">GtkVBox</GTKDOCLINK>
+                            <span class="lineart">╰──</span> AgsLine
+                                <span class="lineart">├──</span> <a class="link" href="AgsDrumInputLine.html" title="AgsDrumInputLine">AgsDrumInputLine</a>
+                                <span class="lineart">├──</span> <a class="link" href="AgsDrumOutputLine.html" title="AgsDrumOutputLine">AgsDrumOutputLine</a>
+                                <span class="lineart">├──</span> <a class="link" href="AgsMixerInputLine.html" title="AgsMixerInputLine">AgsMixerInputLine</a>
+                                <span class="lineart">├──</span> <a class="link" href="AgsPanelInputLine.html" title="AgsPanelInputLine">AgsPanelInputLine</a>
+                                <span class="lineart">╰──</span> <a class="link" href="AgsSynthInputLine.html" title="AgsSynthInputLine">AgsSynthInputLine</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLine.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/X/ags_line.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLine.description"></a><h2>Description</h2>
+<p><a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> is a composite widget to visualize <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>. It should be
+packed by an <a class="link" href="AgsPad.html" title="AgsPad"><span class="type">AgsPad</span></a>. It may contain <a class="link" href="AgsLineMember.html" title="AgsLineMember"><span class="type">AgsLineMember</span></a> to modify ports of
+<a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsLine.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-line-set-channel"></a><h3>ags_line_set_channel ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_line_set_channel (<em class="parameter"><code><a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line</code></em>,
+                      <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>Is emitted as channel gets modified.</p>
+<div class="refsect3">
+<a name="id-1.10.16.10.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>line</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>channel</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to set</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-group-changed"></a><h3>ags_line_group_changed ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_line_group_changed (<em class="parameter"><code><a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+<p>Is emitted as group is changed.</p>
+<div class="refsect3">
+<a name="id-1.10.16.10.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>line</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-find-next-grouped"></a><h3>ags_line_find_next_grouped ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_line_find_next_grouped (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *line</code></em>);</pre>
+<p>Retrieve next grouped line.</p>
+<div class="refsect3">
+<a name="id-1.10.16.10.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>line</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-map-recall"></a><h3>ags_line_map_recall ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_line_map_recall (<em class="parameter"><code><a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line</code></em>,
+                     <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> output_pad_start</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.10.16.10.5.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>line</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.10.16.10.5.5"></a><h4>Returns</h4>
+<p> an <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing all related <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a></p>
+<p>Is emitted as group is changed.</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-find-port"></a><h3>ags_line_find_port ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_line_find_port (<em class="parameter"><code><a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.10.16.10.6.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>line</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.10.16.10.6.5"></a><h4>Returns</h4>
+<p> an <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing all related <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a></p>
+<p>Lookup ports of assigned recalls.</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-new"></a><h3>ags_line_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLine.html" title="AgsLine"><span class="returnvalue">AgsLine</span></a> *
+ags_line_new (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *pad</code></em>,
+              <em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
+<p>Creates an <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a></p>
+<div class="refsect3">
+<a name="id-1.10.16.10.7.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>pad</p></td>
+<td class="parameter_description"><p>the parent pad</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>channel</p></td>
+<td class="parameter_description"><p>the channel to visualize</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.10.16.10.7.6"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsLine.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AGS-LINE-DEFAULT-VERSION:CAPS"></a><h3>AGS_LINE_DEFAULT_VERSION</h3>
+<pre class="programlisting">#define AGS_LINE_DEFAULT_VERSION "0.4.2\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LINE-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_LINE_DEFAULT_BUILD_ID</h3>
+<pre class="programlisting">#define AGS_LINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLineFlags"></a><h3>enum AgsLineFlags</h3>
+<div class="refsect3">
+<a name="id-1.10.16.11.4.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-LINE-CONNECTED:CAPS"></a>AGS_LINE_CONNECTED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-LINE-GROUPED:CAPS"></a>AGS_LINE_GROUPED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-LINE-MAPPED-RECALL:CAPS"></a>AGS_LINE_MAPPED_RECALL</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-LINE-PREMAPPED-RECALL:CAPS"></a>AGS_LINE_PREMAPPED_RECALL</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsLine.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsLine--channel"></a><h3>The <code class="literal">“channel”</code> property</h3>
+<pre class="programlisting">  “channel”                  <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *</pre>
+<p>The assigned <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to visualize.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLine--pad"></a><h3>The <code class="literal">“pad”</code> property</h3>
+<pre class="programlisting">  “pad”                      <a class="link" href="AgsPad.html" title="AgsPad"><span class="type">AgsPad</span></a> *</pre>
+<p>The assigned <a class="link" href="AgsPad.html" title="AgsPad"><span class="type">AgsPad</span></a>.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsLine.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsLine-find-port"></a><h3>The <code class="literal">“find-port”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> user_data)</pre>
+<div class="refsect3">
+<a name="id-1.10.16.13.2.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>line</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.10.16.13.2.5"></a><h4>Returns</h4>
+<p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> with associated ports</p>
+<p>The ::find-port retrieves all associated ports.</p>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLine-group-changed"></a><h3>The <code class="literal">“group-changed”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> user_data)</pre>
+<p>The ::group-changed signal notifies about changed grouping. This
+normally happens as toggling group button in <a class="link" href="AgsPad.html" title="AgsPad"><span class="type">AgsPad</span></a> or <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a>.</p>
+<div class="refsect3">
+<a name="id-1.10.16.13.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>line</p></td>
+<td class="parameter_description"><p>the object group changed</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLine-map-recall"></a><h3>The <code class="literal">“map-recall”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>    arg1,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> user_data)</pre>
+<p>The ::map-recall as recalls should be mapped.</p>
+<div class="refsect3">
+<a name="id-1.10.16.13.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>line</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLine-set-channel"></a><h3>The <code class="literal">“set-channel”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line,
+               <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *channel,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> user_data)</pre>
+<p>The ::set-channel signal notifies about changed channel.</p>
+<div class="refsect3">
+<a name="id-1.10.16.13.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>line</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>channel</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to set</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

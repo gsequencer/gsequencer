@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<indexdiv id="api-index-0.5">
+<indexdiv><title>C</title>
+<indexentry><primaryie linkends="ags-cell-pattern-new"><link linkend="ags-cell-pattern-new">ags_cell_pattern_new</link>, function in <link linkend="AgsCellPattern">AgsCellPattern</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>P</title>
+<indexentry><primaryie linkends="ags-pattern-box-new"><link linkend="ags-pattern-box-new">ags_pattern_box_new</link>, function in <link linkend="AgsPatternBox">AgsPatternBox</link></primaryie></indexentry>
+</indexdiv>
+</indexdiv>

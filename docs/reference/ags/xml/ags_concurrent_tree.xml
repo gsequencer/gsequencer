@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="AgsConcurrentTree">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsConcurrentTree.top_of_page">AgsConcurrentTree</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsConcurrentTree</refname>
+<refpurpose>unique access to recalls</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsConcurrentTree.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-concurrent-tree-get-lock">ags_concurrent_tree_get_lock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-concurrent-tree-get-parent-lock">ags_concurrent_tree_get_parent_lock</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-concurrent-tree-lock-context">ags_concurrent_tree_lock_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-concurrent-tree-unlock-context">ags_concurrent_tree_unlock_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsConcurrentTree.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsConcurrentTree
+</screen>
+</refsect1>
+
+<refsect1 id="AgsConcurrentTree.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_concurrent_tree.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsConcurrentTree.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> interface provides essential locks to process tree
+with parallelism.</para>
+
+</refsect1>
+<refsect1 id="AgsConcurrentTree.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-concurrent-tree-get-lock" role="function" condition="since:0.6">
+<title>ags_concurrent_tree_get_lock&#160;()</title>
+<indexterm zone="ags-concurrent-tree-get-lock" role="0.6"><primary>ags_concurrent_tree_get_lock</primary></indexterm>
+<programlisting language="C"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
+ags_concurrent_tree_get_lock (<parameter><link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> *concurrent_tree</parameter>);</programlisting>
+<para>Get tree node's lock.</para>
+<para role="since">Since: <link linkend="api-index-0.6">0.6</link></para></refsect2>
+<refsect2 id="ags-concurrent-tree-get-parent-lock" role="function" condition="since:0.6">
+<title>ags_concurrent_tree_get_parent_lock&#160;()</title>
+<indexterm zone="ags-concurrent-tree-get-parent-lock" role="0.6"><primary>ags_concurrent_tree_get_parent_lock</primary></indexterm>
+<programlisting language="C"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
+ags_concurrent_tree_get_parent_lock (<parameter><link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> *concurrent_tree</parameter>);</programlisting>
+<para>Get tree node's parent lock.</para>
+<para role="since">Since: <link linkend="api-index-0.6">0.6</link></para></refsect2>
+<refsect2 id="ags-concurrent-tree-lock-context" role="function">
+<title>ags_concurrent_tree_lock_context&#160;()</title>
+<indexterm zone="ags-concurrent-tree-lock-context"><primary>ags_concurrent_tree_lock_context</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_concurrent_tree_lock_context (<parameter><link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> *concurrent_tree</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-concurrent-tree-unlock-context" role="function">
+<title>ags_concurrent_tree_unlock_context&#160;()</title>
+<indexterm zone="ags-concurrent-tree-unlock-context"><primary>ags_concurrent_tree_unlock_context</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_concurrent_tree_unlock_context (<parameter><link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> *concurrent_tree</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsConcurrentTree.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

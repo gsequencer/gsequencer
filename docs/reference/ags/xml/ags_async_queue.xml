@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="AgsAsyncQueue">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsAsyncQueue.top_of_page">AgsAsyncQueue</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAsyncQueue</refname>
+<refpurpose>asynchronous run</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsAsyncQueue.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-async-queue-set-run-mutex">ags_async_queue_set_run_mutex</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-async-queue-get-run-mutex">ags_async_queue_get_run_mutex</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-async-queue-set-run-cond">ags_async_queue_set_run_cond</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="pthread-cond-t"><returnvalue>pthread_cond_t</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-async-queue-get-run-cond">ags_async_queue_get_run_cond</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-async-queue-set-run">ags_async_queue_set_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-async-queue-is-run">ags_async_queue_is_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAsyncQueue.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAsyncQueue
+</screen>
+</refsect1>
+
+<refsect1 id="AgsAsyncQueue.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_async_queue.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsAsyncQueue.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> interface determines if it is safe to run.</para>
+
+</refsect1>
+<refsect1 id="AgsAsyncQueue.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-async-queue-set-run-mutex" role="function">
+<title>ags_async_queue_set_run_mutex&#160;()</title>
+<indexterm zone="ags-async-queue-set-run-mutex"><primary>ags_async_queue_set_run_mutex</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_async_queue_set_run_mutex (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                               <parameter><link linkend="pthread-mutex-t"><type>pthread_mutex_t</type></link> *run_mutex</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-async-queue-get-run-mutex" role="function">
+<title>ags_async_queue_get_run_mutex&#160;()</title>
+<indexterm zone="ags-async-queue-get-run-mutex"><primary>ags_async_queue_get_run_mutex</primary></indexterm>
+<programlisting language="C"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
+ags_async_queue_get_run_mutex (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-async-queue-set-run-cond" role="function">
+<title>ags_async_queue_set_run_cond&#160;()</title>
+<indexterm zone="ags-async-queue-set-run-cond"><primary>ags_async_queue_set_run_cond</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_async_queue_set_run_cond (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                              <parameter><link linkend="pthread-cond-t"><type>pthread_cond_t</type></link> *run_cond</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-async-queue-get-run-cond" role="function">
+<title>ags_async_queue_get_run_cond&#160;()</title>
+<indexterm zone="ags-async-queue-get-run-cond"><primary>ags_async_queue_get_run_cond</primary></indexterm>
+<programlisting language="C"><link linkend="pthread-cond-t"><returnvalue>pthread_cond_t</returnvalue></link>&#160;*
+ags_async_queue_get_run_cond (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-async-queue-set-run" role="function">
+<title>ags_async_queue_set_run&#160;()</title>
+<indexterm zone="ags-async-queue-set-run"><primary>ags_async_queue_set_run</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_async_queue_set_run (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>,
+                         <parameter><link linkend="gboolean"><type>gboolean</type></link> is_run</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-async-queue-is-run" role="function">
+<title>ags_async_queue_is_run&#160;()</title>
+<indexterm zone="ags-async-queue-is-run"><primary>ags_async_queue_is_run</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_async_queue_is_run (<parameter><link linkend="AgsAsyncQueue"><type>AgsAsyncQueue</type></link> *async_queue</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsAsyncQueue.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

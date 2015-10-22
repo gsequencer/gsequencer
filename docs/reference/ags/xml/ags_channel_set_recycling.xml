@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="AgsChannelSetRecycling">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsChannelSetRecycling.top_of_page">AgsChannelSetRecycling</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsChannelSetRecycling</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsChannelSetRecycling.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsChannelSetRecycling"><returnvalue>AgsChannelSetRecycling</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-channel-set-recycling-new">ags_channel_set_recycling_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsChannelSetRecycling.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsChannelSetRecycling
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsChannelSetRecycling.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsChannelSetRecycling.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-channel-set-recycling-new" role="function">
+<title>ags_channel_set_recycling_new&#160;()</title>
+<indexterm zone="ags-channel-set-recycling-new"><primary>ags_channel_set_recycling_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsChannelSetRecycling"><returnvalue>AgsChannelSetRecycling</returnvalue></link>&#160;*
+ags_channel_set_recycling_new (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                               <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *first_recycling</parameter>,
+                               <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *last_recycling</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsChannelSetRecycling.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

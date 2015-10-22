@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<indexdiv id="api-index-0.7.0">
+<indexdiv><title>A</title>
+<indexentry><primaryie linkends="AgsAudioLoop--soundcard"><link linkend="AgsAudioLoop--soundcard">AgsAudioLoop:soundcard</link>, object property in <link linkend="AgsAudioLoop">AgsAudioLoop</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioThread--soundcard"><link linkend="AgsAudioThread--soundcard">AgsAudioThread:soundcard</link>, object property in <link linkend="AgsAudioThread">AgsAudioThread</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-add-automation"><link linkend="ags-audio-add-automation">ags_audio_add_automation</link>, function in <link linkend="AgsAudio">AgsAudio</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-remove-automation"><link linkend="ags-audio-remove-automation">ags_audio_remove_automation</link>, function in <link linkend="AgsAudio">AgsAudio</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>C</title>
+<indexentry><primaryie linkends="AgsChannelThread--soundcard"><link linkend="AgsChannelThread--soundcard">AgsChannelThread:soundcard</link>, object property in <link linkend="AgsChannelThread">AgsChannelThread</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-concurrency-provider-get-main-loop"><link linkend="ags-concurrency-provider-get-main-loop">ags_concurrency_provider_get_main_loop</link>, function in <link linkend="AgsConcurrencyProvider">AgsConcurrencyProvider</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-concurrency-provider-get-mutex-manager"><link linkend="ags-concurrency-provider-get-mutex-manager">ags_concurrency_provider_get_mutex_manager</link>, function in <link linkend="AgsConcurrencyProvider">AgsConcurrencyProvider</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-concurrency-provider-get-task-thread"><link linkend="ags-concurrency-provider-get-task-thread">ags_concurrency_provider_get_task_thread</link>, function in <link linkend="AgsConcurrencyProvider">AgsConcurrencyProvider</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-concurrency-provider-get-thread-pool"><link linkend="ags-concurrency-provider-get-thread-pool">ags_concurrency_provider_get_thread_pool</link>, function in <link linkend="AgsConcurrencyProvider">AgsConcurrencyProvider</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>D</title>
+<indexentry><primaryie linkends="AgsDevout--application-mutex"><link linkend="AgsDevout--application-mutex">AgsDevout:application-mutex</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>S</title>
+<indexentry><primaryie linkends="ags-soundcard-get-application-mutex"><link linkend="ags-soundcard-get-application-mutex">ags_soundcard_get_application_mutex</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-delay-factor"><link linkend="ags-soundcard-get-delay-factor">ags_soundcard_get_delay_factor</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-application-mutex"><link linkend="ags-soundcard-set-application-mutex">ags_soundcard_set_application_mutex</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-delay-factor"><link linkend="ags-soundcard-set-delay-factor">ags_soundcard_set_delay_factor</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+</indexdiv>
+</indexdiv>

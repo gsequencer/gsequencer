@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsEnvelopeChannel:  Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Reference Manual">
+<link rel="up" href="ch01.html" title="[Insert title here]">
+<link rel="prev" href="AgsEnvelopeAudioSignal.html" title="AgsEnvelopeAudioSignal">
+<link rel="next" href="AgsEnvelopeChannelRun.html" title="AgsEnvelopeChannelRun">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsEnvelopeChannel.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsEnvelopeChannel.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsEnvelopeChannel.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsEnvelopeAudioSignal.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsEnvelopeChannelRun.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsEnvelopeChannel"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsEnvelopeChannel.top_of_page"></a>AgsEnvelopeChannel</span></h2>
+<p>AgsEnvelopeChannel — envelopes channel</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsEnvelopeChannel.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody><tr>
+<td class="function_type">
+<a class="link" href="AgsEnvelopeChannel.html" title="AgsEnvelopeChannel"><span class="returnvalue">AgsEnvelopeChannel</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsEnvelopeChannel.html#ags-envelope-channel-new" title="ags_envelope_channel_new ()">ags_envelope_channel_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEnvelopeChannel.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsEnvelopeChannel.html#AgsEnvelopeChannel--attack" title="The “attack” property">attack</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsEnvelopeChannel.html#AgsEnvelopeChannel--decay" title="The “decay” property">decay</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsEnvelopeChannel.html#AgsEnvelopeChannel--ratio" title="The “ratio” property">ratio</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsEnvelopeChannel.html#AgsEnvelopeChannel--release" title="The “release” property">release</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsEnvelopeChannel.html#AgsEnvelopeChannel--sustain" title="The “sustain” property">sustain</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEnvelopeChannel.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> <a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+        <span class="lineart">╰──</span> <a class="link" href="AgsRecallChannel.html" title="AgsRecallChannel">AgsRecallChannel</a>
+            <span class="lineart">╰──</span> AgsEnvelopeChannel
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsEnvelopeChannel.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/audio/recall/ags_envelope_channel.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsEnvelopeChannel.description"></a><h2>Description</h2>
+<p>The <a class="link" href="AgsEnvelopeChannel.html" title="AgsEnvelopeChannel"><span class="type">AgsEnvelopeChannel</span></a> class provides ports to the effect processor.</p>
+</div>
+<div class="refsect1">
+<a name="AgsEnvelopeChannel.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-envelope-channel-new"></a><h3>ags_envelope_channel_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsEnvelopeChannel.html" title="AgsEnvelopeChannel"><span class="returnvalue">AgsEnvelopeChannel</span></a> *
+ags_envelope_channel_new ();</pre>
+<p>Creates an <a class="link" href="AgsEnvelopeChannel.html" title="AgsEnvelopeChannel"><span class="type">AgsEnvelopeChannel</span></a></p>
+<div class="refsect3">
+<a name="id-1.2.105.8.2.5"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsEnvelopeChannel.html" title="AgsEnvelopeChannel"><span class="type">AgsEnvelopeChannel</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.6">0.6</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsEnvelopeChannel.other_details"></a><h2>Types and Values</h2>
+</div>
+<div class="refsect1">
+<a name="AgsEnvelopeChannel.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsEnvelopeChannel--attack"></a><h3>The <code class="literal">“attack”</code> property</h3>
+<pre class="programlisting">  “attack”                   <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</pre>
+<p>Attack of the channel.</p>
+<p>Flags: Read / Write</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEnvelopeChannel--decay"></a><h3>The <code class="literal">“decay”</code> property</h3>
+<pre class="programlisting">  “decay”                    <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</pre>
+<p>Decay of the channel.</p>
+<p>Flags: Read / Write</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEnvelopeChannel--ratio"></a><h3>The <code class="literal">“ratio”</code> property</h3>
+<pre class="programlisting">  “ratio”                    <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</pre>
+<p>The ratio of the envelope.</p>
+<p>Flags: Read / Write</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEnvelopeChannel--release"></a><h3>The <code class="literal">“release”</code> property</h3>
+<pre class="programlisting">  “release”                  <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</pre>
+<p>Release of the channel.</p>
+<p>Flags: Read / Write</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEnvelopeChannel--sustain"></a><h3>The <code class="literal">“sustain”</code> property</h3>
+<pre class="programlisting">  “sustain”                  <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *</pre>
+<p>Sustain of the channel.</p>
+<p>Flags: Read / Write</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

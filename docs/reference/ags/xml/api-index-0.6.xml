@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<indexdiv id="api-index-0.6">
+<indexdiv><title>C</title>
+<indexentry><primaryie linkends="ags-concurrent-tree-get-lock"><link linkend="ags-concurrent-tree-get-lock">ags_concurrent_tree_get_lock</link>, function in <link linkend="AgsConcurrentTree">AgsConcurrentTree</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-concurrent-tree-get-parent-lock"><link linkend="ags-concurrent-tree-get-parent-lock">ags_concurrent_tree_get_parent_lock</link>, function in <link linkend="AgsConcurrentTree">AgsConcurrentTree</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>E</title>
+<indexentry><primaryie linkends="ags-envelope-audio-signal-new"><link linkend="ags-envelope-audio-signal-new">ags_envelope_audio_signal_new</link>, function in <link linkend="AgsEnvelopeAudioSignal">AgsEnvelopeAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-envelope-channel-new"><link linkend="ags-envelope-channel-new">ags_envelope_channel_new</link>, function in <link linkend="AgsEnvelopeChannel">AgsEnvelopeChannel</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-envelope-recycling-new"><link linkend="ags-envelope-recycling-new">ags_envelope_recycling_new</link>, function in <link linkend="AgsEnvelopeRecycling">AgsEnvelopeRecycling</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>M</title>
+<indexentry><primaryie linkends="ags-main-loop-get-tree-lock"><link linkend="ags-main-loop-get-tree-lock">ags_main_loop_get_tree_lock</link>, function in <link linkend="AgsMainLoop">AgsMainLoop</link></primaryie></indexentry>
+</indexdiv>
+</indexdiv>

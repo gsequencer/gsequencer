@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsMutexManager: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="thread.html" title="Part VII. Thread - Multi-threaded tree">
+<link rel="prev" href="AgsIteratorThread.html" title="AgsIteratorThread">
+<link rel="next" href="AgsReturnableThread.html" title="AgsReturnableThread">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsMutexManager.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsMutexManager.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="thread.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsIteratorThread.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsReturnableThread.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsMutexManager"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsMutexManager.top_of_page"></a>AgsMutexManager</span></h2>
+<p>AgsMutexManager</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsMutexManager.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="pthread-mutex-t"><span class="returnvalue">pthread_mutex_t</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsMutexManager.html#ags-mutex-manager-get-application-mutex" title="ags_mutex_manager_get_application_mutex ()">ags_mutex_manager_get_application_mutex</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsMutexManager.html#ags-mutex-manager-insert" title="ags_mutex_manager_insert ()">ags_mutex_manager_insert</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsMutexManager.html#ags-mutex-manager-remove" title="ags_mutex_manager_remove ()">ags_mutex_manager_remove</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="pthread-mutex-t"><span class="returnvalue">pthread_mutex_t</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsMutexManager.html#ags-mutex-manager-lookup" title="ags_mutex_manager_lookup ()">ags_mutex_manager_lookup</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsMutexManager.html" title="AgsMutexManager"><span class="returnvalue">AgsMutexManager</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsMutexManager.html#ags-mutex-manager-get-instance" title="ags_mutex_manager_get_instance ()">ags_mutex_manager_get_instance</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsMutexManager.html" title="AgsMutexManager"><span class="returnvalue">AgsMutexManager</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsMutexManager.html#ags-mutex-manager-new" title="ags_mutex_manager_new ()">ags_mutex_manager_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsMutexManager.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> AgsMutexManager
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsMutexManager.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="AgsMutexManager.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-mutex-manager-get-application-mutex"></a><h3>ags_mutex_manager_get_application_mutex ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="pthread-mutex-t"><span class="returnvalue">pthread_mutex_t</span></GTKDOCLINK> *
+ags_mutex_manager_get_application_mutex
+                               (<em class="parameter"><code><a class="link" href="AgsMutexManager.html" title="AgsMutexManager"><span class="type">AgsMutexManager</span></a> *mutex_manager</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-mutex-manager-insert"></a><h3>ags_mutex_manager_insert ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+ags_mutex_manager_insert (<em class="parameter"><code><a class="link" href="AgsMutexManager.html" title="AgsMutexManager"><span class="type">AgsMutexManager</span></a> *mutex_manager</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *lock_object</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="pthread-mutex-t"><span class="type">pthread_mutex_t</span></GTKDOCLINK> *mutex</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-mutex-manager-remove"></a><h3>ags_mutex_manager_remove ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+ags_mutex_manager_remove (<em class="parameter"><code><a class="link" href="AgsMutexManager.html" title="AgsMutexManager"><span class="type">AgsMutexManager</span></a> *mutex_manager</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *lock_object</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-mutex-manager-lookup"></a><h3>ags_mutex_manager_lookup ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="pthread-mutex-t"><span class="returnvalue">pthread_mutex_t</span></GTKDOCLINK> *
+ags_mutex_manager_lookup (<em class="parameter"><code><a class="link" href="AgsMutexManager.html" title="AgsMutexManager"><span class="type">AgsMutexManager</span></a> *mutex_manager</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *lock_object</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-mutex-manager-get-instance"></a><h3>ags_mutex_manager_get_instance ()</h3>
+<pre class="programlisting"><a class="link" href="AgsMutexManager.html" title="AgsMutexManager"><span class="returnvalue">AgsMutexManager</span></a> *
+ags_mutex_manager_get_instance ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-mutex-manager-new"></a><h3>ags_mutex_manager_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsMutexManager.html" title="AgsMutexManager"><span class="returnvalue">AgsMutexManager</span></a> *
+ags_mutex_manager_new ();</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsMutexManager.other_details"></a><h2>Types and Values</h2>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

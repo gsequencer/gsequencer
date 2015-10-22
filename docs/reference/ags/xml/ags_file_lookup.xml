@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="AgsFileLookup">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsFileLookup.top_of_page">AgsFileLookup</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsFileLookup</refname>
+<refpurpose>resolve objects read of file.</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsFileLookup.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-lookup-find-by-node">ags_file_lookup_find_by_node</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-file-lookup-resolve">ags_file_lookup_resolve</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsFileLookup"><returnvalue>AgsFileLookup</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-lookup-new">ags_file_lookup_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFileLookup.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsFile"><type>AgsFile</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsFileLookup--file">file</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsFileLookup--node">node</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="gpointer"><type>gpointer</type></link></entry><entry role="property_name"><link linkend="AgsFileLookup--reference">reference</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFileLookup.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsFileLookup-resolve">resolve</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsFileLookup.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsFileLookup
+</screen>
+</refsect1>
+
+<refsect1 id="AgsFileLookup.includes"><title>Includes</title><synopsis>#include &lt;ags/file/ags_file_lookup.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsFileLookup.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsFileLookup"><type>AgsFileLookup</type></link> resolve objects of file.</para>
+
+</refsect1>
+<refsect1 id="AgsFileLookup.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-file-lookup-find-by-node" role="function">
+<title>ags_file_lookup_find_by_node&#160;()</title>
+<indexterm zone="ags-file-lookup-find-by-node"><primary>ags_file_lookup_find_by_node</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_file_lookup_find_by_node (<parameter><link linkend="GList"><type>GList</type></link> *file_lookup</parameter>,
+                              <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-lookup-resolve" role="function">
+<title>ags_file_lookup_resolve&#160;()</title>
+<indexterm zone="ags-file-lookup-resolve"><primary>ags_file_lookup_resolve</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_lookup_resolve (<parameter><link linkend="AgsFileLookup"><type>AgsFileLookup</type></link> *lookup</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-file-lookup-new" role="function" condition="since:0.4">
+<title>ags_file_lookup_new&#160;()</title>
+<indexterm zone="ags-file-lookup-new" role="0.4"><primary>ags_file_lookup_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsFileLookup"><returnvalue>AgsFileLookup</returnvalue></link>&#160;*
+ags_file_lookup_new ();</programlisting>
+<para>Creates an <link linkend="AgsFileLookup"><type>AgsFileLookup</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsFileLookup"><type>AgsFileLookup</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsFileLookup.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+<refsect1 id="AgsFileLookup.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsFileLookup--file" role="property"><title>The <literal>“file”</literal> property</title>
+<indexterm zone="AgsFileLookup--file"><primary>AgsFileLookup:file</primary></indexterm>
+<programlisting>  “file”                     <link linkend="AgsFile"><type>AgsFile</type></link>&#160;*</programlisting>
+<para>The file it is assigned with.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsFileLookup--node" role="property"><title>The <literal>“node”</literal> property</title>
+<indexterm zone="AgsFileLookup--node"><primary>AgsFileLookup:node</primary></indexterm>
+<programlisting>  “node”                     <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The node it is assigned with.</para><para>Flags: Read / Write</para>
+</refsect2>
+<refsect2 id="AgsFileLookup--reference" role="property"><title>The <literal>“reference”</literal> property</title>
+<indexterm zone="AgsFileLookup--reference"><primary>AgsFileLookup:reference</primary></indexterm>
+<programlisting>  “reference”                <link linkend="gpointer"><type>gpointer</type></link></programlisting>
+<para>The reference it is assigned with.</para><para>Flags: Read / Write</para>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsFileLookup.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsFileLookup-resolve" role="signal"><title>The <literal>“resolve”</literal> signal</title>
+<indexterm zone="AgsFileLookup-resolve"><primary>AgsFileLookup::resolve</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsFileLookup"><type>AgsFileLookup</type></link> *agsfilelookup,
+               <link linkend="gpointer"><type>gpointer</type></link>       user_data)</programlisting>
+<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
+</refsect1>
+
+</refentry>
