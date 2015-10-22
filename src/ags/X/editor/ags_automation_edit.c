@@ -277,10 +277,10 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);
 
-  zoom_factor = 1.0 / 4.0;
+  zoom_factor = 0.25;
 
-  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
-  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 4.0);
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
 
   if((AGS_AUTOMATION_EDIT_RESET_WIDTH & flags) != 0){
     automation_edit->map_width = (guint) ((double) (64 * AGS_AUTOMATION_EDIT_MAX_CONTROLS) * zoom_factor * tact);
@@ -293,8 +293,8 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
     gtk_widget_queue_draw(automation_edit->ruler);
   }
 
-  g_message("%d\0",
-	    automation_edit->map_width);
+  //  g_message("%d\0",
+  //	    automation_edit->map_width);
 
   if((AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR & flags) != 0){
     GtkWidget *widget;

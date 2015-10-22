@@ -612,8 +612,14 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
 
 void
-ags_menu_bar_remove_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+ags_menu_bar_automation_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
+  AgsWindow *window;
+
+  window = gtk_widget_get_ancestor(menu_bar,
+				   AGS_TYPE_WINDOW);
+
+  gtk_widget_show_all(window->automation_window);
 }
 
 void
