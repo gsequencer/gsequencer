@@ -1,4 +1,4 @@
-#                                               -*- Autoconf -*-
+dl#                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
@@ -10,6 +10,7 @@ AC_CONFIG_MACRO_DIR(m4)
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CPP
 AC_PROG_INSTALL
 
 # check for gtk-doc
