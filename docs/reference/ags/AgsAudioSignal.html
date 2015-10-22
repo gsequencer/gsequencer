@@ -1,0 +1,1137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsAudioSignal: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VIII. The audio layer">
+<link rel="prev" href="AgsAudioApplicationContext.html" title="AgsAudioApplicationContext">
+<link rel="next" href="AgsAutomation.html" title="AgsAutomation">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsAudioSignal.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsAudioSignal.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsAudioSignal.properties" class="shortcut">Properties</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#AgsAudioSignal.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsAudioApplicationContext.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsAutomation.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsAudioSignal"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsAudioSignal.top_of_page"></a>AgsAudioSignal</span></h2>
+<p>AgsAudioSignal — Contains the audio data and its alignment</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsAudioSignal.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">signed <GTKDOCLINK HREF="short"><span class="returnvalue">short</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-stream-alloc" title="ags_stream_alloc ()">ags_stream_alloc</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="guint"><span class="returnvalue">guint</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-get-length-till-current" title="ags_audio_signal_get_length_till_current ()">ags_audio_signal_get_length_till_current</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-add-stream" title="ags_audio_signal_add_stream ()">ags_audio_signal_add_stream</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-stream-resize" title="ags_audio_signal_stream_resize ()">ags_audio_signal_stream_resize</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-stream-safe-resize" title="ags_audio_signal_stream_safe_resize ()">ags_audio_signal_stream_safe_resize</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-realloc-buffer-size" title="ags_audio_signal_realloc_buffer_size ()">ags_audio_signal_realloc_buffer_size</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-morph-samplerate" title="ags_audio_signal_morph_samplerate ()">ags_audio_signal_morph_samplerate</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-copy-buffer-to-buffer" title="ags_audio_signal_copy_buffer_to_buffer ()">ags_audio_signal_copy_buffer_to_buffer</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-copy-buffer-to-double-buffer" title="ags_audio_signal_copy_buffer_to_double_buffer ()">ags_audio_signal_copy_buffer_to_double_buffer</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-copy-double-buffer-to-buffer" title="ags_audio_signal_copy_double_buffer_to_buffer ()">ags_audio_signal_copy_double_buffer_to_buffer</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-duplicate-stream" title="ags_audio_signal_duplicate_stream ()">ags_audio_signal_duplicate_stream</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="returnvalue">AgsAudioSignal</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-get-template" title="ags_audio_signal_get_template ()">ags_audio_signal_get_template</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-get-stream-current" title="ags_audio_signal_get_stream_current ()">ags_audio_signal_get_stream_current</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-get-by-recall-id" title="ags_audio_signal_get_by_recall_id ()">ags_audio_signal_get_by_recall_id</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-tile" title="ags_audio_signal_tile ()">ags_audio_signal_tile</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-scale" title="ags_audio_signal_scale ()">ags_audio_signal_scale</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-envelope" title="ags_audio_signal_envelope ()">ags_audio_signal_envelope</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="returnvalue">AgsAudioSignal</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-new" title="ags_audio_signal_new ()">ags_audio_signal_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="returnvalue">AgsAudioSignal</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsAudioSignal.html#ags-audio-signal-new-with-length" title="ags_audio_signal_new_with_length ()">ags_audio_signal_new_with_length</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsAudioSignal.html#AgsAudioSignal--recall-id" title="The “recall-id” property">recall-id</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsAudioSignal.html#AgsAudioSignal--recycling" title="The “recycling” property">recycling</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsAudioSignal.html#AgsAudioSignal--soundcard" title="The “soundcard” property">soundcard</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsAudioSignal.html#AgsAudioSignal-morph-samplerate" title="The “morph-samplerate” signal">morph-samplerate</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsAudioSignal.html#AgsAudioSignal-realloc-buffer-size" title="The “realloc-buffer-size” signal">realloc-buffer-size</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsAudioSignal.html#AgsAudioSignalFlags" title="enum AgsAudioSignalFlags">AgsAudioSignalFlags</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsAudioSignal.html#AgsAttackFlags" title="enum AgsAttackFlags">AgsAttackFlags</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a class="link" href="AgsAudioSignal.html#AgsAttack" title="AgsAttack">AgsAttack</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> AgsAudioSignal
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/audio/ags_audio_signal.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.description"></a><h2>Description</h2>
+<p><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> organizes audio data within a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> whereby data
+pointing to the buffer.</p>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-stream-alloc"></a><h3>ags_stream_alloc ()</h3>
+<pre class="programlisting">signed <GTKDOCLINK HREF="short"><span class="returnvalue">short</span></GTKDOCLINK> *
+ags_stream_alloc (<em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> buffer_size</code></em>);</pre>
+<p>Allocs an audio buffer.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>buffer_size</p></td>
+<td class="parameter_description"><p>the buffer size</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.5.10.2.6"></a><h4>Returns</h4>
+<p> the audio data array</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-get-length-till-current"></a><h3>ags_audio_signal_get_length_till_current ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="guint"><span class="returnvalue">guint</span></GTKDOCLINK>
+ags_audio_signal_get_length_till_current
+                               (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);</pre>
+<p>Counts the buffers from stream_beginning upto stream_current.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.5.10.3.6"></a><h4>Returns</h4>
+<p> the counted length.</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-add-stream"></a><h3>ags_audio_signal_add_stream ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_add_stream (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);</pre>
+<p>Adds a buffer at the end of the stream.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-stream-resize"></a><h3>ags_audio_signal_stream_resize ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_stream_resize (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> length</code></em>);</pre>
+<p>Resizes an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a>'s stream but be carefull with shrinking.
+This function may crash the application.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to resize.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>length</p></td>
+<td class="parameter_description"><p>a guint as the new length.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-stream-safe-resize"></a><h3>ags_audio_signal_stream_safe_resize ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_stream_safe_resize (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                     <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> length</code></em>);</pre>
+<p>Resizes an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a>'s stream but doesn't shrink more than the
+current stream position.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.6.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>length</p></td>
+<td class="parameter_description"><p>a guint</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-realloc-buffer-size"></a><h3>ags_audio_signal_realloc_buffer_size ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_realloc_buffer_size (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                      <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> buffer_size</code></em>);</pre>
+<p>Realloc the stream to the new buffer size.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.7.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>buffer_size</p></td>
+<td class="parameter_description"><p>the buffer size</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-morph-samplerate"></a><h3>ags_audio_signal_morph_samplerate ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_morph_samplerate (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> samplerate</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="double"><span class="type">double</span></GTKDOCLINK> k_morph</code></em>);</pre>
+<p>Morph audio quality to new samplerate.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.8.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>samplerate</p></td>
+<td class="parameter_description"><p>the new samplerate</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>k_morph</p></td>
+<td class="parameter_description"><p>reserved for future usage</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-copy-buffer-to-buffer"></a><h3>ags_audio_signal_copy_buffer_to_buffer ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_copy_buffer_to_buffer
+                               (<em class="parameter"><code>signed <GTKDOCLINK HREF="short"><span class="type">short</span></GTKDOCLINK> *destination</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> dchannels</code></em>,
+                                <em class="parameter"><code>signed <GTKDOCLINK HREF="short"><span class="type">short</span></GTKDOCLINK> *source</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> schannels</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> size</code></em>);</pre>
+<p>Copy a buffer to an other buffer.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>destination</p></td>
+<td class="parameter_description"><p>destination buffer</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>dchannels</p></td>
+<td class="parameter_description"><p>destination audio channels</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>source</p></td>
+<td class="parameter_description"><p>source buffer</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>schannels</p></td>
+<td class="parameter_description"><p>source audio channels</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>size</p></td>
+<td class="parameter_description"><p>frame count to copy</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-copy-buffer-to-double-buffer"></a><h3>ags_audio_signal_copy_buffer_to_double_buffer ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_copy_buffer_to_double_buffer
+                               (<em class="parameter"><code><GTKDOCLINK HREF="double"><span class="type">double</span></GTKDOCLINK> *destination</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> dchannels</code></em>,
+                                <em class="parameter"><code>signed <GTKDOCLINK HREF="short"><span class="type">short</span></GTKDOCLINK> *source</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> schannels</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> size</code></em>);</pre>
+<p>Copy a buffer to an other buffer.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.10.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>destination</p></td>
+<td class="parameter_description"><p>destination buffer</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>dchannels</p></td>
+<td class="parameter_description"><p>destination audio channels</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>source</p></td>
+<td class="parameter_description"><p>source buffer</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>schannels</p></td>
+<td class="parameter_description"><p>source audio channels</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>size</p></td>
+<td class="parameter_description"><p>frame count to copy</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-copy-double-buffer-to-buffer"></a><h3>ags_audio_signal_copy_double_buffer_to_buffer ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_copy_double_buffer_to_buffer
+                               (<em class="parameter"><code>signed <GTKDOCLINK HREF="short"><span class="type">short</span></GTKDOCLINK> *destination</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> dchannels</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="double"><span class="type">double</span></GTKDOCLINK> *source</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> schannels</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> size</code></em>);</pre>
+<p>Copy a buffer to an other buffer.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.11.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>destination</p></td>
+<td class="parameter_description"><p>destination buffer</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>dchannels</p></td>
+<td class="parameter_description"><p>destination audio channels</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>source</p></td>
+<td class="parameter_description"><p>source buffer</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>schannels</p></td>
+<td class="parameter_description"><p>source audio channels</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>size</p></td>
+<td class="parameter_description"><p>frame count to copy</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-duplicate-stream"></a><h3>ags_audio_signal_duplicate_stream ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_duplicate_stream (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                   <em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *template</code></em>);</pre>
+<p>Copy stream of one audio signal to another</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.12.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>destination <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>template</p></td>
+<td class="parameter_description"><p>source <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-get-template"></a><h3>ags_audio_signal_get_template ()</h3>
+<pre class="programlisting"><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="returnvalue">AgsAudioSignal</span></a> *
+ags_audio_signal_get_template (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *audio_signal</code></em>);</pre>
+<p>Retrieve the template audio signal.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.13.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.5.10.13.6"></a><h4>Returns</h4>
+<p> the template <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-get-stream-current"></a><h3>ags_audio_signal_get_stream_current ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_audio_signal_get_stream_current (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *audio_signal</code></em>,
+                                     <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall_id</code></em>);</pre>
+<p>Retrieve next current stream of <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> list.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.14.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recall_id</p></td>
+<td class="parameter_description"><p>the matching <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.5.10.14.6"></a><h4>Returns</h4>
+<p> next <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> matching <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-get-by-recall-id"></a><h3>ags_audio_signal_get_by_recall_id ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_audio_signal_get_by_recall_id (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *audio_signal</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall_id</code></em>);</pre>
+<p>Retrieve next audio signal refering to <em class="parameter"><code>recall_id</code></em>
+</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.15.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recall_id</p></td>
+<td class="parameter_description"><p>matching <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.5.10.15.6"></a><h4>Returns</h4>
+<p> matching <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-tile"></a><h3>ags_audio_signal_tile ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_tile (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                       <em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *template</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> length</code></em>);</pre>
+<p>Tile audio signal data.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.16.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>template</p></td>
+<td class="parameter_description"><p>the source <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>frame_count</p></td>
+<td class="parameter_description"><p>new frame count</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-scale"></a><h3>ags_audio_signal_scale ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_scale (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                        <em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *template</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> length</code></em>);</pre>
+<p>Scale audio signal data.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.17.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>template</p></td>
+<td class="parameter_description"><p>the source <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>length</p></td>
+<td class="parameter_description"><p>new frame count</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-envelope"></a><h3>ags_audio_signal_envelope ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_audio_signal_envelope (<em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> attack</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> decay</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> sustain</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> release</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> ratio</code></em>);</pre>
+<p>Envelope audio signal.</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.6.7">0.6.7</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-new"></a><h3>ags_audio_signal_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="returnvalue">AgsAudioSignal</span></a> *
+ags_audio_signal_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *soundcard</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall_id</code></em>);</pre>
+<p>Creates a <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a>, with defaults of <em class="parameter"><code>soundcard</code></em>
+, linking <em class="parameter"><code>recycling</code></em>
+ tree
+and refering to <em class="parameter"><code>recall_id</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.19.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>soundcard</p></td>
+<td class="parameter_description"><p>the assigned <GTKDOCLINK HREF="AgsSoundcard"><span class="type">AgsSoundcard</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recall_id</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>, it can be NULL if <a class="link" href="AgsAudioSignal.html#AGS-AUDIO-SIGNAL-TEMPLATE:CAPS"><code class="literal">AGS_AUDIO_SIGNAL_TEMPLATE</code></a> is set</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.5.10.19.6"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-audio-signal-new-with-length"></a><h3>ags_audio_signal_new_with_length ()</h3>
+<pre class="programlisting"><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="returnvalue">AgsAudioSignal</span></a> *
+ags_audio_signal_new_with_length (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *soundcard</code></em>,
+                                  <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling</code></em>,
+                                  <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recall_id</code></em>,
+                                  <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> length</code></em>);</pre>
+<p>Creates a <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a>, with defaults of <em class="parameter"><code>soundcard</code></em>
+, linking <em class="parameter"><code>recycling</code></em>
+ tree
+and refering to <em class="parameter"><code>recall_id</code></em>
+.
+The audio data is tiled to <em class="parameter"><code>length</code></em>
+ frame count.</p>
+<div class="refsect3">
+<a name="id-1.9.5.10.20.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>soundcard</p></td>
+<td class="parameter_description"><p>the assigned <GTKDOCLINK HREF="AgsSoundcard"><span class="type">AgsSoundcard</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recall_id</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>, it can be NULL if <a class="link" href="AgsAudioSignal.html#AGS-AUDIO-SIGNAL-TEMPLATE:CAPS"><code class="literal">AGS_AUDIO_SIGNAL_TEMPLATE</code></a> is set</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>length</p></td>
+<td class="parameter_description"><p>audio data frame count</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.5.10.20.6"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AgsAudioSignalFlags"></a><h3>enum AgsAudioSignalFlags</h3>
+<div class="refsect3">
+<a name="id-1.9.5.11.2.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-AUDIO-SIGNAL-TEMPLATE:CAPS"></a>AGS_AUDIO_SIGNAL_TEMPLATE</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-AUDIO-SIGNAL-PLAY-DONE:CAPS"></a>AGS_AUDIO_SIGNAL_PLAY_DONE</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-AUDIO-SIGNAL-STANDALONE:CAPS"></a>AGS_AUDIO_SIGNAL_STANDALONE</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAttackFlags"></a><h3>enum AgsAttackFlags</h3>
+<div class="refsect3">
+<a name="id-1.9.5.11.3.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-ATTACK-INITIAL-RUN:CAPS"></a>AGS_ATTACK_INITIAL_RUN</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-ATTACK-SWAP:CAPS"></a>AGS_ATTACK_SWAP</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAttack"></a><h3>AgsAttack</h3>
+<pre class="programlisting">typedef struct _AgsAttack AgsAttack;</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsAudioSignal--recall-id"></a><h3>The <code class="literal">“recall-id”</code> property</h3>
+<pre class="programlisting">  “recall-id”                <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *</pre>
+<p>The assigned <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> providing context.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAudioSignal--recycling"></a><h3>The <code class="literal">“recycling”</code> property</h3>
+<pre class="programlisting">  “recycling”                <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *</pre>
+<p>The assigned <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> linking tree.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAudioSignal--soundcard"></a><h3>The <code class="literal">“soundcard”</code> property</h3>
+<pre class="programlisting">  “soundcard”                <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</pre>
+<p>The assigned <GTKDOCLINK HREF="AgsSoundcard"><span class="type">AgsSoundcard</span></GTKDOCLINK> providing default settings.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsAudioSignal.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsAudioSignal-morph-samplerate"></a><h3>The <code class="literal">“morph-samplerate”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>           samplerate,
+               <GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK>         arg2,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>        user_data)</pre>
+<p>The ::morph-samplerate signal is invoked to notify modified samplerate.</p>
+<div class="refsect3">
+<a name="id-1.9.5.13.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>the object to morph samplerate</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>samplerate</p></td>
+<td class="parameter_description"><p>new samplerate</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAudioSignal-realloc-buffer-size"></a><h3>The <code class="literal">“realloc-buffer-size”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>           buffer_size,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>        user_data)</pre>
+<p>The ::reallloc-buffer-size signal is invoked to notify modified buffer size.</p>
+<div class="refsect3">
+<a name="id-1.9.5.13.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>the object to realloc buffer size</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>buffer_size</p></td>
+<td class="parameter_description"><p>new buffer size</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

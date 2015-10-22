@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="ags-main">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-main.top_of_page">main</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>main</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-main.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="ALSA-PCM-NEW-HW-PARAMS-API:CAPS">ALSA_PCM_NEW_HW_PARAMS_API</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-DEFAULT-DIRECTORY:CAPS">AGS_DEFAULT_DIRECTORY</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-DEFAULT-CONFIG:CAPS">AGS_DEFAULT_CONFIG</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-main.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-main.functions_details" role="details">
+<title role="details.title">Functions</title>
+<para />
+</refsect1>
+<refsect1 id="ags-main.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="ALSA-PCM-NEW-HW-PARAMS-API:CAPS" role="macro">
+<title>ALSA_PCM_NEW_HW_PARAMS_API</title>
+<indexterm zone="ALSA-PCM-NEW-HW-PARAMS-API:CAPS"><primary>ALSA_PCM_NEW_HW_PARAMS_API</primary></indexterm>
+<programlisting language="C">#define ALSA_PCM_NEW_HW_PARAMS_API
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-DEFAULT-DIRECTORY:CAPS" role="macro">
+<title>AGS_DEFAULT_DIRECTORY</title>
+<indexterm zone="AGS-DEFAULT-DIRECTORY:CAPS"><primary>AGS_DEFAULT_DIRECTORY</primary></indexterm>
+<programlisting language="C">#define             AGS_DEFAULT_DIRECTORY</programlisting>
+</refsect2>
+<refsect2 id="AGS-DEFAULT-CONFIG:CAPS" role="macro">
+<title>AGS_DEFAULT_CONFIG</title>
+<indexterm zone="AGS-DEFAULT-CONFIG:CAPS"><primary>AGS_DEFAULT_CONFIG</primary></indexterm>
+<programlisting language="C">#define             AGS_DEFAULT_CONFIG</programlisting>
+</refsect2>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsIndicator: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="widget.html" title="Part VI. Widget - GUI elements">
+<link rel="prev" href="AgsExpanderSet.html" title="AgsExpanderSet">
+<link rel="next" href="AgsLed.html" title="AgsLed">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsIndicator.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsIndicator.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsIndicator.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="widget.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsExpanderSet.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsLed.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsIndicator"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsIndicator.top_of_page"></a>AgsIndicator</span></h2>
+<p>AgsIndicator — A indicator widget</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsIndicator.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody><tr>
+<td class="function_type">
+<a class="link" href="AgsIndicator.html" title="AgsIndicator"><span class="returnvalue">AgsIndicator</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsIndicator.html#ags-indicator-new" title="ags_indicator_new ()">ags_indicator_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsIndicator.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody><tr>
+<td class="property_type">
+<GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsIndicator.html#AgsIndicator--adjustment" title="The “adjustment” property">adjustment</a></td>
+<td class="property_flags">Read / Write</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsIndicator.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> <GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+        <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+            <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                <span class="lineart">╰──</span> AgsIndicator
+                    <span class="lineart">├──</span> <GTKDOCLINK HREF="AgsHIndicator">AgsHIndicator</GTKDOCLINK>
+                    <span class="lineart">╰──</span> <a class="link" href="AgsVIndicator.html" title="AgsVIndicator">AgsVIndicator</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsIndicator.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/widget/ags_indicator.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsIndicator.description"></a><h2>Description</h2>
+<p><a class="link" href="AgsIndicator.html" title="AgsIndicator"><span class="type">AgsIndicator</span></a> is a widget representing a <GTKDOCLINK HREF="GtkAdjustment"><span class="type">GtkAdjustment</span></GTKDOCLINK>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsIndicator.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-indicator-new"></a><h3>ags_indicator_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsIndicator.html" title="AgsIndicator"><span class="returnvalue">AgsIndicator</span></a> *
+ags_indicator_new ();</pre>
+<p>Creates an <a class="link" href="AgsIndicator.html" title="AgsIndicator"><span class="type">AgsIndicator</span></a>. Note, use rather its implementation <a class="link" href="AgsVIndicator.html" title="AgsVIndicator"><span class="type">AgsVIndicator</span></a> or
+<GTKDOCLINK HREF="AgsHIndicator"><span class="type">AgsHIndicator</span></GTKDOCLINK>.</p>
+<div class="refsect3">
+<a name="id-1.7.5.8.2.5"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsIndicator.html" title="AgsIndicator"><span class="type">AgsIndicator</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsIndicator.other_details"></a><h2>Types and Values</h2>
+</div>
+<div class="refsect1">
+<a name="AgsIndicator.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsIndicator--adjustment"></a><h3>The <code class="literal">“adjustment”</code> property</h3>
+<pre class="programlisting">  “adjustment”               <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</pre>
+<p>The adjustment it is assigned with.</p>
+<p>Flags: Read / Write</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

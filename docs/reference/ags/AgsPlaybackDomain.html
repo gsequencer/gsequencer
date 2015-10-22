@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsPlaybackDomain: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VIII. The audio layer">
+<link rel="prev" href="AgsPlayback.html" title="AgsPlayback">
+<link rel="next" href="AgsPort.html" title="AgsPort">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsPlaybackDomain.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsPlaybackDomain.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsPlayback.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsPort.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsPlaybackDomain"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsPlaybackDomain.top_of_page"></a>AgsPlaybackDomain</span></h2>
+<p>AgsPlaybackDomain — Outputting to soundcard domain</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsPlaybackDomain.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody><tr>
+<td class="function_type">
+<a class="link" href="AgsPlaybackDomain.html" title="AgsPlaybackDomain"><span class="returnvalue">AgsPlaybackDomain</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsPlaybackDomain.html#ags-playback-domain-new" title="ags_playback_domain_new ()">ags_playback_domain_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsPlaybackDomain.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsPlaybackDomain.html#AgsPlaybackDomainFlags" title="enum AgsPlaybackDomainFlags">AgsPlaybackDomainFlags</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsPlaybackDomain.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> AgsPlaybackDomain
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlaybackDomain.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/audio/ags_playback_domain.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsPlaybackDomain.description"></a><h2>Description</h2>
+<p><a class="link" href="AgsPlaybackDomain.html" title="AgsPlaybackDomain"><span class="type">AgsPlaybackDomain</span></a> represents a domain to output.</p>
+</div>
+<div class="refsect1">
+<a name="AgsPlaybackDomain.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-playback-domain-new"></a><h3>ags_playback_domain_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsPlaybackDomain.html" title="AgsPlaybackDomain"><span class="returnvalue">AgsPlaybackDomain</span></a> *
+ags_playback_domain_new ();</pre>
+<p>Creates an <a class="link" href="AgsPlaybackDomain.html" title="AgsPlaybackDomain"><span class="type">AgsPlaybackDomain</span></a>, refering to <em class="parameter"><code>application_context</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.9.15.8.2.5"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsPlaybackDomain.html" title="AgsPlaybackDomain"><span class="type">AgsPlaybackDomain</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsPlaybackDomain.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AgsPlaybackDomainFlags"></a><h3>enum AgsPlaybackDomainFlags</h3>
+<div class="refsect3">
+<a name="id-1.9.15.9.2.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-PLAYBACK-DOMAIN-PLAYBACK:CAPS"></a>AGS_PLAYBACK_DOMAIN_PLAYBACK</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-PLAYBACK-DOMAIN-SEQUENCER:CAPS"></a>AGS_PLAYBACK_DOMAIN_SEQUENCER</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-PLAYBACK-DOMAIN-NOTATION:CAPS"></a>AGS_PLAYBACK_DOMAIN_NOTATION</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-PLAYBACK-DOMAIN-SINGLE-THREADED:CAPS"></a>AGS_PLAYBACK_DOMAIN_SINGLE_THREADED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-PLAYBACK-DOMAIN-SUPER-THREADED-AUDIO:CAPS"></a>AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

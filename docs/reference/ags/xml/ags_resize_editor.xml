@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="ags-AgsResizeEditor">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsResizeEditor.top_of_page">AgsResizeEditor</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsResizeEditor</refname>
+<refpurpose>Resize audio channels or pads.</refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-AgsResizeEditor.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsResizeEditor"><returnvalue>AgsResizeEditor</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-resize-editor-new">ags_resize_editor_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+<refsect1 id="ags-AgsResizeEditor.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_resize_editor.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="ags-AgsResizeEditor.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsResizeEditor"><type>AgsResizeEditor</type></link> is a composite widget to resize. A resize editor 
+should be packed by a <link linkend="AgsMachineEditor"><type>AgsMachineEditor</type></link>.</para>
+
+</refsect1>
+<refsect1 id="ags-AgsResizeEditor.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-resize-editor-new" role="function" condition="since:0.3">
+<title>ags_resize_editor_new&#160;()</title>
+<indexterm zone="ags-resize-editor-new" role="0.3"><primary>ags_resize_editor_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsResizeEditor"><returnvalue>AgsResizeEditor</returnvalue></link>&#160;*
+ags_resize_editor_new ();</programlisting>
+<para>Creates an <link linkend="AgsResizeEditor"><type>AgsResizeEditor</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsResizeEditor"><type>AgsResizeEditor</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.3">0.3</link></para></refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsResizeEditor.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

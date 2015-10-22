@@ -1,0 +1,182 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="ags-AgsGlobalAccessible">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsGlobalAccessible.top_of_page">AgsGlobalAccessible</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsGlobalAccessible</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-AgsGlobalAccessible.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-insert-note-dialog">ags_global_accessible_move_to_insert_note_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-delete-note-dialog">ags_global_accessible_move_to_delete_note_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-edit-pattern-dialog">ags_global_accessible_move_to_edit_pattern_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-sequence-length-dialog">ags_global_accessible_move_to_sequence_length_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-main-window">ags_global_accessible_move_to_main_window</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-preferences-dialog">ags_global_accessible_move_to_preferences_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-export-window">ags_global_accessible_move_to_export_window</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-rename-dialog">ags_global_accessible_move_to_rename_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-properties-dialog">ags_global_accessible_move_to_properties_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-link-index-dialog">ags_global_accessible_move_to_link_index_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-confirm-open-dialog">ags_global_accessible_move_to_confirm_open_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-confirm-save-as-dialog">ags_global_accessible_move_to_confirm_save_as_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-about-dialog">ags_global_accessible_move_to_about_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-confirm-close-dialog">ags_global_accessible_move_to_confirm_close_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-global-accessible-move-to-error-dialog">ags_global_accessible_move_to_error_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-AgsGlobalAccessible.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-AgsGlobalAccessible.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-global-accessible-move-to-insert-note-dialog" role="function">
+<title>ags_global_accessible_move_to_insert_note_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-insert-note-dialog"><primary>ags_global_accessible_move_to_insert_note_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_insert_note_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-delete-note-dialog" role="function">
+<title>ags_global_accessible_move_to_delete_note_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-delete-note-dialog"><primary>ags_global_accessible_move_to_delete_note_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_delete_note_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-edit-pattern-dialog" role="function">
+<title>ags_global_accessible_move_to_edit_pattern_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-edit-pattern-dialog"><primary>ags_global_accessible_move_to_edit_pattern_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_edit_pattern_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-sequence-length-dialog" role="function">
+<title>ags_global_accessible_move_to_sequence_length_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-sequence-length-dialog"><primary>ags_global_accessible_move_to_sequence_length_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_sequence_length_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-main-window" role="function">
+<title>ags_global_accessible_move_to_main_window&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-main-window"><primary>ags_global_accessible_move_to_main_window</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_main_window
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-preferences-dialog" role="function">
+<title>ags_global_accessible_move_to_preferences_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-preferences-dialog"><primary>ags_global_accessible_move_to_preferences_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_preferences_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-export-window" role="function">
+<title>ags_global_accessible_move_to_export_window&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-export-window"><primary>ags_global_accessible_move_to_export_window</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_export_window
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-rename-dialog" role="function">
+<title>ags_global_accessible_move_to_rename_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-rename-dialog"><primary>ags_global_accessible_move_to_rename_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_rename_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-properties-dialog" role="function">
+<title>ags_global_accessible_move_to_properties_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-properties-dialog"><primary>ags_global_accessible_move_to_properties_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_properties_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-link-index-dialog" role="function">
+<title>ags_global_accessible_move_to_link_index_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-link-index-dialog"><primary>ags_global_accessible_move_to_link_index_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_link_index_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-confirm-open-dialog" role="function">
+<title>ags_global_accessible_move_to_confirm_open_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-confirm-open-dialog"><primary>ags_global_accessible_move_to_confirm_open_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_confirm_open_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-confirm-save-as-dialog" role="function">
+<title>ags_global_accessible_move_to_confirm_save_as_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-confirm-save-as-dialog"><primary>ags_global_accessible_move_to_confirm_save_as_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_confirm_save_as_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-about-dialog" role="function">
+<title>ags_global_accessible_move_to_about_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-about-dialog"><primary>ags_global_accessible_move_to_about_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_about_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-confirm-close-dialog" role="function">
+<title>ags_global_accessible_move_to_confirm_close_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-confirm-close-dialog"><primary>ags_global_accessible_move_to_confirm_close_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_confirm_close_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-global-accessible-move-to-error-dialog" role="function">
+<title>ags_global_accessible_move_to_error_dialog&#160;()</title>
+<indexterm zone="ags-global-accessible-move-to-error-dialog"><primary>ags_global_accessible_move_to_error_dialog</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_global_accessible_move_to_error_dialog
+                               (<parameter><link linkend="AgsGlobalAccessible"><type>AgsGlobalAccessible</type></link> *global_accessible</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsGlobalAccessible.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

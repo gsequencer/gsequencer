@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="AgsScaleArea">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsScaleArea.top_of_page">AgsScaleArea</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsScaleArea</refname>
+<refpurpose>area scales</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsScaleArea.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-SCALE-AREA-DEFAULT-HEIGHT:CAPS">AGS_SCALE_AREA_DEFAULT_HEIGHT</link></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-scale-area-find-specifier">ags_scale_area_find_specifier</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-scale-area-paint">ags_scale_area_paint</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsScaleArea"><returnvalue>AgsScaleArea</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-scale-area-new">ags_scale_area_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsScaleArea.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsScaleArea
+</screen>
+</refsect1>
+
+<refsect1 id="AgsScaleArea.includes"><title>Includes</title><synopsis>#include &lt;ags/X/areaor/ags_scale_area.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsScaleArea.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsScaleArea"><type>AgsScaleArea</type></link> lets you paint scales.</para>
+
+</refsect1>
+<refsect1 id="AgsScaleArea.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="AGS-SCALE-AREA-DEFAULT-HEIGHT:CAPS" role="macro">
+<title>AGS_SCALE_AREA_DEFAULT_HEIGHT</title>
+<indexterm zone="AGS-SCALE-AREA-DEFAULT-HEIGHT:CAPS"><primary>AGS_SCALE_AREA_DEFAULT_HEIGHT</primary></indexterm>
+<programlisting language="C">#define AGS_SCALE_AREA_DEFAULT_HEIGHT (128)
+</programlisting>
+</refsect2>
+<refsect2 id="ags-scale-area-find-specifier" role="function">
+<title>ags_scale_area_find_specifier&#160;()</title>
+<indexterm zone="ags-scale-area-find-specifier"><primary>ags_scale_area_find_specifier</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_scale_area_find_specifier (<parameter><link linkend="GList"><type>GList</type></link> *scale_area</parameter>,
+                               <parameter><link linkend="gchar"><type>gchar</type></link> *specifier</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-scale-area-paint" role="function">
+<title>ags_scale_area_paint&#160;()</title>
+<indexterm zone="ags-scale-area-paint"><primary>ags_scale_area_paint</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_scale_area_paint (<parameter><link linkend="AgsScaleArea"><type>AgsScaleArea</type></link> *scale_area</parameter>,
+                      <parameter><link linkend="cairo-t"><type>cairo_t</type></link> *cr</parameter>,
+                      <parameter><link linkend="gdouble"><type>gdouble</type></link> x_offset</parameter>,
+                      <parameter><link linkend="gdouble"><type>gdouble</type></link> y_offset</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-scale-area-new" role="function" condition="since:0.4.3">
+<title>ags_scale_area_new&#160;()</title>
+<indexterm zone="ags-scale-area-new" role="0.4.3"><primary>ags_scale_area_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsScaleArea"><returnvalue>AgsScaleArea</returnvalue></link>&#160;*
+ags_scale_area_new (<parameter><link linkend="GtkDrawingArea"><type>GtkDrawingArea</type></link> *drawing_area</parameter>,
+                    <parameter><link linkend="gchar"><type>gchar</type></link> *control_name</parameter>,
+                    <parameter><link linkend="gdouble"><type>gdouble</type></link> lower</parameter>,
+                    <parameter><link linkend="gdouble"><type>gdouble</type></link> upper</parameter>,
+                    <parameter><link linkend="gdouble"><type>gdouble</type></link> steps</parameter>);</programlisting>
+<para>Create a new <link linkend="AgsScaleArea"><type>AgsScaleArea</type></link>.</para>
+<para role="since">Since: <link linkend="api-index-0.4.3">0.4.3</link></para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsScaleArea.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

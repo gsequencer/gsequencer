@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<indexdiv id="api-index-0.4.2">
+<indexdiv><title>A</title>
+<indexentry><primaryie linkends="AgsAudioThread--audio"><link linkend="AgsAudioThread--audio">AgsAudioThread:audio</link>, object property in <link linkend="AgsAudioThread">AgsAudioThread</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-file-rw-open"><link linkend="ags-audio-file-rw-open">ags_audio_file_rw_open</link>, function in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-audio-thread-new"><link linkend="ags-audio-thread-new">ags_audio_thread_new</link>, function in <link linkend="AgsAudioThread">AgsAudioThread</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--current-accelerations"><link linkend="AgsAutomation--current-accelerations">AgsAutomation:current-accelerations</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--next-accelerations"><link linkend="AgsAutomation--next-accelerations">AgsAutomation:next-accelerations</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--port"><link linkend="AgsAutomation--port">AgsAutomation:port</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-editor-machine-changed"><link linkend="ags-automation-editor-machine-changed">ags_automation_editor_machine_changed</link>, function in <link linkend="AgsAutomationEditor">AgsAutomationEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-editor-new"><link linkend="ags-automation-editor-new">ags_automation_editor_new</link>, function in <link linkend="AgsAutomationEditor">AgsAutomationEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-new"><link linkend="ags-automation-new">ags_automation_new</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>C</title>
+<indexentry><primaryie linkends="AgsChannelThread--channel"><link linkend="AgsChannelThread--channel">AgsChannelThread:channel</link>, object property in <link linkend="AgsChannelThread">AgsChannelThread</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-channel-thread-new"><link linkend="ags-channel-thread-new">ags_channel_thread_new</link>, function in <link linkend="AgsChannelThread">AgsChannelThread</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-config-get-value"><link linkend="ags-config-get-value">ags_config_get_value</link>, function in <link linkend="AgsConfig">AgsConfig</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-config-load-defaults"><link linkend="ags-config-load-defaults">ags_config_load_defaults</link>, function in <link linkend="AgsConfig">AgsConfig</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-config-load-from-file"><link linkend="ags-config-load-from-file">ags_config_load_from_file</link>, function in <link linkend="AgsConfig">AgsConfig</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-config-new"><link linkend="ags-config-new">ags_config_new</link>, function in <link linkend="AgsConfig">AgsConfig</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-config-save"><link linkend="ags-config-save">ags_config_save</link>, function in <link linkend="AgsConfig">AgsConfig</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-config-set-value"><link linkend="ags-config-set-value">ags_config_set_value</link>, function in <link linkend="AgsConfig">AgsConfig</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>D</title>
+<indexentry><primaryie linkends="AgsDevout--delay-factor"><link linkend="AgsDevout--delay-factor">AgsDevout:delay-factor</link>, object property in <link linkend="AgsDevout">AgsDevout</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>E</title>
+<indexentry><primaryie linkends="ags-editor-copy"><link linkend="ags-editor-copy">ags_editor_copy</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-editor-cut"><link linkend="ags-editor-cut">ags_editor_cut</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-editor-paste"><link linkend="ags-editor-paste">ags_editor_paste</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-editor-select-all"><link linkend="ags-editor-select-all">ags_editor_select_all</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>M</title>
+<indexentry><primaryie linkends="ags-machine-set-run-extended"><link linkend="ags-machine-set-run-extended">ags_machine_set_run_extended</link>, function in <link linkend="AgsMachine">AgsMachine</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>N</title>
+<indexentry><primaryie linkends="ags-notation-add-all-to-selection"><link linkend="ags-notation-add-all-to-selection">ags_notation_add_all_to_selection</link>, function in <link linkend="AgsNotation">AgsNotation</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>P</title>
+<indexentry><primaryie linkends="ags-pattern-edit-draw-notation"><link linkend="ags-pattern-edit-draw-notation">ags_pattern_edit_draw_notation</link>, function in <link linkend="AgsPatternEdit">AgsPatternEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-edit-draw-position"><link linkend="ags-pattern-edit-draw-position">ags_pattern_edit_draw_position</link>, function in <link linkend="AgsPatternEdit">AgsPatternEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-edit-draw-scroll"><link linkend="ags-pattern-edit-draw-scroll">ags_pattern_edit_draw_scroll</link>, function in <link linkend="AgsPatternEdit">AgsPatternEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-edit-draw-segment"><link linkend="ags-pattern-edit-draw-segment">ags_pattern_edit_draw_segment</link>, function in <link linkend="AgsPatternEdit">AgsPatternEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-edit-new"><link linkend="ags-pattern-edit-new">ags_pattern_edit_new</link>, function in <link linkend="AgsPatternEdit">AgsPatternEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-edit-reset-horizontally"><link linkend="ags-pattern-edit-reset-horizontally">ags_pattern_edit_reset_horizontally</link>, function in <link linkend="AgsPatternEdit">AgsPatternEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-edit-reset-vertically"><link linkend="ags-pattern-edit-reset-vertically">ags_pattern_edit_reset_vertically</link>, function in <link linkend="AgsPatternEdit">AgsPatternEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-pattern-edit-set-map-height"><link linkend="ags-pattern-edit-set-map-height">ags_pattern_edit_set_map_height</link>, function in <link linkend="AgsPatternEdit">AgsPatternEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-close"><link linkend="ags-playable-close">ags_playable_close</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-flush"><link linkend="ags-playable-flush">ags_playable_flush</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-info"><link linkend="ags-playable-info">ags_playable_info</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-iter-next"><link linkend="ags-playable-iter-next">ags_playable_iter_next</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-iter-start"><link linkend="ags-playable-iter-start">ags_playable_iter_start</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-level-count"><link linkend="ags-playable-level-count">ags_playable_level_count</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-level-select"><link linkend="ags-playable-level-select">ags_playable_level_select</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-level-up"><link linkend="ags-playable-level-up">ags_playable_level_up</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-nth-level"><link linkend="ags-playable-nth-level">ags_playable_nth_level</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-open"><link linkend="ags-playable-open">ags_playable_open</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-read"><link linkend="ags-playable-read">ags_playable_read</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-read-audio-signal"><link linkend="ags-playable-read-audio-signal">ags_playable_read_audio_signal</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-rw-open"><link linkend="ags-playable-rw-open">ags_playable_rw_open</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-seek"><link linkend="ags-playable-seek">ags_playable_seek</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-selected-level"><link linkend="ags-playable-selected-level">ags_playable_selected_level</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-sublevel-names"><link linkend="ags-playable-sublevel-names">ags_playable_sublevel_names</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-playable-write"><link linkend="ags-playable-write">ags_playable_write</link>, function in <link linkend="AgsPlayable">AgsPlayable</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>R</title>
+<indexentry><primaryie linkends="AgsRecallLadspa--filename"><link linkend="AgsRecallLadspa--filename">AgsRecallLadspa:filename</link>, object property in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-ladspa-run-new"><link linkend="ags-recall-ladspa-run-new">ags_recall_ladspa_run_new</link>, function in <link linkend="AgsRecallLadspaRun">AgsRecallLadspaRun</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>S</title>
+<indexentry><primaryie linkends="ags-soundcard-get-attack"><link linkend="ags-soundcard-get-attack">ags_soundcard_get_attack</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-buffer"><link linkend="ags-soundcard-get-buffer">ags_soundcard_get_buffer</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-delay"><link linkend="ags-soundcard-get-delay">ags_soundcard_get_delay</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-next-buffer"><link linkend="ags-soundcard-get-next-buffer">ags_soundcard_get_next_buffer</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-note-offset"><link linkend="ags-soundcard-get-note-offset">ags_soundcard_get_note_offset</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-presets"><link linkend="ags-soundcard-get-presets">ags_soundcard_get_presets</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-list-cards"><link linkend="ags-soundcard-list-cards">ags_soundcard_list_cards</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-pcm-info"><link linkend="ags-soundcard-pcm-info">ags_soundcard_pcm_info</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-play"><link linkend="ags-soundcard-play">ags_soundcard_play</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-note-offset"><link linkend="ags-soundcard-set-note-offset">ags_soundcard_set_note_offset</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-presets"><link linkend="ags-soundcard-set-presets">ags_soundcard_set_presets</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-stop"><link linkend="ags-soundcard-stop">ags_soundcard_stop</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-tic"><link linkend="ags-soundcard-tic">ags_soundcard_tic</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>T</title>
+<indexentry><primaryie linkends="ags-thread-add-child"><link linkend="ags-thread-add-child">ags_thread_add_child</link>, function in <link linkend="AgsThread">AgsThread</link></primaryie></indexentry>
+</indexdiv>
+</indexdiv>

@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="AgsDial">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsDial.top_of_page">AgsDial</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsDial</refname>
+<refpurpose>A dial widget</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsDial.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-DIAL-DEFAULT-PRECISION:CAPS">AGS_DIAL_DEFAULT_PRECISION</link></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-dial-value-changed">ags_dial_value_changed</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsDial"><returnvalue>AgsDial</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-dial-new">ags_dial_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDial.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsDial--adjustment">adjustment</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDial.signals" role="signal_proto">
+<title role="signal_proto.title">Signals</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="signals_return" colwidth="150px"/>
+<colspec colname="signals_name" colwidth="300px"/>
+<colspec colname="signals_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsDial-value-changed">value-changed</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDial.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsDialFlags">AgsDialFlags</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsDialAction">AgsDialAction</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDial.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsDial
+</screen>
+</refsect1>
+
+<refsect1 id="AgsDial.includes"><title>Includes</title><synopsis>#include &lt;ags/widget/ags_dial.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsDial.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsDial"><type>AgsDial</type></link> is a widget representing a <link linkend="GtkAdjustment"><type>GtkAdjustment</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsDial.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="AGS-DIAL-DEFAULT-PRECISION:CAPS" role="macro">
+<title>AGS_DIAL_DEFAULT_PRECISION</title>
+<indexterm zone="AGS-DIAL-DEFAULT-PRECISION:CAPS"><primary>AGS_DIAL_DEFAULT_PRECISION</primary></indexterm>
+<programlisting language="C">#define AGS_DIAL_DEFAULT_PRECISION (8.0)
+</programlisting>
+</refsect2>
+<refsect2 id="ags-dial-value-changed" role="function">
+<title>ags_dial_value_changed&#160;()</title>
+<indexterm zone="ags-dial-value-changed"><primary>ags_dial_value_changed</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_dial_value_changed (<parameter><link linkend="AgsDial"><type>AgsDial</type></link> *dial</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-dial-new" role="function" condition="since:0.4">
+<title>ags_dial_new&#160;()</title>
+<indexterm zone="ags-dial-new" role="0.4"><primary>ags_dial_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsDial"><returnvalue>AgsDial</returnvalue></link>&#160;*
+ags_dial_new ();</programlisting>
+<para>Creates an <link linkend="AgsDial"><type>AgsDial</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsDial"><type>AgsDial</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsDial.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsDialFlags" role="enum">
+<title>enum AgsDialFlags</title>
+<indexterm zone="AgsDialFlags"><primary>AgsDialFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DIAL-WITH-BUTTONS:CAPS">AGS_DIAL_WITH_BUTTONS</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DIAL-MOUSE-BUTTON-PRESSED:CAPS">AGS_DIAL_MOUSE_BUTTON_PRESSED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DIAL-BUTTON-DOWN-PRESSED:CAPS">AGS_DIAL_BUTTON_DOWN_PRESSED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DIAL-BUTTON-UP-PRESSED:CAPS">AGS_DIAL_BUTTON_UP_PRESSED</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DIAL-MOTION-CAPTURING-INIT:CAPS">AGS_DIAL_MOTION_CAPTURING_INIT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DIAL-MOTION-CAPTURING:CAPS">AGS_DIAL_MOTION_CAPTURING</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DIAL-IDLE:CAPS">AGS_DIAL_IDLE</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="AgsDialAction" role="enum">
+<title>enum AgsDialAction</title>
+<indexterm zone="AgsDialAction"><primary>AgsDialAction</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DIAL-INCREMENT:CAPS">AGS_DIAL_INCREMENT</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DIAL-DECREMENT:CAPS">AGS_DIAL_DECREMENT</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsDial.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsDial--adjustment" role="property"><title>The <literal>“adjustment”</literal> property</title>
+<indexterm zone="AgsDial--adjustment"><primary>AgsDial:adjustment</primary></indexterm>
+<programlisting>  “adjustment”               <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The adjustment it is assigned with.</para><para>Flags: Read / Write</para>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsDial.signal-details" role="signals">
+<title role="signals.title">Signal Details</title>
+<refsect2 id="AgsDial-value-changed" role="signal"><title>The <literal>“value-changed”</literal> signal</title>
+<indexterm zone="AgsDial-value-changed"><primary>AgsDial::value-changed</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsDial"><type>AgsDial</type></link> *dial,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>The ::value-changed signal notifies adjustment value changed.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>dial</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDial"><type>AgsDial</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>port_data</para></entry>
+<entry role="parameter_description"><para>the port's data</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2>
+</refsect1>
+
+</refentry>

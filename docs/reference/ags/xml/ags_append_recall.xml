@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="AgsAppendRecall">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsAppendRecall.top_of_page">AgsAppendRecall</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAppendRecall</refname>
+<refpurpose>append recall object to audio loop</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsAppendRecall.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsAppendRecall"><returnvalue>AgsAppendRecall</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-append-recall-new">ags_append_recall_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsAppendRecall.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsAppendRecall
+</screen>
+</refsect1>
+
+<refsect1 id="AgsAppendRecall.includes"><title>Includes</title><synopsis>#include &lt;ags/recall/task/ags_append_recall.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsAppendRecall.description" role="desc">
+<title role="desc.title">Description</title>
+<para>The <link linkend="AgsAppendRecall"><type>AgsAppendRecall</type></link> task appends <link linkend="AgsRecall"><type>AgsRecall</type></link> to <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link>.</para>
+
+</refsect1>
+<refsect1 id="AgsAppendRecall.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-append-recall-new" role="function" condition="since:0.4">
+<title>ags_append_recall_new&#160;()</title>
+<indexterm zone="ags-append-recall-new" role="0.4"><primary>ags_append_recall_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsAppendRecall"><returnvalue>AgsAppendRecall</returnvalue></link>&#160;*
+ags_append_recall_new (<parameter><link linkend="GObject"><type>GObject</type></link> *audio_loop</parameter>,
+                       <parameter><link linkend="GObject"><type>GObject</type></link> *playback</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsAppendRecall"><type>AgsAppendRecall</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>audio_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsAudioLoop"><type>AgsAudioLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recall</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsRecall"><type>AgsRecall</type></link> to append</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> an new <link linkend="AgsAppendRecall"><type>AgsAppendRecall</type></link>.</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsAppendRecall.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,585 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsRecycling: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio.html" title="Part VIII. The audio layer">
+<link rel="prev" href="AgsRecallRecyclingDummy.html" title="AgsRecallRecyclingDummy">
+<link rel="next" href="AgsRecyclingContext.html" title="AgsRecyclingContext">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsRecycling.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsRecycling.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsRecycling.properties" class="shortcut">Properties</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#AgsRecycling.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="audio.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsRecallRecyclingDummy.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsRecyclingContext.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsRecycling"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsRecycling.top_of_page"></a>AgsRecycling</span></h2>
+<p>AgsRecycling — A container of audio signals</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsRecycling.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsRecycling.html#ags-recycling-set-soundcard" title="ags_recycling_set_soundcard ()">ags_recycling_set_soundcard</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsRecycling.html#ags-recycling-add-audio-signal" title="ags_recycling_add_audio_signal ()">ags_recycling_add_audio_signal</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsRecycling.html#ags-recycling-remove-audio-signal" title="ags_recycling_remove_audio_signal ()">ags_recycling_remove_audio_signal</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsRecycling.html#ags-recycling-create-audio-signal-with-defaults" title="ags_recycling_create_audio_signal_with_defaults ()">ags_recycling_create_audio_signal_with_defaults</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsRecycling.html#ags-recycling-create-audio-signal-with-frame-count" title="ags_recycling_create_audio_signal_with_frame_count ()">ags_recycling_create_audio_signal_with_frame_count</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="gint"><span class="returnvalue">gint</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsRecycling.html#ags-recycling-position" title="ags_recycling_position ()">ags_recycling_position</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="returnvalue">AgsRecycling</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsRecycling.html#ags-recycling-find-next-channel" title="ags_recycling_find_next_channel ()">ags_recycling_find_next_channel</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="returnvalue">AgsRecycling</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsRecycling.html#ags-recycling-new" title="ags_recycling_new ()">ags_recycling_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsRecycling.html#AgsRecycling--channel" title="The “channel” property">channel</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsRecycling.html#AgsRecycling--soundcard" title="The “soundcard” property">soundcard</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsRecycling.html#AgsRecycling-add-audio-signal" title="The “add-audio-signal” signal">add-audio-signal</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsRecycling.html#AgsRecycling-remove-audio-signal" title="The “remove-audio-signal” signal">remove-audio-signal</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsRecycling.html#AgsRecyclingFlags" title="enum AgsRecyclingFlags">AgsRecyclingFlags</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> AgsRecycling
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/audio/ags_recycling.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.description"></a><h2>Description</h2>
+<p><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> forms the nested tree of AgsChannel. Ever channel
+having own audio signal contains therefor an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-recycling-set-soundcard"></a><h3>ags_recycling_set_soundcard ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_recycling_set_soundcard (<em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *soundcard</code></em>);</pre>
+<p>Sets <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> to recycling.</p>
+<div class="refsect3">
+<a name="id-1.9.32.10.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>soundcard</p></td>
+<td class="parameter_description"><p>the <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> to set</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-add-audio-signal"></a><h3>ags_recycling_add_audio_signal ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_recycling_add_audio_signal (<em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                <em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);</pre>
+<p>Add <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to recycling.</p>
+<div class="refsect3">
+<a name="id-1.9.32.10.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to add</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-remove-audio-signal"></a><h3>ags_recycling_remove_audio_signal ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_recycling_remove_audio_signal (<em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                   <em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>);</pre>
+<p>Remove <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> of recycling.</p>
+<div class="refsect3">
+<a name="id-1.9.32.10.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to remove</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-create-audio-signal-with-defaults"></a><h3>ags_recycling_create_audio_signal_with_defaults ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_recycling_create_audio_signal_with_defaults
+                               (<em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                <em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> delay</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> attack</code></em>);</pre>
+<p>Create audio signal with defaults.</p>
+<div class="refsect3">
+<a name="id-1.9.32.10.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to apply defaults </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-create-audio-signal-with-frame-count"></a><h3>ags_recycling_create_audio_signal_with_frame_count ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_recycling_create_audio_signal_with_frame_count
+                               (<em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>,
+                                <em class="parameter"><code><a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> *audio_signal</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> frame_count</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> delay</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> attack</code></em>);</pre>
+<p>Create audio signal with frame count.</p>
+<div class="refsect3">
+<a name="id-1.9.32.10.6.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to apply defaults </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>frame_count</p></td>
+<td class="parameter_description"><p>the audio data size</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-position"></a><h3>ags_recycling_position ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gint"><span class="returnvalue">gint</span></GTKDOCLINK>
+ags_recycling_position (<em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *start_recycling</code></em>,
+                        <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *end_region</code></em>,
+                        <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling</code></em>);</pre>
+<p>Retrieve position of recycling.</p>
+<div class="refsect3">
+<a name="id-1.9.32.10.7.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>start_region</p></td>
+<td class="parameter_description"><p>boundary start</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>end_region</p></td>
+<td class="parameter_description"><p>boundary end</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>matching recycling</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.32.10.7.6"></a><h4>Returns</h4>
+<p> position within boundary.</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-find-next-channel"></a><h3>ags_recycling_find_next_channel ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="returnvalue">AgsRecycling</span></a> *
+ags_recycling_find_next_channel (<em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *start_region</code></em>,
+                                 <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *end_region</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *prev_channel</code></em>);</pre>
+<p>Retrieve next recycling with different channel.</p>
+<div class="refsect3">
+<a name="id-1.9.32.10.8.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>start_region</p></td>
+<td class="parameter_description"><p>boundary start</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>end_region</p></td>
+<td class="parameter_description"><p>boundary end</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>prev_channel</p></td>
+<td class="parameter_description"><p>previous channel</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.32.10.8.6"></a><h4>Returns</h4>
+<p> Matching recycling.</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recycling-new"></a><h3>ags_recycling_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="returnvalue">AgsRecycling</span></a> *
+ags_recycling_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *soundcard</code></em>);</pre>
+<p>Creates a <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a>, with defaults of <em class="parameter"><code>soundcard</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.9.32.10.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>soundcard</p></td>
+<td class="parameter_description"><p>the <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.32.10.9.6"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AgsRecyclingFlags"></a><h3>enum AgsRecyclingFlags</h3>
+<div class="refsect3">
+<a name="id-1.9.32.11.2.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="enum_member_name"><p><a name="AGS-RECYCLING-MUTED:CAPS"></a>AGS_RECYCLING_MUTED</p></td>
+<td> </td>
+<td> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsRecycling--channel"></a><h3>The <code class="literal">“channel”</code> property</h3>
+<pre class="programlisting">  “channel”                  <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *</pre>
+<p>The assigned <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecycling--soundcard"></a><h3>The <code class="literal">“soundcard”</code> property</h3>
+<pre class="programlisting">  “soundcard”                <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</pre>
+<p>The assigned <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> acting as default sink.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsRecycling.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsRecycling-add-audio-signal"></a><h3>The <code class="literal">“add-audio-signal”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling,
+               <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK>      *audio_signal,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>      user_data)</pre>
+<p>The ::add-audio-signal signal is emited as adding <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p>
+<div class="refsect3">
+<a name="id-1.9.32.13.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to add</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsRecycling-remove-audio-signal"></a><h3>The <code class="literal">“remove-audio-signal”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *recycling,
+               <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK>      *audio_signal,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>      user_data)</pre>
+<p>The ::remove-audio-signal signal is emited as removing <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a></p>
+<div class="refsect3">
+<a name="id-1.9.32.13.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recycling</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>audio_signal</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAudioSignal.html" title="AgsAudioSignal"><span class="type">AgsAudioSignal</span></a> to remove</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

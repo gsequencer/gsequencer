@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<indexdiv id="api-index-0.4.3">
+<indexdiv><title>A</title>
+<indexentry><primaryie linkends="ags-acceleration-duplicate"><link linkend="ags-acceleration-duplicate">ags_acceleration_duplicate</link>, function in <link linkend="AgsAcceleration">AgsAcceleration</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-acceleration-new"><link linkend="ags-acceleration-new">ags_acceleration_new</link>, function in <link linkend="AgsAcceleration">AgsAcceleration</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioFile--audio-channels"><link linkend="AgsAudioFile--audio-channels">AgsAudioFile:audio-channels</link>, object property in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioFile--audio-signal"><link linkend="AgsAudioFile--audio-signal">AgsAudioFile:audio-signal</link>, object property in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioFile--buffer-size"><link linkend="AgsAudioFile--buffer-size">AgsAudioFile:buffer-size</link>, object property in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioFile--filename"><link linkend="AgsAudioFile--filename">AgsAudioFile:filename</link>, object property in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioFile--playable"><link linkend="AgsAudioFile--playable">AgsAudioFile:playable</link>, object property in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioFile--samplerate"><link linkend="AgsAudioFile--samplerate">AgsAudioFile:samplerate</link>, object property in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioFile--soundcard"><link linkend="AgsAudioFile--soundcard">AgsAudioFile:soundcard</link>, object property in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudioFile--start-channel"><link linkend="AgsAudioFile--start-channel">AgsAudioFile:start-channel</link>, object property in <link linkend="AgsAudioFile">AgsAudioFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--audio"><link linkend="AgsAutomation--audio">AgsAutomation:audio</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--channel-type"><link linkend="AgsAutomation--channel-type">AgsAutomation:channel-type</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--control-name"><link linkend="AgsAutomation--control-name">AgsAutomation:control-name</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--default-value"><link linkend="AgsAutomation--default-value">AgsAutomation:default-value</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--line"><link linkend="AgsAutomation--line">AgsAutomation:line</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--lower"><link linkend="AgsAutomation--lower">AgsAutomation:lower</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--steps"><link linkend="AgsAutomation--steps">AgsAutomation:steps</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAutomation--upper"><link linkend="AgsAutomation--upper">AgsAutomation:upper</link>, object property in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-add-acceleration"><link linkend="ags-automation-add-acceleration">ags_automation_add_acceleration</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-add-point-to-selection"><link linkend="ags-automation-add-point-to-selection">ags_automation_add_point_to_selection</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-area-draw-automation"><link linkend="ags-automation-area-draw-automation">ags_automation_area_draw_automation</link>, function in <link linkend="AgsAutomationArea">AgsAutomationArea</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-area-draw-scale"><link linkend="ags-automation-area-draw-scale">ags_automation_area_draw_scale</link>, function in <link linkend="AgsAutomationArea">AgsAutomationArea</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-area-draw-segment"><link linkend="ags-automation-area-draw-segment">ags_automation_area_draw_segment</link>, function in <link linkend="AgsAutomationArea">AgsAutomationArea</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-area-draw-strip"><link linkend="ags-automation-area-draw-strip">ags_automation_area_draw_strip</link>, function in <link linkend="AgsAutomationArea">AgsAutomationArea</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-area-draw-surface"><link linkend="ags-automation-area-draw-surface">ags_automation_area_draw_surface</link>, function in <link linkend="AgsAutomationArea">AgsAutomationArea</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-area-new"><link linkend="ags-automation-area-new">ags_automation_area_new</link>, function in <link linkend="AgsAutomationArea">AgsAutomationArea</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-copy-selection"><link linkend="ags-automation-copy-selection">ags_automation_copy_selection</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-cut-selection"><link linkend="ags-automation-cut-selection">ags_automation_cut_selection</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-edit-add-area"><link linkend="ags-automation-edit-add-area">ags_automation_edit_add_area</link>, function in <link linkend="AgsAutomationEdit">AgsAutomationEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-edit-draw-position"><link linkend="ags-automation-edit-draw-position">ags_automation_edit_draw_position</link>, function in <link linkend="AgsAutomationEdit">AgsAutomationEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-edit-draw-scroll"><link linkend="ags-automation-edit-draw-scroll">ags_automation_edit_draw_scroll</link>, function in <link linkend="AgsAutomationEdit">AgsAutomationEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-edit-new"><link linkend="ags-automation-edit-new">ags_automation_edit_new</link>, function in <link linkend="AgsAutomationEdit">AgsAutomationEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-edit-remove-area"><link linkend="ags-automation-edit-remove-area">ags_automation_edit_remove_area</link>, function in <link linkend="AgsAutomationEdit">AgsAutomationEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-edit-reset-horizontally"><link linkend="ags-automation-edit-reset-horizontally">ags_automation_edit_reset_horizontally</link>, function in <link linkend="AgsAutomationEdit">AgsAutomationEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-edit-reset-vertically"><link linkend="ags-automation-edit-reset-vertically">ags_automation_edit_reset_vertically</link>, function in <link linkend="AgsAutomationEdit">AgsAutomationEdit</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-find-near-timestamp"><link linkend="ags-automation-find-near-timestamp">ags_automation_find_near_timestamp</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-find-point"><link linkend="ags-automation-find-point">ags_automation_find_point</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-find-region"><link linkend="ags-automation-find-region">ags_automation_find_region</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-free-selection"><link linkend="ags-automation-free-selection">ags_automation_free_selection</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-get-selection"><link linkend="ags-automation-get-selection">ags_automation_get_selection</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-get-specifier-unique"><link linkend="ags-automation-get-specifier-unique">ags_automation_get_specifier_unique</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-is-acceleration-selected"><link linkend="ags-automation-is-acceleration-selected">ags_automation_is_acceleration_selected</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-remove-acceleration-at-position"><link linkend="ags-automation-remove-acceleration-at-position">ags_automation_remove_acceleration_at_position</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-remove-point-from-selection"><link linkend="ags-automation-remove-point-from-selection">ags_automation_remove_point_from_selection</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-remove-region-from-selection"><link linkend="ags-automation-remove-region-from-selection">ags_automation_remove_region_from_selection</link>, function in <link linkend="AgsAutomation">AgsAutomation</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-toolbar-load-port"><link linkend="ags-automation-toolbar-load-port">ags_automation_toolbar_load_port</link>, function in <link linkend="AgsAutomationToolbar">AgsAutomationToolbar</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-automation-toolbar-new"><link linkend="ags-automation-toolbar-new">ags_automation_toolbar_new</link>, function in <link linkend="AgsAutomationToolbar">AgsAutomationToolbar</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>S</title>
+<indexentry><primaryie linkends="ags-scale-add-area"><link linkend="ags-scale-add-area">ags_scale_add_area</link>, function in <link linkend="AgsScale">AgsScale</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-scale-area-new"><link linkend="ags-scale-area-new">ags_scale_area_new</link>, function in <link linkend="AgsScaleArea">AgsScaleArea</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-scale-new"><link linkend="ags-scale-new">ags_scale_new</link>, function in <link linkend="AgsScale">AgsScale</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-scale-remove-area"><link linkend="ags-scale-remove-area">ags_scale_remove_area</link>, function in <link linkend="AgsScale">AgsScale</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-application-context"><link linkend="ags-soundcard-get-application-context">ags_soundcard_get_application_context</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-audio"><link linkend="ags-soundcard-get-audio">ags_soundcard_get_audio</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-bpm"><link linkend="ags-soundcard-get-bpm">ags_soundcard_get_bpm</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-get-device"><link linkend="ags-soundcard-get-device">ags_soundcard_get_device</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-is-playing"><link linkend="ags-soundcard-is-playing">ags_soundcard_is_playing</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-is-starting"><link linkend="ags-soundcard-is-starting">ags_soundcard_is_starting</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-application-context"><link linkend="ags-soundcard-set-application-context">ags_soundcard_set_application_context</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-audio"><link linkend="ags-soundcard-set-audio">ags_soundcard_set_audio</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-bpm"><link linkend="ags-soundcard-set-bpm">ags_soundcard_set_bpm</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-soundcard-set-device"><link linkend="ags-soundcard-set-device">ags_soundcard_set_device</link>, function in <link linkend="AgsSoundcard">AgsSoundcard</link></primaryie></indexentry>
+</indexdiv>
+</indexdiv>

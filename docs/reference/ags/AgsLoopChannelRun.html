@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLoopChannelRun: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio-recall.html" title="Recalls - Effect processors">
+<link rel="prev" href="AgsLoopChannel.html" title="AgsLoopChannel">
+<link rel="next" href="AgsPeakChannel.html" title="AgsPeakChannel">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsLoopChannelRun.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsLoopChannelRun.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsLoopChannelRun.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="audio-recall.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsLoopChannel.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsPeakChannel.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsLoopChannelRun"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsLoopChannelRun.top_of_page"></a>AgsLoopChannelRun</span></h2>
+<p>AgsLoopChannelRun — loop</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsLoopChannelRun.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody><tr>
+<td class="function_type">
+<a class="link" href="AgsLoopChannelRun.html" title="AgsLoopChannelRun"><span class="returnvalue">AgsLoopChannelRun</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsLoopChannelRun.html#ags-loop-channel-run-new" title="ags_loop_channel_run_new ()">ags_loop_channel_run_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsLoopChannelRun.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody><tr>
+<td class="property_type">
+<GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsLoopChannelRun.html#AgsLoopChannelRun--count-beats-audio-run" title="The “count-beats-audio-run” property">count-beats-audio-run</a></td>
+<td class="property_flags">Read / Write</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsLoopChannelRun.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> <a class="link" href="AgsRecall.html" title="AgsRecall">AgsRecall</a>
+        <span class="lineart">╰──</span> <a class="link" href="AgsRecallChannelRun.html" title="AgsRecallChannelRun">AgsRecallChannelRun</a>
+            <span class="lineart">╰──</span> AgsLoopChannelRun
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLoopChannelRun.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/audio/recall/ags_loop_channel_run.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLoopChannelRun.description"></a><h2>Description</h2>
+<p>The <a class="link" href="AgsLoopChannelRun.html" title="AgsLoopChannelRun"><span class="type">AgsLoopChannelRun</span></a> class loops the channel.</p>
+</div>
+<div class="refsect1">
+<a name="AgsLoopChannelRun.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-loop-channel-run-new"></a><h3>ags_loop_channel_run_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLoopChannelRun.html" title="AgsLoopChannelRun"><span class="returnvalue">AgsLoopChannelRun</span></a> *
+ags_loop_channel_run_new (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                          <em class="parameter"><code><a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a> *count_beats_audio_run</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> is_template</code></em>);</pre>
+<p>Creates an <a class="link" href="AgsLoopChannelRun.html" title="AgsLoopChannelRun"><span class="type">AgsLoopChannelRun</span></a></p>
+<div class="refsect3">
+<a name="id-1.9.40.21.8.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>channel</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> as source</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>count_beats_audio_run</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsCountBeatsAudioRun.html" title="AgsCountBeatsAudioRun"><span class="type">AgsCountBeatsAudioRun</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>is_template</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> recall is templated</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.40.21.8.2.6"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsLoopChannelRun.html" title="AgsLoopChannelRun"><span class="type">AgsLoopChannelRun</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsLoopChannelRun.other_details"></a><h2>Types and Values</h2>
+</div>
+<div class="refsect1">
+<a name="AgsLoopChannelRun.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsLoopChannelRun--count-beats-audio-run"></a><h3>The <code class="literal">“count-beats-audio-run”</code> property</h3>
+<pre class="programlisting">  “count-beats-audio-run”    <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</pre>
+<p>The pointer to a counter object which indicates when looping should happen.</p>
+<p>Flags: Read / Write</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

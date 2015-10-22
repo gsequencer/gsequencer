@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="ags-AgsAccessibleMachine">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsAccessibleMachine.top_of_page">AgsAccessibleMachine</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsAccessibleMachine</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-AgsAccessibleMachine.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-accessible-machine-move-to-pad">ags_accessible_machine_move_to_pad</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-accessible-machine-move-to-line">ags_accessible_machine_move_to_line</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-accessible-machine-move-to-line-member">ags_accessible_machine_move_to_line_member</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-accessible-machine-move-up">ags_accessible_machine_move_up</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-accessible-machine-move-down">ags_accessible_machine_move_down</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-accessible-machine-destroy">ags_accessible_machine_destroy</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-accessible-machine-rename">ags_accessible_machine_rename</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-accessible-machine-popup-context-menu">ags_accessible_machine_popup_context_menu</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-AgsAccessibleMachine.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-AgsAccessibleMachine.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-accessible-machine-move-to-pad" role="function">
+<title>ags_accessible_machine_move_to_pad&#160;()</title>
+<indexterm zone="ags-accessible-machine-move-to-pad"><primary>ags_accessible_machine_move_to_pad</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_accessible_machine_move_to_pad (<parameter><link linkend="AgsAccessibleMachine"><type>AgsAccessibleMachine</type></link> *accessible_machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-accessible-machine-move-to-line" role="function">
+<title>ags_accessible_machine_move_to_line&#160;()</title>
+<indexterm zone="ags-accessible-machine-move-to-line"><primary>ags_accessible_machine_move_to_line</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_accessible_machine_move_to_line (<parameter><link linkend="AgsAccessibleMachine"><type>AgsAccessibleMachine</type></link> *accessible_machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-accessible-machine-move-to-line-member" role="function">
+<title>ags_accessible_machine_move_to_line_member&#160;()</title>
+<indexterm zone="ags-accessible-machine-move-to-line-member"><primary>ags_accessible_machine_move_to_line_member</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_accessible_machine_move_to_line_member
+                               (<parameter><link linkend="AgsAccessibleMachine"><type>AgsAccessibleMachine</type></link> *accessible_machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-accessible-machine-move-up" role="function">
+<title>ags_accessible_machine_move_up&#160;()</title>
+<indexterm zone="ags-accessible-machine-move-up"><primary>ags_accessible_machine_move_up</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_accessible_machine_move_up (<parameter><link linkend="AgsAccessibleMachine"><type>AgsAccessibleMachine</type></link> *accessible_machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-accessible-machine-move-down" role="function">
+<title>ags_accessible_machine_move_down&#160;()</title>
+<indexterm zone="ags-accessible-machine-move-down"><primary>ags_accessible_machine_move_down</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_accessible_machine_move_down (<parameter><link linkend="AgsAccessibleMachine"><type>AgsAccessibleMachine</type></link> *accessible_machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-accessible-machine-destroy" role="function">
+<title>ags_accessible_machine_destroy&#160;()</title>
+<indexterm zone="ags-accessible-machine-destroy"><primary>ags_accessible_machine_destroy</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_accessible_machine_destroy (<parameter><link linkend="AgsAccessibleMachine"><type>AgsAccessibleMachine</type></link> *accessible_machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-accessible-machine-rename" role="function">
+<title>ags_accessible_machine_rename&#160;()</title>
+<indexterm zone="ags-accessible-machine-rename"><primary>ags_accessible_machine_rename</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_accessible_machine_rename (<parameter><link linkend="AgsAccessibleMachine"><type>AgsAccessibleMachine</type></link> *accessible_machine</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-accessible-machine-popup-context-menu" role="function">
+<title>ags_accessible_machine_popup_context_menu&#160;()</title>
+<indexterm zone="ags-accessible-machine-popup-context-menu"><primary>ags_accessible_machine_popup_context_menu</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_accessible_machine_popup_context_menu
+                               (<parameter><link linkend="AgsAccessibleMachine"><type>AgsAccessibleMachine</type></link> *accessible_machine</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsAccessibleMachine.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

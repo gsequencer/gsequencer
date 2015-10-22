@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
+  %gtkdocentities;
+]>
+<refentry id="ags-AgsFileRead">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-AgsFileRead.top_of_page">AgsFileRead</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsFileRead</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-AgsFileRead.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsFileRead"><returnvalue>AgsFileRead</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-file-read-new">ags_file_read_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-AgsFileRead.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-AgsFileRead.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-file-read-new" role="function">
+<title>ags_file_read_new&#160;()</title>
+<indexterm zone="ags-file-read-new"><primary>ags_file_read_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsFileRead"><returnvalue>AgsFileRead</returnvalue></link>&#160;*
+ags_file_read_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-AgsFileRead.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>
