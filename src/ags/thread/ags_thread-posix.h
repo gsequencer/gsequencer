@@ -53,8 +53,6 @@ typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
 typedef struct _AgsAccountingTable AgsAccountingTable;;
 
-static __thread AgsThread *ags_thread_self;
-
 typedef enum{
   AGS_THREAD_RUNNING                 = 1,
   AGS_THREAD_IDLE                    = 1 << 1,
@@ -238,6 +236,7 @@ void ags_thread_stop(AgsThread *thread);
 void ags_thread_hangcheck(AgsThread *thread);
 
 AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
+AgsThread* ags_thread_self(void);
 
 AgsThread* ags_thread_new(gpointer data);
 

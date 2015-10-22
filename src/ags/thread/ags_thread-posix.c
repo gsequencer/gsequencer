@@ -534,7 +534,7 @@ ags_thread_finalize(GObject *gobject)
 void
 ags_thread_resume_handler(int sig)
 {
-  if(ags_thread_self == NULL){
+  if(ags_thread_self() == NULL){
     return;
   }
 
@@ -542,10 +542,10 @@ ags_thread_resume_handler(int sig)
   g_message("thread resume\0");
 #endif
 
-  g_atomic_int_and(&(ags_thread_self->flags),
+  g_atomic_int_and(&(ags_thread_self()->flags),
 		   (~AGS_THREAD_SUSPENDED));
 
-  ags_thread_resume(ags_thread_self);
+  ags_thread_resume(ags_thread_self());
 }
 
 void
@@ -559,14 +559,14 @@ ags_thread_suspend_handler(int sig)
     return;
   }
 
-  if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0) return;
+  if ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self()->flags)))) != 0) return;
 
-  g_atomic_int_or(&(ags_thread_self->flags),
+  g_atomic_int_or(&(ags_thread_self()->flags),
 		  AGS_THREAD_SUSPENDED);
 
-  ags_thread_suspend(ags_thread_self);
+  ags_thread_suspend(ags_thread_self());
 
-  do sigsuspend(&(ags_thread_self->wait_mask)); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self->flags)))) != 0);
+  do sigsuspend(&(ags_thread_self()->wait_mask)); while ((AGS_THREAD_SUSPENDED & (g_atomic_int_get(&(ags_thread_self()->flags)))) != 0);
 }
 
 AgsAccountingTable*
