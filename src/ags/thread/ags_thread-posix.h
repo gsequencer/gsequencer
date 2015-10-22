@@ -51,7 +51,7 @@
 
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
-typedef struct _AgsAccountingTable AgsAccountingTable;
+typedef struct _AgsAccountingTable AgsAccountingTable;;
 
 static __thread AgsThread *ags_thread_self;
 

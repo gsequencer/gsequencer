@@ -56,6 +56,8 @@ void ags_thread_real_timelock(AgsThread *thread);
 void* ags_thread_timelock_loop(void *ptr);
 void ags_thread_real_stop(AgsThread *thread);
 
+static void ags_thread_self_create();
+
 /**
  * SECTION:ags_thread-posix
  * @short_description: threads
@@ -85,7 +87,13 @@ enum{
 static gpointer ags_thread_parent_class = NULL;
 static guint thread_signals[LAST_SIGNAL];
 
-extern __thread AgsThread *ags_thread_self;
+// __thread AgsThread *ags_thread_self = NULL;
+
+/* Key for the thread-specific AgsThread */
+static pthread_key_t ags_thread_key;
+
+/* Once-only initialisation of the key */
+static pthread_once_t ags_thread_key_once = PTHREAD_ONCE_INIT;
 
 GType
 ags_thread_get_type()
@@ -2066,8 +2074,10 @@ ags_thread_loop(void *ptr)
     }
   }
   
-  ags_thread_self =
-    thread = AGS_THREAD(ptr);
+  //  ags_thread_self =
+  thread = (AgsThread *) ptr;
+  pthread_once(&ags_thread_key_once, ags_thread_self_create);
+  pthread_setspecific(&ags_thread_key, thread);
   
   main_loop = ags_thread_get_toplevel(thread);
 
@@ -2930,6 +2940,17 @@ ags_thread_find_type(AgsThread *thread, GType type)
   return(NULL);
 }
 
+static void
+ags_thread_self_create()
+{
+  pthread_key_create(&ags_thread_key, NULL);
+}
+
+AgsThread*
+ags_thread_self(void)
+{
+  return((AgsThread *) pthread_getspecific(ags_thread_key));
+}
 
 /**
  * ags_thread_new:
