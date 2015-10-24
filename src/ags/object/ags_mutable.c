@@ -23,7 +23,7 @@ void ags_mutable_base_init(AgsMutableInterface *interface);
 
 /**
  * SECTION:ags_mutable
- * @short_description: unique access to dialogs
+ * @short_description: unique access to recalls
  * @title: AgsMutable
  * @section_id:
  * @include: ags/object/ags_mutable.h

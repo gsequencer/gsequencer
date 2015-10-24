@@ -19,6 +19,24 @@
 
 #include <ags/lib/ags_container.h>
 
+/**
+ * SECTION:ags_container
+ * @short_description: Complete GtkContainer
+ * @title: AgsContainer
+ * @section_id:
+ * @include: ags/lib/ags_container.h
+ *
+ * Functions completing #GtkContainer API.
+ */
+
+/**
+ * ags_container_remove_all:
+ * @container: the #GtkContainer
+ * 
+ * Adds all #GtkWidget pointed by #GList to @container. 
+ *
+ * Since: 0.4
+ */
 void
 ags_container_add_all(GtkContainer *container,
 		      GList *list)

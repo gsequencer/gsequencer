@@ -21,6 +21,17 @@
 
 void ags_connectable_base_init(AgsConnectableInterface *interface);
 
+/**
+ * SECTION:ags_connectable
+ * @short_description: unique access to recalls
+ * @title: AgsConnectable
+ * @section_id:
+ * @include: ags/object/ags_connectable.h
+ *
+ * The #AgsConnectable interface gives you a unique access to all objects
+ * and is responsible to set up signal handlers.
+ */
+
 GType
 ags_connectable_get_type()
 {

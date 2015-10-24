@@ -83,13 +83,13 @@ ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
 }
 
 /**
- * ags_main_loop_set_async_queue:
+ * ags_main_loop_set_application_context:
  * @main_loop: the #AgsMainLoop
- * @async_queue: the #AgsAsyncQueue
+ * @application_context: the #AgsApplicationContext
  *
- * Sets the asynchronous queue.
+ * Sets the application context.
  *
- * Since: 0.4
+ * Since: 0.6.0
  */
 void
 ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context)
@@ -103,14 +103,14 @@ ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationCont
 }
 
 /**
- * ags_main_loop_get_async_queue:
+ * ags_main_loop_get_application_context:
  * @main_loop: the #AgsMainLoop
  *
- * Retrieve the #AgsAsyncQueue.
+ * Retrieve the #AgsApplicationContext.
  *
- * Returns: the #AgsAsyncQueue
+ * Returns: the #AgsApplicationContext
  *
- * Since: 0.4
+ * Since: 0.6.0
  */
 AgsApplicationContext*
 ags_main_loop_get_application_context(AgsMainLoop *main_loop)
