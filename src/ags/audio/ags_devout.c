@@ -42,7 +42,7 @@
 
 /**
  * SECTION:ags_devout
- * @short_description: Outputting to soundcard
+ * @short_description: Output to soundcard
  * @title: AgsDevout
  * @section_id:
  * @include: ags/object/ags_soundcard.h
@@ -1125,6 +1125,7 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
   char *name;
   gchar *str;
   int card_num;
+  int device;
   int error;
 
   *card_id = NULL;
@@ -1156,6 +1157,13 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
       continue;
     }
 
+    device = -1;
+    error = snd_ctl_pcm_next_device(card_handle, &device);
+
+    if(error < 0){
+      continue;
+    }
+    
     *card_id = g_list_prepend(*card_id, str);
     *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
 
@@ -1168,22 +1176,6 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
   *card_name = g_list_reverse(*card_name);
 }
 
-/**
- * ags_devout_pcm_info:
- * @soundcard: the #AgsSoundcard
- * @card_id: alsa identifier
- * @channels_min: minimum channels supported
- * @channels_max: maximum channels supported
- * @rate_min: minimum samplerate supported
- * @rate_max: maximum samplerate supported
- * @buffer_size_min: minimum buffer size supported
- * @buffer_size_max maximum buffer size supported
- * @error: on success %NULL
- *
- * List soundcard settings.
- *
- * Since: 0.4
- */
 void
 ags_devout_pcm_info(AgsSoundcard *soundcard,
 		    char *card_id,

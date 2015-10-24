@@ -42,7 +42,7 @@
 
 /**
  * SECTION:ags_midiin
- * @short_description: Outputting to sequencer
+ * @short_description: Input from sequencer
  * @title: AgsMidiin
  * @section_id:
  * @include: ags/object/ags_sequencer.h
@@ -787,6 +787,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
   char *name;
   gchar *str;
   int card_num;
+  int device;
   int error;
 
   *card_id = NULL;
@@ -814,6 +815,13 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
     snd_ctl_card_info_alloca(&card_info);
     error = snd_ctl_card_info(card_handle, card_info);
 
+    if(error < 0){
+      continue;
+    }
+
+    device = -1;
+    error = snd_ctl_rawmidi_next_device(card_handle, &device);
+    
     if(error < 0){
       continue;
     }

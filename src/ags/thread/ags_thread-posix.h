@@ -113,11 +113,13 @@ struct _AgsThread
   pthread_mutexattr_t mutexattr;
   pthread_cond_t *cond;
 
+  volatile GList *start_queue;
+  
   pthread_mutex_t *start_mutex;
   pthread_cond_t *start_cond;
   volatile gboolean start_wait;
   volatile gboolean start_done;
-  
+
   pthread_barrier_t **barrier;
   gboolean first_barrier;
   int wait_count[2];

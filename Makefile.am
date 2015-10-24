@@ -185,6 +185,7 @@ libags_object_h_sources =  \
 	src/ags/object/ags_plugin.h \
 	src/ags/object/ags_portlet.h \
 	src/ags/object/ags_seekable.h \
+	src/ags/object/ags_sequencer.h \
 	src/ags/object/ags_soundcard.h \
 	src/ags/object/ags_tactable.h \
 	src/ags/object/ags_tree_iterator.h
@@ -208,6 +209,7 @@ libags_object_c_sources = \
 	src/ags/object/ags_plugin.c \
 	src/ags/object/ags_portlet.c \
 	src/ags/object/ags_seekable.c \
+	src/ags/object/ags_sequencer.c \
 	src/ags/object/ags_soundcard.c \
 	src/ags/object/ags_tactable.c \
 	src/ags/object/ags_tree_iterator.c
@@ -340,6 +342,8 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_effect.h \
 	src/ags/audio/ags_input.h \
 	src/ags/audio/ags_libao.h \
+	src/ags/audio/ags_message.h \
+	src/ags/audio/ags_midiin.h \
 	src/ags/audio/ags_notation.h \
 	src/ags/audio/ags_note.h \
 	src/ags/audio/ags_output.h \
@@ -382,6 +386,8 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_devout.c \
 	src/ags/audio/ags_input.c \
 	src/ags/audio/ags_libao.c \
+	src/ags/audio/ags_message.c \
+	src/ags/audio/ags_midiin.c \
 	src/ags/audio/ags_notation.c \
 	src/ags/audio/ags_note.c \
 	src/ags/audio/ags_output.c \
@@ -418,6 +424,7 @@ libags_audio_thread_h_sources = \
 	src/ags/audio/thread/ags_audio_loop.h \
 	src/ags/audio/thread/ags_audio_thread.h \
 	src/ags/audio/thread/ags_channel_thread.h \
+	src/ags/audio/thread/ags_sequencer_thread.h \
 	src/ags/audio/thread/ags_soundcard_thread.h \
 	src/ags/audio/thread/ags_export_thread.h \
 	src/ags/audio/thread/ags_iterator_thread.h \
@@ -432,6 +439,7 @@ libags_audio_thread_c_sources = \
 	src/ags/audio/thread/ags_audio_loop.c \
 	src/ags/audio/thread/ags_audio_thread.c \
 	src/ags/audio/thread/ags_channel_thread.c \
+	src/ags/audio/thread/ags_sequencer_thread.c \
 	src/ags/audio/thread/ags_soundcard_thread.c \
 	src/ags/audio/thread/ags_export_thread.c \
 	src/ags/audio/thread/ags_iterator_thread.c \
