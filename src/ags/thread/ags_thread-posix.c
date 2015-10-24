@@ -331,6 +331,9 @@ ags_thread_init(AgsThread *thread)
   thread->cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(thread->cond, NULL);
 
+  g_atomic_pointer_set(&(thread->start_queue),
+		       NULL);
+  
   thread->start_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(thread->start_mutex, NULL);
 
