@@ -466,9 +466,14 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->is_starting =  ags_devout_is_starting;
   soundcard->is_playing = ags_devout_is_playing;
+  soundcard->is_recording = NULL;
 
   soundcard->play_init = ags_devout_alsa_init;
   soundcard->play = ags_devout_alsa_play;
+
+  soundcard->record_init = NULL;
+  soundcard->record = NULL;
+
   soundcard->stop = ags_devout_alsa_free;
 
   soundcard->tic = ags_devout_tic;
@@ -1535,7 +1540,6 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
   AgsApplicationContext *application_context;
 
-  gdouble delay;
   guint word_size;
   
   pthread_mutex_t *mutex;
@@ -1976,6 +1980,14 @@ ags_devout_get_audio(AgsSoundcard *soundcard)
   return(devout->audio);
 }
 
+/**
+ * ags_devout_adjust_delay_and_attack:
+ * @devout: the #AgsDevout
+ *
+ * Calculate delay and attack and reset it.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_devout_adjust_delay_and_attack(AgsDevout *devout)
 {
@@ -2017,6 +2029,14 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
   }
 }
 
+/**
+ * ags_devout_realloc_buffer:
+ * @devout: the #AgsDevout
+ *
+ * Reallocate the internal audio buffer.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_devout_realloc_buffer(AgsDevout *devout)
 {

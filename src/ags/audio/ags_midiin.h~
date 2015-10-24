@@ -1,0 +1,47 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef __AGS_DEVOUT_H__
+#define __AGS_DEVOUT_H__
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include <sys/types.h>
+
+#include <pthread.h>
+
+#include <alsa/asoundlib.h>
+
+#define AGS_TYPE_DEVOUT                (ags_devout_get_type())
+#define AGS_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVOUT, AgsDevout))
+#define AGS_DEVOUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_DEVOUT, AgsDevout))
+#define AGS_IS_DEVOUT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_DEVOUT))
+#define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
+#define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
+
+typedef struct _AgsDevout AgsDevout;
+typedef struct _AgsDevoutClass AgsDevoutClass;
+
+typedef enum
+{
+  AGS_DEVOUT_BUFFER0                        = 1,
+  AGS_DEVOUT_BUFFER1                        = 1 << 1,
+  AGS_DEVOUT_BUFFER2                        = 1 << 2,
+  AGS_DEVOUT_BUFFER3                        = 1 << 3,

@@ -92,12 +92,7 @@ struct _AgsSoundcardInterface
   
   void (*list_cards)(AgsSoundcard *soundcard,
 		     GList **card_id, GList **card_name);
-  void (*pcm_info)(AgsSoundcard *soundcard, gchar *card_id,
-		   guint *channels_min, guint *channels_max,
-		   guint *rate_min, guint *rate_max,
-		   guint *buffer_size_min, guint *buffer_size_max,
-		   GError **error);
-  
+
   gboolean (*is_starting)(AgsSoundcard *soundcard);
   gboolean (*is_playing)(AgsSoundcard *soundcard);
   gboolean (*is_recording)(AgsSoundcard *soundcard);
@@ -199,12 +194,10 @@ void* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
 			   gdouble bpm);
-
 gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
 				    gdouble delay_factor);
-
 gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
 
 gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);

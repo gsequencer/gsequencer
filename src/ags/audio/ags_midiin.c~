@@ -1,0 +1,2053 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <ags/audio/ags_midiin.h>
+
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
+
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_sequencer.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/audio/ags_notation.h>
+
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/sequencer.h>
+#include <errno.h>
+
+#include <string.h>
+#include <math.h>
+#include <time.h>
+
+/**
+ * SECTION:ags_midiin
+ * @short_description: Outputting to sequencer
+ * @title: AgsMidiin
+ * @section_id:
+ * @include: ags/object/ags_sequencer.h
+ *
+ * #AgsMidiin represents a sequencer and supports output.
+ */
+
+void ags_midiin_class_init(AgsMidiinClass *midiin);
+void ags_midiin_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer);
+void ags_midiin_init(AgsMidiin *midiin);
+void ags_midiin_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec);
+void ags_midiin_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec);
+void ags_midiin_disconnect(AgsConnectable *connectable);
+void ags_midiin_connect(AgsConnectable *connectable);
+void ags_midiin_finalize(GObject *gobject);
+
+void ags_midiin_switch_buffer_flag(AgsMidiin *midiin);
+
+void ags_midiin_set_application_context(AgsSequencer *sequencer,
+					AgsApplicationContext *application_context);
+AgsApplicationContext* ags_midiin_get_application_context(AgsSequencer *sequencer);
+
+void ags_midiin_set_application_mutex(AgsSequencer *sequencer,
+				      pthread_mutex_t *application_mutex);
+pthread_mutex_t* ags_midiin_get_application_mutex(AgsSequencer *sequencer);
+
+void ags_midiin_set_device(AgsSequencer *sequencer,
+			   gchar *device);
+gchar* ags_midiin_get_device(AgsSequencer *sequencer);
+
+void ags_midiin_set_presets(AgsSequencer *sequencer,
+			    guint channels,
+			    guint rate,
+			    guint buffer_size,
+			    guint format);
+void ags_midiin_get_presets(AgsSequencer *sequencer,
+			    guint *channels,
+			    guint *rate,
+			    guint *buffer_size,
+			    guint *format);
+
+void ags_midiin_list_cards(AgsSequencer *sequencer,
+			   GList **card_id, GList **card_name);
+void ags_midiin_pcm_info(AgsSequencer *sequencer, gchar *card_id,
+			 guint *channels_min, guint *channels_max,
+			 guint *rate_min, guint *rate_max,
+			 guint *buffer_size_min, guint *buffer_size_max,
+			 GError **error);
+
+gboolean ags_midiin_is_starting(AgsSequencer *sequencer);
+gboolean ags_midiin_is_playing(AgsSequencer *sequencer);
+
+void ags_midiin_alsa_init(AgsSequencer *sequencer,
+			  GError **error);
+void ags_midiin_alsa_play(AgsSequencer *sequencer,
+			  GError **error);
+void ags_midiin_alsa_free(AgsSequencer *sequencer);
+
+void ags_midiin_tic(AgsSequencer *sequencer);
+void ags_midiin_offset_changed(AgsSequencer *sequencer,
+			       guint note_offset);
+
+void ags_midiin_set_bpm(AgsSequencer *sequencer,
+			gdouble bpm);
+gdouble ags_midiin_get_bpm(AgsSequencer *sequencer);
+
+void ags_midiin_set_delay_factor(AgsSequencer *sequencer,
+				 gdouble delay_factor);
+gdouble ags_midiin_get_delay_factor(AgsSequencer *sequencer);
+
+gdouble ags_midiin_get_delay(AgsSequencer *sequencer);
+guint ags_midiin_get_attack(AgsSequencer *sequencer);
+
+void* ags_midiin_get_buffer(AgsSequencer *sequencer);
+void* ags_midiin_get_next_buffer(AgsSequencer *sequencer);
+
+void ags_midiin_set_note_offset(AgsSequencer *sequencer,
+				guint note_offset);
+guint ags_midiin_get_note_offset(AgsSequencer *sequencer);
+
+void ags_midiin_set_audio(AgsSequencer *sequencer,
+			  GList *audio);
+GList* ags_midiin_get_audio(AgsSequencer *sequencer);
+
+enum{
+  PROP_0,
+  PROP_APPLICATION_CONTEXT,
+  PROP_APPLICATION_MUTEX,
+  PROP_DEVICE,
+  PROP_DSP_CHANNELS,
+  PROP_PCM_CHANNELS,
+  PROP_FORMAT,
+  PROP_BUFFER_SIZE,
+  PROP_SAMPLERATE,
+  PROP_BUFFER,
+  PROP_BPM,
+  PROP_DELAY_FACTOR,
+  PROP_ATTACK,
+};
+
+enum{
+  LAST_SIGNAL,
+};
+
+static gpointer ags_midiin_parent_class = NULL;
+static guint midiin_signals[LAST_SIGNAL];
+
+GType
+ags_midiin_get_type (void)
+{
+  static GType ags_type_midiin = 0;
+
+  if(!ags_type_midiin){
+    static const GTypeInfo ags_midiin_info = {
+      sizeof (AgsMidiinClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_midiin_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsMidiin),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_midiin_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_midiin_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_sequencer_interface_info = {
+      (GInterfaceInitFunc) ags_midiin_sequencer_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_midiin = g_type_register_static(G_TYPE_OBJECT,
+					     "AgsMidiin\0",
+					     &ags_midiin_info,
+					     0);
+
+    g_type_add_interface_static(ags_type_midiin,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_midiin,
+				AGS_TYPE_SEQUENCER,
+				&ags_sequencer_interface_info);
+  }
+
+  return (ags_type_midiin);
+}
+
+void
+ags_midiin_class_init(AgsMidiinClass *midiin)
+{
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  ags_midiin_parent_class = g_type_class_peek_parent(midiin);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) midiin;
+
+  gobject->set_property = ags_midiin_set_property;
+  gobject->get_property = ags_midiin_get_property;
+
+  gobject->finalize = ags_midiin_finalize;
+
+  /* properties */
+  /**
+   * AgsMidiin:application-context:
+   *
+   * The assigned #AgsApplicationContext
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_object("application-context\0",
+				   "the application context object\0",
+				   "The application context object\0",
+				   AGS_TYPE_APPLICATION_CONTEXT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
+  /**
+   * AgsMidiin:application-mutex:
+   *
+   * The assigned application mutex
+   * 
+   * Since: 0.7.0
+   */
+  param_spec = g_param_spec_pointer("application-mutex\0",
+				    "the application mutex object\0",
+				    "The application mutex object\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_MUTEX,
+				  param_spec);
+
+  /**
+   * AgsMidiin:device:
+   *
+   * The alsa sequencer indentifier
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_string("device\0",
+				   "the device identifier\0",
+				   "The device to perform output to\0",
+				   "hw:0\0",
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DEVICE,
+				  param_spec);
+  
+  /**
+   * AgsMidiin:dsp-channels:
+   *
+   * The dsp channel count
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_uint("dsp-channels\0",
+				 "count of DSP channels\0",
+				 "The count of DSP channels to use\0",
+				 1,
+				 64,
+				 2,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DSP_CHANNELS,
+				  param_spec);
+
+  /**
+   * AgsMidiin:pcm-channels:
+   *
+   * The pcm channel count
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_uint("pcm-channels\0",
+				 "count of PCM channels\0",
+				 "The count of PCM channels to use\0",
+				 1,
+				 64,
+				 2,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PCM_CHANNELS,
+				  param_spec);
+
+  /*
+   * TODO:JK: add support for other quality than 16 bit
+   */
+  /**
+   * AgsMidiin:format:
+   *
+   * The precision of the buffer
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_uint("format\0",
+				 "precision of buffer\0",
+				 "The precision to use for a frame\0",
+				 1,
+				 64,
+				 AGS_SEQUENCER_DEFAULT_FORMAT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
+  /**
+   * AgsMidiin:buffer-size:
+   *
+   * The buffer size
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_uint("buffer-size\0",
+				 "frame count of a buffer\0",
+				 "The count of frames a buffer contains\0",
+				 1,
+				 44100,
+				 940,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsMidiin:samplerate:
+   *
+   * The samplerate
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_uint("samplerate\0",
+				 "frames per second\0",
+				 "The frames count played during a second\0",
+				 8000,
+				 96000,
+				 44100,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsMidiin:buffer:
+   *
+   * The buffer
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_pointer("buffer\0",
+				    "the buffer\0",
+				    "The buffer to play\0",
+				    G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER,
+				  param_spec);
+
+  /**
+   * AgsMidiin:bpm:
+   *
+   * Beats per minute
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_double("bpm\0",
+				   "beats per minute\0",
+				   "Beats per minute to use\0",
+				   1.0,
+				   240.0,
+				   120.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BPM,
+				  param_spec);
+
+  /**
+   * AgsMidiin:delay-factor:
+   *
+   * tact
+   * 
+   * Since: 0.4.2
+   */
+  param_spec = g_param_spec_double("delay-factor\0",
+				   "delay factor\0",
+				   "The delay factor\0",
+				   0.0,
+				   16.0,
+				   1.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY_FACTOR,
+				  param_spec);
+
+  /**
+   * AgsMidiin:attack:
+   *
+   * Attack of the buffer
+   * 
+   * Since: 0.4.0
+   */
+  param_spec = g_param_spec_pointer("attack\0",
+				    "attack of buffer\0",
+				    "The attack to use for the buffer\0",
+				    G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
+
+
+  /* AgsMidiinClass */
+}
+
+GQuark
+ags_midiin_error_quark()
+{
+  return(g_quark_from_static_string("ags-midiin-error-quark\0"));
+}
+
+void
+ags_midiin_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_midiin_connect;
+  connectable->disconnect = ags_midiin_disconnect;
+}
+
+void
+ags_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
+{
+  sequencer->set_application_context = ags_midiin_set_application_context;
+  sequencer->get_application_context = ags_midiin_get_application_context;
+
+  sequencer->set_application_mutex = ags_midiin_set_application_mutex;
+  sequencer->get_application_mutex = ags_midiin_get_application_mutex;
+
+  sequencer->set_device = ags_midiin_set_device;
+  sequencer->get_device = ags_midiin_get_device;
+  
+  sequencer->set_presets = ags_midiin_set_presets;
+  sequencer->get_presets = ags_midiin_get_presets;
+
+  sequencer->list_cards = ags_midiin_list_cards;
+  sequencer->pcm_info = ags_midiin_pcm_info;
+
+  sequencer->is_starting =  ags_midiin_is_starting;
+  sequencer->is_playing = ags_midiin_is_playing;
+  sequencer->is_recording = NULL;
+
+  sequencer->play_init = ags_midiin_alsa_init;
+  sequencer->play = ags_midiin_alsa_play;
+
+  sequencer->record_init = NULL;
+  sequencer->record = NULL;
+
+  sequencer->stop = ags_midiin_alsa_free;
+
+  sequencer->tic = ags_midiin_tic;
+  sequencer->offset_changed = ags_midiin_offset_changed;
+    
+  sequencer->set_bpm = ags_midiin_set_bpm;
+  sequencer->get_bpm = ags_midiin_get_bpm;
+
+  sequencer->set_delay_factor = ags_midiin_set_delay_factor;
+  sequencer->get_delay_factor = ags_midiin_get_delay_factor;
+  
+  sequencer->get_delay = ags_midiin_get_delay;
+  sequencer->get_attack = ags_midiin_get_attack;
+
+  sequencer->get_buffer = ags_midiin_get_buffer;
+  sequencer->get_next_buffer = ags_midiin_get_next_buffer;
+
+  sequencer->set_note_offset = ags_midiin_set_note_offset;
+  sequencer->get_note_offset = ags_midiin_get_note_offset;
+
+  sequencer->set_audio = ags_midiin_set_audio;
+  sequencer->get_audio = ags_midiin_get_audio;
+}
+
+void
+ags_midiin_init(AgsMidiin *midiin)
+{
+  /* flags */
+  midiin->flags = (AGS_MIDIIN_ALSA);
+
+  /* quality */
+  midiin->dsp_channels = AGS_SEQUENCER_DEFAULT_DSP_CHANNELS;
+  midiin->pcm_channels = AGS_SEQUENCER_DEFAULT_PCM_CHANNELS;
+  midiin->format = AGS_SEQUENCER_DEFAULT_FORMAT;
+  midiin->buffer_size = AGS_SEQUENCER_DEFAULT_BUFFER_SIZE;
+  midiin->samplerate = AGS_SEQUENCER_DEFAULT_SAMPLERATE;
+
+  //  midiin->out.oss.device = NULL;
+  midiin->out.alsa.handle = NULL;
+  midiin->out.alsa.device = AGS_SEQUENCER_DEFAULT_DEVICE;
+
+  /* buffer */
+  midiin->buffer = (void **) malloc(4 * sizeof(void*));
+
+  midiin->buffer[0] = NULL;
+  midiin->buffer[1] = NULL;
+  midiin->buffer[2] = NULL;
+  midiin->buffer[3] = NULL;
+  
+  ags_midiin_realloc_buffer(midiin);
+  
+  /* bpm */
+  midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
+
+  /* delay factor */
+  midiin->delay_factor = AGS_SEQUENCER_DEFAULT_DELAY_FACTOR;
+  
+  /* delay and attack */
+  midiin->delay = (gdouble *) malloc((int) 2 * AGS_SEQUENCER_DEFAULT_PERIOD *
+				     sizeof(gdouble));
+  
+  midiin->attack = (guint *) malloc((int) 2 * AGS_SEQUENCER_DEFAULT_PERIOD *
+				    sizeof(guint));
+
+  ags_midiin_adjust_delay_and_attack(midiin);
+  
+  /* counters */
+  midiin->note_offset = 0;
+  midiin->tact_counter = 0.0;
+  midiin->delay_counter = 0;
+  midiin->tic_counter = 0;
+
+  /* parent */
+  midiin->application_context = NULL;
+  midiin->application_mutex = NULL;
+
+  /* all AgsAudio */
+  midiin->audio = NULL;
+}
+
+void
+ags_midiin_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(gobject);
+
+  //TODO:JK: implement set functionality
+  
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = g_value_get_object(value);
+
+      if(midiin->application_context == application_context){
+	return;
+      }
+
+      if(midiin->application_context != NULL){
+	g_object_unref(G_OBJECT(midiin->application_context));
+      }
+
+      if(application_context != NULL){
+	AgsConfig *config;
+
+	gchar *str;
+	gchar *segmentation;
+	guint discriminante, nominante;
+	
+	g_object_ref(G_OBJECT(application_context));
+
+	midiin->application_mutex = application_context->mutex;
+	
+	config = ags_config_get_instance();
+
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SEQUENCER,
+				   "dsp-channels\0");
+
+	if(str != NULL){
+	  midiin->dsp_channels = g_ascii_strtoull(str,
+						  NULL,
+						  10);
+	  g_free(str);
+	}
+
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SEQUENCER,
+				   "pcm-channels\0");
+
+	if(str != NULL){
+	  midiin->pcm_channels = g_ascii_strtoull(str,
+						  NULL,
+						  10);
+	  
+	  g_free(str);
+	}
+	
+	midiin->format = AGS_SEQUENCER_DEFAULT_FORMAT;
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SEQUENCER,
+				   "buffer-size\0");
+
+	if(str != NULL){
+	  midiin->buffer_size = g_ascii_strtoull(str,
+						 NULL,
+						 10);
+	  
+	  g_free(str);
+	}
+
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SEQUENCER,
+				   "samplerate\0");
+
+	if(str != NULL){
+	  midiin->samplerate = g_ascii_strtoull(str,
+						NULL,
+						10);
+	  
+	  g_free(str);
+	}
+	
+	segmentation = ags_config_get_value(config,
+					    AGS_CONFIG_GENERIC,
+					    "segmentation\0");
+
+	if(segmentation != NULL){
+	  sscanf(segmentation, "%d/%d\0",
+		 &discriminante,
+		 &nominante);
+    
+	  midiin->delay_factor = 1.0 / nominante * (nominante / discriminante);
+	}
+	
+	//  midiin->out.oss.device = NULL;
+	midiin->out.alsa.handle = NULL;
+	midiin->out.alsa.device = g_strdup(ags_config_get_value(config,
+								AGS_CONFIG_SEQUENCER,
+								"alsa-handle\0"));
+
+	ags_midiin_adjust_delay_and_attack(midiin);
+	ags_midiin_realloc_buffer(midiin);
+      }else{
+	midiin->application_mutex = NULL;
+      }
+
+      midiin->application_context = application_context;
+    }
+    break;
+  case PROP_APPLICATION_MUTEX:
+    {
+      pthread_mutex_t *application_mutex;
+
+      application_mutex = (pthread_mutex_t *) g_value_get_pointer(value);
+
+      if(midiin->application_mutex == application_mutex){
+	return;
+      }
+      
+      midiin->application_mutex = application_mutex;
+    }
+  case PROP_DEVICE:
+    {
+      char *device;
+
+      device = (char *) g_value_get_string(value);
+
+      if((AGS_MIDIIN_OSS & (midiin->flags)) != 0){
+	midiin->out.oss.device = g_strdup(device);
+      }else if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
+	midiin->out.alsa.device = g_strdup(device);
+      }
+    }
+    break;
+  case PROP_DSP_CHANNELS:
+    {
+      guint dsp_channels;
+
+      dsp_channels = g_value_get_uint(value);
+
+      if(dsp_channels == midiin->dsp_channels){
+	return;
+      }
+
+      midiin->dsp_channels = dsp_channels;
+    }
+    break;
+  case PROP_PCM_CHANNELS:
+    {
+      guint pcm_channels;
+
+      pcm_channels = g_value_get_uint(value);
+
+      if(pcm_channels == midiin->pcm_channels){
+	return;
+      }
+
+      midiin->pcm_channels = pcm_channels;
+
+      ags_midiin_realloc_buffer(midiin);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      guint format;
+
+      format = g_value_get_uint(value);
+
+      if(format == midiin->format){
+	return;
+      }
+
+      midiin->format = format;
+
+      ags_midiin_realloc_buffer(midiin);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size;
+
+      buffer_size = g_value_get_uint(value);
+
+      if(buffer_size == midiin->buffer_size){
+	return;
+      }
+
+      midiin->buffer_size = buffer_size;
+
+      ags_midiin_realloc_buffer(midiin);
+    }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      guint samplerate;
+
+      samplerate = g_value_get_uint(value);
+
+      if(samplerate == midiin->samplerate){
+	return;
+      }
+
+      midiin->samplerate = samplerate;
+
+      ags_midiin_realloc_buffer(midiin);
+    }
+    break;
+  case PROP_BUFFER:
+    {
+	//TODO:JK: implement me
+    }
+    break;
+  case PROP_BPM:
+    {
+      gdouble bpm;
+      
+      bpm = g_value_get_double(value);
+
+      midiin->bpm = bpm;
+
+      ags_midiin_adjust_delay_and_attack(midiin);
+    }
+    break;
+  case PROP_DELAY_FACTOR:
+    {
+      gdouble delay_factor;
+      
+      delay_factor = g_value_get_double(value);
+
+      midiin->delay_factor = delay_factor;
+
+      ags_midiin_adjust_delay_and_attack(midiin);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_midiin_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(gobject);
+  
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, midiin->application_context);
+    }
+    break;
+  case PROP_APPLICATION_MUTEX:
+    {
+      g_value_set_pointer(value, midiin->application_mutex);
+    }
+    break;
+  case PROP_DEVICE:
+    {
+      if((AGS_MIDIIN_OSS & (midiin->flags)) != 0){
+	g_value_set_string(value, midiin->out.oss.device);
+      }else if((AGS_MIDIIN_ALSA & (midiin->flags)) != 0){
+	g_value_set_string(value, midiin->out.alsa.device);
+      }
+    }
+    break;
+  case PROP_DSP_CHANNELS:
+    {
+      g_value_set_uint(value, midiin->dsp_channels);
+    }
+    break;
+  case PROP_PCM_CHANNELS:
+    {
+      g_value_set_uint(value, midiin->pcm_channels);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, midiin->format);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, midiin->buffer_size);
+    }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value, midiin->samplerate);
+    }
+    break;
+  case PROP_BUFFER:
+    {
+      g_value_set_pointer(value, midiin->buffer);
+    }
+    break;
+  case PROP_BPM:
+    {
+      g_value_set_double(value, midiin->bpm);
+    }
+    break;
+  case PROP_DELAY_FACTOR:
+    {
+      g_value_set_double(value, midiin->delay_factor);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      g_value_set_pointer(value, midiin->attack);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_midiin_finalize(GObject *gobject)
+{
+  AgsMidiin *midiin;
+
+  AgsMutexManager *mutex_manager;
+  
+  GList *list, *list_next;
+
+  midiin = AGS_MIDIIN(gobject);
+
+  /* remove midiin mutex */
+  pthread_mutex_lock(midiin->application_mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(midiin->application_mutex);
+
+  /* free output buffer */
+  free(midiin->buffer[0]);
+  free(midiin->buffer[1]);
+  free(midiin->buffer[2]);
+  free(midiin->buffer[3]);
+
+  /* free buffer array */
+  free(midiin->buffer);
+
+  /* free AgsAttack */
+  free(midiin->attack);
+
+  if(midiin->audio != NULL){
+    g_list_free_full(midiin->audio,
+		     g_object_unref);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_midiin_parent_class)->finalize(gobject);
+}
+
+void
+ags_midiin_connect(AgsConnectable *connectable)
+{
+  AgsMidiin *midiin;
+  
+  AgsMutexManager *mutex_manager;
+
+  GList *list;
+
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  midiin = AGS_MIDIIN(connectable);
+
+  /* create midiin mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+  
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  /* insert mutex */
+  pthread_mutex_lock(midiin->application_mutex);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) midiin,
+			   mutex);
+  
+  pthread_mutex_unlock(midiin->application_mutex);
+
+  /*  */  
+  list = midiin->audio;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+}
+
+void
+ags_midiin_disconnect(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_midiin_switch_buffer_flag:
+ * @midiin: an #AgsMidiin
+ *
+ * The buffer flag indicates the currently played buffer.
+ *
+ * Since: 0.3
+ */
+void
+ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
+{
+  if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER0);
+    midiin->flags |= AGS_MIDIIN_BUFFER1;
+  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER1);
+    midiin->flags |= AGS_MIDIIN_BUFFER2;
+  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER2);
+    midiin->flags |= AGS_MIDIIN_BUFFER3;
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER3);
+    midiin->flags |= AGS_MIDIIN_BUFFER0;
+  }
+}
+
+void
+ags_midiin_set_application_context(AgsSequencer *sequencer,
+				   AgsApplicationContext *application_context)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+  midiin->application_context = application_context;
+}
+
+AgsApplicationContext*
+ags_midiin_get_application_context(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  return(midiin->application_context);
+}
+
+void
+ags_midiin_set_application_mutex(AgsSequencer *sequencer,
+				 pthread_mutex_t *application_mutex)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+  midiin->application_mutex = application_mutex;
+}
+
+pthread_mutex_t*
+ags_midiin_get_application_mutex(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  return(midiin->application_mutex);
+}
+
+void
+ags_midiin_set_device(AgsSequencer *sequencer,
+		      gchar *device)
+{
+  AgsMidiin *midiin;
+  
+  midiin = AGS_MIDIIN(sequencer);
+  midiin->out.alsa.device = device;
+}
+
+gchar*
+ags_midiin_get_device(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+  
+  midiin = AGS_MIDIIN(sequencer);
+  
+  return(midiin->out.alsa.device);
+}
+
+void
+ags_midiin_set_presets(AgsSequencer *sequencer,
+		       guint channels,
+		       guint rate,
+		       guint buffer_size,
+		       guint format)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+  g_object_set(midiin,
+	       "dsp-channels\0", channels,
+	       "samplerate\0", rate,
+	       "buffer-size\0", buffer_size,
+	       "format\0", format,
+	       NULL);
+}
+
+void
+ags_midiin_get_presets(AgsSequencer *sequencer,
+		       guint *channels,
+		       guint *rate,
+		       guint *buffer_size,
+		       guint *format)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  if(channels != NULL){
+    *channels = midiin->dsp_channels;
+  }
+
+  if(rate != NULL){
+    *rate = midiin->samplerate;
+  }
+
+  if(buffer_size != NULL){
+    *buffer_size = midiin->buffer_size;
+  }
+
+  if(format != NULL){
+    *format = midiin->format;
+  }
+}
+
+/**
+ * ags_midiin_list_cards:
+ * @sequencer: the #AgsSequencer
+ * @card_id: alsa identifier
+ * @card_name: card name
+ *
+ * List available sequencers.
+ *
+ * Since: 0.4
+ */
+void
+ags_midiin_list_cards(AgsSequencer *sequencer,
+		      GList **card_id, GList **card_name)
+{
+  snd_ctl_t *card_handle;
+  snd_ctl_card_info_t *card_info;
+  char *name;
+  gchar *str;
+  int card_num;
+  int error;
+
+  *card_id = NULL;
+  *card_name = NULL;
+  card_num = -1;
+
+  while(TRUE){
+    error = snd_card_next(&card_num);
+
+    if(card_num < 0){
+      break;
+    }
+
+    if(error < 0){
+      continue;
+    }
+
+    str = g_strdup_printf("hw:%i\0", card_num);
+    error = snd_ctl_open(&card_handle, str, 0);
+
+    if(error < 0){
+      continue;
+    }
+
+    snd_ctl_card_info_alloca(&card_info);
+    error = snd_ctl_card_info(card_handle, card_info);
+
+    if(error < 0){
+      continue;
+    }
+
+    *card_id = g_list_prepend(*card_id, str);
+    *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
+
+    snd_ctl_close(card_handle);
+  }
+
+  snd_config_update_free_global();
+
+  *card_id = g_list_reverse(*card_id);
+  *card_name = g_list_reverse(*card_name);
+}
+
+/**
+ * ags_midiin_pcm_info:
+ * @sequencer: the #AgsSequencer
+ * @card_id: alsa identifier
+ * @channels_min: minimum channels supported
+ * @channels_max: maximum channels supported
+ * @rate_min: minimum samplerate supported
+ * @rate_max: maximum samplerate supported
+ * @buffer_size_min: minimum buffer size supported
+ * @buffer_size_max maximum buffer size supported
+ * @error: on success %NULL
+ *
+ * List sequencer settings.
+ *
+ * Since: 0.4
+ */
+void
+ags_midiin_pcm_info(AgsSequencer *sequencer,
+		    char *card_id,
+		    guint *channels_min, guint *channels_max,
+		    guint *rate_min, guint *rate_max,
+		    guint *buffer_size_min, guint *buffer_size_max,
+		    GError **error)
+{
+  int rc;
+  snd_pcm_t *handle;
+  snd_pcm_hw_params_t *params;
+  unsigned int val;
+  int dir;
+  snd_pcm_uframes_t frames;
+  int err;
+
+  /* Open PCM device for playback. */
+  handle = NULL;
+
+  rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
+
+  if(rc < 0) {
+    g_message("unable to open pcm device: %s\n\0", snd_strerror(rc));
+
+    g_set_error(error,
+		AGS_MIDIIN_ERROR,
+		AGS_MIDIIN_ERROR_LOCKED_SEQUENCER,
+		"unable to open pcm device: %s\n\0",
+		snd_strerror(rc));
+
+    return;
+  }
+
+  /* Allocate a hardware parameters object. */
+  snd_pcm_hw_params_alloca(&params);
+
+  /* Fill it in with default values. */
+  snd_pcm_hw_params_any(handle, params);
+
+  /* channels */
+  snd_pcm_hw_params_get_channels_min(params, &val);
+  *channels_min = val;
+
+  snd_pcm_hw_params_get_channels_max(params, &val);
+  *channels_max = val;
+
+  /* samplerate */
+  dir = 0;
+  snd_pcm_hw_params_get_rate_min(params, &val, &dir);
+  *rate_min = val;
+
+  dir = 0;
+  snd_pcm_hw_params_get_rate_max(params, &val, &dir);
+  *rate_max = val;
+
+  /* buffer size */
+  dir = 0;
+  snd_pcm_hw_params_get_buffer_size_min(params, &frames);
+  *buffer_size_min = frames;
+
+  dir = 0;
+  snd_pcm_hw_params_get_buffer_size_max(params, &frames);
+  *buffer_size_max = frames;
+
+  snd_pcm_close(handle);
+}
+
+gboolean
+ags_midiin_is_starting(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+  
+  return(((AGS_MIDIIN_START_PLAY & (midiin->flags)) != 0) ? TRUE: FALSE);
+}
+
+gboolean
+ags_midiin_is_playing(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+  
+  return(((AGS_MIDIIN_PLAY & (midiin->flags)) != 0) ? TRUE: FALSE);
+}
+
+void
+ags_midiin_alsa_init(AgsSequencer *sequencer,
+		     GError **error)
+{
+  AgsMidiin *midiin;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  snd_pcm_t *handle;
+  snd_pcm_hw_params_t *hwparams;
+  snd_pcm_sw_params_t *swparams;
+
+  int rc;
+  unsigned int val;
+  snd_pcm_uframes_t frames;
+  unsigned int rate;
+  unsigned int rrate;
+  unsigned int channels;
+  snd_pcm_uframes_t size;
+  snd_pcm_sframes_t buffer_size;
+  snd_pcm_sframes_t period_size;
+  guint word_size;
+  snd_pcm_format_t format;
+
+  int period_event;
+
+  int err, dir;
+  
+  pthread_mutex_t *mutex;
+  
+  static unsigned int period_time = 100000;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  application_context = ags_sequencer_get_application_context(sequencer);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) midiin);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* retrieve word size */
+  pthread_mutex_lock(mutex);
+
+  switch(midiin->format){
+  case AGS_SEQUENCER_RESOLUTION_8_BIT:
+    {
+      format = SND_PCM_FORMAT_S8;
+
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SEQUENCER_RESOLUTION_16_BIT:
+    {
+      format = SND_PCM_FORMAT_S16;
+      
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SEQUENCER_RESOLUTION_24_BIT:
+    {
+      format = SND_PCM_FORMAT_S24;
+      
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SEQUENCER_RESOLUTION_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SEQUENCER_RESOLUTION_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    g_warning("ags_midiin_alsa_init(): unsupported word size\0");
+    return;
+  }
+  
+  /* prepare for playback */
+  midiin->flags |= (AGS_MIDIIN_BUFFER3 |
+		    AGS_MIDIIN_START_PLAY |
+		    AGS_MIDIIN_PLAY |
+		    AGS_MIDIIN_NONBLOCKING);
+
+  midiin->note_offset = 0;
+
+  memset(midiin->buffer[0], 0, midiin->dsp_channels * midiin->buffer_size * word_size);
+  memset(midiin->buffer[1], 0, midiin->dsp_channels * midiin->buffer_size * word_size);
+  memset(midiin->buffer[2], 0, midiin->dsp_channels * midiin->buffer_size * word_size);
+  memset(midiin->buffer[3], 0, midiin->dsp_channels * midiin->buffer_size * word_size);
+
+  /*  */
+  period_event = 0;
+  
+  /* Open PCM device for playback. */
+  if ((err = snd_pcm_open(&handle, midiin->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Playback open error: %s\n", snd_strerror(err));
+    g_set_error(error,
+		AGS_MIDIIN_ERROR,
+		AGS_MIDIIN_ERROR_LOCKED_SEQUENCER,
+		"unable to open pcm device: %s\n\0",
+		snd_strerror(err));
+    return;
+  }
+
+  snd_pcm_hw_params_alloca(&hwparams);
+  snd_pcm_sw_params_alloca(&swparams);
+
+  /* choose all parameters */
+  err = snd_pcm_hw_params_any(handle, hwparams);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* set hardware resampling */
+  err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 1);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Resampling setup failed for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* set the interleaved read/write format */
+  err = snd_pcm_hw_params_set_access(handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Access type not available for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* set the sample format */
+  err = snd_pcm_hw_params_set_format(handle, hwparams, format);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Sample format not available for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* set the count of channels */
+  channels = midiin->dsp_channels;
+  err = snd_pcm_hw_params_set_channels(handle, hwparams, channels);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Channels count (%i) not available for playbacks: %s\n", channels, snd_strerror(err));
+    return;
+  }
+
+  /* set the stream rate */
+  rate = midiin->samplerate;
+  rrate = rate;
+  err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
+    return;
+  }
+
+  if (rrate != rate) {
+    pthread_mutex_unlock(mutex);
+    printf("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
+    //    exit(-EINVAL);
+    return;
+  }
+
+  /* set the buffer size */
+  size = midiin->buffer_size;
+  err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, size);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Unable to set buffer size %i for playback: %s\n", size, snd_strerror(err));
+    return;
+  }
+
+  buffer_size = size;
+
+  /* set the period time */
+  period_time = MSEC_PER_SEC / midiin->samplerate;
+  dir = -1;
+  err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
+    return;
+  }
+
+  err = snd_pcm_hw_params_get_period_size(hwparams, &size, &dir);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Unable to get period size for playback: %s\n", snd_strerror(err));
+    return;
+  }
+  period_size = size;
+
+  /* write the parameters to device */
+  err = snd_pcm_hw_params(handle, hwparams);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Unable to set hw params for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* get the current swparams */
+  err = snd_pcm_sw_params_current(handle, swparams);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Unable to determine current swparams for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* start the transfer when the buffer is almost full: */
+  /* (buffer_size / avail_min) * avail_min */
+  err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* allow the transfer when at least period_size samples can be processed */
+  /* or disable this mechanism when period event is enabled (aka interrupt like style processing) */
+  err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Unable to set avail min for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /* write the parameters to the playback device */
+  err = snd_pcm_sw_params(handle, swparams);
+  if (err < 0) {
+    pthread_mutex_unlock(mutex);
+    printf("Unable to set sw params for playback: %s\n", snd_strerror(err));
+    return;
+  }
+
+  /*  */
+  midiin->out.alsa.handle = handle;
+  midiin->tact_counter = 0.0;
+  midiin->delay_counter = 0.0;
+  midiin->tic_counter = 0;
+
+  midiin->flags |= AGS_MIDIIN_INITIALIZED;
+
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_midiin_alsa_play(AgsSequencer *sequencer,
+		     GError **error)
+{
+  AgsMidiin *midiin;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  gdouble delay;
+  guint word_size;
+  
+  pthread_mutex_t *mutex;
+  
+  midiin = AGS_MIDIIN(sequencer);
+
+  /*  */
+  application_context = ags_sequencer_get_application_context(sequencer);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) midiin);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* retrieve word size */
+  pthread_mutex_lock(mutex);
+
+  switch(midiin->format){
+  case AGS_SEQUENCER_RESOLUTION_8_BIT:
+    {
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SEQUENCER_RESOLUTION_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SEQUENCER_RESOLUTION_24_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SEQUENCER_RESOLUTION_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SEQUENCER_RESOLUTION_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    g_warning("ags_midiin_alsa_play(): unsupported word size\0");
+    return;
+  }
+
+  /* do playback */
+  midiin->flags &= (~AGS_MIDIIN_START_PLAY);
+
+  if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
+  
+  /* check buffer flag */
+  if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
+    memset(midiin->buffer[3], 0, (size_t) midiin->dsp_channels * midiin->buffer_size * word_size);
+      
+    midiin->out.alsa.rc = snd_pcm_writei(midiin->out.alsa.handle,
+					 midiin->buffer[0],
+					 (snd_pcm_uframes_t) (midiin->buffer_size));
+
+    if((AGS_MIDIIN_NONBLOCKING & (midiin->flags)) == 0){
+      if(midiin->out.alsa.rc == -EPIPE){
+	/* EPIPE means underrun */
+	snd_pcm_prepare(midiin->out.alsa.handle);
+
+#ifdef AGS_DEBUG
+	g_message("underrun occurred\0");
+#endif
+      }else if(midiin->out.alsa.rc == -ESTRPIPE){
+	static const struct timespec idle = {
+	  0,
+	  4000,
+	};
+
+	int err;
+
+	while((err = snd_pcm_resume(midiin->out.alsa.handle)) == -EAGAIN)
+	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	if(err < 0){
+	  err = snd_pcm_prepare(midiin->out.alsa.handle);
+	}
+      }else if(midiin->out.alsa.rc < 0){
+	g_message("error from writei: %s\0", snd_strerror(midiin->out.alsa.rc));
+      }else if(midiin->out.alsa.rc != (int) midiin->buffer_size) {
+	g_message("short write, write %d frames\0", midiin->out.alsa.rc);
+      }
+    }      
+    //      g_message("ags_midiin_play 0\0");
+  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
+    memset(midiin->buffer[0], 0, (size_t) midiin->dsp_channels * midiin->buffer_size * word_size);
+
+    midiin->out.alsa.rc = snd_pcm_writei(midiin->out.alsa.handle,
+					 midiin->buffer[1],
+					 (snd_pcm_uframes_t) (midiin->buffer_size));
+     
+    if((AGS_MIDIIN_NONBLOCKING & (midiin->flags)) == 0){
+      if(midiin->out.alsa.rc == -EPIPE){
+	/* EPIPE means underrun */
+	snd_pcm_prepare(midiin->out.alsa.handle);
+
+#ifdef AGS_DEBUG
+	g_message("underrun occurred\0");
+#endif
+      }else if(midiin->out.alsa.rc == -ESTRPIPE){
+	static const struct timespec idle = {
+	  0,
+	  4000,
+	};
+
+	int err;	
+
+	while((err = snd_pcm_resume(midiin->out.alsa.handle)) == -EAGAIN)
+	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	if(err < 0){
+	  err = snd_pcm_prepare(midiin->out.alsa.handle);
+	}
+      }else if(midiin->out.alsa.rc < 0){
+	g_message("error from writei: %s\0", snd_strerror(midiin->out.alsa.rc));
+      }else if(midiin->out.alsa.rc != (int) midiin->buffer_size) {
+	g_message("short write, write %d frames\0", midiin->out.alsa.rc);
+      }
+    }      
+    //      g_message("ags_midiin_play 1\0");
+  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
+    memset(midiin->buffer[1], 0, (size_t) midiin->dsp_channels * midiin->buffer_size * word_size);
+      
+    midiin->out.alsa.rc = snd_pcm_writei(midiin->out.alsa.handle,
+					 midiin->buffer[2],
+					 (snd_pcm_uframes_t) (midiin->buffer_size));
+
+    if((AGS_MIDIIN_NONBLOCKING & (midiin->flags)) == 0){
+      if(midiin->out.alsa.rc == -EPIPE){
+	/* EPIPE means underrun */
+	snd_pcm_prepare(midiin->out.alsa.handle);
+
+#ifdef AGS_DEBUG
+	g_message("underrun occurred\0");
+#endif
+      }else if(midiin->out.alsa.rc == -ESTRPIPE){
+	static const struct timespec idle = {
+	  0,
+	  4000,
+	};
+
+	int err;
+
+	while((err = snd_pcm_resume(midiin->out.alsa.handle)) == -EAGAIN)
+	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	if(err < 0){
+	  err = snd_pcm_prepare(midiin->out.alsa.handle);
+	}
+      }else if(midiin->out.alsa.rc < 0){
+	g_message("error from writei: %s\0", snd_strerror(midiin->out.alsa.rc));
+      }else if(midiin->out.alsa.rc != (int) midiin->buffer_size) {
+	g_message("short write, write %d frames\0", midiin->out.alsa.rc);
+      }
+    }
+    //      g_message("ags_midiin_play 2\0");
+  }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
+    memset(midiin->buffer[2], 0, (size_t) midiin->dsp_channels * midiin->buffer_size * word_size);
+      
+    midiin->out.alsa.rc = snd_pcm_writei(midiin->out.alsa.handle,
+					 midiin->buffer[3],
+					 (snd_pcm_uframes_t) (midiin->buffer_size));
+
+    if((AGS_MIDIIN_NONBLOCKING & (midiin->flags)) == 0){
+      if(midiin->out.alsa.rc == -EPIPE){
+	snd_pcm_prepare(midiin->out.alsa.handle);
+
+#ifdef AGS_DEBUG
+	g_message("underrun occurred\0");
+#endif
+      }else if(midiin->out.alsa.rc == -ESTRPIPE){
+	static const struct timespec idle = {
+	  0,
+	  4000,
+	};
+
+	int err;
+
+	while((err = snd_pcm_resume(midiin->out.alsa.handle)) == -EAGAIN)
+	  nanosleep(&idle, NULL); /* wait until the suspend flag is released */
+	if(err < 0){
+	  err = snd_pcm_prepare(midiin->out.alsa.handle);
+	}
+      }else if(midiin->out.alsa.rc < 0){
+	g_message("error from writei: %s\0", snd_strerror(midiin->out.alsa.rc));
+      }else if(midiin->out.alsa.rc != (int) midiin->buffer_size) {
+	g_message("short write, write %d frames\0", midiin->out.alsa.rc);
+      }
+    }
+    //      g_message("ags_midiin_play 3\0");
+  }
+
+  /* tic */
+  ags_sequencer_tic(sequencer);
+
+  /* reset - switch buffer flags */
+  ags_midiin_switch_buffer_flag(midiin);
+
+  snd_pcm_prepare(midiin->out.alsa.handle);
+
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_midiin_alsa_free(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *mutex;
+  
+  application_context = ags_sequencer_get_application_context(sequencer);
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) midiin);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
+    return;
+  }
+
+  midiin = AGS_MIDIIN(sequencer);
+  
+  snd_pcm_drain(midiin->out.alsa.handle);
+  snd_pcm_close(midiin->out.alsa.handle);
+  midiin->out.alsa.handle = NULL;
+  midiin->flags &= (~(AGS_MIDIIN_BUFFER0 |
+		      AGS_MIDIIN_BUFFER1 |
+		      AGS_MIDIIN_BUFFER2 |
+		      AGS_MIDIIN_BUFFER3 |
+		      AGS_MIDIIN_PLAY));
+}
+
+void
+ags_midiin_tic(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+  gdouble delay;
+  
+  midiin = AGS_MIDIIN(sequencer);
+  
+  /* determine if attack should be switched */
+  delay = midiin->delay[midiin->tic_counter];
+  midiin->delay_counter += 1.0;
+
+  if(midiin->delay_counter >= delay){
+    /* delay */
+    ags_sequencer_offset_changed(sequencer,
+				 midiin->note_offset);
+    
+    /* reset - delay counter */
+    midiin->delay_counter = 0.0;
+    midiin->tact_counter += 1.0;
+  } 
+}
+
+void
+ags_midiin_offset_changed(AgsSequencer *sequencer,
+			  guint note_offset)
+{
+  AgsMidiin *midiin;
+  
+  midiin = AGS_MIDIIN(sequencer);
+
+  midiin->tic_counter += 1;
+
+  if(midiin->tic_counter == AGS_SEQUENCER_DEFAULT_PERIOD){
+    /* reset - tic counter i.e. modified delay index within period */
+    midiin->tic_counter = 0;
+  }
+}
+
+void
+ags_midiin_set_bpm(AgsSequencer *sequencer,
+		   gdouble bpm)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  midiin->bpm = bpm;
+
+  ags_midiin_adjust_delay_and_attack(midiin);
+}
+
+gdouble
+ags_midiin_get_bpm(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+  
+  midiin = AGS_MIDIIN(sequencer);
+
+  return(midiin->bpm);
+}
+
+void
+ags_midiin_set_delay_factor(AgsSequencer *sequencer,
+			    gdouble delay_factor)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  midiin->delay_factor = delay_factor;
+
+  ags_midiin_adjust_delay_and_attack(midiin);
+}
+
+gdouble
+ags_midiin_get_delay_factor(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+  
+  midiin = AGS_MIDIIN(sequencer);
+
+  return(midiin->delay_factor);
+}
+
+gdouble
+ags_midiin_get_delay(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+  guint index;
+  
+  midiin = AGS_MIDIIN(sequencer);
+  index = midiin->tic_counter;
+  
+  return(midiin->delay[index]);
+}
+
+guint
+ags_midiin_get_attack(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+  guint index;
+  
+  midiin = AGS_MIDIIN(sequencer);
+  index = midiin->tic_counter;
+  
+  return(midiin->attack[index]);
+}
+
+void*
+ags_midiin_get_buffer(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+  signed short *buffer;
+  
+  midiin = AGS_MIDIIN(sequencer);
+
+  if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
+    buffer = midiin->buffer[0];
+  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
+    buffer = midiin->buffer[1];
+  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
+    buffer = midiin->buffer[2];
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
+    buffer = midiin->buffer[3];
+  }else{
+    buffer = NULL;
+  }
+
+  return(buffer);
+}
+
+void*
+ags_midiin_get_next_buffer(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+  signed short *buffer;
+  
+  midiin = AGS_MIDIIN(sequencer);
+
+  if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
+    buffer = midiin->buffer[1];
+  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
+    buffer = midiin->buffer[2];
+  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
+    buffer = midiin->buffer[3];
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
+    buffer = midiin->buffer[0];
+  }else{
+    buffer = NULL;
+  }
+
+  return(buffer);
+}
+
+void
+ags_midiin_set_note_offset(AgsSequencer *sequencer,
+			   guint note_offset)
+{
+  AGS_MIDIIN(sequencer)->note_offset = note_offset;
+}
+
+guint
+ags_midiin_get_note_offset(AgsSequencer *sequencer)
+{
+  return(AGS_MIDIIN(sequencer)->note_offset);
+}
+
+void
+ags_midiin_set_audio(AgsSequencer *sequencer,
+		     GList *audio)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+  midiin->audio = audio;
+}
+
+GList*
+ags_midiin_get_audio(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  return(midiin->audio);
+}
+
+/**
+ * ags_midiin_adjust_delay_and_attack:
+ * @midiin: the #AgsMidiin
+ *
+ * Calculate delay and attack and reset it.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_midiin_adjust_delay_and_attack(AgsMidiin *midiin)
+{
+  gdouble delay;
+  guint default_tact_frames;
+  guint default_period;
+  guint i;
+
+  if(midiin == NULL){
+    return;
+  }
+  
+  delay = ((gdouble) midiin->samplerate / (gdouble) midiin->buffer_size) * (gdouble)(60.0 / midiin->bpm) * midiin->delay_factor;
+
+#ifdef AGS_DEBUG
+  g_message("delay : %f\0", delay);
+#endif
+  
+  default_tact_frames = (guint) (delay * midiin->buffer_size);
+  default_period = (1.0 / AGS_SEQUENCER_DEFAULT_PERIOD) * (default_tact_frames);
+
+  midiin->attack[0] = 0;
+  midiin->delay[0] = delay;
+  
+  for(i = 1; i < (int)  2.0 * AGS_SEQUENCER_DEFAULT_PERIOD; i++){
+    midiin->attack[i] = (guint) ((i * default_tact_frames + midiin->attack[i - 1]) / (AGS_SEQUENCER_DEFAULT_PERIOD / (delay * i))) % (guint) (midiin->buffer_size);
+    
+#ifdef AGS_DEBUG
+    g_message("%d\0", midiin->attack[i]);
+#endif
+  }
+  
+  for(i = 1; i < (int) 2.0 * AGS_SEQUENCER_DEFAULT_PERIOD; i++){
+    midiin->delay[i] = ((gdouble) (default_tact_frames + midiin->attack[i])) / (gdouble) midiin->buffer_size;
+    
+#ifdef AGS_DEBUG
+    g_message("%f\0", midiin->delay[i]);
+#endif
+  }
+}
+
+/**
+ * ags_midiin_new:
+ * @application_context: the #AgsApplicationContext
+ *
+ * Creates an #AgsMidiin, refering to @application_context.
+ *
+ * Returns: a new #AgsMidiin
+ *
+ * Since: 0.7.0
+ */
+AgsMidiin*
+ags_midiin_new(GObject *application_context)
+{
+  AgsMidiin *midiin;
+
+  midiin = (AgsMidiin *) g_object_new(AGS_TYPE_MIDIIN,
+				      "application-context\0", application_context,
+				      NULL);
+  
+  return(midiin);
+}
