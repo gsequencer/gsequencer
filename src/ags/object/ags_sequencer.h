@@ -36,6 +36,24 @@
 typedef void AgsSequencer;
 typedef struct _AgsSequencerInterface AgsSequencerInterface;
 
+#define AGS_SEQUENCER_DEFAULT_SAMPLERATE (44100.0)
+#define AGS_SEQUENCER_DEFAULT_BUFFER_SIZE (944)
+#define AGS_SEQUENCER_DEFAULT_DEVICE "hw:0"
+#define AGS_SEQUENCER_DEFAULT_BPM (120.0)
+#define AGS_SEQUENCER_DEFAULT_DELAY_FACTOR (1.0 / 4.0)
+#define AGS_SEQUENCER_DEFAULT_JIFFIE ((double) AGS_SEQUENCER_DEFAULT_SAMPLERATE / (double) AGS_SEQUENCER_DEFAULT_BUFFER_SIZE)
+
+#define AGS_SEQUENCER_DEFAULT_TACT (1.0 / 1.0)
+#define AGS_SEQUENCER_DEFAULT_TACT_JIFFIE (60.0 / AGS_SEQUENCER_DEFAULT_BPM * AGS_SEQUENCER_DEFAULT_TACT)
+#define AGS_SEQUENCER_DEFAULT_TACTRATE (1.0 / AGS_SEQUENCER_DEFAULT_TACT_JIFFIE)
+
+#define AGS_SEQUENCER_DEFAULT_SCALE (1.0)
+#define AGS_SEQUENCER_DEFAULT_DELAY (AGS_SEQUENCER_DEFAULT_JIFFIE * (60.0 / AGS_SEQUENCER_DEFAULT_BPM))
+
+#define AGS_SEQUENCER_DEFAULT_PERIOD (64.0)
+
+#define AGS_SEQUENCER_DEFAULT_LATENCY (400)
+
 struct _AgsSequencerInterface
 {
   GTypeInterface interface;
@@ -82,13 +100,10 @@ i  gchar* (*get_device)(AgsSequencer *sequencer);
 		  gdouble bpm);
   gdouble (*get_bpm)(AgsSequencer *sequencer);
 
-  void (*set_delay_factor)(AgsSequencer *sequencer,
-			   gdouble delay_factor);
-  gdouble (*get_delay_factor)(AgsSequencer *sequencer);
-  
+  void (*set_delay)(AgsSequencer *sequencer,
+		    gdouble delay);
   gdouble (*get_delay)(AgsSequencer *sequencer);
-  guint (*get_attack)(AgsSequencer *sequencer);
-  
+
   void (*set_note_offset)(AgsSequencer *sequencer,
 			  guint note_offset);
   guint (*get_note_offset)(AgsSequencer *sequencer);
@@ -140,16 +155,11 @@ void* ags_sequencer_get_next_buffer(AgsSequencer *sequencer);
 
 void ags_sequencer_set_bpm(AgsSequencer *sequencer,
 			   gdouble bpm);
-
 gdouble ags_sequencer_get_bpm(AgsSequencer *sequencer);
 
-void ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
-				    gdouble delay_factor);
-
-gdouble ags_sequencer_get_delay_factor(AgsSequencer *sequencer);
-
+void ags_sequencer_set_delay(AgsSequencer *sequencer,
+			     gdouble delay);
 gdouble ags_sequencer_get_delay(AgsSequencer *sequencer);
-guint ags_sequencer_get_attack(AgsSequencer *sequencer);
 
 void ags_sequencer_set_note_offset(AgsSequencer *sequencer,
 				   guint note_offset);

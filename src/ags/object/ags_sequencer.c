@@ -237,41 +237,6 @@ ags_sequencer_list_cards(AgsSequencer *sequencer,
 }
 
 /**
- * ags_sequencer_pcm_info:
- * @sequencer: an #AgsSequencer
- * @card_id: the selected sequencer by its string identifier
- * @channels_min: min channels supported
- * @channels_max: max channels supported
- * @rate_min: min samplerate supported
- * @rate_max: max samplerate supported
- * @buffer_size_min: min buffer size supported by sequencer
- * @buffer_size_max: max buffer size supported by sequencer
- * @error: an error that may occure
- *
- * Retrieve detailed information of @card_id sequencer.
- *
- * Since: 0.7.0
- */
-void
-ags_sequencer_pcm_info(AgsSequencer *sequencer, gchar *card_id,
-		       guint *channels_min, guint *channels_max,
-		       guint *rate_min, guint *rate_max,
-		       guint *buffer_size_min, guint *buffer_size_max,
-		       GError **error)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_if_fail(sequencer_interface->pcm_info);
-  sequencer_interface->pcm_info(sequencer, card_id,
-				channels_min, channels_max,
-				rate_min, rate_max,
-				buffer_size_min, buffer_size_max,
-				error);
-}
-
-/**
  * ags_sequencer_is_starting:
  * @sequencer: an #AgsSequencer
  *
