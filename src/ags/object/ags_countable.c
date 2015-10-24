@@ -25,7 +25,7 @@ void ags_countable_base_init(AgsCountableInterface *interface);
 
 /**
  * SECTION:ags_countable
- * @short_description: unique access to dialogs
+ * @short_description: a counter interface
  * @title: AgsCountable
  * @section_id:
  * @include: ags/object/ags_countable.h

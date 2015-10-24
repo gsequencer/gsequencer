@@ -613,6 +613,13 @@ ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
   return(value);
 }
 
+/**
+ * ags_config_get_instance:
+ *
+ * Get config instance.
+ *
+ * Since: 0.7.0
+ */
 AgsConfig*
 ags_config_get_instance()
 {

@@ -48,6 +48,18 @@ void ags_application_context_finalize(GObject *gobject);
 void ags_application_context_real_load_config(AgsApplicationContext *application_context);
 void ags_application_context_real_register_types(AgsApplicationContext *application_context);
 
+/**
+ * SECTION:ags_application_context
+ * @short_description: The application context
+ * @title: AgsApplicationContext
+ * @section_id:
+ * @include: ags/object/ags_application_context.h
+ *
+ * #AgsApplicationContext is a context provider is your and libraries entry
+ * point to the application. You might subtype it to implement your own contices.
+ * Thus you should consider to create a provider interface for reusability.
+ */
+
 enum{
   LOAD_CONFIG,
   REGISTER_TYPES,
@@ -161,8 +173,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * AgsApplicationContext::load-config:
    * @application_context: the object to play
    *
-   * The ::load-config signal notifies about running
-   * stage 2.
+   * The ::load-config notifies to load configuration.
    */
   application_context_signals[LOAD_CONFIG] =
     g_signal_new("load-config\0",
@@ -177,8 +188,8 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * AgsApplicationContext::register-types:
    * @application_context: the object to play
    *
-   * The ::register-types signal notifies about running
-   * stage 2.
+   * The ::register-types signal should be implemented to load
+   * your types.
    */
   application_context_signals[REGISTER_TYPES] =
     g_signal_new("register-types\0",
@@ -376,6 +387,14 @@ ags_application_context_real_load_config(AgsApplicationContext *application_cont
   //TODO:JK: implement me
 }
 
+/**
+ * ags_application_context_load_config:
+ * @application_context: the #AgsApplicationContext
+ *
+ * Signal to load and parse configuration.
+ *
+ * Since 0.7.0
+ */
 void
 ags_application_context_load_config(AgsApplicationContext *application_context)
 {
@@ -394,6 +413,14 @@ ags_application_context_real_register_types(AgsApplicationContext *application_c
   //TODO:JK: implement me
 }
 
+/**
+ * ags_application_context_register_types:
+ * @application_context: the #AgsApplicationContext
+ *
+ * Notification to register your types.
+ *
+ * Since 0.7.0
+ */
 void
 ags_application_context_register_types(AgsApplicationContext *application_context)
 {
@@ -448,6 +475,14 @@ ags_application_context_find_main_loop(GList *application_context)
   return(application_context);
 }
 
+/**
+ * ags_application_context_quit:
+ * @application_context: the context to quit
+ *
+ * Calls exit()
+ *
+ * Since: 0.7.0
+ */
 gboolean
 ags_application_context_quit(AgsApplicationContext *application_context)
 {
@@ -455,6 +490,13 @@ ags_application_context_quit(AgsApplicationContext *application_context)
   exit(0);
 }
 
+/**
+ * ags_application_context_get_instance:
+ * 
+ * Get your application context instance.
+ *
+ * Since: 0.7.0
+ */
 AgsApplicationContext*
 ags_application_context_get_instance()
 {

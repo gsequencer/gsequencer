@@ -100,11 +100,18 @@ struct _AgsSoundcardInterface
   
   gboolean (*is_starting)(AgsSoundcard *soundcard);
   gboolean (*is_playing)(AgsSoundcard *soundcard);
+  gboolean (*is_recording)(AgsSoundcard *soundcard);
   
   void (*play_init)(AgsSoundcard *soundcard,
 		    GError **error);
   void (*play)(AgsSoundcard *soundcard,
 	       GError **error);
+
+  void (*record_init)(AgsSoundcard *soundcard,
+		      GError **error);
+  void (*record)(AgsSoundcard *soundcard,
+		 GError **error);
+
   void (*stop)(AgsSoundcard *soundcard);
 
   void (*tic)(AgsSoundcard *soundcard);
@@ -169,11 +176,18 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 
 gboolean ags_soundcard_is_starting(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_playing(AgsSoundcard *soundcard);
+gboolean ags_soundcard_is_recording(AgsSoundcard *soundcard);
 
 void ags_soundcard_play_init(AgsSoundcard *soundcard,
 			     GError **error);
 void ags_soundcard_play(AgsSoundcard *soundcard,
 			GError **error);
+
+void ags_soundcard_record_init(AgsSoundcard *soundcard,
+			       GError **error);
+void ags_soundcard_record(AgsSoundcard *soundcard,
+			  GError **error);
+
 void ags_soundcard_stop(AgsSoundcard *soundcard);
 
 void ags_soundcard_tic(AgsSoundcard *soundcard);

@@ -1065,6 +1065,14 @@ ags_editor_cut(AgsEditor *editor)
   }
 }
 
+/**
+ * ags_editor_select_all:
+ * @editor: an #AgsEditor
+ *
+ * Invert all notation of @editor's selected machine.
+ *
+ * Since: 0.5.0
+ */
 void
 ags_editor_invert(AgsEditor *editor)
 {

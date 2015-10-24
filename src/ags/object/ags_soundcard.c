@@ -371,6 +371,28 @@ ags_soundcard_is_playing(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_is_recording:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get recording.
+ *
+ * Returns: %TRUE if recording, else %FALSE
+ *
+ * Since: 0.7.0
+ */
+gboolean
+ags_soundcard_is_recording(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), FALSE);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->is_recording, FALSE);
+
+  return(soundcard_interface->is_recording(soundcard));
+}
+
+/**
  * ags_soundcard_play:
  * @soundcard: an #AgsSoundcard
  * @error: an error that may occure
@@ -412,6 +434,50 @@ ags_soundcard_play(AgsSoundcard *soundcard,
   g_return_if_fail(soundcard_interface->play);
   soundcard_interface->play(soundcard,
 			    error);
+}
+
+/**
+ * ags_soundcard_record:
+ * @soundcard: an #AgsSoundcard
+ * @error: an error that may occure
+ *
+ * Initializes the soundcard for recordback.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_soundcard_record_init(AgsSoundcard *soundcard,
+			  GError **error)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->record_init);
+  soundcard_interface->record_init(soundcard,
+				   error);
+}
+
+/**
+ * ags_soundcard_record:
+ * @soundcard: an #AgsSoundcard
+ * @error: an error that may occure
+ *
+ * Records the current buffer of soundcard.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_soundcard_record(AgsSoundcard *soundcard,
+		     GError **error)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->record);
+  soundcard_interface->record(soundcard,
+			      error);
 }
 
 /**
