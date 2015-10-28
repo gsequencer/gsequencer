@@ -138,6 +138,7 @@ ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
 					   gchar *track_name,
 					   guint status, ...)
 {
+  //TODO:JK: implement me
 }
 
 void
@@ -145,6 +146,7 @@ ags_midi_file_writer_write_status_message(AgsMidiFileWriter *midi_file_writer,
 					  gchar *track_name,
 					  guint status, ...)
 {
+  //TODO:JK: implement me
 }
 
 AgsMidiFile*
