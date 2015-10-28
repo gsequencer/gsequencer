@@ -158,92 +158,13 @@ ags_midi_file_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_midi_file_parent_class)->finalize(gobject);
 }
 
-gboolean
-ags_midi_file_open(AgsMidiFile *midi_file)
-{
-  //TODO:JK: implement me
-}
-
-gboolean
-ags_midi_file_open_from_data(AgsMidiFile *midi_file,
-			     char *data, guint buffer_length)
-{
-  //TODO:JK: implement me
-}
-
-gboolean
-ags_midi_file_rw_open(AgsMidiFile *midi_file)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_midi_file_close(AgsMidiFile *midi_file)
-{
-  //TODO:JK: implement me
-}
-
-GList*
-ags_midi_file_read(AgsMidiFile *midi_file, GError **error)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_midi_file_write(AgsMidiFile *midi_file,
-		    GList *notation)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_file_flush(AgsMidiFile *midi_file)
-{
-  //TODO:JK: implement me
-}
-
-char*
-ags_midi_file_read_header(AgsMidiFile *midi_file,
-			  guint *buffer_length)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_midi_file_write_header(AgsMidiFile *midi_file,
-			   char *buffer, guint length)
-{
-  //TODO:JK: implement me
-}
-
-char*
-ags_midi_file_read_track_data(AgsMidiFile *midi_file,
-			      guint *buffer_length)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_midi_file_write_track_data(AgsMidiFile *midi_file,
-			       gchar *track_name,
-			       char *data, guint buffer_length)
-{
-  //TODO:JK: implement me
-}
 
 AgsMidiFile*
-ags_midi_file_new(gchar *filename)
+ags_midi_file_new()
 {
   AgsMidiFile *midi_file;
 
   midi_file = (AgsMidiFile *) g_object_new(AGS_TYPE_MIDI_FILE,
-					   "filename\0", filename,
 					   NULL);
 
   return(midi_file);

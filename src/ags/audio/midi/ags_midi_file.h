@@ -32,15 +32,46 @@
 
 typedef struct _AgsMidiFile AgsMidiFile;
 typedef struct _AgsMidiFileClass AgsMidiFileClass;
+typedef struct _AgsMidiFileTrack AgsMidiFileTrack;
+
+typedef enum{
+  /* channel messages */
+  AGS_MIDI_FILE_KEY_OFF           = 0x80,
+  AGS_MIDI_FILE_KEY_ON            = 0x90,
+  AGS_MIDI_FILE_KEY_PRESSURE      = 0xa0,
+  AGS_MIDI_FILE_CHANGE_PARAMETER  = 0xb0,
+  AGS_MIDI_FILE_CHANGE_PROGRAM    = 0xc0,
+  AGS_MIDI_FILE_CHANNEL_PRESSURE  = 0xd0,
+  AGS_MIDI_FILE_CHANGE_PITCH_BEND = 0xe0,
+  /* status messages */
+  AGS_MIDI_FILE_SYSEX             = 0xf0,
+  AGS_MIDI_FILE_QUARTER_FRAME     = 0xf1,
+  AGS_MIDI_FILE_SONG_POSITION     = 0xf2,
+  AGS_MIDI_FILE_SONG_SELECT       = 0xf3,
+  AGS_MIDI_FILE_UNDEFINED_0       = 0xf4,
+  AGS_MIDI_FILE_UNDEFINED_1       = 0xf5,
+  AGS_MIDI_FILE_TUNE_REQUEST      = 0xf6,
+  AGS_MIDI_FILE_SYSEX_END         = 0xf7,
+  AGS_MIDI_FILE_META_EVENT        = 0xff,
+}AgsMidiFileStatus;
 
 struct _AgsMidiFile
 {
   GObject gobject;
 
   gchar *filename;
-  
-  AgsMidiParser *parser;
-  GList *notation;
+
+  char *buffer;
+
+  guint offset;
+  guint format;
+  guint count;
+  guint division;
+  guint times;
+  guint beat;
+  guint clicks;
+
+  GList *track;
 };
 
 struct _AgsMidiFileClass
@@ -48,19 +79,39 @@ struct _AgsMidiFileClass
   GObjectClass gobject;
 };
 
+struct _AgsMidiFileTrack
+{
+  GObject *sequencer;
+
+  gchar *track_name;
+  char *buffer;
+};
+
 GType ags_midi_file_get_type(void);
 
 gboolean ags_midi_file_open(AgsMidiFile *midi_file);
-gboolean ags_midi_file_open_from_data(AgsMidiFile *midi_file);
+gboolean ags_midi_file_open_from_data(AgsMidiFile *midi_file,
+				      char *data, guint buffer_length);
 gboolean ags_midi_file_rw_open(AgsMidiFile *midi_file);
 
 void ags_midi_file_close(AgsMidiFile *midi_file);
 
 GList* ags_midi_file_read(AgsMidiFile *midi_file, GError **error);
 void ags_midi_file_write(AgsMidiFile *midi_file,
-			  GList *notation);
-void ags_midi_file_seek(AgsMidiFile *midi_file, guint note_offset, gint whence);
+			 char *data, guint buffer_length);
+void ags_midi_file_seek(AgsMidiFile *midi_file, guint position, gint whence);
 void ags_midi_file_flush(AgsMidiFile *midi_file);
+
+char* ags_midi_file_read_header(AgsMidiFile *midi_file,
+				guint *buffer_length);
+void ags_midi_file_write_header(AgsMidiFile *midi_file,
+				char *data, guint buffer_length);
+
+char* ags_midi_file_read_track_data(AgsMidiFile *midi_file,
+				    guint *buffer_length);
+void ags_midi_file_write_track_data(AgsMidiFile *midi_file,
+				    gchar *track_name,
+				    char *data, guint buffer_length);
 
 AgsMidiFile* ags_midi_file_new(gchar *filename);
 
