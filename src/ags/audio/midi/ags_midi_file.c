@@ -91,9 +91,8 @@ void
 ags_midi_file_init(AgsMidiFile *midi_file)
 {
   midi_file->filename = NULL;
-
-  midi_file->parser = ags_midi_parser_new();
-  midi_file->notation = NULL;
+  
+  midi_file->buffer = NULL;
 }
 
 void
@@ -158,47 +157,84 @@ ags_midi_file_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_midi_file_parent_class)->finalize(gobject);
 }
-}
 
 gboolean
 ags_midi_file_open(AgsMidiFile *midi_file)
 {
+  //TODO:JK: implement me
 }
 
 gboolean
-ags_midi_file_open_from_data(AgsMidiFile *midi_file)
+ags_midi_file_open_from_data(AgsMidiFile *midi_file,
+			     char *data, guint buffer_length)
 {
+  //TODO:JK: implement me
 }
 
 gboolean
 ags_midi_file_rw_open(AgsMidiFile *midi_file)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_midi_file_close(AgsMidiFile *midi_file)
 {
+  //TODO:JK: implement me
 }
 
 GList*
 ags_midi_file_read(AgsMidiFile *midi_file, GError **error)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_midi_file_write(AgsMidiFile *midi_file,
 		    GList *notation)
 {
+  //TODO:JK: implement me
 }
 
 void
-ags_audio_file_seek(AgsMidiFile *midi_file, guint offset, gint whence)
+ags_audio_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_audio_file_flush(AgsMidiFile *midi_file)
 {
+  //TODO:JK: implement me
+}
+
+char*
+ags_midi_file_read_header(AgsMidiFile *midi_file,
+			  guint *buffer_length)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_file_write_header(AgsMidiFile *midi_file,
+			   char *buffer, guint length)
+{
+  //TODO:JK: implement me
+}
+
+char*
+ags_midi_file_read_track_data(AgsMidiFile *midi_file,
+			      guint *buffer_length)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_file_write_track_data(AgsMidiFile *midi_file,
+			       gchar *track_name,
+			       char *data, guint buffer_length)
+{
+  //TODO:JK: implement me
 }
 
 AgsMidiFile*

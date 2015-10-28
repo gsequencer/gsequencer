@@ -20,9 +20,6 @@
 #include <midi2ags/midi/ags_midi_parser.h>
 #include <midi2ags/object/ags_marshal.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -67,8 +64,6 @@ xmlNode* ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint m
 xmlNode* ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type);
-
-#define AGS_MIDI_PARSER_MAX_TEXT_LENGTH (4096)
 
 #define AGS_MIDI_EVENT "event\0"
 
@@ -179,6 +174,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
   midi_parser->midi_getc = ags_midi_parser_real_midi_getc;
   midi_parser->on_error = ags_midi_parser_real_on_error;
 
+  midi_parser->parse_full = ags_midi_parser_real_parse_full;
+  
   midi_parser->parse_header = ags_midi_parser_real_parse_header;
   midi_parser->parse_track = ags_midi_parser_real_parse_track;
 
@@ -204,8 +201,6 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
   midi_parser->sequencer_meta_event = ags_midi_parser_real_sequencer_meta_event;
   midi_parser->text_event = ags_midi_parser_real_text_event;
 
-  midi_parser->parse_full = ags_midi_parser_real_parse_full;
-  
   /* signals */
   /**
    * AgsMidiParser::midi-getc:
@@ -241,6 +236,23 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 g_cclosure_user_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 
+
+  /**
+   * AgsMidiParser::parse-full:
+   * @midi_parser: the parser
+   *
+   * Returns: The XML node representing the event
+   *
+   * The ::parse-full signal is emited during parsing of midi file.
+   */
+  midi_parser_signals[PARSE_FULL] =
+    g_signal_new("parse-full\0",
+		 G_TYPE_FROM_CLASS(midi_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_full),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
 
   /**
    * AgsMidiParser::parse-header:
@@ -617,23 +629,6 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 g_cclosure_user_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
-
-  /**
-   * AgsMidiParser::parse-full:
-   * @midi_parser: the parser
-   *
-   * Returns: The XML node representing the event
-   *
-   * The ::parse-full signal is emited during parsing of midi file.
-   */
-  midi_parser_signals[PARSE_FULL] =
-    g_signal_new("parse-full\0",
-		 G_TYPE_FROM_CLASS(midi_parser),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_full),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
-		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -781,7 +776,7 @@ gchar*
 ags_midi_parser_read_text(AgsMidiParser *midi_parser,
 			  gint length)
 {
-  gchar text[AGS_MIDI_PARSER_MAX_TEXT_LENGTH];
+  gchar text[AGS_MIDI_PARSER_MAX_TEXT_LENGTH + 1];
   gchar c;
   guint i;
 
@@ -789,7 +784,7 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
   i = 0;
   
   while((length <= 0 ||
-	 i < length) && (c = (char) 0xff & ags_midi_parser_midi_getc(midi_parser)) != EOF){
+	 i < length) && (c = (char) 0xff & (ags_midi_parser_midi_getc(midi_parser))) != EOF){
     if(c == '\0' || !(g_ascii_isalnum(c) ||
 		      g_ascii_ispunct(c) ||
 		      c == ' ')){
@@ -876,6 +871,7 @@ void
 ags_midi_parser_real_on_error(AgsMidiParser *midi_parser,
 			      GError **error)
 {
+  //TODO:JK: implement me
 }
 
 xmlDoc*  
@@ -902,24 +898,25 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   xmlNode *tracks_node;
   xmlNode *current;
 
-  GError *error;
-
+  /* create xmlDoc and set root node */
   midi_parser->doc = 
     doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(NULL, "midi\0");
   xmlDocSetRootElement(doc, root_node);
 
+  /* create tracks node */
   tracks_node = xmlNewNode(NULL, "midi-tracks\0");
 
-  error = NULL;
-
+  /* parse header */
   current = ags_midi_parser_parse_header(midi_parser);
   xmlAddChild(root_node,
 	      current);
-#ifdef DEBUG
+
+#ifdef AGS_DEBUG
   g_message("parsed header\0");
 #endif
-  
+
+  /* parse tracks */
   xmlAddChild(root_node,
 	      tracks_node);
   
@@ -929,7 +926,7 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
     if(current != NULL){
       xmlAddChild(tracks_node,
 		  current);
-#ifdef DEBUG
+#ifdef AGS_DEBUG
       g_message("parsed track\0");
 #endif
     }else{
@@ -962,15 +959,16 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   xmlNode *node;
 
   static gchar header[] = "MThd";
+  guint offset;
   guint format;
   guint count;
   guint division;
-  guint offset;
   guint times;
   guint beat, clicks;
   guint n;
   gchar c;
-  
+
+  /* read header */
   n = 0;
   
   while(n < 4 &&
@@ -987,6 +985,7 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   node = xmlNewNode(NULL,
 		    "midi-header\0");
 
+  /* get some values */
   offset = (guint) ags_midi_parser_read_gint32(midi_parser);
   format = (guint) ags_midi_parser_read_gint16(midi_parser);
   count = (guint) ags_midi_parser_read_gint16(midi_parser);
@@ -1010,8 +1009,9 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   }
   
   if(format > 2){
-    fprintf(stderr, "Can't deal with format %d files\n", format);
-    exit(-1);
+    g_warning("Can't deal with format %d files\n", format);
+
+    return(NULL);
   }
   
   beat =
