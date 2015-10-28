@@ -65,8 +65,6 @@ struct _AgsAudioLoop
   volatile guint tic;
   volatile guint last_sync;
 
-  gdouble frequency;
-
   GObject *application_context;
   GObject *soundcard;
   
