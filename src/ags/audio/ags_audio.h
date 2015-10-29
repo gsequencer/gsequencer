@@ -57,6 +57,9 @@ struct _AgsAudio
 
   GObject *soundcard;
   guint level;
+
+  GObject *sequencer;
+  GObject *midi_file;
   
   guint sequence_length;
   guint audio_channels;
@@ -86,7 +89,7 @@ struct _AgsAudio
   GList *recall_remove; //TODO:JK: verify deprecation
   GList *play_remove; //TODO:JK: verify deprecation
 
-  GtkWidget *machine;
+  GObject *machine;
 };
 
 struct _AgsAudioClass

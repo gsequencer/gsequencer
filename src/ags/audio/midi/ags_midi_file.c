@@ -19,6 +19,10 @@
 
 #include <ags/audio/midi/ags_midi_file.h>
 
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
 void ags_midi_file_class_init(AgsMidiFileClass *midi_file);
 void ags_midi_file_init(AgsMidiFile *midi_file);
 void ags_midi_file_set_property(GObject *gobject,
@@ -90,9 +94,23 @@ ags_midi_file_class_init(AgsMidiFileClass *midi_file)
 void
 ags_midi_file_init(AgsMidiFile *midi_file)
 {
+  midi_file->file = NULL;
   midi_file->filename = NULL;
   
   midi_file->buffer = NULL;
+  midi_file->buffer_length = 0;
+  
+  midi_file->offset = AGS_MIDI_FILE_DEFAULT_OFFSET;
+  midi_file->format = AGS_MIDI_FILE_DEFAULT_FORMAT;
+  midi_file->count = 0;
+  midi_file->division = AGS_MIDI_FILE_DEFAULT_FPS;
+  midi_file->times = 0;
+  midi_file->beat = AGS_MIDI_FILE_DEFAULT_BEAT;
+  midi_file->clicks = AGS_MIDI_FILE_DEFAULT_TICKS;
+
+  midi_file->track = NULL;
+
+  midi_file->current_track = NULL;
 }
 
 void
@@ -161,7 +179,15 @@ ags_midi_file_finalize(GObject *gobject)
 gboolean
 ags_midi_file_open(AgsMidiFile *midi_file)
 {
-  //TODO:JK: implement me
+  if(midi_file == NULL ||
+     midi_file->filename == NULL){
+    return(FALSE);
+  }
+
+  midi_file->file = fopen(midi_file->filename,
+			  "r\0");
+
+  return(TRUE);
 }
 
 gboolean
@@ -174,51 +200,135 @@ ags_midi_file_open_from_data(AgsMidiFile *midi_file,
 gboolean
 ags_midi_file_rw_open(AgsMidiFile *midi_file)
 {
-  //TODO:JK: implement me
+  if(midi_file == NULL ||
+     midi_file->filename == NULL){
+    return(FALSE);
+  }
+  
+  midi_file->file = fopen(midi_file->filename,
+			  "r+\0");
+
+  return(TRUE);
 }
 
 void
 ags_midi_file_close(AgsMidiFile *midi_file)
 {
-  //TODO:JK: implement me
+  if(midi_file == NULL ||
+     midi_file->file == NULL){
+    return;
+  }
+  
+  fclose(midi_file->file);
+  
+  midi_file->file = NULL;
 }
 
-GList*
-ags_midi_file_read(AgsMidiFile *midi_file, GError **error)
+gchar*
+ags_midi_file_read(AgsMidiFile *midi_file)
 {
-  //TODO:JK: implement me
+  struct stat sb;
+
+  if(midi_file == NULL ||
+     midi_file->filename == NULL ||
+     midi_file->file == NULL){
+    return(NULL);
+  }
+  
+  stat(midi_file->filename, &sb);
+
+  midi_file->buffer_length = sb.st_size + 1;
+  midi_file->buffer = (gchar *) malloc(midi_file->buffer_length * sizeof(gchar));
+  midi_file->buffer[sb.st_size] = EOF;
+  fread(midi_file->buffer, sizeof(char), sb.st_size, midi_file->file);
+
+  return(midi_file->buffer);
 }
 
 void
 ags_midi_file_write(AgsMidiFile *midi_file,
-		    GList *notation)
+		    char *data, guint buffer_length)
 {
-  //TODO:JK: implement me
+  char *start;
+  
+  if(midi_file == NULL ||
+     midi_file->file == NULL){
+    return;
+  }
+
+  if(midi_file->buffer == NULL){
+    start =
+      midi_file->buffer = (char *) malloc((buffer_length + 1) * sizeof(char));
+    midi_file->buffer_length = buffer_length + 1;
+  }else{
+    guint old_buffer_length;
+
+    old_buffer_length = midi_file->buffer_length;
+
+    midi_file->buffer = realloc(midi_file->buffer,
+				(old_buffer_length + buffer_length) * sizeof(char));
+    start = &(midi_file->buffer[old_buffer_length - 1]);
+  }
+
+  memcpy(start, data, buffer_length * sizeof(char));
+  start[buffer_length] = EOF;
+  
+  fwrite(data, sizeof(char), buffer_length, midi_file->file);
 }
 
 void
 ags_audio_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
 {
-  //TODO:JK: implement me
+  if(midi_file == NULL ||
+     midi_file->file == NULL){
+    return;
+  }
+
+  fseek(midi_file->file, position, whence);
 }
 
 void
 ags_audio_file_flush(AgsMidiFile *midi_file)
 {
-  //TODO:JK: implement me
+  if(midi_file == NULL ||
+     midi_file->file == NULL){
+    return;
+  }
+
+  fflush(midi_file->file);
 }
 
 char*
 ags_midi_file_read_header(AgsMidiFile *midi_file,
 			  guint *buffer_length)
 {
+  char *data;
+  
+  if(midi_file == NULL ||
+     midi_file->file == NULL){
+    if(buffer_length != NULL){
+      *buffer_length = 0;
+    }
+    
+    return(NULL);
+  }
+
+  data = NULL;
+  
   //TODO:JK: implement me
+
+  return(data);
 }
 
 void
 ags_midi_file_write_header(AgsMidiFile *midi_file,
 			   char *buffer, guint length)
 {
+  if(midi_file == NULL ||
+     midi_file->file == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -226,7 +336,22 @@ char*
 ags_midi_file_read_track_data(AgsMidiFile *midi_file,
 			      guint *buffer_length)
 {
+  char *data;
+  
+  if(midi_file == NULL ||
+     midi_file->file == NULL){
+    if(buffer_length != NULL){
+      *buffer_length = 0;
+    }
+    
+    return(NULL);
+  }
+
+  data = NULL;
+  
   //TODO:JK: implement me
+
+  return(data);
 }
 
 void
@@ -234,6 +359,11 @@ ags_midi_file_write_track_data(AgsMidiFile *midi_file,
 			       gchar *track_name,
 			       char *data, guint buffer_length)
 {
+  if(midi_file == NULL ||
+     midi_file->file == NULL){
+    return;
+  }
+  
   //TODO:JK: implement me
 }
 

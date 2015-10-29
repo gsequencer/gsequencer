@@ -23,12 +23,22 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <stdio.h>
+
 #define AGS_TYPE_MIDI_FILE                (ags_midi_file_get_type ())
 #define AGS_MIDI_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_FILE, AgsMidiFile))
 #define AGS_MIDI_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MIDI_FILE, AgsMidiFileClass))
 #define AGS_IS_MIDI_FILE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_MIDI_FILE))
 #define AGS_IS_MIDI_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_FILE))
 #define AGS_MIDI_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MIDI_FILE, AgsMidiFileClass))
+
+#define AGS_MIDI_FILE_TRACK(ptr) ((AgsMidiFileTrack *)(ptr))
+
+#define AGS_MIDI_FILE_DEFAULT_OFFSET (0)
+#define AGS_MIDI_FILE_DEFAULT_FORMAT (1)
+#define AGS_MIDI_FILE_DEFAULT_BEATS (120)
+#define AGS_MIDI_FILE_DEFAULT_FPS (30)
+#define AGS_MIDI_FILE_DEFAULT_TICKS (384)
 
 typedef struct _AgsMidiFile AgsMidiFile;
 typedef struct _AgsMidiFileClass AgsMidiFileClass;
@@ -59,10 +69,12 @@ struct _AgsMidiFile
 {
   GObject gobject;
 
+  FILE *file;
   gchar *filename;
-
+  
   char *buffer;
-
+  guint buffer_length;
+  
   guint offset;
   guint format;
   guint count;
@@ -72,6 +84,8 @@ struct _AgsMidiFile
   guint clicks;
 
   GList *track;
+  
+  AgsMidiFileTrack *current_track;
 };
 
 struct _AgsMidiFileClass
@@ -96,7 +110,7 @@ gboolean ags_midi_file_rw_open(AgsMidiFile *midi_file);
 
 void ags_midi_file_close(AgsMidiFile *midi_file);
 
-GList* ags_midi_file_read(AgsMidiFile *midi_file, GError **error);
+gchar* ags_midi_file_read(AgsMidiFile *midi_file);
 void ags_midi_file_write(AgsMidiFile *midi_file,
 			 char *data, guint buffer_length);
 void ags_midi_file_seek(AgsMidiFile *midi_file, guint position, gint whence);
