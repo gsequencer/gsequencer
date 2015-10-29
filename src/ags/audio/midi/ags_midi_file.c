@@ -94,6 +94,8 @@ ags_midi_file_class_init(AgsMidiFileClass *midi_file)
 void
 ags_midi_file_init(AgsMidiFile *midi_file)
 {
+  midi_file->flags = 0;
+  
   midi_file->file = NULL;
   midi_file->filename = NULL;
   
@@ -103,9 +105,9 @@ ags_midi_file_init(AgsMidiFile *midi_file)
   midi_file->offset = AGS_MIDI_FILE_DEFAULT_OFFSET;
   midi_file->format = AGS_MIDI_FILE_DEFAULT_FORMAT;
   midi_file->count = 0;
-  midi_file->division = AGS_MIDI_FILE_DEFAULT_FPS;
+  midi_file->division = (60 * USEC_PER_SEC) / AGS_MIDI_FILE_DEFAULT_BEATS;
   midi_file->times = 0;
-  midi_file->beat = AGS_MIDI_FILE_DEFAULT_BEAT;
+  midi_file->beat = AGS_MIDI_FILE_DEFAULT_BEATS;
   midi_file->clicks = AGS_MIDI_FILE_DEFAULT_TICKS;
 
   midi_file->track = NULL;
@@ -242,6 +244,8 @@ ags_midi_file_read(AgsMidiFile *midi_file)
   midi_file->buffer[sb.st_size] = EOF;
   fread(midi_file->buffer, sizeof(char), sb.st_size, midi_file->file);
 
+  midi_file->iter = midi_file->buffer;
+  
   return(midi_file->buffer);
 }
 
@@ -298,12 +302,164 @@ ags_audio_file_flush(AgsMidiFile *midi_file)
   fflush(midi_file->file);
 }
 
+gint16
+ags_midi_file_read_gint16(AgsMidiFile *midi_file)
+{
+  char str[2];
+  gint16 value = 0;
+
+  str[0] = (midi_file->iter[0]);
+  str[1] = (midi_file->iter[1]);
+
+  midi_file->iter += 2;
+  
+  value = (str[0] & 0xff);
+  value = (value<<8) + (str[1] & 0xff);
+  
+  return(value);
+}
+
+gint32
+ags_midi_file_read_gint24(AgsMidiFile *midi_file)
+{
+  char str[4];
+  gint32 value = 0;
+  
+  str[0] = (char) 0x00;
+  str[1] = (midi_file->iter[0]);
+  str[2] = (midi_file->iter[1]);
+  str[3] = (midi_file->iter[2]);
+
+  midi_file->iter += 3;
+  
+  value = (value<<8) + (str[1] & 0xff);
+  value = (value<<8) + (str[2] & 0xff);
+  value = (value<<8) + (str[3] & 0xff);
+  
+  return(value);
+}
+
+gint32
+ags_midi_file_read_gint32(AgsMidiFile *midi_file)
+{
+  char str[4];
+  gint32 value;
+  
+  str[0] = (midi_file->iter[0]);
+  str[1] = (midi_file->iter[1]);
+  str[2] = (midi_file->iter[2]);
+  str[3] = (midi_file->iter[3]);
+  
+  midi_file->iter += 4;
+  
+  value = (str[0] & 0xff);
+  value = (value<<8) + (str[1] & 0xff);
+  value = (value<<8) + (str[2] & 0xff);
+  value = (value<<8) + (str[3] & 0xff);
+  
+  return(value);
+}
+
+long
+ags_midi_file_read_varlength(AgsMidiFile *midi_file)
+{
+  long value;
+  guint i;
+  char c;
+  
+  c = midi_file->iter[0];
+  value = c;
+  i = 1;
+
+  midi_file->iter += 1;
+  
+  if(c & 0x80){
+    value &= 0x7F;
+   
+    do{
+      //TODO:JK: unsafe
+      value = (value << 7) + ((c = (midi_file->iter[0])) & 0x7F);
+      i++;
+      midi_file->iter += 1;
+    }while(c & 0x80);
+  }
+  
+  return(value);
+}
+
+gchar*
+ags_midi_file_read_text(AgsMidiFile *midi_file,
+			gint length)
+{
+  gchar text[AGS_MIDI_FILE_MAX_TEXT_LENGTH + 1];
+  gchar c;
+  guint i;
+
+  memset(text, 0, AGS_MIDI_FILE_MAX_TEXT_LENGTH * sizeof(char));
+  i = 0;
+  
+  while((length <= 0 ||
+	 i < length) && (c = (midi_file->iter[0])) != EOF){
+    midi_file->iter += 1;
+    //TODO:JK: unsafe
+    if(c == '\0' || !(g_ascii_isalnum(c) ||
+		      g_ascii_ispunct(c) ||
+		      c == ' ')){
+      break;
+    }
+
+    text[i] = c;
+    i++;
+  }
+
+  text[i] = '\0';
+    
+  return(g_strdup(text));
+}
+
+void
+ags_midi_file_write_gint16(AgsMidiFile *midi_file, gint16 val)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_file_write_gint24(AgsMidiFile *midi_file, gint32 val)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_file_write_gint32(AgsMidiFile *midi_file, gint32 val)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_file_write_varlength(AgsMidiFile *midi_file, long val)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_file_write_text(AgsMidiFile *midi_file,
+			 gchar *text)
+{
+  //TODO:JK: implement me
+}
+
 char*
 ags_midi_file_read_header(AgsMidiFile *midi_file,
 			  guint *buffer_length)
 {
+  static gchar header[] = "MThd";
+
   char *data;
-  
+  guint length;
+
+  guint n;
+  gchar c;
+
   if(midi_file == NULL ||
      midi_file->file == NULL){
     if(buffer_length != NULL){
@@ -314,9 +470,45 @@ ags_midi_file_read_header(AgsMidiFile *midi_file,
   }
 
   data = NULL;
-  
-  //TODO:JK: implement me
+  length = 0;
 
+  /* read header */
+  n = 0;
+  
+  while(n < 4 &&
+	(AGS_MIDI_FILE_EOF & (midi_file->flags)) == 0){
+    c = ags_midi_file_midi_getc(midi_file);
+    
+    if(c == header[n]){
+      n++;
+    }else{
+      n = 0;
+    }
+  }
+
+  length += 4;
+
+  /* get some values */
+  midi_file->offset = (guint) ags_midi_file_read_gint32(midi_file);
+  midi_file->format = (guint) ags_midi_file_read_gint16(midi_file);
+  midi_file->count = (guint) ags_midi_file_read_gint16(midi_file);
+  midi_file->division = (guint) ags_midi_file_read_gint16(midi_file);
+
+  if(division & 0x8000){
+    /* SMPTE */
+    midi_file->times = 0; /* Can't do beats */
+  }
+
+  midi_file->beat =
+    midi_file->clicks = division;
+
+  length += 10;
+
+  /* return values */
+  if(buffer_length != NULL){
+    *buffer_length = length;
+  }
+  
   return(data);
 }
 
@@ -332,11 +524,14 @@ ags_midi_file_write_header(AgsMidiFile *midi_file,
   //TODO:JK: implement me
 }
 
-char*
+gchar*
 ags_midi_file_read_track_data(AgsMidiFile *midi_file,
+			      char **buffer,
 			      guint *buffer_length)
 {
+  gchar *track_name;
   char *data;
+  guint length;
   
   if(midi_file == NULL ||
      midi_file->file == NULL){
@@ -347,11 +542,17 @@ ags_midi_file_read_track_data(AgsMidiFile *midi_file,
     return(NULL);
   }
 
+  track_name = NULL;
   data = NULL;
+  length = 0;
   
   //TODO:JK: implement me
 
-  return(data);
+  if(buffer_length != NULL){
+    *buffer_length = length;
+  }
+  
+  return(track_name);
 }
 
 void

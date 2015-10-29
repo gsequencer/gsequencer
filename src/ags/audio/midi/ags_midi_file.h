@@ -34,6 +34,12 @@
 
 #define AGS_MIDI_FILE_TRACK(ptr) ((AgsMidiFileTrack *)(ptr))
 
+#define USEC_PER_SEC (1000000)
+
+#define AGS_MIDI_FILE_MAX_TEXT_LENGTH (4096)
+#define AGS_MIDI_FILE_MTHD "MThd\0"
+#define AGS_MIDI_FILE_MTRK "MTrk\0"
+
 #define AGS_MIDI_FILE_DEFAULT_OFFSET (0)
 #define AGS_MIDI_FILE_DEFAULT_FORMAT (1)
 #define AGS_MIDI_FILE_DEFAULT_BEATS (120)
@@ -65,15 +71,25 @@ typedef enum{
   AGS_MIDI_FILE_META_EVENT        = 0xff,
 }AgsMidiFileStatus;
 
+typedef enum{
+  AGS_MIDI_FILE_EOF               = 1,
+  AGS_MIDI_FILE_SMTPE             = 1 <<  1,
+  AGS_MIDI_FILE_DROP_FRAME        = 1 <<  2,
+}AgsMidiFileFlags;
+
 struct _AgsMidiFile
 {
   GObject gobject;
 
+  guint flags;
+  
   FILE *file;
   gchar *filename;
   
   char *buffer;
   guint buffer_length;
+
+  char *iter;
   
   guint offset;
   guint format;
@@ -116,13 +132,28 @@ void ags_midi_file_write(AgsMidiFile *midi_file,
 void ags_midi_file_seek(AgsMidiFile *midi_file, guint position, gint whence);
 void ags_midi_file_flush(AgsMidiFile *midi_file);
 
+gint16 ags_midi_file_read_gint16(AgsMidiFile *midi_file);
+gint32 ags_midi_file_read_gint24(AgsMidiFile *midi_file);
+gint32 ags_midi_file_read_gint32(AgsMidiFile *midi_file);
+long ags_midi_file_read_varlength(AgsMidiFile *midi_file);
+gchar* ags_midi_file_read_text(AgsMidiFile *midi_file,
+			       gint length);
+
+void ags_midi_file_write_gint16(AgsMidiFile *midi_file, gint16 val);
+void ags_midi_file_write_gint24(AgsMidiFile *midi_file, gint32 val);
+void ags_midi_file_write_gint32(AgsMidiFile *midi_file, gint32 val);
+void ags_midi_file_write_varlength(AgsMidiFile *midi_file, long val);
+void ags_midi_file_write_text(AgsMidiFile *midi_file,
+			      gchar *text);
+
 char* ags_midi_file_read_header(AgsMidiFile *midi_file,
 				guint *buffer_length);
 void ags_midi_file_write_header(AgsMidiFile *midi_file,
 				char *data, guint buffer_length);
 
-char* ags_midi_file_read_track_data(AgsMidiFile *midi_file,
-				    guint *buffer_length);
+gchar* ags_midi_file_read_track_data(AgsMidiFile *midi_file,
+				     char **buffer,
+				     guint *buffer_length);
 void ags_midi_file_write_track_data(AgsMidiFile *midi_file,
 				    gchar *track_name,
 				    char *data, guint buffer_length);
