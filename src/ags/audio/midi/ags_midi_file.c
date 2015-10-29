@@ -178,6 +178,16 @@ ags_midi_file_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_midi_file_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_midi_file_open:
+ * @midi_file: the #AgsMidiFile
+ *
+ * Opens a MIDI file read-only.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ *
+ * Since: 0.7.0
+ */
 gboolean
 ags_midi_file_open(AgsMidiFile *midi_file)
 {
@@ -192,13 +202,42 @@ ags_midi_file_open(AgsMidiFile *midi_file)
   return(TRUE);
 }
 
+/**
+ * ags_midi_file_open_from_data:
+ * @midi_file: the #AgsMidiFile
+ * @data: the buffer to set
+ * @buffer_length: the length of the buffer
+ *
+ * Opens a virtual MIDI file residing in @data's array.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ *
+ * Since: 0.7.0
+ */
 gboolean
 ags_midi_file_open_from_data(AgsMidiFile *midi_file,
 			     char *data, guint buffer_length)
 {
-  //TODO:JK: implement me
+  if(midi_file == NULL){
+    return(FALSE);
+  }
+
+  midi_file->buffer = data;
+  midi_file->buffer_length = buffer_length;
+
+  return(TRUE);
 }
 
+/**
+ * ags_midi_file_rw_open:
+ * @midi_file: the #AgsMidiFile
+ * 
+ * Opens a MIDI file with read-write permission.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ *
+ * Since: 0.7.0
+ */
 gboolean
 ags_midi_file_rw_open(AgsMidiFile *midi_file)
 {
@@ -213,6 +252,14 @@ ags_midi_file_rw_open(AgsMidiFile *midi_file)
   return(TRUE);
 }
 
+/**
+ * ags_midi_file_close:
+ * @midi_file: the #AgsMidiFile
+ *
+ * Closes the file stream.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_midi_file_close(AgsMidiFile *midi_file)
 {
@@ -226,6 +273,16 @@ ags_midi_file_close(AgsMidiFile *midi_file)
   midi_file->file = NULL;
 }
 
+/**
+ * ags_midi_file_read:
+ * @midi_file: the #AgsMidiFile
+ *
+ * Reads all bytes of the file's stream and stores them in the internal buffer.
+ *
+ * Returns: the data array just read
+ * 
+ * Since: 0.7.0
+ */
 gchar*
 ags_midi_file_read(AgsMidiFile *midi_file)
 {
@@ -249,6 +306,16 @@ ags_midi_file_read(AgsMidiFile *midi_file)
   return(midi_file->buffer);
 }
 
+/**
+ * ags_midi_file_write:
+ * @midi_file: the #AgsMidiFile
+ * @data: the data array to write
+ * @buffer_length: n-bytes to write
+ *
+ * Writes @data to the file stream and to internal buffer, reallocates it if necessary.
+ * 
+ * Since: 0.7.0
+ */
 void
 ags_midi_file_write(AgsMidiFile *midi_file,
 		    char *data, guint buffer_length)
@@ -280,6 +347,16 @@ ags_midi_file_write(AgsMidiFile *midi_file,
   fwrite(data, sizeof(char), buffer_length, midi_file->file);
 }
 
+/**
+ * ags_audio_file_seek:
+ * @midi_file: the #AgsMidiFile
+ * @position: the offset
+ * @whence: SEEK_SET, SEEK_END, or SEEK_CUR
+ *
+ * Seeks the file stream's offset.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_audio_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
 {
@@ -291,6 +368,14 @@ ags_audio_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
   fseek(midi_file->file, position, whence);
 }
 
+/**
+ * ags_audio_file_flush:
+ * @midi_file: the #AgsMidiFile
+ * 
+ * Flushes file stream's data buffer to disc.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_audio_file_flush(AgsMidiFile *midi_file)
 {
@@ -302,6 +387,16 @@ ags_audio_file_flush(AgsMidiFile *midi_file)
   fflush(midi_file->file);
 }
 
+/**
+ * ags_midi_file_read_gint16:
+ * @midi_file: the #AgsMidiFile
+ *  
+ * Reads a gint16 quantity.
+ *
+ * Returns: the current value at file's iteration pointer
+ * 
+ * Since: 0.7.0
+ */
 gint16
 ags_midi_file_read_gint16(AgsMidiFile *midi_file)
 {
@@ -319,6 +414,16 @@ ags_midi_file_read_gint16(AgsMidiFile *midi_file)
   return(value);
 }
 
+/**
+ * ags_midi_file_read_gint24:
+ * @midi_file: the #AgsMidiFile
+ *  
+ * Reads a 24-bit quantity.
+ *
+ * Returns: the current value at file's iteration pointer
+ * 
+ * Since: 0.7.0
+ */
 gint32
 ags_midi_file_read_gint24(AgsMidiFile *midi_file)
 {
@@ -339,6 +444,16 @@ ags_midi_file_read_gint24(AgsMidiFile *midi_file)
   return(value);
 }
 
+/**
+ * ags_midi_file_read_gint32:
+ * @midi_file: the #AgsMidiFile
+ *  
+ * Reads a gint32 quantity.
+ *
+ * Returns: the current value at file's iteration pointer
+ * 
+ * Since: 0.7.0
+ */
 gint32
 ags_midi_file_read_gint32(AgsMidiFile *midi_file)
 {
@@ -360,6 +475,16 @@ ags_midi_file_read_gint32(AgsMidiFile *midi_file)
   return(value);
 }
 
+/**
+ * ags_midi_file_read_varlength:
+ * @midi_file: the #AgsMidiFile
+ *  
+ * Reads a variable length quantity.
+ *
+ * Returns: the current value at file's iteration pointer
+ * 
+ * Since: 0.7.0
+ */
 long
 ags_midi_file_read_varlength(AgsMidiFile *midi_file)
 {
@@ -387,6 +512,17 @@ ags_midi_file_read_varlength(AgsMidiFile *midi_file)
   return(value);
 }
 
+/**
+ * ags_midi_file_read_text:
+ * @midi_file: the #AgsMidiFile
+ * @length: the number of bytes to be read, or as long valid string for -1
+ *  
+ * Reads a string.
+ *
+ * Returns: the string at file's iteration pointer
+ * 
+ * Since: 0.7.0
+ */
 gchar*
 ags_midi_file_read_text(AgsMidiFile *midi_file,
 			gint length)
@@ -417,37 +553,190 @@ ags_midi_file_read_text(AgsMidiFile *midi_file,
   return(g_strdup(text));
 }
 
+/**
+ * ags_midi_file_write_gint16:
+ * @midi_file: the #AgsMidiFile
+ * @val: the value to write
+ *
+ * Writes a gint16 quantity to internal buffer.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_midi_file_write_gint16(AgsMidiFile *midi_file, gint16 val)
 {
-  //TODO:JK: implement me
+  if(&(midi_file->iter[2]) >= &(midi_file->buffer[midi_file->buffer_length])){
+    size_t new_length;
+
+    new_length = &(midi_file->iter[2]) - &(midi_file->buffer[midi_file->buffer_length]);
+    
+    midi_file->buffer = (char *) realloc(midi_file->buffer,
+					 new_length * sizeof(char));
+
+    midi_file->buffer_length = new_length;
+  }
+
+  midi_file->iter[0] = 0xff & val;
+  midi_file->iter[1] = (0xff00 & val) >> 8;
+  
+  midi_file->iter += 2;
 }
 
+/**
+ * ags_midi_file_write_gint24:
+ * @midi_file: the #AgsMidiFile
+ * @val: the value to write
+ *
+ * Writes a 24-bit quantity to internal buffer.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_midi_file_write_gint24(AgsMidiFile *midi_file, gint32 val)
 {
-  //TODO:JK: implement me
+  if(&(midi_file->iter[3]) >= &(midi_file->buffer[midi_file->buffer_length])){
+    size_t new_length;
+
+    new_length = &(midi_file->iter[3]) - &(midi_file->buffer[midi_file->buffer_length]);
+    
+    midi_file->buffer = (char *) realloc(midi_file->buffer,
+					 new_length * sizeof(char));
+
+    midi_file->buffer_length = new_length;
+  }
+
+  midi_file->iter[0] = 0xff & val;
+  midi_file->iter[1] = (0xff00 & val) >> 8;
+  midi_file->iter[2] = (0xff0000 & val) >> 16;
+  
+  midi_file->iter += 3;
 }
 
+/**
+ * ags_midi_file_write_gint32:
+ * @midi_file: the #AgsMidiFile
+ * @val: the value to write
+ *
+ * Writes a gint32 quantity to internal buffer.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_midi_file_write_gint32(AgsMidiFile *midi_file, gint32 val)
 {
-  //TODO:JK: implement me
+  if(&(midi_file->iter[4]) >= &(midi_file->buffer[midi_file->buffer_length])){
+    size_t new_length;
+
+    new_length = &(midi_file->iter[4]) - &(midi_file->buffer[midi_file->buffer_length]);
+    
+    midi_file->buffer = (char *) realloc(midi_file->buffer,
+					 new_length * sizeof(char));
+
+    midi_file->buffer_length = new_length;
+  }
+
+  midi_file->iter[0] = 0xff & val;
+  midi_file->iter[1] = (0xff00 & val) >> 8;
+  midi_file->iter[2] = (0xff0000 & val) >> 16;
+  midi_file->iter[3] = (0xff000000 & val) >> 24;
+  
+  midi_file->iter += 4;
 }
 
+/**
+ * ags_midi_file_write_varlenght:
+ * @midi_file: the #AgsMidiFile
+ * @val: the value to write
+ *
+ * Writes a variable length quantity to internal buffer.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_midi_file_write_varlength(AgsMidiFile *midi_file, long val)
 {
-  //TODO:JK: implement me
+  gchar c;
+  long mask;
+  guint i, j;
+  
+  mask = 0xff;
+
+  /* retrieve new size */
+  i = 0;
+
+  do{
+    c = ((mask << (i * 8)) & val) >> (i * 8);
+    i++;
+  }while(0x80 & c);
+
+  /* realloc buffer if needed */
+  if(&(midi_file->iter[i]) >= &(midi_file->buffer[midi_file->buffer_length])){
+    size_t new_length;
+
+    new_length = &(midi_file->iter[i]) - &(midi_file->buffer[midi_file->buffer_length]);
+    
+    midi_file->buffer = (char *) realloc(midi_file->buffer,
+					 new_length * sizeof(char));
+
+    midi_file->buffer_length = new_length;
+  }
+
+  /* write to internal buffer */
+  for(j = 0; j < i; i++){
+    midi_file->iter[j] = ((mask << (j * 8)) & val) >> (j * 8);
+  }
+  
+  midi_file->iter += i;
 }
 
+/**
+ * ags_midi_file_write_text:
+ * @midi_file: the #AgsMidiFile
+ * @text: the text
+ * @length: the string's length
+ *
+ * Writes a string to internal buffer up to length bytes.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_midi_file_write_text(AgsMidiFile *midi_file,
-			 gchar *text)
+			 gchar *text, guint length)
 {
-  //TODO:JK: implement me
+  guint i;
+  
+  if(text == NULL){
+    return;
+  }
+
+  if(&(midi_file->iter[length]) >= &(midi_file->buffer[midi_file->buffer_length])){
+    size_t new_length;
+
+    new_length = &(midi_file->iter[length]) - &(midi_file->buffer[midi_file->buffer_length]);
+    midi_file->buffer = (char *) realloc(midi_file->buffer,
+					 new_length * sizeof(char));
+
+    midi_file->buffer_length = new_length;
+  }
+
+  for(i = 0; i < length; i++){
+    midi_file->iter[i] = text[i];
+  }
+  
+  midi_file->iter += length;
 }
 
+/**
+ * ags_midi_file_read_header:
+ * @midi_file: the #AgsMidiFile
+ * @buffer_length: pointer to return buffer length or %NULL
+ *
+ * Reads the MIDI file's header and positions internal buffer pointer just behind it.
+ *
+ * Returns: the header's bytes
+ *
+ * Since: 0.7.0
+ */
 char*
 ags_midi_file_read_header(AgsMidiFile *midi_file,
 			  guint *buffer_length)
@@ -504,11 +793,14 @@ ags_midi_file_read_header(AgsMidiFile *midi_file,
 
   length += 10;
 
+  /* position internal iteration pointer */
+  midi_file->iter = &(midi_file->buffer[length]);
+  
   /* return values */
   if(buffer_length != NULL){
     *buffer_length = length;
   }
-  
+
   return(data);
 }
 
