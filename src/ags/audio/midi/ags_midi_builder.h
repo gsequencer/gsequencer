@@ -46,10 +46,10 @@ struct _AgsMidiBuilder
   GObject gobject;
 
   FILE *file;
-
+  
   AgsMidiBuilderHeader *midi_header;
   
-  GList *midi_tracks;
+  GList *midi_track;
 };
 
 struct _AgsMidiBuilderClass
@@ -120,7 +120,7 @@ struct _AgsMidiBuilderClass
   void (*append_time_signature)(AgsMidiBuilder *midi_builder,
 				guint nn, guint denom, guint dd, guint cc, guint bb);
   void (*append_key_signature)(AgsMidiBuilder *midi_builder,
-			       guint nn, guint denom, guint dd, guint cc, guint bb);
+			       guint sf, guint mi);
   void (*append_sequencer_meta_event)(AgsMidiBuilder *midi_builder,
 				      guint len, guint id, guint data);
   void (*append_text_event)(AgsMidiBuilder *midi_builder,
@@ -212,7 +212,7 @@ void ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
 void ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
 					    guint nn, guint denom, guint dd, guint cc, guint bb);
 void ags_midi_builder_append_key_signature(AgsMidiBuilder *midi_builder,
-					   guint nn, guint denom, guint dd, guint cc, guint bb);
+					   guint sf, guint mi);
 void ags_midi_builder_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
 						  guint len, guint id, guint data);
 void ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,

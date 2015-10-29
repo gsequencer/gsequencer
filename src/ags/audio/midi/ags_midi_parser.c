@@ -157,9 +157,9 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
   gobject->finalize = ags_midi_parser_finalize;
 
   /**
-   * AgsMidiParser:dsp-channels:
+   * AgsMidiParser:file:
    *
-   * The dsp channel count
+   * The file to parse data from.
    * 
    * Since: 0.4.2
    */
@@ -234,8 +234,9 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, on_error),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
-		 G_TYPE_POINTER, 0);
+		 g_cclosure_user_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
 
 
   /**
