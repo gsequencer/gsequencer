@@ -144,7 +144,7 @@ void ags_midi_file_write_gint24(AgsMidiFile *midi_file, gint32 val);
 void ags_midi_file_write_gint32(AgsMidiFile *midi_file, gint32 val);
 void ags_midi_file_write_varlength(AgsMidiFile *midi_file, long val);
 void ags_midi_file_write_text(AgsMidiFile *midi_file,
-			      gchar *text);
+			      gchar *text, guint length);
 
 char* ags_midi_file_read_header(AgsMidiFile *midi_file,
 				guint *buffer_length);
