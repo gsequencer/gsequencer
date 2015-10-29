@@ -105,6 +105,8 @@ enum{
 enum{
   PROP_0,
   PROP_SOUNDCARD,
+  PROP_SEQUENCER,
+  PROP_MIDI_FILE,
 };
 
 static gpointer ags_audio_parent_class = NULL;
@@ -177,6 +179,38 @@ ags_audio_class_init(AgsAudioClass *audio)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsAudio:sequencer:
+   *
+   * The assigned #AgsSequencer acting as default sink.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("sequencer\0",
+				   "assigned sequencer\0",
+				   "The sequencer it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEQUENCER,
+				  param_spec);
+
+  /**
+   * AgsAudio:midi-file:
+   *
+   * The assigned #AgsMidiFile acting as default sink.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("midi-file\0",
+				   "assigned midi_file\0",
+				   "The midi file it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI_FILE,
 				  param_spec);
 
   /* AgsAudioClass */
@@ -335,7 +369,10 @@ ags_audio_init(AgsAudio *audio)
   audio->flags = 0;
 
   audio->soundcard = NULL;
-
+  
+  audio->sequencer = NULL;
+  audio->midi_file = NULL;
+  
   audio->sequence_length = 0;
   audio->audio_channels = 0;
   audio->frequence = 0;
@@ -428,6 +465,46 @@ ags_audio_set_property(GObject *gobject,
       ags_audio_set_soundcard(audio, (GObject *) soundcard);
     }
     break;
+  case PROP_SEQUENCER:
+    {
+      GObject *sequencer;
+
+      sequencer = g_value_get_object(value);
+
+      if(audio->sequencer == sequencer){
+	return;
+      }
+
+      if(audio->sequencer != NULL){
+	g_object_unref(audio->sequencer);
+      }
+
+      if(sequencer != NULL) {
+	g_object_ref(sequencer);
+      }
+
+      audio->sequencer = sequencer;
+    }
+  case PROP_MIDI_FILE:
+    {
+      GObject *midi_file;
+
+      midi_file = g_value_get_object(value);
+
+      if(audio->midi_file == midi_file){
+	return;
+      }
+
+      if(audio->midi_file != NULL){
+	g_object_unref(audio->midi_file);
+      }
+
+      if(midi_file != NULL) {
+	g_object_ref(midi_file);
+      }
+
+      audio->midi_file = midi_file;
+    }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -447,6 +524,12 @@ ags_audio_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     g_value_set_object(value, audio->soundcard);
+    break;
+  case PROP_SEQUENCER:
+    g_value_set_object(value, audio->sequencer);
+    break;
+  case PROP_MIDI_FILE:
+    g_value_set_object(value, audio->midi_file);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -478,6 +561,14 @@ ags_audio_finalize(GObject *gobject)
 
   if(audio->soundcard != NULL){
     g_object_unref(audio->soundcard);
+  }
+
+  if(audio->sequencer != NULL){
+    g_object_unref(audio->sequencer);
+  }
+
+  if(audio->midi_file != NULL){
+    g_object_unref(audio->midi_file);
   }
   
   /* output */

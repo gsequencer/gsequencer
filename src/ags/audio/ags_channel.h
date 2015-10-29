@@ -92,7 +92,7 @@ struct _AgsChannel
   GList *pattern;
   AgsNotation *notation;
 
-  GtkWidget *line_widget;
+  GObject *line_widget;
   gpointer file_data;
 };
 
