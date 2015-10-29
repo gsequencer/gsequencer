@@ -47,7 +47,6 @@ struct _AgsMidiFileReaderClass
   GObjectClass gobject;
 };
 
-
 gchar* ags_midi_file_reader_read_channel_message(AgsMidiFileReader *midi_file_reader,
 						 GParameter *parameter, guint *n_params);
 

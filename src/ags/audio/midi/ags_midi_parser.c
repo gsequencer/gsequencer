@@ -17,8 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <midi2ags/midi/ags_midi_parser.h>
-#include <midi2ags/object/ags_marshal.h>
+#include <ags/midi/ags_midi_parser.h>
+
+#include <ags/object/ags_marshal.h>
 
 #include <fcntl.h>
 #include <sys/stat.h>
