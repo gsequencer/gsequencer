@@ -37,7 +37,7 @@
 
 #define AGS_ACCOUNTING_TABLE(ptr) ((AgsAccountingTable *)(ptr))
 
-#define MSEC_PER_SEC    (1000000) /* The number of msecs per sec. */
+#define USEC_PER_SEC    (1000000) /* The number of usecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
 
 #define AGS_PRIORITY (5)

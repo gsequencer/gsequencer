@@ -1452,7 +1452,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   buffer_size = size;
 
   /* set the period time */
-  period_time = MSEC_PER_SEC / devout->samplerate;
+  period_time = USEC_PER_SEC / devout->samplerate;
   dir = -1;
   err = snd_pcm_hw_params_set_period_time_near(handle, hwparams, &period_time, &dir);
   if (err < 0) {
