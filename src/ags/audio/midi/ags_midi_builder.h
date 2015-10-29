@@ -148,13 +148,6 @@ typedef struct _AgsMidiBuilderTrack
 
 GType ags_midi_builder_get_type(void);
 
-void ags_midi_builder_build(AgsMidiBuilder *midi_builder);
-
-void ags_midi_builder_from_doc(AgsMidiBuilder *midi_builder,
-			       xmlDoc *doc);
-void ags_midi_builder_from_node(AgsMidiBuilder *midi_builder,
-				xmlNode *node);
-
 void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
 				int c);
 void ags_midi_builder_on_error(AgsMidiBuilder *builder,
@@ -224,6 +217,16 @@ void ags_midi_builder_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
 						  guint len, guint id, guint data);
 void ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
 					gchar *text, guint length);
+
+/*  */
+void ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
+				      xmlNode *node);
+
+void ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
+				   xmlDoc *doc);
+
+/*  */
+void ags_midi_builder_build(AgsMidiBuilder *midi_builder);
 
 /*  */
 AgsMidiBuilder* ags_midi_builder_new(FILE *file);
