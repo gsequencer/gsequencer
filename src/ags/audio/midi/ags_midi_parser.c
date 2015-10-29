@@ -59,7 +59,7 @@ xmlNode* ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint st
 xmlNode* ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status);
 xmlNode* ags_midi_parser_real_sequence_number(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_end_of_track(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_real_smpte(AgsMidiParser *midi_parser, guint meta_type);
+xmlNode* ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type);
@@ -102,7 +102,7 @@ enum{
   META_EVENT,
   SEQUENCE_NUMBER,
   END_OF_TRACK,
-  SMPTE,
+  SMTPE,
   TEMPO,
   TIME_SIGNATURE,
   KEY_SIGNATURE,
@@ -195,7 +195,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
   midi_parser->meta_event = ags_midi_parser_real_meta_event;
   midi_parser->sequence_number = ags_midi_parser_real_sequence_number;
   midi_parser->end_of_track = ags_midi_parser_real_end_of_track;
-  midi_parser->smpte = ags_midi_parser_real_smpte;
+  midi_parser->smtpe = ags_midi_parser_real_smtpe;
   midi_parser->tempo = ags_midi_parser_real_tempo;
   midi_parser->time_signature = ags_midi_parser_real_time_signature;
   midi_parser->key_signature = ags_midi_parser_real_key_signature;
@@ -524,18 +524,18 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiParser::smpte:
+   * AgsMidiParser::smtpe:
    * @midi_parser: the parser
    *
    * Returns: The XML node representing the event
    *
-   * The ::smpte signal is emited during parsing of event.
+   * The ::smtpe signal is emited during parsing of event.
    */
-  midi_parser_signals[SMPTE] =
-    g_signal_new("smpte\0",
+  midi_parser_signals[SMTPE] =
+    g_signal_new("smtpe\0",
 		 G_TYPE_FROM_CLASS(midi_parser),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiParserClass, smpte),
+		 G_STRUCT_OFFSET(AgsMidiParserClass, smtpe),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
@@ -812,13 +812,13 @@ ags_midi_parser_ticks_to_sec(AgsMidiParser *midi_parser,
 	      (gdouble) (division * 1000000.0);
     return(retval);
   }else{
-    gdouble smpte_format, smpte_resolution;
+    gdouble smtpe_format, smtpe_resolution;
 
-    smpte_format = (gdouble) ((0xff00 & division) >> 8);
-    smpte_resolution = (gdouble) (0xff & division);
+    smtpe_format = (gdouble) ((0xff00 & division) >> 8);
+    smtpe_resolution = (gdouble) (0xff & division);
 
     retval = (((gdouble) ticks) /
-	      (gdouble) (smpte_format * smpte_resolution * 1000000.0));
+	      (gdouble) (smtpe_format * smtpe_resolution * 1000000.0));
     
     return(retval);
   }
@@ -997,7 +997,7 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
 	     g_strdup_printf("%d\0", format));
 
   if(division & 0x8000){
-    /* SMPTE */
+    /* SMTPE */
     times = 0; /* Can't do beats */
 
     xmlNewProp(node,
@@ -1838,7 +1838,7 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
       c = ags_midi_parser_midi_getc(midi_parser);
 
       if(c == 0x05){
-	node = ags_midi_parser_smpte(midi_parser, meta_type);
+	node = ags_midi_parser_smtpe(midi_parser, meta_type);
       }
     }
     break;
@@ -1975,7 +1975,7 @@ ags_midi_parser_end_of_track(AgsMidiParser *midi_parser, guint meta_type)
 }
 
 xmlNode*  
-ags_midi_parser_real_smpte(AgsMidiParser *midi_parser, guint meta_type)
+ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
   int hr, mn, se, fr, ff;
@@ -1991,7 +1991,7 @@ ags_midi_parser_real_smpte(AgsMidiParser *midi_parser, guint meta_type)
   
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
-	     "smpte\0");
+	     "smtpe\0");
   
   xmlNewProp(node,
 	     "timestamp\0",
@@ -2001,7 +2001,7 @@ ags_midi_parser_real_smpte(AgsMidiParser *midi_parser, guint meta_type)
 }
 
 xmlNode*  
-ags_midi_parser_smpte(AgsMidiParser *midi_parser, guint meta_type)
+ags_midi_parser_smtpe(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
   
@@ -2009,7 +2009,7 @@ ags_midi_parser_smpte(AgsMidiParser *midi_parser, guint meta_type)
   
   g_object_ref((GObject *) midi_parser);
   g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[SMPTE], 0,
+		midi_parser_signals[SMTPE], 0,
 		meta_type,
 		&node);
   g_object_unref((GObject *) midi_parser);

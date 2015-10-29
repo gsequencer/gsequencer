@@ -101,7 +101,7 @@ struct _AgsMidiParserClass
   xmlNode* (*meta_event)(AgsMidiParser *midi_parser, guint status);
   xmlNode* (*sequence_number)(AgsMidiParser *midi_parser, guint meta_type);
   xmlNode* (*end_of_track)(AgsMidiParser *midi_parser, guint meta_type);
-  xmlNode* (*smpte)(AgsMidiParser *midi_parser, guint meta_type);
+  xmlNode* (*smtpe)(AgsMidiParser *midi_parser, guint meta_type);
   xmlNode* (*tempo)(AgsMidiParser *midi_parser, guint meta_type);
   xmlNode* (*time_signature)(AgsMidiParser *midi_parser, guint meta_type);
   xmlNode* (*key_signature)(AgsMidiParser *midi_parser, guint meta_type);
@@ -147,7 +147,7 @@ xmlNode* ags_midi_parser_system_common(AgsMidiParser *midi_parser, guint status)
 xmlNode* ags_midi_parser_meta_event(AgsMidiParser *midi_parser, guint status);
 xmlNode* ags_midi_parser_sequence_number(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_end_of_track(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_smpte(AgsMidiParser *midi_parser, guint meta_type);
+xmlNode* ags_midi_parser_smtpe(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_tempo(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_time_signature(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_key_signature(AgsMidiParser *midi_parser, guint meta_type);
