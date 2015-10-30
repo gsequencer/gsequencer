@@ -504,8 +504,8 @@ libags_audio_midi_h_sources = \
 	src/ags/audio/midi/ags_midi_builder.h \
 	src/ags/audio/midi/ags_midi_file.h \
 	src/ags/audio/midi/ags_midi_parser.h \
-	src/ags/audio/midi/ags_midi_reader.h \
-	src/ags/audio/midi/ags_midi_writer.h
+	src/ags/audio/midi/ags_midi_file_reader.h \
+	src/ags/audio/midi/ags_midi_file_writer.h
 
 deprecated_libags_audio_midi_c_sources =
 
@@ -514,8 +514,8 @@ libags_audio_midi_c_sources = \
 	src/ags/audio/midi/ags_midi_builder.c \
 	src/ags/audio/midi/ags_midi_file.c \
 	src/ags/audio/midi/ags_midi_parser.c \
-	src/ags/audio/midi/ags_midi_reader.c \
-	src/ags/audio/midi/ags_midi_writer.c
+	src/ags/audio/midi/ags_midi_file_reader.c \
+	src/ags/audio/midi/ags_midi_file_writer.c
 
 # libags-audio - recall
 deprecated_libags_audio_recall_h_sources =
@@ -963,23 +963,29 @@ deprecated_libgsequencer_task_h_sources =
 
 libgsequencer_task_h_sources = \
 	$(deprecated_libgsequencer_task_h_sources) \
+	src/ags/X/task/ags_add_bulk_member.h \
+	src/ags/X/task/ags_add_line_member.h \
 	src/ags/X/task/ags_blink_cell_pattern_cursor.h \
 	src/ags/X/task/ags_change_indicator.h \
 	src/ags/X/task/ags_change_tact.h \
 	src/ags/X/task/ags_display_tact.h \
 	src/ags/X/task/ags_scroll_on_play.h \
-	src/ags/X/task/ags_toggle_led.h
+	src/ags/X/task/ags_toggle_led.h \
+	src/ags/X/task/ags_update_bulk_member.h
 
 deprecated_libgsequencer_task_c_sources =
 
 libgsequencer_task_c_sources = \
 	$(deprecated_libgsequencer_task_c_sources) \
+	src/ags/X/task/ags_add_bulk_member.c \
+	src/ags/X/task/ags_add_line_member.c \
 	src/ags/X/task/ags_blink_cell_pattern_cursor.c \
 	src/ags/X/task/ags_change_indicator.c \
 	src/ags/X/task/ags_change_tact.c \
 	src/ags/X/task/ags_display_tact.c \
 	src/ags/X/task/ags_scroll_on_play.c \
-	src/ags/X/task/ags_toggle_led.c
+	src/ags/X/task/ags_toggle_led.c \
+	src/ags/X/task/ags_update_bulk_member.c
 
 # libgsequencer - machine
 deprecated_libgsequencer_machine_h_sources =

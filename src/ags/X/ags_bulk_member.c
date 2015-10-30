@@ -19,6 +19,7 @@
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_bulk_member_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
 #ifdef AGS_USE_LINUX_THREADS

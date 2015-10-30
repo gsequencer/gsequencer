@@ -348,7 +348,7 @@ ags_midi_file_write(AgsMidiFile *midi_file,
 }
 
 /**
- * ags_audio_file_seek:
+ * ags_midi_file_seek:
  * @midi_file: the #AgsMidiFile
  * @position: the offset
  * @whence: SEEK_SET, SEEK_END, or SEEK_CUR
@@ -358,7 +358,7 @@ ags_midi_file_write(AgsMidiFile *midi_file,
  * Since: 0.7.1
  */
 void
-ags_audio_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
+ags_midi_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
 {
   if(midi_file == NULL ||
      midi_file->file == NULL){
@@ -369,7 +369,7 @@ ags_audio_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
 }
 
 /**
- * ags_audio_file_flush:
+ * ags_midi_file_flush:
  * @midi_file: the #AgsMidiFile
  * 
  * Flushes file stream's data buffer to disc.
@@ -377,7 +377,7 @@ ags_audio_file_seek(AgsMidiFile *midi_file, guint position, gint whence)
  * Since: 0.7.1
  */
 void
-ags_audio_file_flush(AgsMidiFile *midi_file)
+ags_midi_file_flush(AgsMidiFile *midi_file)
 {
   if(midi_file == NULL ||
      midi_file->file == NULL){
@@ -783,13 +783,13 @@ ags_midi_file_read_header(AgsMidiFile *midi_file,
   midi_file->count = (guint) ags_midi_file_read_gint16(midi_file);
   midi_file->division = (guint) ags_midi_file_read_gint16(midi_file);
 
-  if(division & 0x8000){
+  if((midi_file->division) & 0x8000){
     /* SMPTE */
     midi_file->times = 0; /* Can't do beats */
   }
 
   midi_file->beat =
-    midi_file->clicks = division;
+    midi_file->clicks = midi_file->division;
 
   length += 10;
 

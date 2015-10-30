@@ -19,8 +19,8 @@
 
 #include <ags/audio/midi/ags_midi_file_writer.h>
 
-void ags_midi_file_writer_class_init(AgsMidiFileClass *midi_file_writer);
-void ags_midi_file_writer_init(AgsMidiFile *midi_file_writer);
+void ags_midi_file_writer_class_init(AgsMidiFileWriterClass *midi_file_writer);
+void ags_midi_file_writer_init(AgsMidiFileWriter *midi_file_writer);
 void ags_midi_file_writer_set_property(GObject *gobject,
 				       guint prop_id,
 				       const GValue *value,
@@ -34,11 +34,11 @@ void ags_midi_file_writer_finalize(GObject *gobject);
 /**
  * SECTION:ags_midi_file_writer
  * @short_description: the menu bar.
- * @title: AgsMidiFile
+ * @title: AgsMidiFileWriter
  * @section_id:
  * @include: ags/X/ags_midi_file_writer.h
  *
- * #AgsMidiFile reads your midi files.
+ * #AgsMidiFileWriter reads your midi files.
  */
 
 enum{
@@ -55,19 +55,19 @@ ags_midi_file_writer_get_type(void)
 
   if(!ags_type_midi_file_writer){
     static const GTypeInfo ags_midi_file_writer_info = {
-      sizeof (AgsMidiFileClass),
+      sizeof (AgsMidiFileWriterClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_midi_file_writer_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsMidiFile),
+      sizeof (AgsMidiFileWriter),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_midi_file_writer_init,
     };
 
     ags_type_midi_file_writer = g_type_register_static(G_TYPE_OBJECT,
-						       "AgsMidiFile\0", &ags_midi_file_writer_info,
+						       "AgsMidiFileWriter\0", &ags_midi_file_writer_info,
 						       0);
   }
 
@@ -75,7 +75,7 @@ ags_midi_file_writer_get_type(void)
 }
 
 void
-ags_midi_file_writer_class_init(AgsMidiFileClass *midi_file_writer)
+ags_midi_file_writer_class_init(AgsMidiFileWriterClass *midi_file_writer)
 {
   GObjectClass *gobject;
 
@@ -88,7 +88,7 @@ ags_midi_file_writer_class_init(AgsMidiFileClass *midi_file_writer)
 }
 
 void
-ags_midi_file_writer_init(AgsMidiFile *midi_file_writer)
+ags_midi_file_writer_init(AgsMidiFileWriter *midi_file_writer)
 {
   midi_file_writer->midi_file = NULL;
 }
@@ -99,7 +99,7 @@ ags_midi_file_writer_set_property(GObject *gobject,
 				  const GValue *value,
 				  GParamSpec *param_spec)
 {
-  AgsMidiFile *midi_file_writer;
+  AgsMidiFileWriter *midi_file_writer;
 
   midi_file_writer = AGS_MIDI_FILE_WRITER(gobject);
   
@@ -116,7 +116,7 @@ ags_midi_file_writer_get_property(GObject *gobject,
 				  GValue *value,
 				  GParamSpec *param_spec)
 {
-  AgsMidiFile *midi_file_writer;
+  AgsMidiFileWriter *midi_file_writer;
 
   midi_file_writer = AGS_MIDI_FILE_WRITER(gobject);
   
@@ -149,12 +149,12 @@ ags_midi_file_writer_write_status_message(AgsMidiFileWriter *midi_file_writer,
   //TODO:JK: implement me
 }
 
-AgsMidiFile*
+AgsMidiFileWriter*
 ags_midi_file_writer_new(gchar *filename)
 {
-  AgsMidiFile *midi_file_writer;
+  AgsMidiFileWriter *midi_file_writer;
 
-  midi_file_writer = (AgsMidiFile *) g_object_new(AGS_TYPE_MIDI_FILE_WRITER,
+  midi_file_writer = (AgsMidiFileWriter *) g_object_new(AGS_TYPE_MIDI_FILE_WRITER,
 						  NULL);
   
   if(filename != NULL){
