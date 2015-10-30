@@ -312,6 +312,7 @@ ags_machine_init(AgsMachine *machine)
 			     menu_tool_button);
   machine->properties = NULL;
   machine->rename = NULL;
+  machine->connection = NULL;
 }
 
 void
