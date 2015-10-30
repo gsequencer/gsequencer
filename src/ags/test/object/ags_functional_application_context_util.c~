@@ -1,0 +1,5 @@
+AgsApplicationContext*
+ags_functional_application_context_util_xorg_setup()
+{
+}
+

@@ -1,0 +1,2 @@
+void ags_functional_menu_bar_util_activate_path(GtkMenuBar *menu_bar,
+						gchar *path);

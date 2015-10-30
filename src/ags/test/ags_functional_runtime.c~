@@ -1,0 +1,10 @@
+void
+ags_functional_runtime_enter()
+{
+}
+
+void
+ags_functional_runtime_leave()
+{
+}
+
