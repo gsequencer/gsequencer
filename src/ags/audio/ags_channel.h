@@ -41,7 +41,8 @@ typedef struct _AgsChannel AgsChannel;
 typedef struct _AgsChannelClass AgsChannelClass;
 
 typedef enum{
-  AGS_CHANNEL_RUNNING        = 1,
+  AGS_CHANNEL_CONNECTED      = 1,
+  AGS_CHANNEL_RUNNING        = 1 <<  1,
 }AgsChannelFlags;
 
 typedef enum{
@@ -100,6 +101,12 @@ struct _AgsChannelClass
 {
   GObjectClass object;
 
+  GList* (*add_effect)(AgsChannel *channel,
+		       gchar *filename,
+		       gchar *effect);
+  void (*remove_effect)(AgsChannel *channel,
+			guint nth);
+
   void (*recycling_changed)(AgsChannel *channel,
 			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 			    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
@@ -139,6 +146,12 @@ void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_co
 
 void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
 void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
+
+GList* ags_channel_add_effect(AgsChannel *channel,
+			      char *filename,
+			      gchar *effect);
+void ags_channel_remove_effect(AgsChannel *channel,
+			       guint nth);
 
 void ags_channel_safe_resize_audio_signal(AgsChannel *channel,
 					  guint size);

@@ -766,7 +766,7 @@ ags_midi_file_read_header(AgsMidiFile *midi_file,
   
   while(n < 4 &&
 	(AGS_MIDI_FILE_EOF & (midi_file->flags)) == 0){
-    c = ags_midi_file_midi_getc(midi_file);
+    c = midi_file->iter[n];
     
     if(c == header[n]){
       n++;
@@ -775,6 +775,8 @@ ags_midi_file_read_header(AgsMidiFile *midi_file,
     }
   }
 
+  /* position internal iteration pointer */
+  midi_file->iter += 4;
   length += 4;
 
   /* get some values */
@@ -793,9 +795,6 @@ ags_midi_file_read_header(AgsMidiFile *midi_file,
 
   length += 10;
 
-  /* position internal iteration pointer */
-  midi_file->iter = midi_file->buffer + length;
-  
   /* return values */
   if(buffer_length != NULL){
     *buffer_length = length;

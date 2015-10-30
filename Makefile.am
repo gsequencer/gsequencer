@@ -816,6 +816,8 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_generic_preferences.h \
 	src/ags/X/ags_ladspa_browser_callbacks.h \
 	src/ags/X/ags_ladspa_browser.h \
+	src/ags/X/ags_lv2_browser_callbacks.h \
+	src/ags/X/ags_lv2_browser.h \
 	src/ags/X/ags_line_callbacks.h \
 	src/ags/X/ags_line_editor_callbacks.h \
 	src/ags/X/ags_line_editor.h \
@@ -844,6 +846,8 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_pad.h \
 	src/ags/X/ags_performance_preferences_callbacks.h \
 	src/ags/X/ags_performance_preferences.h \
+	src/ags/X/ags_plugin_browser_callbacks.h \
+	src/ags/X/ags_plugin_browser.h \
 	src/ags/X/ags_plugin_preferences_callbacks.h \
 	src/ags/X/ags_plugin_preferences.h \
 	src/ags/X/ags_preferences_callbacks.h \
@@ -888,6 +892,8 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_generic_preferences_callbacks.c \
 	src/ags/X/ags_ladspa_browser.c \
 	src/ags/X/ags_ladspa_browser_callbacks.c \
+	src/ags/X/ags_lv2_browser.c \
+	src/ags/X/ags_lv2_browser_callbacks.c \
 	src/ags/X/ags_line.c \
 	src/ags/X/ags_line_callbacks.c \
 	src/ags/X/ags_line_editor.c \
@@ -916,6 +922,8 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_pad_editor_callbacks.c \
 	src/ags/X/ags_performance_preferences.c \
 	src/ags/X/ags_performance_preferences_callbacks.c \
+	src/ags/X/ags_plugin_browser.c \
+	src/ags/X/ags_plugin_browser_callbacks.c \
 	src/ags/X/ags_plugin_preferences.c \
 	src/ags/X/ags_plugin_preferences_callbacks.c \
 	src/ags/X/ags_preferences.c \
