@@ -67,7 +67,6 @@ AgsRecall* ags_play_notation_audio_run_duplicate(AgsRecall *recall,
 						 AgsRecallID *recall_id,
 						 guint *n_params, GParameter *parameter);
 
-void ags_play_notation_audio_run_play_note_done(AgsRecall *recall, AgsPlayNotationAudioRun *play_notation_audio_run);
 void ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 						      guint nth_run,
 						      gdouble delay, guint attack,
@@ -886,7 +885,6 @@ ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 
 /**
  * ags_play_notation_audio_run_new:
- * @count_beats_audio_run: an #AgsCountBeatsAudioRun as dependency
  *
  * Creates an #AgsPlayNotationAudioRun
  *

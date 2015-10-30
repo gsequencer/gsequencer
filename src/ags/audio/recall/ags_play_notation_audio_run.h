@@ -47,7 +47,7 @@ typedef enum{
 
 struct _AgsPlayNotationAudioRun
 {
-  AgsRecallAudioRun recall;
+  AgsRecallAudioRun recall_audio_run;
 
   guint flags;
 
@@ -61,7 +61,7 @@ struct _AgsPlayNotationAudioRun
 
 struct _AgsPlayNotationAudioRunClass
 {
-  AgsRecallAudioRunClass recall;
+  AgsRecallAudioRunClass recall_audio_run;
 };
 
 GType ags_play_notation_audio_run_get_type();
