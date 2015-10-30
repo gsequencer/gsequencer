@@ -19,7 +19,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <midi2ags/midi/ags_midi_parser.h>
+#include <ags/audio/midi/ags_midi_parser.h>
 
 #include <stdio.h>
 

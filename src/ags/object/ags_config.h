@@ -36,6 +36,7 @@
 #define AGS_CONFIG_GENERIC "generic\0"
 #define AGS_CONFIG_THREAD "thread\0"
 #define AGS_CONFIG_SOUNDCARD "soundcard\0"
+#define AGS_CONFIG_SEQUENCER "sequencer\0"
 #define AGS_CONFIG_RECALL "recall\0"
 
 typedef struct _AgsConfig AgsConfig;

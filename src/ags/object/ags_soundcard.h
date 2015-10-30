@@ -78,6 +78,12 @@ struct _AgsSoundcardInterface
   void (*set_device)(AgsSoundcard *soundcard,
 		     gchar *card_id);
   gchar* (*get_device)(AgsSoundcard *soundcard);
+
+  void (*pcm_info)(AgsSoundcard *soundcard, gchar *card_id,
+		   guint *channels_min, guint *channels_max,
+		   guint *rate_min, guint *rate_max,
+		   guint *buffer_size_min, guint *buffer_size_max,
+		   GError **error);
   
   void (*set_presets)(AgsSoundcard *soundcard,
 		      guint channels,

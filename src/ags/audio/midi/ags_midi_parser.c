@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/midi/ags_midi_parser.h>
+#include <ags/audio/midi/ags_midi_parser.h>
 
 #include <ags/object/ags_marshal.h>
 
@@ -234,7 +234,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, on_error),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER,
+		 g_cclosure_marshal_VOID__POINTER,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_POINTER);
 

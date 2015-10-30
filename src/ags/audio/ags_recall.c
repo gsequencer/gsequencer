@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_recall.h>
 
-#include <ags/main.h>
-
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/lib/ags_parameter.h>

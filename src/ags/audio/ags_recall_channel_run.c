@@ -18,8 +18,6 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
-#include <ags/main.h>
-
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_marshal.h>

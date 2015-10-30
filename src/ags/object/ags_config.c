@@ -19,8 +19,6 @@
 
 #include <ags/object/ags_config.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_marshal.h>
