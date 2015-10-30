@@ -19,8 +19,8 @@
 
 #include <ags/audio/midi/ags_midi_file_reader.h>
 
-void ags_midi_file_reader_class_init(AgsMidiFileClass *midi_file_reader);
-void ags_midi_file_reader_init(AgsMidiFile *midi_file_reader);
+void ags_midi_file_reader_class_init(AgsMidiFileReaderClass *midi_file_reader);
+void ags_midi_file_reader_init(AgsMidiFileReader *midi_file_reader);
 void ags_midi_file_reader_set_property(GObject *gobject,
 				       guint prop_id,
 				       const GValue *value,
@@ -34,11 +34,11 @@ void ags_midi_file_reader_finalize(GObject *gobject);
 /**
  * SECTION:ags_midi_file_reader
  * @short_description: the menu bar.
- * @title: AgsMidiFile
+ * @title: AgsMidiFileReader
  * @section_id:
  * @include: ags/X/ags_midi_file_reader.h
  *
- * #AgsMidiFile reads your midi files.
+ * #AgsMidiFileReader reads your midi files.
  */
 
 enum{
@@ -55,19 +55,19 @@ ags_midi_file_reader_get_type(void)
 
   if(!ags_type_midi_file_reader){
     static const GTypeInfo ags_midi_file_reader_info = {
-      sizeof (AgsMidiFileClass),
+      sizeof (AgsMidiFileReaderClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_midi_file_reader_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsMidiFile),
+      sizeof (AgsMidiFileReader),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_midi_file_reader_init,
     };
 
     ags_type_midi_file_reader = g_type_register_static(G_TYPE_OBJECT,
-						       "AgsMidiFile\0", &ags_midi_file_reader_info,
+						       "AgsMidiFileReader\0", &ags_midi_file_reader_info,
 						       0);
   }
 
@@ -75,7 +75,7 @@ ags_midi_file_reader_get_type(void)
 }
 
 void
-ags_midi_file_reader_class_init(AgsMidiFileClass *midi_file_reader)
+ags_midi_file_reader_class_init(AgsMidiFileReaderClass *midi_file_reader)
 {
   GObjectClass *gobject;
 
@@ -88,7 +88,7 @@ ags_midi_file_reader_class_init(AgsMidiFileClass *midi_file_reader)
 }
 
 void
-ags_midi_file_reader_init(AgsMidiFile *midi_file_reader)
+ags_midi_file_reader_init(AgsMidiFileReader *midi_file_reader)
 {
   midi_file_reader->midi_file = NULL;
 }
@@ -99,7 +99,7 @@ ags_midi_file_reader_set_property(GObject *gobject,
 				  const GValue *value,
 				  GParamSpec *param_spec)
 {
-  AgsMidiFile *midi_file_reader;
+  AgsMidiFileReader *midi_file_reader;
 
   midi_file_reader = AGS_MIDI_FILE_READER(gobject);
   
@@ -116,7 +116,7 @@ ags_midi_file_reader_get_property(GObject *gobject,
 				  GValue *value,
 				  GParamSpec *param_spec)
 {
-  AgsMidiFile *midi_file_reader;
+  AgsMidiFileReader *midi_file_reader;
 
   midi_file_reader = AGS_MIDI_FILE_READER(gobject);
   
@@ -152,12 +152,12 @@ ags_midi_file_reader_read_status_message(AgsMidiFileReader *midi_file_reader,
   return(NULL);
 }
 
-AgsMidiFile*
+AgsMidiFileReader*
 ags_midi_file_reader_new(gchar *filename)
 {
-  AgsMidiFile *midi_file_reader;
+  AgsMidiFileReader *midi_file_reader;
 
-  midi_file_reader = (AgsMidiFile *) g_object_new(AGS_TYPE_MIDI_FILE_READER,
+  midi_file_reader = (AgsMidiFileReader *) g_object_new(AGS_TYPE_MIDI_FILE_READER,
 						  NULL);
 
   if(filename != NULL){

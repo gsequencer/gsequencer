@@ -36,10 +36,10 @@ void ags_midi_builder_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_midi_builder_finalize(GObject *gobject);
 
-void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
-				int c);
-void ags_midi_builder_on_error(AgsMidiBuilder *builder,
-			       GError **error);
+void ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
+				     int c);
+void ags_midi_builder_real_on_error(AgsMidiBuilder *builder,
+				    GError **error);
 
 /* channel messages */
 void ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
@@ -71,9 +71,9 @@ void ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder
 						    guint channel,
 						    guint pitch,
 						    guint transmitter);
-void ags_midi_builder_real_append_change_pitch_program(AgsMidiBuilder *midi_builder,
-						       guint channel,
-						       guint program);
+void ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
+						 guint channel,
+						 guint program);
 void ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
 						  guint channel,
 						  guint pressure);
@@ -127,7 +127,7 @@ enum{
   SONG_SELECT,
   TUNE_REQUEST,
   SEQUENCE_NUMBER,
-  SMPTE,
+  SMTPE,
   TEMPO,
   TIME_SIGNATURE,
   KEY_SIGNATURE,
@@ -207,7 +207,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   midi_builder->append_key_pressure = ags_midi_builder_real_append_key_pressure;
   midi_builder->append_change_parameter = ags_midi_builder_real_append_change_parameter;
   midi_builder->append_change_pitch_bend = ags_midi_builder_real_append_change_pitch_bend;
-  midi_builder->append_change_pitch_program = ags_midi_builder_real_append_change_pitch_program;
+  midi_builder->append_change_program = ags_midi_builder_real_append_change_program;
   midi_builder->append_change_pressure = ags_midi_builder_real_append_change_pressure;
   midi_builder->append_sysex = ags_midi_builder_real_append_sysex;
   midi_builder->append_quarter_frame = ags_midi_builder_real_append_quarter_frame;
@@ -238,7 +238,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, on_error),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER,
+		 g_cclosure_marshal_VOID__POINTER,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_POINTER);
 
@@ -263,7 +263,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_header),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID___UINT_UINT_UINT_UINT_UINT_UINT_UINT,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT,
 		 G_TYPE_NONE, 7,
 		 G_TYPE_UINT, G_TYPE_UINT,
 		 G_TYPE_UINT, G_TYPE_UINT,
@@ -287,7 +287,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_track),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING,
+		 g_cclosure_marshal_VOID__STRING,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_STRING);
 
@@ -306,7 +306,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("key-on\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, key_on),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_key_on),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
@@ -329,7 +329,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("key-off\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, key_off),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_key_off),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
@@ -352,7 +352,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("key-pressure\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, key_pressure),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_key_pressure),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
@@ -375,7 +375,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("change-parameter\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, change_parameter),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_change_parameter),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
@@ -398,7 +398,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("change-pitch-bend\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, change_pitch_bend),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_change_pitch_bend),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
@@ -420,7 +420,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("change-program\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, change_program),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_change_program),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT,
 		 G_TYPE_NONE, 2,
@@ -437,11 +437,11 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * Since: 0.7.0
    */
-  midi_builder_signals[CHANGE_CHANNEL_PRESSURE] =
+  midi_builder_signals[CHANGE_PRESSURE] =
     g_signal_new("change-channel-pressure\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, change_channel_pressure),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_change_pressure),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT,
 		 G_TYPE_NONE, 2,
@@ -462,7 +462,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("sysex\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, sysex),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_sysex),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__POINTER_UINT,
 		 G_TYPE_NONE, 2,
@@ -482,9 +482,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("quarter-frame\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, quarter_frame),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_quarter_frame),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT,
+		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
@@ -501,9 +501,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("song-position\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, song_position),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_song_position),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT,
+		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
@@ -520,9 +520,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("song-select\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, song_select),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_song_select),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT,
+		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
@@ -539,9 +539,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("tune-request\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, tune_request),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_tune_request),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__VOID,
+		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
 
@@ -558,9 +558,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("sequence-number\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, sequence_number),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_sequence_number),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT,
+		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
   
@@ -581,7 +581,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("smtpe\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, smtpe),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_smtpe),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT,
 		 G_TYPE_NONE, 5,
@@ -604,9 +604,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("tempo\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, tempo),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_tempo),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT,
+		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
 
@@ -627,9 +627,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("time-signature\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, time_signature),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_time_signature),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT,
+		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 5,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
@@ -651,7 +651,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("key-signature\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, key_signature),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_key_signature),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT,
 		 G_TYPE_NONE, 2,
@@ -673,7 +673,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("sequencer-meta-event\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, sequencer_meta_event),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_sequencer_meta_event),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
 		 G_TYPE_NONE, 3,
@@ -695,7 +695,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     g_signal_new("text-event\0",
 		 G_TYPE_FROM_CLASS(midi_builder),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiBuilderClass, text_event),
+		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_text_event),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_VOID__UINT_UINT,
 		 G_TYPE_NONE, 2,
@@ -771,14 +771,21 @@ ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
 }
 
 void
-ags_midi_builder_real_on_error(AgsMidiBuilder *builder,
+ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
+				int c)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_midi_builder_real_on_error(AgsMidiBuilder *midi_builder,
 			       GError **error)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_midi_builder_on_error(AgsMidiBuilder *builder,
+ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,
 			  GError **error)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -830,13 +837,13 @@ void
 ags_midi_builder_append_track(AgsMidiBuilder *midi_builder,
 			      gchar *track_name)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[APPEND_TRACK], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[APPEND_TRACK], 0,
 		track_name);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -854,15 +861,15 @@ ags_midi_builder_append_key_on(AgsMidiBuilder *midi_builder,
 			       guint note,
 			       guint velocity)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[KEY_ON], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[KEY_ON], 0,
 		audio_channel,
 		note,
 		velocity);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -880,15 +887,15 @@ ags_midi_builder_append_key_off(AgsMidiBuilder *midi_builder,
 				guint note,
 				guint velocity)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[KEY_OFF], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[KEY_OFF], 0,
 		audio_channel,
 		note,
 		velocity);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -906,15 +913,15 @@ ags_midi_builder_append_key_pressure(AgsMidiBuilder *midi_builder,
 				     guint note,
 				     guint pressure)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[KEY_PRESSURE], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[KEY_PRESSURE], 0,
 		audio_channel,
 		note,
 		pressure);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -932,15 +939,15 @@ ags_midi_builder_append_change_parameter(AgsMidiBuilder *midi_builder,
 					 guint control,
 					 guint value)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[CHANGE_PARAMETER], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[CHANGE_PARAMETER], 0,
 		channel,
 		control,
 		value);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -958,38 +965,38 @@ ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 					  guint pitch,
 					  guint transmitter)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[CHANGE_PITCH_BEND], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[CHANGE_PITCH_BEND], 0,
 		channel,
 		pitch,
 		transmitter);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
-ags_midi_builder_real_append_change_pitch_program(AgsMidiBuilder *midi_builder,
-						  guint channel,
-						  guint program)
+ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
+					    guint channel,
+					    guint program)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_midi_builder_append_change_pitch_program(AgsMidiBuilder *midi_builder,
-					     guint channel,
-					     guint program)
+ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
+				       guint channel,
+				       guint program)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[CHANGE_PITCH_PROGRAMM], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[CHANGE_PROGRAM], 0,
 		channel,
 		program);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1005,14 +1012,14 @@ ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
 					guint channel,
 					guint pressure)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[CHANGE_PRESSURE], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[CHANGE_PRESSURE], 0,
 		channel,
 		pressure);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1026,13 +1033,13 @@ void
 ags_midi_builder_append_sysex(AgsMidiBuilder *midi_builder,
 			      unsigned char *sysex_data, guint length)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[SYSEX], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[SYSEX], 0,
 		sysex_data, length);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1046,13 +1053,13 @@ void
 ags_midi_builder_append_quarter_frame(AgsMidiBuilder *midi_builder,
 				      guint quarter_frame)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[QUARTER_FRAME], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[QUARTER_FRAME], 0,
 		quarter_frame);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1066,13 +1073,13 @@ void
 ags_midi_builder_append_song_position(AgsMidiBuilder *midi_builder,
 				      guint song_position)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[SONG_POSITION], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[SONG_POSITION], 0,
 		song_position);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1086,13 +1093,13 @@ void
 ags_midi_builder_append_song_select(AgsMidiBuilder *midi_builder,
 				    guint song_select)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[SONG_SELECT], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[SONG_SELECT], 0,
 		song_select);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1104,12 +1111,12 @@ ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder)
 void
 ags_midi_builder_append_tune_request(AgsMidiBuilder *midi_builder)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[TUNE_REQUEST], 0);
-  g_object_unref((GObject *) midi_parser);
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[TUNE_REQUEST], 0);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1123,13 +1130,13 @@ void
 ags_midi_builder_append_sequence_number(AgsMidiBuilder *midi_builder,
 					guint sequence)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[SEQUENCE_NUMBER], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[SEQUENCE_NUMBER], 0,
 		sequence);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1143,13 +1150,13 @@ void
 ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
 			      guint hr, guint mn, guint se, guint fr, guint ff)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[SMTPE], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[SMTPE], 0,
 		hr, mn, se, fr, ff);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1163,13 +1170,13 @@ void
 ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
 			      guint tempo)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[TEMPO], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[TEMPO], 0,
 		tempo);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1183,33 +1190,33 @@ void
 ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
 				       guint nn, guint denom, guint dd, guint cc, guint bb)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[TIME_SIGNATURE], 0,
-		nn. denom, dd, cc, bb);
-  g_object_unref((GObject *) midi_parser);
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[TIME_SIGNATURE], 0,
+		nn, denom, dd, cc, bb);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
-					   guint nn, guint denom, guint dd, guint cc, guint bb)
+					   guint sf, guint mi)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_midi_builder_append_key_signature(AgsMidiBuilder *midi_builder,
-				      guint nn, guint denom, guint dd, guint cc, guint bb)
+				      guint sf, guint mi)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[KEY_SIGNATURE], 0,
-		nn, denom, dd, cc, bb);
-  g_object_unref((GObject *) midi_parser);
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[KEY_SIGNATURE], 0,
+		sf, mi);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1223,13 +1230,13 @@ void
 ags_midi_builder_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
 					     guint len, guint id, guint data)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[SEQUENCER_META_EVENT], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[SEQUENCER_META_EVENT], 0,
 		len, id, data);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void
@@ -1243,13 +1250,13 @@ void
 ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
 				   gchar *text, guint length)
 {
-  g_return_if_fail(AGS_IS_MIDI_PARSER(midi_parser));
+  g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
-  g_object_ref((GObject *) midi_parser);
-  g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[TEXT_EVENT], 0,
+  g_object_ref((GObject *) midi_builder);
+  g_signal_emit(G_OBJECT(midi_builder),
+		midi_builder_signals[TEXT_EVENT], 0,
 		text, length);
-  g_object_unref((GObject *) midi_parser);
+  g_object_unref((GObject *) midi_builder);
 }
 
 void

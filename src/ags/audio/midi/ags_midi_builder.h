@@ -58,7 +58,7 @@ struct _AgsMidiBuilderClass
 
   void (*midi_putc)(AgsMidiBuilder *midi_builder,
 		    int c);
-  void (*on_error)(AgsMidiBuilder *builder,
+  void (*on_error)(AgsMidiBuilder *midi_builder,
 		   GError **error);
 
   /* channel messages */
@@ -91,9 +91,9 @@ struct _AgsMidiBuilderClass
 				   guint channel,
 				   guint pitch,
 				   guint transmitter);
-  void (*append_change_pitch_program)(AgsMidiBuilder *midi_builder,
-				      guint channel,
-				      guint program);
+  void (*append_change_program)(AgsMidiBuilder *midi_builder,
+				guint channel,
+				guint program);
   void (*append_change_pressure)(AgsMidiBuilder *midi_builder,
 				 guint channel,
 				 guint pressure);
@@ -150,7 +150,7 @@ GType ags_midi_builder_get_type(void);
 
 void ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
 				int c);
-void ags_midi_builder_on_error(AgsMidiBuilder *builder,
+void ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,
 			       GError **error);
 
 /* channel messages */
@@ -183,9 +183,9 @@ void ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 					       guint channel,
 					       guint pitch,
 					       guint transmitter);
-void ags_midi_builder_append_change_pitch_program(AgsMidiBuilder *midi_builder,
-						  guint channel,
-						  guint program);
+void ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
+					    guint channel,
+					    guint program);
 void ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
 					     guint channel,
 					     guint pressure);

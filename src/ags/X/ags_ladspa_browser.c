@@ -19,8 +19,6 @@
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_ladspa_browser_callbacks.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_connectable.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>

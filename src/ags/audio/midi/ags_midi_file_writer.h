@@ -47,6 +47,8 @@ struct _AgsMidiFileWriterClass
   GObjectClass gobject;
 };
 
+GType ags_midi_file_writer_get_type(void);
+
 void ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
 						gchar *track_name,
 						guint status, ...);
