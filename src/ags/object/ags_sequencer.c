@@ -582,50 +582,6 @@ ags_sequencer_get_delay_factor(AgsSequencer *sequencer)
 }
 
 /**
- * ags_sequencer_get_delay:
- * @sequencer: an #AgsSequencer
- *
- * Get current playback delay. 
- *
- * Returns: delay
- *
- * Since: 0.7.0
- */
-gdouble
-ags_sequencer_get_delay(AgsSequencer *sequencer)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), G_MAXUINT);
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_val_if_fail(sequencer_interface->get_delay, G_MAXUINT);
-
-  return(sequencer_interface->get_delay(sequencer));
-}
-
-/**
- * ags_sequencer_get_attack:
- * @sequencer: an #AgsSequencer
- *
- * Get current playback attack. 
- *
- * Returns: attack
- *
- * Since: 0.7.0
- */
-guint
-ags_sequencer_get_attack(AgsSequencer *sequencer)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), G_MAXUINT);
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_val_if_fail(sequencer_interface->get_attack, G_MAXUINT);
-
-  return(sequencer_interface->get_attack(sequencer));
-}
-
-/**
  * ags_sequencer_get_note_offset:
  * @sequencer: an #AgsSequencer
  *

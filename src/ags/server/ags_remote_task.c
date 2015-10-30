@@ -21,8 +21,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/main.h>
-
 #include <ags/server/ags_server.h>
 #include <ags/server/ags_registry.h>
 

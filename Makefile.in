@@ -162,8 +162,9 @@ am__objects_4 = $(am__objects_1) libags_la-ags_applicable.lo \
 	libags_la-ags_main_loop.lo libags_la-ags_marshal.lo \
 	libags_la-ags_mutable.lo libags_la-ags_packable.lo \
 	libags_la-ags_plugin.lo libags_la-ags_portlet.lo \
-	libags_la-ags_seekable.lo libags_la-ags_soundcard.lo \
-	libags_la-ags_tactable.lo libags_la-ags_tree_iterator.lo
+	libags_la-ags_seekable.lo libags_la-ags_sequencer.lo \
+	libags_la-ags_soundcard.lo libags_la-ags_tactable.lo \
+	libags_la-ags_tree_iterator.lo
 am__objects_5 = $(am__objects_1) libags_la-ags_file.lo \
 	libags_la-ags_file_id_ref.lo libags_la-ags_file_launch.lo \
 	libags_la-ags_file_link.lo libags_la-ags_file_lookup.lo \
@@ -188,7 +189,8 @@ am__objects_6 = $(am__objects_1) libags_audio_la-ags_acceleration.lo \
 	libags_audio_la-ags_channel.lo \
 	libags_audio_la-ags_channel_iter.lo \
 	libags_audio_la-ags_devout.lo libags_audio_la-ags_input.lo \
-	libags_audio_la-ags_libao.lo libags_audio_la-ags_notation.lo \
+	libags_audio_la-ags_libao.lo libags_audio_la-ags_message.lo \
+	libags_audio_la-ags_midiin.lo libags_audio_la-ags_notation.lo \
 	libags_audio_la-ags_note.lo libags_audio_la-ags_output.lo \
 	libags_audio_la-ags_pattern.lo libags_audio_la-ags_playable.lo \
 	libags_audio_la-ags_playback.lo \
@@ -216,6 +218,7 @@ am__objects_6 = $(am__objects_1) libags_audio_la-ags_acceleration.lo \
 am__objects_7 = $(am__objects_1) libags_audio_la-ags_audio_loop.lo \
 	libags_audio_la-ags_audio_thread.lo \
 	libags_audio_la-ags_channel_thread.lo \
+	libags_audio_la-ags_sequencer_thread.lo \
 	libags_audio_la-ags_soundcard_thread.lo \
 	libags_audio_la-ags_export_thread.lo \
 	libags_audio_la-ags_iterator_thread.lo \
@@ -535,7 +538,7 @@ libgsequencer_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(libgsequencer_la_CFLAGS) $(CFLAGS) \
 	$(libgsequencer_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_22 = gsequencer-main.$(OBJEXT)
+am__objects_22 = gsequencer-gsequencer_main.$(OBJEXT)
 am_gsequencer_OBJECTS = $(am__objects_22)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
@@ -543,7 +546,7 @@ gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
 gsequencer_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(gsequencer_CFLAGS) \
 	$(CFLAGS) $(gsequencer_LDFLAGS) $(LDFLAGS) -o $@
-am__objects_23 = gsequencer_static-main.$(OBJEXT)
+am__objects_23 = gsequencer_static-gsequencer_main.$(OBJEXT)
 am_gsequencer_static_OBJECTS = $(am__objects_23)
 gsequencer_static_OBJECTS = $(am_gsequencer_static_OBJECTS)
 gsequencer_static_DEPENDENCIES = libgsequencer.la libags_audio.la \
@@ -552,7 +555,7 @@ gsequencer_static_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(gsequencer_static_CFLAGS) $(CFLAGS) \
 	$(gsequencer_static_LDFLAGS) $(LDFLAGS) -o $@
-am_midi2xml_OBJECTS = midi2xml-main.$(OBJEXT) \
+am_midi2xml_OBJECTS = midi2xml-midi2xml_main.$(OBJEXT) \
 	midi2xml-ags_midi_parser.$(OBJEXT) \
 	midi2xml-ags_marshal.$(OBJEXT)
 midi2xml_OBJECTS = $(am_midi2xml_OBJECTS)
@@ -967,6 +970,7 @@ libags_object_h_sources = \
 	src/ags/object/ags_plugin.h \
 	src/ags/object/ags_portlet.h \
 	src/ags/object/ags_seekable.h \
+	src/ags/object/ags_sequencer.h \
 	src/ags/object/ags_soundcard.h \
 	src/ags/object/ags_tactable.h \
 	src/ags/object/ags_tree_iterator.h
@@ -989,6 +993,7 @@ libags_object_c_sources = \
 	src/ags/object/ags_plugin.c \
 	src/ags/object/ags_portlet.c \
 	src/ags/object/ags_seekable.c \
+	src/ags/object/ags_sequencer.c \
 	src/ags/object/ags_soundcard.c \
 	src/ags/object/ags_tactable.c \
 	src/ags/object/ags_tree_iterator.c
@@ -1116,6 +1121,8 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_effect.h \
 	src/ags/audio/ags_input.h \
 	src/ags/audio/ags_libao.h \
+	src/ags/audio/ags_message.h \
+	src/ags/audio/ags_midiin.h \
 	src/ags/audio/ags_notation.h \
 	src/ags/audio/ags_note.h \
 	src/ags/audio/ags_output.h \
@@ -1157,6 +1164,8 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_devout.c \
 	src/ags/audio/ags_input.c \
 	src/ags/audio/ags_libao.c \
+	src/ags/audio/ags_message.c \
+	src/ags/audio/ags_midiin.c \
 	src/ags/audio/ags_notation.c \
 	src/ags/audio/ags_note.c \
 	src/ags/audio/ags_output.c \
@@ -1193,6 +1202,7 @@ libags_audio_thread_h_sources = \
 	src/ags/audio/thread/ags_audio_loop.h \
 	src/ags/audio/thread/ags_audio_thread.h \
 	src/ags/audio/thread/ags_channel_thread.h \
+	src/ags/audio/thread/ags_sequencer_thread.h \
 	src/ags/audio/thread/ags_soundcard_thread.h \
 	src/ags/audio/thread/ags_export_thread.h \
 	src/ags/audio/thread/ags_iterator_thread.h \
@@ -1206,6 +1216,7 @@ libags_audio_thread_c_sources = \
 	src/ags/audio/thread/ags_audio_loop.c \
 	src/ags/audio/thread/ags_audio_thread.c \
 	src/ags/audio/thread/ags_channel_thread.c \
+	src/ags/audio/thread/ags_sequencer_thread.c \
 	src/ags/audio/thread/ags_soundcard_thread.c \
 	src/ags/audio/thread/ags_export_thread.c \
 	src/ags/audio/thread/ags_iterator_thread.c \
@@ -1835,14 +1846,14 @@ libgsequencer_editor_c_sources = \
 
 # libgsequencer all files
 gsequencerheaders = \
-	src/ags/main.h
+	src/ags/gsequencer_main.h
 
 gsequencer_c_sources = \
-	src/ags/main.c
+	src/ags/gsequencer_main.c
 
 midi2xml_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 midi2xml_LDFLAGS = -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-midi2xml_SOURCES = src/midi2ags/main.c src/midi2ags/midi/ags_midi_parser.c src/midi2ags/midi/ags_midi_parser.h src/midi2ags/object/ags_marshal.c src/midi2ags/object/ags_marshal.h
+midi2xml_SOURCES = src/ags/midi2xml_main.c src/ags/audio/midi/ags_midi_parser.c src/ags/audio/midi/ags_midi_parser.h src/midi2ags/object/ags_marshal.c src/midi2ags/object/ags_marshal.h
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -2017,8 +2028,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer_static-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-gsequencer_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer_static-gsequencer_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_acceleration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_audio_signal.Plo@am__quote@
@@ -2091,6 +2102,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_link_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_loop_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_loop_channel_run.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_message.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_midiin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_mute_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_mute_audio_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_mute_audio_signal.Plo@am__quote@
@@ -2153,6 +2166,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_resize_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_save_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_seek_soundcard.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_sequencer_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_set_audio_channels.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_set_buffer_size.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_set_muted.Plo@am__quote@
@@ -2216,6 +2230,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_portlet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_seekable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_sequencer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_tactable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_tree_iterator.Plo@am__quote@
@@ -2369,7 +2384,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_xorg_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi2xml-ags_marshal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi2xml-ags_midi_parser.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi2xml-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/midi2xml-midi2xml_main.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -2525,6 +2540,13 @@ libags_la-ags_seekable.lo: src/ags/object/ags_seekable.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o libags_la-ags_seekable.lo `test -f 'src/ags/object/ags_seekable.c' || echo '$(srcdir)/'`src/ags/object/ags_seekable.c
 
+libags_la-ags_sequencer.lo: src/ags/object/ags_sequencer.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT libags_la-ags_sequencer.lo -MD -MP -MF $(DEPDIR)/libags_la-ags_sequencer.Tpo -c -o libags_la-ags_sequencer.lo `test -f 'src/ags/object/ags_sequencer.c' || echo '$(srcdir)/'`src/ags/object/ags_sequencer.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_la-ags_sequencer.Tpo $(DEPDIR)/libags_la-ags_sequencer.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/object/ags_sequencer.c' object='libags_la-ags_sequencer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o libags_la-ags_sequencer.lo `test -f 'src/ags/object/ags_sequencer.c' || echo '$(srcdir)/'`src/ags/object/ags_sequencer.c
+
 libags_la-ags_soundcard.lo: src/ags/object/ags_soundcard.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT libags_la-ags_soundcard.lo -MD -MP -MF $(DEPDIR)/libags_la-ags_soundcard.Tpo -c -o libags_la-ags_soundcard.lo `test -f 'src/ags/object/ags_soundcard.c' || echo '$(srcdir)/'`src/ags/object/ags_soundcard.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_la-ags_soundcard.Tpo $(DEPDIR)/libags_la-ags_soundcard.Plo
@@ -2657,6 +2679,20 @@ libags_audio_la-ags_libao.lo: src/ags/audio/ags_libao.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_libao.c' object='libags_audio_la-ags_libao.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_libao.lo `test -f 'src/ags/audio/ags_libao.c' || echo '$(srcdir)/'`src/ags/audio/ags_libao.c
+
+libags_audio_la-ags_message.lo: src/ags/audio/ags_message.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_message.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_message.Tpo -c -o libags_audio_la-ags_message.lo `test -f 'src/ags/audio/ags_message.c' || echo '$(srcdir)/'`src/ags/audio/ags_message.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_message.Tpo $(DEPDIR)/libags_audio_la-ags_message.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_message.c' object='libags_audio_la-ags_message.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_message.lo `test -f 'src/ags/audio/ags_message.c' || echo '$(srcdir)/'`src/ags/audio/ags_message.c
+
+libags_audio_la-ags_midiin.lo: src/ags/audio/ags_midiin.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_midiin.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_midiin.Tpo -c -o libags_audio_la-ags_midiin.lo `test -f 'src/ags/audio/ags_midiin.c' || echo '$(srcdir)/'`src/ags/audio/ags_midiin.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_midiin.Tpo $(DEPDIR)/libags_audio_la-ags_midiin.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_midiin.c' object='libags_audio_la-ags_midiin.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_midiin.lo `test -f 'src/ags/audio/ags_midiin.c' || echo '$(srcdir)/'`src/ags/audio/ags_midiin.c
 
 libags_audio_la-ags_notation.lo: src/ags/audio/ags_notation.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_notation.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_notation.Tpo -c -o libags_audio_la-ags_notation.lo `test -f 'src/ags/audio/ags_notation.c' || echo '$(srcdir)/'`src/ags/audio/ags_notation.c
@@ -2867,6 +2903,13 @@ libags_audio_la-ags_channel_thread.lo: src/ags/audio/thread/ags_channel_thread.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/thread/ags_channel_thread.c' object='libags_audio_la-ags_channel_thread.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_channel_thread.lo `test -f 'src/ags/audio/thread/ags_channel_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_channel_thread.c
+
+libags_audio_la-ags_sequencer_thread.lo: src/ags/audio/thread/ags_sequencer_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_sequencer_thread.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_sequencer_thread.Tpo -c -o libags_audio_la-ags_sequencer_thread.lo `test -f 'src/ags/audio/thread/ags_sequencer_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_sequencer_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_sequencer_thread.Tpo $(DEPDIR)/libags_audio_la-ags_sequencer_thread.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/thread/ags_sequencer_thread.c' object='libags_audio_la-ags_sequencer_thread.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_sequencer_thread.lo `test -f 'src/ags/audio/thread/ags_sequencer_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_sequencer_thread.c
 
 libags_audio_la-ags_soundcard_thread.lo: src/ags/audio/thread/ags_soundcard_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_soundcard_thread.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_soundcard_thread.Tpo -c -o libags_audio_la-ags_soundcard_thread.lo `test -f 'src/ags/audio/thread/ags_soundcard_thread.c' || echo '$(srcdir)/'`src/ags/audio/thread/ags_soundcard_thread.c
@@ -4828,61 +4871,61 @@ libgsequencer_la-ags_toolbar_callbacks.lo: src/ags/X/editor/ags_toolbar_callback
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_toolbar_callbacks.lo `test -f 'src/ags/X/editor/ags_toolbar_callbacks.c' || echo '$(srcdir)/'`src/ags/X/editor/ags_toolbar_callbacks.c
 
-gsequencer-main.o: src/ags/main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-main.o -MD -MP -MF $(DEPDIR)/gsequencer-main.Tpo -c -o gsequencer-main.o `test -f 'src/ags/main.c' || echo '$(srcdir)/'`src/ags/main.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-main.Tpo $(DEPDIR)/gsequencer-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/main.c' object='gsequencer-main.o' libtool=no @AMDEPBACKSLASH@
+gsequencer-gsequencer_main.o: src/ags/gsequencer_main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-gsequencer_main.o -MD -MP -MF $(DEPDIR)/gsequencer-gsequencer_main.Tpo -c -o gsequencer-gsequencer_main.o `test -f 'src/ags/gsequencer_main.c' || echo '$(srcdir)/'`src/ags/gsequencer_main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-gsequencer_main.Tpo $(DEPDIR)/gsequencer-gsequencer_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/gsequencer_main.c' object='gsequencer-gsequencer_main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-main.o `test -f 'src/ags/main.c' || echo '$(srcdir)/'`src/ags/main.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-gsequencer_main.o `test -f 'src/ags/gsequencer_main.c' || echo '$(srcdir)/'`src/ags/gsequencer_main.c
 
-gsequencer-main.obj: src/ags/main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-main.obj -MD -MP -MF $(DEPDIR)/gsequencer-main.Tpo -c -o gsequencer-main.obj `if test -f 'src/ags/main.c'; then $(CYGPATH_W) 'src/ags/main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/main.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-main.Tpo $(DEPDIR)/gsequencer-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/main.c' object='gsequencer-main.obj' libtool=no @AMDEPBACKSLASH@
+gsequencer-gsequencer_main.obj: src/ags/gsequencer_main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-gsequencer_main.obj -MD -MP -MF $(DEPDIR)/gsequencer-gsequencer_main.Tpo -c -o gsequencer-gsequencer_main.obj `if test -f 'src/ags/gsequencer_main.c'; then $(CYGPATH_W) 'src/ags/gsequencer_main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/gsequencer_main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-gsequencer_main.Tpo $(DEPDIR)/gsequencer-gsequencer_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/gsequencer_main.c' object='gsequencer-gsequencer_main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-main.obj `if test -f 'src/ags/main.c'; then $(CYGPATH_W) 'src/ags/main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/main.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-gsequencer_main.obj `if test -f 'src/ags/gsequencer_main.c'; then $(CYGPATH_W) 'src/ags/gsequencer_main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/gsequencer_main.c'; fi`
 
-gsequencer_static-main.o: src/ags/main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -MT gsequencer_static-main.o -MD -MP -MF $(DEPDIR)/gsequencer_static-main.Tpo -c -o gsequencer_static-main.o `test -f 'src/ags/main.c' || echo '$(srcdir)/'`src/ags/main.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer_static-main.Tpo $(DEPDIR)/gsequencer_static-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/main.c' object='gsequencer_static-main.o' libtool=no @AMDEPBACKSLASH@
+gsequencer_static-gsequencer_main.o: src/ags/gsequencer_main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -MT gsequencer_static-gsequencer_main.o -MD -MP -MF $(DEPDIR)/gsequencer_static-gsequencer_main.Tpo -c -o gsequencer_static-gsequencer_main.o `test -f 'src/ags/gsequencer_main.c' || echo '$(srcdir)/'`src/ags/gsequencer_main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer_static-gsequencer_main.Tpo $(DEPDIR)/gsequencer_static-gsequencer_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/gsequencer_main.c' object='gsequencer_static-gsequencer_main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -c -o gsequencer_static-main.o `test -f 'src/ags/main.c' || echo '$(srcdir)/'`src/ags/main.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -c -o gsequencer_static-gsequencer_main.o `test -f 'src/ags/gsequencer_main.c' || echo '$(srcdir)/'`src/ags/gsequencer_main.c
 
-gsequencer_static-main.obj: src/ags/main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -MT gsequencer_static-main.obj -MD -MP -MF $(DEPDIR)/gsequencer_static-main.Tpo -c -o gsequencer_static-main.obj `if test -f 'src/ags/main.c'; then $(CYGPATH_W) 'src/ags/main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/main.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer_static-main.Tpo $(DEPDIR)/gsequencer_static-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/main.c' object='gsequencer_static-main.obj' libtool=no @AMDEPBACKSLASH@
+gsequencer_static-gsequencer_main.obj: src/ags/gsequencer_main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -MT gsequencer_static-gsequencer_main.obj -MD -MP -MF $(DEPDIR)/gsequencer_static-gsequencer_main.Tpo -c -o gsequencer_static-gsequencer_main.obj `if test -f 'src/ags/gsequencer_main.c'; then $(CYGPATH_W) 'src/ags/gsequencer_main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/gsequencer_main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer_static-gsequencer_main.Tpo $(DEPDIR)/gsequencer_static-gsequencer_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/gsequencer_main.c' object='gsequencer_static-gsequencer_main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -c -o gsequencer_static-main.obj `if test -f 'src/ags/main.c'; then $(CYGPATH_W) 'src/ags/main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/main.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -c -o gsequencer_static-gsequencer_main.obj `if test -f 'src/ags/gsequencer_main.c'; then $(CYGPATH_W) 'src/ags/gsequencer_main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/gsequencer_main.c'; fi`
 
-midi2xml-main.o: src/midi2ags/main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-main.o -MD -MP -MF $(DEPDIR)/midi2xml-main.Tpo -c -o midi2xml-main.o `test -f 'src/midi2ags/main.c' || echo '$(srcdir)/'`src/midi2ags/main.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/midi2xml-main.Tpo $(DEPDIR)/midi2xml-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/midi2ags/main.c' object='midi2xml-main.o' libtool=no @AMDEPBACKSLASH@
+midi2xml-midi2xml_main.o: src/ags/midi2xml_main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-midi2xml_main.o -MD -MP -MF $(DEPDIR)/midi2xml-midi2xml_main.Tpo -c -o midi2xml-midi2xml_main.o `test -f 'src/ags/midi2xml_main.c' || echo '$(srcdir)/'`src/ags/midi2xml_main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/midi2xml-midi2xml_main.Tpo $(DEPDIR)/midi2xml-midi2xml_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/midi2xml_main.c' object='midi2xml-midi2xml_main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-main.o `test -f 'src/midi2ags/main.c' || echo '$(srcdir)/'`src/midi2ags/main.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-midi2xml_main.o `test -f 'src/ags/midi2xml_main.c' || echo '$(srcdir)/'`src/ags/midi2xml_main.c
 
-midi2xml-main.obj: src/midi2ags/main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-main.obj -MD -MP -MF $(DEPDIR)/midi2xml-main.Tpo -c -o midi2xml-main.obj `if test -f 'src/midi2ags/main.c'; then $(CYGPATH_W) 'src/midi2ags/main.c'; else $(CYGPATH_W) '$(srcdir)/src/midi2ags/main.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/midi2xml-main.Tpo $(DEPDIR)/midi2xml-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/midi2ags/main.c' object='midi2xml-main.obj' libtool=no @AMDEPBACKSLASH@
+midi2xml-midi2xml_main.obj: src/ags/midi2xml_main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-midi2xml_main.obj -MD -MP -MF $(DEPDIR)/midi2xml-midi2xml_main.Tpo -c -o midi2xml-midi2xml_main.obj `if test -f 'src/ags/midi2xml_main.c'; then $(CYGPATH_W) 'src/ags/midi2xml_main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/midi2xml_main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/midi2xml-midi2xml_main.Tpo $(DEPDIR)/midi2xml-midi2xml_main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/midi2xml_main.c' object='midi2xml-midi2xml_main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-main.obj `if test -f 'src/midi2ags/main.c'; then $(CYGPATH_W) 'src/midi2ags/main.c'; else $(CYGPATH_W) '$(srcdir)/src/midi2ags/main.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-midi2xml_main.obj `if test -f 'src/ags/midi2xml_main.c'; then $(CYGPATH_W) 'src/ags/midi2xml_main.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/midi2xml_main.c'; fi`
 
-midi2xml-ags_midi_parser.o: src/midi2ags/midi/ags_midi_parser.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-ags_midi_parser.o -MD -MP -MF $(DEPDIR)/midi2xml-ags_midi_parser.Tpo -c -o midi2xml-ags_midi_parser.o `test -f 'src/midi2ags/midi/ags_midi_parser.c' || echo '$(srcdir)/'`src/midi2ags/midi/ags_midi_parser.c
+midi2xml-ags_midi_parser.o: src/ags/audio/midi/ags_midi_parser.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-ags_midi_parser.o -MD -MP -MF $(DEPDIR)/midi2xml-ags_midi_parser.Tpo -c -o midi2xml-ags_midi_parser.o `test -f 'src/ags/audio/midi/ags_midi_parser.c' || echo '$(srcdir)/'`src/ags/audio/midi/ags_midi_parser.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/midi2xml-ags_midi_parser.Tpo $(DEPDIR)/midi2xml-ags_midi_parser.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/midi2ags/midi/ags_midi_parser.c' object='midi2xml-ags_midi_parser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/midi/ags_midi_parser.c' object='midi2xml-ags_midi_parser.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-ags_midi_parser.o `test -f 'src/midi2ags/midi/ags_midi_parser.c' || echo '$(srcdir)/'`src/midi2ags/midi/ags_midi_parser.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-ags_midi_parser.o `test -f 'src/ags/audio/midi/ags_midi_parser.c' || echo '$(srcdir)/'`src/ags/audio/midi/ags_midi_parser.c
 
-midi2xml-ags_midi_parser.obj: src/midi2ags/midi/ags_midi_parser.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-ags_midi_parser.obj -MD -MP -MF $(DEPDIR)/midi2xml-ags_midi_parser.Tpo -c -o midi2xml-ags_midi_parser.obj `if test -f 'src/midi2ags/midi/ags_midi_parser.c'; then $(CYGPATH_W) 'src/midi2ags/midi/ags_midi_parser.c'; else $(CYGPATH_W) '$(srcdir)/src/midi2ags/midi/ags_midi_parser.c'; fi`
+midi2xml-ags_midi_parser.obj: src/ags/audio/midi/ags_midi_parser.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-ags_midi_parser.obj -MD -MP -MF $(DEPDIR)/midi2xml-ags_midi_parser.Tpo -c -o midi2xml-ags_midi_parser.obj `if test -f 'src/ags/audio/midi/ags_midi_parser.c'; then $(CYGPATH_W) 'src/ags/audio/midi/ags_midi_parser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/midi/ags_midi_parser.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/midi2xml-ags_midi_parser.Tpo $(DEPDIR)/midi2xml-ags_midi_parser.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/midi2ags/midi/ags_midi_parser.c' object='midi2xml-ags_midi_parser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/midi/ags_midi_parser.c' object='midi2xml-ags_midi_parser.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-ags_midi_parser.obj `if test -f 'src/midi2ags/midi/ags_midi_parser.c'; then $(CYGPATH_W) 'src/midi2ags/midi/ags_midi_parser.c'; else $(CYGPATH_W) '$(srcdir)/src/midi2ags/midi/ags_midi_parser.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-ags_midi_parser.obj `if test -f 'src/ags/audio/midi/ags_midi_parser.c'; then $(CYGPATH_W) 'src/ags/audio/midi/ags_midi_parser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/midi/ags_midi_parser.c'; fi`
 
 midi2xml-ags_marshal.o: src/midi2ags/object/ags_marshal.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-ags_marshal.o -MD -MP -MF $(DEPDIR)/midi2xml-ags_marshal.Tpo -c -o midi2xml-ags_marshal.o `test -f 'src/midi2ags/object/ags_marshal.c' || echo '$(srcdir)/'`src/midi2ags/object/ags_marshal.c

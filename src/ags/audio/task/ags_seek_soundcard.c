@@ -25,8 +25,6 @@
 
 #include <ags/audio/ags_audio.h>
 
-#include <ags/main.h>
-
 void ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard);
 void ags_seek_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_seek_soundcard_init(AgsSeekSoundcard *seek_soundcard);

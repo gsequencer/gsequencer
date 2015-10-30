@@ -50,6 +50,7 @@ struct _AgsMessageInterface
 		 gdouble velocity);
   void (*key_off)(AgsMessage *message,
 		  gchar *note,
+		  guint audio_channel,
 		  gdouble velocity);
   void (*key_pressure)(AgsMessage *message,
 		       gchar *note,

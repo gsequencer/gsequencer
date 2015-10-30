@@ -25,8 +25,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/main.h>
-
 #include <ags/server/ags_server.h>
 
 void ags_registry_class_init(AgsRegistryClass *registry);

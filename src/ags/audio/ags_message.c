@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_message.h>
 
+#include <ags/object/ags_marshal.h>
+
 void ags_message_class_init(AgsMessageInterface *interface);
 
 GType
@@ -54,7 +56,7 @@ ags_message_class_init(AgsMessageInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, key_on),
 	       NULL, NULL,
-	       g_cclosure_marshal_VOID__STRING_UINT_DOUBLE,
+	       g_cclosure_user_marshal_VOID__STRING_UINT_DOUBLE,
 	       G_TYPE_NONE, 3,
 	       G_TYPE_STRING,
 	       G_TYPE_UINT,
@@ -74,7 +76,7 @@ ags_message_class_init(AgsMessageInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, key_off),
 	       NULL, NULL,
-	       g_cclosure_marshal_VOID__STRING_UINT_DOUBLE,
+	       g_cclosure_user_marshal_VOID__STRING_UINT_DOUBLE,
 	       G_TYPE_NONE, 3,
 	       G_TYPE_STRING,
 	       G_TYPE_UINT,
@@ -94,7 +96,7 @@ ags_message_class_init(AgsMessageInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, key_pressure),
 	       NULL, NULL,
-	       g_cclosure_marshal_VOID__STRING_UINT_DOUBLE,
+	       g_cclosure_user_marshal_VOID__STRING_UINT_DOUBLE,
 	       G_TYPE_NONE, 3,
 	       G_TYPE_STRING,
 	       G_TYPE_UINT,
@@ -115,7 +117,7 @@ ags_message_class_init(AgsMessageInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, change_parameter),
 	       NULL, NULL,
-	       g_cclosure_marshal_VOID__STRING_UINT_STRING_DOUBLE,
+	       g_cclosure_user_marshal_VOID__STRING_UINT_STRING_DOUBLE,
 	       G_TYPE_NONE, 4,
 	       G_TYPE_STRING,
 	       G_TYPE_UINT,
@@ -136,7 +138,7 @@ ags_message_class_init(AgsMessageInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, change_mode),
 	       NULL, NULL,
-	       g_cclosure_marshal_VOID__UINT_UINT_BOOLEAN,
+	       g_cclosure_user_marshal_VOID__UINT_UINT_BOOLEAN,
 	       G_TYPE_NONE, 3,
 	       G_TYPE_UINT, G_TYPE_UINT,
 	       G_TYPE_BOOLEAN);
@@ -154,7 +156,7 @@ ags_message_class_init(AgsMessageInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsMessageInterface, pitch_bend),
 	       NULL, NULL,
-	       g_cclosure_marshal_VOID__DOUBLE_DOUBLE,
+	       g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
 	       G_TYPE_NONE, 2,
 	       G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 
@@ -212,7 +214,7 @@ ags_message_key_on(AgsMessage *message,
 
   g_return_if_fail(AGS_IS_MESSAGE(message));
   message_interface = AGS_MESSAGE_GET_INTERFACE(message);
-  g_return_if_fail(message_interface->key_ond);
+  g_return_if_fail(message_interface->key_on);
   message_interface->key_on(message,
 			    note,
 			    audio_channel,
@@ -329,7 +331,7 @@ ags_message_change_mode(AgsMessage *message,
   message_interface = AGS_MESSAGE_GET_INTERFACE(message);
   g_return_if_fail(message_interface->change_mode);
   message_interface->change_mode(message,
-				 note,
+				 audio_channel,
 				 mode,
 				 enabled);
 }
@@ -353,7 +355,7 @@ ags_message_pitch_bend(AgsMessage *message,
 
   g_return_if_fail(AGS_IS_MESSAGE(message));
   message_interface = AGS_MESSAGE_GET_INTERFACE(message);
-  g_return_if_fail(message_interface->);
+  g_return_if_fail(message_interface->pitch_bend);
   message_interface->pitch_bend(message,
 				pitch,
 				transmitter);

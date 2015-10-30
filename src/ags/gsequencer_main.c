@@ -16,7 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <ags/main.h>
+
+#include <ags/gsequencer_main.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>

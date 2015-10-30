@@ -33,7 +33,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <sys/sequencer.h>
+#include <alsa/rawmidi.h>
 #include <errno.h>
 
 #include <string.h>
@@ -103,9 +103,6 @@ gdouble ags_midiin_get_bpm(AgsSequencer *sequencer);
 void ags_midiin_set_delay_factor(AgsSequencer *sequencer,
 				 gdouble delay_factor);
 gdouble ags_midiin_get_delay_factor(AgsSequencer *sequencer);
-
-gdouble ags_midiin_get_delay(AgsSequencer *sequencer);
-guint ags_midiin_get_attack(AgsSequencer *sequencer);
 
 void* ags_midiin_get_buffer(AgsSequencer *sequencer);
 void* ags_midiin_get_next_buffer(AgsSequencer *sequencer);
@@ -367,9 +364,6 @@ ags_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->set_delay_factor = ags_midiin_set_delay_factor;
   sequencer->get_delay_factor = ags_midiin_get_delay_factor;
   
-  sequencer->get_delay = ags_midiin_get_delay;
-  sequencer->get_attack = ags_midiin_get_attack;
-
   sequencer->get_buffer = ags_midiin_get_buffer;
   sequencer->get_next_buffer = ags_midiin_get_next_buffer;
 
@@ -403,13 +397,12 @@ ags_midiin_init(AgsMidiin *midiin)
   midiin->buffer_size[2] = 0;
   midiin->buffer_size[3] = 0;
 
-  ags_midiin_realloc_buffer(midiin);
-  
   /* bpm */
   midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
 
-  /* delay */
+  /* delay and delay factor */
   midiin->delay = AGS_SEQUENCER_DEFAULT_DELAY;
+  midiin->delay_factor = AGS_SEQUENCER_DEFAULT_DELAY_FACTOR;
     
   /* counters */
   midiin->note_offset = 0;
@@ -514,8 +507,6 @@ ags_midiin_set_property(GObject *gobject,
       bpm = g_value_get_double(value);
 
       midiin->bpm = bpm;
-
-      ags_midiin_adjust_delay_and_attack(midiin);
     }
     break;
   case PROP_DELAY_FACTOR:
@@ -525,8 +516,6 @@ ags_midiin_set_property(GObject *gobject,
       delay_factor = g_value_get_double(value);
 
       midiin->delay_factor = delay_factor;
-
-      ags_midiin_adjust_delay_and_attack(midiin);
     }
     break;
   default:
@@ -578,11 +567,6 @@ ags_midiin_get_property(GObject *gobject,
   case PROP_DELAY_FACTOR:
     {
       g_value_set_double(value, midiin->delay_factor);
-    }
-    break;
-  case PROP_ATTACK:
-    {
-      g_value_set_pointer(value, midiin->attack);
     }
     break;
   default:
@@ -901,7 +885,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 
   mode = SND_RAWMIDI_NONBLOCK;
   
-  if((err = snd_rawmidi_open(&handle, NULL, midiin->in.alsa->device, mode)) < 0) {
+  if((err = snd_rawmidi_open(&handle, NULL, midiin->in.alsa.device, mode)) < 0) {
     pthread_mutex_unlock(mutex);
     printf("Record midi open error: %s\n", snd_strerror(err));
     g_set_error(error,
@@ -924,8 +908,8 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 }
 
 void
-ags_midiin_alsa_play(AgsSequencer *sequencer,
-		     GError **error)
+ags_midiin_alsa_record(AgsSequencer *sequencer,
+		       GError **error)
 {
   AgsMidiin *midiin;
 
@@ -1172,8 +1156,6 @@ ags_midiin_set_bpm(AgsSequencer *sequencer,
   midiin = AGS_MIDIIN(sequencer);
 
   midiin->bpm = bpm;
-
-  ags_midiin_adjust_delay_and_attack(midiin);
 }
 
 gdouble
@@ -1187,47 +1169,23 @@ ags_midiin_get_bpm(AgsSequencer *sequencer)
 }
 
 void
-ags_midiin_set_delay(AgsSequencer *sequencer, gdouble delay)
+ags_midiin_set_delay_factor(AgsSequencer *sequencer, gdouble delay_factor)
 {
   AgsMidiin *midiin;
 
   midiin = AGS_MIDIIN(sequencer);
 
-  midiin->delay = delay;
+  midiin->delay_factor = delay_factor;
 }
 
 gdouble
-ags_midiin_get_delay(AgsSequencer *sequencer)
+ags_midiin_get_delay_factor(AgsSequencer *sequencer)
 {
   AgsMidiin *midiin;
   
   midiin = AGS_MIDIIN(sequencer);
 
-  return(midiin->delay);
-}
-
-gdouble
-ags_midiin_get_delay(AgsSequencer *sequencer)
-{
-  AgsMidiin *midiin;
-  guint index;
-  
-  midiin = AGS_MIDIIN(sequencer);
-  index = midiin->tic_counter;
-  
-  return(midiin->delay[index]);
-}
-
-guint
-ags_midiin_get_attack(AgsSequencer *sequencer)
-{
-  AgsMidiin *midiin;
-  guint index;
-  
-  midiin = AGS_MIDIIN(sequencer);
-  index = midiin->tic_counter;
-  
-  return(midiin->attack[index]);
+  return(midiin->delay_factor);
 }
 
 void*

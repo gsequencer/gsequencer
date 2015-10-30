@@ -22,8 +22,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/main.h>
-
 #include <string.h>
 #include <math.h>
 #include <time.h>

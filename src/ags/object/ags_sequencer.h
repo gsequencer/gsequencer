@@ -68,13 +68,13 @@ struct _AgsSequencerInterface
 
   void (*set_device)(AgsSequencer *sequencer,
 		     gchar *card_id);
-i  gchar* (*get_device)(AgsSequencer *sequencer);
+  gchar* (*get_device)(AgsSequencer *sequencer);
 
   void (*list_cards)(AgsSequencer *sequencer,
 		     GList **card_id, GList **card_name);
 
   gboolean (*is_starting)(AgsSequencer *sequencer);
-  gboolean (*is_running)(AgsSequencer *sequencer);
+  gboolean (*is_playing)(AgsSequencer *sequencer);
   gboolean (*is_recording)(AgsSequencer *sequencer);
 
   void (*play_init)(AgsSequencer *sequencer,
@@ -100,9 +100,9 @@ i  gchar* (*get_device)(AgsSequencer *sequencer);
 		  gdouble bpm);
   gdouble (*get_bpm)(AgsSequencer *sequencer);
 
-  void (*set_delay)(AgsSequencer *sequencer,
-		    gdouble delay);
-  gdouble (*get_delay)(AgsSequencer *sequencer);
+  void (*set_delay_factor)(AgsSequencer *sequencer,
+			   gdouble delay_factor);
+  gdouble (*get_delay_factor)(AgsSequencer *sequencer);
 
   void (*set_note_offset)(AgsSequencer *sequencer,
 			  guint note_offset);
@@ -157,9 +157,9 @@ void ags_sequencer_set_bpm(AgsSequencer *sequencer,
 			   gdouble bpm);
 gdouble ags_sequencer_get_bpm(AgsSequencer *sequencer);
 
-void ags_sequencer_set_delay(AgsSequencer *sequencer,
-			     gdouble delay);
-gdouble ags_sequencer_get_delay(AgsSequencer *sequencer);
+void ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
+				    gdouble delay_factor);
+gdouble ags_sequencer_get_delay_factor(AgsSequencer *sequencer);
 
 void ags_sequencer_set_note_offset(AgsSequencer *sequencer,
 				   guint note_offset);

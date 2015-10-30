@@ -77,8 +77,9 @@ struct _AgsMidiin
   guint buffer_size[4];
 
   double bpm; // beats per minute
-  
+
   gdouble delay;
+  gdouble delay_factor;
   guint latency;
   
   gdouble tact_counter;
