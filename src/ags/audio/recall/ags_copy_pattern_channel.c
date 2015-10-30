@@ -177,15 +177,18 @@ ags_copy_pattern_channel_set_property(GObject *gobject,
 
       pattern = (AgsPort *) g_value_get_object(value);
 
-      if(copy_pattern_channel->pattern == pattern)
+      if(copy_pattern_channel->pattern == pattern){
 	return;
+      }
 
-      if(copy_pattern_channel->pattern != NULL)
+      if(copy_pattern_channel->pattern != NULL){
 	g_object_unref(G_OBJECT(copy_pattern_channel->pattern));
+      }
       
-      if(pattern != NULL)
+      if(pattern != NULL){
 	g_object_ref(G_OBJECT(pattern));
-
+      }
+      
       copy_pattern_channel->pattern = pattern;
     }
     break;
