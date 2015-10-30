@@ -27,12 +27,16 @@
 #include <ags/object/ags_concurrent_tree.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/server/ags_server.h>
 #include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_registry.h>
 
 #include <ags/file/ags_file_link.h>
+
+#include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
@@ -45,14 +49,30 @@
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_channel_run_dummy.h>
+#include <ags/audio/ags_recall_recycling_dummy.h>
+#include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_ladspa_run.h>
+#include <ags/audio/ags_recall_lv2.h>
+#include <ags/audio/ags_recall_lv2_run.h>
+#include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/thread/ags_channel_thread.h>
 #include <ags/audio/thread/ags_recycling_thread.h>
 
+#include <ags/audio/task/ags_add_recall_container.h>
+#include <ags/audio/task/ags_add_recall.h>
+#include <ags/audio/task/ags_remove_recall.h>
+#include <ags/audio/task/ags_remove_recall_container.h>
+
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <stdio.h>
+
+#include <ladspa.h>
+#include <lv2.h>
 
 /**
  * SECTION:ags_channel
@@ -85,7 +105,21 @@ void ags_channel_connect(AgsConnectable *connectable);
 void ags_channel_disconnect(AgsConnectable *connectable);
 static void ags_channel_finalize(GObject *gobject);
 
+GList* ags_channel_add_ladspa_effect(AgsChannel *channel,
+				     gchar *filename,
+				     gchar *effect);
+GList* ags_channel_add_lv2_effect(AgsChannel *channel,
+				  gchar *filename,
+				  gchar *effect);
+GList* ags_channel_real_add_effect(AgsChannel *channel,
+				   gchar *filename,
+				   gchar *effect);
+void ags_channel_real_remove_effect(AgsChannel *channel,
+				    guint nth);
+
 enum{
+  ADD_EFFECT,
+  REMOVE_EFFECT,
   RECYCLING_CHANGED,
   DONE,
   LAST_SIGNAL,
@@ -186,10 +220,49 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /* AgsChannelClass */
+  channel->add_effect = ags_channel_real_add_effect;
+  channel->remove_effect = ags_channel_real_remove_effect;
+
   channel->recycling_changed = NULL;
+
   channel->done = NULL;
 
   /* signals */
+    /**
+   * AgsChannel::add-effect:
+   * @channel: the #AgsChannel to modify
+   * @effect: the effect's name
+   *
+   * The ::add-effect signal notifies about added effect.
+   */
+  channel_signals[ADD_EFFECT] =
+    g_signal_new("add-effect\0",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, add_effect),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__STRING_STRING,
+		 G_TYPE_POINTER, 2,
+		 G_TYPE_STRING,
+		 G_TYPE_STRING);
+
+  /**
+   * AgsChannel::remove-effect:
+   * @channel: the #AgsChannel to modify
+   * @nth: the nth effect
+   *
+   * The ::remove-effect signal notifies about removed effect.
+   */
+  channel_signals[REMOVE_EFFECT] =
+    g_signal_new("remove-effect\0",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, remove_effect),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
   /**
    * AgsChannel::recycling-changed:
    * @channel the object recycling changed
@@ -1561,6 +1634,575 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
   }
 
   pthread_mutex_unlock(mutex);
+}
+
+GList*
+ags_channel_add_ladspa_effect(AgsChannel *channel,
+			      gchar *filename,
+			      gchar *effect)
+{
+  AgsRecallContainer *recall_container;
+  AgsRecallChannelRunDummy *recall_channel_run_dummy;
+  AgsRecallLadspa *recall_ladspa;
+  AgsLadspaPlugin *ladspa_plugin;
+  AgsAddRecallContainer *add_recall_container;
+  AgsAddRecall *add_recall;
+  
+  GList *port;
+
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  unsigned long effect_index;
+
+  effect_index = ags_ladspa_manager_effect_index(filename,
+						 effect);
+
+  /* load plugin */
+  ags_ladspa_manager_load_file(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+
+  /* ladspa play */
+  recall_container = ags_recall_container_new();
+  ags_channel_add_recall_container(channel,
+				   recall_container);
+
+  recall_ladspa = ags_recall_ladspa_new(channel,
+					filename,
+					effect,
+					effect_index);
+  g_object_set(G_OBJECT(recall_ladspa),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       NULL);
+  AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
+  ags_channel_add_recall(channel,
+			 recall_ladspa,
+			 TRUE);
+
+  /* load */
+  ags_recall_ladspa_load(recall_ladspa);
+  port = ags_recall_ladspa_load_ports(recall_ladspa);
+  
+  
+  /* dummy */
+  recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
+							      AGS_TYPE_RECALL_RECYCLING_DUMMY,
+							      AGS_TYPE_RECALL_LADSPA_RUN);
+  AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+  g_object_set(G_OBJECT(recall_channel_run_dummy),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       "recall-channel\0", recall_ladspa,
+	       NULL);
+  ags_channel_add_recall(channel,
+			 recall_channel_run_dummy,
+			 TRUE);
+  
+  /* check if connected or running */
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+    AgsRecall *current;
+    GList *recall_id;
+    
+    ags_connectable_connect(AGS_CONNECTABLE(recall_container));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+
+    recall_id = channel->recall_id;
+    
+    while(recall_id != NULL){
+      if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
+	current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+
+	/* set appropriate flag */
+	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
+	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
+	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	}
+
+	/* append to AgsAudio */
+	channel->play = g_list_append(channel->play, current);
+
+	/* connect */
+	ags_connectable_connect(AGS_CONNECTABLE(current));
+
+	/* notify run */
+	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	/* resolve */
+	ags_recall_resolve_dependencies(current);
+
+	/* init */
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+      
+	current->flags &= (~AGS_RECALL_HIDE);
+	ags_recall_run_init_pre(current);
+	current->flags &= (~AGS_RECALL_REMOVE);
+      
+	ags_recall_run_init_inter(current);
+	ags_recall_run_init_post(current);
+      }
+      
+      /* iterate */
+      recall_id = recall_id->next;
+    }
+  }
+
+  /* ladspa recall */
+  recall_container = ags_recall_container_new();
+  ags_channel_add_recall_container(channel,
+				   recall_container);
+  
+  recall_ladspa = ags_recall_ladspa_new(channel,
+					filename,
+					effect,
+					effect_index);
+  g_object_set(G_OBJECT(recall_ladspa),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       NULL);
+  ags_channel_add_recall(channel,
+			 recall_ladspa,
+			 FALSE);
+  
+  AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
+  ags_recall_ladspa_load(recall_ladspa);
+
+  if(port != NULL){
+    port = g_list_concat(port,
+			 ags_recall_ladspa_load_ports(recall_ladspa));
+  }
+  
+  /* dummy */
+  recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
+							      AGS_TYPE_RECALL_RECYCLING_DUMMY,
+							      AGS_TYPE_RECALL_LADSPA_RUN);
+  AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+  g_object_set(G_OBJECT(recall_channel_run_dummy),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       "recall-channel\0", recall_ladspa,
+	       NULL);
+  ags_channel_add_recall(channel,
+			 recall_channel_run_dummy,
+			 FALSE);  
+  
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+    AgsRecall *current;
+    GList *recall_id;
+
+    ags_connectable_connect(AGS_CONNECTABLE(recall_container));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+
+    recall_id = channel->recall_id;
+    
+    while(recall_id != NULL){
+      if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL){
+	current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+
+	/* set appropriate flag */
+	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
+	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
+	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	}
+
+	/* append to AgsAudio */
+	channel->recall = g_list_append(channel->recall, current);
+
+	/* connect */
+	ags_connectable_connect(AGS_CONNECTABLE(current));
+
+	/* notify run */
+	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	/* resolve */
+	ags_recall_resolve_dependencies(current);
+
+	/* init */
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+      
+	current->flags &= (~AGS_RECALL_HIDE);
+	ags_recall_run_init_pre(current);
+	current->flags &= (~AGS_RECALL_REMOVE);
+      
+	ags_recall_run_init_inter(current);
+	ags_recall_run_init_post(current);
+      }
+      
+      /* iterate */
+      recall_id = recall_id->next;
+    }
+  }
+
+  return(port);
+}
+
+GList*
+ags_channel_add_lv2_effect(AgsChannel *channel,
+			   gchar *filename,
+			   gchar *effect)
+{
+  AgsRecallContainer *recall_container;
+  AgsRecallChannelRunDummy *recall_channel_run_dummy;
+  AgsRecallLv2 *recall_lv2;
+  AgsAddRecallContainer *add_recall_container;
+  AgsAddRecall *add_recall;
+  
+  AgsLv2Plugin *lv2_plugin;
+
+  GList *uri_node;
+  GList *port;
+
+  gchar *uri;
+  gchar *str;
+  
+  void *plugin_so;
+  LV2_Descriptor_Function lv2_descriptor;
+  LV2_Descriptor *plugin_descriptor;
+  uint32_t effect_index;
+
+  /* find plugin */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  
+  uri = effect;
+  effect_index = ags_lv2_manager_uri_index(filename,
+					   uri);
+  
+  /* lv2 play */
+  recall_container = ags_recall_container_new();
+  ags_channel_add_recall_container(channel,
+				   recall_container);
+
+  recall_lv2 = ags_recall_lv2_new(channel,
+				  lv2_plugin->turtle,
+				  filename,
+				  uri,
+				  effect_index);
+  g_object_set(G_OBJECT(recall_lv2),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       NULL);
+  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
+  ags_channel_add_recall(channel,
+			 recall_lv2,
+			 TRUE);
+
+  /* load */
+  ags_recall_lv2_load(recall_lv2);
+  port = ags_recall_lv2_load_ports(recall_lv2);
+    
+  /* dummy */
+  recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
+							      AGS_TYPE_RECALL_RECYCLING_DUMMY,
+							      AGS_TYPE_RECALL_LV2_RUN);
+  AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+  g_object_set(G_OBJECT(recall_channel_run_dummy),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       "recall-channel\0", recall_lv2,
+	       NULL);
+  ags_channel_add_recall(channel,
+			 recall_channel_run_dummy,
+			 TRUE);
+  
+  /* check if connected or running */
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+    AgsRecall *current;
+    GList *recall_id;
+    
+    ags_connectable_connect(AGS_CONNECTABLE(recall_container));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+
+    recall_id = channel->recall_id;
+    
+    while(recall_id != NULL){
+      if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
+	current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+
+	/* set appropriate flag */
+	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
+	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
+	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	}
+
+	/* append to AgsAudio */
+	channel->play = g_list_append(channel->play, current);
+
+	/* connect */
+	ags_connectable_connect(AGS_CONNECTABLE(current));
+
+	/* notify run */
+	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	/* resolve */
+	ags_recall_resolve_dependencies(current);
+
+	/* init */
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+      
+	current->flags &= (~AGS_RECALL_HIDE);
+	ags_recall_run_init_pre(current);
+	current->flags &= (~AGS_RECALL_REMOVE);
+      
+	ags_recall_run_init_inter(current);
+	ags_recall_run_init_post(current);
+      }
+      
+      /* iterate */
+      recall_id = recall_id->next;
+    }
+  }
+
+  /* lv2 recall */
+  recall_container = ags_recall_container_new();
+  ags_channel_add_recall_container(channel,
+				   recall_container);
+  
+  recall_lv2 = ags_recall_lv2_new(channel,
+				  lv2_plugin->turtle,
+				  filename,
+				  uri,
+				  effect_index);
+  g_object_set(G_OBJECT(recall_lv2),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       NULL);
+  ags_channel_add_recall(channel,
+			 recall_lv2,
+			 FALSE);
+  
+  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
+  ags_recall_lv2_load(recall_lv2);
+
+  if(port != NULL){
+    port = g_list_concat(port,
+			 ags_recall_lv2_load_ports(recall_lv2));
+  }
+  
+  /* dummy */
+  recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
+							      AGS_TYPE_RECALL_RECYCLING_DUMMY,
+							      AGS_TYPE_RECALL_LV2_RUN);
+  AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+  g_object_set(G_OBJECT(recall_channel_run_dummy),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       "recall-channel\0", recall_lv2,
+	       NULL);
+  ags_channel_add_recall(channel,
+			 recall_channel_run_dummy,
+			 FALSE);  
+  
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+    AgsRecall *current;
+    GList *recall_id;
+
+    ags_connectable_connect(AGS_CONNECTABLE(recall_container));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+
+    recall_id = channel->recall_id;
+    
+    while(recall_id != NULL){
+      if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL){
+	current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+
+	/* set appropriate flag */
+	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
+	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
+	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	}
+
+	/* append to AgsAudio */
+	channel->recall = g_list_append(channel->recall, current);
+
+	/* connect */
+	ags_connectable_connect(AGS_CONNECTABLE(current));
+
+	/* notify run */
+	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	/* resolve */
+	ags_recall_resolve_dependencies(current);
+
+	/* init */
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+      
+	current->flags &= (~AGS_RECALL_HIDE);
+	ags_recall_run_init_pre(current);
+	current->flags &= (~AGS_RECALL_REMOVE);
+      
+	ags_recall_run_init_inter(current);
+	ags_recall_run_init_post(current);
+      }
+      
+      /* iterate */
+      recall_id = recall_id->next;
+    }
+  }
+
+  return(port);
+}
+
+GList*
+ags_channel_real_add_effect(AgsChannel *channel,
+			    gchar *filename,
+			    gchar *effect)
+{
+  AgsLadspaPlugin *ladspa_plugin;
+  AgsLv2Plugin *lv2_plugin;
+  
+  GList *port;
+
+  /* load plugin */
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  port = NULL;
+  
+  if(ladspa_plugin != NULL){
+    port = ags_channel_add_ladspa_effect(channel,
+					 filename,
+					 effect);
+  }else{
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+    
+    if(lv2_plugin != NULL){
+      port = ags_channel_add_lv2_effect(channel,
+					filename,
+					effect);
+    }
+  }
+  
+  return(port);
+}
+
+GList*
+ags_channel_add_effect(AgsChannel *channel,
+		       gchar *filename,
+		       gchar *effect)
+{
+  GList *port;
+
+  //FIXME:JK: make it thread-safe
+
+  g_return_val_if_fail(AGS_IS_CHANNEL(channel), NULL);
+
+  g_object_ref((GObject *) channel);
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[ADD_EFFECT], 0,
+		filename,
+		effect,
+		&port);
+  g_object_unref((GObject *) channel);
+
+  return(port);
+}
+
+void
+ags_channel_real_remove_effect(AgsChannel *channel,
+			       guint nth)
+{
+  AgsRemoveRecallContainer *remove_recall_container;
+  AgsRemoveRecall *remove_recall;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
+  GList *play_ladspa, *recall_ladspa;
+  GList *task;
+
+  application_context = ags_soundcard_get_application_context(AGS_AUDIO(channel->audio)->soundcard);
+  main_loop = application_context->main_loop;
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  play_ladspa = ags_recall_template_find_type(channel->play,
+					      AGS_TYPE_RECALL_LADSPA);
+  
+  recall_ladspa = ags_recall_template_find_type(channel->recall,
+						AGS_TYPE_RECALL_LADSPA);
+  
+  task = NULL;
+
+  /* play context */
+  remove_recall = ags_remove_recall_new(channel,
+					g_list_nth(play_ladspa,
+						   nth)->data,
+					TRUE,
+					TRUE);
+  task = g_list_prepend(task,
+			remove_recall);
+
+  remove_recall = ags_remove_recall_new(channel,
+					ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(play_ladspa,
+													    nth)->data)->container)->recall_channel_run)->data,
+					TRUE,
+					TRUE);
+  task = g_list_prepend(task,
+			remove_recall);
+
+  remove_recall_container = ags_remove_recall_container_new(channel->audio,
+							    AGS_RECALL(g_list_nth(play_ladspa,
+										  nth)->data)->container);
+  task = g_list_prepend(task,
+			remove_recall_container);
+
+  /* recall context */
+  remove_recall = ags_remove_recall_new(channel,
+					g_list_nth(recall_ladspa,
+						   nth)->data,
+					FALSE,
+					TRUE);
+  task = g_list_prepend(task,
+			remove_recall);
+
+  remove_recall = ags_remove_recall_new(channel,
+					ags_recall_find_template(AGS_RECALL_CONTAINER(AGS_RECALL(g_list_nth(recall_ladspa,
+													    nth)->data)->container)->recall_channel_run)->data,
+					FALSE,
+					TRUE);
+  task = g_list_prepend(task,
+			remove_recall);
+
+  remove_recall_container = ags_remove_recall_container_new(channel->audio,
+							    AGS_RECALL(g_list_nth(recall_ladspa,
+										  nth)->data)->container);
+  task = g_list_prepend(task,
+			remove_recall_container);
+
+  /* launch task */
+  ags_task_thread_append_tasks(task_thread,
+			       task);
+}
+
+void
+ags_channel_remove_effect(AgsChannel *channel,
+			  guint nth)
+{
+  //FIXME:JK: make it thread-safe
+  
+  g_return_if_fail(AGS_IS_CHANNEL(channel));
+
+  g_object_ref((GObject *) channel);
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[REMOVE_EFFECT], 0,
+		nth);
+  g_object_unref((GObject *) channel);
 }
 
 /**
