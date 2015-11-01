@@ -1,20 +1,19 @@
-/* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2013 Joël Krähemann
  *
- * This file is part of GSequencer.
- *
- * GSequencer is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * GSequencer is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
 #include <ags/X/ags_line_member_editor.h>
@@ -23,8 +22,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
-#include <ags/thread/ags_mutex_manager.h>
-
+#include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_ladspa.h>
 
 #include <ags/X/ags_machine.h>
@@ -150,7 +148,7 @@ ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor)
 		     FALSE, FALSE,
 		     0);
 
-  line_member_editor->ladspa_browser = (GtkWidget *) ags_ladspa_browser_new(line_member_editor);
+  line_member_editor->plugin_browser = ags_plugin_browser_new(line_member_editor);
 }
 
 void
@@ -166,10 +164,10 @@ ags_line_member_editor_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(line_member_editor->remove), "clicked\0",
 		   G_CALLBACK(ags_line_member_editor_remove_callback), line_member_editor);
 
-  ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->ladspa_browser));
+  ags_connectable_connect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
 
-  g_signal_connect(G_OBJECT(line_member_editor->ladspa_browser), "response\0",
-		   G_CALLBACK(ags_line_member_editor_ladspa_browser_response_callback), line_member_editor);
+  g_signal_connect(G_OBJECT(line_member_editor->plugin_browser), "response\0",
+		   G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback), line_member_editor);
 }
 
 void
@@ -207,45 +205,36 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   GtkHBox *hbox;
   GtkCheckButton *check_button;
   GtkLabel *label;
-
-  AgsMutexManager *mutex_manager;
-
-  GList *recall_ladspa;
+  GList *recall;
   gchar *filename, *effect;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
 
   line_member_editor = AGS_LINE_MEMBER_EDITOR(applicable);
 
-  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(line_member_editor,
 								AGS_TYPE_MACHINE_EDITOR);
-  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
+  line_editor = (AgsLineEditor *) gtk_widget_get_ancestor(line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
-  mutex_manager = ags_mutex_manager_get_instance();
+  recall = line_editor->channel->recall;
 
-  /* lookup channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) line_editor->channel);
-  
-  pthread_mutex_unlock(application_mutex);
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* reset */
-  pthread_mutex_lock(channel_mutex);
-
-  recall_ladspa = line_editor->channel->recall;
-
-  while((recall_ladspa = ags_recall_template_find_type(recall_ladspa,
-						       AGS_TYPE_RECALL_LADSPA)) != NULL){
-    g_object_get(G_OBJECT(recall_ladspa->data),
+  while((recall = ags_recall_template_find_all_type(recall,
+						    AGS_TYPE_RECALL_LADSPA,
+						    AGS_TYPE_RECALL_LV2,
+						    G_TYPE_NONE)) != NULL){
+    g_object_get(G_OBJECT(recall->data),
 		 "filename\0", &filename,
-		 "effect\0", &effect,
 		 NULL);
 
+    if(AGS_IS_RECALL_LADSPA(recall->data)){
+      g_object_get(G_OBJECT(recall->data),
+		   "effect\0", &effect,
+		   NULL);
+    }else if(AGS_IS_RECALL_LV2(recall->data)){
+      g_object_get(G_OBJECT(recall->data),
+		   "uri\0", &effect,
+		   NULL);
+    }
+    
     hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
 		       GTK_WIDGET(hbox),
@@ -267,10 +256,8 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 		       0);
     gtk_widget_show_all((GtkWidget *) hbox);
 
-    recall_ladspa = recall_ladspa->next;
+    recall = recall->next;
   }
-
-  pthread_mutex_unlock(channel_mutex);
 }
 
 /**

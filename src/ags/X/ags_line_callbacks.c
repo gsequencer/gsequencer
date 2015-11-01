@@ -135,6 +135,26 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 }
 
 void
+ags_line_add_effect_callback(AgsChannel *channel,
+			     gchar *filename,
+			     gchar *effect,
+			     AgsLine *line)
+{
+  ags_line_add_effect(line,
+		      filename,
+		      effect);
+}
+
+void
+ags_line_remove_effect_callback(AgsChannel *channel,
+				guint nth,
+				AgsLine *line)
+{
+  ags_line_remove_effect(line,
+			 nth);
+}
+
+void
 ags_line_volume_callback(GtkRange *range,
 			 AgsLine *line)
 {

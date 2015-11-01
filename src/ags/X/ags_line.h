@@ -35,8 +35,8 @@
 #define AGS_IS_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LINE))
 #define AGS_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LINE, AgsLineClass))
 
-#define AGS_LINE_DEFAULT_VERSION "0.4.2\0"
-#define AGS_LINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_LINE_DEFAULT_VERSION "0.7.0\0"
+#define AGS_LINE_DEFAULT_BUILD_ID "CEST 31-10-2015 19:49\0"
 
 typedef struct _AgsLine AgsLine;
 typedef struct _AgsLineClass AgsLineClass;
@@ -60,7 +60,9 @@ struct _AgsLine
   gchar *name;
 
   AgsChannel *channel;
-
+  gulong add_effect_handler;
+  gulong remove_effect_handler;
+  
   GtkWidget *pad;
 
   GtkLabel *label;
@@ -77,6 +79,12 @@ struct _AgsLineClass
 
   void (*group_changed)(AgsLine *line);
 
+  GList* (*add_effect)(AgsLine *line,
+		       gchar *filename,
+		       gchar *effect);
+  void (*remove_effect)(AgsLine *line,
+			guint nth);
+  
   void (*map_recall)(AgsLine *line,
 		     guint output_pad_start);
   GList* (*find_port)(AgsLine *line);
@@ -87,6 +95,12 @@ GType ags_line_get_type(void);
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 
 void ags_line_group_changed(AgsLine *line);
+
+GList* ags_line_add_effect(AgsLine *line,
+			   gchar *filename,
+			   gchar *effect);
+void ags_line_remove_effect(AgsLine *line,
+			    guint nth);
 
 GList* ags_line_find_next_grouped(GList *line);
 
