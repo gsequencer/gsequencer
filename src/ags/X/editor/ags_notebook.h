@@ -44,6 +44,7 @@ typedef enum{
   AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL    = 1 <<  2,
   AGS_NOTEBOOK_SHOW_PAD              = 1 <<  3,
   AGS_NOTEBOOK_SHOW_LINE             = 1 <<  4,
+  AGS_NOTEBOOK_SHOW_SCROLL_BUTTONS   = 1 <<  5,
 }AgsNotebookFlags;
 
 typedef enum{
@@ -57,7 +58,11 @@ struct _AgsNotebook
   GtkVBox vbox;
 
   guint flags;
-
+  
+  GtkScrolledWindow *scrolled_window;
+  GtkButton *scroll_prev;
+  GtkButton *scroll_next;
+  
   GtkHBox *hbox;
 
   GList *tabs;
@@ -73,8 +78,10 @@ struct _AgsNotebookTab
 {
   guint flags;
 
-  GtkToggleButton *toggle;
   GObject *notation;
+  GObject *automation;
+  
+  GtkToggleButton *toggle;
 };
 
 GType ags_notebook_get_type(void);

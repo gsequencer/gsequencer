@@ -102,21 +102,24 @@ void
 ags_menu_bar_init(AgsMenuBar *menu_bar)
 {
   GtkImageMenuItem *item;
-
+  GtkAccelGroup *accel_group;
+  
+  accel_group = gtk_accel_group_new();
+  
   /* File */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_FILE, NULL);
+  item = (GtkImageMenuItem *) gtk_menu_item_new_with_mnemonic("_File\0");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
   menu_bar->file = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->file);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE_AS, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE_AS, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
@@ -128,23 +131,23 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_EDIT, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_EDIT, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
   /* Edit */
   menu_bar->edit = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->edit);
 
-  //  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_UNDO, NULL);
+  //  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_UNDO, accel_group);
   //  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
 
-  //  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REDO, NULL);
+  //  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REDO, accel_group);
   //  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ADD, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ADD, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
   menu_bar->add = (GtkMenu *) gtk_menu_new();
@@ -174,17 +177,17 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
   /* Help */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
   menu_bar->help = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->help);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->help, (GtkWidget*) item);
 }
 
@@ -320,7 +323,8 @@ ags_menu_bar_new()
 {
   AgsMenuBar *menu_bar;
 
-  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR, NULL);
+  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR,
+					 NULL);
 
   return(menu_bar);
 }
