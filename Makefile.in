@@ -241,6 +241,7 @@ am__objects_9 = $(am__objects_1) libags_audio_la-ags_midi_builder.lo \
 	libags_audio_la-ags_midi_file_writer.lo
 am__objects_10 = $(am__objects_1) libags_audio_la-ags_add_audio.lo \
 	libags_audio_la-ags_add_audio_signal.lo \
+	libags_audio_la-ags_add_effect.lo \
 	libags_audio_la-ags_add_line_member.lo \
 	libags_audio_la-ags_add_note.lo \
 	libags_audio_la-ags_add_point_to_selection.lo \
@@ -945,13 +946,13 @@ libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_
 
 # application gsequencer
 gsequencer_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
-gsequencer_LDFLAGS = -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) -lm -lrt -pthread
+gsequencer_LDFLAGS = -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) 
 gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # static gsequencer
 gsequencer_static_SOURCES = $(gsequencer_c_sources)
 gsequencer_static_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS)
-gsequencer_static_LDFLAGS = -static
+gsequencer_static_LDFLAGS = -static -ldl
 gsequencer_static_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # libags all files
@@ -1448,6 +1449,7 @@ libags_audio_task_h_sources = \
 	$(deprecated_libags_audio_task_h_sources) \
 	src/ags/audio/task/ags_add_audio.h \
 	src/ags/audio/task/ags_add_audio_signal.h \
+	src/ags/audio/task/ags_add_effect.h \
 	src/ags/audio/task/ags_add_line_member.h \
 	src/ags/audio/task/ags_add_note.h \
 	src/ags/audio/task/ags_add_point_to_selection.h \
@@ -1499,6 +1501,7 @@ libags_audio_task_c_sources = \
 	$(deprecated_libags_audio_task_c_sources) \
 	src/ags/audio/task/ags_add_audio.c \
 	src/ags/audio/task/ags_add_audio_signal.c \
+	src/ags/audio/task/ags_add_effect.c \
 	src/ags/audio/task/ags_add_line_member.c \
 	src/ags/audio/task/ags_add_note.c \
 	src/ags/audio/task/ags_add_point_to_selection.c \
@@ -2136,6 +2139,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_acceleration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_audio_signal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_effect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_line_member.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_note.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_add_point_to_selection.Plo@am__quote@
@@ -3198,6 +3202,13 @@ libags_audio_la-ags_add_audio_signal.lo: src/ags/audio/task/ags_add_audio_signal
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/task/ags_add_audio_signal.c' object='libags_audio_la-ags_add_audio_signal.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_add_audio_signal.lo `test -f 'src/ags/audio/task/ags_add_audio_signal.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_audio_signal.c
+
+libags_audio_la-ags_add_effect.lo: src/ags/audio/task/ags_add_effect.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_add_effect.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_add_effect.Tpo -c -o libags_audio_la-ags_add_effect.lo `test -f 'src/ags/audio/task/ags_add_effect.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_effect.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_add_effect.Tpo $(DEPDIR)/libags_audio_la-ags_add_effect.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/task/ags_add_effect.c' object='libags_audio_la-ags_add_effect.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_add_effect.lo `test -f 'src/ags/audio/task/ags_add_effect.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_effect.c
 
 libags_audio_la-ags_add_line_member.lo: src/ags/audio/task/ags_add_line_member.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_add_line_member.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_add_line_member.Tpo -c -o libags_audio_la-ags_add_line_member.lo `test -f 'src/ags/audio/task/ags_add_line_member.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_add_line_member.c

@@ -1653,14 +1653,14 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
-  unsigned long effect_index;
-
-  effect_index = ags_ladspa_manager_effect_index(filename,
-						 effect);
+  long effect_index;
 
   /* load plugin */
   ags_ladspa_manager_load_file(filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+
+  effect_index = ags_ladspa_manager_effect_index(filename,
+						 effect);
 
   /* ladspa play */
   recall_container = ags_recall_container_new();
@@ -1672,7 +1672,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 					effect,
 					effect_index);
   g_object_set(G_OBJECT(recall_ladspa),
-	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "soundcard\0", channel->soundcard,
 	       "recall-container\0", recall_container,
 	       NULL);
   AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -1691,7 +1691,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LADSPA_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "soundcard\0", channel->soundcard,
 	       "recall-container\0", recall_container,
 	       "recall-channel\0", recall_ladspa,
 	       NULL);

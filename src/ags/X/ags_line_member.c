@@ -707,6 +707,11 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
     port = line_member->port;
 
+    if(port == NULL){
+      g_warning("ags_line_member_change_port() - no port available");
+      return;
+    }
+
     if(!port->port_value_is_pointer){
       if(port->port_value_type == G_TYPE_BOOLEAN){
 	g_value_init(&value,
