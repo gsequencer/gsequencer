@@ -234,6 +234,9 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) automation_editor->machine_selector, "changed\0",
 		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
 
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->output_notebook));
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->input_notebook));
+  
   /* */
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->machine_selector));

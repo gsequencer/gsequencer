@@ -34,6 +34,9 @@
 
 #define AGS_NOTEBOOK_TAB(x) ((AgsNotebookTab *)(x))
 
+#define AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT (32)
+#define AGS_NOTEBOOK_TAB_DEFAULT_WIDTH (100)
+
 typedef struct _AgsNotebook AgsNotebook;
 typedef struct _AgsNotebookClass AgsNotebookClass;
 typedef struct _AgsNotebookTab AgsNotebookTab;
@@ -62,6 +65,9 @@ struct _AgsNotebook
   GtkScrolledWindow *scrolled_window;
   GtkButton *scroll_prev;
   GtkButton *scroll_next;
+
+  gulong scroll_prev_handler;
+  gulong scroll_next_handler;
   
   GtkHBox *hbox;
 
@@ -79,7 +85,6 @@ struct _AgsNotebookTab
   guint flags;
 
   GObject *notation;
-  GObject *automation;
   
   GtkToggleButton *toggle;
 };

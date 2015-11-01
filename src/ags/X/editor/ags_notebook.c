@@ -98,9 +98,8 @@ void
 ags_notebook_init(AgsNotebook *notebook)
 {
   GtkHBox *hbox;
-
   GtkArrow *arrow;
-  
+    
   notebook->flags = 0;
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -137,7 +136,7 @@ ags_notebook_init(AgsNotebook *notebook)
 				 GTK_POLICY_NEVER,
 				 GTK_POLICY_NEVER);
   gtk_widget_set_size_request(notebook->scrolled_window,
-			      -1, 32);
+			      -1, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(notebook->scrolled_window),
 		     TRUE, TRUE,
@@ -160,6 +159,13 @@ ags_notebook_connect(AgsConnectable *connectable)
   notebook = AGS_NOTEBOOK(connectable);
 
   editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) notebook, AGS_TYPE_EDITOR);
+
+  g_message("connect\0");
+  
+  notebook->scroll_prev_handler = g_signal_connect(G_OBJECT(notebook->scroll_prev), "clicked\0",
+						   G_CALLBACK(ags_notebook_scroll_prev_callback), notebook);
+  notebook->scroll_next_handler = g_signal_connect(G_OBJECT(notebook->scroll_next), "clicked\0",
+						   G_CALLBACK(ags_notebook_scroll_next_callback), notebook);
 }
 
 void
@@ -177,8 +183,9 @@ ags_notebook_tab_alloc()
 
   notebook_tab->flags = 0;
 
-  notebook_tab->toggle = NULL;
   notebook_tab->notation = NULL;
+  
+  notebook_tab->toggle = NULL;
 
   return(notebook_tab);
 }
@@ -208,8 +215,14 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 {
   AgsNotebookTab *tab;
   GtkViewport *viewport;
-  gint tab_index;
 
+  GtkAdjustment *adjustment;
+  
+  gint tab_index;
+  gint length;
+  guint width;
+  
+  /* new tab */
   tab = ags_notebook_tab_alloc();
 
   notebook->tabs = g_list_prepend(notebook->tabs,
@@ -224,14 +237,12 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 	       NULL);
   gtk_toggle_button_set_active(tab->toggle, TRUE);
   gtk_widget_set_size_request(tab->toggle,
-			      100, 32);  
+			      AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);  
   gtk_box_pack_start(GTK_BOX(notebook->hbox),
 		     GTK_WIDGET(tab->toggle),
 		     FALSE, FALSE,
 		     0);
-  
-  gtk_widget_queue_draw(notebook->scrolled_window);
-  
+    
   return(tab_index);
 }
 
@@ -268,8 +279,13 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 			gint position)
 {
   AgsNotebookTab *tab;
+  
+  GtkAdjustment *adjustment;
+  
   gint length;
-
+  guint width;
+  
+  /* insert tab */
   length = g_list_length(notebook->tabs);
 
   tab = ags_notebook_tab_alloc();
@@ -284,7 +300,7 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 	       "yalign\0", 0.0,
 	       NULL);
   gtk_widget_set_size_request(tab->toggle,
-			      100, 32);
+			      AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);
   gtk_box_pack_start(GTK_BOX(notebook->hbox),
 		     GTK_WIDGET(tab->toggle),
 		     FALSE, FALSE,
@@ -292,8 +308,6 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
   gtk_box_reorder_child(GTK_BOX(notebook->hbox),
 			GTK_WIDGET(tab->toggle),
 			position);
-  
-  gtk_widget_queue_draw(notebook->scrolled_window);
 }
 
 void

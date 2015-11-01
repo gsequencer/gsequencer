@@ -18,3 +18,50 @@
  */
 
 #include <ags/X/editor/ags_notebook_callbacks.h>
+
+void
+ags_notebook_scroll_prev_callback(GtkWidget *button,
+				  AgsNotebook *notebook)
+{
+  GtkAdjustment *adjustment;
+  
+  gint length;
+  
+  adjustment = gtk_scrolled_window_get_hadjustment(notebook->scrolled_window);
+
+  length = g_list_length(notebook->tabs);
+
+  if(adjustment->step_increment < adjustment->upper){
+    if(adjustment->value - adjustment->step_increment > 0){
+      gtk_adjustment_set_value(adjustment,
+			       adjustment->value - adjustment->step_increment);
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       0.0);
+    }
+  }
+}
+
+void
+ags_notebook_scroll_next_callback(GtkWidget *button,
+				  AgsNotebook *notebook)
+{
+  GtkAdjustment *adjustment;
+
+  gint length;
+  
+  adjustment = gtk_scrolled_window_get_hadjustment(notebook->scrolled_window);
+
+  length = g_list_length(notebook->tabs);
+  
+  if(adjustment->step_increment < adjustment->upper){
+    if(adjustment->value + adjustment->step_increment < adjustment->upper){
+      gtk_adjustment_set_value(adjustment,
+			       adjustment->value + adjustment->step_increment);
+    }else{
+      gtk_adjustment_set_value(adjustment,
+			       adjustment->upper);
+    }
+  }
+}
+

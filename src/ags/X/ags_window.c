@@ -344,7 +344,7 @@ ags_window_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(window->editor));
   ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
 
-    ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
+  ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
 
   ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
 }
