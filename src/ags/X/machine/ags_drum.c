@@ -254,6 +254,8 @@ ags_drum_init(AgsDrum *drum)
 
   ags_machine_popup_add_edit_options(drum,
 				     (AGS_MACHINE_POPUP_COPY_PATTERN));
+  ags_machine_popup_add_connection_options(drum,
+					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
   
   g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
 			 G_CALLBACK(ags_drum_set_audio_channels), drum);

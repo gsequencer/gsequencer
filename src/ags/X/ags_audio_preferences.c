@@ -385,9 +385,12 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   ags_soundcard_list_cards(soundcard,
 			   &card_id, &card_name);    
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "alsa-handle\0");
-  g_message("%s\0", str);
+			     AGS_CONFIG_SOUNDCARD,
+			     "alsa-handle\0");
+#ifdef AGS_DEBUG
+  g_message("configured soundcard: %s\0", str);
+#endif
+  
   nth = 0;
   found_card = FALSE;
 

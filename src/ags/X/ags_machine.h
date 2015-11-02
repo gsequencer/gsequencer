@@ -66,8 +66,11 @@ typedef enum{
 typedef enum{
   AGS_MACHINE_POPUP_COPY_PATTERN          = 1,
   AGS_MACHINE_POPUP_PASTE_PATTERN         = 1 <<  1,
-  AGS_MACHINE_POPUP_CONNECTION            = 1 <<  2,
 }AgsMachineEditOptions;
+
+typedef enum{
+  AGS_MACHINE_POPUP_MIDI_DIALOG           = 1,
+}AgsMachineConnectionOptions;
 
 struct _AgsMachine
 {

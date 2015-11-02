@@ -485,6 +485,7 @@ ags_audio_set_property(GObject *gobject,
 
       audio->sequencer = sequencer;
     }
+    break;
   case PROP_MIDI_FILE:
     {
       GObject *midi_file;

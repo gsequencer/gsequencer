@@ -22,6 +22,7 @@
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
+#include <ags/object/ags_sequencer.h>
 
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -133,7 +134,7 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 0.3
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("machine\0",
 				   "assigned machine\0",
@@ -165,6 +166,9 @@ ags_midi_dialog_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 {
+  GtkTable *table;
+  GtkLabel *label;
+  
   gtk_window_set_title((GtkDialog *) midi_dialog, g_strdup("MIDI connection\0"));
 
   midi_dialog->flags = 0;
@@ -174,17 +178,103 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   midi_dialog->machine = NULL;
 
-  //TODO:JK: implement me
+  /* connection */
+  table = (GtkTable *) gtk_table_new(6, 2,
+				     FALSE);
+  gtk_box_pack_start(GTK_DIALOG(midi_dialog)->vbox,
+		     GTK_WIDGET(table),
+		     FALSE, FALSE,
+		     0);
+
+  midi_dialog->playback = gtk_check_button_new_with_label("playback\0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->playback),
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  midi_dialog->record = gtk_check_button_new_with_label("record\0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->record),
+		   0, 1,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  /* audio start */
+  label = (GtkLabel *) gtk_label_new("audio mapping\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  midi_dialog->audio_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									      65535.0,
+									      1.0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->audio_start),
+		   1, 2,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* midi start */
+  label = (GtkLabel *) gtk_label_new("midi mapping\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+    gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  midi_dialog->midi_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									      128.0,
+									      1.0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->midi_start),
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* midi start */
+  label = (GtkLabel *) gtk_label_new("midi device\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   5, 6,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  midi_dialog->midi_device = (GtkSpinButton *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->midi_device),
+		   1, 2,
+		   5, 6,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
   
   /* GtkButton's in GtkDialog->action_area  */
   midi_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) midi_dialog->dialog.action_area, (GtkWidget *) midi_dialog->apply, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area, (GtkWidget *) midi_dialog->apply, FALSE, FALSE, 0);
   
   midi_dialog->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) midi_dialog->dialog.action_area, (GtkWidget *) midi_dialog->ok, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area, (GtkWidget *) midi_dialog->ok, FALSE, FALSE, 0);
   
   midi_dialog->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) midi_dialog->dialog.action_area, (GtkWidget *) midi_dialog->cancel, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area, (GtkWidget *) midi_dialog->cancel, FALSE, FALSE, 0);
 }
 
 void
@@ -201,7 +291,14 @@ ags_midi_dialog_set_property(GObject *gobject,
   case PROP_MACHINE:
     {
       AgsMachine *machine;
-      
+
+      GObject *sequencer;
+      GtkListStore *model;
+      AgsAudio *audio;
+
+      GtkTreeIter iter;
+      GList *card_id, *card_name;
+
       machine = (AgsMachine *) g_value_get_object(value);
 
       if(machine == midi_dialog->machine){
@@ -217,6 +314,35 @@ ags_midi_dialog_set_property(GObject *gobject,
       }
 
       midi_dialog->machine = machine;
+
+      /* set cards */
+      audio = midi_dialog->machine->audio;
+  
+      sequencer = audio->sequencer;
+
+      if(sequencer != NULL){
+	ags_sequencer_list_cards(AGS_SEQUENCER(sequencer),
+				 &card_id, &card_name);
+
+	model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+  
+	while(card_id != NULL){
+	  gtk_list_store_append(model, &iter);
+	  gtk_list_store_set(model, &iter,
+			     0, card_id->data,
+			     1, card_name->data,
+			     -1);
+    
+	  card_id = card_id->next;
+	  card_name = card_name->next;
+	}
+
+	gtk_combo_box_set_model(midi_dialog->midi_device,
+				GTK_TREE_MODEL(model));
+  
+	g_list_free(card_id);
+	g_list_free(card_name);
+      }
     }
     break;
   default:
@@ -298,7 +424,7 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
   AgsMidiDialog *midi_dialog;
 
   midi_dialog = AGS_MIDI_DIALOG(applicable);
-
+  
   //TODO:JK: implement me
 }
 
