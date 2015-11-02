@@ -130,21 +130,18 @@ ags_notebook_init(AgsNotebook *notebook)
 		     FALSE, FALSE,
 		     0);
   
-  notebook->scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
-									    NULL);
-  gtk_scrolled_window_set_policy(notebook->scrolled_window,
-				 GTK_POLICY_NEVER,
-				 GTK_POLICY_NEVER);
-  gtk_widget_set_size_request(notebook->scrolled_window,
-			      -1, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);
+  notebook->viewport = (GtkScrolledWindow *) gtk_viewport_new(NULL,
+							      NULL);
+  gtk_widget_set_size_request(notebook->viewport,
+			      6 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);
   gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(notebook->scrolled_window),
-		     TRUE, TRUE,
+		     GTK_WIDGET(notebook->viewport),
+		     FALSE, FALSE,
 		     0);
   
   notebook->hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_scrolled_window_add_with_viewport(notebook->scrolled_window,
-					GTK_WIDGET(notebook->hbox));
+  gtk_container_add(notebook->viewport,
+		    GTK_WIDGET(notebook->hbox));
   
   notebook->tabs = NULL;
   notebook->child = NULL;
@@ -242,7 +239,11 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 		     GTK_WIDGET(tab->toggle),
 		     FALSE, FALSE,
 		     0);
-    
+
+  gdk_window_invalidate_rect(gtk_viewport_get_view_window(notebook->viewport),
+			     &(GTK_WIDGET(notebook->hbox)->allocation),
+			     TRUE);
+
   return(tab_index);
 }
 
@@ -308,6 +309,10 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
   gtk_box_reorder_child(GTK_BOX(notebook->hbox),
 			GTK_WIDGET(tab->toggle),
 			position);
+
+  gdk_window_invalidate_rect(gtk_viewport_get_view_window(notebook->viewport),
+			     &(GTK_WIDGET(notebook->hbox)->allocation),
+			     TRUE);
 }
 
 void

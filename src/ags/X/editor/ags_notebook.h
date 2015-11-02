@@ -62,7 +62,7 @@ struct _AgsNotebook
 
   guint flags;
   
-  GtkScrolledWindow *scrolled_window;
+  GtkViewport *viewport;
   GtkButton *scroll_prev;
   GtkButton *scroll_next;
 
