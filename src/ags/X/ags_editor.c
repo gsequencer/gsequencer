@@ -222,6 +222,16 @@ ags_editor_init(AgsEditor *editor)
 					  "homogeneous\0", FALSE,
 					  "spacing\0", 0,
 					  NULL);
+  editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
+				      AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
+  gtk_label_set_label(editor->machine_selector->label,
+		      "notation\0");
+  
+  editor->machine_selector->popup = ags_machine_selector_popup_new(editor->machine_selector);
+  g_object_set(editor->machine_selector->menu_button,
+	       "menu\0", editor->machine_selector->popup,
+	       NULL);
+  
   gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) editor->machine_selector);
 
   editor->selected_machine = NULL;
