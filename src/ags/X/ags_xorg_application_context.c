@@ -266,7 +266,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /* AgsServer */
   xorg_application_context->server = ags_server_new(xorg_application_context);
 
-  /* AgsApplicationContextLoop */
+  /* AgsAudioLoop */
   AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop = 
     audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
 						  xorg_application_context);
@@ -279,6 +279,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* AgsTaskThread */
   AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
+  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+		       g_list_append(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)),
+				     AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread));
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
 				TRUE, TRUE);
@@ -301,6 +304,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* AgsGuiThread */
   xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
+  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+		       g_list_append(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)),
+				     xorg_application_context->gui_thread));
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				xorg_application_context->gui_thread,
 				TRUE, TRUE);

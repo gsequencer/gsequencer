@@ -129,13 +129,15 @@ ags_notebook_init(AgsNotebook *notebook)
 		     GTK_WIDGET(notebook->scroll_next),
 		     FALSE, FALSE,
 		     0);
-  
+
+  //TODO:JK: improve the code
   notebook->viewport = (GtkScrolledWindow *) gtk_viewport_new(NULL,
 							      NULL);
   gtk_widget_set_size_request(notebook->viewport,
 			      6 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(notebook->viewport),
+		     //		     TRUE, TRUE,
 		     FALSE, FALSE,
 		     0);
   
