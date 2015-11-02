@@ -23,12 +23,14 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 #include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_sequencer.h>
 
 #include <ags/file/ags_file.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
 
@@ -390,6 +392,8 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsDrum *drum;
 
+  GObject *sequencer;
+  
   AgsAddAudio *add_audio;
 
   AgsMutexManager *mutex_manager;
@@ -401,9 +405,15 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   pthread_mutex_t *application_mutex;
     
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
-
   application_context = window->application_context;
 
+  drum = ags_drum_new(G_OBJECT(window->soundcard));
+
+  sequencer = ags_midiin_new(application_context);
+  g_object_set(AGS_MACHINE(drum)->audio,
+	       "sequencer\0", sequencer,
+	       NULL);
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
@@ -417,9 +427,7 @@ ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   /* get task thread */
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
-
-  drum = ags_drum_new(G_OBJECT(window->soundcard));
-
+  
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(drum)->audio);
   ags_task_thread_append_task(task_thread,
@@ -562,6 +570,8 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   AgsWindow *window;
   AgsFFPlayer *ffplayer;
 
+  GObject *sequencer;
+
   AgsAddAudio *add_audio;
 
   AgsMutexManager *mutex_manager;
@@ -573,10 +583,14 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   pthread_mutex_t *application_mutex;
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
-
+  application_context = window->application_context;
+  
   ffplayer = ags_ffplayer_new(G_OBJECT(window->soundcard));
 
-  application_context = window->application_context;
+  sequencer = ags_midiin_new(application_context);
+  g_object_set(AGS_MACHINE(ffplayer)->audio,
+	       "sequencer\0", sequencer,
+	       NULL);
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);    

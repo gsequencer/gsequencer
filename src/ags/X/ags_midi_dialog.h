@@ -54,6 +54,9 @@ struct _AgsMidiDialog
   
   AgsMachine *machine;
 
+  GtkCheckButton *playback;
+  GtkCheckButton *record;
+  
   GtkSpinButton *audio_start;
   GtkSpinButton *midi_start;
   
@@ -71,6 +74,6 @@ struct _AgsMidiDialogClass
 
 GType ags_midi_dialog_get_type(void);
 
-AgsMidiDialog* ags_midi_dialog_new();
+AgsMidiDialog* ags_midi_dialog_new(AgsMachine *machine);
 
 #endif /*__AGS_MIDI_DIALOG_H__*/

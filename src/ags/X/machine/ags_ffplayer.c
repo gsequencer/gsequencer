@@ -232,6 +232,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_MACHINE(ffplayer)->input_line_type = G_TYPE_NONE;
   AGS_MACHINE(ffplayer)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(ffplayer)->output_line_type = G_TYPE_NONE;
+
+  ags_machine_popup_add_connection_options(ffplayer,
+					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
   
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);

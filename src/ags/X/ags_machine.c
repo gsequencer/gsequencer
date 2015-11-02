@@ -1687,25 +1687,16 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
 {
   GtkMenu *edit;
   GtkMenuItem *item;
-  GList *list, *list_start;
-
-  list =
-    list_start = gtk_container_get_children(machine->popup);
-  list = g_list_last(list);
   
-  if((edit = gtk_menu_item_get_submenu(list->data)) == NULL){
-    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("edit\0"));
-    gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
-    gtk_widget_show(item);
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("edit\0"));
+  gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
+  gtk_widget_show(item);
 
-    edit = (GtkMenu *) gtk_menu_new();
-    gtk_menu_item_set_submenu(item,
-			      edit);
+  edit = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    edit);
 
-    gtk_widget_show(edit);
-  }
-
-  g_list_free(list_start);
+  gtk_widget_show(edit);
 
   if((AGS_MACHINE_POPUP_COPY_PATTERN & edit_options) != 0){
     item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("copy pattern\0"));
@@ -1728,3 +1719,38 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
   }
 }
 
+/**
+ * ags_machine_popup_add_connection_options:
+ * @machine: the assigned machine.
+ * @connection_options: the options to set
+ *
+ * Add options to connection submenu
+ *
+ * Since: 0.4.2
+ */
+void
+ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options)
+{
+  GtkMenu *connection;
+  GtkMenuItem *item;
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("connection\0"));
+  gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
+  gtk_widget_show(item);
+
+  connection = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    connection);
+
+  gtk_widget_show(connection);
+
+  if((AGS_MACHINE_POPUP_MIDI_DIALOG & connection_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("MIDI dialog\0"));
+    gtk_menu_shell_append((GtkMenuShell *) connection, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate\0",
+		     G_CALLBACK(ags_machine_popup_midi_dialog_callback), (gpointer) machine);
+
+    gtk_widget_show(item);
+  }
+}
