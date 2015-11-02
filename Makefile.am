@@ -840,6 +840,8 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_machine.h \
 	src/ags/X/ags_menu_bar_callbacks.h \
 	src/ags/X/ags_menu_bar.h \
+	src/ags/X/ags_midi_dialog_callbacks.h \
+	src/ags/X/ags_midi_dialog.h \
 	src/ags/X/ags_navigation_callbacks.h \
 	src/ags/X/ags_navigation.h \
 	src/ags/X/ags_pad_callbacks.h \
@@ -916,6 +918,8 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_machine_editor_callbacks.c \
 	src/ags/X/ags_menu_bar.c \
 	src/ags/X/ags_menu_bar_callbacks.c \
+	src/ags/X/ags_midi_dialog.c \
+	src/ags/X/ags_midi_dialog_callbacks.c \
 	src/ags/X/ags_navigation.c \
 	src/ags/X/ags_navigation_callbacks.c \
 	src/ags/X/ags_pad.c \
