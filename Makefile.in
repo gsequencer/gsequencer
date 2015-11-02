@@ -457,6 +457,8 @@ am__objects_17 = $(am__objects_1) \
 	libgsequencer_la-ags_machine_editor_callbacks.lo \
 	libgsequencer_la-ags_menu_bar.lo \
 	libgsequencer_la-ags_menu_bar_callbacks.lo \
+	libgsequencer_la-ags_midi_dialog.lo \
+	libgsequencer_la-ags_midi_dialog_callbacks.lo \
 	libgsequencer_la-ags_navigation.lo \
 	libgsequencer_la-ags_navigation_callbacks.lo \
 	libgsequencer_la-ags_pad.lo \
@@ -1643,6 +1645,8 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_machine.h \
 	src/ags/X/ags_menu_bar_callbacks.h \
 	src/ags/X/ags_menu_bar.h \
+	src/ags/X/ags_midi_dialog_callbacks.h \
+	src/ags/X/ags_midi_dialog.h \
 	src/ags/X/ags_navigation_callbacks.h \
 	src/ags/X/ags_navigation.h \
 	src/ags/X/ags_pad_callbacks.h \
@@ -1718,6 +1722,8 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_machine_editor_callbacks.c \
 	src/ags/X/ags_menu_bar.c \
 	src/ags/X/ags_menu_bar_callbacks.c \
+	src/ags/X/ags_midi_dialog.c \
+	src/ags/X/ags_midi_dialog_callbacks.c \
 	src/ags/X/ags_navigation.c \
 	src/ags/X/ags_navigation_callbacks.c \
 	src/ags/X/ags_pad.c \
@@ -2462,6 +2468,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_menu_bar_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_meter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_meter_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_midi_dialog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_midi_dialog_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_mixer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_mixer_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_mixer_input_line.Plo@am__quote@
@@ -4518,6 +4526,20 @@ libgsequencer_la-ags_menu_bar_callbacks.lo: src/ags/X/ags_menu_bar_callbacks.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_menu_bar_callbacks.c' object='libgsequencer_la-ags_menu_bar_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_menu_bar_callbacks.lo `test -f 'src/ags/X/ags_menu_bar_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_menu_bar_callbacks.c
+
+libgsequencer_la-ags_midi_dialog.lo: src/ags/X/ags_midi_dialog.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_midi_dialog.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_midi_dialog.Tpo -c -o libgsequencer_la-ags_midi_dialog.lo `test -f 'src/ags/X/ags_midi_dialog.c' || echo '$(srcdir)/'`src/ags/X/ags_midi_dialog.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_midi_dialog.Tpo $(DEPDIR)/libgsequencer_la-ags_midi_dialog.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_midi_dialog.c' object='libgsequencer_la-ags_midi_dialog.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_midi_dialog.lo `test -f 'src/ags/X/ags_midi_dialog.c' || echo '$(srcdir)/'`src/ags/X/ags_midi_dialog.c
+
+libgsequencer_la-ags_midi_dialog_callbacks.lo: src/ags/X/ags_midi_dialog_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_midi_dialog_callbacks.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_midi_dialog_callbacks.Tpo -c -o libgsequencer_la-ags_midi_dialog_callbacks.lo `test -f 'src/ags/X/ags_midi_dialog_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_midi_dialog_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_midi_dialog_callbacks.Tpo $(DEPDIR)/libgsequencer_la-ags_midi_dialog_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_midi_dialog_callbacks.c' object='libgsequencer_la-ags_midi_dialog_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_midi_dialog_callbacks.lo `test -f 'src/ags/X/ags_midi_dialog_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_midi_dialog_callbacks.c
 
 libgsequencer_la-ags_navigation.lo: src/ags/X/ags_navigation.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_navigation.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_navigation.Tpo -c -o libgsequencer_la-ags_navigation.lo `test -f 'src/ags/X/ags_navigation.c' || echo '$(srcdir)/'`src/ags/X/ags_navigation.c

@@ -17,44 +17,38 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/ags_machine_editor_callbacks.h>
+#include <ags/X/ags_midi_dialog_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
 int
-ags_machine_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsMachineEditor *machine_editor)
+ags_midi_dialog_apply_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
-  /* empty */
-}
-
-int
-ags_machine_editor_apply_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
-{
-  ags_applicable_apply(AGS_APPLICABLE(machine_editor));
+  ags_applicable_apply(AGS_APPLICABLE(midi_dialog));
 
   //TODO:JK: remove me
-  //  ags_applicable_reset(AGS_APPLICABLE(machine_editor));
+  //  ags_applicable_reset(AGS_APPLICABLE(midi_dialog));
 
   return(0);
 }
 
 int
-ags_machine_editor_ok_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
+ags_midi_dialog_ok_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
-  //  ags_applicable_set_update(AGS_APPLICABLE(machine_editor), FALSE);
-  ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor));
-  ags_applicable_apply(AGS_APPLICABLE(machine_editor));
+  //  ags_applicable_set_update(AGS_APPLICABLE(midi_dialog), FALSE);
+  ags_connectable_disconnect(AGS_CONNECTABLE(midi_dialog));
+  ags_applicable_apply(AGS_APPLICABLE(midi_dialog));
 
-  gtk_widget_destroy((GtkWidget *) machine_editor);
+  gtk_widget_destroy((GtkWidget *) midi_dialog);
 
   return(0);
 }
 
 int
-ags_machine_editor_cancel_callback(GtkWidget *widget, AgsMachineEditor *machine_editor)
+ags_midi_dialog_cancel_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
-  gtk_widget_destroy((GtkWidget *) machine_editor);
+  gtk_widget_destroy((GtkWidget *) midi_dialog);
 
   return(0);
 }
