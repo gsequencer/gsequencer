@@ -42,19 +42,19 @@ typedef struct _AgsDevoutClass AgsDevoutClass;
 typedef enum
 {
   AGS_DEVOUT_BUFFER0                        = 1,
-  AGS_DEVOUT_BUFFER1                        = 1 << 1,
-  AGS_DEVOUT_BUFFER2                        = 1 << 2,
-  AGS_DEVOUT_BUFFER3                        = 1 << 3,
+  AGS_DEVOUT_BUFFER1                        = 1 <<  1,
+  AGS_DEVOUT_BUFFER2                        = 1 <<  2,
+  AGS_DEVOUT_BUFFER3                        = 1 <<  3,
 
-  AGS_DEVOUT_ATTACK_FIRST                   = 1 << 4,
+  AGS_DEVOUT_ATTACK_FIRST                   = 1 <<  4,
 
-  AGS_DEVOUT_PLAY                           = 1 << 5,
+  AGS_DEVOUT_PLAY                           = 1 <<  5,
 
-  AGS_DEVOUT_OSS                            = 1 << 6,
-  AGS_DEVOUT_ALSA                           = 1 << 7,
+  AGS_DEVOUT_OSS                            = 1 <<  6,
+  AGS_DEVOUT_ALSA                           = 1 <<  7,
 
-  AGS_DEVOUT_SHUTDOWN                       = 1 << 8,
-  AGS_DEVOUT_START_PLAY                     = 1 << 9,
+  AGS_DEVOUT_SHUTDOWN                       = 1 <<  8,
+  AGS_DEVOUT_START_PLAY                     = 1 <<  9,
 
   AGS_DEVOUT_NONBLOCKING                    = 1 << 10,
   AGS_DEVOUT_INITIALIZED                    = 1 << 11,
