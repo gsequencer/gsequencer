@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pthread.h>
+#include <jack/jack.h>
 
 #define AGS_TYPE_JACK_SERVER                (ags_jack_server_get_type())
 #define AGS_JACK_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_SERVER, AgsJackServer))
@@ -37,10 +37,16 @@ typedef struct _AgsJackServerClass AgsJackServerClass;
 typedef struct _AgsJackClient AgsJackClient;
 typedef struct _AgsJackPort AgsJackPort;
 
+typedef enum{
+  AGS_JACK_SERVER_CONNECTED       = 1,
+}AgsJackServerFlags;
+
 struct _AgsJackServer
 {
   GObject object;
 
+  guint flags;
+  
   gchar *url;
   
   GList *client;
@@ -66,6 +72,7 @@ struct _AgsJackPort
 {
   gchar *uuid;
   gchar *name;
+  gchar *uri;
   
   jack_port_t *port;
   
@@ -83,11 +90,6 @@ void ags_jack_port_free(AgsJackPort *jack_port);
 AgsJackClient* ags_jack_server_find_default_client(AgsJackServer *jack_server);
 
 GObject* ags_jack_server_register_default_soundcard(AgsJackServer *jack_server);
-GObject* ags_jack_server_register_soundcard(AgsJackServer *jack_server,
-					    gboolean is_output);
-
-GObject* ags_jack_server_register_sequencer(AgsJackServer *jack_server,
-					    gboolean is_output);
 
 AgsJackServer* ags_jack_server_new();
 

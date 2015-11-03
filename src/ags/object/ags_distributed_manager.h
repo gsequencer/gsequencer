@@ -44,17 +44,17 @@ struct _AgsDistributedManagerInterface
 		    gchar **ports);
   gchar** (*get_ports)(AgsDistributedManager *distributed_manager);
 
-  GObject* (*get_soundcard)(AgsDistributedManager *distributed_manager,
-			    gchar *uri);
   void (*set_soundcard)(AgsDistributedManager *distributed_manager,
 			gchar *uri,
 			GObject *soundcard);
-
-  GObject* (*get_sequencer)(AgsDistributedManager *distributed_manager,
+  GObject* (*get_soundcard)(AgsDistributedManager *distributed_manager,
 			    gchar *uri);
+
   void (*set_sequencer)(AgsDistributedManager *distributed_manager,
 			gchar *uri,
 			GObject *sequencer);
+  GObject* (*get_sequencer)(AgsDistributedManager *distributed_manager,
+			    gchar *uri);
 
   GObject* (*register_soundcard)(AgsDistributedManager *distributed_manager);
   void (*unregister_soundcard)(AgsDistributedManager *distributed_manager,
