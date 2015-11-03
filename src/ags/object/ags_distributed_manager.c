@@ -235,3 +235,98 @@ ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager
 						      uri));
 }
 
+/**
+ * ags_distributed_manager_register_soundcard:
+ * @distributed_manager: The #AgsDistributedManager
+ * @is_output: if %TRUE the used as sink, else as source
+ *
+ * Fetches @soundcard of @distributed_manager.
+ *
+ * Returns: a new #AgsSoundcard
+ *
+ * Since: 0.7.0
+ */
+GObject*
+ags_distributed_manager_register_soundcard(AgsDistributedManager *distributed_manager,
+					   gboolean is_output)
+{
+  AgsDistributedManagerInterface *distributed_manager_interface;
+
+  g_return_val_if_fail(AGS_IS_DISTRIBUTED_MANAGER(distributed_manager), NULL);
+  distributed_manager_interface = AGS_DISTRIBUTED_MANAGER_GET_INTERFACE(distributed_manager);
+  g_return_val_if_fail(distributed_manager_interface->register_soundcard, NULL);
+
+  return(distributed_manager_interface->register_soundcard(distributed_manager,
+							   is_output));
+}
+
+/**
+ * ags_distributed_manager_unregister_soundcard:
+ * @distributed_manager: The #AgsDistributedManager
+ * @soundcard: the #AgsSoundcard
+ *
+ * Releases @soundcard in @distributed_manager.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_distributed_manager_unregister_soundcard(AgsDistributedManager *distributed_manager,
+					     GObject *soundcard)
+{
+  AgsDistributedManagerInterface *distributed_manager_interface;
+
+  g_return_if_fail(AGS_IS_DISTRIBUTED_MANAGER(distributed_manager));
+  distributed_manager_interface = AGS_DISTRIBUTED_MANAGER_GET_INTERFACE(distributed_manager);
+  g_return_if_fail(distributed_manager_interface->unregister_soundcard);
+  
+  distributed_manager_interface->unregister_soundcard(distributed_manager,
+						      sequencer);
+}
+
+/**
+ * ags_distributed_manager_register_sequencer:
+ * @distributed_manager: The #AgsDistributedManager
+ * @is_output: if %TRUE the used as sink, else as source
+ *
+ * Fetches @sequencer of @distributed_manager.
+ *
+ * Returns: a new #AgsSequencer
+ *
+ * Since: 0.7.0
+ */
+GObject*
+ags_distributed_manager_register_sequencer(AgsDistributedManager *distributed_manager,
+					   gboolean is_output)
+{
+  AgsDistributedManagerInterface *distributed_manager_interface;
+
+  g_return_val_if_fail(AGS_IS_DISTRIBUTED_MANAGER(distributed_manager), NULL);
+  distributed_manager_interface = AGS_DISTRIBUTED_MANAGER_GET_INTERFACE(distributed_manager);
+  g_return_val_if_fail(distributed_manager_interface->register_sequencer, NULL);
+
+  return(distributed_manager_interface->register_sequencer(distributed_manager,
+							   is_output));
+}
+
+/**
+ * ags_distributed_manager_unregister_sequencer:
+ * @distributed_manager: The #AgsDistributedManager
+ * @sequencer: the #AgsSequencer
+ *
+ * Releases @sequencer in @distributed_manager.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_distributed_manager_unregister_sequencer(AgsDistributedManager *distributed_manager,
+					     GObject *sequencer)
+{
+  AgsDistributedManagerInterface *distributed_manager_interface;
+
+  g_return_if_fail(AGS_IS_DISTRIBUTED_MANAGER(distributed_manager));
+  distributed_manager_interface = AGS_DISTRIBUTED_MANAGER_GET_INTERFACE(distributed_manager);
+  g_return_if_fail(distributed_manager_interface->unregister_sequencer);
+  
+  distributed_manager_interface->unregister_sequencer(distributed_manager,
+						      sequencer);
+}

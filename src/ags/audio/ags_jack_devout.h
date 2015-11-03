@@ -94,7 +94,8 @@ struct _AgsJackDevout
   guint note_offset;
 
   gchar *card_uri;
-
+  jack_port_t *out;
+  
   GObject *application_context;
   pthread_mutex_t *application_mutex;
   
