@@ -61,6 +61,8 @@
 
 #include <ags/X/file/ags_gui_file_xml.h>
 
+#include <ags/X/machine/ags_ffplayer_bridge.h>
+
 #include <math.h>
 
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
@@ -203,15 +205,19 @@ ags_ffplayer_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_ffplayer_init(AgsFFPlayer *ffplayer)
 {
-  AgsAudio *audio;
+  GtkVBox *vbox;
+  GtkAlignment *alignment;
   GtkTable *table;
   GtkHScrollbar *hscrollbar;
-  GtkVBox *vbox;
   GtkHBox *hbox;
+  GtkVBox *piano_vbox;
   GtkLabel *label;
+  
   PangoAttrList *attr_list;
   PangoAttribute *attr;
 
+  AgsAudio *audio;
+  
   g_signal_connect_after((GObject *) ffplayer, "parent_set\0",
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
@@ -249,9 +255,22 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->xml_type = "ags-ffplayer\0";
 
   /* create widgets */
-  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
-  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)), (GtkWidget *) table);
+  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) ffplayer)),
+		    (GtkWidget *) vbox);
 
+  alignment = (GtkAlignment *) g_object_new(GTK_TYPE_ALIGNMENT,
+					    "xalign\0", 0.0,
+					    NULL);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) alignment,
+		     FALSE, FALSE,
+		     0);
+  
+  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
+  gtk_container_add((GtkContainer *) alignment,
+		    (GtkWidget *) table);
+  
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table,
 		   GTK_WIDGET(hbox),
@@ -300,8 +319,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     0);
   ffplayer->open_dialog = NULL;
   
-  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
-  gtk_table_attach(table, (GtkWidget *) vbox,
+  piano_vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
+  gtk_table_attach(table, (GtkWidget *) piano_vbox,
 		   1, 2,
 		   0, 3,
 		   GTK_FILL, GTK_FILL,
@@ -311,7 +330,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->control_height = 40;
 
   ffplayer->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area, 16 * ffplayer->control_width, ffplayer->control_width * 8 + ffplayer->control_height);
+  gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area,
+			      16 * ffplayer->control_width,
+			      ffplayer->control_width * 8 + ffplayer->control_height);
   gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area, ffplayer_style);
   gtk_widget_set_events ((GtkWidget *) ffplayer->drawing_area,
                          GDK_EXPOSURE_MASK
@@ -319,7 +340,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
                          | GDK_BUTTON_PRESS_MASK
                          | GDK_POINTER_MOTION_MASK
                          | GDK_POINTER_MOTION_HINT_MASK);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) ffplayer->drawing_area, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) piano_vbox,
+		     (GtkWidget *) ffplayer->drawing_area,
+		     FALSE, FALSE,
+		     0);
 
   ffplayer->hadjustment = (GtkAdjustment *) gtk_adjustment_new(0.0,
 							       0.0,
@@ -329,7 +353,17 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							       (double) (16 * ffplayer->control_width));
   hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
   gtk_widget_set_style((GtkWidget *) hscrollbar, ffplayer_style);
-  gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) hscrollbar, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) piano_vbox,
+		     (GtkWidget *) hscrollbar,
+		     FALSE, FALSE,
+		     0);
+
+  /* effect bridge */
+  AGS_MACHINE(ffplayer)->bridge = ags_ffplayer_bridge_new(audio);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
+		     FALSE, FALSE,
+		     0);
 }
 
 void

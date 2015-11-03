@@ -159,6 +159,7 @@ am__objects_4 = $(am__objects_1) libags_la-ags_applicable.lo \
 	libags_la-ags_async_queue.lo libags_la-ags_config.lo \
 	libags_la-ags_connectable.lo libags_la-ags_countable.lo \
 	libags_la-ags_concurrent_tree.lo \
+	libags_la-ags_distributed_manager.lo \
 	libags_la-ags_dynamic_connectable.lo \
 	libags_la-ags_main_loop.lo libags_la-ags_marshal.lo \
 	libags_la-ags_mutable.lo libags_la-ags_packable.lo \
@@ -510,6 +511,14 @@ am__objects_21 = $(am__objects_1) libgsequencer_la-ags_cell_pattern.lo \
 	libgsequencer_la-ags_drum_output_pad_callbacks.lo \
 	libgsequencer_la-ags_ffplayer.lo \
 	libgsequencer_la-ags_ffplayer_callbacks.lo \
+	libgsequencer_la-ags_ffplayer_bridge.lo \
+	libgsequencer_la-ags_ffplayer_bridge_callbacks.lo \
+	libgsequencer_la-ags_ffplayer_bulk_input.lo \
+	libgsequencer_la-ags_ffplayer_bulk_input_callbacks.lo \
+	libgsequencer_la-ags_ffplayer_input_line.lo \
+	libgsequencer_la-ags_ffplayer_input_line_callbacks.lo \
+	libgsequencer_la-ags_ffplayer_input_pad.lo \
+	libgsequencer_la-ags_ffplayer_input_pad_callbacks.lo \
 	libgsequencer_la-ags_ladspa_bridge.lo \
 	libgsequencer_la-ags_ladspa_bridge_callbacks.lo \
 	libgsequencer_la-ags_lv2_bridge.lo \
@@ -998,6 +1007,7 @@ libags_object_h_sources = \
 	src/ags/object/ags_connectable.h \
 	src/ags/object/ags_countable.h \
 	src/ags/object/ags_concurrent_tree.h \
+	src/ags/object/ags_distributed_manager.h \
 	src/ags/object/ags_dynamic_connectable.h \
 	src/ags/object/ags_main_loop.h \
 	src/ags/object/ags_marshal.h \
@@ -1021,6 +1031,7 @@ libags_object_c_sources = \
 	src/ags/object/ags_connectable.c \
 	src/ags/object/ags_countable.c \
 	src/ags/object/ags_concurrent_tree.c \
+	src/ags/object/ags_distributed_manager.c \
 	src/ags/object/ags_dynamic_connectable.c \
 	src/ags/object/ags_main_loop.c \
 	src/ags/object/ags_marshal.c \
@@ -1821,6 +1832,14 @@ libgsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_drum_output_pad.h \
 	src/ags/X/machine/ags_ffplayer_callbacks.h \
 	src/ags/X/machine/ags_ffplayer.h \
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.h \
+	src/ags/X/machine/ags_ffplayer_bridge.h \
+	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.h \
+	src/ags/X/machine/ags_ffplayer_bulk_input.h \
+	src/ags/X/machine/ags_ffplayer_input_line_callbacks.h \
+	src/ags/X/machine/ags_ffplayer_input_line.h \
+	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
+	src/ags/X/machine/ags_ffplayer_input_pad.h \
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	src/ags/X/machine/ags_ladspa_bridge.h \
 	src/ags/X/machine/ags_lv2_bridge_callbacks.h \
@@ -1861,6 +1880,14 @@ libgsequencer_machine_c_sources = \
 	src/ags/X/machine/ags_drum_output_pad_callbacks.c \
 	src/ags/X/machine/ags_ffplayer.c \
 	src/ags/X/machine/ags_ffplayer_callbacks.c \
+	src/ags/X/machine/ags_ffplayer_bridge.c \
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.c \
+	src/ags/X/machine/ags_ffplayer_bulk_input.c \
+	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c \
+	src/ags/X/machine/ags_ffplayer_input_line.c \
+	src/ags/X/machine/ags_ffplayer_input_line_callbacks.c \
+	src/ags/X/machine/ags_ffplayer_input_pad.c \
+	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
 	src/ags/X/machine/ags_ladspa_bridge.c \
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	src/ags/X/machine/ags_lv2_bridge.c \
@@ -2336,6 +2363,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_connectable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_countable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_distributed_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_dynamic_connectable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_la-ags_file_id_ref.Plo@am__quote@
@@ -2423,7 +2451,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_export_window.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_export_window_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer_bridge.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer_bridge_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer_bulk_input.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer_bulk_input_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_file_selection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_file_selection_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_generic_preferences.Plo@am__quote@
@@ -2636,6 +2672,13 @@ libags_la-ags_concurrent_tree.lo: src/ags/object/ags_concurrent_tree.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/object/ags_concurrent_tree.c' object='libags_la-ags_concurrent_tree.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o libags_la-ags_concurrent_tree.lo `test -f 'src/ags/object/ags_concurrent_tree.c' || echo '$(srcdir)/'`src/ags/object/ags_concurrent_tree.c
+
+libags_la-ags_distributed_manager.lo: src/ags/object/ags_distributed_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT libags_la-ags_distributed_manager.lo -MD -MP -MF $(DEPDIR)/libags_la-ags_distributed_manager.Tpo -c -o libags_la-ags_distributed_manager.lo `test -f 'src/ags/object/ags_distributed_manager.c' || echo '$(srcdir)/'`src/ags/object/ags_distributed_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_la-ags_distributed_manager.Tpo $(DEPDIR)/libags_la-ags_distributed_manager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/object/ags_distributed_manager.c' object='libags_la-ags_distributed_manager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o libags_la-ags_distributed_manager.lo `test -f 'src/ags/object/ags_distributed_manager.c' || echo '$(srcdir)/'`src/ags/object/ags_distributed_manager.c
 
 libags_la-ags_dynamic_connectable.lo: src/ags/object/ags_dynamic_connectable.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT libags_la-ags_dynamic_connectable.lo -MD -MP -MF $(DEPDIR)/libags_la-ags_dynamic_connectable.Tpo -c -o libags_la-ags_dynamic_connectable.lo `test -f 'src/ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`src/ags/object/ags_dynamic_connectable.c
@@ -4890,6 +4933,62 @@ libgsequencer_la-ags_ffplayer_callbacks.lo: src/ags/X/machine/ags_ffplayer_callb
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_callbacks.c' object='libgsequencer_la-ags_ffplayer_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_ffplayer_callbacks.lo `test -f 'src/ags/X/machine/ags_ffplayer_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_callbacks.c
+
+libgsequencer_la-ags_ffplayer_bridge.lo: src/ags/X/machine/ags_ffplayer_bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ffplayer_bridge.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ffplayer_bridge.Tpo -c -o libgsequencer_la-ags_ffplayer_bridge.lo `test -f 'src/ags/X/machine/ags_ffplayer_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_ffplayer_bridge.Tpo $(DEPDIR)/libgsequencer_la-ags_ffplayer_bridge.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bridge.c' object='libgsequencer_la-ags_ffplayer_bridge.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_ffplayer_bridge.lo `test -f 'src/ags/X/machine/ags_ffplayer_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bridge.c
+
+libgsequencer_la-ags_ffplayer_bridge_callbacks.lo: src/ags/X/machine/ags_ffplayer_bridge_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ffplayer_bridge_callbacks.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ffplayer_bridge_callbacks.Tpo -c -o libgsequencer_la-ags_ffplayer_bridge_callbacks.lo `test -f 'src/ags/X/machine/ags_ffplayer_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bridge_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_ffplayer_bridge_callbacks.Tpo $(DEPDIR)/libgsequencer_la-ags_ffplayer_bridge_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bridge_callbacks.c' object='libgsequencer_la-ags_ffplayer_bridge_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_ffplayer_bridge_callbacks.lo `test -f 'src/ags/X/machine/ags_ffplayer_bridge_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bridge_callbacks.c
+
+libgsequencer_la-ags_ffplayer_bulk_input.lo: src/ags/X/machine/ags_ffplayer_bulk_input.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ffplayer_bulk_input.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ffplayer_bulk_input.Tpo -c -o libgsequencer_la-ags_ffplayer_bulk_input.lo `test -f 'src/ags/X/machine/ags_ffplayer_bulk_input.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bulk_input.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_ffplayer_bulk_input.Tpo $(DEPDIR)/libgsequencer_la-ags_ffplayer_bulk_input.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bulk_input.c' object='libgsequencer_la-ags_ffplayer_bulk_input.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_ffplayer_bulk_input.lo `test -f 'src/ags/X/machine/ags_ffplayer_bulk_input.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bulk_input.c
+
+libgsequencer_la-ags_ffplayer_bulk_input_callbacks.lo: src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ffplayer_bulk_input_callbacks.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ffplayer_bulk_input_callbacks.Tpo -c -o libgsequencer_la-ags_ffplayer_bulk_input_callbacks.lo `test -f 'src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_ffplayer_bulk_input_callbacks.Tpo $(DEPDIR)/libgsequencer_la-ags_ffplayer_bulk_input_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c' object='libgsequencer_la-ags_ffplayer_bulk_input_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_ffplayer_bulk_input_callbacks.lo `test -f 'src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c
+
+libgsequencer_la-ags_ffplayer_input_line.lo: src/ags/X/machine/ags_ffplayer_input_line.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ffplayer_input_line.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line.Tpo -c -o libgsequencer_la-ags_ffplayer_input_line.lo `test -f 'src/ags/X/machine/ags_ffplayer_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_line.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line.Tpo $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_line.c' object='libgsequencer_la-ags_ffplayer_input_line.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_ffplayer_input_line.lo `test -f 'src/ags/X/machine/ags_ffplayer_input_line.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_line.c
+
+libgsequencer_la-ags_ffplayer_input_line_callbacks.lo: src/ags/X/machine/ags_ffplayer_input_line_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ffplayer_input_line_callbacks.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line_callbacks.Tpo -c -o libgsequencer_la-ags_ffplayer_input_line_callbacks.lo `test -f 'src/ags/X/machine/ags_ffplayer_input_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_line_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line_callbacks.Tpo $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_line_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_line_callbacks.c' object='libgsequencer_la-ags_ffplayer_input_line_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_ffplayer_input_line_callbacks.lo `test -f 'src/ags/X/machine/ags_ffplayer_input_line_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_line_callbacks.c
+
+libgsequencer_la-ags_ffplayer_input_pad.lo: src/ags/X/machine/ags_ffplayer_input_pad.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ffplayer_input_pad.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad.Tpo -c -o libgsequencer_la-ags_ffplayer_input_pad.lo `test -f 'src/ags/X/machine/ags_ffplayer_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_pad.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad.Tpo $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_pad.c' object='libgsequencer_la-ags_ffplayer_input_pad.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_ffplayer_input_pad.lo `test -f 'src/ags/X/machine/ags_ffplayer_input_pad.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_pad.c
+
+libgsequencer_la-ags_ffplayer_input_pad_callbacks.lo: src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ffplayer_input_pad_callbacks.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad_callbacks.Tpo -c -o libgsequencer_la-ags_ffplayer_input_pad_callbacks.lo `test -f 'src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad_callbacks.Tpo $(DEPDIR)/libgsequencer_la-ags_ffplayer_input_pad_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c' object='libgsequencer_la-ags_ffplayer_input_pad_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_ffplayer_input_pad_callbacks.lo `test -f 'src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c
 
 libgsequencer_la-ags_ladspa_bridge.lo: src/ags/X/machine/ags_ladspa_bridge.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_ladspa_bridge.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_ladspa_bridge.Tpo -c -o libgsequencer_la-ags_ladspa_bridge.lo `test -f 'src/ags/X/machine/ags_ladspa_bridge.c' || echo '$(srcdir)/'`src/ags/X/machine/ags_ladspa_bridge.c
