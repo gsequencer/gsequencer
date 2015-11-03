@@ -45,6 +45,20 @@ ags_sound_provider_class_init(AgsSoundProviderInterface *interface)
   /* empty */
 }
 
+void
+ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
+				 GList *soundcard)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_soundcard);
+
+  sound_provider_interface->set_soundcard(sound_provider,
+					  soundcard);
+}
+
 GList*
 ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
 {
@@ -55,4 +69,30 @@ ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
   g_return_val_if_fail(sound_provider_interface->get_soundcard, NULL);
 
   return(sound_provider_interface->get_soundcard(sound_provider));
+}
+
+void
+ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
+					   GList *distributed_manager)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_distributed_manager);
+
+  sound_provider_interface->set_distributed_manager(sound_provider,
+						    distributed_manager);
+}
+
+GList*
+ags_sound_provider_get_distributed_manager(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_distributed_manager, NULL);
+
+  return(sound_provider_interface->get_distributed_manager(sound_provider));
 }

@@ -22,8 +22,6 @@
 
 #include <glib-object.h>
 
-#include <ags/object/ags_soundcard.h>
-
 #define AGS_TYPE_SOUND_PROVIDER                    (ags_sound_provider_get_type())
 #define AGS_SOUND_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUND_PROVIDER, AgsSoundProvider))
 #define AGS_SOUND_PROVIDER_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SOUND_PROVIDER, AgsSoundProviderInterface))
@@ -38,11 +36,23 @@ struct _AgsSoundProviderInterface
 {
   GTypeInterface interface;
 
+  void (*set_soundcard)(AgsSoundProvider *sound_provider,
+			GList *soundcard);
   GList* (*get_soundcard)(AgsSoundProvider *sound_provider);
+
+  void (*set_distributed_manager)(AgsSoundProvider *sound_provider,
+				 GList *distributed_manager);
+  GList* (*get_distributed_manager)(AgsSoundProvider *sound_provider);
 };
 
 GType ags_sound_provider_get_type();
 
+void ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
+				      GList *soundcard);
 GList* ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider);
+
+void ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
+					       GList *distributed_manager);
+GList* ags_sound_provider_get_distributed_manager(AgsSoundProvider *sound_provider);
 
 #endif /*__AGS_SOUND_PROVIDER_H__*/

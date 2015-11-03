@@ -179,6 +179,7 @@ libags_object_h_sources =  \
 	src/ags/object/ags_connectable.h \
 	src/ags/object/ags_countable.h \
 	src/ags/object/ags_concurrent_tree.h \
+	src/ags/object/ags_distributed_manager.h \
 	src/ags/object/ags_dynamic_connectable.h \
 	src/ags/object/ags_main_loop.h \
 	src/ags/object/ags_marshal.h \
@@ -203,6 +204,7 @@ libags_object_c_sources = \
 	src/ags/object/ags_connectable.c \
 	src/ags/object/ags_countable.c \
 	src/ags/object/ags_concurrent_tree.c \
+	src/ags/object/ags_distributed_manager.c \
 	src/ags/object/ags_dynamic_connectable.c \
 	src/ags/object/ags_main_loop.c \
 	src/ags/object/ags_marshal.c \
@@ -1020,6 +1022,14 @@ libgsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_drum_output_pad.h \
 	src/ags/X/machine/ags_ffplayer_callbacks.h \
 	src/ags/X/machine/ags_ffplayer.h \
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.h \
+	src/ags/X/machine/ags_ffplayer_bridge.h \
+	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.h \
+	src/ags/X/machine/ags_ffplayer_bulk_input.h \
+	src/ags/X/machine/ags_ffplayer_input_line_callbacks.h \
+	src/ags/X/machine/ags_ffplayer_input_line.h \
+	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
+	src/ags/X/machine/ags_ffplayer_input_pad.h \
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	src/ags/X/machine/ags_ladspa_bridge.h \
 	src/ags/X/machine/ags_lv2_bridge_callbacks.h \
@@ -1061,6 +1071,14 @@ libgsequencer_machine_c_sources = \
 	src/ags/X/machine/ags_drum_output_pad_callbacks.c \
 	src/ags/X/machine/ags_ffplayer.c \
 	src/ags/X/machine/ags_ffplayer_callbacks.c \
+	src/ags/X/machine/ags_ffplayer_bridge.c \
+	src/ags/X/machine/ags_ffplayer_bridge_callbacks.c \
+	src/ags/X/machine/ags_ffplayer_bulk_input.c \
+	src/ags/X/machine/ags_ffplayer_bulk_input_callbacks.c \
+	src/ags/X/machine/ags_ffplayer_input_line.c \
+	src/ags/X/machine/ags_ffplayer_input_line_callbacks.c \
+	src/ags/X/machine/ags_ffplayer_input_pad.c \
+	src/ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
 	src/ags/X/machine/ags_ladspa_bridge.c \
 	src/ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	src/ags/X/machine/ags_lv2_bridge.c \

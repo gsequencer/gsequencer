@@ -583,6 +583,10 @@ ags_machine_connect(AgsConnectable *connectable)
     ags_machine_find_port(machine);
   }
 
+  if(machine->bridge != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(machine->bridge));
+  }
+  
   if(machine->play != NULL){
     g_signal_connect(G_OBJECT(machine->play), "clicked\0",
 		     G_CALLBACK(ags_machine_play_callback), (gpointer) machine);
