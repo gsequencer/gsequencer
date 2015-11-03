@@ -20,6 +20,9 @@
 #include <ags/audio/ags_jack_server.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_distributed_manager.h>
+#include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_sequencer.h>
 
 #include <ags/audio/ags_jack_devout.h>
 #include <ags/audio/ags_jack_midiin.h>
@@ -56,10 +59,12 @@ void ags_jack_server_set_sequencer(AgsDistributedManager *distributed_manager,
 				   GObject *sequencer);
 GObject* ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
 				       gchar *uri);
-GObject* ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager);
+GObject* ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
+					    gboolean is_output);
 void ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
 					  GObject *soundcard);
-GObject* ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager);
+GObject* ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
+					    gboolean is_output);
 void ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
 					  GObject *sequencer);
 
@@ -327,7 +332,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   }
 
   /* the default client */
-  default_client = ags_jack_server_find_default_client(jack_server);
+  default_client = ags_jack_server_find_default_client(AGS_JACK_SERVER(distributed_manager));
 
   if(default_client == NULL){
     default_client = ags_jack_client_alloc();
@@ -338,8 +343,8 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 					      0,
 					      NULL);
     
-    jack_server->client = g_list_prepend(jack_server->client,
-					 default_client);
+    AGS_JACK_SERVER(distributed_manager)->client = g_list_prepend(AGS_JACK_SERVER(distributed_manager)->client,
+								  default_client);
   }
 
   /* register soundcard */
@@ -347,13 +352,13 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   soundcard->port = jack_port_register(default_client,
 				       g_strdup_printf("ags-soundcard-%04d\0",
 						       AGS_JACK_SERVER(distributed_manager)->n_soundcards),
-				       ACK_DEFAULT_AUDIO_TYPE,
+				       JACK_DEFAULT_AUDIO_TYPE,
 				       JackPortIsOutput,
 				       AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
   soundcard->gobject = ags_jack_devout_new(NULL);
-  AGS_JACK_DEVOUT(soundcard->gobject)->out = soundcard->port;
+  AGS_JACK_DEVOUT(soundcard->gobject)->out_port = soundcard->port;
 
-  distributed_manager->n_soundcards += 1;
+  AGS_JACK_SERVER(distributed_manager)->n_soundcards += 1;
   
   return(soundcard->gobject);
 }
@@ -378,7 +383,7 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   }
   
   /* the default client */
-  default_client = ags_jack_server_find_default_client(jack_server);
+  default_client = ags_jack_server_find_default_client(AGS_JACK_SERVER(distributed_manager));
 
   if(default_client == NULL){
     default_client = ags_jack_client_alloc();
@@ -389,22 +394,22 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 					      0,
 					      NULL);
     
-    jack_server->client = g_list_prepend(jack_server->client,
-					 default_client);
+    AGS_JACK_SERVER(distributed_manager)->client = g_list_prepend(AGS_JACK_SERVER(distributed_manager)->client,
+								  default_client);
   }
-
+  
   /* register sequencer */
   sequencer = ags_jack_port_alloc();
   sequencer->port = jack_port_register(default_client,
 				       g_strdup_printf("ags-sequencer-%04d\0",
 						       AGS_JACK_SERVER(distributed_manager)->n_sequencers),
-				       ACK_DEFAULT_AUDIO_TYPE,
+				       JACK_DEFAULT_MIDI_TYPE,
 				       JackPortIsOutput,
 				       AGS_SEQUENCER_DEFAULT_BUFFER_SIZE);
   sequencer->gobject = ags_jack_midiin_new(NULL);
-  AGS_JACK_MIDIIN(sequencer->gobject)->out = sequencer->port;
+  AGS_JACK_MIDIIN(sequencer->gobject)->in_port = sequencer->port;
 
-  distributed_manager->n_sequencers += 1;
+  AGS_JACK_SERVER(distributed_manager)->n_sequencers += 1;
   
   return(sequencer->gobject);
 }
@@ -505,11 +510,11 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   default_soundcard = ags_jack_port_alloc();
   default_soundcard->port = jack_port_register(default_client,
 					       "ags-default-soundcard\0",
-					       ACK_DEFAULT_AUDIO_TYPE,
+					       JACK_DEFAULT_AUDIO_TYPE,
 					       JackPortIsOutput,
 					       AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
   default_soundcard->gobject = ags_jack_devout_new(NULL);
-  AGS_JACK_DEVOUT(default_soundcard->gobject)->out = default_soundcard->port;
+  AGS_JACK_DEVOUT(default_soundcard->gobject)->out_port = default_soundcard->port;
 
   return(default_soundcard->gobject);
 }

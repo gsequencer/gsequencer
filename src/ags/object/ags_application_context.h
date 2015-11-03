@@ -86,6 +86,7 @@ struct _AgsApplicationContext
   GObject *task_thread;
   
   AgsFile *file;
+  GObject *history;
 };
 
 struct _AgsApplicationContextClass

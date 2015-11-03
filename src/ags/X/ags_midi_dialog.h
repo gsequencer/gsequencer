@@ -53,7 +53,7 @@ struct _AgsMidiDialog
   gchar *build_id;
   
   AgsMachine *machine;
-
+  
   GtkCheckButton *playback;
   GtkCheckButton *record;
   
@@ -62,6 +62,11 @@ struct _AgsMidiDialog
   
   GtkComboBoxText *midi_device;
 
+  GtkVBox *connections;
+
+  GtkButton *add;
+  GtkButton *remove;
+  
   GtkButton *apply;
   GtkButton *ok;
   GtkButton *cancel;
@@ -73,6 +78,8 @@ struct _AgsMidiDialogClass
 };
 
 GType ags_midi_dialog_get_type(void);
+
+void ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog);
 
 AgsMidiDialog* ags_midi_dialog_new(AgsMachine *machine);
 

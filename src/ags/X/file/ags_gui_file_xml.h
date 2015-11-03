@@ -30,6 +30,10 @@
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/widget/ags_dial.h>
+#include <ags/widget/ags_indicator.h>
+#include <ags/widget/ags_vindicator.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>

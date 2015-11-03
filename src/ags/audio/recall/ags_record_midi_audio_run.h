@@ -22,10 +22,9 @@
 
 #include <glib-object.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_midi.h>
+
+#include <ags/audio/ags_audio.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>

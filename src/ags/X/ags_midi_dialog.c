@@ -292,13 +292,6 @@ ags_midi_dialog_set_property(GObject *gobject,
     {
       AgsMachine *machine;
 
-      GObject *sequencer;
-      GtkListStore *model;
-      AgsAudio *audio;
-
-      GtkTreeIter iter;
-      GList *card_id, *card_name;
-
       machine = (AgsMachine *) g_value_get_object(value);
 
       if(machine == midi_dialog->machine){
@@ -316,33 +309,7 @@ ags_midi_dialog_set_property(GObject *gobject,
       midi_dialog->machine = machine;
 
       /* set cards */
-      audio = midi_dialog->machine->audio;
-  
-      sequencer = audio->sequencer;
-
-      if(sequencer != NULL){
-	ags_sequencer_list_cards(AGS_SEQUENCER(sequencer),
-				 &card_id, &card_name);
-
-	model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-  
-	while(card_id != NULL){
-	  gtk_list_store_append(model, &iter);
-	  gtk_list_store_set(model, &iter,
-			     0, card_id->data,
-			     1, card_name->data,
-			     -1);
-    
-	  card_id = card_id->next;
-	  card_name = card_name->next;
-	}
-
-	gtk_combo_box_set_model(midi_dialog->midi_device,
-				GTK_TREE_MODEL(model));
-  
-	g_list_free(card_id);
-	g_list_free(card_name);
-      }
+      ags_midi_dialog_load_sequencers(midi_dialog);
     }
     break;
   default:
@@ -426,6 +393,47 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
   midi_dialog = AGS_MIDI_DIALOG(applicable);
   
   //TODO:JK: implement me
+}
+
+void
+ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
+{
+  GObject *sequencer;
+  GtkListStore *model;
+  AgsAudio *audio;
+
+  GtkTreeIter iter;
+  GList *card_id, *card_name;
+
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(midi_dialog->midi_device)));
+
+  audio = midi_dialog->machine->audio;
+  
+  sequencer = audio->sequencer;
+
+  if(sequencer != NULL){
+    ags_sequencer_list_cards(AGS_SEQUENCER(sequencer),
+			     &card_id, &card_name);
+
+    model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+  
+    while(card_id != NULL){
+      gtk_list_store_append(model, &iter);
+      gtk_list_store_set(model, &iter,
+			 0, card_id->data,
+			 1, card_name->data,
+			 -1);
+    
+      card_id = card_id->next;
+      card_name = card_name->next;
+    }
+
+    gtk_combo_box_set_model(midi_dialog->midi_device,
+			    GTK_TREE_MODEL(model));
+  
+    g_list_free(card_id);
+    g_list_free(card_name);
+  }
 }
 
 /**

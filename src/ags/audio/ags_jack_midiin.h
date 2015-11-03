@@ -95,7 +95,7 @@ struct _AgsJackMidiin
   guint note_offset;
 
   gchar *card_uri;
-  jack_port_t *in;
+  jack_port_t *in_port;
   
   GObject *application_context;
   pthread_mutex_t *application_mutex;

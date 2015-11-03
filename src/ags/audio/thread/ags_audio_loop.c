@@ -652,44 +652,9 @@ ags_audio_loop_run(AgsThread *thread)
       ags_thread_stop(export_thread);
     }
   }
-
-  /* wait for task thread * /
-     pthread_mutex_lock(AGS_THREAD(audio_loop->task_thread)->start_mutex);
-
-     g_atomic_int_set(&(AGS_THREAD(audio_loop->task_thread)->start_wait),
-     TRUE);
-	
-     if(g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->start_wait)) == TRUE &&
-     g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->start_done)) == FALSE){
-     while(g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->start_wait)) == TRUE &&
-     g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->start_done)) == FALSE){
-     pthread_cond_wait(AGS_THREAD(audio_loop->task_thread)->start_cond,
-     AGS_THREAD(audio_loop->task_thread)->start_mutex);
-     }
-     }
-	
-     pthread_mutex_unlock(AGS_THREAD(audio_loop->task_thread)->start_mutex);
-
-     /* wait for gui thread * /
-     pthread_mutex_lock(AGS_THREAD(audio_loop->gui_thread)->start_mutex);
-
-     g_atomic_int_set(&(AGS_THREAD(audio_loop->gui_thread)->start_wait),
-     TRUE);
-	
-     if(g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->start_wait)) == TRUE &&
-     g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->start_done)) == FALSE){
-     while(g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->start_wait)) == TRUE &&
-     g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->start_done)) == FALSE){
-     pthread_cond_wait(AGS_THREAD(audio_loop->gui_thread)->start_cond,
-     AGS_THREAD(audio_loop->gui_thread)->start_mutex);
-     }
-     }
-	
-     pthread_mutex_unlock(AGS_THREAD(audio_loop->gui_thread)->start_mutex);
-  */
   
-  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-  pango_cairo_font_map_set_default(NULL);
+  //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  //  pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();
   //  FcFini();
 }

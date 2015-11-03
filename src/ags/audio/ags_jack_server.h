@@ -32,6 +32,9 @@
 #define AGS_IS_JACK_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_JACK_SERVER))
 #define AGS_JACK_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_SERVER, AgsJackServerClass))
 
+#define AGS_JACK_CLIENT(ptr) ((AgsJackClient *)(ptr))
+#define AGS_JACK_PORT(ptr) ((AgsJackPort *)(ptr))
+
 typedef struct _AgsJackServer AgsJackServer;
 typedef struct _AgsJackServerClass AgsJackServerClass;
 typedef struct _AgsJackClient AgsJackClient;
@@ -50,7 +53,7 @@ struct _AgsJackServer
   gchar *url;
 
   guint n_soundcards;
-  guint n_midicards;
+  guint n_sequencers;
   
   GList *client;
 };

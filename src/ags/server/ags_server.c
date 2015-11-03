@@ -168,6 +168,7 @@ ags_server_init(AgsServer *server)
   server->registry = ags_registry_new();
   server->remote_task = ags_remote_task_new();
 }
+
 void
 ags_server_set_property(GObject *gobject,
 			guint prop_id,

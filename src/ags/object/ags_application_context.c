@@ -237,7 +237,9 @@ ags_application_context_init(AgsApplicationContext *application_context)
   application_context->autosave_thread = NULL;
   
   application_context->file = NULL;
-
+  
+  application_context->history = NULL;
+  
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 }
 
