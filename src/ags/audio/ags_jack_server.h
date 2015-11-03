@@ -48,6 +48,9 @@ struct _AgsJackServer
   guint flags;
   
   gchar *url;
+
+  guint n_soundcards;
+  guint n_midicards;
   
   GList *client;
 };

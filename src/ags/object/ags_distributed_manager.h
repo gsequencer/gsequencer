@@ -56,11 +56,13 @@ struct _AgsDistributedManagerInterface
   GObject* (*get_sequencer)(AgsDistributedManager *distributed_manager,
 			    gchar *uri);
 
-  GObject* (*register_soundcard)(AgsDistributedManager *distributed_manager);
+  GObject* (*register_soundcard)(AgsDistributedManager *distributed_manager,
+				 gboolean is_output);
   void (*unregister_soundcard)(AgsDistributedManager *distributed_manager,
 			       GObject *soundcard);
 
-  GObject* (*register_sequencer)(AgsDistributedManager *distributed_manager);
+  GObject* (*register_sequencer)(AgsDistributedManager *distributed_manager,
+				 gboolean is_output);
   void (*unregister_sequencer)(AgsDistributedManager *distributed_manager,
 			       GObject *sequencer);
 };
