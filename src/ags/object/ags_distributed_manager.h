@@ -55,6 +55,14 @@ struct _AgsDistributedManagerInterface
   void (*set_sequencer)(AgsDistributedManager *distributed_manager,
 			gchar *uri,
 			GObject *sequencer);
+
+  GObject* (*register_soundcard)(AgsDistributedManager *distributed_manager);
+  void (*unregister_soundcard)(AgsDistributedManager *distributed_manager,
+			       GObject *soundcard);
+
+  GObject* (*register_sequencer)(AgsDistributedManager *distributed_manager);
+  void (*unregister_sequencer)(AgsDistributedManager *distributed_manager,
+			       GObject *sequencer);
 };
 
 GType ags_distributed_manager_get_type();
@@ -78,5 +86,15 @@ void ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_ma
 					   GObject *sequencer);
 GObject* ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager,
 					       gchar *uri);
+
+GObject* ags_distributed_manager_register_soundcard(AgsDistributedManager *distributed_manager,
+						    gboolean is_output);
+void ags_distributed_manager_unregister_soundcard(AgsDistributedManager *distributed_manager,
+						  GObject *soundcard);
+
+GObject* ags_distributed_manager_register_sequencer(AgsDistributedManager *distributed_manager,
+						    gboolean is_output);
+void ags_distributed_manager_unregister_sequencer(AgsDistributedManager *distributed_manager,
+						  GObject *sequencer);
 
 #endif /*__AGS_DISTRIBUTED_MANAGER_H__*/
