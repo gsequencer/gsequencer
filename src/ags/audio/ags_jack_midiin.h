@@ -27,6 +27,8 @@
 
 #include <pthread.h>
 
+#include <jack/jack.h>
+
 #define AGS_TYPE_JACK_MIDIIN                (ags_jack_midiin_get_type())
 #define AGS_JACK_MIDIIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_MIDIIN, AgsJackMidiin))
 #define AGS_JACK_MIDIIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_MIDIIN, AgsJackMidiin))
