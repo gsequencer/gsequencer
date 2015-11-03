@@ -25,6 +25,7 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_sequencer.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_mutex_manager.h>
@@ -66,6 +67,8 @@ void ags_record_midi_audio_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_record_midi_audio_run_duplicate(AgsRecall *recall,
 					       AgsRecallID *recall_id,
 					       guint *n_params, GParameter *parameter);
+void ags_record_midi_audio_run_run_init_pre(AgsRecall *recall);
+void ags_record_midi_audio_run_run_pre(AgsRecall *recall);
 
 void ags_record_midi_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 							GObject *recall);
@@ -191,6 +194,8 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
 
   recall->resolve_dependencies = ags_record_midi_audio_run_resolve_dependencies;
   recall->duplicate = ags_record_midi_audio_run_duplicate;
+  recall->run_init_pre = ags_record_midi_audio_run_run_init_pre;
+  recall->run_pre = ags_record_midi_audio_run_run_pre;
 }
 
 void
@@ -234,7 +239,7 @@ ags_record_midi_audio_run_init(AgsRecordMidiAudioRun *record_midi_audio_run)
 
   record_midi_audio_run->midi_file_writer = NULL;
   record_midi_audio_run->midi_parser = NULL;
-}}
+}
 
 void
 ags_record_midi_audio_run_set_property(GObject *gobject,
@@ -269,13 +274,8 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 	if(is_template){
 	  ags_recall_remove_dependency(AGS_RECALL(record_midi_audio_run),
 				       (AgsRecall *) record_midi_audio_run->delay_audio_run);
-	}else{
-	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(record_midi_audio_run)->flags)) != 0){
-	    g_signal_handler_disconnect(G_OBJECT(record_midi_audio_run),
-					record_midi_audio_run->midi_alloc_input_handler);
-	  }
 	}
-
+	
 	g_object_unref(G_OBJECT(record_midi_audio_run->delay_audio_run));
       }
 
@@ -285,12 +285,6 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 	if(is_template){
 	  ags_recall_add_dependency(AGS_RECALL(record_midi_audio_run),
 				    ags_recall_dependency_new((GObject *) delay_audio_run));
-	}else{
-	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(record_midi_audio_run)->flags)) != 0){
-	    record_midi_audio_run->midi_alloc_input_handler =
-	      g_signal_connect(G_OBJECT(delay_audio_run), "midi-alloc-input\0",
-			       G_CALLBACK(ags_record_midi_audio_run_alloc_input_callback), record_midi_audio_run);
-	  }
 	}
       }
 
@@ -421,13 +415,7 @@ ags_record_midi_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connect
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(dynamic_connectable);
 
   /* call parent */
-  ags_record_midi_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* connect */
-  record_midi_audio_run->midi_alloc_input_handler =
-    g_signal_connect(G_OBJECT(record_midi_audio_run->delay_audio_run), "midi-alloc-input\0",
-		     G_CALLBACK(ags_record_midi_audio_run_alloc_input_callback), record_midi_audio_run);
-  
+  ags_record_midi_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);  
 }
 
 void
@@ -439,10 +427,6 @@ ags_record_midi_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_conn
   ags_record_midi_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(dynamic_connectable);
-
-  if(record_midi_audio_run->delay_audio_run != NULL){
-    g_signal_handler_disconnect(G_OBJECT(record_midi_audio_run->delay_audio_run), record_midi_audio_run->midi_alloc_input_handler);
-  }
 }
 
 void
@@ -627,6 +611,63 @@ ags_record_midi_audio_run_duplicate(AgsRecall *recall,
 												       n_params, parameter));
 
   return((AgsRecall *) copy);
+}
+
+void
+ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
+{
+  //TODO:JK: implement me
+  
+  AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_record_midi_audio_run_run_pre(AgsRecall *recall)
+{
+  AgsAudio *audio;
+  AgsRecordMidiAudio *record_midi_audio;
+  AgsRecordMidiAudioRun *record_midi_audio_run;
+  
+  AgsSequencer *sequencer;
+
+  char *midi_buffer;
+  gboolean playback, record;
+
+  GValue value = {0,};
+  
+  record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
+  record_midi_audio = AGS_RECORD_MIDI_AUDIO(recall);
+
+  audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
+  sequencer = audio->sequencer;
+
+  midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(sequencer));
+
+  /* get mode */
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+  ags_port_safe_read(record_midi_audio->playback,
+		     &value);
+
+  playback = g_value_get_boolean(&value);
+
+  g_value_reset(&value);
+  ags_port_safe_read(record_midi_audio->record,
+		     &value);
+
+  record = g_value_get_boolean(&value);
+
+  /* playback */
+  if(playback){
+    //TODO:JK: implement me
+  }
+
+  /* record */
+  if(record){
+    //TODO:JK: implement me
+  }
+
+  AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_pre(recall);
 }
 
 void

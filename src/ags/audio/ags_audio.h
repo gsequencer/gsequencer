@@ -21,7 +21,6 @@
 #define __AGS_AUDIO_H__
 
 #include <glib-object.h>
-#include <gtk/gtk.h>
 
 #include <ags/audio/ags_channel.h>
 

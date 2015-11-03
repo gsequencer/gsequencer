@@ -21,7 +21,6 @@
 #define __AGS_CHANNEL_H__
 
 #include <glib-object.h>
-#include <gtk/gtk.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall.h>

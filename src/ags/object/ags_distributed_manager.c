@@ -280,7 +280,7 @@ ags_distributed_manager_unregister_soundcard(AgsDistributedManager *distributed_
   g_return_if_fail(distributed_manager_interface->unregister_soundcard);
   
   distributed_manager_interface->unregister_soundcard(distributed_manager,
-						      sequencer);
+						      soundcard);
 }
 
 /**

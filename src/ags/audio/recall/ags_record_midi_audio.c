@@ -158,9 +158,9 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
   port = NULL;
 
   record_midi_audio->playback = g_object_new(AGS_TYPE_PORT,
-					     "plugin-name\0", ags_copy_pattern_channel_plugin_name,
-					     "specifier\0", ags_copy_pattern_channel_specifier[0],
-					     "control-port\0", ags_copy_pattern_channel_control_port[0],
+					     "plugin-name\0", ags_record_midi_audio_plugin_name,
+					     "specifier\0", ags_record_midi_audio_specifier[0],
+					     "control-port\0", ags_record_midi_audio_control_port[0],
 					     "port-value-is-pointer\0", FALSE,
 					     "port-value-type\0", G_TYPE_BOOLEAN,
 					     NULL);
@@ -170,9 +170,9 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
   port = g_list_prepend(port, record_midi_audio->playback);
 
   record_midi_audio->record = g_object_new(AGS_TYPE_PORT,
-					   "plugin-name\0", ags_copy_pattern_channel_plugin_name,
-					   "specifier\0", ags_copy_pattern_channel_specifier[0],
-					   "control-port\0", ags_copy_pattern_channel_control_port[0],
+					   "plugin-name\0", ags_record_midi_audio_plugin_name,
+					   "specifier\0", ags_record_midi_audio_specifier[1],
+					   "control-port\0", ags_record_midi_audio_control_port[1],
 					   "port-value-is-pointer\0", FALSE,
 					   "port-value-type\0", G_TYPE_BOOLEAN,
 					   NULL);

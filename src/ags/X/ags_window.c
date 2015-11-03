@@ -224,6 +224,7 @@ ags_window_init(AgsWindow *window)
   window->import_window = NULL;
   
   window->preferences = NULL;
+  window->history_browser = NULL;
 }
 
 void

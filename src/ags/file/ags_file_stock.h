@@ -25,13 +25,6 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_led.h>
-#include <ags/widget/ags_vindicator.h>
-#include <ags/widget/ags_hindicator.h>
-#include <ags/widget/ags_waveform.h>
-#include <ags/widget/ags_dial.h>
-#include <ags/widget/ags_cartesian.h>
-
 #define AGS_FILE_DEFAULT_VERSION "0.4.2\0"
 #define AGS_FILE_EFFECTS_DEFAULT_VERSION "0.4.2\0"
 #define AGS_CLIPBOARD_DEFAULT_VERSION "0.4.2\0"
@@ -65,19 +58,5 @@
 #define AGS_FILE_XPATH_PROP "xpath\0"
 #define AGS_FILE_FLAGS_PROP "flags\0"
 #define AGS_FILE_CONTEXT_PROP "context\0"
-
-#define AGS_FILE_DYNAMIC_WIDGET_LED (g_type_name(AgsTypeLed))
-#define AGS_FILE_DYNAMIC_WIDGET_VINDICATOR (g_type_name(AgsTypeVIndicator))
-#define AGS_FILE_DYNAMIC_WIDGET_HINDICATOR (g_type_name(AgsTypeHIndicator))
-#define AGS_FILE_DYNAMIC_WIDGET_LABEL (g_type_name(GtkTypeLabel))
-#define AGS_FILE_DYNAMIC_WIDGET_WAVEFORM (g_type_name(AgsTypeWaveform))
-#define AGS_FILE_DYNAMIC_WIDGET_BUTTON (g_type_name(GtkTypeButton))
-#define AGS_FILE_DYNAMIC_WIDGET_TOGGLE_BUTTON (g_type_name(GtkTypeToggleButton))
-#define AGS_FILE_DYNAMIC_WIDGET_CHECK_BUTTON (g_type_name(GtkTypeCheckButton))
-#define AGS_FILE_DYNAMIC_WIDGET_SPIN_BUTTON (g_type_name(GtkTypeSpinButton))
-#define AGS_FILE_DYNAMIC_WIDGET_VSCALE (g_type_name(GtkTypeVScale))
-#define AGS_FILE_DYNAMIC_WIDGET_HSCALE (g_type_name(GtkTypeHScale))
-#define AGS_FILE_DYNAMIC_WIDGET_DIAL (g_type_name(AgsTypeDial))
-#define AGS_FILE_DYNAMIC_WIDGET_CARTESIAN (g_type_name(GtkTypeCartesian))
 
 #endif /*__AGS_FILE_STOCK_H__*/

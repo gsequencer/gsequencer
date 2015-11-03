@@ -31,6 +31,7 @@
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_preferences.h>
+#include <ags/X/ags_history_browser.h>
 
 #define AGS_TYPE_WINDOW                (ags_window_get_type())
 #define AGS_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WINDOW, AgsWindow))
@@ -81,6 +82,7 @@ struct _AgsWindow
   GtkWidget *import_window;
 
   AgsPreferences *preferences;
+  AgsHistoryBrowser *history_browser;
 };
 
 struct _AgsWindowClass

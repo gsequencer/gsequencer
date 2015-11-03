@@ -99,18 +99,18 @@ libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/i
 libags_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp  $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 # library libags-thread
-libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_thread_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(GOBJECT_CFLAGS) $(GTK_CFLAGS)
+libags_thread_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(GOBJECT_LIBS) $(GTK_LIBS)
 libags_thread_la_LIBADD = libags.la
 
 # library libags-server
-libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_server_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GTK_CFLAGS)
+libags_server_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GTK_LIBS)
 libags_server_la_LIBADD = libags_thread.la libags.la
 
 # library libags-audio
-libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
+libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./src -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(GTK_CFLAGS)
+libags_audio_la_LDFLAGS = $(LDFLAGS) -L/lib -L/usr/lib -L/usr/X11/lib -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(GTK_LIBS)
 libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la
 
 # library libags-gui
@@ -345,6 +345,9 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_devout.h \
 	src/ags/audio/ags_effect.h \
 	src/ags/audio/ags_input.h \
+	src/ags/audio/ags_jack_midiin.h \
+	src/ags/audio/ags_jack_devout.h \
+	src/ags/audio/ags_jack_server.h \
 	src/ags/audio/ags_libao.h \
 	src/ags/audio/ags_message.h \
 	src/ags/audio/ags_midiin.h \
@@ -391,6 +394,9 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_channel_iter.c \
 	src/ags/audio/ags_devout.c \
 	src/ags/audio/ags_input.c \
+	src/ags/audio/ags_jack_midiin.c \
+	src/ags/audio/ags_jack_devout.c \
+	src/ags/audio/ags_jack_server.c \
 	src/ags/audio/ags_libao.c \
 	src/ags/audio/ags_message.c \
 	src/ags/audio/ags_midiin.c \
@@ -569,6 +575,8 @@ libags_audio_recall_h_sources = \
 	src/ags/audio/recall/ags_play_note.h \
 	src/ags/audio/recall/ags_play_pattern.h \
 	src/ags/audio/recall/ags_play_recycling.h \
+	src/ags/audio/recall/ags_record_midi_audio.h \
+	src/ags/audio/recall/ags_record_midi_audio_run.h \
 	src/ags/audio/recall/ags_stream_audio_signal.h \
 	src/ags/audio/recall/ags_stream_channel.h \
 	src/ags/audio/recall/ags_stream_channel_run.h \
@@ -629,6 +637,8 @@ libags_audio_recall_c_sources = \
 	src/ags/audio/recall/ags_play_note.c \
 	src/ags/audio/recall/ags_play_pattern.c \
 	src/ags/audio/recall/ags_play_recycling.c \
+	src/ags/audio/recall/ags_record_midi_audio.c \
+	src/ags/audio/recall/ags_record_midi_audio_run.c \
 	src/ags/audio/recall/ags_stream_audio_signal.c \
 	src/ags/audio/recall/ags_stream.c \
 	src/ags/audio/recall/ags_stream_channel.c \
