@@ -22,7 +22,6 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtk.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
