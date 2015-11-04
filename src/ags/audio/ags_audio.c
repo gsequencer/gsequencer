@@ -769,8 +769,13 @@ ags_audio_connect(AgsConnectable *connectable)
   }
 
   /* connect notation */
-  if(audio->notation != NULL)
-    ags_connectable_connect(AGS_CONNECTABLE(audio->notation));
+  list = audio->notation;
+  
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
 }
 
 void

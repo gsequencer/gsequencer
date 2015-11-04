@@ -237,8 +237,7 @@ ags_record_midi_audio_run_init(AgsRecordMidiAudioRun *record_midi_audio_run)
   record_midi_audio_run->delay_audio_run = NULL;
   record_midi_audio_run->count_beats_audio_run = NULL;
 
-  record_midi_audio_run->midi_file_writer = NULL;
-  record_midi_audio_run->midi_parser = NULL;
+  record_midi_audio_run->midi_file_writer = ags_midi_file_writer_new(NULL);
 }
 
 void
@@ -616,6 +615,24 @@ ags_record_midi_audio_run_duplicate(AgsRecall *recall,
 void
 ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
 {
+  AgsAudio *audio;
+  AgsRecordMidiAudio *record_midi_audio;
+  AgsRecordMidiAudioRun *record_midi_audio_run;
+  
+  AgsSequencer *sequencer;
+  
+  gboolean playback, record;
+
+  record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
+  record_midi_audio = AGS_RECORD_MIDI_AUDIO(recall);
+
+  audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
+  sequencer = audio->sequencer;
+
+  if(sequencer == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
   
   AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_init_pre(recall);
@@ -641,6 +658,10 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
   sequencer = audio->sequencer;
 
+  if(sequencer == NULL){
+    return;
+  }
+  
   midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(sequencer));
 
   /* get mode */
