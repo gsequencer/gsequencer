@@ -40,6 +40,10 @@ struct _AgsSoundProviderInterface
 			GList *soundcard);
   GList* (*get_soundcard)(AgsSoundProvider *sound_provider);
 
+  void (*set_sequencer)(AgsSoundProvider *sound_provider,
+			GList *sequencer);
+  GList* (*get_sequencer)(AgsSoundProvider *sound_provider);
+
   void (*set_distributed_manager)(AgsSoundProvider *sound_provider,
 				 GList *distributed_manager);
   GList* (*get_distributed_manager)(AgsSoundProvider *sound_provider);
@@ -50,6 +54,10 @@ GType ags_sound_provider_get_type();
 void ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
 				      GList *soundcard);
 GList* ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider);
+
+void ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
+				      GList *sequencer);
+GList* ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider);
 
 void ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
 					       GList *distributed_manager);

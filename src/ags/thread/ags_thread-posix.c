@@ -1980,6 +1980,7 @@ ags_thread_loop(void *ptr)
 
   auto void ags_thread_loop_sync(AgsThread *thread);
   auto void ags_thread_loop_wait_starting();
+  auto void ags_thread_loop_wait_async();
   
   void ags_thread_loop_sync(AgsThread *thread){    
     /* sync */
@@ -2085,6 +2086,32 @@ ags_thread_loop(void *ptr)
       list = list->next;
     }
   }
+
+  void ags_thread_loop_wait_async(){
+    /* async-queue */
+    if(!AGS_IS_ASYNC_QUEUE(thread)){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) != 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) == 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	pthread_mutex_lock(run_mutex);
+
+	//g_message("blocked\0");
+
+	if(!ags_async_queue_is_run(AGS_ASYNC_QUEUE(async_queue))){
+	  //  g_message("wait\0");
+
+	  while(!ags_async_queue_is_run(AGS_ASYNC_QUEUE(async_queue))){
+	    pthread_cond_wait(run_cond,
+			      run_mutex);
+	  }
+	}
+
+	pthread_mutex_unlock(run_mutex);
+      }
+    }else{
+      //      g_message("not blocked\0");
+    }
+  }
   
   //  ags_thread_self =
   thread = (AgsThread *) ptr;
@@ -2120,6 +2147,7 @@ ags_thread_loop(void *ptr)
   while((AGS_THREAD_RUNNING & running) != 0){
     /* wait for starting threads */
     ags_thread_loop_wait_starting();
+    ags_thread_loop_wait_async();
     
     /*  */
     if(thread->freq >= 1.0){
