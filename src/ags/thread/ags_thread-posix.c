@@ -2088,11 +2088,13 @@ ags_thread_loop(void *ptr)
   }
 
   void ags_thread_loop_wait_async(){
+    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(thread)->flags)))) != 0){
+      return;
+    }
+    
     /* async-queue */
     if(!AGS_IS_ASYNC_QUEUE(thread)){
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) != 0 &&
-	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) == 0 &&
-	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) != 0){
 	pthread_mutex_lock(run_mutex);
 
 	//g_message("blocked\0");
@@ -2539,6 +2541,18 @@ ags_thread_loop(void *ptr)
 	  pthread_mutex_unlock(thread->start_mutex);
 	}
       }
+    }
+
+    if(AGS_IS_ASYNC_QUEUE(thread)){
+      /* async queue */
+      pthread_mutex_lock(ags_async_queue_get_run_mutex(AGS_ASYNC_QUEUE(async_queue)));
+	
+      ags_async_queue_set_run(AGS_ASYNC_QUEUE(async_queue),
+			      TRUE);
+	
+      pthread_cond_broadcast(ags_async_queue_get_run_cond(AGS_ASYNC_QUEUE(async_queue)));
+      
+      pthread_mutex_unlock(ags_async_queue_get_run_mutex(AGS_ASYNC_QUEUE(async_queue)));
     }
 
     pthread_yield();
