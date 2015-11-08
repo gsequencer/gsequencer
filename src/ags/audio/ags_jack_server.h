@@ -49,7 +49,8 @@ struct _AgsJackServer
   GObject object;
 
   guint flags;
-  
+
+  GObject *application_context;
   gchar *url;
 
   guint n_soundcards;
@@ -97,6 +98,7 @@ AgsJackClient* ags_jack_server_find_default_client(AgsJackServer *jack_server);
 
 GObject* ags_jack_server_register_default_soundcard(AgsJackServer *jack_server);
 
-AgsJackServer* ags_jack_server_new();
+AgsJackServer* ags_jack_server_new(GObject *application_context,
+				   gchar *url);
 
 #endif /*__AGS_JACK_SERVER_H__*/

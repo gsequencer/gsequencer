@@ -89,11 +89,11 @@ struct _AgsMidiin
   guint note_offset;
   
   union{
-    struct _AgsOss{
+    struct _AgsOssMidi{
       int device_fd;
       char *device;
     }oss;
-    struct _AgsAlsa{
+    struct _AgsAlsaMidi{
       char *device;
       int rc;
       snd_rawmidi_t *handle;
