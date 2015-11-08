@@ -81,6 +81,7 @@ struct _AgsXorgApplicationContext
   AgsServer *server;
   
   GList *soundcard;
+  GList *sequencer;
   
   AgsWindow *window;
 };

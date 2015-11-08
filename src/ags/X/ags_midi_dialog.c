@@ -24,10 +24,13 @@
 #include <ags/object/ags_applicable.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_midiin.h>
+#include <ags/audio/ags_jack_midiin.h>
 
-#include <ags/X/ags_link_collection_editor.h>
+#include <ags/X/ags_window.h>
 
 void ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog);
 void ags_midi_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -168,6 +171,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 {
   GtkTable *table;
   GtkLabel *label;
+  GtkHBox *hbox;
   
   gtk_window_set_title((GtkDialog *) midi_dialog, g_strdup("MIDI connection\0"));
 
@@ -246,8 +250,8 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  /* midi start */
-  label = (GtkLabel *) gtk_label_new("midi device\0");
+  /* backend */
+  label = (GtkLabel *) gtk_label_new("midi backend\0");
   g_object_set(label,
 	       "xalign\0", 0.0,
 	       NULL);
@@ -257,24 +261,87 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   5, 6,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  
-  midi_dialog->midi_device = (GtkSpinButton *) gtk_combo_box_text_new();
+
+  midi_dialog->backend =  (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_combo_box_text_append_text(midi_dialog->backend,
+				 "alsa\0");
+  gtk_combo_box_text_append_text(midi_dialog->backend,
+				 "jack\0");
   gtk_table_attach(table,
-		   GTK_WIDGET(midi_dialog->midi_device),
+		   GTK_WIDGET(midi_dialog->backend),
 		   1, 2,
 		   5, 6,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+  gtk_combo_box_set_active(midi_dialog->backend,
+			   0);
   
+  /* midi device */
+  label = (GtkLabel *) gtk_label_new("midi device\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   6, 7,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  midi_dialog->midi_device = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->midi_device),
+		   1, 2,
+		   6, 7,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* connection */  
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(hbox),
+		   0, 2,
+		   8, 9,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  midi_dialog->connection_name = (GtkEntry *) gtk_entry_new();
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->connection_name),
+		     TRUE, TRUE,
+		     0);
+
+  midi_dialog->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->add),
+		     FALSE, FALSE,
+		     0);
+
+  midi_dialog->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->remove),
+		     FALSE, FALSE,
+		     0);
+
   /* GtkButton's in GtkDialog->action_area  */
   midi_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area, (GtkWidget *) midi_dialog->apply, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
+		     (GtkWidget *) midi_dialog->apply,
+		     FALSE, FALSE,
+		     0);
   
   midi_dialog->ok = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area, (GtkWidget *) midi_dialog->ok, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
+		     (GtkWidget *) midi_dialog->ok,
+		     FALSE, FALSE,
+		     0);
   
   midi_dialog->cancel = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area, (GtkWidget *) midi_dialog->cancel, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
+		     (GtkWidget *) midi_dialog->cancel,
+		     FALSE, FALSE,
+		     0);
 }
 
 void
@@ -345,6 +412,17 @@ ags_midi_dialog_connect(AgsConnectable *connectable)
 
   midi_dialog = AGS_MIDI_DIALOG(connectable);
 
+  g_signal_connect((GObject *) midi_dialog->backend, "changed\0",
+		   G_CALLBACK(ags_midi_dialog_backend_changed_callback), (gpointer) midi_dialog);
+
+  /* connection */
+  g_signal_connect((GObject *) midi_dialog->add, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_add_callback), (gpointer) midi_dialog);
+
+  g_signal_connect((GObject *) midi_dialog->remove, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_remove_callback), (gpointer) midi_dialog);
+
+  /* applicable */
   g_signal_connect((GObject *) midi_dialog->apply, "clicked\0",
 		   G_CALLBACK(ags_midi_dialog_apply_callback), (gpointer) midi_dialog);
 
@@ -398,19 +476,57 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
 void
 ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 {
+  AgsWindow *window;
+  
   GObject *sequencer;
   GtkListStore *model;
   AgsAudio *audio;
 
+  GType find_type;
+  
   GtkTreeIter iter;
   GList *card_id, *card_name;
+  GList *list;
+  gchar *str;
 
+  window = gtk_widget_get_ancestor(midi_dialog->machine,
+				   AGS_TYPE_WINDOW);
+  
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(midi_dialog->midi_device)));
 
-  audio = midi_dialog->machine->audio;
+  /* find sequencer */
+  sequencer = NULL;
   
-  sequencer = audio->sequencer;
+  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(window->application_context));
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
 
+  if(!g_ascii_strncasecmp("alsa\0",
+			  str,
+			  4)){
+    find_type = AGS_TYPE_MIDIIN;
+  }else if(!g_ascii_strncasecmp("jack\0",
+				str,
+				4)){
+    find_type = AGS_TYPE_JACK_MIDIIN;
+  }
+
+  while(list != NULL){
+    if(g_type_is_a(G_OBJECT_TYPE(list->data),
+		   find_type)){
+      sequencer = list->data;
+      
+      break;
+    }else if(g_type_is_a(G_OBJECT_TYPE(list->data),
+			 find_type)){
+      sequencer = list->data;
+      
+      break;
+    }
+    
+    list = list->next;
+  }
+  
+  /* load sequencer */
   if(sequencer != NULL){
     ags_sequencer_list_cards(AGS_SEQUENCER(sequencer),
 			     &card_id, &card_name);

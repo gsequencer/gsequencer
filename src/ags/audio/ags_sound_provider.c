@@ -72,6 +72,32 @@ ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
 }
 
 void
+ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
+				 GList *sequencer)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_sequencer);
+
+  sound_provider_interface->set_sequencer(sound_provider,
+					  sequencer);
+}
+
+GList*
+ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_sequencer, NULL);
+
+  return(sound_provider_interface->get_sequencer(sound_provider));
+}
+
+void
 ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
 					   GList *distributed_manager)
 {

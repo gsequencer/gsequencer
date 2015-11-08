@@ -62,6 +62,7 @@ AgsThread* ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *co
 AgsThread* ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 GList* ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider);
+GList* ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_finalize(GObject *gobject);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
@@ -198,6 +199,7 @@ void
 ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider)
 {
   sound_provider->get_soundcard = ags_xorg_application_context_get_soundcard;
+  sound_provider->get_sequencer = ags_xorg_application_context_get_sequencer;
 }
 
 void
@@ -209,6 +211,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   AgsAudioLoop *audio_loop;
   GObject *soundcard;
+  GObject *sequencer;
 
   AgsConfig *config;
   
@@ -244,11 +247,25 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   
   /* AgsSoundcard */
   xorg_application_context->soundcard = NULL;
+
   soundcard = ags_devout_new(xorg_application_context);
   xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
 						       soundcard);
   g_object_ref(G_OBJECT(soundcard));
-    
+  
+  /* AgsSequencer */
+  xorg_application_context->sequencer = NULL;
+
+  sequencer = ags_midiin_new(xorg_application_context);
+  xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
+						       sequencer);
+  g_object_ref(G_OBJECT(sequencer));
+
+  sequencer = ags_jack_midiin_new(xorg_application_context);
+  xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
+						       sequencer);
+  g_object_ref(G_OBJECT(sequencer));
+
   /* AgsWindow */
   window = ags_window_new(xorg_application_context);
   g_object_set(window,
@@ -426,6 +443,12 @@ GList*
 ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider)
 {
   return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard);
+}
+
+GList*
+ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider)
+{
+  return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer);
 }
 
 void

@@ -23,6 +23,82 @@
 #include <ags/object/ags_applicable.h>
 
 int
+ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
+{
+  gchar *str;
+
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(widget));
+  
+  if(!g_ascii_strncasecmp("alsa\0",
+			  str,
+			  4)){
+    gtk_widget_set_sensitive(midi_dialog->connection_name,
+			     FALSE);
+    gtk_widget_set_sensitive(midi_dialog->add,
+			     FALSE);
+    gtk_widget_set_sensitive(midi_dialog->remove,
+			     FALSE);
+  }else if(!g_ascii_strncasecmp("jack\0",
+				str,
+				4)){
+    gtk_widget_set_sensitive(midi_dialog->connection_name,
+			     TRUE);
+    gtk_widget_set_sensitive(midi_dialog->add,
+			     TRUE);
+    gtk_widget_set_sensitive(midi_dialog->remove,
+			     TRUE);
+  }
+
+  ags_midi_dialog_load_sequencers(midi_dialog);
+
+  return(0);
+}
+
+int
+ags_midi_dialog_add_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
+{
+  gchar *str;
+
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+
+  if(str == NULL ||
+     g_utf8_strlen(str,
+		   -1) == 0){
+    return(0);
+  }
+  
+  if(!g_ascii_strncasecmp("jack\0",
+			  str,
+			  4)){
+    gchar *connection;
+
+    connection = gtk_entry_get_text(midi_dialog->connection_name);
+
+    gtk_combo_box_text_append_text(midi_dialog->midi_device,
+				   connection);
+  }
+  
+  return(0);
+}
+
+int
+ags_midi_dialog_remove_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
+{
+  gchar *str;
+
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+
+  if(!g_ascii_strncasecmp("jack\0",
+			  str,
+			  4)){
+    gtk_combo_box_text_remove(midi_dialog->midi_device,
+			      gtk_combo_box_get_active(midi_dialog->midi_device));
+  }
+
+  return(0);
+}
+
+int
 ags_midi_dialog_apply_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
   ags_applicable_apply(AGS_APPLICABLE(midi_dialog));
