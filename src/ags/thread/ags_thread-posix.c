@@ -2545,14 +2545,14 @@ ags_thread_loop(void *ptr)
 
     if(AGS_IS_ASYNC_QUEUE(thread)){
       /* async queue */
-      pthread_mutex_lock(ags_async_queue_get_run_mutex(AGS_ASYNC_QUEUE(async_queue)));
+      pthread_mutex_lock(run_mutex);
 	
       ags_async_queue_set_run(AGS_ASYNC_QUEUE(async_queue),
 			      TRUE);
 	
-      pthread_cond_broadcast(ags_async_queue_get_run_cond(AGS_ASYNC_QUEUE(async_queue)));
+      pthread_cond_broadcast(run_cond);
       
-      pthread_mutex_unlock(ags_async_queue_get_run_mutex(AGS_ASYNC_QUEUE(async_queue)));
+      pthread_mutex_unlock(run_mutex);
     }
 
     pthread_yield();
