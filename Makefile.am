@@ -369,6 +369,8 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_recall_dependency.h \
 	src/ags/audio/ags_recall_factory.h \
 	src/ags/audio/ags_recall.h \
+	src/ags/audio/ags_recall_dssi.h \
+	src/ags/audio/ags_recall_dssi_run.h \
 	src/ags/audio/ags_recall_id.h \
 	src/ags/audio/ags_recall_ladspa.h \
 	src/ags/audio/ags_recall_ladspa_run.h \
@@ -418,6 +420,8 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_recall_container.c \
 	src/ags/audio/ags_recall_dependency.c \
 	src/ags/audio/ags_recall_factory.c \
+	src/ags/audio/ags_recall_dssi.c \
+	src/ags/audio/ags_recall_dssi_run.c \
 	src/ags/audio/ags_recall_id.c \
 	src/ags/audio/ags_recall_ladspa.c \
 	src/ags/audio/ags_recall_ladspa_run.c \
@@ -466,6 +470,7 @@ deprecated_libags_plugin_h_sources =
 
 libags_plugin_h_sources = \
 	$(deprecated_libags_plugin_h_sources) \
+	src/ags/plugin/ags_dssi_manager.h \
 	src/ags/plugin/ags_ladspa_manager.h \
 	src/ags/plugin/ags_plugin_factory.h \
 	src/ags/plugin/ags_lv2_manager.h \
@@ -476,6 +481,7 @@ deprecated_libags_plugin_c_sources =
 
 libags_plugin_c_sources = \
 	$(deprecated_libags_plugin_c_sources) \
+	src/ags/plugin/ags_dssi_manager.c \
 	src/ags/plugin/ags_ladspa_manager.c \
 	src/ags/plugin/ags_lv2_manager.c \
 	src/ags/plugin/ags_lv2ui_manager.c \

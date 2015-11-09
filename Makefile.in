@@ -211,6 +211,8 @@ am__objects_6 = $(am__objects_1) libags_audio_la-ags_acceleration.lo \
 	libags_audio_la-ags_recall_container.lo \
 	libags_audio_la-ags_recall_dependency.lo \
 	libags_audio_la-ags_recall_factory.lo \
+	libags_audio_la-ags_recall_dssi.lo \
+	libags_audio_la-ags_recall_dssi_run.lo \
 	libags_audio_la-ags_recall_id.lo \
 	libags_audio_la-ags_recall_ladspa.lo \
 	libags_audio_la-ags_recall_ladspa_run.lo \
@@ -348,7 +350,7 @@ am__objects_11 = $(am__objects_1) \
 	libags_audio_la-ags_volume_channel.lo \
 	libags_audio_la-ags_volume_channel_run.lo \
 	libags_audio_la-ags_volume_recycling.lo
-am__objects_12 = $(am__objects_1) \
+am__objects_12 = $(am__objects_1) libags_audio_la-ags_dssi_manager.lo \
 	libags_audio_la-ags_ladspa_manager.lo \
 	libags_audio_la-ags_lv2_manager.lo \
 	libags_audio_la-ags_lv2ui_manager.lo \
@@ -1198,6 +1200,8 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_recall_dependency.h \
 	src/ags/audio/ags_recall_factory.h \
 	src/ags/audio/ags_recall.h \
+	src/ags/audio/ags_recall_dssi.h \
+	src/ags/audio/ags_recall_dssi_run.h \
 	src/ags/audio/ags_recall_id.h \
 	src/ags/audio/ags_recall_ladspa.h \
 	src/ags/audio/ags_recall_ladspa_run.h \
@@ -1246,6 +1250,8 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_recall_container.c \
 	src/ags/audio/ags_recall_dependency.c \
 	src/ags/audio/ags_recall_factory.c \
+	src/ags/audio/ags_recall_dssi.c \
+	src/ags/audio/ags_recall_dssi_run.c \
 	src/ags/audio/ags_recall_id.c \
 	src/ags/audio/ags_recall_ladspa.c \
 	src/ags/audio/ags_recall_ladspa_run.c \
@@ -1293,6 +1299,7 @@ libags_audio_thread_c_sources = \
 deprecated_libags_plugin_h_sources = 
 libags_plugin_h_sources = \
 	$(deprecated_libags_plugin_h_sources) \
+	src/ags/plugin/ags_dssi_manager.h \
 	src/ags/plugin/ags_ladspa_manager.h \
 	src/ags/plugin/ags_plugin_factory.h \
 	src/ags/plugin/ags_lv2_manager.h \
@@ -1302,6 +1309,7 @@ libags_plugin_h_sources = \
 deprecated_libags_plugin_c_sources = 
 libags_plugin_c_sources = \
 	$(deprecated_libags_plugin_c_sources) \
+	src/ags/plugin/ags_dssi_manager.c \
 	src/ags/plugin/ags_ladspa_manager.c \
 	src/ags/plugin/ags_lv2_manager.c \
 	src/ags/plugin/ags_lv2ui_manager.c \
@@ -2241,6 +2249,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_delay_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_delay_audio_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_devout.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_dssi_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_envelope_audio_signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_envelope_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_envelope_channel_run.Plo@am__quote@
@@ -2312,6 +2321,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_recall_channel_run_dummy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_recall_container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_recall_dependency.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_recall_dssi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_recall_dssi_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_recall_factory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_recall_id.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_recall_ladspa.Plo@am__quote@
@@ -3058,6 +3069,20 @@ libags_audio_la-ags_recall_factory.lo: src/ags/audio/ags_recall_factory.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recall_factory.c' object='libags_audio_la-ags_recall_factory.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_recall_factory.lo `test -f 'src/ags/audio/ags_recall_factory.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_factory.c
+
+libags_audio_la-ags_recall_dssi.lo: src/ags/audio/ags_recall_dssi.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_recall_dssi.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_recall_dssi.Tpo -c -o libags_audio_la-ags_recall_dssi.lo `test -f 'src/ags/audio/ags_recall_dssi.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_dssi.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_recall_dssi.Tpo $(DEPDIR)/libags_audio_la-ags_recall_dssi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recall_dssi.c' object='libags_audio_la-ags_recall_dssi.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_recall_dssi.lo `test -f 'src/ags/audio/ags_recall_dssi.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_dssi.c
+
+libags_audio_la-ags_recall_dssi_run.lo: src/ags/audio/ags_recall_dssi_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_recall_dssi_run.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_recall_dssi_run.Tpo -c -o libags_audio_la-ags_recall_dssi_run.lo `test -f 'src/ags/audio/ags_recall_dssi_run.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_dssi_run.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_recall_dssi_run.Tpo $(DEPDIR)/libags_audio_la-ags_recall_dssi_run.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/ags_recall_dssi_run.c' object='libags_audio_la-ags_recall_dssi_run.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_recall_dssi_run.lo `test -f 'src/ags/audio/ags_recall_dssi_run.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_dssi_run.c
 
 libags_audio_la-ags_recall_id.lo: src/ags/audio/ags_recall_id.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_recall_id.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_recall_id.Tpo -c -o libags_audio_la-ags_recall_id.lo `test -f 'src/ags/audio/ags_recall_id.c' || echo '$(srcdir)/'`src/ags/audio/ags_recall_id.c
@@ -4010,6 +4035,13 @@ libags_audio_la-ags_volume_recycling.lo: src/ags/audio/recall/ags_volume_recycli
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_volume_recycling.c' object='libags_audio_la-ags_volume_recycling.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_volume_recycling.lo `test -f 'src/ags/audio/recall/ags_volume_recycling.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_volume_recycling.c
+
+libags_audio_la-ags_dssi_manager.lo: src/ags/plugin/ags_dssi_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_dssi_manager.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_dssi_manager.Tpo -c -o libags_audio_la-ags_dssi_manager.lo `test -f 'src/ags/plugin/ags_dssi_manager.c' || echo '$(srcdir)/'`src/ags/plugin/ags_dssi_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_dssi_manager.Tpo $(DEPDIR)/libags_audio_la-ags_dssi_manager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/plugin/ags_dssi_manager.c' object='libags_audio_la-ags_dssi_manager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_dssi_manager.lo `test -f 'src/ags/plugin/ags_dssi_manager.c' || echo '$(srcdir)/'`src/ags/plugin/ags_dssi_manager.c
 
 libags_audio_la-ags_ladspa_manager.lo: src/ags/plugin/ags_ladspa_manager.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_ladspa_manager.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_ladspa_manager.Tpo -c -o libags_audio_la-ags_ladspa_manager.lo `test -f 'src/ags/plugin/ags_ladspa_manager.c' || echo '$(srcdir)/'`src/ags/plugin/ags_ladspa_manager.c
