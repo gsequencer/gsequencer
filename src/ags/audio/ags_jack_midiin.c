@@ -24,10 +24,12 @@
 
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_sequencer.h>
+#include <ags/object/ags_distributed_manager.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
-#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_jack_server.h>
 
 #include <string.h>
 #include <math.h>
@@ -749,22 +751,63 @@ void
 ags_jack_midiin_list_cards(AgsSequencer *sequencer,
 			   GList **card_id, GList **card_name)
 {
+  AgsJackServer *jack_server;
+  
+  AgsApplicationContext *application_context;
+
+  GList *distributed_manager;
+  GList *client, *list;
+  
   char *name;
   gchar *str;
   int card_num;
   int device;
   int error;
 
+  application_context = AGS_JACK_MIDIIN(sequencer)->application_context;
+
+  /* find jack server */
+  jack_server = NULL;
+  
+  distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+
+  while(distributed_manager != NULL){
+    if(AGS_IS_JACK_SERVER(distributed_manager->data)){
+      jack_server = distributed_manager->data;
+
+      break;
+    }
+
+    distributed_manager = distributed_manager->next;
+  }
+  
+  /* list card uuid and name */
   *card_id = NULL;
   *card_name = NULL;
   card_num = -1;
 
-  while(FALSE){
-    //TODO:JK: implement me
+  if(jack_server != NULL){
+    client = jack_server->client;
+    
+    while(client != NULL){
+      list = AGS_JACK_CLIENT(client->data)->port;
+
+      while(list != NULL){
+	if(AGS_IS_JACK_MIDIIN(AGS_JACK_PORT(list->data)->gobject)){
+	  *card_id = g_list_prepend(*card_id,
+				    g_strdup(AGS_JACK_PORT(list->data)->uuid));
+	  *card_name = g_list_prepend(*card_name,
+				      AGS_JACK_PORT(list->data)->name);
+	}
+	
+	list = list->next;
+      }
+
+      client = client->next;
+    }
   }
 
-  snd_config_update_free_global();
-
+  /* reverse the created lists */
   *card_id = g_list_reverse(*card_id);
   *card_name = g_list_reverse(*card_name);
 }

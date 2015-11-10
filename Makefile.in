@@ -238,6 +238,7 @@ am__objects_8 = $(am__objects_1) libags_audio_la-ags_audio_file.lo \
 	libags_audio_la-ags_audio_file_link.lo \
 	libags_audio_la-ags_audio_file_xml.lo \
 	libags_audio_la-ags_ipatch.lo \
+	libags_audio_la-ags_ipatch_dls2_reader.lo \
 	libags_audio_la-ags_ipatch_sf2_reader.lo \
 	libags_audio_la-ags_sndfile.lo
 am__objects_9 = $(am__objects_1) libags_audio_la-ags_midi_builder.lo \
@@ -341,6 +342,10 @@ am__objects_11 = $(am__objects_1) \
 	libags_audio_la-ags_play_recycling.lo \
 	libags_audio_la-ags_record_midi_audio.lo \
 	libags_audio_la-ags_record_midi_audio_run.lo \
+	libags_audio_la-ags_route_dssi_audio.lo \
+	libags_audio_la-ags_route_dssi_audio_run.lo \
+	libags_audio_la-ags_route_lv2_audio.lo \
+	libags_audio_la-ags_route_lv2_audio_run.lo \
 	libags_audio_la-ags_stream_audio_signal.lo \
 	libags_audio_la-ags_stream.lo \
 	libags_audio_la-ags_stream_channel.lo \
@@ -1324,6 +1329,7 @@ libags_audio_file_h_sources = \
 	src/ags/audio/file/ags_audio_file_link.h \
 	src/ags/audio/file/ags_audio_file_xml.h \
 	src/ags/audio/file/ags_ipatch.h \
+	src/ags/audio/file/ags_ipatch_dls2_reader.h \
 	src/ags/audio/file/ags_ipatch_sf2_reader.h \
 	src/ags/audio/file/ags_sndfile.h
 
@@ -1334,6 +1340,7 @@ libags_audio_file_c_sources = \
 	src/ags/audio/file/ags_audio_file_link.c \
 	src/ags/audio/file/ags_audio_file_xml.c \
 	src/ags/audio/file/ags_ipatch.c \
+	src/ags/audio/file/ags_ipatch_dls2_reader.c \
 	src/ags/audio/file/ags_ipatch_sf2_reader.c \
 	src/ags/audio/file/ags_sndfile.c
 
@@ -1409,6 +1416,10 @@ libags_audio_recall_h_sources = \
 	src/ags/audio/recall/ags_play_recycling.h \
 	src/ags/audio/recall/ags_record_midi_audio.h \
 	src/ags/audio/recall/ags_record_midi_audio_run.h \
+	src/ags/audio/recall/ags_route_dssi_audio.h \
+	src/ags/audio/recall/ags_route_dssi_audio_run.h \
+	src/ags/audio/recall/ags_route_lv2_audio.h \
+	src/ags/audio/recall/ags_route_lv2_audio_run.h \
 	src/ags/audio/recall/ags_stream_audio_signal.h \
 	src/ags/audio/recall/ags_stream_channel.h \
 	src/ags/audio/recall/ags_stream_channel_run.h \
@@ -1470,6 +1481,10 @@ libags_audio_recall_c_sources = \
 	src/ags/audio/recall/ags_play_recycling.c \
 	src/ags/audio/recall/ags_record_midi_audio.c \
 	src/ags/audio/recall/ags_record_midi_audio_run.c \
+	src/ags/audio/recall/ags_route_dssi_audio.c \
+	src/ags/audio/recall/ags_route_dssi_audio_run.c \
+	src/ags/audio/recall/ags_route_lv2_audio.c \
+	src/ags/audio/recall/ags_route_lv2_audio_run.c \
 	src/ags/audio/recall/ags_stream_audio_signal.c \
 	src/ags/audio/recall/ags_stream.c \
 	src/ags/audio/recall/ags_stream_channel.c \
@@ -2261,6 +2276,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_init_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_input.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_ipatch.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_ipatch_sf2_reader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_iterator_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_jack_devout.Plo@am__quote@
@@ -2346,6 +2362,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_remove_recall_container.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_remove_region_from_selection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_resize_audio.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_route_dssi_audio.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_route_dssi_audio_run.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_route_lv2_audio.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_route_lv2_audio_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_save_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_seek_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libags_audio_la-ags_sequencer_thread.Plo@am__quote@
@@ -3259,6 +3279,13 @@ libags_audio_la-ags_ipatch.lo: src/ags/audio/file/ags_ipatch.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_ipatch.lo `test -f 'src/ags/audio/file/ags_ipatch.c' || echo '$(srcdir)/'`src/ags/audio/file/ags_ipatch.c
 
+libags_audio_la-ags_ipatch_dls2_reader.lo: src/ags/audio/file/ags_ipatch_dls2_reader.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_ipatch_dls2_reader.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Tpo -c -o libags_audio_la-ags_ipatch_dls2_reader.lo `test -f 'src/ags/audio/file/ags_ipatch_dls2_reader.c' || echo '$(srcdir)/'`src/ags/audio/file/ags_ipatch_dls2_reader.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Tpo $(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/file/ags_ipatch_dls2_reader.c' object='libags_audio_la-ags_ipatch_dls2_reader.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_ipatch_dls2_reader.lo `test -f 'src/ags/audio/file/ags_ipatch_dls2_reader.c' || echo '$(srcdir)/'`src/ags/audio/file/ags_ipatch_dls2_reader.c
+
 libags_audio_la-ags_ipatch_sf2_reader.lo: src/ags/audio/file/ags_ipatch_sf2_reader.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_ipatch_sf2_reader.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_ipatch_sf2_reader.Tpo -c -o libags_audio_la-ags_ipatch_sf2_reader.lo `test -f 'src/ags/audio/file/ags_ipatch_sf2_reader.c' || echo '$(srcdir)/'`src/ags/audio/file/ags_ipatch_sf2_reader.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_ipatch_sf2_reader.Tpo $(DEPDIR)/libags_audio_la-ags_ipatch_sf2_reader.Plo
@@ -3972,6 +3999,34 @@ libags_audio_la-ags_record_midi_audio_run.lo: src/ags/audio/recall/ags_record_mi
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_record_midi_audio_run.c' object='libags_audio_la-ags_record_midi_audio_run.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_record_midi_audio_run.lo `test -f 'src/ags/audio/recall/ags_record_midi_audio_run.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_record_midi_audio_run.c
+
+libags_audio_la-ags_route_dssi_audio.lo: src/ags/audio/recall/ags_route_dssi_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_route_dssi_audio.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_route_dssi_audio.Tpo -c -o libags_audio_la-ags_route_dssi_audio.lo `test -f 'src/ags/audio/recall/ags_route_dssi_audio.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_route_dssi_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_route_dssi_audio.Tpo $(DEPDIR)/libags_audio_la-ags_route_dssi_audio.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_route_dssi_audio.c' object='libags_audio_la-ags_route_dssi_audio.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_route_dssi_audio.lo `test -f 'src/ags/audio/recall/ags_route_dssi_audio.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_route_dssi_audio.c
+
+libags_audio_la-ags_route_dssi_audio_run.lo: src/ags/audio/recall/ags_route_dssi_audio_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_route_dssi_audio_run.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_route_dssi_audio_run.Tpo -c -o libags_audio_la-ags_route_dssi_audio_run.lo `test -f 'src/ags/audio/recall/ags_route_dssi_audio_run.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_route_dssi_audio_run.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_route_dssi_audio_run.Tpo $(DEPDIR)/libags_audio_la-ags_route_dssi_audio_run.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_route_dssi_audio_run.c' object='libags_audio_la-ags_route_dssi_audio_run.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_route_dssi_audio_run.lo `test -f 'src/ags/audio/recall/ags_route_dssi_audio_run.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_route_dssi_audio_run.c
+
+libags_audio_la-ags_route_lv2_audio.lo: src/ags/audio/recall/ags_route_lv2_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_route_lv2_audio.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_route_lv2_audio.Tpo -c -o libags_audio_la-ags_route_lv2_audio.lo `test -f 'src/ags/audio/recall/ags_route_lv2_audio.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_route_lv2_audio.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_route_lv2_audio.Tpo $(DEPDIR)/libags_audio_la-ags_route_lv2_audio.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_route_lv2_audio.c' object='libags_audio_la-ags_route_lv2_audio.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_route_lv2_audio.lo `test -f 'src/ags/audio/recall/ags_route_lv2_audio.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_route_lv2_audio.c
+
+libags_audio_la-ags_route_lv2_audio_run.lo: src/ags/audio/recall/ags_route_lv2_audio_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_route_lv2_audio_run.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_route_lv2_audio_run.Tpo -c -o libags_audio_la-ags_route_lv2_audio_run.lo `test -f 'src/ags/audio/recall/ags_route_lv2_audio_run.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_route_lv2_audio_run.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libags_audio_la-ags_route_lv2_audio_run.Tpo $(DEPDIR)/libags_audio_la-ags_route_lv2_audio_run.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/recall/ags_route_lv2_audio_run.c' object='libags_audio_la-ags_route_lv2_audio_run.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o libags_audio_la-ags_route_lv2_audio_run.lo `test -f 'src/ags/audio/recall/ags_route_lv2_audio_run.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_route_lv2_audio_run.c
 
 libags_audio_la-ags_stream_audio_signal.lo: src/ags/audio/recall/ags_stream_audio_signal.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT libags_audio_la-ags_stream_audio_signal.lo -MD -MP -MF $(DEPDIR)/libags_audio_la-ags_stream_audio_signal.Tpo -c -o libags_audio_la-ags_stream_audio_signal.lo `test -f 'src/ags/audio/recall/ags_stream_audio_signal.c' || echo '$(srcdir)/'`src/ags/audio/recall/ags_stream_audio_signal.c

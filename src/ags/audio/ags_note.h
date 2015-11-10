@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <alsa/asoundlib.h>
+
 #define AGS_TYPE_NOTE                (ags_note_get_type())
 #define AGS_NOTE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTE, AgsNote))
 #define AGS_NOTE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTE, AgsNoteClass))
@@ -51,6 +53,13 @@ struct _AgsNote
   guint x[2];
   guint y;
 
+  gdouble attack;
+  gdouble decay;
+  gdouble sustain;
+  gdouble release;
+  
+  gdouble ratio;
+  
   gchar *name;
   gdouble frequency;
 };
@@ -61,6 +70,14 @@ struct _AgsNoteClass
 };
 
 GType ags_note_get_type();
+
+snd_seq_event_t *ags_note_to_seq_event(AgsNote *note,
+				       guint *n_events);
+
+GList* ags_note_from_raw_midi(char raw_midi,
+			      guint length);
+GList* ags_note_from_seq_event(snd_seq_event_t *event,
+			       guint n_events);
 
 AgsNote* ags_note_duplicate(AgsNote *note);
 

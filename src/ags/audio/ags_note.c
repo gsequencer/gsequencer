@@ -107,6 +107,13 @@ ags_note_init(AgsNote *note)
   note->x[1] = 0;
   note->y = 0;
 
+  note->attack = 1.0;
+  note->decay = 1.0;
+  note->sustain = 1.0;
+  note->release = 1.0;
+
+  note->ratio = 1.0;
+  
   note->name = NULL;
   note->frequency = 440.0;
 }
@@ -132,6 +139,79 @@ ags_note_finalize(GObject *gobject)
 }
 
 /**
+ * ags_note_to_seq_event:
+ * @note: the #AgsNote
+ * @n_events: the count of events
+ * 
+ * Convert @note to ALSA sequencer events and set the number of events
+ * in the array in @n_events.
+ *
+ * Returns: The sequencer events as array.
+ *
+ * Since: 0.7.1
+ */
+snd_seq_event_t*
+ags_note_to_seq_event(AgsNote *note,
+		      guint *n_events)
+{
+  snd_seq_event_t *event;
+
+  event = NULL;
+  
+  //TODO:JK: implement me
+
+  return(event);
+}
+
+/**
+ * ags_note_from_raw_midi:
+ * @raw_midi: the data array
+ * @length: the length of the array
+ *
+ * Parse @raw_midi data and convert to #AgsNote.
+ *
+ * Returns: a #GList containing the notes
+ *
+ * Since: 0.7.1
+ */
+GList*
+ags_note_from_raw_midi(char raw_midi,
+		       guint length)
+{
+  GList *list;
+
+  list = NULL;
+
+  //TODO:JK: implement me
+  
+  return(list);
+}
+
+/**
+ * ags_note_from_seq_event:
+ * @event: ALSA sequencer events as array
+ * @n_events: the arrays length
+ *
+ * Convert ALSA sequencer data @event to #AgsNote.
+ *
+ * Returns: a #GList containing the notes
+ *
+ * Since: 0.7.1
+ */
+GList*
+ags_note_from_seq_event(snd_seq_event_t *event,
+			guint n_events)
+{
+  GList *list;
+
+  list = NULL;
+
+  //TODO:JK: implement me
+  
+  return(list);
+}
+
+/**
  * ags_note_duplicate:
  * @note: an #AgsNote
  * 
@@ -153,6 +233,13 @@ ags_note_duplicate(AgsNote *note)
   copy->x[0] = note->x[0];
   copy->x[1] = note->x[1];
   copy->y = note->y;
+
+  copy->attack = note->attack;
+  copy->decay = note->decay;
+  copy->sustain = note->sustain;
+  copy->release = note->release;
+
+  copy->ratio = note->ratio;
 
   return(copy);
 }
