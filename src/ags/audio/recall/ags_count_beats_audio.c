@@ -661,7 +661,6 @@ ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdouble du
 
 /**
  * ags_count_beats_audio_new:
- * @loop: if %TRUE after exceeding counter, effect loops
  *
  * Creates an #AgsCountBeatsAudio
  *

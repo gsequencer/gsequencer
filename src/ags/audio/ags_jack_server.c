@@ -147,7 +147,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.4.0
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("application-context\0",
 				   "the application context object\0",
@@ -397,7 +397,13 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
     default_client->client = jack_client_open(g_strdup("ags-default-client\0"),
 					      0,
 					      NULL);
-    
+
+    if(default_client->client == NULL){
+      g_warning("ags_jack_server.c - can't open JACK client");
+      
+      return;
+    }
+
     AGS_JACK_SERVER(distributed_manager)->client = g_list_prepend(AGS_JACK_SERVER(distributed_manager)->client,
 								  default_client);
   }
@@ -464,6 +470,12 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
     default_client->client = jack_client_open(g_strdup("ags-default-client\0"),
 					      0,
 					      NULL);
+
+    if(default_client->client == NULL){
+      g_warning("ags_jack_server.c - can't open JACK client");
+      
+      return;
+    }
     
     AGS_JACK_SERVER(distributed_manager)->client = g_list_prepend(AGS_JACK_SERVER(distributed_manager)->client,
 								  default_client);

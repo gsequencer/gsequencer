@@ -496,6 +496,8 @@ libags_audio_file_h_sources = \
 	src/ags/audio/file/ags_audio_file_link.h \
 	src/ags/audio/file/ags_audio_file_xml.h \
 	src/ags/audio/file/ags_ipatch.h \
+	src/ags/audio/file/ags_ipatch_dls2_reader.h \
+	src/ags/audio/file/ags_ipatch_sf2_reader.h \
 	src/ags/audio/file/ags_sndfile.h
 
 deprecated_libags_audio_file_c_sources =
@@ -506,6 +508,8 @@ libags_audio_file_c_sources = \
 	src/ags/audio/file/ags_audio_file_link.c \
 	src/ags/audio/file/ags_audio_file_xml.c \
 	src/ags/audio/file/ags_ipatch.c \
+	src/ags/audio/file/ags_ipatch_dls2_reader.c \
+	src/ags/audio/file/ags_ipatch_sf2_reader.c \
 	src/ags/audio/file/ags_sndfile.c
 
 # libags-audio - midi
@@ -581,6 +585,10 @@ libags_audio_recall_h_sources = \
 	src/ags/audio/recall/ags_play_recycling.h \
 	src/ags/audio/recall/ags_record_midi_audio.h \
 	src/ags/audio/recall/ags_record_midi_audio_run.h \
+	src/ags/audio/recall/ags_route_dssi_audio.h \
+	src/ags/audio/recall/ags_route_dssi_audio_run.h \
+	src/ags/audio/recall/ags_route_lv2_audio.h \
+	src/ags/audio/recall/ags_route_lv2_audio_run.h \
 	src/ags/audio/recall/ags_stream_audio_signal.h \
 	src/ags/audio/recall/ags_stream_channel.h \
 	src/ags/audio/recall/ags_stream_channel_run.h \
@@ -643,6 +651,10 @@ libags_audio_recall_c_sources = \
 	src/ags/audio/recall/ags_play_recycling.c \
 	src/ags/audio/recall/ags_record_midi_audio.c \
 	src/ags/audio/recall/ags_record_midi_audio_run.c \
+	src/ags/audio/recall/ags_route_dssi_audio.c \
+	src/ags/audio/recall/ags_route_dssi_audio_run.c \
+	src/ags/audio/recall/ags_route_lv2_audio.c \
+	src/ags/audio/recall/ags_route_lv2_audio_run.c \
 	src/ags/audio/recall/ags_stream_audio_signal.c \
 	src/ags/audio/recall/ags_stream.c \
 	src/ags/audio/recall/ags_stream_channel.c \
