@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devout.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
@@ -28,6 +28,10 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_notation.h>
+
+#include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_client.h>
+#include <ags/audio/jack/ags_jack_port.h>
 
 #include <string.h>
 #include <math.h>

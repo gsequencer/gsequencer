@@ -28,7 +28,8 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_midiin.h>
-#include <ags/audio/ags_jack_midiin.h>
+
+#include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/X/ags_window.h>
 
