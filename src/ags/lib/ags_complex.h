@@ -32,8 +32,8 @@ GType ags_complex_get_type(void);
 
 AgsComplex* ags_complex_alloc();
 
-gpointer ags_complex_copy(AgsComplex *z);
-void ags_complex_free(AgsComplex *z);
+gpointer ags_complex_copy(AgsComplex *ptr);
+void ags_complex_free(AgsComplex *ptr);
 
 complex ags_complex_get(AgsComplex *ptr);
 void ags_complex_set(AgsComplex *ptr, complex z);

@@ -18,6 +18,16 @@
 
 #include <ags/lib/ags_complex.h>
 
+/**
+ * SECTION:ags_complex
+ * @short_description: Boxed type of complex
+ * @title: AgsComplex
+ * @section_id:
+ * @include: ags/lib/ags_complex.h
+ *
+ * GBoxed of complex data type.
+ */
+
 GType
 ags_complex_get_type(void)
 {
@@ -35,6 +45,15 @@ ags_complex_get_type(void)
   return(ags_define_type_id__volatile);
 }
 
+/**
+ * ags_complex_alloc:
+ *
+ * Allocate #AgsComplex
+ *
+ * Returns: a new #AgsComplex
+ *
+ * Since: 0.7.1
+ */
 AgsComplex*
 ags_complex_alloc()
 {
@@ -48,25 +67,53 @@ ags_complex_alloc()
   return(ptr);
 }
 
+/**
+ * ags_complex_copy:
+ * @ptr: the original #AgsCopy
+ *
+ * Create a copy of @ptr.
+ *
+ * Returns: a pointer of the new #AgsComplex
+ *
+ * Since: 0.7.1
+ */
 gpointer
-ags_complex_copy(AgsComplex *z)
+ags_complex_copy(AgsComplex *ptr)
 {
-  AgsComplex *new_z;
+  AgsComplex *new_ptr;
   
-  new_z = (AgsComplex *) malloc(sizeof(AgsComplex));
+  new_ptr = (AgsComplex *) malloc(sizeof(AgsComplex));
   
-  *new_z[0] = *z[0];
-  *new_z[1] = *z[1];
+  *new_ptr[0] = *ptr[0];
+  *new_ptr[1] = *ptr[1];
 
-  return(new_z);
+  return(new_ptr);
 }
 
+/**
+ * ags_complex_free:
+ * @ptr: the #AgsComplex
+ *
+ * Frees the memory of @ptr.
+ *
+ * Since: 0.7.1
+ */
 void
-ags_complex_free(AgsComplex *z)
+ags_complex_free(AgsComplex *ptr)
 {
-  g_free(z);
+  g_free(ptr);
 }
 
+/**
+ * ags_complex_get:
+ * @ptr: the #AgsComplex
+ * 
+ * Get complex number.
+ *
+ * Returns: number as complex data type
+ *
+ * Since: 0.7.1
+ */
 complex
 ags_complex_get(AgsComplex *ptr)
 {
@@ -77,6 +124,15 @@ ags_complex_get(AgsComplex *ptr)
   return(z);
 }
 
+/**
+ * ags_complex_get:
+ * @ptr: the #AgsComplex
+ * @z: the complex data to set
+ * 
+ * Set complex number.
+ *
+ * Since: 0.7.1
+ */
 void
 ags_complex_set(AgsComplex *ptr, complex z)
 {

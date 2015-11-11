@@ -146,10 +146,35 @@ ags_note_finalize(GObject *gobject)
 /**
  * ags_note_to_seq_event:
  * @note: the #AgsNote
+ * @buffer_length: the length of the returned buffer
+ * 
+ * Convert @note to raw MIDI and set the buffer length of returned bytes
+ * in the array as @buffer_length.
+ *
+ * Returns: The sequencer raw midi as array.
+ *
+ * Since: 0.7.1
+ */
+char*
+ags_note_to_raw_midi(AgsNote *note,
+		     guint *buffer_length)
+{
+  char *raw_midi;
+
+  raw_midi = NULL;
+
+  //TODO:JK: implement me
+
+  return(raw_midi);
+}
+
+/**
+ * ags_note_to_seq_event:
+ * @note: the #AgsNote
  * @n_events: the count of events
  * 
  * Convert @note to ALSA sequencer events and set the number of events
- * in the array in @n_events.
+ * in the array as @n_events.
  *
  * Returns: The sequencer events as array.
  *
@@ -180,7 +205,7 @@ ags_note_to_seq_event(AgsNote *note,
  * Since: 0.7.1
  */
 GList*
-ags_note_from_raw_midi(char raw_midi,
+ags_note_from_raw_midi(char *raw_midi,
 		       guint length)
 {
   GList *list;

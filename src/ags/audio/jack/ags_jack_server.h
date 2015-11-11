@@ -32,13 +32,8 @@
 #define AGS_IS_JACK_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_JACK_SERVER))
 #define AGS_JACK_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_SERVER, AgsJackServerClass))
 
-#define AGS_JACK_CLIENT(ptr) ((AgsJackClient *)(ptr))
-#define AGS_JACK_PORT(ptr) ((AgsJackPort *)(ptr))
-
 typedef struct _AgsJackServer AgsJackServer;
 typedef struct _AgsJackServerClass AgsJackServerClass;
-typedef struct _AgsJackClient AgsJackClient;
-typedef struct _AgsJackPort AgsJackPort;
 
 typedef enum{
   AGS_JACK_SERVER_CONNECTED       = 1,
@@ -56,6 +51,9 @@ struct _AgsJackServer
   guint n_soundcards;
   guint n_sequencers;
   
+  GObject *default_soundcard;  
+
+  GObject *default_client;
   GList *client;
 };
 
@@ -64,39 +62,7 @@ struct _AgsJackServerClass
   GObjectClass object;
 };
 
-struct _AgsJackClient
-{
-  gboolean default_client;
-  
-  gchar *uuid;
-  
-  jack_client_t *client;
-
-  GList *port;
-};
-
-struct _AgsJackPort
-{
-  gchar *uuid;
-  gchar *name;
-  gchar *uri;
-  
-  jack_port_t *port;
-  
-  GObject *gobject;
-};
-
 GType ags_jack_server_get_type();
-
-AgsJackClient* ags_jack_client_alloc();
-void ags_jack_client_free(AgsJackClient *jack_client);
-
-AgsJackPort* ags_jack_port_alloc();
-void ags_jack_port_free(AgsJackPort *jack_port);
-
-AgsJackClient* ags_jack_server_find_default_client(AgsJackServer *jack_server);
-
-GObject* ags_jack_server_register_default_soundcard(AgsJackServer *jack_server);
 
 AgsJackServer* ags_jack_server_new(GObject *application_context,
 				   gchar *url);

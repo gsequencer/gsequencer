@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/ags_jack_midiin.h>
+#include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
@@ -29,7 +29,10 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_jack_server.h>
+
+#include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_client.h>
+#include <ags/audio/jack/ags_jack_port.h>
 
 #include <string.h>
 #include <math.h>
@@ -793,7 +796,7 @@ ags_jack_midiin_list_cards(AgsSequencer *sequencer,
       list = AGS_JACK_CLIENT(client->data)->port;
 
       while(list != NULL){
-	if(AGS_IS_JACK_MIDIIN(AGS_JACK_PORT(list->data)->gobject)){
+	if(AGS_IS_JACK_MIDIIN(AGS_JACK_PORT(list->data)->device)){
 	  *card_id = g_list_prepend(*card_id,
 				    g_strdup(AGS_JACK_PORT(list->data)->uuid));
 	  *card_name = g_list_prepend(*card_name,

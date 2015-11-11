@@ -35,8 +35,9 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_midiin.h>
-#include <ags/audio/ags_jack_midiin.h>
-#include <ags/audio/ags_jack_server.h>
+
+#include <ags/audio/jack/ags_jack_midiin.h>
+#include <ags/audio/jack/ags_jack_server.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
 

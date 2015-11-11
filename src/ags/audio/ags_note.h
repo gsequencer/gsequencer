@@ -73,10 +73,12 @@ struct _AgsNoteClass
 
 GType ags_note_get_type();
 
-snd_seq_event_t *ags_note_to_seq_event(AgsNote *note,
+char* ags_note_to_raw_midi(AgsNote *note,
+			   guint *buffer_length);
+snd_seq_event_t* ags_note_to_seq_event(AgsNote *note,
 				       guint *n_events);
 
-GList* ags_note_from_raw_midi(char raw_midi,
+GList* ags_note_from_raw_midi(char *raw_midi,
 			      guint length);
 GList* ags_note_from_seq_event(snd_seq_event_t *event,
 			       guint n_events);

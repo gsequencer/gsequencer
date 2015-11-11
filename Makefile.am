@@ -81,8 +81,8 @@ libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sou
 libags_thread_la_HEADERS = $(libags_thread_h_headers) $(libags_thread_file_h_headers) $(libags_thread_task_h_headers)
 libags_server_la_SOURCES = $(libags_server_c_sources)
 libags_server_la_HEADERS = $(libags_server_h_headers)
-libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
-libags_audio_la_HEADERS = $(libags_audio_h_headers) $(libags_audio_thread_h_headers) $(libags_audio_file_h_headers) $(libags_audio_midi_h_headers) $(libags_audio_task_h_headers) $(libags_audio_task_recall_h_headers) $(libags_audio_recall_h_headers)  $(libags_plugin_h_headers)
+libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
+libags_audio_la_HEADERS = $(libags_audio_h_headers) $(libags_audio_thread_h_headers) $(libags_audio_file_h_headers) $(libags_audio_midi_h_headers) $(libags_audio_jack_h_headers) $(libags_audio_task_h_headers) $(libags_audio_task_recall_h_headers) $(libags_audio_recall_h_headers)  $(libags_plugin_h_headers)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS = $(libags_gui_h_headers)
 libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
@@ -347,9 +347,6 @@ libags_audio_h_sources = \
 	src/ags/audio/ags_devout.h \
 	src/ags/audio/ags_effect.h \
 	src/ags/audio/ags_input.h \
-	src/ags/audio/ags_jack_midiin.h \
-	src/ags/audio/ags_jack_devout.h \
-	src/ags/audio/ags_jack_server.h \
 	src/ags/audio/ags_libao.h \
 	src/ags/audio/ags_message.h \
 	src/ags/audio/ags_midiin.h \
@@ -398,9 +395,6 @@ libags_audio_c_sources = \
 	src/ags/audio/ags_channel_iter.c \
 	src/ags/audio/ags_devout.c \
 	src/ags/audio/ags_input.c \
-	src/ags/audio/ags_jack_midiin.c \
-	src/ags/audio/ags_jack_devout.c \
-	src/ags/audio/ags_jack_server.c \
 	src/ags/audio/ags_libao.c \
 	src/ags/audio/ags_message.c \
 	src/ags/audio/ags_midiin.c \
@@ -534,6 +528,27 @@ libags_audio_midi_c_sources = \
 	src/ags/audio/midi/ags_midi_parser.c \
 	src/ags/audio/midi/ags_midi_file_reader.c \
 	src/ags/audio/midi/ags_midi_file_writer.c
+
+# libags-audio - jack
+deprecated_libags_audio_jack_h_sources =
+
+libags_audio_jack_h_sources = \
+	$(deprecated_libags_audio_jack_h_sources) \
+	src/ags/audio/jack/ags_jack_client.h
+	src/ags/audio/jack/ags_jack_midiin.h \
+	src/ags/audio/jack/ags_jack_devout.h \
+	src/ags/audio/jack/ags_jack_port.h \
+	src/ags/audio/jack/ags_jack_server.h
+
+deprecated_libags_audio_jack_c_sources =
+
+libags_audio_jack_c_sources = \
+	$(deprecated_libags_audio_jack_c_sources) \
+	src/ags/audio/jack/ags_jack_client.c \
+	src/ags/audio/jack/ags_jack_midiin.c \
+	src/ags/audio/jack/ags_jack_devout.c \
+	src/ags/audio/jack/ags_jack_port.c \
+	src/ags/audio/jack/ags_jack_server.c
 
 # libags-audio - recall
 deprecated_libags_audio_recall_h_sources =
