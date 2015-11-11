@@ -107,12 +107,17 @@ ags_note_init(AgsNote *note)
   note->x[1] = 0;
   note->y = 0;
 
-  note->attack = 1.0;
-  note->decay = 1.0;
-  note->sustain = 1.0;
-  note->release = 1.0;
+  ags_complex_set(&(note->attack),
+		  1.0);
+  ags_complex_set(&(note->decay),
+		  1.0);
+  ags_complex_set(&(note->sustain),
+		  1.0);  
+  ags_complex_set(&(note->release),
+		  1.0);
 
-  note->ratio = 1.0;
+  ags_complex_set(&(note->ratio),
+		  1.0);
   
   note->name = NULL;
   note->frequency = 440.0;
@@ -234,12 +239,20 @@ ags_note_duplicate(AgsNote *note)
   copy->x[1] = note->x[1];
   copy->y = note->y;
 
-  copy->attack = note->attack;
-  copy->decay = note->decay;
-  copy->sustain = note->sustain;
-  copy->release = note->release;
+  copy->attack[0] = note->attack[0];
+  copy->attack[1] = note->attack[1];
 
-  copy->ratio = note->ratio;
+  copy->decay[0] = note->decay[0];
+  copy->decay[1] = note->decay[1];
+
+  copy->sustain[0] = note->sustain[0];
+  copy->sustain[1] = note->sustain[1];
+
+  copy->release[0] = note->release[0];
+  copy->release[1] = note->release[1];
+
+  copy->ratio[0] = note->ratio[0];
+  copy->ratio[1] = note->ratio[1];
 
   return(copy);
 }

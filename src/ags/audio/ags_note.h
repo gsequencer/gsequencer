@@ -25,6 +25,8 @@
 
 #include <alsa/asoundlib.h>
 
+#include <ags/lib/ags_complex.h>
+
 #define AGS_TYPE_NOTE                (ags_note_get_type())
 #define AGS_NOTE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTE, AgsNote))
 #define AGS_NOTE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTE, AgsNoteClass))
@@ -53,12 +55,12 @@ struct _AgsNote
   guint x[2];
   guint y;
 
-  gdouble attack;
-  gdouble decay;
-  gdouble sustain;
-  gdouble release;
+  AgsComplex attack;
+  AgsComplex decay;
+  AgsComplex sustain;
+  AgsComplex release;
   
-  gdouble ratio;
+  AgsComplex ratio;
   
   gchar *name;
   gdouble frequency;

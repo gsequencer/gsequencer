@@ -141,6 +141,7 @@ deprecated_libags_h_sources =
 libags_h_sources = \
 	$(deprecated_libags_h_sources) \
 	src/ags/lib/ags_combo_box_text.h \
+	src/ags/lib/ags_complex.h \
 	src/ags/lib/ags_container.h \
 	src/ags/lib/ags_parameter.h \
 	src/ags/lib/ags_turtle.h
@@ -150,6 +151,7 @@ deprecated_libags_c_sources =
 libags_c_sources = \
 	$(deprecated_libags_c_sources) \
 	src/ags/lib/ags_combo_box_text.c \
+	src/ags/lib/ags_complex.c \
 	src/ags/lib/ags_container.c \
 	src/ags/lib/ags_parameter.c \
 	src/ags/lib/ags_turtle.c
