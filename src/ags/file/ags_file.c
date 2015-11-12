@@ -632,6 +632,8 @@ ags_file_real_open(AgsFile *file)
   file->doc = xmlReadFile(file->filename, NULL, 0);
 
   if(file->doc == NULL){
+    //TODO:JK: move code
+    /*
     GtkDialog *dialog;
     
     g_warning("could not parse file %s\n", file->filename);
@@ -646,6 +648,10 @@ ags_file_real_open(AgsFile *file)
     g_signal_connect(dialog, "response\0",
 		     G_CALLBACK(gtk_main_quit), NULL);
     gtk_main();
+    */
+
+    g_warning("ags_file.c - failed to read XML documen %s\0", file->filename);
+
     exit(-1);
   }
 
@@ -675,6 +681,8 @@ ags_file_real_open_from_data(AgsFile *file,
   file->doc = xmlReadMemory(data, length, file->filename, NULL, 0);
 
   if(file->doc == NULL) {
+    //TODO:JK: move code
+    /*
     GtkDialog *dialog;
     
     g_warning("could not parse file %s\n", file->filename);
@@ -689,6 +697,10 @@ ags_file_real_open_from_data(AgsFile *file,
     g_signal_connect(dialog, "response\0",
 		     G_CALLBACK(gtk_main_quit), NULL);
     gtk_main();
+    */
+    
+    g_warning("ags_file.c - failed to read XML documen %s\0", file->filename);
+
     exit(-1);
   }
 

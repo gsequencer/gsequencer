@@ -22,9 +22,6 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_notation.h>
 
 #include <stdlib.h>
 
@@ -218,15 +215,6 @@ ags_history_browser_connect(AgsConnectable *connectable)
   AgsHistoryBrowser *history_browser;
 
   history_browser = AGS_HISTORY_BROWSER(connectable);
-
-  g_signal_connect_after(G_OBJECT(history_browser->file_chooser_button), "clicked\0",
-			 G_CALLBACK(ags_history_browser_file_chooser_button_callback), history_browser);
-
-  g_signal_connect_after(G_OBJECT(history_browser->tact), "value-changed\0",
-			 G_CALLBACK(ags_history_browser_tact_callback), history_browser);
-
-  g_signal_connect_after(G_OBJECT(history_browser->export), "clicked\0",
-			 G_CALLBACK(ags_history_browser_export_callback), history_browser);
 }
 
 void

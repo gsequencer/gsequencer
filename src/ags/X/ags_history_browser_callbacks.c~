@@ -17,26 +17,3 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_SYNTH_H__
-#define __AGS_SYNTH_H__
-
-#include <glib.h>
-#include <glib-object.h>
-
-#include <ags/object/ags_soundcard.h>
-
-void ags_synth_sin(GObject *soundcard, signed short *buffer, guint offset,
-		   guint freq, guint phase, guint length,
-		   double volume);
-
-void ags_synth_saw(GObject *soundcard, signed short *buffer, guint offset,
-		   guint freq, guint phase, guint length,
-		   double volume);
-void ags_synth_triangle(GObject *soundcard, signed short *buffer, guint offset,
-			guint freq, guint phase, guint length,
-			double volume);
-void ags_synth_square(GObject *soundcard, signed short *buffer, guint offset,
-		      guint freq, guint phase, guint length,
-		      double volume);
-
-#endif /*__AGS_SYNTH_H__*/

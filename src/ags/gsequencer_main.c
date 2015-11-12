@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/gsequencer_main.h>
+#include "gsequencer_main.h"
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>

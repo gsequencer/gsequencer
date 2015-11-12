@@ -17,26 +17,14 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_SYNTH_H__
-#define __AGS_SYNTH_H__
+#ifndef __AGS_HISTORY_BROWSER_CALLBACKS_H__
+#define __AGS_HISTORY_BROWSER_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gtk/gtk.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/X/ags_history_browser.h>
 
-void ags_synth_sin(GObject *soundcard, signed short *buffer, guint offset,
-		   guint freq, guint phase, guint length,
-		   double volume);
 
-void ags_synth_saw(GObject *soundcard, signed short *buffer, guint offset,
-		   guint freq, guint phase, guint length,
-		   double volume);
-void ags_synth_triangle(GObject *soundcard, signed short *buffer, guint offset,
-			guint freq, guint phase, guint length,
-			double volume);
-void ags_synth_square(GObject *soundcard, signed short *buffer, guint offset,
-		      guint freq, guint phase, guint length,
-		      double volume);
-
-#endif /*__AGS_SYNTH_H__*/
+#endif /*__AGS_HISTORY_BROWSER_CALLBACKS_H__*/

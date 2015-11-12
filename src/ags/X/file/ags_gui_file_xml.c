@@ -27,8 +27,6 @@
 
 #include <ags/plugin/ags_plugin_factory.h>
 
-#include <ags/lib/ags_container.h>
-
 #include <ags/object/ags_plugin.h>
 
 #include <ags/util/ags_id_generator.h>
@@ -45,6 +43,8 @@
 
 #include <ags/audio/recall/ags_peak_channel.h>
 #include <ags/audio/recall/ags_peak_channel_run.h>
+
+#include <ags/widget/ags_container.h>
 
 #include <ags/X/ags_line_callbacks.h>
 

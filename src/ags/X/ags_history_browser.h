@@ -43,6 +43,8 @@ struct _AgsHistoryBrowser
   GtkWindow window;
 
   guint flags;
+
+  GObject *application_context;
 };
 
 struct _AgsHistoryBrowserClass

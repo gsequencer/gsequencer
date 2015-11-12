@@ -800,9 +800,12 @@ ags_file_util_read_object(AgsFile *file,
       }else if(!xmlStrncmp(child->name,
 			   "ags-widget\0",
 			   11)){
+	//FIXME:JK: 
+	/*
 	ags_file_read_widget(file,
 			     child,
 			     gobject);
+	*/
       }
     }
 
@@ -881,12 +884,15 @@ ags_file_util_write_object(AgsFile *file,
 				ags_id_generator_create_uuid(),
 				parameter, n_properties);
 
+  //FIXME:JK: 
+  /*
   if(GTK_IS_WIDGET(gobject)){
     ags_file_write_widget(file,
 			  node,
 			  GTK_WIDGET(gobject));
   }
-
+  */
+  
   return(node);
 }
 

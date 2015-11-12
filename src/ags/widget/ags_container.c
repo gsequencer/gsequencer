@@ -17,26 +17,34 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_SYNTH_H__
-#define __AGS_SYNTH_H__
+#include <ags/widget/ags_container.h>
 
-#include <glib.h>
-#include <glib-object.h>
+/**
+ * SECTION:ags_container
+ * @short_description: Complete GtkContainer
+ * @title: AgsContainer
+ * @section_id:
+ * @include: ags/widget/ags_container.h
+ *
+ * Functions completing #GtkContainer API.
+ */
 
-#include <ags/object/ags_soundcard.h>
+/**
+ * ags_container_remove_all:
+ * @container: the #GtkContainer
+ * 
+ * Adds all #GtkWidget pointed by #GList to @container. 
+ *
+ * Since: 0.4
+ */
+void
+ags_container_add_all(GtkContainer *container,
+		      GList *list)
+{
+  while(list != NULL){
+    gtk_container_add(container,
+		      GTK_WIDGET(list->data));
 
-void ags_synth_sin(GObject *soundcard, signed short *buffer, guint offset,
-		   guint freq, guint phase, guint length,
-		   double volume);
-
-void ags_synth_saw(GObject *soundcard, signed short *buffer, guint offset,
-		   guint freq, guint phase, guint length,
-		   double volume);
-void ags_synth_triangle(GObject *soundcard, signed short *buffer, guint offset,
-			guint freq, guint phase, guint length,
-			double volume);
-void ags_synth_square(GObject *soundcard, signed short *buffer, guint offset,
-		      guint freq, guint phase, guint length,
-		      double volume);
-
-#endif /*__AGS_SYNTH_H__*/
+    list = list->next;
+  }
+}

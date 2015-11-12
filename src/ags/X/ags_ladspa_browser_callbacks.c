@@ -20,8 +20,6 @@
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/lib/ags_combo_box_text.h>
-
 #include <ags/object/ags_applicable.h>
 
 #include <dlfcn.h>
@@ -51,7 +49,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   filename = GTK_COMBO_BOX(list->next->data);
   effect = GTK_COMBO_BOX(list->next->next->next->data);
 
-  ags_combo_box_text_remove_all(effect);
+  gtk_list_store_clear(GTK_LIST_STORE(effect));
 
   ags_ladspa_manager_load_file(gtk_combo_box_text_get_active_text(filename));
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename));

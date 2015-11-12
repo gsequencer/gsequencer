@@ -20,7 +20,6 @@
 #include <ags/audio/ags_recall_audio_signal.h>
 #include <ags/audio/ags_recall_recycling.h>
 
-#include <ags/lib/ags_list.h>
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_connectable.h>

@@ -17,34 +17,4 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/lib/ags_container.h>
-
-/**
- * SECTION:ags_container
- * @short_description: Complete GtkContainer
- * @title: AgsContainer
- * @section_id:
- * @include: ags/lib/ags_container.h
- *
- * Functions completing #GtkContainer API.
- */
-
-/**
- * ags_container_remove_all:
- * @container: the #GtkContainer
- * 
- * Adds all #GtkWidget pointed by #GList to @container. 
- *
- * Since: 0.4
- */
-void
-ags_container_add_all(GtkContainer *container,
-		      GList *list)
-{
-  while(list != NULL){
-    gtk_container_add(container,
-		      GTK_WIDGET(list->data));
-
-    list = list->next;
-  }
-}
+#include <ags/X/ags_history_browser_callbacks.h>

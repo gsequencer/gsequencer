@@ -687,7 +687,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     GError *error;
 
     /* clear preset, instrument and sample*/
-    ags_combo_box_text_remove_all(ffplayer->instrument);
+    gtk_list_store_clear(GTK_LIST_STORE(ffplayer->instrument));
 
     /* Ipatch related */
     ffplayer->ipatch =
