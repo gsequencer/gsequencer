@@ -12,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsMidiFileWriter</refname>
-<refpurpose>the menu bar.</refpurpose>
+<refpurpose>the MIDI file writer</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsMidiFileWriter.functions" role="functions_proto">

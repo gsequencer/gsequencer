@@ -21,6 +21,16 @@
 
 void ags_distributed_manager_class_init(AgsDistributedManagerInterface *interface);
 
+/**
+ * SECTION:ags_distributed_manager
+ * @short_description: unique access to recalls
+ * @title: AgsDistributedManager
+ * @section_id:
+ * @include: ags/object/ags_distributed_manager.h
+ *
+ * The #AgsDistributed_Manager interface gives you a unique access distributed resources.
+ */
+
 GType
 ags_distributed_manager_get_type()
 {
@@ -50,7 +60,7 @@ ags_distributed_manager_class_init(AgsDistributedManagerInterface *interface)
  *
  * Sets the url of @distributed_manager.
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 void
 ags_distributed_manager_set_url(AgsDistributedManager *distributed_manager,
@@ -74,7 +84,7 @@ ags_distributed_manager_set_url(AgsDistributedManager *distributed_manager,
  *
  * Returns: the URL as string
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 gchar*
 ags_distributed_manager_get_url(AgsDistributedManager *distributed_manager)
@@ -95,7 +105,7 @@ ags_distributed_manager_get_url(AgsDistributedManager *distributed_manager)
  *
  * Sets the ports of @distributed_manager.
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 void
 ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
@@ -119,7 +129,7 @@ ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
  *
  * Returns: the port as string %NULL-terminated array
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 gchar**
 ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager)
@@ -141,7 +151,7 @@ ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager)
  *
  * Sets the soundcard at @uri.
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 void
 ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager,
@@ -168,7 +178,7 @@ ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager
  *
  * Returns: the soundcard as #GObject
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 GObject*
 ags_distributed_manager_get_soundcard(AgsDistributedManager *distributed_manager,
@@ -192,7 +202,7 @@ ags_distributed_manager_get_soundcard(AgsDistributedManager *distributed_manager
  *
  * Sets the sequencer at @uri.
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 void
 ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_manager,
@@ -219,7 +229,7 @@ ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_manager
  *
  * Returns: the sequencer as #GObject
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 GObject*
 ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager,
@@ -244,7 +254,7 @@ ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager
  *
  * Returns: a new #AgsSoundcard
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 GObject*
 ags_distributed_manager_register_soundcard(AgsDistributedManager *distributed_manager,
@@ -267,7 +277,7 @@ ags_distributed_manager_register_soundcard(AgsDistributedManager *distributed_ma
  *
  * Releases @soundcard in @distributed_manager.
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 void
 ags_distributed_manager_unregister_soundcard(AgsDistributedManager *distributed_manager,
@@ -292,7 +302,7 @@ ags_distributed_manager_unregister_soundcard(AgsDistributedManager *distributed_
  *
  * Returns: a new #AgsSequencer
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 GObject*
 ags_distributed_manager_register_sequencer(AgsDistributedManager *distributed_manager,
@@ -315,7 +325,7 @@ ags_distributed_manager_register_sequencer(AgsDistributedManager *distributed_ma
  *
  * Releases @sequencer in @distributed_manager.
  *
- * Since: 0.7.0
+ * Since: 0.7.1
  */
 void
 ags_distributed_manager_unregister_sequencer(AgsDistributedManager *distributed_manager,

@@ -23,6 +23,16 @@
 
 void ags_sequencer_class_init(AgsSequencerInterface *interface);
 
+/**
+ * SECTION:ags_sequencer
+ * @short_description: unique access to sequencers
+ * @title: AgsSequencer
+ * @section_id:
+ * @include: ags/object/ags_sequencer.h
+ *
+ * The #AgsSequencer interface gives you a unique access to MIDI devices.
+ */
+
 GType
 ags_sequencer_get_type()
 {

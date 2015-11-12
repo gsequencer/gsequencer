@@ -585,9 +585,71 @@ ags_file_add_launch (<em class="parameter"><code><a class="link" href="AgsFile.h
 <a name="ags-file-open"></a><h3>ags_file_open ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_open (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
-<p>Opens the file specified by :filename property in read-write mode.</p>
+<p>Opens the file specified by :filename property.</p>
 <div class="refsect3">
 <a name="id-1.5.3.10.10.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-open-from-data"></a><h3>ags_file_open_from_data ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_open_from_data (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *data</code></em>,
+                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> length</code></em>);</pre>
+<p>Opens the file provided by <em class="parameter"><code>data</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.11.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>data</p></td>
+<td class="parameter_description"><p>a buffer containing the XML document</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>length</p></td>
+<td class="parameter_description"><p>the buffer length</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-file-rw-open"></a><h3>ags_file_rw_open ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_file_rw_open (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
+                  <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> create</code></em>);</pre>
+<p>Opens the file specified by :filename property in read-write mode.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.12.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -609,21 +671,6 @@ ags_file_open (<em class="parameter"><code><a class="link" href="AgsFile.html" t
 </table></div>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
-</div>
-<hr>
-<div class="refsect2">
-<a name="ags-file-open-from-data"></a><h3>ags_file_open_from_data ()</h3>
-<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-ags_file_open_from_data (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
-                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *data</code></em>,
-                         <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> length</code></em>);</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="ags-file-rw-open"></a><h3>ags_file_rw_open ()</h3>
-<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-ags_file_rw_open (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
-                  <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> create</code></em>);</pre>
 </div>
 <hr>
 <div class="refsect2">

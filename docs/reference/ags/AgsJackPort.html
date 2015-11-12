@@ -29,7 +29,7 @@
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2><span class="refentrytitle"><a name="AgsJackPort.top_of_page"></a>AgsJackPort</span></h2>
-<p>AgsJackPort</p>
+<p>AgsJackPort — JACK resource.</p>
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
@@ -96,7 +96,14 @@
 </pre>
 </div>
 <div class="refsect1">
+<a name="AgsJackPort.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/jack_port/ags_jack_port.h&gt;
+</pre>
+</div>
+<div class="refsect1">
 <a name="AgsJackPort.description"></a><h2>Description</h2>
+<p>The <a class="link" href="AgsJackPort.html" title="AgsJackPort"><span class="type">AgsJackPort</span></a> represents either a JACK sequencer or soundcard to communicate
+with.</p>
 </div>
 <div class="refsect1">
 <a name="AgsJackPort.functions_details"></a><h2>Functions</h2>
@@ -110,7 +117,7 @@ ags_jack_port_register (<em class="parameter"><code><a class="link" href="AgsJac
                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> is_output</code></em>);</pre>
 <p>Register a new JACK port.</p>
 <div class="refsect3">
-<a name="id-1.9.42.4.8.2.5"></a><h4>Parameters</h4>
+<a name="id-1.9.42.4.9.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -150,7 +157,7 @@ ags_jack_port_register (<em class="parameter"><code><a class="link" href="AgsJac
 ags_jack_port_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *jack_client</code></em>);</pre>
 <p>Instantiate a new <a class="link" href="AgsJackPort.html" title="AgsJackPort"><span class="type">AgsJackPort</span></a>.</p>
 <div class="refsect3">
-<a name="id-1.9.42.4.8.3.5"></a><h4>Parameters</h4>
+<a name="id-1.9.42.4.9.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -165,7 +172,7 @@ ags_jack_port_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span 
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.42.4.8.3.6"></a><h4>Returns</h4>
+<a name="id-1.9.42.4.9.3.6"></a><h4>Returns</h4>
 <p> the new <a class="link" href="AgsJackPort.html" title="AgsJackPort"><span class="type">AgsJackPort</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
@@ -176,7 +183,7 @@ ags_jack_port_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span 
 <div class="refsect2">
 <a name="AgsJackPortFlags"></a><h3>enum AgsJackPortFlags</h3>
 <div class="refsect3">
-<a name="id-1.9.42.4.9.2.3"></a><h4>Members</h4>
+<a name="id-1.9.42.4.10.2.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">

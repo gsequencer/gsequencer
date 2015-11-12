@@ -28,7 +28,7 @@
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2><span class="refentrytitle"><a name="AgsDistributedManager.top_of_page"></a>AgsDistributedManager</span></h2>
-<p>AgsDistributedManager</p>
+<p>AgsDistributedManager — unique access to recalls</p>
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
@@ -146,7 +146,13 @@
 </pre>
 </div>
 <div class="refsect1">
+<a name="AgsDistributedManager.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/object/ags_distributed_manager.h&gt;
+</pre>
+</div>
+<div class="refsect1">
 <a name="AgsDistributedManager.description"></a><h2>Description</h2>
+<p>The <GTKDOCLINK HREF="AgsDistributed-Manager"><span class="type">AgsDistributed_Manager</span></GTKDOCLINK> interface gives you a unique access distributed resources.</p>
 </div>
 <div class="refsect1">
 <a name="AgsDistributedManager.functions_details"></a><h2>Functions</h2>
@@ -158,7 +164,7 @@ ags_distributed_manager_set_url (<em class="parameter"><code><a class="link" hre
 <p>Sets the url of <em class="parameter"><code>distributed_manager</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -179,7 +185,7 @@ ags_distributed_manager_set_url (<em class="parameter"><code><a class="link" hre
 </tbody>
 </table></div>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -189,7 +195,7 @@ ags_distributed_manager_get_url (<em class="parameter"><code><a class="link" hre
 <p>Gets the URL of <em class="parameter"><code>distributed_manager</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -204,10 +210,10 @@ ags_distributed_manager_get_url (<em class="parameter"><code><a class="link" hre
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.9.6.3.6"></a><h4>Returns</h4>
+<a name="id-1.4.9.7.3.6"></a><h4>Returns</h4>
 <p> the URL as string</p>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -218,7 +224,7 @@ ags_distributed_manager_set_ports (<em class="parameter"><code><a class="link" h
 <p>Sets the ports of <em class="parameter"><code>distributed_manager</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.4.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -239,7 +245,7 @@ ags_distributed_manager_set_ports (<em class="parameter"><code><a class="link" h
 </tbody>
 </table></div>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -249,7 +255,7 @@ ags_distributed_manager_get_ports (<em class="parameter"><code><a class="link" h
 <p>Gets the ports of <em class="parameter"><code>distributed_manager</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.5.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -264,10 +270,10 @@ ags_distributed_manager_get_ports (<em class="parameter"><code><a class="link" h
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.9.6.5.6"></a><h4>Returns</h4>
+<a name="id-1.4.9.7.5.6"></a><h4>Returns</h4>
 <p> the port as string <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK>-terminated array</p>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -279,7 +285,7 @@ ags_distributed_manager_set_soundcard (<em class="parameter"><code><a class="lin
 <p>Sets the soundcard at <em class="parameter"><code>uri</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.6.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -305,7 +311,7 @@ ags_distributed_manager_set_soundcard (<em class="parameter"><code><a class="lin
 </tbody>
 </table></div>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -317,7 +323,7 @@ ags_distributed_manager_get_soundcard (<em class="parameter"><code><a class="lin
  associated with <em class="parameter"><code>uri</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.7.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -339,10 +345,10 @@ ags_distributed_manager_get_soundcard (<em class="parameter"><code><a class="lin
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.9.6.7.6"></a><h4>Returns</h4>
+<a name="id-1.4.9.7.7.6"></a><h4>Returns</h4>
 <p> the soundcard as <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK></p>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -354,7 +360,7 @@ ags_distributed_manager_set_sequencer (<em class="parameter"><code><a class="lin
 <p>Sets the sequencer at <em class="parameter"><code>uri</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.8.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.8.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -380,7 +386,7 @@ ags_distributed_manager_set_sequencer (<em class="parameter"><code><a class="lin
 </tbody>
 </table></div>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -392,7 +398,7 @@ ags_distributed_manager_get_sequencer (<em class="parameter"><code><a class="lin
  associated with <em class="parameter"><code>uri</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.9.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.9.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -414,10 +420,10 @@ ags_distributed_manager_get_sequencer (<em class="parameter"><code><a class="lin
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.9.6.9.6"></a><h4>Returns</h4>
+<a name="id-1.4.9.7.9.6"></a><h4>Returns</h4>
 <p> the sequencer as <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK></p>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -430,7 +436,7 @@ ags_distributed_manager_register_soundcard
  of <em class="parameter"><code>distributed_manager</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.10.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.10.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -452,10 +458,10 @@ ags_distributed_manager_register_soundcard
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.9.6.10.6"></a><h4>Returns</h4>
+<a name="id-1.4.9.7.10.6"></a><h4>Returns</h4>
 <p> a new <a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a></p>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -468,7 +474,7 @@ ags_distributed_manager_unregister_soundcard
  in <em class="parameter"><code>distributed_manager</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.11.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.11.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -489,7 +495,7 @@ ags_distributed_manager_unregister_soundcard
 </tbody>
 </table></div>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -502,7 +508,7 @@ ags_distributed_manager_register_sequencer
  of <em class="parameter"><code>distributed_manager</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.12.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.12.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -524,10 +530,10 @@ ags_distributed_manager_register_sequencer
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.9.6.12.6"></a><h4>Returns</h4>
+<a name="id-1.4.9.7.12.6"></a><h4>Returns</h4>
 <p> a new <a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a></p>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -540,7 +546,7 @@ ags_distributed_manager_unregister_sequencer
  in <em class="parameter"><code>distributed_manager</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.9.6.13.5"></a><h4>Parameters</h4>
+<a name="id-1.4.9.7.13.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -561,7 +567,7 @@ ags_distributed_manager_unregister_sequencer
 </tbody>
 </table></div>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.1">0.7.1</GTKDOCLINK></p>
 </div>
 </div>
 <div class="refsect1">

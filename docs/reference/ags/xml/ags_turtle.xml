@@ -12,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsTurtle</refname>
-<refpurpose>Boxed type of turtle</refpurpose>
+<refpurpose>Terse RDF Triple Language</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsTurtle.functions" role="functions_proto">
@@ -82,7 +82,7 @@
 
 <refsect1 id="AgsTurtle.description" role="desc">
 <title role="desc.title">Description</title>
-<para>The <link linkend="AgsTurtle"><type>AgsTurtle</type></link> object converts Tearse Triple Language files
+<para>The <link linkend="AgsTurtle"><type>AgsTurtle</type></link> object converts Terse RDF Triple Language files
 into XML.</para>
 
 </refsect1>

@@ -29,7 +29,7 @@
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2><span class="refentrytitle"><a name="AgsSequencer.top_of_page"></a>AgsSequencer</span></h2>
-<p>AgsSequencer</p>
+<p>AgsSequencer — unique access to sequencers</p>
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
@@ -350,7 +350,13 @@
 </pre>
 </div>
 <div class="refsect1">
+<a name="AgsSequencer.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/object/ags_sequencer.h&gt;
+</pre>
+</div>
+<div class="refsect1">
 <a name="AgsSequencer.description"></a><h2>Description</h2>
+<p>The <a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> interface gives you a unique access to MIDI devices.</p>
 </div>
 <div class="refsect1">
 <a name="AgsSequencer.functions_details"></a><h2>Functions</h2>
@@ -433,7 +439,7 @@ ags_sequencer_set_application_context (<em class="parameter"><code><a class="lin
                                        <em class="parameter"><code><a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a> *application_context</code></em>);</pre>
 <p>Set application context.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.14.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.14.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -463,7 +469,7 @@ ags_sequencer_set_application_context (<em class="parameter"><code><a class="lin
 ags_sequencer_get_application_context (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get application context.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.15.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.15.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -478,7 +484,7 @@ ags_sequencer_get_application_context (<em class="parameter"><code><a class="lin
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.15.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.15.6"></a><h4>Returns</h4>
 <p> <a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -491,7 +497,7 @@ ags_sequencer_set_application_mutex (<em class="parameter"><code><a class="link"
                                      <em class="parameter"><code><GTKDOCLINK HREF="pthread-mutex-t"><span class="type">pthread_mutex_t</span></GTKDOCLINK> *application_mutex</code></em>);</pre>
 <p>Set application mutex.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.16.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.16.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -521,7 +527,7 @@ ags_sequencer_set_application_mutex (<em class="parameter"><code><a class="link"
 ags_sequencer_get_application_mutex (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get application mutex.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.17.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.17.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -536,7 +542,7 @@ ags_sequencer_get_application_mutex (<em class="parameter"><code><a class="link"
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.17.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.17.6"></a><h4>Returns</h4>
 <p> <GTKDOCLINK HREF="AgsApplicationMutex"><span class="type">AgsApplicationMutex</span></GTKDOCLINK></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -549,7 +555,7 @@ ags_sequencer_set_device (<em class="parameter"><code><a class="link" href="AgsS
                           <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *device_id</code></em>);</pre>
 <p>Set device.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.18.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.18.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -579,7 +585,7 @@ ags_sequencer_set_device (<em class="parameter"><code><a class="link" href="AgsS
 ags_sequencer_get_device (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get device.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.19.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.19.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -594,7 +600,7 @@ ags_sequencer_get_device (<em class="parameter"><code><a class="link" href="AgsS
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.19.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.19.6"></a><h4>Returns</h4>
 <p> the device's identifier</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -610,7 +616,7 @@ ags_sequencer_list_cards (<em class="parameter"><code><a class="link" href="AgsS
  and <em class="parameter"><code>card_name</code></em>
  as a list of strings.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.20.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.20.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -650,7 +656,7 @@ ags_sequencer_list_cards (<em class="parameter"><code><a class="link" href="AgsS
 ags_sequencer_is_starting (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get starting.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.21.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.21.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -665,7 +671,7 @@ ags_sequencer_is_starting (<em class="parameter"><code><a class="link" href="Ags
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.21.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.21.6"></a><h4>Returns</h4>
 <p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if starting, else <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -677,7 +683,7 @@ ags_sequencer_is_starting (<em class="parameter"><code><a class="link" href="Ags
 ags_sequencer_is_playing (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get playing.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.22.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.22.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -692,7 +698,7 @@ ags_sequencer_is_playing (<em class="parameter"><code><a class="link" href="AgsS
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.22.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.22.6"></a><h4>Returns</h4>
 <p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if playing, else <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -704,7 +710,7 @@ ags_sequencer_is_playing (<em class="parameter"><code><a class="link" href="AgsS
 ags_sequencer_is_recording (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get recording.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.23.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.23.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -719,7 +725,7 @@ ags_sequencer_is_recording (<em class="parameter"><code><a class="link" href="Ag
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.23.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.23.6"></a><h4>Returns</h4>
 <p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if recording, else <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -739,7 +745,7 @@ ags_sequencer_play (<em class="parameter"><code><a class="link" href="AgsSequenc
                     <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);</pre>
 <p>Plays the current buffer of sequencer.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.25.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.25.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -777,7 +783,7 @@ ags_sequencer_record (<em class="parameter"><code><a class="link" href="AgsSeque
                       <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);</pre>
 <p>Records the current buffer of sequencer.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.27.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.27.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -807,7 +813,7 @@ ags_sequencer_record (<em class="parameter"><code><a class="link" href="AgsSeque
 ags_sequencer_stop (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Stops the sequencer from playing to it.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.28.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.28.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -830,7 +836,7 @@ ags_sequencer_stop (<em class="parameter"><code><a class="link" href="AgsSequenc
 ags_sequencer_tic (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Callback when counter expires minor note offset.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.29.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.29.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -860,7 +866,7 @@ ags_sequencer_offset_changed (<em class="parameter"><code><a class="link" href="
 ags_sequencer_get_buffer (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get current playback buffer.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.31.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.31.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -875,7 +881,7 @@ ags_sequencer_get_buffer (<em class="parameter"><code><a class="link" href="AgsS
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.31.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.31.6"></a><h4>Returns</h4>
 <p> current playback buffer</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -887,7 +893,7 @@ ags_sequencer_get_buffer (<em class="parameter"><code><a class="link" href="AgsS
 ags_sequencer_get_next_buffer (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get future playback buffer.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.32.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.32.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -902,7 +908,7 @@ ags_sequencer_get_next_buffer (<em class="parameter"><code><a class="link" href=
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.32.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.32.6"></a><h4>Returns</h4>
 <p> next playback buffer</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -915,7 +921,7 @@ ags_sequencer_set_bpm (<em class="parameter"><code><a class="link" href="AgsSequ
                        <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> bpm</code></em>);</pre>
 <p>Set current playback bpm.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.33.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.33.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -945,7 +951,7 @@ ags_sequencer_set_bpm (<em class="parameter"><code><a class="link" href="AgsSequ
 ags_sequencer_get_bpm (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get current playback bpm.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.34.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.34.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -960,7 +966,7 @@ ags_sequencer_get_bpm (<em class="parameter"><code><a class="link" href="AgsSequ
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.34.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.34.6"></a><h4>Returns</h4>
 <p> bpm</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -973,7 +979,7 @@ ags_sequencer_set_delay_factor (<em class="parameter"><code><a class="link" href
                                 <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> delay_factor</code></em>);</pre>
 <p>Set current playback delay factor.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.35.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.35.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1003,7 +1009,7 @@ ags_sequencer_set_delay_factor (<em class="parameter"><code><a class="link" href
 ags_sequencer_get_delay_factor (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get current playback delay factor.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.36.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.36.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1018,7 +1024,7 @@ ags_sequencer_get_delay_factor (<em class="parameter"><code><a class="link" href
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.36.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.36.6"></a><h4>Returns</h4>
 <p> delay factor</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -1031,7 +1037,7 @@ ags_sequencer_set_note_offset (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> note_offset</code></em>);</pre>
 <p>Set current playback note offset.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.37.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.37.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1061,7 +1067,7 @@ ags_sequencer_set_note_offset (<em class="parameter"><code><a class="link" href=
 ags_sequencer_get_note_offset (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get current playback note offset.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.38.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.38.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1076,7 +1082,7 @@ ags_sequencer_get_note_offset (<em class="parameter"><code><a class="link" href=
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.38.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.38.6"></a><h4>Returns</h4>
 <p> offset</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -1089,7 +1095,7 @@ ags_sequencer_set_audio (<em class="parameter"><code><a class="link" href="AgsSe
                          <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *audio</code></em>);</pre>
 <p>Set audio.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.39.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.39.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1119,7 +1125,7 @@ ags_sequencer_set_audio (<em class="parameter"><code><a class="link" href="AgsSe
 ags_sequencer_get_audio (<em class="parameter"><code><a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> *sequencer</code></em>);</pre>
 <p>Get audio.</p>
 <div class="refsect3">
-<a name="id-1.4.17.8.40.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.9.40.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1134,7 +1140,7 @@ ags_sequencer_get_audio (<em class="parameter"><code><a class="link" href="AgsSe
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.17.8.40.6"></a><h4>Returns</h4>
+<a name="id-1.4.17.9.40.6"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> container <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -1159,7 +1165,7 @@ user_function (<a class="link" href="AgsSequencer.html" title="AgsSequencer"><sp
 <p>The ::offset-changed signal notifies about changed position within
 notation.</p>
 <div class="refsect3">
-<a name="id-1.4.17.10.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.11.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1196,7 +1202,7 @@ user_function (<a class="link" href="AgsSequencer.html" title="AgsSequencer"><sp
 <p>The ::tic signal is emitted every tic of the sequencer. This notifies
 about a newly played buffer.</p>
 <div class="refsect3">
-<a name="id-1.4.17.10.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.17.11.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">

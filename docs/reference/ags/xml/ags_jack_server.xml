@@ -12,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsJackServer</refname>
-<refpurpose></refpurpose>
+<refpurpose>JACK instance</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsJackServer.functions" role="functions_proto">
@@ -64,9 +64,12 @@
 </screen>
 </refsect1>
 
+<refsect1 id="AgsJackServer.includes"><title>Includes</title><synopsis>#include &lt;ags/jack_server/ags_jack_server.h&gt;
+</synopsis></refsect1>
 
 <refsect1 id="AgsJackServer.description" role="desc">
 <title role="desc.title">Description</title>
+<para>The <link linkend="AgsJackServer"><type>AgsJackServer</type></link> is an object to represent a running JACK instance.</para>
 
 </refsect1>
 <refsect1 id="AgsJackServer.functions_details" role="details">

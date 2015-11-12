@@ -37,7 +37,7 @@ void ags_midi_file_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_midi_file
- * @short_description: the menu bar.
+ * @short_description: the MIDI file
  * @title: AgsMidiFile
  * @section_id:
  * @include: ags/X/ags_midi_file.h

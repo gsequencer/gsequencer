@@ -112,6 +112,29 @@ ags_complex_free (<parameter><link linkend="AgsComplex"><type>AgsComplex</type><
 <indexterm zone="ags-complex-get" role="0.7.1"><primary>ags_complex_get</primary></indexterm>
 <programlisting language="C"><link linkend="complex"><returnvalue>complex</returnvalue></link>
 ags_complex_get (<parameter><link linkend="AgsComplex"><type>AgsComplex</type></link> *ptr</parameter>);</programlisting>
+<para>Get complex number.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>ptr</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsComplex"><type>AgsComplex</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> number as complex data type</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-complex-set" role="function" condition="since:0.7.1">
+<title>ags_complex_set&#160;()</title>
+<indexterm zone="ags-complex-set" role="0.7.1"><primary>ags_complex_set</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_complex_set (<parameter><link linkend="AgsComplex"><type>AgsComplex</type></link> *ptr</parameter>,
+                 <parameter><link linkend="complex"><type>complex</type></link> z</parameter>);</programlisting>
 <para>Set complex number.</para>
 <refsect3 role="parameters">
 <title>Parameters</title>
@@ -129,13 +152,6 @@ ags_complex_get (<parameter><link linkend="AgsComplex"><type>AgsComplex</type></
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
 </refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
-<refsect2 id="ags-complex-set" role="function">
-<title>ags_complex_set&#160;()</title>
-<indexterm zone="ags-complex-set"><primary>ags_complex_set</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_complex_set (<parameter><link linkend="AgsComplex"><type>AgsComplex</type></link> *ptr</parameter>,
-                 <parameter><link linkend="complex"><type>complex</type></link> z</parameter>);</programlisting>
-</refsect2>
 
 </refsect1>
 <refsect1 id="AgsComplex.other_details" role="details">

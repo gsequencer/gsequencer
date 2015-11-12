@@ -12,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsSoundcard</refname>
-<refpurpose></refpurpose>
+<refpurpose>unique access to soundcards</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsSoundcard.functions" role="functions_proto">
@@ -141,9 +141,12 @@
 </screen>
 </refsect1>
 
+<refsect1 id="AgsSoundcard.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_soundcard.h&gt;
+</synopsis></refsect1>
 
 <refsect1 id="AgsSoundcard.description" role="desc">
 <title role="desc.title">Description</title>
+<para>The <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> interface gives you a unique access to audio devices.</para>
 
 </refsect1>
 <refsect1 id="AgsSoundcard.functions_details" role="details">

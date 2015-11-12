@@ -12,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsDistributedManager</refname>
-<refpurpose></refpurpose>
+<refpurpose>unique access to recalls</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsDistributedManager.functions" role="functions_proto">
@@ -58,16 +58,19 @@
 </screen>
 </refsect1>
 
+<refsect1 id="AgsDistributedManager.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_distributed_manager.h&gt;
+</synopsis></refsect1>
 
 <refsect1 id="AgsDistributedManager.description" role="desc">
 <title role="desc.title">Description</title>
+<para>The <link linkend="AgsDistributed-Manager"><type>AgsDistributed_Manager</type></link> interface gives you a unique access distributed resources.</para>
 
 </refsect1>
 <refsect1 id="AgsDistributedManager.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-distributed-manager-set-url" role="function" condition="since:0.7.0">
+<refsect2 id="ags-distributed-manager-set-url" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_set_url&#160;()</title>
-<indexterm zone="ags-distributed-manager-set-url" role="0.7.0"><primary>ags_distributed_manager_set_url</primary></indexterm>
+<indexterm zone="ags-distributed-manager-set-url" role="0.7.1"><primary>ags_distributed_manager_set_url</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_distributed_manager_set_url (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
                                  <parameter><link linkend="gchar"><type>gchar</type></link> *url</parameter>);</programlisting>
@@ -88,10 +91,10 @@ ags_distributed_manager_set_url (<parameter><link linkend="AgsDistributedManager
 <entry role="parameter_description"><para>the url to set</para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-get-url" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-get-url" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_get_url&#160;()</title>
-<indexterm zone="ags-distributed-manager-get-url" role="0.7.0"><primary>ags_distributed_manager_get_url</primary></indexterm>
+<indexterm zone="ags-distributed-manager-get-url" role="0.7.1"><primary>ags_distributed_manager_get_url</primary></indexterm>
 <programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
 ags_distributed_manager_get_url (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>);</programlisting>
 <para>Gets the URL of <parameter>distributed_manager</parameter>
@@ -111,10 +114,10 @@ ags_distributed_manager_get_url (<parameter><link linkend="AgsDistributedManager
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the URL as string</para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-set-ports" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-set-ports" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_set_ports&#160;()</title>
-<indexterm zone="ags-distributed-manager-set-ports" role="0.7.0"><primary>ags_distributed_manager_set_ports</primary></indexterm>
+<indexterm zone="ags-distributed-manager-set-ports" role="0.7.1"><primary>ags_distributed_manager_set_ports</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_distributed_manager_set_ports (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
                                    <parameter><link linkend="gchar"><type>gchar</type></link> **ports</parameter>);</programlisting>
@@ -135,10 +138,10 @@ ags_distributed_manager_set_ports (<parameter><link linkend="AgsDistributedManag
 <entry role="parameter_description"><para>the ports to set</para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-get-ports" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-get-ports" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_get_ports&#160;()</title>
-<indexterm zone="ags-distributed-manager-get-ports" role="0.7.0"><primary>ags_distributed_manager_get_ports</primary></indexterm>
+<indexterm zone="ags-distributed-manager-get-ports" role="0.7.1"><primary>ags_distributed_manager_get_ports</primary></indexterm>
 <programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;**
 ags_distributed_manager_get_ports (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>);</programlisting>
 <para>Gets the ports of <parameter>distributed_manager</parameter>
@@ -158,10 +161,10 @@ ags_distributed_manager_get_ports (<parameter><link linkend="AgsDistributedManag
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the port as string <link linkend="NULL:CAPS"><literal>NULL</literal></link>-terminated array</para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-set-soundcard" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-set-soundcard" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_set_soundcard&#160;()</title>
-<indexterm zone="ags-distributed-manager-set-soundcard" role="0.7.0"><primary>ags_distributed_manager_set_soundcard</primary></indexterm>
+<indexterm zone="ags-distributed-manager-set-soundcard" role="0.7.1"><primary>ags_distributed_manager_set_soundcard</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_distributed_manager_set_soundcard (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
                                        <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>,
@@ -186,10 +189,10 @@ ags_distributed_manager_set_soundcard (<parameter><link linkend="AgsDistributedM
 <entry role="parameter_description"><para>the soundcard to set</para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-get-soundcard" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-get-soundcard" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_get_soundcard&#160;()</title>
-<indexterm zone="ags-distributed-manager-get-soundcard" role="0.7.0"><primary>ags_distributed_manager_get_soundcard</primary></indexterm>
+<indexterm zone="ags-distributed-manager-get-soundcard" role="0.7.1"><primary>ags_distributed_manager_get_soundcard</primary></indexterm>
 <programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
 ags_distributed_manager_get_soundcard (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
                                        <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>);</programlisting>
@@ -214,10 +217,10 @@ ags_distributed_manager_get_soundcard (<parameter><link linkend="AgsDistributedM
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the soundcard as <link linkend="GObject"><type>GObject</type></link></para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-set-sequencer" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-set-sequencer" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_set_sequencer&#160;()</title>
-<indexterm zone="ags-distributed-manager-set-sequencer" role="0.7.0"><primary>ags_distributed_manager_set_sequencer</primary></indexterm>
+<indexterm zone="ags-distributed-manager-set-sequencer" role="0.7.1"><primary>ags_distributed_manager_set_sequencer</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_distributed_manager_set_sequencer (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
                                        <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>,
@@ -242,10 +245,10 @@ ags_distributed_manager_set_sequencer (<parameter><link linkend="AgsDistributedM
 <entry role="parameter_description"><para>the sequencer to set</para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-get-sequencer" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-get-sequencer" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_get_sequencer&#160;()</title>
-<indexterm zone="ags-distributed-manager-get-sequencer" role="0.7.0"><primary>ags_distributed_manager_get_sequencer</primary></indexterm>
+<indexterm zone="ags-distributed-manager-get-sequencer" role="0.7.1"><primary>ags_distributed_manager_get_sequencer</primary></indexterm>
 <programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
 ags_distributed_manager_get_sequencer (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
                                        <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>);</programlisting>
@@ -270,10 +273,10 @@ ags_distributed_manager_get_sequencer (<parameter><link linkend="AgsDistributedM
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the sequencer as <link linkend="GObject"><type>GObject</type></link></para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-register-soundcard" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-register-soundcard" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_register_soundcard&#160;()</title>
-<indexterm zone="ags-distributed-manager-register-soundcard" role="0.7.0"><primary>ags_distributed_manager_register_soundcard</primary></indexterm>
+<indexterm zone="ags-distributed-manager-register-soundcard" role="0.7.1"><primary>ags_distributed_manager_register_soundcard</primary></indexterm>
 <programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
 ags_distributed_manager_register_soundcard
                                (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
@@ -299,10 +302,10 @@ ags_distributed_manager_register_soundcard
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> a new <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-unregister-soundcard" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-unregister-soundcard" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_unregister_soundcard&#160;()</title>
-<indexterm zone="ags-distributed-manager-unregister-soundcard" role="0.7.0"><primary>ags_distributed_manager_unregister_soundcard</primary></indexterm>
+<indexterm zone="ags-distributed-manager-unregister-soundcard" role="0.7.1"><primary>ags_distributed_manager_unregister_soundcard</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_distributed_manager_unregister_soundcard
                                (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
@@ -325,10 +328,10 @@ ags_distributed_manager_unregister_soundcard
 <entry role="parameter_description"><para>the <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-register-sequencer" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-register-sequencer" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_register_sequencer&#160;()</title>
-<indexterm zone="ags-distributed-manager-register-sequencer" role="0.7.0"><primary>ags_distributed_manager_register_sequencer</primary></indexterm>
+<indexterm zone="ags-distributed-manager-register-sequencer" role="0.7.1"><primary>ags_distributed_manager_register_sequencer</primary></indexterm>
 <programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
 ags_distributed_manager_register_sequencer
                                (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
@@ -354,10 +357,10 @@ ags_distributed_manager_register_sequencer
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> a new <link linkend="AgsSequencer"><type>AgsSequencer</type></link></para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
-<refsect2 id="ags-distributed-manager-unregister-sequencer" role="function" condition="since:0.7.0">
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-unregister-sequencer" role="function" condition="since:0.7.1">
 <title>ags_distributed_manager_unregister_sequencer&#160;()</title>
-<indexterm zone="ags-distributed-manager-unregister-sequencer" role="0.7.0"><primary>ags_distributed_manager_unregister_sequencer</primary></indexterm>
+<indexterm zone="ags-distributed-manager-unregister-sequencer" role="0.7.1"><primary>ags_distributed_manager_unregister_sequencer</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_distributed_manager_unregister_sequencer
                                (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
@@ -380,7 +383,7 @@ ags_distributed_manager_unregister_sequencer
 <entry role="parameter_description"><para>the <link linkend="AgsSequencer"><type>AgsSequencer</type></link></para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
 
 </refsect1>
 <refsect1 id="AgsDistributedManager.other_details" role="details">

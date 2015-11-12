@@ -315,6 +315,54 @@ ags_file_add_launch (<parameter><link linkend="AgsFile"><type>AgsFile</type></li
 <indexterm zone="ags-file-open" role="0.4.0"><primary>ags_file_open</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_open (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
+<para>Opens the file specified by :filename property.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-file-open-from-data" role="function" condition="since:0.4.0">
+<title>ags_file_open_from_data&#160;()</title>
+<indexterm zone="ags-file-open-from-data" role="0.4.0"><primary>ags_file_open_from_data</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_open_from_data (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                         <parameter><link linkend="gchar"><type>gchar</type></link> *data</parameter>,
+                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);</programlisting>
+<para>Opens the file provided by <parameter>data</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>data</para></entry>
+<entry role="parameter_description"><para>a buffer containing the XML document</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>length</para></entry>
+<entry role="parameter_description"><para>the buffer length</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-file-rw-open" role="function" condition="since:0.4.0">
+<title>ags_file_rw_open&#160;()</title>
+<indexterm zone="ags-file-rw-open" role="0.4.0"><primary>ags_file_rw_open</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_file_rw_open (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
+                  <parameter><link linkend="gboolean"><type>gboolean</type></link> create</parameter>);</programlisting>
 <para>Opens the file specified by :filename property in read-write mode.</para>
 <refsect3 role="parameters">
 <title>Parameters</title>
@@ -332,21 +380,6 @@ ags_file_open (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *f
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
-<refsect2 id="ags-file-open-from-data" role="function">
-<title>ags_file_open_from_data&#160;()</title>
-<indexterm zone="ags-file-open-from-data"><primary>ags_file_open_from_data</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_file_open_from_data (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                         <parameter><link linkend="gchar"><type>gchar</type></link> *data</parameter>,
-                         <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-file-rw-open" role="function">
-<title>ags_file_rw_open&#160;()</title>
-<indexterm zone="ags-file-rw-open"><primary>ags_file_rw_open</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_file_rw_open (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
-                  <parameter><link linkend="gboolean"><type>gboolean</type></link> create</parameter>);</programlisting>
-</refsect2>
 <refsect2 id="ags-file-open-filename" role="function" condition="since:0.4.0">
 <title>ags_file_open_filename&#160;()</title>
 <indexterm zone="ags-file-open-filename" role="0.4.0"><primary>ags_file_open_filename</primary></indexterm>

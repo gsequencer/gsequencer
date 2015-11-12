@@ -59,14 +59,20 @@ with parallelism.</para>
 <programlisting language="C"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
 ags_concurrent_tree_get_lock (<parameter><link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> *concurrent_tree</parameter>);</programlisting>
 <para>Get tree node's lock.</para>
-<para role="since">Since: <link linkend="api-index-0.6">0.6</link></para></refsect2>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> the pthread_mutex_t</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.6">0.6</link></para></refsect2>
 <refsect2 id="ags-concurrent-tree-get-parent-lock" role="function" condition="since:0.6">
 <title>ags_concurrent_tree_get_parent_lock&#160;()</title>
 <indexterm zone="ags-concurrent-tree-get-parent-lock" role="0.6"><primary>ags_concurrent_tree_get_parent_lock</primary></indexterm>
 <programlisting language="C"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
 ags_concurrent_tree_get_parent_lock (<parameter><link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> *concurrent_tree</parameter>);</programlisting>
 <para>Get tree node's parent lock.</para>
-<para role="since">Since: <link linkend="api-index-0.6">0.6</link></para></refsect2>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> the pthread_mutex_t</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.6">0.6</link></para></refsect2>
 <refsect2 id="ags-concurrent-tree-lock-context" role="function" condition="since:0.6.0">
 <title>ags_concurrent_tree_lock_context&#160;()</title>
 <indexterm zone="ags-concurrent-tree-lock-context" role="0.6.0"><primary>ags_concurrent_tree_lock_context</primary></indexterm>

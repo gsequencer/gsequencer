@@ -32,7 +32,7 @@
 <span class="refentrytitle"><a href="ags-AgsParameter.html">AgsParameter</a></span><span class="refpurpose"> — Complete GParameter</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsTurtle.html">AgsTurtle</a></span><span class="refpurpose"> — Boxed type of turtle</span>
+<span class="refentrytitle"><a href="AgsTurtle.html">AgsTurtle</a></span><span class="refpurpose"> — Terse RDF Triple Language</span>
 </dt>
 </dl></dd>
 <dt><span class="part"><a href="util.html">II. Util - Helper functions</a></span></dt>
@@ -63,7 +63,7 @@
 <span class="refentrytitle"><a href="AgsCountable.html">AgsCountable</a></span><span class="refpurpose"> — a counter interface</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsDistributedManager.html">AgsDistributedManager</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsDistributedManager.html">AgsDistributedManager</a></span><span class="refpurpose"> — unique access to recalls</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsDynamicConnectable.html">AgsDynamicConnectable</a></span><span class="refpurpose"> — unique access to recalls</span>
@@ -87,10 +87,10 @@
 <span class="refentrytitle"><a href="AgsSeekable.html">AgsSeekable</a></span><span class="refpurpose"> — unique access to recalls</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsSequencer.html">AgsSequencer</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsSequencer.html">AgsSequencer</a></span><span class="refpurpose"> — unique access to sequencers</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsSoundcard.html">AgsSoundcard</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsSoundcard.html">AgsSoundcard</a></span><span class="refpurpose"> — unique access to soundcards</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsTactable.html">AgsTactable</a></span><span class="refpurpose"> — Unique tempo set or attributes access</span>
@@ -363,13 +363,13 @@
 <dt><span class="chapter"><a href="audio-jack.html">Audio JACK - JACK support</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="AgsJackServer.html">AgsJackServer</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsJackServer.html">AgsJackServer</a></span><span class="refpurpose"> — JACK instance</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsJackClient.html">AgsJackClient</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsJackClient.html">AgsJackClient</a></span><span class="refpurpose"> — JACK connection</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsJackPort.html">AgsJackPort</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsJackPort.html">AgsJackPort</a></span><span class="refpurpose"> — JACK resource.</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsJackDevout.html">AgsJackDevout</a></span><span class="refpurpose"> — Output to soundcard</span>
@@ -381,13 +381,13 @@
 <dt><span class="chapter"><a href="audio-midi.html">Audio MIDI - MIDI support</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="AgsMidiFile.html">AgsMidiFile</a></span><span class="refpurpose"> — the menu bar.</span>
+<span class="refentrytitle"><a href="AgsMidiFile.html">AgsMidiFile</a></span><span class="refpurpose"> — the MIDI file</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsMidiFileReader.html">AgsMidiFileReader</a></span><span class="refpurpose"> — the menu bar.</span>
+<span class="refentrytitle"><a href="AgsMidiFileReader.html">AgsMidiFileReader</a></span><span class="refpurpose"> — the MIDI file reader</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsMidiFileWriter.html">AgsMidiFileWriter</a></span><span class="refpurpose"> — the menu bar.</span>
+<span class="refentrytitle"><a href="AgsMidiFileWriter.html">AgsMidiFileWriter</a></span><span class="refpurpose"> — the MIDI file writer</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsMidiBuilder.html">AgsMidiBuilder</a></span><span class="refpurpose"></span>
@@ -736,7 +736,7 @@
 <span class="refentrytitle"><a href="AgsEffectBridge.html">AgsEffectBridge</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsEffectBridge.html">AgsEffectBridge</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+<span class="refentrytitle"><a href="ags-ags-effect-bridge-callbacks.html">ags_effect_bridge_callbacks</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsEffectBulk.html">AgsEffectBulk</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
@@ -1105,9 +1105,6 @@
 <span class="refentrytitle"><a href="AgsFFPlayerBulkInput.html">AgsFFPlayerBulkInput</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsFFPlayerBulkInput.html">AgsFFPlayerBulkInput</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
-</dt>
-<dt>
 <span class="refentrytitle"><a href="AgsFFPlayerInputLine.html">AgsFFPlayerInputLine</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
 </dt>
 <dt>
@@ -1115,12 +1112,6 @@
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsFFPlayerInputPad.html">AgsFFPlayerInputPad</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="AgsFFPlayer.html">AgsFFPlayer</a></span><span class="refpurpose"> — ffplayer notation</span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ags-ags-ffplayer-callbacks.html">ags_ffplayer_callbacks</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsLadspaBridge.html">AgsLadspaBridge</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>

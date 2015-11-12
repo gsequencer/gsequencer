@@ -12,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsJackPort</refname>
-<refpurpose></refpurpose>
+<refpurpose>JACK resource.</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsJackPort.functions" role="functions_proto">
@@ -65,9 +65,13 @@
 </screen>
 </refsect1>
 
+<refsect1 id="AgsJackPort.includes"><title>Includes</title><synopsis>#include &lt;ags/jack_port/ags_jack_port.h&gt;
+</synopsis></refsect1>
 
 <refsect1 id="AgsJackPort.description" role="desc">
 <title role="desc.title">Description</title>
+<para>The <link linkend="AgsJackPort"><type>AgsJackPort</type></link> represents either a JACK sequencer or soundcard to communicate
+with.</para>
 
 </refsect1>
 <refsect1 id="AgsJackPort.functions_details" role="details">

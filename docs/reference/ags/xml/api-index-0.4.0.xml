@@ -41,7 +41,9 @@
 <indexentry><primaryie linkends="ags-file-find-id-ref-by-xpath"><link linkend="ags-file-find-id-ref-by-xpath">ags_file_find_id_ref_by_xpath</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-file-open"><link linkend="ags-file-open">ags_file_open</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-file-open-filename"><link linkend="ags-file-open-filename">ags_file_open_filename</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-file-open-from-data"><link linkend="ags-file-open-from-data">ags_file_open_from_data</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-file-read"><link linkend="ags-file-read">ags_file_read</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-file-rw-open"><link linkend="ags-file-rw-open">ags_file_rw_open</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-file-str2md5"><link linkend="ags-file-str2md5">ags_file_str2md5</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-file-write"><link linkend="ags-file-write">ags_file_write</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-file-write-resolve"><link linkend="ags-file-write-resolve">ags_file_write_resolve</link>, function in <link linkend="AgsFile">AgsFile</link></primaryie></indexentry>

@@ -23,6 +23,16 @@
 
 void ags_soundcard_class_init(AgsSoundcardInterface *interface);
 
+/**
+ * SECTION:ags_soundcard
+ * @short_description: unique access to soundcards
+ * @title: AgsSoundcard
+ * @section_id:
+ * @include: ags/object/ags_soundcard.h
+ *
+ * The #AgsSoundcard interface gives you a unique access to audio devices.
+ */
+
 GType
 ags_soundcard_get_type()
 {

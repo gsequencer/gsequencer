@@ -12,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsSequencer</refname>
-<refpurpose></refpurpose>
+<refpurpose>unique access to sequencers</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsSequencer.functions" role="functions_proto">
@@ -128,9 +128,12 @@
 </screen>
 </refsect1>
 
+<refsect1 id="AgsSequencer.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_sequencer.h&gt;
+</synopsis></refsect1>
 
 <refsect1 id="AgsSequencer.description" role="desc">
 <title role="desc.title">Description</title>
+<para>The <link linkend="AgsSequencer"><type>AgsSequencer</type></link> interface gives you a unique access to MIDI devices.</para>
 
 </refsect1>
 <refsect1 id="AgsSequencer.functions_details" role="details">
