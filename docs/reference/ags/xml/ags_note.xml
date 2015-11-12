@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsNote">
 <refmeta>
@@ -24,6 +22,14 @@
 <colspec colname="functions_return" colwidth="150px"/>
 <colspec colname="functions_name"/>
 <tbody>
+<row><entry role="function_type"><link linkend="char"><returnvalue>char</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-note-to-raw-midi">ags_note_to_raw_midi</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="snd-seq-event-t"><returnvalue>snd_seq_event_t</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-note-to-seq-event">ags_note_to_seq_event</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-note-from-raw-midi">ags_note_from_raw_midi</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-note-from-seq-event">ags_note_from_seq_event</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-note-duplicate">ags_note_duplicate</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="AgsNote"><returnvalue>AgsNote</returnvalue></link>&#160;*
@@ -63,6 +69,96 @@
 </refsect1>
 <refsect1 id="AgsNote.functions_details" role="details">
 <title role="details.title">Functions</title>
+<refsect2 id="ags-note-to-raw-midi" role="function">
+<title>ags_note_to_raw_midi&#160;()</title>
+<indexterm zone="ags-note-to-raw-midi"><primary>ags_note_to_raw_midi</primary></indexterm>
+<programlisting language="C"><link linkend="char"><returnvalue>char</returnvalue></link>&#160;*
+ags_note_to_raw_midi (<parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>,
+                      <parameter><link linkend="guint"><type>guint</type></link> *buffer_length</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-note-to-seq-event" role="function" condition="since:0.7.1">
+<title>ags_note_to_seq_event&#160;()</title>
+<indexterm zone="ags-note-to-seq-event" role="0.7.1"><primary>ags_note_to_seq_event</primary></indexterm>
+<programlisting language="C"><link linkend="snd-seq-event-t"><returnvalue>snd_seq_event_t</returnvalue></link>&#160;*
+ags_note_to_seq_event (<parameter><link linkend="AgsNote"><type>AgsNote</type></link> *note</parameter>,
+                       <parameter><link linkend="guint"><type>guint</type></link> *n_events</parameter>);</programlisting>
+<para>Convert <parameter>note</parameter>
+ to ALSA sequencer events and set the number of events
+in the array as <parameter>n_events</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>note</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsNote"><type>AgsNote</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>n_events</para></entry>
+<entry role="parameter_description"><para>the count of events</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> The sequencer events as array.</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-note-from-raw-midi" role="function" condition="since:0.7.1">
+<title>ags_note_from_raw_midi&#160;()</title>
+<indexterm zone="ags-note-from-raw-midi" role="0.7.1"><primary>ags_note_from_raw_midi</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_note_from_raw_midi (<parameter><link linkend="char"><type>char</type></link> *raw_midi</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> length</parameter>);</programlisting>
+<para>Parse <parameter>raw_midi</parameter>
+ data and convert to <link linkend="AgsNote"><type>AgsNote</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>raw_midi</para></entry>
+<entry role="parameter_description"><para>the data array</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>length</para></entry>
+<entry role="parameter_description"><para>the length of the array</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing the notes</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-note-from-seq-event" role="function" condition="since:0.7.1">
+<title>ags_note_from_seq_event&#160;()</title>
+<indexterm zone="ags-note-from-seq-event" role="0.7.1"><primary>ags_note_from_seq_event</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_note_from_seq_event (<parameter><link linkend="snd-seq-event-t"><type>snd_seq_event_t</type></link> *event</parameter>,
+                         <parameter><link linkend="guint"><type>guint</type></link> n_events</parameter>);</programlisting>
+<para>Convert ALSA sequencer data <parameter>event</parameter>
+ to <link linkend="AgsNote"><type>AgsNote</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>event</para></entry>
+<entry role="parameter_description"><para>ALSA sequencer events as array</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>n_events</para></entry>
+<entry role="parameter_description"><para>the arrays length</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing the notes</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
 <refsect2 id="ags-note-duplicate" role="function" condition="since:0.4">
 <title>ags_note_duplicate&#160;()</title>
 <indexterm zone="ags-note-duplicate" role="0.4"><primary>ags_note_duplicate</primary></indexterm>

@@ -317,12 +317,26 @@
 <col width="300px" class="properties_name">
 <col width="200px" class="properties_flags">
 </colgroup>
-<tbody><tr>
+<tbody>
+<tr>
+<td class="property_type">
+<GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsAudio.html#AgsAudio--midi-file" title="The “midi-file” property">midi-file</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsAudio.html#AgsAudio--sequencer" title="The “sequencer” property">sequencer</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
 <td class="property_type">
 <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</td>
 <td class="property_name"><a class="link" href="AgsAudio.html#AgsAudio--soundcard" title="The “soundcard” property">soundcard</a></td>
 <td class="property_flags">Read / Write</td>
-</tr></tbody>
+</tr>
+</tbody>
 </table></div>
 </div>
 <div class="refsect1">
@@ -422,7 +436,7 @@ ags_audio_set_soundcard (<em class="parameter"><code><a class="link" href="AgsAu
 </tr>
 <tr>
 <td class="parameter_name"><p>soundcard</p></td>
-<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsSoundcard"><span class="type">AgsSoundcard</span></GTKDOCLINK></p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a></p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 </tbody>
@@ -1433,7 +1447,7 @@ ags_audio_new ();</pre>
 </colgroup>
 <tbody><tr>
 <td class="parameter_name"><p>soundcard</p></td>
-<td class="parameter_description"><p>an <GTKDOCLINK HREF="AgsSoundcard"><span class="type">AgsSoundcard</span></GTKDOCLINK></p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a></p></td>
 <td class="parameter_annotations"> </td>
 </tr></tbody>
 </table></div>
@@ -1521,9 +1535,25 @@ ags_audio_new ();</pre>
 <div class="refsect1">
 <a name="AgsAudio.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
+<a name="AgsAudio--midi-file"></a><h3>The <code class="literal">“midi-file”</code> property</h3>
+<pre class="programlisting">  “midi-file”                <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</pre>
+<p>The assigned <a class="link" href="AgsMidiFile.html" title="AgsMidiFile"><span class="type">AgsMidiFile</span></a> acting as default sink.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsAudio--sequencer"></a><h3>The <code class="literal">“sequencer”</code> property</h3>
+<pre class="programlisting">  “sequencer”                <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</pre>
+<p>The assigned <a class="link" href="AgsSequencer.html" title="AgsSequencer"><span class="type">AgsSequencer</span></a> acting as default sink.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="AgsAudio--soundcard"></a><h3>The <code class="literal">“soundcard”</code> property</h3>
 <pre class="programlisting">  “soundcard”                <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</pre>
-<p>The assigned <GTKDOCLINK HREF="AgsSoundcard"><span class="type">AgsSoundcard</span></GTKDOCLINK> acting as default sink.</p>
+<p>The assigned <a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> acting as default sink.</p>
 <p>Flags: Read / Write</p>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>

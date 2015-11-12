@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsConnectable">
 <refmeta>
@@ -14,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsConnectable</refname>
-<refpurpose></refpurpose>
+<refpurpose>unique access to recalls</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsConnectable.functions" role="functions_proto">
@@ -42,9 +40,13 @@
 </screen>
 </refsect1>
 
+<refsect1 id="AgsConnectable.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_connectable.h&gt;
+</synopsis></refsect1>
 
 <refsect1 id="AgsConnectable.description" role="desc">
 <title role="desc.title">Description</title>
+<para>The <link linkend="AgsConnectable"><type>AgsConnectable</type></link> interface gives you a unique access to all objects
+and is responsible to set up signal handlers.</para>
 
 </refsect1>
 <refsect1 id="AgsConnectable.functions_details" role="details">

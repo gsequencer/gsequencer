@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsTable">
 <refmeta>
@@ -40,7 +38,6 @@
                 <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
                     <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkTable">GtkTable</link>
                         <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsTable
-                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMenuItem">AgsMenuItem</link>
 </screen>
 </refsect1>
 

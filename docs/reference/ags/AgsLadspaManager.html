@@ -6,8 +6,8 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="plugin.html" title="Part V. Plugin - API of plugins">
-<link rel="prev" href="plugin.html" title="Part V. Plugin - API of plugins">
-<link rel="next" href="AgsPluginFactory.html" title="AgsPluginFactory">
+<link rel="prev" href="AgsDssiManager.html" title="AgsDssiManager">
+<link rel="next" href="AgsLv2Manager.html" title="AgsLv2Manager">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -20,8 +20,8 @@
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="plugin.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="plugin.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="AgsPluginFactory.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="p" href="AgsDssiManager.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsLv2Manager.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="AgsLadspaManager"></a><div class="titlepage"></div>
@@ -96,6 +96,14 @@
 </tr>
 <tr>
 <td class="function_type">
+<GTKDOCLINK HREF="long"><span class="returnvalue">long</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsLadspaManager.html#ags-ladspa-manager-effect-index" title="ags_ladspa_manager_effect_index ()">ags_ladspa_manager_effect_index</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
 <a class="link" href="AgsLadspaManager.html" title="AgsLadspaManager"><span class="returnvalue">AgsLadspaManager</span></a> *
 </td>
 <td class="function_name">
@@ -161,7 +169,7 @@
 ags_ladspa_plugin_alloc ();</pre>
 <p>Alloc the <GTKDOCLINK HREF="AgsLadspaPlugin-struct"><span class="type">AgsLadspaPlugin</span></GTKDOCLINK></p>
 <div class="refsect3">
-<a name="id-1.6.2.8.3.5"></a><h4>Returns</h4>
+<a name="id-1.6.3.8.3.5"></a><h4>Returns</h4>
 <p> the <GTKDOCLINK HREF="AgsLadspaPlugin-struct"><span class="type">AgsLadspaPlugin</span></GTKDOCLINK></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -173,7 +181,7 @@ ags_ladspa_plugin_alloc ();</pre>
 ags_ladspa_plugin_free (<em class="parameter"><code><a class="link" href="AgsLadspaManager.html#AgsLadspaPlugin" title="struct AgsLadspaPlugin"><span class="type">AgsLadspaPlugin</span></a> *ladspa_plugin</code></em>);</pre>
 <p>Free the <GTKDOCLINK HREF="AgsLadspaPlugin-struct"><span class="type">AgsLadspaPlugin</span></GTKDOCLINK></p>
 <div class="refsect3">
-<a name="id-1.6.2.8.4.5"></a><h4>Parameters</h4>
+<a name="id-1.6.3.8.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -196,7 +204,7 @@ ags_ladspa_plugin_free (<em class="parameter"><code><a class="link" href="AgsLad
 ags_ladspa_manager_get_filenames ();</pre>
 <p>Retrieve all filenames</p>
 <div class="refsect3">
-<a name="id-1.6.2.8.5.5"></a><h4>Returns</h4>
+<a name="id-1.6.3.8.5.5"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK>-terminated array of filenames</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -208,7 +216,7 @@ ags_ladspa_manager_get_filenames ();</pre>
 ags_ladspa_manager_find_ladspa_plugin (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>);</pre>
 <p>Lookup filename in loaded plugins.</p>
 <div class="refsect3">
-<a name="id-1.6.2.8.6.5"></a><h4>Parameters</h4>
+<a name="id-1.6.3.8.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -223,7 +231,7 @@ ags_ladspa_manager_find_ladspa_plugin (<em class="parameter"><code><GTKDOCLINK H
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.6.2.8.6.6"></a><h4>Returns</h4>
+<a name="id-1.6.3.8.6.6"></a><h4>Returns</h4>
 <p> the <GTKDOCLINK HREF="AgsLadspaPlugin-struct"><span class="type">AgsLadspaPlugin</span></GTKDOCLINK></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -236,7 +244,7 @@ ags_ladspa_manager_load_file (<em class="parameter"><code><GTKDOCLINK HREF="gcha
 <p>Load <em class="parameter"><code>filename</code></em>
  specified plugin.</p>
 <div class="refsect3">
-<a name="id-1.6.2.8.7.5"></a><h4>Parameters</h4>
+<a name="id-1.6.3.8.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -263,12 +271,48 @@ ags_ladspa_manager_load_default_directory
 </div>
 <hr>
 <div class="refsect2">
+<a name="ags-ladspa-manager-effect-index"></a><h3>ags_ladspa_manager_effect_index ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="long"><span class="returnvalue">long</span></GTKDOCLINK>
+ags_ladspa_manager_effect_index (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>);</pre>
+<p>Retrieve the effect's index within <em class="parameter"><code>filename</code></em>
+</p>
+<div class="refsect3">
+<a name="id-1.6.3.8.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>filename</p></td>
+<td class="parameter_description"><p>the plugin.so filename</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>effect</p></td>
+<td class="parameter_description"><p>the effect's name within plugin</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.3.8.9.6"></a><h4>Returns</h4>
+<p> the index, G_MAXULONG if not found</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="ags-ladspa-manager-get-instance"></a><h3>ags_ladspa_manager_get_instance ()</h3>
 <pre class="programlisting"><a class="link" href="AgsLadspaManager.html" title="AgsLadspaManager"><span class="returnvalue">AgsLadspaManager</span></a> *
 ags_ladspa_manager_get_instance ();</pre>
 <p>Get instance.</p>
 <div class="refsect3">
-<a name="id-1.6.2.8.9.5"></a><h4>Returns</h4>
+<a name="id-1.6.3.8.10.5"></a><h4>Returns</h4>
 <p> the <a class="link" href="AgsLadspaManager.html" title="AgsLadspaManager"><span class="type">AgsLadspaManager</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -280,7 +324,7 @@ ags_ladspa_manager_get_instance ();</pre>
 ags_ladspa_manager_new ();</pre>
 <p>Creates an <a class="link" href="AgsLadspaManager.html" title="AgsLadspaManager"><span class="type">AgsLadspaManager</span></a></p>
 <div class="refsect3">
-<a name="id-1.6.2.8.10.5"></a><h4>Parameters</h4>
+<a name="id-1.6.3.8.11.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -295,7 +339,7 @@ ags_ladspa_manager_new ();</pre>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.6.2.8.10.6"></a><h4>Returns</h4>
+<a name="id-1.6.3.8.11.6"></a><h4>Returns</h4>
 <p> a new <a class="link" href="AgsLadspaManager.html" title="AgsLadspaManager"><span class="type">AgsLadspaManager</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -306,7 +350,7 @@ ags_ladspa_manager_new ();</pre>
 <div class="refsect2">
 <a name="AgsLadspaPluginFlags"></a><h3>enum AgsLadspaPluginFlags</h3>
 <div class="refsect3">
-<a name="id-1.6.2.9.2.3"></a><h4>Members</h4>
+<a name="id-1.6.3.9.2.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">

@@ -219,6 +219,10 @@
 <td class="datatype_keyword">enum</td>
 <td class="function_name"><a class="link" href="AgsMachine.html#AgsMachineEditOptions" title="enum AgsMachineEditOptions">AgsMachineEditOptions</a></td>
 </tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsMachine.html#AgsMachineConnectionOptions" title="enum AgsMachineConnectionOptions">AgsMachineConnectionOptions</a></td>
+</tr>
 </tbody>
 </table></div>
 </div>
@@ -234,6 +238,8 @@
                             <span class="lineart">╰──</span> AgsMachine
                                 <span class="lineart">├──</span> <a class="link" href="AgsDrum.html" title="AgsDrum">AgsDrum</a>
                                 <span class="lineart">├──</span> <a class="link" href="AgsFFPlayer.html" title="AgsFFPlayer">AgsFFPlayer</a>
+                                <span class="lineart">├──</span> <a class="link" href="AgsLadspaBridge.html" title="AgsLadspaBridge">AgsLadspaBridge</a>
+                                <span class="lineart">├──</span> <a class="link" href="AgsLv2Bridge.html" title="AgsLv2Bridge">AgsLv2Bridge</a>
                                 <span class="lineart">├──</span> <a class="link" href="AgsMatrix.html" title="AgsMatrix">AgsMatrix</a>
                                 <span class="lineart">├──</span> <a class="link" href="AgsMixer.html" title="AgsMixer">AgsMixer</a>
                                 <span class="lineart">├──</span> <a class="link" href="AgsPanel.html" title="AgsPanel">AgsPanel</a>
@@ -284,7 +290,7 @@ ags_machine_map_recall (<em class="parameter"><code><a class="link" href="AgsMac
 <p>You may want the <em class="parameter"><code>machine</code></em>
  to add its default recall.</p>
 <div class="refsect3">
-<a name="id-1.10.31.10.5.5"></a><h4>Parameters</h4>
+<a name="id-1.10.42.10.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -307,7 +313,7 @@ ags_machine_get_possible_links (<em class="parameter"><code><a class="link" href
 <p>Find links suitable for <em class="parameter"><code>machine</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.10.31.10.6.5"></a><h4>Parameters</h4>
+<a name="id-1.10.42.10.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -322,7 +328,7 @@ ags_machine_get_possible_links (<em class="parameter"><code><a class="link" href
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.10.31.10.6.6"></a><h4>Returns</h4>
+<a name="id-1.10.42.10.6.6"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GtkListStore"><span class="type">GtkListStore</span></GTKDOCLINK> containing one column with a string representing
 machines by its type and name.</p>
 </div>
@@ -337,7 +343,7 @@ ags_machine_find_by_name (<em class="parameter"><code><GTKDOCLINK HREF="GList"><
 <p>Find the specified by <em class="parameter"><code>name</code></em>
  machine.</p>
 <div class="refsect3">
-<a name="id-1.10.31.10.7.5"></a><h4>Parameters</h4>
+<a name="id-1.10.42.10.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -366,7 +372,7 @@ ags_machine_find_by_name (<em class="parameter"><code><GTKDOCLINK HREF="GList"><
 <pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
 ags_machine_find_port (<em class="parameter"><code><a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);</pre>
 <div class="refsect3">
-<a name="id-1.10.31.10.8.4"></a><h4>Parameters</h4>
+<a name="id-1.10.42.10.8.4"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -381,7 +387,7 @@ ags_machine_find_port (<em class="parameter"><code><a class="link" href="AgsMach
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.10.31.10.8.5"></a><h4>Returns</h4>
+<a name="id-1.10.42.10.8.5"></a><h4>Returns</h4>
 <p> an <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing all related <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a></p>
 <p>Lookup ports of associated recalls.</p>
 </div>
@@ -396,7 +402,7 @@ ags_machine_set_run (<em class="parameter"><code><a class="link" href="AgsMachin
 <p>Start/stop playback of <em class="parameter"><code>machine</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.10.31.10.9.5"></a><h4>Parameters</h4>
+<a name="id-1.10.42.10.9.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -430,7 +436,7 @@ ags_machine_set_run_extended (<em class="parameter"><code><a class="link" href="
 <p>Start/stop playback of <em class="parameter"><code>machine</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.10.31.10.10.5"></a><h4>Parameters</h4>
+<a name="id-1.10.42.10.10.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -461,7 +467,7 @@ ags_machine_file_chooser_dialog_new (<em class="parameter"><code><a class="link"
 <p>Creates a new machine file chooser dialog in order to
 open audio files.</p>
 <div class="refsect3">
-<a name="id-1.10.31.10.11.5"></a><h4>Parameters</h4>
+<a name="id-1.10.42.10.11.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -487,7 +493,7 @@ ags_machine_open_files (<em class="parameter"><code><a class="link" href="AgsMac
                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> create_channels</code></em>);</pre>
 <p>Opens audio files and modifies or creates new channels if wished.</p>
 <div class="refsect3">
-<a name="id-1.10.31.10.12.5"></a><h4>Parameters</h4>
+<a name="id-1.10.42.10.12.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -533,7 +539,7 @@ ags_machine_copy_pattern (<em class="parameter"><code><a class="link" href="AgsM
 ags_machine_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *soundcard</code></em>);</pre>
 <p>Creates an <a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a></p>
 <div class="refsect3">
-<a name="id-1.10.31.10.14.5"></a><h4>Parameters</h4>
+<a name="id-1.10.42.10.14.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -548,7 +554,7 @@ ags_machine_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.10.31.10.14.6"></a><h4>Returns</h4>
+<a name="id-1.10.42.10.14.6"></a><h4>Returns</h4>
 <p> a new <a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
@@ -558,20 +564,20 @@ ags_machine_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 <a name="AgsMachine.other_details"></a><h2>Types and Values</h2>
 <div class="refsect2">
 <a name="AGS-MACHINE-DEFAULT-VERSION:CAPS"></a><h3>AGS_MACHINE_DEFAULT_VERSION</h3>
-<pre class="programlisting">#define AGS_MACHINE_DEFAULT_VERSION "0.4.2\0"
+<pre class="programlisting">#define AGS_MACHINE_DEFAULT_VERSION "0.7.0\0"
 </pre>
 </div>
 <hr>
 <div class="refsect2">
 <a name="AGS-MACHINE-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_MACHINE_DEFAULT_BUILD_ID</h3>
-<pre class="programlisting">#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+<pre class="programlisting">#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 30-10-2015 02:37\0"
 </pre>
 </div>
 <hr>
 <div class="refsect2">
 <a name="AgsMachineFlags"></a><h3>enum AgsMachineFlags</h3>
 <div class="refsect3">
-<a name="id-1.10.31.11.4.3"></a><h4>Members</h4>
+<a name="id-1.10.42.11.4.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -642,7 +648,7 @@ ags_machine_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 <div class="refsect2">
 <a name="AgsMachineFileInputFlags"></a><h3>enum AgsMachineFileInputFlags</h3>
 <div class="refsect3">
-<a name="id-1.10.31.11.5.3"></a><h4>Members</h4>
+<a name="id-1.10.42.11.5.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -673,7 +679,7 @@ ags_machine_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 <div class="refsect2">
 <a name="AgsMachineMappingFlags"></a><h3>enum AgsMachineMappingFlags</h3>
 <div class="refsect3">
-<a name="id-1.10.31.11.6.3"></a><h4>Members</h4>
+<a name="id-1.10.42.11.6.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -692,7 +698,7 @@ ags_machine_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 <div class="refsect2">
 <a name="AgsMachineEditOptions"></a><h3>enum AgsMachineEditOptions</h3>
 <div class="refsect3">
-<a name="id-1.10.31.11.7.3"></a><h4>Members</h4>
+<a name="id-1.10.42.11.7.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -711,6 +717,25 @@ ags_machine_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 <td> </td>
 </tr>
 </tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsMachineConnectionOptions"></a><h3>enum AgsMachineConnectionOptions</h3>
+<div class="refsect3">
+<a name="id-1.10.42.11.8.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="enum_member_name"><p><a name="AGS-MACHINE-POPUP-MIDI-DIALOG:CAPS"></a>AGS_MACHINE_POPUP_MIDI_DIALOG</p></td>
+<td> </td>
+<td> </td>
+</tr></tbody>
 </table></div>
 </div>
 </div>
@@ -733,7 +758,7 @@ ags_machine_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 user_function (<a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a> *machine,
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>    user_data)</pre>
 <div class="refsect3">
-<a name="id-1.10.31.13.2.4"></a><h4>Parameters</h4>
+<a name="id-1.10.42.13.2.4"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -755,7 +780,7 @@ user_function (<a class="link" href="AgsMachine.html" title="AgsMachine"><span c
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.10.31.13.2.5"></a><h4>Returns</h4>
+<a name="id-1.10.42.13.2.5"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> with associated ports</p>
 <p>The ::find-port as recall should be mapped</p>
 </div>
@@ -769,7 +794,7 @@ user_function (<a class="link" href="AgsMachine.html" title="AgsMachine"><span c
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>    user_data)</pre>
 <p>The ::map-recall should be used to add the machine's default recall.</p>
 <div class="refsect3">
-<a name="id-1.10.31.13.3.5"></a><h4>Parameters</h4>
+<a name="id-1.10.42.13.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">

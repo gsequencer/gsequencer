@@ -68,6 +68,22 @@
 <GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 </td>
 <td class="function_name">
+<a class="link" href="ags-ags-line-callbacks.html#ags-line-add-effect-callback" title="ags_line_add_effect_callback ()">ags_line_add_effect_callback</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="ags-ags-line-callbacks.html#ags-line-remove-effect-callback" title="ags_line_remove_effect_callback ()">ags_line_remove_effect_callback</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
 <a class="link" href="ags-ags-line-callbacks.html#ags-line-volume-callback" title="ags_line_volume_callback ()">ags_line_volume_callback</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
@@ -170,6 +186,23 @@ ags_line_remove_recall_callback (<em class="parameter"><code><a class="link" hre
 <a name="ags-line-group-clicked-callback"></a><h3>ags_line_group_clicked_callback ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>
 ags_line_group_clicked_callback (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
+                                 <em class="parameter"><code><a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-add-effect-callback"></a><h3>ags_line_add_effect_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_line_add_effect_callback (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>,
+                              <em class="parameter"><code><a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-line-remove-effect-callback"></a><h3>ags_line_remove_effect_callback ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_line_remove_effect_callback (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                                 <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> nth</code></em>,
                                  <em class="parameter"><code><a class="link" href="AgsLine.html" title="AgsLine"><span class="type">AgsLine</span></a> *line</code></em>);</pre>
 </div>
 <hr>

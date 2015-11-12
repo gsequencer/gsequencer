@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-AgsAccessibleWindow">
 <refmeta>
@@ -17,54 +15,6 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsect1 id="ags-AgsAccessibleWindow.functions" role="functions_proto">
-<title role="functions_proto.title">Functions</title>
-<informaltable pgwide="1" frame="none">
-<tgroup cols="2">
-<colspec colname="functions_return" colwidth="150px"/>
-<colspec colname="functions_name"/>
-<tbody>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-move-to-machines-pane">ags_accessible_window_move_to_machines_pane</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-move-to-editor-index-pane">ags_accessible_window_move_to_editor_index_pane</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-move-to-notation-editor-pane">ags_accessible_window_move_to_notation_editor_pane</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-move-to-navigation">ags_accessible_window_move_to_navigation</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-open-file">ags_accessible_window_open_file</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-save-file">ags_accessible_window_save_file</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-save-file-as">ags_accessible_window_save_file_as</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-export-to-audio-file">ags_accessible_window_export_to_audio_file</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-quit">ags_accessible_window_quit</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-add-panel">ags_accessible_window_add_panel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-add-mixer">ags_accessible_window_add_mixer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-add-drum">ags_accessible_window_add_drum</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-add-matrix">ags_accessible_window_add_matrix</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-add-synth">ags_accessible_window_add_synth</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-add-ffplayer">ags_accessible_window_add_ffplayer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-remove-machine">ags_accessible_window_remove_machine</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-show-preferences">ags_accessible_window_show_preferences</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-window-show-about-dialog">ags_accessible_window_show_about_dialog</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-
-</tbody>
-</tgroup>
-</informaltable>
-</refsect1>
 
 
 <refsect1 id="ags-AgsAccessibleWindow.description" role="desc">
@@ -73,122 +23,7 @@
 </refsect1>
 <refsect1 id="ags-AgsAccessibleWindow.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-accessible-window-move-to-machines-pane" role="function">
-<title>ags_accessible_window_move_to_machines_pane&#160;()</title>
-<indexterm zone="ags-accessible-window-move-to-machines-pane"><primary>ags_accessible_window_move_to_machines_pane</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_move_to_machines_pane
-                               (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-move-to-editor-index-pane" role="function">
-<title>ags_accessible_window_move_to_editor_index_pane&#160;()</title>
-<indexterm zone="ags-accessible-window-move-to-editor-index-pane"><primary>ags_accessible_window_move_to_editor_index_pane</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_move_to_editor_index_pane
-                               (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-move-to-notation-editor-pane" role="function">
-<title>ags_accessible_window_move_to_notation_editor_pane&#160;()</title>
-<indexterm zone="ags-accessible-window-move-to-notation-editor-pane"><primary>ags_accessible_window_move_to_notation_editor_pane</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_move_to_notation_editor_pane
-                               (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-move-to-navigation" role="function">
-<title>ags_accessible_window_move_to_navigation&#160;()</title>
-<indexterm zone="ags-accessible-window-move-to-navigation"><primary>ags_accessible_window_move_to_navigation</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_move_to_navigation
-                               (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-open-file" role="function">
-<title>ags_accessible_window_open_file&#160;()</title>
-<indexterm zone="ags-accessible-window-open-file"><primary>ags_accessible_window_open_file</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_open_file (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-save-file" role="function">
-<title>ags_accessible_window_save_file&#160;()</title>
-<indexterm zone="ags-accessible-window-save-file"><primary>ags_accessible_window_save_file</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_save_file (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-save-file-as" role="function">
-<title>ags_accessible_window_save_file_as&#160;()</title>
-<indexterm zone="ags-accessible-window-save-file-as"><primary>ags_accessible_window_save_file_as</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_save_file_as (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-export-to-audio-file" role="function">
-<title>ags_accessible_window_export_to_audio_file&#160;()</title>
-<indexterm zone="ags-accessible-window-export-to-audio-file"><primary>ags_accessible_window_export_to_audio_file</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_export_to_audio_file
-                               (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-quit" role="function">
-<title>ags_accessible_window_quit&#160;()</title>
-<indexterm zone="ags-accessible-window-quit"><primary>ags_accessible_window_quit</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_quit (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-add-panel" role="function">
-<title>ags_accessible_window_add_panel&#160;()</title>
-<indexterm zone="ags-accessible-window-add-panel"><primary>ags_accessible_window_add_panel</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_add_panel (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-add-mixer" role="function">
-<title>ags_accessible_window_add_mixer&#160;()</title>
-<indexterm zone="ags-accessible-window-add-mixer"><primary>ags_accessible_window_add_mixer</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_add_mixer (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-add-drum" role="function">
-<title>ags_accessible_window_add_drum&#160;()</title>
-<indexterm zone="ags-accessible-window-add-drum"><primary>ags_accessible_window_add_drum</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_add_drum (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-add-matrix" role="function">
-<title>ags_accessible_window_add_matrix&#160;()</title>
-<indexterm zone="ags-accessible-window-add-matrix"><primary>ags_accessible_window_add_matrix</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_add_matrix (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-add-synth" role="function">
-<title>ags_accessible_window_add_synth&#160;()</title>
-<indexterm zone="ags-accessible-window-add-synth"><primary>ags_accessible_window_add_synth</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_add_synth (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-add-ffplayer" role="function">
-<title>ags_accessible_window_add_ffplayer&#160;()</title>
-<indexterm zone="ags-accessible-window-add-ffplayer"><primary>ags_accessible_window_add_ffplayer</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_add_ffplayer (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-remove-machine" role="function">
-<title>ags_accessible_window_remove_machine&#160;()</title>
-<indexterm zone="ags-accessible-window-remove-machine"><primary>ags_accessible_window_remove_machine</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_remove_machine (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-show-preferences" role="function">
-<title>ags_accessible_window_show_preferences&#160;()</title>
-<indexterm zone="ags-accessible-window-show-preferences"><primary>ags_accessible_window_show_preferences</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_show_preferences
-                               (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-window-show-about-dialog" role="function">
-<title>ags_accessible_window_show_about_dialog&#160;()</title>
-<indexterm zone="ags-accessible-window-show-about-dialog"><primary>ags_accessible_window_show_about_dialog</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_window_show_about_dialog
-                               (<parameter><link linkend="AgsAccessibleWindow"><type>AgsAccessibleWindow</type></link> *accessible_window</parameter>);</programlisting>
-</refsect2>
-
+<para />
 </refsect1>
 <refsect1 id="ags-AgsAccessibleWindow.other_details" role="details">
 <title role="details.title">Types and Values</title>

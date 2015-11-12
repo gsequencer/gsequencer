@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsConfig">
 <refmeta>
@@ -85,6 +83,7 @@
 <row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-CONFIG-GENERIC:CAPS">AGS_CONFIG_GENERIC</link></entry></row>
 <row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-CONFIG-THREAD:CAPS">AGS_CONFIG_THREAD</link></entry></row>
 <row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-CONFIG-SOUNDCARD:CAPS">AGS_CONFIG_SOUNDCARD</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-CONFIG-SEQUENCER:CAPS">AGS_CONFIG_SEQUENCER</link></entry></row>
 <row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-CONFIG-RECALL:CAPS">AGS_CONFIG_RECALL</link></entry></row>
 
 </tbody>
@@ -236,12 +235,13 @@ ags_config_save (<parameter><link linkend="AgsConfig"><type>AgsConfig</type></li
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4.2">0.4.2</link></para></refsect2>
-<refsect2 id="ags-config-get-instance" role="function">
+<refsect2 id="ags-config-get-instance" role="function" condition="since:0.7.0">
 <title>ags_config_get_instance&#160;()</title>
-<indexterm zone="ags-config-get-instance"><primary>ags_config_get_instance</primary></indexterm>
+<indexterm zone="ags-config-get-instance" role="0.7.0"><primary>ags_config_get_instance</primary></indexterm>
 <programlisting language="C"><link linkend="AgsConfig"><returnvalue>AgsConfig</returnvalue></link>&#160;*
 ags_config_get_instance ();</programlisting>
-</refsect2>
+<para>Get config instance.</para>
+<para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
 <refsect2 id="ags-config-new" role="function" condition="since:0.4.2">
 <title>ags_config_new&#160;()</title>
 <indexterm zone="ags-config-new" role="0.4.2"><primary>ags_config_new</primary></indexterm>
@@ -284,6 +284,12 @@ ags_config_new (<parameter><link linkend="GObject"><type>GObject</type></link> *
 <title>AGS_CONFIG_SOUNDCARD</title>
 <indexterm zone="AGS-CONFIG-SOUNDCARD:CAPS"><primary>AGS_CONFIG_SOUNDCARD</primary></indexterm>
 <programlisting language="C">#define AGS_CONFIG_SOUNDCARD "soundcard\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-CONFIG-SEQUENCER:CAPS" role="macro">
+<title>AGS_CONFIG_SEQUENCER</title>
+<indexterm zone="AGS-CONFIG-SEQUENCER:CAPS"><primary>AGS_CONFIG_SEQUENCER</primary></indexterm>
+<programlisting language="C">#define AGS_CONFIG_SEQUENCER "sequencer\0"
 </programlisting>
 </refsect2>
 <refsect2 id="AGS-CONFIG-RECALL:CAPS" role="macro">

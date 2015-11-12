@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-ladspa-browser-callbacks">
 <refmeta>
@@ -28,12 +26,6 @@
 </entry><entry role="function_name"><link linkend="ags-ladspa-browser-plugin-filename-callback">ags_ladspa_browser_plugin_filename_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-ladspa-browser-plugin-effect-callback">ags_ladspa_browser_plugin_effect_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-ladspa-browser-preview-close-callback">ags_ladspa_browser_preview_close_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-ladspa-browser-ok-callback">ags_ladspa_browser_ok_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-ladspa-browser-cancel-callback">ags_ladspa_browser_cancel_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
 </tbody>
 </tgroup>
@@ -62,28 +54,6 @@ ags_ladspa_browser_plugin_filename_callback
 ags_ladspa_browser_plugin_effect_callback
                                (<parameter><link linkend="GtkComboBoxText"><type>GtkComboBoxText</type></link> *combo_box</parameter>,
                                 <parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-ladspa-browser-preview-close-callback" role="function">
-<title>ags_ladspa_browser_preview_close_callback&#160;()</title>
-<indexterm zone="ags-ladspa-browser-preview-close-callback"><primary>ags_ladspa_browser_preview_close_callback</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_ladspa_browser_preview_close_callback
-                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *preview</parameter>,
-                                <parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-ladspa-browser-ok-callback" role="function">
-<title>ags_ladspa_browser_ok_callback&#160;()</title>
-<indexterm zone="ags-ladspa-browser-ok-callback"><primary>ags_ladspa_browser_ok_callback</primary></indexterm>
-<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
-ags_ladspa_browser_ok_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                <parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-ladspa-browser-cancel-callback" role="function">
-<title>ags_ladspa_browser_cancel_callback&#160;()</title>
-<indexterm zone="ags-ladspa-browser-cancel-callback"><primary>ags_ladspa_browser_cancel_callback</primary></indexterm>
-<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
-ags_ladspa_browser_cancel_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
-                                    <parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);</programlisting>
 </refsect2>
 
 </refsect1>

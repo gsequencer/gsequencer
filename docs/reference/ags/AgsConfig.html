@@ -6,7 +6,7 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
-<link rel="prev" href="AgsApplicationContext.html" title="AgsApplicationContext">
+<link rel="prev" href="AgsConcurrentTree.html" title="AgsConcurrentTree">
 <link rel="next" href="AgsConnectable.html" title="AgsConnectable">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
@@ -22,7 +22,7 @@
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="AgsApplicationContext.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="p" href="AgsConcurrentTree.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="AgsConnectable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
@@ -175,6 +175,10 @@
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsConfig.html#AGS-CONFIG-SEQUENCER:CAPS" title="AGS_CONFIG_SEQUENCER">AGS_CONFIG_SEQUENCER</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
 <td class="function_name"><a class="link" href="AgsConfig.html#AGS-CONFIG-RECALL:CAPS" title="AGS_CONFIG_RECALL">AGS_CONFIG_RECALL</a></td>
 </tr>
 </tbody>
@@ -203,7 +207,7 @@
 ags_config_load_defaults (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>);</pre>
 <p>Load configuration from default values.</p>
 <div class="refsect3">
-<a name="id-1.4.4.10.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.6.10.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -228,7 +232,7 @@ ags_config_load_from_file (<em class="parameter"><code><a class="link" href="Ags
 <p>Load configuration from <em class="parameter"><code>filename</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.4.10.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.6.10.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -264,7 +268,7 @@ ags_config_set_value (<em class="parameter"><code><a class="link" href="AgsConfi
 , applying <em class="parameter"><code>value</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.4.10.4.5"></a><h4>Parameters</h4>
+<a name="id-1.4.6.10.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -308,7 +312,7 @@ ags_config_get_value (<em class="parameter"><code><a class="link" href="AgsConfi
  and <em class="parameter"><code>key</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.4.10.5.5"></a><h4>Parameters</h4>
+<a name="id-1.4.6.10.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -335,7 +339,7 @@ ags_config_get_value (<em class="parameter"><code><a class="link" href="AgsConfi
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.4.10.5.6"></a><h4>Returns</h4>
+<a name="id-1.4.6.10.5.6"></a><h4>Returns</h4>
 <p> the property's value</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.2">0.4.2</GTKDOCLINK></p>
@@ -347,7 +351,7 @@ ags_config_get_value (<em class="parameter"><code><a class="link" href="AgsConfi
 ags_config_save (<em class="parameter"><code><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a> *config</code></em>);</pre>
 <p>Save configuration.</p>
 <div class="refsect3">
-<a name="id-1.4.4.10.6.5"></a><h4>Parameters</h4>
+<a name="id-1.4.6.10.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -368,6 +372,8 @@ ags_config_save (<em class="parameter"><code><a class="link" href="AgsConfig.htm
 <a name="ags-config-get-instance"></a><h3>ags_config_get_instance ()</h3>
 <pre class="programlisting"><a class="link" href="AgsConfig.html" title="AgsConfig"><span class="returnvalue">AgsConfig</span></a> *
 ags_config_get_instance ();</pre>
+<p>Get config instance.</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -376,7 +382,7 @@ ags_config_get_instance ();</pre>
 ags_config_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *application_context</code></em>);</pre>
 <p>Creates an <a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a>.</p>
 <div class="refsect3">
-<a name="id-1.4.4.10.8.5"></a><h4>Returns</h4>
+<a name="id-1.4.6.10.8.5"></a><h4>Returns</h4>
 <p> a new <a class="link" href="AgsConfig.html" title="AgsConfig"><span class="type">AgsConfig</span></a>.</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.2">0.4.2</GTKDOCLINK></p>
@@ -415,6 +421,12 @@ ags_config_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cla
 </div>
 <hr>
 <div class="refsect2">
+<a name="AGS-CONFIG-SEQUENCER:CAPS"></a><h3>AGS_CONFIG_SEQUENCER</h3>
+<pre class="programlisting">#define AGS_CONFIG_SEQUENCER "sequencer\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
 <a name="AGS-CONFIG-RECALL:CAPS"></a><h3>AGS_CONFIG_RECALL</h3>
 <pre class="programlisting">#define AGS_CONFIG_RECALL "recall\0"
 </pre>
@@ -439,7 +451,7 @@ user_function (<a class="link" href="AgsConfig.html" title="AgsConfig"><span cla
                <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>     *key,
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <div class="refsect3">
-<a name="id-1.4.4.13.2.4"></a><h4>Parameters</h4>
+<a name="id-1.4.6.13.2.4"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -471,7 +483,7 @@ user_function (<a class="link" href="AgsConfig.html" title="AgsConfig"><span cla
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.4.13.2.5"></a><h4>Returns</h4>
+<a name="id-1.4.6.13.2.5"></a><h4>Returns</h4>
 <p> the value</p>
 <p>The ::get-value signal notifies about value been getting.</p>
 </div>
@@ -485,7 +497,7 @@ user_function (<a class="link" href="AgsConfig.html" title="AgsConfig"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::load-defaults signal notifies about loading defaults</p>
 <div class="refsect3">
-<a name="id-1.4.4.13.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.6.13.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -519,7 +531,7 @@ user_function (<a class="link" href="AgsConfig.html" title="AgsConfig"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::set-value signal notifies about value been setting.</p>
 <div class="refsect3">
-<a name="id-1.4.4.13.4.5"></a><h4>Parameters</h4>
+<a name="id-1.4.6.13.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">

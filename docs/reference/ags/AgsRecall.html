@@ -242,10 +242,10 @@
 </tr>
 <tr>
 <td class="function_type">
-<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
 </td>
 <td class="function_name">
-<a class="link" href="AgsRecall.html#ags-recall-set-effect" title="ags_recall_set_effect ()">ags_recall_set_effect</a> <span class="c_punctuation">()</span>
+<a class="link" href="AgsRecall.html#ags-recall-get-by-effect" title="ags_recall_get_by_effect ()">ags_recall_get_by_effect</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -285,7 +285,7 @@
 <GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
 </td>
 <td class="function_name">
-<a class="link" href="AgsRecall.html#ags-recall-find-type-with-recycling-container" title="ags_recall_find_type_with_recycling_container ()">ags_recall_find_type_with_recycling_container</a> <span class="c_punctuation">()</span>
+<a class="link" href="AgsRecall.html#ags-recall-template-find-all-type" title="ags_recall_template_find_all_type ()">ags_recall_template_find_all_type</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -293,7 +293,15 @@
 <GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
 </td>
 <td class="function_name">
-<a class="link" href="AgsRecall.html#ags-recall-find-recycling-container" title="ags_recall_find_recycling_container ()">ags_recall_find_recycling_container</a> <span class="c_punctuation">()</span>
+<a class="link" href="AgsRecall.html#ags-recall-find-type-with-recycling-context" title="ags_recall_find_type_with_recycling_context ()">ags_recall_find_type_with_recycling_context</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsRecall.html#ags-recall-find-recycling-context" title="ags_recall_find_recycling_context ()">ags_recall_find_recycling_context</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -317,7 +325,7 @@
 <GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
 </td>
 <td class="function_name">
-<a class="link" href="AgsRecall.html#ags-recall-find-provider-with-recycling-container" title="ags_recall_find_provider_with_recycling_container ()">ags_recall_find_provider_with_recycling_container</a> <span class="c_punctuation">()</span>
+<a class="link" href="AgsRecall.html#ags-recall-find-provider-with-recycling-context" title="ags_recall_find_provider_with_recycling_context ()">ags_recall_find_provider_with_recycling_context</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -536,8 +544,7 @@
         <span class="lineart">├──</span> <a class="link" href="AgsRecallAudio.html" title="AgsRecallAudio">AgsRecallAudio</a>
         <span class="lineart">├──</span> <a class="link" href="AgsRecallAudioRun.html" title="AgsRecallAudioRun">AgsRecallAudioRun</a>
         <span class="lineart">├──</span> <a class="link" href="AgsPlayAudioFile.html" title="AgsPlayAudioFile">AgsPlayAudioFile</a>
-        <span class="lineart">├──</span> <a class="link" href="AgsPlayNote.html" title="AgsPlayNote">AgsPlayNote</a>
-        <span class="lineart">╰──</span> <a class="link" href="AgsPlayPattern.html" title="AgsPlayPattern">AgsPlayPattern</a>
+        <span class="lineart">╰──</span> <a class="link" href="AgsPlayNote.html" title="AgsPlayNote">AgsPlayNote</a>
 </pre>
 </div>
 <div class="refsect1">
@@ -559,7 +566,7 @@ ags_recall_set_flags (<em class="parameter"><code><a class="link" href="AgsRecal
                       <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> flags</code></em>);</pre>
 <p>Set flags recursivly.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.3.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -590,7 +597,7 @@ ags_recall_resolve_dependencies (<em class="parameter"><code><a class="link" hre
 <p>A signal indicating that the inheriting object should resolve
 it's dependencies.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.4.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -620,7 +627,7 @@ ags_recall_child_added (<em class="parameter"><code><a class="link" href="AgsRec
 ags_recall_run_init_pre (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>Prepare for run, this is the pre stage within the preparation.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.6.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -643,7 +650,7 @@ ags_recall_run_init_pre (<em class="parameter"><code><a class="link" href="AgsRe
 ags_recall_run_init_inter (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>Prepare for run, this is the inter stage within the preparation.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.7.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -666,7 +673,7 @@ ags_recall_run_init_inter (<em class="parameter"><code><a class="link" href="Ags
 ags_recall_run_init_post (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>Prepare for run, this is the post stage within the preparation.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.8.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.8.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -689,7 +696,7 @@ ags_recall_run_init_post (<em class="parameter"><code><a class="link" href="AgsR
 ags_recall_run_pre (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>This is the pre stage within a run.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.9.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.9.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -712,7 +719,7 @@ ags_recall_run_pre (<em class="parameter"><code><a class="link" href="AgsRecall.
 ags_recall_run_inter (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>This is the inter stage within a run.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.10.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.10.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -735,7 +742,7 @@ ags_recall_run_inter (<em class="parameter"><code><a class="link" href="AgsRecal
 ags_recall_run_post (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>This is the post stage within a run.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.11.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.11.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -758,7 +765,7 @@ ags_recall_run_post (<em class="parameter"><code><a class="link" href="AgsRecall
 ags_recall_stop_persistent (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>Unsets the <a class="link" href="AgsRecall.html#AGS-RECALL-PERSISTENT:CAPS"><code class="literal">AGS_RECALL_PERSISTENT</code></a> flag set and invokes <a class="link" href="AgsRecall.html#ags-recall-done" title="ags_recall_done ()"><code class="function">ags_recall_done()</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.12.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.12.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -782,7 +789,7 @@ ags_recall_done (<em class="parameter"><code><a class="link" href="AgsRecall.htm
 <p>The <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> doesn't want to run anymore, it has been done its
 work.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.13.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.13.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -805,7 +812,7 @@ work.</p>
 ags_recall_cancel (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>The <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> doesn't want to run anymore, it aborts further execution.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.14.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.14.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -828,7 +835,7 @@ ags_recall_cancel (<em class="parameter"><code><a class="link" href="AgsRecall.h
 ags_recall_remove (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>The <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> will be removed immediately.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.15.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.15.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -849,10 +856,10 @@ ags_recall_remove (<em class="parameter"><code><a class="link" href="AgsRecall.h
 <a name="ags-recall-is-done"></a><h3>ags_recall_is_done ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
 ags_recall_is_done (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recalls</code></em>,
-                    <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling_container</code></em>);</pre>
+                    <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling_context</code></em>);</pre>
 <p>Check if recall is over.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.16.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.16.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -884,7 +891,7 @@ ags_recall_duplicate (<em class="parameter"><code><a class="link" href="AgsRecal
 <p>Should duplicate an <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a>, so it can pass the runs. Mainly used for
 creating duplicates from templates, see <a class="link" href="AgsRecall.html#AGS-RECALL-TEMPLATE:CAPS"><code class="literal">AGS_RECALL_TEMPLATE</code></a>.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.17.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.17.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -925,7 +932,7 @@ ags_recall_set_recall_id (<em class="parameter"><code><a class="link" href="AgsR
                           <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
 <p>Sets the recall id recursively.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.18.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.18.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -964,7 +971,7 @@ ags_recall_notify_dependency (<em class="parameter"><code><a class="link" href="
                               <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> count</code></em>);</pre>
 <p>Notifies a recall that an other depends on it.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.20.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.20.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1000,7 +1007,7 @@ ags_recall_add_dependency (<em class="parameter"><code><a class="link" href="Ags
                            <em class="parameter"><code><a class="link" href="AgsRecallDependency.html" title="AgsRecallDependency"><span class="type">AgsRecallDependency</span></a> *dependency</code></em>);</pre>
 <p>Associate a new dependency for this recall.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.21.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.21.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1031,7 +1038,7 @@ ags_recall_remove_dependency (<em class="parameter"><code><a class="link" href="
                               <em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *template</code></em>);</pre>
 <p>Remove a prior associated dependency.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.22.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.22.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1061,7 +1068,7 @@ ags_recall_remove_dependency (<em class="parameter"><code><a class="link" href="
 ags_recall_get_dependencies (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>Retrieve dependencies.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.23.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.23.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1076,7 +1083,7 @@ ags_recall_get_dependencies (<em class="parameter"><code><a class="link" href="A
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.17.9.23.6"></a><h4>Returns</h4>
+<a name="id-1.9.18.9.23.6"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> with all dependencies.</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -1089,7 +1096,7 @@ ags_recall_remove_child (<em class="parameter"><code><a class="link" href="AgsRe
                          <em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *child</code></em>);</pre>
 <p>An <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> may have children.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.24.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.24.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1120,7 +1127,7 @@ ags_recall_add_child (<em class="parameter"><code><a class="link" href="AgsRecal
                       <em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *child</code></em>);</pre>
 <p>An <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> may have children.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.25.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.25.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1150,7 +1157,7 @@ ags_recall_add_child (<em class="parameter"><code><a class="link" href="AgsRecal
 ags_recall_get_children (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>);</pre>
 <p>Retrieve children.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.26.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.26.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1165,17 +1172,52 @@ ags_recall_get_children (<em class="parameter"><code><a class="link" href="AgsRe
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.17.9.26.6"></a><h4>Returns</h4>
+<a name="id-1.9.18.9.26.6"></a><h4>Returns</h4>
 <p> a GList with all children.</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
-<a name="ags-recall-set-effect"></a><h3>ags_recall_set_effect ()</h3>
-<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-ags_recall_set_effect (<em class="parameter"><code><a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> *recall</code></em>,
-                       <em class="parameter"><code><GTKDOCLINK HREF="char"><span class="type">char</span></GTKDOCLINK> *effect</code></em>);</pre>
+<a name="ags-recall-get-by-effect"></a><h3>ags_recall_get_by_effect ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_recall_get_by_effect (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>);</pre>
+<p>Finds all matching effect and filename.</p>
+<div class="refsect3">
+<a name="id-1.9.18.9.27.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>list</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> with recalls</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>filename</p></td>
+<td class="parameter_description"><p>the filename containing <em class="parameter"><code>effect</code></em>
+or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>effect</p></td>
+<td class="parameter_description"><p>the effect name</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.18.9.27.6"></a><h4>Returns</h4>
+<p> a GList, or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> if not found</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -1183,11 +1225,12 @@ ags_recall_set_effect (<em class="parameter"><code><a class="link" href="AgsReca
 <pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
 ags_recall_find_by_effect (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *list</code></em>,
                            <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>,
-                           <em class="parameter"><code><GTKDOCLINK HREF="char"><span class="type">char</span></GTKDOCLINK> *effect</code></em>);</pre>
+                           <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>);</pre>
 <p>Finds next matching effect name. Intended to be used as
 iteration function.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.28.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.28.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1206,6 +1249,12 @@ iteration function.</p>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
+<td class="parameter_name"><p>filename</p></td>
+<td class="parameter_description"><p>the filename containing <em class="parameter"><code>effect</code></em>
+or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
 <td class="parameter_name"><p>effect</p></td>
 <td class="parameter_description"><p>the effect name</p></td>
 <td class="parameter_annotations"> </td>
@@ -1214,10 +1263,10 @@ iteration function.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.17.9.28.6"></a><h4>Returns</h4>
+<a name="id-1.9.18.9.28.6"></a><h4>Returns</h4>
 <p> a GList, or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> if not found</p>
 </div>
-<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -1228,7 +1277,7 @@ ags_recall_find_type (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span
 <p>Finds next matching recall for type. Intended to be used as
 iteration function.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.29.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.29.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1250,7 +1299,7 @@ iteration function.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.17.9.29.6"></a><h4>Returns</h4>
+<a name="id-1.9.18.9.29.6"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls, or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> if not found</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -1263,7 +1312,7 @@ ags_recall_find_template (<em class="parameter"><code><GTKDOCLINK HREF="GList"><
 <p>Finds next template, see <a class="link" href="AgsRecall.html#AGS-RECALL-TEMPLATE:CAPS"><span class="type">AGS_RECALL_TEMPLATE</span></a> flag. Intended to be used as
 iteration function.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.30.5"></a><h4>Returns</h4>
+<a name="id-1.9.18.9.30.5"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls, or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> if not found</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -1277,7 +1326,53 @@ ags_recall_template_find_type (<em class="parameter"><code><GTKDOCLINK HREF="GLi
 <p>Finds next matching recall for type which is a template, see <a class="link" href="AgsRecall.html#AGS-RECALL-TEMPLATE:CAPS"><span class="type">AGS_RECALL_TEMPLATE</span></a> flag.
 Intended to be used as iteration function.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.31.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.31.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recall_i</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recall_type</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.18.9.31.6"></a><h4>Returns</h4>
+<p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls, or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> if not found</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-template-find-all-type"></a><h3>ags_recall_template_find_all_type ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_recall_template_find_all_type (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
+                                   <em class="parameter"><code>...</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-recall-find-type-with-recycling-context"></a><h3>ags_recall_find_type_with_recycling_context ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_recall_find_type_with_recycling_context
+                               (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> type</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling_context</code></em>);</pre>
+<p>Finds next matching recall for type which has <em class="parameter"><code>recycling_context</code></em>
+, see <GTKDOCLINK HREF="AgsRecallId"><span class="type">AgsRecallId</span></GTKDOCLINK> for further
+details about <a class="link" href="AgsRecyclingContext.html" title="AgsRecyclingContext"><span class="type">AgsRecyclingContext</span></a>. Intended to be used as iteration function.</p>
+<div class="refsect3">
+<a name="id-1.9.18.9.33.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1295,30 +1390,56 @@ Intended to be used as iteration function.</p>
 <td class="parameter_description"><p>a <GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK></p></td>
 <td class="parameter_annotations"> </td>
 </tr>
+<tr>
+<td class="parameter_name"><p>recycling_context</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecyclingContext.html" title="AgsRecyclingContext"><span class="type">AgsRecyclingContext</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
 </tbody>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.17.9.31.6"></a><h4>Returns</h4>
+<a name="id-1.9.18.9.33.6"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls, or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> if not found</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
-<a name="ags-recall-find-type-with-recycling-container"></a><h3>ags_recall_find_type_with_recycling_container ()</h3>
+<a name="ags-recall-find-recycling-context"></a><h3>ags_recall_find_recycling_context ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
-ags_recall_find_type_with_recycling_container
-                               (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
-                                <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> type</code></em>,
-                                <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling_container</code></em>);</pre>
+ags_recall_find_recycling_context (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
+                                   <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling_context</code></em>);</pre>
+<p>Finds next matching recall which has <em class="parameter"><code>recycling_context</code></em>
+, see <GTKDOCLINK HREF="AgsRecallId"><span class="type">AgsRecallId</span></GTKDOCLINK> for further
+details about <a class="link" href="AgsRecyclingContext.html" title="AgsRecyclingContext"><span class="type">AgsRecyclingContext</span></a>. Intended to be used as iteration function.</p>
+<div class="refsect3">
+<a name="id-1.9.18.9.34.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recall_i</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recycling_context</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecyclingContext.html" title="AgsRecyclingContext"><span class="type">AgsRecyclingContext</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
 </div>
-<hr>
-<div class="refsect2">
-<a name="ags-recall-find-recycling-container"></a><h3>ags_recall_find_recycling_container ()</h3>
-<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
-ags_recall_find_recycling_container (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
-                                     <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling_container</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.9.18.9.34.6"></a><h4>Returns</h4>
+<p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls, or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> if not found</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -1328,7 +1449,7 @@ ags_recall_find_provider (<em class="parameter"><code><GTKDOCLINK HREF="GList"><
                           <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *provider</code></em>);</pre>
 <p>Finds provider eg. <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> or <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> within <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containig <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a>.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.34.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.35.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1350,7 +1471,7 @@ ags_recall_find_provider (<em class="parameter"><code><GTKDOCLINK HREF="GList"><
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.17.9.34.6"></a><h4>Returns</h4>
+<a name="id-1.9.18.9.35.6"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls, or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> if not found</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -1364,12 +1485,46 @@ ags_recall_template_find_provider (<em class="parameter"><code><GTKDOCLINK HREF=
 </div>
 <hr>
 <div class="refsect2">
-<a name="ags-recall-find-provider-with-recycling-container"></a><h3>ags_recall_find_provider_with_recycling_container ()</h3>
+<a name="ags-recall-find-provider-with-recycling-context"></a><h3>ags_recall_find_provider_with_recycling_context ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
-ags_recall_find_provider_with_recycling_container
+ags_recall_find_provider_with_recycling_context
                                (<em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *recall</code></em>,
                                 <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *provider</code></em>,
-                                <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling_container</code></em>);</pre>
+                                <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *recycling_context</code></em>);</pre>
+<p>Like <a class="link" href="AgsRecall.html#ags-recall-template-find-provider" title="ags_recall_template_find_provider ()"><code class="function">ags_recall_template_find_provider()</code></a> but given additionally <em class="parameter"><code>recycling_context</code></em>
+ as search parameter.</p>
+<div class="refsect3">
+<a name="id-1.9.18.9.37.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>recall_i</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>provider</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>recycling_context</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsRecyclingContext.html" title="AgsRecyclingContext"><span class="type">AgsRecyclingContext</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.18.9.37.6"></a><h4>Returns</h4>
+<p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing recalls, or <GTKDOCLINK HREF="NULL:CAPS"><code class="literal">NULL</code></GTKDOCLINK> if not found</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -1387,7 +1542,7 @@ ags_recall_handler_alloc (<em class="parameter"><code>const <GTKDOCLINK HREF="gc
                           <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *data</code></em>);</pre>
 <p>Allocates <GTKDOCLINK HREF="AgsRecallHandler-struct"><span class="type">AgsRecallHandler</span></GTKDOCLINK>.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.38.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.39.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1425,7 +1580,7 @@ ags_recall_add_handler (<em class="parameter"><code><a class="link" href="AgsRec
  specified by <em class="parameter"><code>recall_handler</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.39.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.40.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1457,7 +1612,7 @@ ags_recall_remove_handler (<em class="parameter"><code><a class="link" href="Ags
 <p>Remove a <GTKDOCLINK HREF="AgsRecallHandler-struct"><span class="type">AgsRecallHandler</span></GTKDOCLINK> from <em class="parameter"><code>recall</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.40.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.9.41.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1487,7 +1642,7 @@ ags_recall_remove_handler (<em class="parameter"><code><a class="link" href="Ags
 ags_recall_new ();</pre>
 <p>Creates an <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a>.</p>
 <div class="refsect3">
-<a name="id-1.9.17.9.41.5"></a><h4>Returns</h4>
+<a name="id-1.9.18.9.42.5"></a><h4>Returns</h4>
 <p> a new <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a>.</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
@@ -1510,7 +1665,7 @@ ags_recall_new ();</pre>
 <div class="refsect2">
 <a name="AgsRecallFlags"></a><h3>enum AgsRecallFlags</h3>
 <div class="refsect3">
-<a name="id-1.9.17.10.4.3"></a><h4>Members</h4>
+<a name="id-1.9.18.10.4.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -1631,7 +1786,7 @@ ags_recall_new ();</pre>
 <div class="refsect2">
 <a name="AgsRecallNotifyDependencyMode"></a><h3>enum AgsRecallNotifyDependencyMode</h3>
 <div class="refsect3">
-<a name="id-1.9.17.10.5.3"></a><h4>Members</h4>
+<a name="id-1.9.18.10.5.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -1743,7 +1898,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::cancel signal notifies about cancelling playback.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.2.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1776,7 +1931,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::child-added signal notifies about children
 added.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.3.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1812,7 +1967,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::done signal notifies about stopping playback.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.4.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1846,7 +2001,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::duplicate signal notifies about instantiating.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.5.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1895,7 +2050,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::notify-dependency signal notifies about dependencies
 added.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.6.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1936,7 +2091,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::remove signal notifies about removing.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.7.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1968,7 +2123,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::resolve-dependencies signal notifies about resolving
 dependencies.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.8.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.8.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2000,7 +2155,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::run-init-inter signal notifies about initializing
 stage 1.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.9.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.9.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2032,7 +2187,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::run-init-post signal notifies about initializing
 stage 2.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.10.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.10.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2064,7 +2219,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::run-init-pre signal notifies about initializing
 stage 0.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.11.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.11.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2096,7 +2251,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::run-inter signal notifies about running
 stage 1.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.12.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.12.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2128,7 +2283,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::run-post signal notifies about running
 stage 2.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.13.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.13.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2160,7 +2315,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::run-pre signal notifies about running
 stage 0.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.14.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.14.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2192,7 +2347,7 @@ user_function (<a class="link" href="AgsRecall.html" title="AgsRecall"><span cla
 <p>The ::stop-persistent signal notifies about definitively
 stopping playback.</p>
 <div class="refsect3">
-<a name="id-1.9.17.12.15.5"></a><h4>Parameters</h4>
+<a name="id-1.9.18.12.15.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">

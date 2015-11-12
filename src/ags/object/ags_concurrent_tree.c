@@ -25,7 +25,7 @@ void ags_concurrent_tree_base_init(AgsConcurrentTreeInterface *interface);
 
 /**
  * SECTION:ags_concurrent_tree
- * @short_description: unique access to recalls
+ * @short_description: thread-safe locking of tree
  * @title: AgsConcurrentTree
  * @section_id:
  * @include: ags/object/ags_concurrent_tree.h
@@ -100,6 +100,16 @@ ags_concurrent_tree_get_parent_lock(AgsConcurrentTree *concurrent_tree)
   return(concurrent_tree_interface->get_parent_lock(concurrent_tree));
 }
 
+/**
+ * ags_concurrent_tree_lock_context:
+ * @concurrent_tree: the #AgsConcurrentTree
+ *
+ * Locks the context of @concurrent_tree and blocks until success.
+ *
+ * Returns: %TRUE
+ *
+ * Since: 0.6.0
+ */
 gboolean
 ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
 {
@@ -124,6 +134,14 @@ ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
   }
 }
 
+/**
+ * ags_concurrent_tree_unlock_context:
+ * @concurrent_tree: the #AgsConcurrentTree
+ * 
+ * Unlocks the context of @concurrent_tree.
+ *
+ * Since: 0.6.0
+ */
 void
 ags_concurrent_tree_unlock_context(AgsConcurrentTree *concurrent_tree)
 {

@@ -2,11 +2,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>AgsConcurrentTree:  Reference Manual</title>
+<title>AgsConcurrentTree: Advanced Gtk+ Sequencer Reference Manual</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
-<link rel="home" href="index.html" title="Reference Manual">
-<link rel="up" href="ch01.html" title="[Insert title here]">
-<link rel="prev" href="AgsConcurrencyProvider.html" title="AgsConcurrencyProvider">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
+<link rel="prev" href="AgsApplicationContext.html" title="AgsApplicationContext">
 <link rel="next" href="AgsConfig.html" title="AgsConfig">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
@@ -19,8 +19,8 @@
                   <a href="#AgsConcurrentTree.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
-<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="AgsConcurrencyProvider.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsApplicationContext.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="AgsConfig.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
@@ -28,7 +28,7 @@
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2><span class="refentrytitle"><a name="AgsConcurrentTree.top_of_page"></a>AgsConcurrentTree</span></h2>
-<p>AgsConcurrentTree — unique access to recalls</p>
+<p>AgsConcurrentTree — thread-safe locking of tree</p>
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
@@ -113,12 +113,52 @@ ags_concurrent_tree_get_parent_lock (<em class="parameter"><code><a class="link"
 <a name="ags-concurrent-tree-lock-context"></a><h3>ags_concurrent_tree_lock_context ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
 ags_concurrent_tree_lock_context (<em class="parameter"><code><a class="link" href="AgsConcurrentTree.html" title="AgsConcurrentTree"><span class="type">AgsConcurrentTree</span></a> *concurrent_tree</code></em>);</pre>
+<p>Locks the context of <em class="parameter"><code>concurrent_tree</code></em>
+ and blocks until success.</p>
+<div class="refsect3">
+<a name="id-1.4.5.7.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>concurrent_tree</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsConcurrentTree.html" title="AgsConcurrentTree"><span class="type">AgsConcurrentTree</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.4.5.7.4.6"></a><h4>Returns</h4>
+<p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.6.0">0.6.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-concurrent-tree-unlock-context"></a><h3>ags_concurrent_tree_unlock_context ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_concurrent_tree_unlock_context (<em class="parameter"><code><a class="link" href="AgsConcurrentTree.html" title="AgsConcurrentTree"><span class="type">AgsConcurrentTree</span></a> *concurrent_tree</code></em>);</pre>
+<p>Unlocks the context of <em class="parameter"><code>concurrent_tree</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.4.5.7.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>concurrent_tree</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsConcurrentTree.html" title="AgsConcurrentTree"><span class="type">AgsConcurrentTree</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.6.0">0.6.0</GTKDOCLINK></p>
 </div>
 </div>
 <div class="refsect1">

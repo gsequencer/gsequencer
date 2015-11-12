@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsNotebook">
 <refmeta>
@@ -25,6 +23,8 @@
 <colspec colname="functions_name"/>
 <tbody>
 <row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-NOTEBOOK-TAB:CAPS">AGS_NOTEBOOK_TAB</link><phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-NOTEBOOK-TAB-DEFAULT-HEIGHT:CAPS">AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-NOTEBOOK-TAB-DEFAULT-WIDTH:CAPS">AGS_NOTEBOOK_TAB_DEFAULT_WIDTH</link></entry></row>
 <row><entry role="function_type"><link linkend="gint"><returnvalue>gint</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-notebook-tab-index">ags_notebook_tab_index</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="gint"><returnvalue>gint</returnvalue></link>
@@ -88,6 +88,18 @@
 <title>AGS_NOTEBOOK_TAB()</title>
 <indexterm zone="AGS-NOTEBOOK-TAB:CAPS"><primary>AGS_NOTEBOOK_TAB</primary></indexterm>
 <programlisting language="C">#define AGS_NOTEBOOK_TAB(x) ((AgsNotebookTab *)(x))
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-NOTEBOOK-TAB-DEFAULT-HEIGHT:CAPS" role="macro">
+<title>AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT</title>
+<indexterm zone="AGS-NOTEBOOK-TAB-DEFAULT-HEIGHT:CAPS"><primary>AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT</primary></indexterm>
+<programlisting language="C">#define AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT (32)
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-NOTEBOOK-TAB-DEFAULT-WIDTH:CAPS" role="macro">
+<title>AGS_NOTEBOOK_TAB_DEFAULT_WIDTH</title>
+<indexterm zone="AGS-NOTEBOOK-TAB-DEFAULT-WIDTH:CAPS"><primary>AGS_NOTEBOOK_TAB_DEFAULT_WIDTH</primary></indexterm>
+<programlisting language="C">#define AGS_NOTEBOOK_TAB_DEFAULT_WIDTH (100)
 </programlisting>
 </refsect2>
 <refsect2 id="ags-notebook-tab-index" role="function">
@@ -175,6 +187,9 @@ ags_notebook_new ();</programlisting>
 <row role="constant"><entry role="enum_member_name"><para id="AGS-NOTEBOOK-SHOW-LINE:CAPS">AGS_NOTEBOOK_SHOW_LINE</para></entry>
 <entry /><entry />
 </row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-NOTEBOOK-SHOW-SCROLL-BUTTONS:CAPS">AGS_NOTEBOOK_SHOW_SCROLL_BUTTONS</para></entry>
+<entry /><entry />
+</row>
 </tbody></tgroup></informaltable>
 </refsect3></refsect2>
 <refsect2 id="AgsNotebookTabFlags" role="enum">
@@ -205,8 +220,9 @@ ags_notebook_new ();</programlisting>
 <programlisting language="C">struct AgsNotebookTab {
   guint flags;
 
-  GtkToggleButton *toggle;
   GObject *notation;
+  
+  GtkToggleButton *toggle;
 };
 </programlisting>
 </refsect2>

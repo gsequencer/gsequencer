@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsComplex">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsComplex.top_of_page">AgsComplex</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsComplex</refname>
+<refpurpose>Boxed type of complex</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsComplex.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsComplex"><returnvalue>AgsComplex</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-complex-alloc">ags_complex_alloc</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-complex-copy">ags_complex_copy</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-complex-free">ags_complex_free</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="complex"><returnvalue>complex</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-complex-get">ags_complex_get</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-complex-set">ags_complex_set</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsComplex.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GBoxed">GBoxed</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsComplex
+</screen>
+</refsect1>
+
+<refsect1 id="AgsComplex.includes"><title>Includes</title><synopsis>#include &lt;ags/lib/ags_complex.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsComplex.description" role="desc">
+<title role="desc.title">Description</title>
+<para>GBoxed of complex data type.</para>
+
+</refsect1>
+<refsect1 id="AgsComplex.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-complex-alloc" role="function" condition="since:0.7.1">
+<title>ags_complex_alloc&#160;()</title>
+<indexterm zone="ags-complex-alloc" role="0.7.1"><primary>ags_complex_alloc</primary></indexterm>
+<programlisting language="C"><link linkend="AgsComplex"><returnvalue>AgsComplex</returnvalue></link>&#160;*
+ags_complex_alloc ();</programlisting>
+<para>Allocate <link linkend="AgsComplex"><type>AgsComplex</type></link></para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsComplex"><type>AgsComplex</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-complex-copy" role="function" condition="since:0.7.1">
+<title>ags_complex_copy&#160;()</title>
+<indexterm zone="ags-complex-copy" role="0.7.1"><primary>ags_complex_copy</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+ags_complex_copy (<parameter><link linkend="AgsComplex"><type>AgsComplex</type></link> *ptr</parameter>);</programlisting>
+<para>Create a copy of <parameter>ptr</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>ptr</para></entry>
+<entry role="parameter_description"><para>the original <link linkend="AgsCopy"><type>AgsCopy</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a pointer of the new <link linkend="AgsComplex"><type>AgsComplex</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-complex-free" role="function" condition="since:0.7.1">
+<title>ags_complex_free&#160;()</title>
+<indexterm zone="ags-complex-free" role="0.7.1"><primary>ags_complex_free</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_complex_free (<parameter><link linkend="AgsComplex"><type>AgsComplex</type></link> *ptr</parameter>);</programlisting>
+<para>Frees the memory of <parameter>ptr</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>ptr</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsComplex"><type>AgsComplex</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-complex-get" role="function" condition="since:0.7.1">
+<title>ags_complex_get&#160;()</title>
+<indexterm zone="ags-complex-get" role="0.7.1"><primary>ags_complex_get</primary></indexterm>
+<programlisting language="C"><link linkend="complex"><returnvalue>complex</returnvalue></link>
+ags_complex_get (<parameter><link linkend="AgsComplex"><type>AgsComplex</type></link> *ptr</parameter>);</programlisting>
+<para>Set complex number.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>ptr</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsComplex"><type>AgsComplex</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>z</para></entry>
+<entry role="parameter_description"><para>the complex data to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+<refsect2 id="ags-complex-set" role="function">
+<title>ags_complex_set&#160;()</title>
+<indexterm zone="ags-complex-set"><primary>ags_complex_set</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_complex_set (<parameter><link linkend="AgsComplex"><type>AgsComplex</type></link> *ptr</parameter>,
+                 <parameter><link linkend="complex"><type>complex</type></link> z</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsComplex.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<indexdiv id="api-index-0.6.0">
+<indexdiv><title>C</title>
+<indexentry><primaryie linkends="ags-concurrent-tree-lock-context"><link linkend="ags-concurrent-tree-lock-context">ags_concurrent_tree_lock_context</link>, function in <link linkend="AgsConcurrentTree">AgsConcurrentTree</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-concurrent-tree-unlock-context"><link linkend="ags-concurrent-tree-unlock-context">ags_concurrent_tree_unlock_context</link>, function in <link linkend="AgsConcurrentTree">AgsConcurrentTree</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>M</title>
+<indexentry><primaryie linkends="ags-main-loop-get-application-context"><link linkend="ags-main-loop-get-application-context">ags_main_loop_get_application_context</link>, function in <link linkend="AgsMainLoop">AgsMainLoop</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-main-loop-set-application-context"><link linkend="ags-main-loop-set-application-context">ags_main_loop_set_application_context</link>, function in <link linkend="AgsMainLoop">AgsMainLoop</link></primaryie></indexentry>
+</indexdiv>
+</indexdiv>

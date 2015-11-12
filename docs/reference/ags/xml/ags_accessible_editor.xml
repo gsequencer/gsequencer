@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-AgsAccessibleEditor">
 <refmeta>
@@ -17,44 +15,6 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsect1 id="ags-AgsAccessibleEditor.functions" role="functions_proto">
-<title role="functions_proto.title">Functions</title>
-<informaltable pgwide="1" frame="none">
-<tgroup cols="2">
-<colspec colname="functions_return" colwidth="150px"/>
-<colspec colname="functions_name"/>
-<tbody>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-insert-note">ags_accessible_editor_insert_note</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-delete-note">ags_accessible_editor_delete_note</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-select-region">ags_accessible_editor_select_region</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-select-all">ags_accessible_editor_select_all</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-unselect-all">ags_accessible_editor_unselect_all</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-copy">ags_accessible_editor_copy</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-cut">ags_accessible_editor_cut</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-paste">ags_accessible_editor_paste</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-add-index">ags_accessible_editor_add_index</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-remove-index">ags_accessible_editor_remove_index</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-link-index">ags_accessible_editor_link_index</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-reverse-mapping">ags_accessible_editor_reverse_mapping</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-accessible-editor-move-to-index">ags_accessible_editor_move_to_index</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-
-</tbody>
-</tgroup>
-</informaltable>
-</refsect1>
 
 
 <refsect1 id="ags-AgsAccessibleEditor.description" role="desc">
@@ -63,85 +23,7 @@
 </refsect1>
 <refsect1 id="ags-AgsAccessibleEditor.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-accessible-editor-insert-note" role="function">
-<title>ags_accessible_editor_insert_note&#160;()</title>
-<indexterm zone="ags-accessible-editor-insert-note"><primary>ags_accessible_editor_insert_note</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_insert_note (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-delete-note" role="function">
-<title>ags_accessible_editor_delete_note&#160;()</title>
-<indexterm zone="ags-accessible-editor-delete-note"><primary>ags_accessible_editor_delete_note</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_delete_note (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-select-region" role="function">
-<title>ags_accessible_editor_select_region&#160;()</title>
-<indexterm zone="ags-accessible-editor-select-region"><primary>ags_accessible_editor_select_region</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_select_region (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-select-all" role="function">
-<title>ags_accessible_editor_select_all&#160;()</title>
-<indexterm zone="ags-accessible-editor-select-all"><primary>ags_accessible_editor_select_all</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_select_all (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-unselect-all" role="function">
-<title>ags_accessible_editor_unselect_all&#160;()</title>
-<indexterm zone="ags-accessible-editor-unselect-all"><primary>ags_accessible_editor_unselect_all</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_unselect_all (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-copy" role="function">
-<title>ags_accessible_editor_copy&#160;()</title>
-<indexterm zone="ags-accessible-editor-copy"><primary>ags_accessible_editor_copy</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_copy (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-cut" role="function">
-<title>ags_accessible_editor_cut&#160;()</title>
-<indexterm zone="ags-accessible-editor-cut"><primary>ags_accessible_editor_cut</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_cut (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-paste" role="function">
-<title>ags_accessible_editor_paste&#160;()</title>
-<indexterm zone="ags-accessible-editor-paste"><primary>ags_accessible_editor_paste</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_paste (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-add-index" role="function">
-<title>ags_accessible_editor_add_index&#160;()</title>
-<indexterm zone="ags-accessible-editor-add-index"><primary>ags_accessible_editor_add_index</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_add_index (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-remove-index" role="function">
-<title>ags_accessible_editor_remove_index&#160;()</title>
-<indexterm zone="ags-accessible-editor-remove-index"><primary>ags_accessible_editor_remove_index</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_remove_index (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-link-index" role="function">
-<title>ags_accessible_editor_link_index&#160;()</title>
-<indexterm zone="ags-accessible-editor-link-index"><primary>ags_accessible_editor_link_index</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_link_index (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-reverse-mapping" role="function">
-<title>ags_accessible_editor_reverse_mapping&#160;()</title>
-<indexterm zone="ags-accessible-editor-reverse-mapping"><primary>ags_accessible_editor_reverse_mapping</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_reverse_mapping (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-accessible-editor-move-to-index" role="function">
-<title>ags_accessible_editor_move_to_index&#160;()</title>
-<indexterm zone="ags-accessible-editor-move-to-index"><primary>ags_accessible_editor_move_to_index</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_accessible_editor_move_to_index (<parameter><link linkend="AgsAccessibleEditor"><type>AgsAccessibleEditor</type></link> *accessible_editor</parameter>);</programlisting>
-</refsect2>
-
+<para />
 </refsect1>
 <refsect1 id="ags-AgsAccessibleEditor.other_details" role="details">
 <title role="details.title">Types and Values</title>

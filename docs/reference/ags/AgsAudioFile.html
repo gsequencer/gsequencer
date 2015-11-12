@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="audio-file.html" title="Audio files - Reading/Writing audio data from disk">
 <link rel="prev" href="audio-file.html" title="Audio files - Reading/Writing audio data from disk">
-<link rel="next" href="AgsIpatch.html" title="AgsIpatch">
+<link rel="next" href="AgsAudioFileLink.html" title="AgsAudioFileLink">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -22,7 +22,7 @@
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="audio-file.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
 <td><a accesskey="p" href="audio-file.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="AgsIpatch.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="AgsAudioFileLink.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="AgsAudioFile"></a><div class="titlepage"></div>
@@ -195,7 +195,7 @@
 ags_audio_file_open (<em class="parameter"><code><a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);</pre>
 <p>Open the <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a> in read mode.</p>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.2.5"></a><h4>Parameters</h4>
+<a name="id-1.9.44.2.8.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -219,7 +219,7 @@ ags_audio_file_open_from_data (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *data</code></em>);</pre>
 <p>Open <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a> using virtual functions.</p>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.3.5"></a><h4>Parameters</h4>
+<a name="id-1.9.44.2.8.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -250,7 +250,7 @@ ags_audio_file_rw_open (<em class="parameter"><code><a class="link" href="AgsAud
                         <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> create</code></em>);</pre>
 <p>Open the <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a> in read/write mode.</p>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.4.5"></a><h4>Parameters</h4>
+<a name="id-1.9.44.2.8.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -280,7 +280,7 @@ ags_audio_file_rw_open (<em class="parameter"><code><a class="link" href="AgsAud
 ags_audio_file_close (<em class="parameter"><code><a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);</pre>
 <p>Close the <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a>.</p>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.5.5"></a><h4>Parameters</h4>
+<a name="id-1.9.44.2.8.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -303,7 +303,7 @@ ags_audio_file_close (<em class="parameter"><code><a class="link" href="AgsAudio
 ags_audio_file_read_audio_signal (<em class="parameter"><code><a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);</pre>
 <p>Convert the <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a> to a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> of buffers.</p>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.6.5"></a><h4>Parameters</h4>
+<a name="id-1.9.44.2.8.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -328,7 +328,7 @@ ags_audio_file_seek (<em class="parameter"><code><a class="link" href="AgsAudioF
                      <em class="parameter"><code><GTKDOCLINK HREF="gint"><span class="type">gint</span></GTKDOCLINK> whence</code></em>);</pre>
 <p>Position the <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a>'s internal data address.</p>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.7.5"></a><h4>Parameters</h4>
+<a name="id-1.9.44.2.8.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -365,7 +365,7 @@ ags_audio_file_write (<em class="parameter"><code><a class="link" href="AgsAudio
                       <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> buffer_size</code></em>);</pre>
 <p>Write the buffer to <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a>.</p>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.8.5"></a><h4>Parameters</h4>
+<a name="id-1.9.44.2.8.8.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -400,7 +400,7 @@ ags_audio_file_write (<em class="parameter"><code><a class="link" href="AgsAudio
 ags_audio_file_flush (<em class="parameter"><code><a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a> *audio_file</code></em>);</pre>
 <p>Flushes the <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a>'s internal buffer.</p>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.9.5"></a><h4>Parameters</h4>
+<a name="id-1.9.44.2.8.9.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -426,7 +426,7 @@ ags_audio_file_new (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span c
                     <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> audio_channels</code></em>);</pre>
 <p>Creates an <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a>.</p>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.10.5"></a><h4>Parameters</h4>
+<a name="id-1.9.44.2.8.10.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -441,7 +441,7 @@ ags_audio_file_new (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span c
 </tr>
 <tr>
 <td class="parameter_name"><p>soundcard</p></td>
-<td class="parameter_description"><p>defaults of <GTKDOCLINK HREF="AgsSoundcard"><span class="type">AgsSoundcard</span></GTKDOCLINK></p></td>
+<td class="parameter_description"><p>defaults of <a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a></p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>
@@ -458,7 +458,7 @@ ags_audio_file_new (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span c
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.39.2.8.10.6"></a><h4>Returns</h4>
+<a name="id-1.9.44.2.8.10.6"></a><h4>Returns</h4>
 <p> an empty <a class="link" href="AgsAudioFile.html" title="AgsAudioFile"><span class="type">AgsAudioFile</span></a>.</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>

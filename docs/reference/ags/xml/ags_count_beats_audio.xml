@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsCountBeatsAudio">
 <refmeta>
@@ -75,19 +73,7 @@
 <programlisting language="C"><link linkend="AgsCountBeatsAudio"><returnvalue>AgsCountBeatsAudio</returnvalue></link>&#160;*
 ags_count_beats_audio_new (<parameter><link linkend="gboolean"><type>gboolean</type></link> loop</parameter>);</programlisting>
 <para>Creates an <link linkend="AgsCountBeatsAudio"><type>AgsCountBeatsAudio</type></link></para>
-<refsect3 role="parameters">
-<title>Parameters</title>
-<informaltable role="parameters_table" pgwide="1" frame="none">
-<tgroup cols="3">
-<colspec colname="parameters_name" colwidth="150px"/>
-<colspec colname="parameters_description"/>
-<colspec colname="parameters_annotations" colwidth="200px"/>
-<tbody>
-<row><entry role="parameter_name"><para>loop</para></entry>
-<entry role="parameter_description"><para>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> after exceeding counter, effect loops</para></entry>
-<entry role="parameter_annotations"></entry></row>
-</tbody></tgroup></informaltable>
-</refsect3><refsect3 role="returns">
+<refsect3 role="returns">
 <title>Returns</title>
 <para> a new <link linkend="AgsCountBeatsAudio"><type>AgsCountBeatsAudio</type></link></para>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>

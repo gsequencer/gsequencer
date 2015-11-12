@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-AgsGarbageCollector">
 <refmeta>
@@ -17,39 +15,6 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsect1 id="ags-AgsGarbageCollector.functions" role="functions_proto">
-<title role="functions_proto.title">Functions</title>
-<informaltable pgwide="1" frame="none">
-<tgroup cols="2">
-<colspec colname="functions_return" colwidth="150px"/>
-<colspec colname="functions_name"/>
-<tbody>
-<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-garbage-collector-add">ags_garbage_collector_add</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-garbage-collector-remove">ags_garbage_collector_remove</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-garbage-collector-run">ags_garbage_collector_run</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="AgsGarbageCollector"><returnvalue>AgsGarbageCollector</returnvalue></link>&#160;*
-</entry><entry role="function_name"><link linkend="ags-garbage-collector-new">ags_garbage_collector_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-
-</tbody>
-</tgroup>
-</informaltable>
-</refsect1>
-<refsect1 id="ags-AgsGarbageCollector.other" role="other_proto">
-<title role="other_proto.title">Types and Values</title>
-<informaltable role="enum_members_table" pgwide="1" frame="none">
-<tgroup cols="2">
-<colspec colname="name" colwidth="150px"/>
-<colspec colname="description"/>
-<tbody>
-<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsGarbageCollectorFlags">AgsGarbageCollectorFlags</link></entry></row>
-
-</tbody>
-</tgroup>
-</informaltable>
-</refsect1>
 
 
 <refsect1 id="ags-AgsGarbageCollector.description" role="desc">
@@ -58,55 +23,10 @@
 </refsect1>
 <refsect1 id="ags-AgsGarbageCollector.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-garbage-collector-add" role="function">
-<title>ags_garbage_collector_add&#160;()</title>
-<indexterm zone="ags-garbage-collector-add"><primary>ags_garbage_collector_add</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_garbage_collector_add (<parameter><link linkend="AgsGarbageCollector"><type>AgsGarbageCollector</type></link> *garbage_collector</parameter>,
-                           <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-garbage-collector-remove" role="function">
-<title>ags_garbage_collector_remove&#160;()</title>
-<indexterm zone="ags-garbage-collector-remove"><primary>ags_garbage_collector_remove</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_garbage_collector_remove (<parameter><link linkend="AgsGarbageCollector"><type>AgsGarbageCollector</type></link> *garbage_collector</parameter>,
-                              <parameter><link linkend="AgsRecycling"><type>AgsRecycling</type></link> *recycling</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-garbage-collector-run" role="function">
-<title>ags_garbage_collector_run&#160;()</title>
-<indexterm zone="ags-garbage-collector-run"><primary>ags_garbage_collector_run</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_garbage_collector_run (<parameter><link linkend="AgsGarbageCollector"><type>AgsGarbageCollector</type></link> *garbage_collector</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-garbage-collector-new" role="function">
-<title>ags_garbage_collector_new&#160;()</title>
-<indexterm zone="ags-garbage-collector-new"><primary>ags_garbage_collector_new</primary></indexterm>
-<programlisting language="C"><link linkend="AgsGarbageCollector"><returnvalue>AgsGarbageCollector</returnvalue></link>&#160;*
-ags_garbage_collector_new ();</programlisting>
-</refsect2>
-
+<para />
 </refsect1>
 <refsect1 id="ags-AgsGarbageCollector.other_details" role="details">
 <title role="details.title">Types and Values</title>
-<refsect2 id="AgsGarbageCollectorFlags" role="enum">
-<title>enum AgsGarbageCollectorFlags</title>
-<indexterm zone="AgsGarbageCollectorFlags"><primary>AgsGarbageCollectorFlags</primary></indexterm>
-<refsect3 role="enum_members">
-<title>Members</title>
-<informaltable role="enum_members_table" pgwide="1" frame="none">
-<tgroup cols="3">
-<colspec colname="enum_members_name" colwidth="300px"/>
-<colspec colname="enum_members_description"/>
-<colspec colname="enum_members_annotations" colwidth="200px"/>
-<tbody>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-GARBAGE-COLLECTOR-RUN:CAPS">AGS_GARBAGE_COLLECTOR_RUN</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-GARBAGE-COLLECTOR-CANCEL-RUN:CAPS">AGS_GARBAGE_COLLECTOR_CANCEL_RUN</para></entry>
-<entry /><entry />
-</row>
-</tbody></tgroup></informaltable>
-</refsect3></refsect2>
 
 </refsect1>
 

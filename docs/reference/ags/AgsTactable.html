@@ -6,8 +6,8 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
-<link rel="prev" href="AgsSeekable.html" title="AgsSeekable">
-<link rel="next" href="ags-AgsStackable.html" title="AgsStackable">
+<link rel="prev" href="AgsSoundcard.html" title="AgsSoundcard">
+<link rel="next" href="AgsTreeIterator.html" title="AgsTreeIterator">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -21,8 +21,8 @@
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="AgsSeekable.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="ags-AgsStackable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="p" href="AgsSoundcard.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsTreeIterator.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="AgsTactable"></a><div class="titlepage"></div>
@@ -133,7 +133,7 @@ ags_tactable_change_sequencer_duration
                                 <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> duration</code></em>);</pre>
 <p>Sequencer duration changed.</p>
 <div class="refsect3">
-<a name="id-1.4.15.8.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.19.8.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -163,7 +163,7 @@ ags_tactable_change_notation_duration (<em class="parameter"><code><a class="lin
                                        <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> duration</code></em>);</pre>
 <p>Notation duration changed.</p>
 <div class="refsect3">
-<a name="id-1.4.15.8.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.19.8.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -193,7 +193,7 @@ ags_tactable_change_tact (<em class="parameter"><code><a class="link" href="AgsT
                           <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> tact</code></em>);</pre>
 <p>Tact changed.</p>
 <div class="refsect3">
-<a name="id-1.4.15.8.4.5"></a><h4>Parameters</h4>
+<a name="id-1.4.19.8.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -223,7 +223,7 @@ ags_tactable_change_bpm (<em class="parameter"><code><a class="link" href="AgsTa
                          <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> bpm</code></em>);</pre>
 <p>Bpm changed.</p>
 <div class="refsect3">
-<a name="id-1.4.15.8.5.5"></a><h4>Parameters</h4>
+<a name="id-1.4.19.8.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -259,7 +259,7 @@ user_function (<a class="link" href="AgsTactable.html" title="AgsTactable"><span
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>     user_data)</pre>
 <p>The ::change-bpm signal notifies about changed bpm.</p>
 <div class="refsect3">
-<a name="id-1.4.15.10.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.19.10.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -297,7 +297,7 @@ user_function (<a class="link" href="AgsTactable.html" title="AgsTactable"><span
 <p>The ::change-notation-duration signal notifies about changed duration
 of notation.</p>
 <div class="refsect3">
-<a name="id-1.4.15.10.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.19.10.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -335,7 +335,7 @@ user_function (<a class="link" href="AgsTactable.html" title="AgsTactable"><span
 <p>The ::change-sequencer-duration signal notifies about changed duration
 of sequencer.</p>
 <div class="refsect3">
-<a name="id-1.4.15.10.4.5"></a><h4>Parameters</h4>
+<a name="id-1.4.19.10.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -372,7 +372,7 @@ user_function (<a class="link" href="AgsTactable.html" title="AgsTactable"><span
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>     user_data)</pre>
 <p>The ::change-tact signal notifies about changed tact.</p>
 <div class="refsect3">
-<a name="id-1.4.15.10.5.5"></a><h4>Parameters</h4>
+<a name="id-1.4.19.10.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">

@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsRecallAudio">
 <refmeta>
@@ -56,7 +54,10 @@
             <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDelayAudio">AgsDelayAudio</link>
             <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMuteAudio">AgsMuteAudio</link>
             <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayAudio">AgsPlayAudio</link>
-            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPlayNotationAudio">AgsPlayNotationAudio</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayNotationAudio">AgsPlayNotationAudio</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecordMidiAudio">AgsRecordMidiAudio</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRouteDssiAudio">AgsRouteDssiAudio</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRouteLv2Audio">AgsRouteLv2Audio</link>
 </screen>
 </refsect1>
 

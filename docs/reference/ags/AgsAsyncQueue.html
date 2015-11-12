@@ -2,12 +2,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>AgsAsyncQueue:  Reference Manual</title>
+<title>AgsAsyncQueue: Advanced Gtk+ Sequencer Reference Manual</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
-<link rel="home" href="index.html" title="Reference Manual">
-<link rel="up" href="ch01.html" title="[Insert title here]">
-<link rel="prev" href="AgsApplyWavetable.html" title="AgsApplyWavetable">
-<link rel="next" href="AgsAudio.html" title="AgsAudio">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
+<link rel="prev" href="object.html" title="Part III. Object - Interfaces and marshallers">
+<link rel="next" href="AgsApplicable.html" title="AgsApplicable">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -19,9 +19,9 @@
                   <a href="#AgsAsyncQueue.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
-<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="AgsApplyWavetable.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="AgsAudio.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="object.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsApplicable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="AgsAsyncQueue"></a><div class="titlepage"></div>
@@ -113,12 +113,57 @@
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_async_queue_set_run_mutex (<em class="parameter"><code><a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
                                <em class="parameter"><code><GTKDOCLINK HREF="pthread-mutex-t"><span class="type">pthread_mutex_t</span></GTKDOCLINK> *run_mutex</code></em>);</pre>
+<p>Sets the mutex to access the condition variable.</p>
+<div class="refsect3">
+<a name="id-1.4.2.7.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>async_queue</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>run_mutex</p></td>
+<td class="parameter_description"><p>a pthread_mutex_t</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-async-queue-get-run-mutex"></a><h3>ags_async_queue_get_run_mutex ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="pthread-mutex-t"><span class="returnvalue">pthread_mutex_t</span></GTKDOCLINK> *
 ags_async_queue_get_run_mutex (<em class="parameter"><code><a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);</pre>
+<p>Get the mutex to access the condition variable.</p>
+<div class="refsect3">
+<a name="id-1.4.2.7.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>async_queue</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.4.2.7.3.6"></a><h4>Returns</h4>
+<p> a pthread_mutex_t</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -126,12 +171,59 @@ ags_async_queue_get_run_mutex (<em class="parameter"><code><a class="link" href=
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_async_queue_set_run_cond (<em class="parameter"><code><a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>,
                               <em class="parameter"><code><GTKDOCLINK HREF="pthread-cond-t"><span class="type">pthread_cond_t</span></GTKDOCLINK> *run_cond</code></em>);</pre>
+<p>Sets the condition to determine if <em class="parameter"><code>async_queue</code></em>
+ was run.</p>
+<div class="refsect3">
+<a name="id-1.4.2.7.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>async_queue</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>run_cond</p></td>
+<td class="parameter_description"><p>a pthread_cond_t</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-async-queue-get-run-cond"></a><h3>ags_async_queue_get_run_cond ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="pthread-cond-t"><span class="returnvalue">pthread_cond_t</span></GTKDOCLINK> *
 ags_async_queue_get_run_cond (<em class="parameter"><code><a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);</pre>
+<p>Get the condition to wait for <em class="parameter"><code>async_queue</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.4.2.7.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>async_queue</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.4.2.7.5.6"></a><h4>Returns</h4>
+<p> the pthread_cond_t</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -145,6 +237,27 @@ ags_async_queue_set_run (<em class="parameter"><code><a class="link" href="AgsAs
 <a name="ags-async-queue-is-run"></a><h3>ags_async_queue_is_run ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
 ags_async_queue_is_run (<em class="parameter"><code><a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a> *async_queue</code></em>);</pre>
+<p>Decide if you are allowed to pass the condition.</p>
+<div class="refsect3">
+<a name="id-1.4.2.7.7.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>async_queue</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAsyncQueue.html" title="AgsAsyncQueue"><span class="type">AgsAsyncQueue</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.4.2.7.7.6"></a><h4>Returns</h4>
+<p> if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> it is safe to continue, else you should wait for the condition.</p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
 </div>
 </div>
 <div class="refsect1">

@@ -1,23 +1,21 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
-<refentry id="ags-ags-container">
+<refentry id="ags-AgsContainer">
 <refmeta>
-<refentrytitle role="top_of_page" id="ags-ags-container.top_of_page">ags_container</refentrytitle>
+<refentrytitle role="top_of_page" id="ags-AgsContainer.top_of_page">AgsContainer</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>AGS Library</refmiscinfo>
 </refmeta>
 <refnamediv>
-<refname>ags_container</refname>
-<refpurpose></refpurpose>
+<refname>AgsContainer</refname>
+<refpurpose>Complete GtkContainer</refpurpose>
 </refnamediv>
 
-<refsect1 id="ags-ags-container.functions" role="functions_proto">
+<refsect1 id="ags-AgsContainer.functions" role="functions_proto">
 <title role="functions_proto.title">Functions</title>
 <informaltable pgwide="1" frame="none">
 <tgroup cols="2">
@@ -32,12 +30,15 @@
 </informaltable>
 </refsect1>
 
+<refsect1 id="ags-AgsContainer.includes"><title>Includes</title><synopsis>#include &lt;ags/widget/ags_container.h&gt;
+</synopsis></refsect1>
 
-<refsect1 id="ags-ags-container.description" role="desc">
+<refsect1 id="ags-AgsContainer.description" role="desc">
 <title role="desc.title">Description</title>
+<para>Functions completing <link linkend="GtkContainer"><type>GtkContainer</type></link> API.</para>
 
 </refsect1>
-<refsect1 id="ags-ags-container.functions_details" role="details">
+<refsect1 id="ags-AgsContainer.functions_details" role="details">
 <title role="details.title">Functions</title>
 <refsect2 id="ags-container-add-all" role="function">
 <title>ags_container_add_all&#160;()</title>
@@ -48,7 +49,7 @@ ags_container_add_all (<parameter><link linkend="GtkContainer"><type>GtkContaine
 </refsect2>
 
 </refsect1>
-<refsect1 id="ags-ags-container.other_details" role="details">
+<refsect1 id="ags-AgsContainer.other_details" role="details">
 <title role="details.title">Types and Values</title>
 
 </refsect1>

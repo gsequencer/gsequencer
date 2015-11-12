@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
 <link rel="prev" href="AgsPackable.html" title="AgsPackable">
-<link rel="next" href="ags-AgsRunnable.html" title="AgsRunnable">
+<link rel="next" href="AgsSeekable.html" title="AgsSeekable">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -21,7 +21,7 @@
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
 <td><a accesskey="p" href="AgsPackable.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="ags-AgsRunnable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="AgsSeekable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="AgsPortlet"></a><div class="titlepage"></div>
@@ -107,7 +107,7 @@ Whereas its should implement this interface.</p>
 ags_portlet_get_port (<em class="parameter"><code><a class="link" href="AgsPortlet.html" title="AgsPortlet"><span class="type">AgsPortlet</span></a> *portlet</code></em>);</pre>
 <p>Get port.</p>
 <div class="refsect3">
-<a name="id-1.4.12.7.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.15.7.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -122,7 +122,7 @@ ags_portlet_get_port (<em class="parameter"><code><a class="link" href="AgsPortl
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.12.7.2.6"></a><h4>Returns</h4>
+<a name="id-1.4.15.7.2.6"></a><h4>Returns</h4>
 <p> the <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -135,7 +135,7 @@ ags_portlet_set_port (<em class="parameter"><code><a class="link" href="AgsPortl
                       <em class="parameter"><code><a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a> *port</code></em>);</pre>
 <p>Set port.</p>
 <div class="refsect3">
-<a name="id-1.4.12.7.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.15.7.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -165,7 +165,7 @@ ags_portlet_set_port (<em class="parameter"><code><a class="link" href="AgsPortl
 ags_portlet_list_safe_properties (<em class="parameter"><code><a class="link" href="AgsPortlet.html" title="AgsPortlet"><span class="type">AgsPortlet</span></a> *portlet</code></em>);</pre>
 <p>Retrieve thread-safe properties.</p>
 <div class="refsect3">
-<a name="id-1.4.12.7.4.5"></a><h4>Parameters</h4>
+<a name="id-1.4.15.7.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -180,7 +180,7 @@ ags_portlet_list_safe_properties (<em class="parameter"><code><a class="link" hr
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.12.7.4.6"></a><h4>Returns</h4>
+<a name="id-1.4.15.7.4.6"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing properties</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -194,7 +194,7 @@ ags_portlet_safe_get_property (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><GTKDOCLINK HREF="GValue"><span class="type">GValue</span></GTKDOCLINK> *value</code></em>);</pre>
 <p>Get property thread safe.</p>
 <div class="refsect3">
-<a name="id-1.4.12.7.5.5"></a><h4>Parameters</h4>
+<a name="id-1.4.15.7.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -231,7 +231,7 @@ ags_portlet_safe_set_property (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><GTKDOCLINK HREF="GValue"><span class="type">GValue</span></GTKDOCLINK> *value</code></em>);</pre>
 <p>Set property thread safe.</p>
 <div class="refsect3">
-<a name="id-1.4.12.7.6.5"></a><h4>Parameters</h4>
+<a name="id-1.4.15.7.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">

@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsChannel">
 <refmeta>
@@ -63,6 +61,10 @@
 </entry><entry role="function_name"><link linkend="ags-channel-remove-recall">ags_channel_remove_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-channel-add-recall">ags_channel_add_recall</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-channel-add-effect">ags_channel_add_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-channel-remove-effect">ags_channel_remove_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-channel-safe-resize-audio-signal">ags_channel_safe_resize_audio_signal</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
@@ -129,8 +131,10 @@
 <colspec colname="signals_name" colwidth="300px"/>
 <colspec colname="signals_flags" colwidth="200px"/>
 <tbody>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsChannel-add-effect">add-effect</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 <row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsChannel-done">done</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 <row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsChannel-recycling-changed">recycling-changed</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsChannel-remove-effect">remove-effect</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
 </tbody>
 </tgroup>
@@ -561,6 +565,21 @@ ags_channel_add_recall (<parameter><link linkend="AgsChannel"><type>AgsChannel</
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+<refsect2 id="ags-channel-add-effect" role="function">
+<title>ags_channel_add_effect&#160;()</title>
+<indexterm zone="ags-channel-add-effect"><primary>ags_channel_add_effect</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_channel_add_effect (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                        <parameter><link linkend="char"><type>char</type></link> *filename</parameter>,
+                        <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-channel-remove-effect" role="function">
+<title>ags_channel_remove_effect&#160;()</title>
+<indexterm zone="ags-channel-remove-effect"><primary>ags_channel_remove_effect</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_channel_remove_effect (<parameter><link linkend="AgsChannel"><type>AgsChannel</type></link> *channel</parameter>,
+                           <parameter><link linkend="guint"><type>guint</type></link> nth</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-channel-safe-resize-audio-signal" role="function" condition="since:0.4">
 <title>ags_channel_safe_resize_audio_signal&#160;()</title>
 <indexterm zone="ags-channel-safe-resize-audio-signal" role="0.4"><primary>ags_channel_safe_resize_audio_signal</primary></indexterm>
@@ -1125,6 +1144,9 @@ ags_channel_new (<parameter><link linkend="GObject"><type>GObject</type></link> 
 <colspec colname="enum_members_description"/>
 <colspec colname="enum_members_annotations" colwidth="200px"/>
 <tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-CHANNEL-CONNECTED:CAPS">AGS_CHANNEL_CONNECTED</para></entry>
+<entry /><entry />
+</row>
 <row role="constant"><entry role="enum_member_name"><para id="AGS-CHANNEL-RUNNING:CAPS">AGS_CHANNEL_RUNNING</para></entry>
 <entry /><entry />
 </row>
@@ -1185,7 +1207,34 @@ ags_channel_new (<parameter><link linkend="GObject"><type>GObject</type></link> 
 </refsect1>
 <refsect1 id="AgsChannel.signal-details" role="signals">
 <title role="signals.title">Signal Details</title>
-<refsect2 id="AgsChannel-done" role="signal"><title>The <literal>“done”</literal> signal</title>
+<refsect2 id="AgsChannel-add-effect" role="signal"><title>The <literal>“add-effect”</literal> signal</title>
+<indexterm zone="AgsChannel-add-effect"><primary>AgsChannel::add-effect</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsChannel"><type>AgsChannel</type></link> *channel,
+               <link linkend="gchar"><type>gchar</type></link>      *effect,
+               <link linkend="gchar"><type>gchar</type></link>      *arg2,
+               <link linkend="gpointer"><type>gpointer</type></link>    user_data)</programlisting>
+<para>The ::add-effect signal notifies about added effect.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> to modify</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>effect</para></entry>
+<entry role="parameter_description"><para>the effect's name</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsChannel-done" role="signal"><title>The <literal>“done”</literal> signal</title>
 <indexterm zone="AgsChannel-done"><primary>AgsChannel::done</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 user_function (<link linkend="AgsChannel"><type>AgsChannel</type></link> *channel,
@@ -1256,6 +1305,32 @@ user_function (<link linkend="AgsChannel"><type>AgsChannel</type></link> *old_st
 <entry role="parameter_annotations"></entry></row>
 <row><entry role="parameter_name"><para>new_end_changed_region</para></entry>
 <entry role="parameter_description"><para>replacing link recycling end</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsChannel-remove-effect" role="signal"><title>The <literal>“remove-effect”</literal> signal</title>
+<indexterm zone="AgsChannel-remove-effect"><primary>AgsChannel::remove-effect</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsChannel"><type>AgsChannel</type></link> *channel,
+               <link linkend="guint"><type>guint</type></link>       nth,
+               <link linkend="gpointer"><type>gpointer</type></link>    user_data)</programlisting>
+<para>The ::remove-effect signal notifies about removed effect.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>channel</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsChannel"><type>AgsChannel</type></link> to modify</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>nth</para></entry>
+<entry role="parameter_description"><para>the nth effect</para></entry>
 <entry role="parameter_annotations"></entry></row>
 <row><entry role="parameter_name"><simpara>user_data</simpara></entry>
 <entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>

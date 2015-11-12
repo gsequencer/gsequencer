@@ -6,7 +6,7 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
-<link rel="prev" href="ags-AgsPersistable.html" title="AgsPersistable">
+<link rel="prev" href="AgsTreeIterator.html" title="AgsTreeIterator">
 <link rel="next" href="xml-io.html" title="Part IV. XML Input/Output - Persist project">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
@@ -20,7 +20,7 @@
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="ags-AgsPersistable.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="p" href="AgsTreeIterator.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="xml-io.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
@@ -163,7 +163,7 @@ line members, lines, pads or machines ...</p>
 ags_plugin_get_name (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
 <p>Retrieve the name of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -179,9 +179,10 @@ ags_plugin_get_name (<em class="parameter"><code><a class="link" href="AgsPlugin
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.18.7.2.6"></a><h4>Returns</h4>
+<a name="id-1.4.21.7.2.6"></a><h4>Returns</h4>
 <p> the plugins name</p>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -191,7 +192,7 @@ ags_plugin_set_name (<em class="parameter"><code><a class="link" href="AgsPlugin
                      <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *name</code></em>);</pre>
 <p>Set the name of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -213,6 +214,7 @@ ags_plugin_set_name (<em class="parameter"><code><a class="link" href="AgsPlugin
 </tbody>
 </table></div>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -221,7 +223,7 @@ ags_plugin_set_name (<em class="parameter"><code><a class="link" href="AgsPlugin
 ags_plugin_get_version (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
 <p>Retrieve the version of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.4.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -237,9 +239,10 @@ ags_plugin_get_version (<em class="parameter"><code><a class="link" href="AgsPlu
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.18.7.4.6"></a><h4>Returns</h4>
+<a name="id-1.4.21.7.4.6"></a><h4>Returns</h4>
 <p> the plugins version</p>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -249,7 +252,7 @@ ags_plugin_set_version (<em class="parameter"><code><a class="link" href="AgsPlu
                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *version</code></em>);</pre>
 <p>Set the version of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.5.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -271,6 +274,7 @@ ags_plugin_set_version (<em class="parameter"><code><a class="link" href="AgsPlu
 </tbody>
 </table></div>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -279,7 +283,7 @@ ags_plugin_set_version (<em class="parameter"><code><a class="link" href="AgsPlu
 ags_plugin_get_build_id (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
 <p>Retrieve the build id of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.6.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -295,9 +299,10 @@ ags_plugin_get_build_id (<em class="parameter"><code><a class="link" href="AgsPl
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.18.7.6.6"></a><h4>Returns</h4>
+<a name="id-1.4.21.7.6.6"></a><h4>Returns</h4>
 <p> the plugins build id</p>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -307,7 +312,7 @@ ags_plugin_set_build_id (<em class="parameter"><code><a class="link" href="AgsPl
                          <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *build_id</code></em>);</pre>
 <p>Set the build id of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.7.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -329,6 +334,7 @@ ags_plugin_set_build_id (<em class="parameter"><code><a class="link" href="AgsPl
 </tbody>
 </table></div>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -337,7 +343,7 @@ ags_plugin_set_build_id (<em class="parameter"><code><a class="link" href="AgsPl
 ags_plugin_get_xml_type (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
 <p>Retrieve the xml type of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.8.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.8.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -353,9 +359,10 @@ ags_plugin_get_xml_type (<em class="parameter"><code><a class="link" href="AgsPl
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.18.7.8.6"></a><h4>Returns</h4>
+<a name="id-1.4.21.7.8.6"></a><h4>Returns</h4>
 <p> the plugins xml type</p>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -365,7 +372,7 @@ ags_plugin_set_xml_type (<em class="parameter"><code><a class="link" href="AgsPl
                          <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *xml_type</code></em>);</pre>
 <p>Set the build id of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.9.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.9.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -387,6 +394,7 @@ ags_plugin_set_xml_type (<em class="parameter"><code><a class="link" href="AgsPl
 </tbody>
 </table></div>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -395,7 +403,7 @@ ags_plugin_set_xml_type (<em class="parameter"><code><a class="link" href="AgsPl
 ags_plugin_get_ports (<em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
 <p>Retrieve the ports of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.10.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.10.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -411,9 +419,10 @@ ags_plugin_get_ports (<em class="parameter"><code><a class="link" href="AgsPlugi
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.18.7.10.6"></a><h4>Returns</h4>
+<a name="id-1.4.21.7.10.6"></a><h4>Returns</h4>
 <p> the plugins ports</p>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -423,7 +432,7 @@ ags_plugin_set_ports (<em class="parameter"><code><a class="link" href="AgsPlugi
                       <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *ports</code></em>);</pre>
 <p>Set the build id of the plugin.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.11.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.11.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -445,6 +454,7 @@ ags_plugin_set_ports (<em class="parameter"><code><a class="link" href="AgsPlugi
 </tbody>
 </table></div>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -455,7 +465,7 @@ ags_plugin_read (<em class="parameter"><code><a class="link" href="AgsFile.html"
                  <em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
 <p>Read of file.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.12.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.12.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -481,6 +491,7 @@ ags_plugin_read (<em class="parameter"><code><a class="link" href="AgsFile.html"
 </tbody>
 </table></div>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -491,7 +502,7 @@ ags_plugin_write (<em class="parameter"><code><a class="link" href="AgsFile.html
                   <em class="parameter"><code><a class="link" href="AgsPlugin.html" title="AgsPlugin"><span class="type">AgsPlugin</span></a> *plugin</code></em>);</pre>
 <p>Write to file.</p>
 <div class="refsect3">
-<a name="id-1.4.18.7.13.5"></a><h4>Parameters</h4>
+<a name="id-1.4.21.7.13.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -518,9 +529,10 @@ ags_plugin_write (<em class="parameter"><code><a class="link" href="AgsFile.html
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.18.7.13.6"></a><h4>Returns</h4>
+<a name="id-1.4.21.7.13.6"></a><h4>Returns</h4>
 <p> the new node you created</p>
 </div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 </div>
 <div class="refsect1">

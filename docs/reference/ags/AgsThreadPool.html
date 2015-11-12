@@ -6,7 +6,7 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="thread.html" title="Part VII. Thread - Multi-threaded tree">
-<link rel="prev" href="AgsThread.html" title="AgsThread">
+<link rel="prev" href="AgsThreadApplicationContext.html" title="AgsThreadApplicationContext">
 <link rel="next" href="thread-file.html" title="Thread files - Reading/Writing audio data from disk">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
@@ -22,7 +22,7 @@
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="thread.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="AgsThread.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="p" href="AgsThreadApplicationContext.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="thread-file.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
@@ -144,7 +144,7 @@ ags_thread_pool_pull (<em class="parameter"><code><a class="link" href="AgsThrea
 <p>Pull a previously instantiated <a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread"><span class="type">AgsReturnableThread</span></a>. Note this
 function may block until a new thread is available.</p>
 <div class="refsect3">
-<a name="id-1.8.11.10.2.5"></a><h4>Parameters</h4>
+<a name="id-1.8.13.10.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -159,7 +159,7 @@ function may block until a new thread is available.</p>
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.8.11.10.2.6"></a><h4>Returns</h4>
+<a name="id-1.8.13.10.2.6"></a><h4>Returns</h4>
 <p> a new <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -171,7 +171,7 @@ function may block until a new thread is available.</p>
 ags_thread_pool_start (<em class="parameter"><code><a class="link" href="AgsThreadPool.html" title="AgsThreadPool"><span class="type">AgsThreadPool</span></a> *thread_pool</code></em>);</pre>
 <p>Start the thread pool.</p>
 <div class="refsect3">
-<a name="id-1.8.11.10.3.5"></a><h4>Parameters</h4>
+<a name="id-1.8.13.10.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -194,7 +194,7 @@ ags_thread_pool_start (<em class="parameter"><code><a class="link" href="AgsThre
 ags_thread_pool_new (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
 <p>Create a new <a class="link" href="AgsThreadPool.html" title="AgsThreadPool"><span class="type">AgsThreadPool</span></a>.</p>
 <div class="refsect3">
-<a name="id-1.8.11.10.4.5"></a><h4>Parameters</h4>
+<a name="id-1.8.13.10.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -209,7 +209,7 @@ ags_thread_pool_new (<em class="parameter"><code><a class="link" href="AgsThread
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.8.11.10.4.6"></a><h4>Returns</h4>
+<a name="id-1.8.13.10.4.6"></a><h4>Returns</h4>
 <p> the new <a class="link" href="AgsThreadPool.html" title="AgsThreadPool"><span class="type">AgsThreadPool</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -220,7 +220,7 @@ ags_thread_pool_new (<em class="parameter"><code><a class="link" href="AgsThread
 <div class="refsect2">
 <a name="AgsThreadPoolFlags"></a><h3>enum AgsThreadPoolFlags</h3>
 <div class="refsect3">
-<a name="id-1.8.11.11.2.3"></a><h4>Members</h4>
+<a name="id-1.8.13.11.2.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">

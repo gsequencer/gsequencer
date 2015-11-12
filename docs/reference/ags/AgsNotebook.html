@@ -47,6 +47,14 @@
 </td>
 </tr>
 <tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsNotebook.html#AGS-NOTEBOOK-TAB-DEFAULT-HEIGHT:CAPS" title="AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT">AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsNotebook.html#AGS-NOTEBOOK-TAB-DEFAULT-WIDTH:CAPS" title="AGS_NOTEBOOK_TAB_DEFAULT_WIDTH">AGS_NOTEBOOK_TAB_DEFAULT_WIDTH</a></td>
+</tr>
+<tr>
 <td class="function_type">
 <GTKDOCLINK HREF="gint"><span class="returnvalue">gint</span></GTKDOCLINK>
 </td>
@@ -166,6 +174,18 @@
 </div>
 <hr>
 <div class="refsect2">
+<a name="AGS-NOTEBOOK-TAB-DEFAULT-HEIGHT:CAPS"></a><h3>AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT</h3>
+<pre class="programlisting">#define AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT (32)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-NOTEBOOK-TAB-DEFAULT-WIDTH:CAPS"></a><h3>AGS_NOTEBOOK_TAB_DEFAULT_WIDTH</h3>
+<pre class="programlisting">#define AGS_NOTEBOOK_TAB_DEFAULT_WIDTH (100)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
 <a name="ags-notebook-tab-index"></a><h3>ags_notebook_tab_index ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="gint"><span class="returnvalue">gint</span></GTKDOCLINK>
 ags_notebook_tab_index (<em class="parameter"><code><a class="link" href="AgsNotebook.html" title="AgsNotebook"><span class="type">AgsNotebook</span></a> *notebook</code></em>,
@@ -226,7 +246,7 @@ ags_notebook_new ();</pre>
 <div class="refsect2">
 <a name="AgsNotebookFlags"></a><h3>enum AgsNotebookFlags</h3>
 <div class="refsect3">
-<a name="id-1.10.58.16.9.2.3"></a><h4>Members</h4>
+<a name="id-1.10.72.16.9.2.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -259,6 +279,11 @@ ags_notebook_new ();</pre>
 <td> </td>
 <td> </td>
 </tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-NOTEBOOK-SHOW-SCROLL-BUTTONS:CAPS"></a>AGS_NOTEBOOK_SHOW_SCROLL_BUTTONS</p></td>
+<td> </td>
+<td> </td>
+</tr>
 </tbody>
 </table></div>
 </div>
@@ -267,7 +292,7 @@ ags_notebook_new ();</pre>
 <div class="refsect2">
 <a name="AgsNotebookTabFlags"></a><h3>enum AgsNotebookTabFlags</h3>
 <div class="refsect3">
-<a name="id-1.10.58.16.9.3.3"></a><h4>Members</h4>
+<a name="id-1.10.72.16.9.3.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -300,8 +325,9 @@ ags_notebook_new ();</pre>
 <pre class="programlisting">struct AgsNotebookTab {
   guint flags;
 
-  GtkToggleButton *toggle;
   GObject *notation;
+  
+  GtkToggleButton *toggle;
 };
 </pre>
 </div>

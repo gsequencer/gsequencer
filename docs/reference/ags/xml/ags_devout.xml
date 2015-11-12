@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsDevout">
 <refmeta>
@@ -14,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsDevout</refname>
-<refpurpose>Outputting to soundcard</refpurpose>
+<refpurpose>Output to soundcard</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsDevout.functions" role="functions_proto">
@@ -106,18 +104,44 @@
 <programlisting language="C"><link linkend="GQuark"><returnvalue>GQuark</returnvalue></link>
 ags_devout_error_quark ();</programlisting>
 </refsect2>
-<refsect2 id="ags-devout-adjust-delay-and-attack" role="function">
+<refsect2 id="ags-devout-adjust-delay-and-attack" role="function" condition="since:0.7.0">
 <title>ags_devout_adjust_delay_and_attack&#160;()</title>
-<indexterm zone="ags-devout-adjust-delay-and-attack"><primary>ags_devout_adjust_delay_and_attack</primary></indexterm>
+<indexterm zone="ags-devout-adjust-delay-and-attack" role="0.7.0"><primary>ags_devout_adjust_delay_and_attack</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_devout_adjust_delay_and_attack (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-devout-realloc-buffer" role="function">
+<para>Calculate delay and attack and reset it.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>devout</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDevout"><type>AgsDevout</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-devout-realloc-buffer" role="function" condition="since:0.7.0">
 <title>ags_devout_realloc_buffer&#160;()</title>
-<indexterm zone="ags-devout-realloc-buffer"><primary>ags_devout_realloc_buffer</primary></indexterm>
+<indexterm zone="ags-devout-realloc-buffer" role="0.7.0"><primary>ags_devout_realloc_buffer</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_devout_realloc_buffer (<parameter><link linkend="AgsDevout"><type>AgsDevout</type></link> *devout</parameter>);</programlisting>
-</refsect2>
+<para>Reallocate the internal audio buffer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>devout</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDevout"><type>AgsDevout</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
 <refsect2 id="ags-devout-new" role="function" condition="since:0.3">
 <title>ags_devout_new&#160;()</title>
 <indexterm zone="ags-devout-new" role="0.3"><primary>ags_devout_new</primary></indexterm>

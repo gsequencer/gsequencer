@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsIpatchDLS2Reader">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsIpatchDLS2Reader.top_of_page">AgsIpatchDLS2Reader</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsIpatchDLS2Reader</refname>
+<refpurpose>interfacing Soundfont2 related API of libinstpatch</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsIpatchDLS2Reader.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsIpatchDLS2Reader"><returnvalue>AgsIpatchDLS2Reader</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-ipatch-dls2-reader-new">ags_ipatch_dls2_reader_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsIpatchDLS2Reader.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsDLS2Levels">AgsDLS2Levels</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsIpatchDLS2Reader.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsIpatchDLS2Reader
+</screen>
+</refsect1>
+
+<refsect1 id="AgsIpatchDLS2Reader.includes"><title>Includes</title><synopsis>#include &lt;ags/audio/file/ags_ipatch_dls2_reader.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsIpatchDLS2Reader.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsIpatchDLS2Reader"><type>AgsIpatchDLS2Reader</type></link> is the base object to ineract with Soundfont2 related API.</para>
+
+</refsect1>
+<refsect1 id="AgsIpatchDLS2Reader.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-ipatch-dls2-reader-new" role="function" condition="since:0.7.1">
+<title>ags_ipatch_dls2_reader_new&#160;()</title>
+<indexterm zone="ags-ipatch-dls2-reader-new" role="0.7.1"><primary>ags_ipatch_dls2_reader_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsIpatchDLS2Reader"><returnvalue>AgsIpatchDLS2Reader</returnvalue></link>&#160;*
+ags_ipatch_dls2_reader_new ();</programlisting>
+<para>Creates an <link linkend="AgsIpatchDLS2Reader"><type>AgsIpatchDLS2Reader</type></link>.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> an empty <link linkend="AgsIpatchDLS2Reader"><type>AgsIpatchDLS2Reader</type></link>.</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.1">0.7.1</link></para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsIpatchDLS2Reader.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsDLS2Levels" role="enum">
+<title>enum AgsDLS2Levels</title>
+<indexterm zone="AgsDLS2Levels"><primary>AgsDLS2Levels</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DLS2-FILENAME:CAPS">AGS_DLS2_FILENAME</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DLS2-IHDR:CAPS">AGS_DLS2_IHDR</para></entry>
+<entry /><entry />
+</row>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-DLS2-SHDR:CAPS">AGS_DLS2_SHDR</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+
+</refentry>

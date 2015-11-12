@@ -1,0 +1,551 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsEffectBulk: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="pt09.html" title="Part IX. Graphical user interface">
+<link rel="prev" href="AgsEffectBridge.html" title="AgsEffectBridge">
+<link rel="next" href="ags-ags-effect-bulk-callbacks.html" title="ags_effect_bulk_callbacks">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsEffectBulk.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsEffectBulk.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsEffectBulk.properties" class="shortcut">Properties</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#AgsEffectBulk.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="pt09.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsEffectBridge.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="ags-ags-effect-bulk-callbacks.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsEffectBulk"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsEffectBulk.top_of_page"></a>AgsEffectBulk</span></h2>
+<p>AgsEffectBulk — A composite widget to visualize a bunch of <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a></p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsEffectBulk.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBulk.html#AGS-EFFECT-BULK-PLUGIN:CAPS" title="AGS_EFFECT_BULK_PLUGIN()">AGS_EFFECT_BULK_PLUGIN</a><span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsEffectBulk.html#AGS-EFFECT-BULK-COLUMNS-COUNT:CAPS" title="AGS_EFFECT_BULK_COLUMNS_COUNT">AGS_EFFECT_BULK_COLUMNS_COUNT</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsEffectBulk.html#AgsEffectBulkPlugin" title="struct AgsEffectBulkPlugin"><span class="returnvalue">AgsEffectBulkPlugin</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBulk.html#ags-effect-bulk-plugin-alloc" title="ags_effect_bulk_plugin_alloc ()">ags_effect_bulk_plugin_alloc</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBulk.html#ags-effect-bulk-add-effect" title="ags_effect_bulk_add_effect ()">ags_effect_bulk_add_effect</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBulk.html#ags-effect-bulk-remove-effect" title="ags_effect_bulk_remove_effect ()">ags_effect_bulk_remove_effect</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBulk.html#ags-effect-bulk-resize-audio-channels" title="ags_effect_bulk_resize_audio_channels ()">ags_effect_bulk_resize_audio_channels</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBulk.html#ags-effect-bulk-resize-pads" title="ags_effect_bulk_resize_pads ()">ags_effect_bulk_resize_pads</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="returnvalue">AgsEffectBulk</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBulk.html#ags-effect-bulk-new" title="ags_effect_bulk_new ()">ags_effect_bulk_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsEffectBulk.html#AgsEffectBulk--audio" title="The “audio” property">audio</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsEffectBulk.html#AgsEffectBulk--channel-type" title="The “channel-type” property">channel-type</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="gpointer"><span class="returnvalue">gpointer</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsEffectBulk.html#AgsEffectBulk-add-effect" title="The “add-effect” signal">add-effect</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsEffectBulk.html#AgsEffectBulk-remove-effect" title="The “remove-effect” signal">remove-effect</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsEffectBulk.html#AgsEffectBulk-resize-audio-channels" title="The “resize-audio-channels” signal">resize-audio-channels</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsEffectBulk.html#AgsEffectBulk-resize-pads" title="The “resize-pads” signal">resize-pads</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsEffectBulk.html#AGS-EFFECT-BULK-DEFAULT-VERSION:CAPS" title="AGS_EFFECT_BULK_DEFAULT_VERSION">AGS_EFFECT_BULK_DEFAULT_VERSION</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsEffectBulk.html#AGS-EFFECT-BULK-DEFAULT-BUILD-ID:CAPS" title="AGS_EFFECT_BULK_DEFAULT_BUILD_ID">AGS_EFFECT_BULK_DEFAULT_BUILD_ID</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsEffectBulk.html#AgsEffectBulkFlags" title="enum AgsEffectBulkFlags">AgsEffectBulkFlags</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="AgsEffectBulk.html#AgsEffectBulkPlugin" title="struct AgsEffectBulkPlugin">AgsEffectBulkPlugin</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> <GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+        <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+            <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                    <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkBox">GtkBox</GTKDOCLINK>
+                        <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkVBox">GtkVBox</GTKDOCLINK>
+                            <span class="lineart">╰──</span> AgsEffectBulk
+                                <span class="lineart">╰──</span> <a class="link" href="AgsFFPlayerBulkInput.html" title="AgsFFPlayerBulkInput">AgsFFPlayerBulkInput</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/X/ags_effect_bulk.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.description"></a><h2>Description</h2>
+<p><a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> is a composite widget to visualize one <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>. It should be
+packed by an <a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="AGS-EFFECT-BULK-PLUGIN:CAPS"></a><h3>AGS_EFFECT_BULK_PLUGIN()</h3>
+<pre class="programlisting">#define AGS_EFFECT_BULK_PLUGIN(ptr) ((AgsEffectBulkPlugin *)(ptr))
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-EFFECT-BULK-COLUMNS-COUNT:CAPS"></a><h3>AGS_EFFECT_BULK_COLUMNS_COUNT</h3>
+<pre class="programlisting">#define AGS_EFFECT_BULK_COLUMNS_COUNT (4)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-effect-bulk-plugin-alloc"></a><h3>ags_effect_bulk_plugin_alloc ()</h3>
+<pre class="programlisting"><a class="link" href="AgsEffectBulk.html#AgsEffectBulkPlugin" title="struct AgsEffectBulkPlugin"><span class="returnvalue">AgsEffectBulkPlugin</span></a> *
+ags_effect_bulk_plugin_alloc (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                              <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-effect-bulk-add-effect"></a><h3>ags_effect_bulk_add_effect ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_effect_bulk_add_effect (<em class="parameter"><code><a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> *effect_bulk</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                            <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-effect-bulk-remove-effect"></a><h3>ags_effect_bulk_remove_effect ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_effect_bulk_remove_effect (<em class="parameter"><code><a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> *effect_bulk</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> nth</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-effect-bulk-resize-audio-channels"></a><h3>ags_effect_bulk_resize_audio_channels ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_effect_bulk_resize_audio_channels (<em class="parameter"><code><a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> *effect_bulk</code></em>,
+                                       <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> new_size</code></em>,
+                                       <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> old_size</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-effect-bulk-resize-pads"></a><h3>ags_effect_bulk_resize_pads ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_effect_bulk_resize_pads (<em class="parameter"><code><a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> *effect_bulk</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> new_size</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> old_size</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-effect-bulk-new"></a><h3>ags_effect_bulk_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="returnvalue">AgsEffectBulk</span></a> *
+ags_effect_bulk_new (<em class="parameter"><code><a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>,
+                     <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> channel_type</code></em>);</pre>
+<p>Creates an <a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a></p>
+<div class="refsect3">
+<a name="id-1.10.10.10.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>effect_bulk</p></td>
+<td class="parameter_description"><p>the parent effect_bulk</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>audio</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> to visualize</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>channel_type</p></td>
+<td class="parameter_description"><p>either <GTKDOCLINK HREF="AGS-TYPE-INPUT:CAPS"><code class="literal">AGS_TYPE_INPUT</code></GTKDOCLINK> or <GTKDOCLINK HREF="AGS-TYPE-OUTPUT:CAPS"><code class="literal">AGS_TYPE_OUTPUT</code></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.10.10.10.9.6"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AGS-EFFECT-BULK-DEFAULT-VERSION:CAPS"></a><h3>AGS_EFFECT_BULK_DEFAULT_VERSION</h3>
+<pre class="programlisting">#define AGS_EFFECT_BULK_DEFAULT_VERSION "0.4.3\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-EFFECT-BULK-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_EFFECT_BULK_DEFAULT_BUILD_ID</h3>
+<pre class="programlisting">#define AGS_EFFECT_BULK_DEFAULT_BUILD_ID "CEST 20-03-2015 08:24\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEffectBulkFlags"></a><h3>enum AgsEffectBulkFlags</h3>
+<div class="refsect3">
+<a name="id-1.10.10.11.4.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-EFFECT-BULK-CONNECTED:CAPS"></a>AGS_EFFECT_BULK_CONNECTED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-EFFECT-BULK-HIDE-BUTTONS:CAPS"></a>AGS_EFFECT_BULK_HIDE_BUTTONS</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-EFFECT-BULK-HIDE-ENTRIES:CAPS"></a>AGS_EFFECT_BULK_HIDE_ENTRIES</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-EFFECT-BULK-SHOW-LABELS:CAPS"></a>AGS_EFFECT_BULK_SHOW_LABELS</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEffectBulkPlugin"></a><h3>struct AgsEffectBulkPlugin</h3>
+<pre class="programlisting">struct AgsEffectBulkPlugin {
+  gchar *filename;
+  gchar *effect;
+};
+</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsEffectBulk--audio"></a><h3>The <code class="literal">“audio”</code> property</h3>
+<pre class="programlisting">  “audio”                    <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *</pre>
+<p>The <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> to visualize.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEffectBulk--channel-type"></a><h3>The <code class="literal">“channel-type”</code> property</h3>
+<pre class="programlisting">  “channel-type”             <GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> *</pre>
+<p>The target channel.</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: AgsChannel</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBulk.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsEffectBulk-add-effect"></a><h3>The <code class="literal">“add-effect”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gpointer"><span class="returnvalue">gpointer</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> *effect_bulk,
+               <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>         *effect,
+               <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>         *arg2,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>       user_data)</pre>
+<p>The ::add-effect signal notifies about added effect.</p>
+<div class="refsect3">
+<a name="id-1.10.10.13.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>effect_bulk</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>effect</p></td>
+<td class="parameter_description"><p>the effect's name</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEffectBulk-remove-effect"></a><h3>The <code class="literal">“remove-effect”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> *effect_bulk,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>          nth,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>       user_data)</pre>
+<p>The ::remove-effect signal notifies about removed effect.</p>
+<div class="refsect3">
+<a name="id-1.10.10.13.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>effect_bulk</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>nth</p></td>
+<td class="parameter_description"><p>the nth effect</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEffectBulk-resize-audio-channels"></a><h3>The <code class="literal">“resize-audio-channels”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> *effect_bulk,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>          new_size,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>          old_size,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>       user_data)</pre>
+<p>The ::resize-audio-channels signal notifies about changes in channel
+alignment.</p>
+<div class="refsect3">
+<a name="id-1.10.10.13.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>effect_bulk</p></td>
+<td class="parameter_description"><p>the object to adjust the channels.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>new_size</p></td>
+<td class="parameter_description"><p>new audio channel count</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>old_size</p></td>
+<td class="parameter_description"><p>old audio channel count</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEffectBulk-resize-pads"></a><h3>The <code class="literal">“resize-pads”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> *effect_bulk,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>          new_size,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>          old_size,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>       user_data)</pre>
+<p>The ::resize-pads signal notifies about changes in channel
+alignment.</p>
+<div class="refsect3">
+<a name="id-1.10.10.13.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>effect_bulk</p></td>
+<td class="parameter_description"><p>the object to adjust the channels.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>new_size</p></td>
+<td class="parameter_description"><p>new pad count</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>old_size</p></td>
+<td class="parameter_description"><p>old pad count</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

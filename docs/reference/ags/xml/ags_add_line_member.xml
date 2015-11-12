@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsAddLineMember">
 <refmeta>
@@ -53,7 +51,7 @@
 <title>ags_add_line_member_new&#160;()</title>
 <indexterm zone="ags-add-line-member-new" role="0.4"><primary>ags_add_line_member_new</primary></indexterm>
 <programlisting language="C"><link linkend="AgsAddLineMember"><returnvalue>AgsAddLineMember</returnvalue></link>&#160;*
-ags_add_line_member_new (<parameter><link linkend="AgsLine"><type>AgsLine</type></link> *line</parameter>,
+ags_add_line_member_new (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *line</parameter>,
                          <parameter><link linkend="AgsLineMember"><type>AgsLineMember</type></link> *line_member</parameter>,
                          <parameter><link linkend="guint"><type>guint</type></link> x</parameter>,
                          <parameter><link linkend="guint"><type>guint</type></link> y</parameter>,

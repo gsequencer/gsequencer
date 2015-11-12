@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsLadspaBridge: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="engines.html" title="Engines - Composite widgets with audio set up">
+<link rel="prev" href="ags-ags-ffplayer-callbacks.html" title="ags_ffplayer_callbacks">
+<link rel="next" href="AgsLv2Bridge.html" title="AgsLv2Bridge">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsLadspaBridge.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsLadspaBridge.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsLadspaBridge.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="engines.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ags-ags-ffplayer-callbacks.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsLv2Bridge.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsLadspaBridge"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsLadspaBridge.top_of_page"></a>AgsLadspaBridge</span></h2>
+<p>AgsLadspaBridge — A composite widget to visualize a bunch of <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a></p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsLadspaBridge.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsLadspaBridge.html#ags-ladspa-bridge-load" title="ags_ladspa_bridge_load ()">ags_ladspa_bridge_load</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsLadspaBridge.html" title="AgsLadspaBridge"><span class="returnvalue">AgsLadspaBridge</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsLadspaBridge.html#ags-ladspa-bridge-new" title="ags_ladspa_bridge_new ()">ags_ladspa_bridge_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaBridge.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type">
+<GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsLadspaBridge.html#AgsLadspaBridge--effect" title="The “effect” property">effect</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsLadspaBridge.html#AgsLadspaBridge--filename" title="The “filename” property">filename</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="gulong"><span class="type">gulong</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsLadspaBridge.html#AgsLadspaBridge--index" title="The “index” property">index</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaBridge.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-DEFAULT-VERSION:CAPS" title="AGS_LADSPA_BRIDGE_DEFAULT_VERSION">AGS_LADSPA_BRIDGE_DEFAULT_VERSION</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-DEFAULT-BUILD-ID:CAPS" title="AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID">AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsLadspaBridge.html#AgsLadspaBridgeFlags" title="enum AgsLadspaBridgeFlags">AgsLadspaBridgeFlags</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaBridge.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> <GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+        <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+            <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                    <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkBin">GtkBin</GTKDOCLINK>
+                        <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkHandleBox">GtkHandleBox</GTKDOCLINK>
+                            <span class="lineart">╰──</span> <a class="link" href="AgsMachine.html" title="AgsMachine">AgsMachine</a>
+                                <span class="lineart">╰──</span> AgsLadspaBridge
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaBridge.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/X/ags_ladspa_bridge.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaBridge.description"></a><h2>Description</h2>
+<p><a class="link" href="AgsLadspaBridge.html" title="AgsLadspaBridge"><span class="type">AgsLadspaBridge</span></a> is a composite widget to visualize all <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>. It should be
+packed by an <a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaBridge.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ags-ladspa-bridge-load"></a><h3>ags_ladspa_bridge_load ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_ladspa_bridge_load (<em class="parameter"><code><a class="link" href="AgsLadspaBridge.html" title="AgsLadspaBridge"><span class="type">AgsLadspaBridge</span></a> *ladspa_bridge</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-ladspa-bridge-new"></a><h3>ags_ladspa_bridge_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsLadspaBridge.html" title="AgsLadspaBridge"><span class="returnvalue">AgsLadspaBridge</span></a> *
+ags_ladspa_bridge_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *soundcard</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>,
+                       <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>);</pre>
+<p>Creates an <a class="link" href="AgsLadspaBridge.html" title="AgsLadspaBridge"><span class="type">AgsLadspaBridge</span></a></p>
+<div class="refsect3">
+<a name="id-1.10.73.39.9.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>soundcard</p></td>
+<td class="parameter_description"><p>the assigned soundcard.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>filename</p></td>
+<td class="parameter_description"><p>the plugin.so</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>effect</p></td>
+<td class="parameter_description"><p>the effect</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.10.73.39.9.3.6"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsLadspaBridge.html" title="AgsLadspaBridge"><span class="type">AgsLadspaBridge</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaBridge.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AGS-LADSPA-BRIDGE-DEFAULT-VERSION:CAPS"></a><h3>AGS_LADSPA_BRIDGE_DEFAULT_VERSION</h3>
+<pre class="programlisting">#define AGS_LADSPA_BRIDGE_DEFAULT_VERSION "0.4.3\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-LADSPA-BRIDGE-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID</h3>
+<pre class="programlisting">#define AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID "CEST 15-03-2015 13:40\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLadspaBridgeFlags"></a><h3>enum AgsLadspaBridgeFlags</h3>
+<div class="refsect3">
+<a name="id-1.10.73.39.10.4.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-LADSPA-BRIDGE-DISPLAY-INPUT:CAPS"></a>AGS_LADSPA_BRIDGE_DISPLAY_INPUT</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-LADSPA-BRIDGE-BULK-OUTPUT:CAPS"></a>AGS_LADSPA_BRIDGE_BULK_OUTPUT</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-LADSPA-BRIDGE-DISPLAY-OUTPUT:CAPS"></a>AGS_LADSPA_BRIDGE_DISPLAY_OUTPUT</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-LADSPA-BRIDGE-BULK-INPUT:CAPS"></a>AGS_LADSPA_BRIDGE_BULK_INPUT</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsLadspaBridge.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsLadspaBridge--effect"></a><h3>The <code class="literal">“effect”</code> property</h3>
+<pre class="programlisting">  “effect”                   <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</pre>
+<p>The effect's string representation.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLadspaBridge--filename"></a><h3>The <code class="literal">“filename”</code> property</h3>
+<pre class="programlisting">  “filename”                 <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</pre>
+<p>The filename as string of object file.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsLadspaBridge--index"></a><h3>The <code class="literal">“index”</code> property</h3>
+<pre class="programlisting">  “index”                    <GTKDOCLINK HREF="gulong"><span class="type">gulong</span></GTKDOCLINK></pre>
+<p>The numerical index of effect.</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: &lt;= 65535</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

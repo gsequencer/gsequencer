@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
 <link rel="prev" href="AgsConnectable.html" title="AgsConnectable">
-<link rel="next" href="AgsDynamicConnectable.html" title="AgsDynamicConnectable">
+<link rel="next" href="AgsDistributedManager.html" title="AgsDistributedManager">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -21,14 +21,14 @@
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
 <td><a accesskey="p" href="AgsConnectable.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="AgsDynamicConnectable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="AgsDistributedManager.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="AgsCountable"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2><span class="refentrytitle"><a name="AgsCountable.top_of_page"></a>AgsCountable</span></h2>
-<p>AgsCountable — unique access to dialogs</p>
+<p>AgsCountable — a counter interface</p>
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
@@ -84,7 +84,7 @@ relative positions, especially the sequencers may loop.</p>
 ags_countable_get_notation_counter (<em class="parameter"><code><a class="link" href="AgsCountable.html" title="AgsCountable"><span class="type">AgsCountable</span></a> *countable</code></em>);</pre>
 <p>Retrieve current position of notation.</p>
 <div class="refsect3">
-<a name="id-1.4.6.7.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.8.7.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -99,7 +99,7 @@ ags_countable_get_notation_counter (<em class="parameter"><code><a class="link" 
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.6.7.2.6"></a><h4>Returns</h4>
+<a name="id-1.4.8.7.2.6"></a><h4>Returns</h4>
 <p> the current position</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -111,7 +111,7 @@ ags_countable_get_notation_counter (<em class="parameter"><code><a class="link" 
 ags_countable_get_sequencer_counter (<em class="parameter"><code><a class="link" href="AgsCountable.html" title="AgsCountable"><span class="type">AgsCountable</span></a> *countable</code></em>);</pre>
 <p>Retrieve current position of sequencer.</p>
 <div class="refsect3">
-<a name="id-1.4.6.7.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.8.7.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -126,7 +126,7 @@ ags_countable_get_sequencer_counter (<em class="parameter"><code><a class="link"
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.6.7.3.6"></a><h4>Returns</h4>
+<a name="id-1.4.8.7.3.6"></a><h4>Returns</h4>
 <p> the current position</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>

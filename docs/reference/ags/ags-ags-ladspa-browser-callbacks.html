@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="pt09.html" title="Part IX. Graphical user interface">
 <link rel="prev" href="AgsLadspaBrowser.html" title="AgsLadspaBrowser">
-<link rel="next" href="AgsLine.html" title="AgsLine">
+<link rel="next" href="AgsLv2Browser.html" title="AgsLv2Browser">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -20,7 +20,7 @@
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="pt09.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
 <td><a accesskey="p" href="AgsLadspaBrowser.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="AgsLine.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="AgsLv2Browser.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="ags-ags-ladspa-browser-callbacks"></a><div class="titlepage"></div>
@@ -55,30 +55,6 @@
 <a class="link" href="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-plugin-effect-callback" title="ags_ladspa_browser_plugin_effect_callback ()">ags_ladspa_browser_plugin_effect_callback</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
-<tr>
-<td class="function_type">
-<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-</td>
-<td class="function_name">
-<a class="link" href="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-preview-close-callback" title="ags_ladspa_browser_preview_close_callback ()">ags_ladspa_browser_preview_close_callback</a> <span class="c_punctuation">()</span>
-</td>
-</tr>
-<tr>
-<td class="function_type">
-<GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>
-</td>
-<td class="function_name">
-<a class="link" href="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-ok-callback" title="ags_ladspa_browser_ok_callback ()">ags_ladspa_browser_ok_callback</a> <span class="c_punctuation">()</span>
-</td>
-</tr>
-<tr>
-<td class="function_type">
-<GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>
-</td>
-<td class="function_name">
-<a class="link" href="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-cancel-callback" title="ags_ladspa_browser_cancel_callback ()">ags_ladspa_browser_cancel_callback</a> <span class="c_punctuation">()</span>
-</td>
-</tr>
 </tbody>
 </table></div>
 </div>
@@ -101,28 +77,6 @@ ags_ladspa_browser_plugin_filename_callback
 ags_ladspa_browser_plugin_effect_callback
                                (<em class="parameter"><code><GTKDOCLINK HREF="GtkComboBoxText"><span class="type">GtkComboBoxText</span></GTKDOCLINK> *combo_box</code></em>,
                                 <em class="parameter"><code><a class="link" href="AgsLadspaBrowser.html" title="AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="ags-ladspa-browser-preview-close-callback"></a><h3>ags_ladspa_browser_preview_close_callback ()</h3>
-<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-ags_ladspa_browser_preview_close_callback
-                               (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *preview</code></em>,
-                                <em class="parameter"><code><a class="link" href="AgsLadspaBrowser.html" title="AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="ags-ladspa-browser-ok-callback"></a><h3>ags_ladspa_browser_ok_callback ()</h3>
-<pre class="programlisting"><GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>
-ags_ladspa_browser_ok_callback (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
-                                <em class="parameter"><code><a class="link" href="AgsLadspaBrowser.html" title="AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);</pre>
-</div>
-<hr>
-<div class="refsect2">
-<a name="ags-ladspa-browser-cancel-callback"></a><h3>ags_ladspa_browser_cancel_callback ()</h3>
-<pre class="programlisting"><GTKDOCLINK HREF="int"><span class="returnvalue">int</span></GTKDOCLINK>
-ags_ladspa_browser_cancel_callback (<em class="parameter"><code><GTKDOCLINK HREF="GtkWidget"><span class="type">GtkWidget</span></GTKDOCLINK> *widget</code></em>,
-                                    <em class="parameter"><code><a class="link" href="AgsLadspaBrowser.html" title="AgsLadspaBrowser"><span class="type">AgsLadspaBrowser</span></a> *ladspa_browser</code></em>);</pre>
 </div>
 </div>
 <div class="refsect1">

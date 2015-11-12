@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsApplicationContext">
 <refmeta>
@@ -14,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsApplicationContext</refname>
-<refpurpose></refpurpose>
+<refpurpose>The application context</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsApplicationContext.functions" role="functions_proto">
@@ -107,9 +105,14 @@
 </screen>
 </refsect1>
 
+<refsect1 id="AgsApplicationContext.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_application_context.h&gt;
+</synopsis></refsect1>
 
 <refsect1 id="AgsApplicationContext.description" role="desc">
 <title role="desc.title">Description</title>
+<para><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link> is a context provider is your and libraries entry
+point to the application. You might subtype it to implement your own contices.
+Thus you should consider to create a provider interface for reusability.</para>
 
 </refsect1>
 <refsect1 id="AgsApplicationContext.functions_details" role="details">
@@ -119,7 +122,21 @@
 <indexterm zone="ags-application-context-load-config"><primary>ags_application_context_load_config</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_application_context_load_config (<parameter><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link> *application_context</parameter>);</programlisting>
-</refsect2>
+<para>Signal to load and parse configuration.</para>
+<para>Since 0.7.0</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>application_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
 <refsect2 id="ags-application-read" role="function">
 <title>ags_application_read&#160;()</title>
 <indexterm zone="ags-application-read"><primary>ags_application_read</primary></indexterm>
@@ -164,18 +181,32 @@ ags_application_context_find_default (<parameter><link linkend="GList"><type>GLi
 ags_application_context_find_main_loop
                                (<parameter><link linkend="GList"><type>GList</type></link> *application_context</parameter>);</programlisting>
 </refsect2>
-<refsect2 id="ags-application-context-quit" role="function">
+<refsect2 id="ags-application-context-quit" role="function" condition="since:0.7.0">
 <title>ags_application_context_quit&#160;()</title>
-<indexterm zone="ags-application-context-quit"><primary>ags_application_context_quit</primary></indexterm>
+<indexterm zone="ags-application-context-quit" role="0.7.0"><primary>ags_application_context_quit</primary></indexterm>
 <programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
 ags_application_context_quit (<parameter><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link> *application_context</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-application-context-get-instance" role="function">
+<para>Calls <link linkend="exit"><function>exit()</function></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>application_context</para></entry>
+<entry role="parameter_description"><para>the context to quit</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-application-context-get-instance" role="function" condition="since:0.7.0">
 <title>ags_application_context_get_instance&#160;()</title>
-<indexterm zone="ags-application-context-get-instance"><primary>ags_application_context_get_instance</primary></indexterm>
+<indexterm zone="ags-application-context-get-instance" role="0.7.0"><primary>ags_application_context_get_instance</primary></indexterm>
 <programlisting language="C"><link linkend="AgsApplicationContext"><returnvalue>AgsApplicationContext</returnvalue></link>&#160;*
 ags_application_context_get_instance ();</programlisting>
-</refsect2>
+<para>Get your application context instance.</para>
+<para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
 <refsect2 id="ags-application-context-new" role="function">
 <title>ags_application_context_new&#160;()</title>
 <indexterm zone="ags-application-context-new"><primary>ags_application_context_new</primary></indexterm>
@@ -268,8 +299,7 @@ ags_application_context_new (<parameter><link linkend="GObject"><type>GObject</t
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 user_function (<link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link> *application_context,
                <link linkend="gpointer"><type>gpointer</type></link>               user_data)</programlisting>
-<para>The ::load-config signal notifies about running
-stage 2.</para>
+<para>The ::load-config notifies to load configuration.</para>
 <refsect3 role="parameters">
 <title>Parameters</title>
 <informaltable role="parameters_table" pgwide="1" frame="none">
@@ -291,8 +321,8 @@ stage 2.</para>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 user_function (<link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link> *application_context,
                <link linkend="gpointer"><type>gpointer</type></link>               user_data)</programlisting>
-<para>The ::register-types signal notifies about running
-stage 2.</para>
+<para>The ::register-types signal should be implemented to load
+your types.</para>
 <refsect3 role="parameters">
 <title>Parameters</title>
 <informaltable role="parameters_table" pgwide="1" frame="none">

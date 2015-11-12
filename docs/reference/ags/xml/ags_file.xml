@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsFile">
 <refmeta>
@@ -153,20 +151,56 @@ is the persisting layer of Advanced Gtk+ Sequencer.</para>
 <programlisting language="C">#define AGS_FILE_CHECKSUM_LENGTH (g_checksum_type_get_length(G_CHECKSUM_MD5))
 </programlisting>
 </refsect2>
-<refsect2 id="ags-file-str2md5" role="function">
+<refsect2 id="ags-file-str2md5" role="function" condition="since:0.4.0">
 <title>ags_file_str2md5&#160;()</title>
-<indexterm zone="ags-file-str2md5"><primary>ags_file_str2md5</primary></indexterm>
+<indexterm zone="ags-file-str2md5" role="0.4.0"><primary>ags_file_str2md5</primary></indexterm>
 <programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
 ags_file_str2md5 (<parameter><link linkend="gchar"><type>gchar</type></link> *content</parameter>,
                   <parameter><link linkend="guint"><type>guint</type></link> strlen</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-file-add-id-ref" role="function">
+<para>Compute MD5 sums of a buffer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>content</para></entry>
+<entry role="parameter_description"><para>the string buffer</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>content_length</para></entry>
+<entry role="parameter_description"><para>the length of the string</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-file-add-id-ref" role="function" condition="since:0.4.0">
 <title>ags_file_add_id_ref&#160;()</title>
-<indexterm zone="ags-file-add-id-ref"><primary>ags_file_add_id_ref</primary></indexterm>
+<indexterm zone="ags-file-add-id-ref" role="0.4.0"><primary>ags_file_add_id_ref</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_add_id_ref (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                      <parameter><link linkend="GObject"><type>GObject</type></link> *id_ref</parameter>);</programlisting>
-</refsect2>
+<para>Find a reference by its XML node.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <parameter>AgsFile</parameter>
+</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>node</para></entry>
+<entry role="parameter_description"><para>a XML node</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the matching <link linkend="GObject"><type>GObject</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
 <refsect2 id="ags-file-find-id-ref-by-node" role="function">
 <title>ags_file_find_id_ref_by_node&#160;()</title>
 <indexterm zone="ags-file-find-id-ref-by-node"><primary>ags_file_find_id_ref_by_node</primary></indexterm>
@@ -174,40 +208,130 @@ ags_file_add_id_ref (<parameter><link linkend="AgsFile"><type>AgsFile</type></li
 ags_file_find_id_ref_by_node (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                               <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>);</programlisting>
 </refsect2>
-<refsect2 id="ags-file-find-id-ref-by-xpath" role="function">
+<refsect2 id="ags-file-find-id-ref-by-xpath" role="function" condition="since:0.4.0">
 <title>ags_file_find_id_ref_by_xpath&#160;()</title>
-<indexterm zone="ags-file-find-id-ref-by-xpath"><primary>ags_file_find_id_ref_by_xpath</primary></indexterm>
+<indexterm zone="ags-file-find-id-ref-by-xpath" role="0.4.0"><primary>ags_file_find_id_ref_by_xpath</primary></indexterm>
 <programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
 ags_file_find_id_ref_by_xpath (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                                <parameter><link linkend="gchar"><type>gchar</type></link> *xpath</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-file-find-id-ref-by-reference" role="function">
+<para>Lookup a reference by <parameter>xpath</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>xpath</para></entry>
+<entry role="parameter_description"><para>a XPath expression</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the matching <link linkend="GObject"><type>GObject</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-file-find-id-ref-by-reference" role="function" condition="since:0.4.0">
 <title>ags_file_find_id_ref_by_reference&#160;()</title>
-<indexterm zone="ags-file-find-id-ref-by-reference"><primary>ags_file_find_id_ref_by_reference</primary></indexterm>
+<indexterm zone="ags-file-find-id-ref-by-reference" role="0.4.0"><primary>ags_file_find_id_ref_by_reference</primary></indexterm>
 <programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
 ags_file_find_id_ref_by_reference (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                                    <parameter><link linkend="gpointer"><type>gpointer</type></link> ref</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-file-add-lookup" role="function">
+<para>Find a reference matching <parameter>ref</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>ref</para></entry>
+<entry role="parameter_description"><para>a <link linkend="gpointer"><literal>gpointer</literal></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the matching <link linkend="GObject"><type>GObject</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-file-add-lookup" role="function" condition="since:0.4.0">
 <title>ags_file_add_lookup&#160;()</title>
-<indexterm zone="ags-file-add-lookup"><primary>ags_file_add_lookup</primary></indexterm>
+<indexterm zone="ags-file-add-lookup" role="0.4.0"><primary>ags_file_add_lookup</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_add_lookup (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                      <parameter><link linkend="GObject"><type>GObject</type></link> *file_lookup</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-file-add-launch" role="function">
+<para>Add <parameter>file_lookup</parameter>
+ for later invoking.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>file_lookup</para></entry>
+<entry role="parameter_description"><para>a <link linkend="AgsFileLookup"><type>AgsFileLookup</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-file-add-launch" role="function" condition="since:0.4.0">
 <title>ags_file_add_launch&#160;()</title>
-<indexterm zone="ags-file-add-launch"><primary>ags_file_add_launch</primary></indexterm>
+<indexterm zone="ags-file-add-launch" role="0.4.0"><primary>ags_file_add_launch</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_add_launch (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                      <parameter><link linkend="GObject"><type>GObject</type></link> *file_launch</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-file-open" role="function">
+<para>Add <parameter>file_launch</parameter>
+ for later invoking.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>file_launch</para></entry>
+<entry role="parameter_description"><para>a <link linkend="AgsFileLaunch"><type>AgsFileLaunch</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-file-open" role="function" condition="since:0.4.0">
 <title>ags_file_open&#160;()</title>
-<indexterm zone="ags-file-open"><primary>ags_file_open</primary></indexterm>
+<indexterm zone="ags-file-open" role="0.4.0"><primary>ags_file_open</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_open (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-</refsect2>
+<para>Opens the file specified by :filename property in read-write mode.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>create</para></entry>
+<entry role="parameter_description"><para>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> create the file as needed</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
 <refsect2 id="ags-file-open-from-data" role="function">
 <title>ags_file_open_from_data&#160;()</title>
 <indexterm zone="ags-file-open-from-data"><primary>ags_file_open_from_data</primary></indexterm>
@@ -223,43 +347,113 @@ ags_file_open_from_data (<parameter><link linkend="AgsFile"><type>AgsFile</type>
 ags_file_rw_open (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                   <parameter><link linkend="gboolean"><type>gboolean</type></link> create</parameter>);</programlisting>
 </refsect2>
-<refsect2 id="ags-file-open-filename" role="function">
+<refsect2 id="ags-file-open-filename" role="function" condition="since:0.4.0">
 <title>ags_file_open_filename&#160;()</title>
-<indexterm zone="ags-file-open-filename"><primary>ags_file_open_filename</primary></indexterm>
+<indexterm zone="ags-file-open-filename" role="0.4.0"><primary>ags_file_open_filename</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_open_filename (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                         <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
-</refsect2>
+<para>Opens the file specified by <parameter>filename</parameter>
+ property.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>a path</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
 <refsect2 id="ags-file-close" role="function">
 <title>ags_file_close&#160;()</title>
 <indexterm zone="ags-file-close"><primary>ags_file_close</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_close (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-file-write" role="function">
+<para>Closes <parameter>file</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+<refsect2 id="ags-file-write" role="function" condition="since:0.4.0">
 <title>ags_file_write&#160;()</title>
-<indexterm zone="ags-file-write"><primary>ags_file_write</primary></indexterm>
+<indexterm zone="ags-file-write" role="0.4.0"><primary>ags_file_write</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_write (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-</refsect2>
+<para>Write the XML document to disk.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
 <refsect2 id="ags-file-write-concurrent" role="function">
 <title>ags_file_write_concurrent&#160;()</title>
 <indexterm zone="ags-file-write-concurrent"><primary>ags_file_write_concurrent</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_write_concurrent (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
 </refsect2>
-<refsect2 id="ags-file-write-resolve" role="function">
+<refsect2 id="ags-file-write-resolve" role="function" condition="since:0.4.0">
 <title>ags_file_write_resolve&#160;()</title>
-<indexterm zone="ags-file-write-resolve"><primary>ags_file_write_resolve</primary></indexterm>
+<indexterm zone="ags-file-write-resolve" role="0.4.0"><primary>ags_file_write_resolve</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_write_resolve (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-file-read" role="function">
+<para>Resolve references to XPath expressions.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-file-read" role="function" condition="since:0.4.0">
 <title>ags_file_read&#160;()</title>
-<indexterm zone="ags-file-read"><primary>ags_file_read</primary></indexterm>
+<indexterm zone="ags-file-read" role="0.4.0"><primary>ags_file_read</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_file_read (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>);</programlisting>
-</refsect2>
+<para>Update or start the application.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
 <refsect2 id="ags-file-read-resolve" role="function">
 <title>ags_file_read_resolve&#160;()</title>
 <indexterm zone="ags-file-read-resolve"><primary>ags_file_read_resolve</primary></indexterm>
@@ -367,52 +561,109 @@ ags_file_new ();</programlisting>
 <para>The application context to write to file.</para><para>Flags: Read / Write</para>
 </refsect2>
 <refsect2 id="AgsFile--audio-encoding" role="property"><title>The <literal>“audio-encoding”</literal> property</title>
-<indexterm zone="AgsFile--audio-encoding"><primary>AgsFile:audio-encoding</primary></indexterm>
+<indexterm zone="AgsFile--audio-encoding" role="0.5.0"><primary>AgsFile:audio-encoding</primary></indexterm>
 <programlisting>  “audio-encoding”           <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
-<para>The audio encoding used to embedded audio.</para><para>Flags: Read / Write</para>
+<para>The encoding to use for embedding audio data.</para>
+<para>Flags: Read / Write</para>
 <para>Default value: "base64"</para>
-</refsect2>
+<para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
 <refsect2 id="AgsFile--audio-format" role="property"><title>The <literal>“audio-format”</literal> property</title>
-<indexterm zone="AgsFile--audio-format"><primary>AgsFile:audio-format</primary></indexterm>
+<indexterm zone="AgsFile--audio-format" role="0.5.0"><primary>AgsFile:audio-format</primary></indexterm>
 <programlisting>  “audio-format”             <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
-<para>The audio format used to embedded audio.</para><para>Flags: Read / Write</para>
+<para>The format of embedded audio data.</para>
+<para>Flags: Read / Write</para>
 <para>Default value: "raw"</para>
-</refsect2>
+<para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
 <refsect2 id="AgsFile--encoding" role="property"><title>The <literal>“encoding”</literal> property</title>
-<indexterm zone="AgsFile--encoding"><primary>AgsFile:encoding</primary></indexterm>
+<indexterm zone="AgsFile--encoding" role="0.7.0"><primary>AgsFile:encoding</primary></indexterm>
 <programlisting>  “encoding”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
-<para>The encoding of the XML document.</para><para>Flags: Read / Write</para>
+<para>The application context assigned with.</para>
+<para>Flags: Read / Write</para>
 <para>Default value: NULL</para>
-</refsect2>
+<para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
 <refsect2 id="AgsFile--filename" role="property"><title>The <literal>“filename”</literal> property</title>
-<indexterm zone="AgsFile--filename"><primary>AgsFile:filename</primary></indexterm>
+<indexterm zone="AgsFile--filename" role="0.5.0"><primary>AgsFile:filename</primary></indexterm>
 <programlisting>  “filename”                 <link linkend="gchar"><type>gchar</type></link>&#160;*</programlisting>
-<para>The filename to read or write to.</para><para>Flags: Read / Write</para>
+<para>The assigned filename to open and read from.</para>
+<para>Flags: Read / Write</para>
 <para>Default value: NULL</para>
-</refsect2>
+<para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
 
 </refsect1>
 <refsect1 id="AgsFile.signal-details" role="signals">
 <title role="signals.title">Signal Details</title>
 <refsect2 id="AgsFile-open" role="signal"><title>The <literal>“open”</literal> signal</title>
-<indexterm zone="AgsFile-open"><primary>AgsFile::open</primary></indexterm>
+<indexterm zone="AgsFile-open" role="0.5.0"><primary>AgsFile::open</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *file,
                <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
-<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
-</refsect2><refsect2 id="AgsFile-open-from-data" role="signal"><title>The <literal>“open-from-data”</literal> signal</title>
-<indexterm zone="AgsFile-open-from-data"><primary>AgsFile::open-from-data</primary></indexterm>
+<para>Open <parameter>file</parameter>
+ with appropriate filename.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+<para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2><refsect2 id="AgsFile-open-from-data" role="signal"><title>The <literal>“open-from-data”</literal> signal</title>
+<indexterm zone="AgsFile-open-from-data" role="0.5.0"><primary>AgsFile::open-from-data</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *file,
                <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
-<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
-</refsect2><refsect2 id="AgsFile-read" role="signal"><title>The <literal>“read”</literal> signal</title>
-<indexterm zone="AgsFile-read"><primary>AgsFile::read</primary></indexterm>
+<para>Open <parameter>file</parameter>
+ in read-write mode.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>create</para></entry>
+<entry role="parameter_description"><para>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> the file will be created if not exists</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+<para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2><refsect2 id="AgsFile-read" role="signal"><title>The <literal>“read”</literal> signal</title>
+<indexterm zone="AgsFile-read" role="0.5.0"><primary>AgsFile::read</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *file,
                <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
-<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
-</refsect2><refsect2 id="AgsFile-read-resolve" role="signal"><title>The <literal>“read-resolve”</literal> signal</title>
+<para>Read a XML document from disk with specified filename.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+<para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2><refsect2 id="AgsFile-read-resolve" role="signal"><title>The <literal>“read-resolve”</literal> signal</title>
 <indexterm zone="AgsFile-read-resolve"><primary>AgsFile::read-resolve</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
@@ -431,24 +682,57 @@ user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
                <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
 <para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
 </refsect2><refsect2 id="AgsFile-write" role="signal"><title>The <literal>“write”</literal> signal</title>
-<indexterm zone="AgsFile-write"><primary>AgsFile::write</primary></indexterm>
+<indexterm zone="AgsFile-write" role="0.5.0"><primary>AgsFile::write</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *file,
                <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
-<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
-</refsect2><refsect2 id="AgsFile-write-concurrent" role="signal"><title>The <literal>“write-concurrent”</literal> signal</title>
+<para>Write XML Document to disk.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+<para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2><refsect2 id="AgsFile-write-concurrent" role="signal"><title>The <literal>“write-concurrent”</literal> signal</title>
 <indexterm zone="AgsFile-write-concurrent"><primary>AgsFile::write-concurrent</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
                <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
 <para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
 </refsect2><refsect2 id="AgsFile-write-resolve" role="signal"><title>The <literal>“write-resolve”</literal> signal</title>
-<indexterm zone="AgsFile-write-resolve"><primary>AgsFile::write-resolve</primary></indexterm>
+<indexterm zone="AgsFile-write-resolve" role="0.5.0"><primary>AgsFile::write-resolve</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *agsfile,
+user_function (<link linkend="AgsFile"><type>AgsFile</type></link> *file,
                <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
-<para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
-</refsect2>
+<para>Resolve references and generate thus XPath expressions just
+before writing to disk.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>file</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsFile"><type>AgsFile</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+<para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
 </refsect1>
 
 </refentry>

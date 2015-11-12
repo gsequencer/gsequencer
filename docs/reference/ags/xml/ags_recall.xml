@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsRecall">
 <refmeta>
@@ -73,8 +71,8 @@
 </entry><entry role="function_name"><link linkend="ags-recall-add-child">ags_recall_add_child</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-recall-get-children">ags_recall_get_children</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-recall-set-effect">ags_recall_set_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-get-by-effect">ags_recall_get_by_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-recall-find-by-effect">ags_recall_find_by_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
@@ -84,15 +82,17 @@
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-recall-template-find-type">ags_recall_template_find_type</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
-</entry><entry role="function_name"><link linkend="ags-recall-find-type-with-recycling-container">ags_recall_find_type_with_recycling_container</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+</entry><entry role="function_name"><link linkend="ags-recall-template-find-all-type">ags_recall_template_find_all_type</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
-</entry><entry role="function_name"><link linkend="ags-recall-find-recycling-container">ags_recall_find_recycling_container</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+</entry><entry role="function_name"><link linkend="ags-recall-find-type-with-recycling-context">ags_recall_find_type_with_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-recall-find-recycling-context">ags_recall_find_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-recall-find-provider">ags_recall_find_provider</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-recall-template-find-provider">ags_recall_template_find_provider</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
-</entry><entry role="function_name"><link linkend="ags-recall-find-provider-with-recycling-container">ags_recall_find_provider_with_recycling_container</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+</entry><entry role="function_name"><link linkend="ags-recall-find-provider-with-recycling-context">ags_recall_find_provider_with_recycling_context</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-recall-run-init">ags_recall_run_init</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="AgsRecallHandler"><returnvalue>AgsRecallHandler</returnvalue></link>&#160;*
@@ -182,8 +182,7 @@
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudio">AgsRecallAudio</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayAudioFile">AgsPlayAudioFile</link>
-        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayNote">AgsPlayNote</link>
-        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPlayPattern">AgsPlayPattern</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPlayNote">AgsPlayNote</link>
 </screen>
 </refsect1>
 
@@ -447,7 +446,7 @@ ags_recall_remove (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></
 <indexterm zone="ags-recall-is-done" role="0.4"><primary>ags_recall_is_done</primary></indexterm>
 <programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
 ags_recall_is_done (<parameter><link linkend="GList"><type>GList</type></link> *recalls</parameter>,
-                    <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);</programlisting>
+                    <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
 <para>Check if recall is over.</para>
 <refsect3 role="parameters">
 <title>Parameters</title>
@@ -688,20 +687,45 @@ ags_recall_get_children (<parameter><link linkend="AgsRecall"><type>AgsRecall</t
 <title>Returns</title>
 <para> a GList with all children.</para>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
-<refsect2 id="ags-recall-set-effect" role="function">
-<title>ags_recall_set_effect&#160;()</title>
-<indexterm zone="ags-recall-set-effect"><primary>ags_recall_set_effect</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_recall_set_effect (<parameter><link linkend="AgsRecall"><type>AgsRecall</type></link> *recall</parameter>,
-                       <parameter><link linkend="char"><type>char</type></link> *effect</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-recall-find-by-effect" role="function" condition="since:0.4">
+<refsect2 id="ags-recall-get-by-effect" role="function" condition="since:0.4.3">
+<title>ags_recall_get_by_effect&#160;()</title>
+<indexterm zone="ags-recall-get-by-effect" role="0.4.3"><primary>ags_recall_get_by_effect</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_get_by_effect (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                          <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                          <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);</programlisting>
+<para>Finds all matching effect and filename.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>list</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> with recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename containing <parameter>effect</parameter>
+or <link linkend="NULL:CAPS"><literal>NULL</literal></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>effect</para></entry>
+<entry role="parameter_description"><para>the effect name</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a GList, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.3">0.4.3</link></para></refsect2>
+<refsect2 id="ags-recall-find-by-effect" role="function" condition="since:0.4.3">
 <title>ags_recall_find_by_effect&#160;()</title>
-<indexterm zone="ags-recall-find-by-effect" role="0.4"><primary>ags_recall_find_by_effect</primary></indexterm>
+<indexterm zone="ags-recall-find-by-effect" role="0.4.3"><primary>ags_recall_find_by_effect</primary></indexterm>
 <programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 ags_recall_find_by_effect (<parameter><link linkend="GList"><type>GList</type></link> *list</parameter>,
                            <parameter><link linkend="AgsRecallID"><type>AgsRecallID</type></link> *recall_id</parameter>,
-                           <parameter><link linkend="char"><type>char</type></link> *effect</parameter>);</programlisting>
+                           <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                           <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);</programlisting>
 <para>Finds next matching effect name. Intended to be used as
 iteration function.</para>
 <refsect3 role="parameters">
@@ -718,6 +742,10 @@ iteration function.</para>
 <row><entry role="parameter_name"><para>recall_id</para></entry>
 <entry role="parameter_description"><para>an <link linkend="AgsRecallId"><type>AgsRecallId</type></link></para></entry>
 <entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename containing <parameter>effect</parameter>
+or <link linkend="NULL:CAPS"><literal>NULL</literal></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
 <row><entry role="parameter_name"><para>effect</para></entry>
 <entry role="parameter_description"><para>the effect name</para></entry>
 <entry role="parameter_annotations"></entry></row>
@@ -725,7 +753,7 @@ iteration function.</para>
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> a GList, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.3">0.4.3</link></para></refsect2>
 <refsect2 id="ags-recall-find-type" role="function" condition="since:0.4">
 <title>ags_recall_find_type&#160;()</title>
 <indexterm zone="ags-recall-find-type" role="0.4"><primary>ags_recall_find_type</primary></indexterm>
@@ -764,9 +792,9 @@ iteration function.</para>
 <title>Returns</title>
 <para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
-<refsect2 id="ags-recall-template-find-type" role="function" condition="since:0.4">
+<refsect2 id="ags-recall-template-find-type" role="function" condition="since:0.4.3">
 <title>ags_recall_template_find_type&#160;()</title>
-<indexterm zone="ags-recall-template-find-type" role="0.4"><primary>ags_recall_template_find_type</primary></indexterm>
+<indexterm zone="ags-recall-template-find-type" role="0.4.3"><primary>ags_recall_template_find_type</primary></indexterm>
 <programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 ags_recall_template_find_type (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
                                <parameter><link linkend="GType"><type>GType</type></link> type</parameter>);</programlisting>
@@ -783,30 +811,82 @@ Intended to be used as iteration function.</para>
 <row><entry role="parameter_name"><para>recall_i</para></entry>
 <entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
 <entry role="parameter_annotations"></entry></row>
-<row><entry role="parameter_name"><para>type</para></entry>
+<row><entry role="parameter_name"><para>recall_type</para></entry>
 <entry role="parameter_description"><para>a <link linkend="GType"><type>GType</type></link></para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
-<refsect2 id="ags-recall-find-type-with-recycling-container" role="function">
-<title>ags_recall_find_type_with_recycling_container&#160;()</title>
-<indexterm zone="ags-recall-find-type-with-recycling-container"><primary>ags_recall_find_type_with_recycling_container</primary></indexterm>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.3">0.4.3</link></para></refsect2>
+<refsect2 id="ags-recall-template-find-all-type" role="function">
+<title>ags_recall_template_find_all_type&#160;()</title>
+<indexterm zone="ags-recall-template-find-all-type"><primary>ags_recall_template_find_all_type</primary></indexterm>
 <programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
-ags_recall_find_type_with_recycling_container
+ags_recall_template_find_all_type (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                                   <parameter>...</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-recall-find-type-with-recycling-context" role="function" condition="since:0.4">
+<title>ags_recall_find_type_with_recycling_context&#160;()</title>
+<indexterm zone="ags-recall-find-type-with-recycling-context" role="0.4"><primary>ags_recall_find_type_with_recycling_context</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_recall_find_type_with_recycling_context
                                (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
                                 <parameter><link linkend="GType"><type>GType</type></link> type</parameter>,
-                                <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-recall-find-recycling-container" role="function">
-<title>ags_recall_find_recycling_container&#160;()</title>
-<indexterm zone="ags-recall-find-recycling-container"><primary>ags_recall_find_recycling_container</primary></indexterm>
+                                <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
+<para>Finds next matching recall for type which has <parameter>recycling_context</parameter>
+, see <link linkend="AgsRecallId"><type>AgsRecallId</type></link> for further
+details about <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link>. Intended to be used as iteration function.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_i</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>type</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GType"><type>GType</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+<refsect2 id="ags-recall-find-recycling-context" role="function" condition="since:0.4">
+<title>ags_recall_find_recycling_context&#160;()</title>
+<indexterm zone="ags-recall-find-recycling-context" role="0.4"><primary>ags_recall_find_recycling_context</primary></indexterm>
 <programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
-ags_recall_find_recycling_container (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
-                                     <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);</programlisting>
-</refsect2>
+ags_recall_find_recycling_context (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
+                                   <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
+<para>Finds next matching recall which has <parameter>recycling_context</parameter>
+, see <link linkend="AgsRecallId"><type>AgsRecallId</type></link> for further
+details about <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link>. Intended to be used as iteration function.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_i</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
 <refsect2 id="ags-recall-find-provider" role="function" condition="since:0.4">
 <title>ags_recall_find_provider&#160;()</title>
 <indexterm zone="ags-recall-find-provider" role="0.4"><primary>ags_recall_find_provider</primary></indexterm>
@@ -840,15 +920,38 @@ ags_recall_find_provider (<parameter><link linkend="GList"><type>GList</type></l
 ags_recall_template_find_provider (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
                                    <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>);</programlisting>
 </refsect2>
-<refsect2 id="ags-recall-find-provider-with-recycling-container" role="function">
-<title>ags_recall_find_provider_with_recycling_container&#160;()</title>
-<indexterm zone="ags-recall-find-provider-with-recycling-container"><primary>ags_recall_find_provider_with_recycling_container</primary></indexterm>
+<refsect2 id="ags-recall-find-provider-with-recycling-context" role="function" condition="since:0.4">
+<title>ags_recall_find_provider_with_recycling_context&#160;()</title>
+<indexterm zone="ags-recall-find-provider-with-recycling-context" role="0.4"><primary>ags_recall_find_provider_with_recycling_context</primary></indexterm>
 <programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
-ags_recall_find_provider_with_recycling_container
+ags_recall_find_provider_with_recycling_context
                                (<parameter><link linkend="GList"><type>GList</type></link> *recall</parameter>,
                                 <parameter><link linkend="GObject"><type>GObject</type></link> *provider</parameter>,
-                                <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_container</parameter>);</programlisting>
-</refsect2>
+                                <parameter><link linkend="GObject"><type>GObject</type></link> *recycling_context</parameter>);</programlisting>
+<para>Like <link linkend="ags-recall-template-find-provider"><function>ags_recall_template_find_provider()</function></link> but given additionally <parameter>recycling_context</parameter>
+ as search parameter.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>recall_i</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GList"><type>GList</type></link> containing recalls</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>provider</para></entry>
+<entry role="parameter_description"><para>a <link linkend="GObject"><type>GObject</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>recycling_context</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsRecyclingContext"><type>AgsRecyclingContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a <link linkend="GList"><type>GList</type></link> containing recalls, or <link linkend="NULL:CAPS"><literal>NULL</literal></link> if not found</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
 <refsect2 id="ags-recall-run-init" role="function">
 <title>ags_recall_run_init&#160;()</title>
 <indexterm zone="ags-recall-run-init"><primary>ags_recall_run_init</primary></indexterm>

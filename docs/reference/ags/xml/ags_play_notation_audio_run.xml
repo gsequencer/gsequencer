@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsPlayNotationAudioRun">
 <refmeta>
@@ -84,19 +82,7 @@
 <programlisting language="C"><link linkend="AgsPlayNotationAudioRun"><returnvalue>AgsPlayNotationAudioRun</returnvalue></link>&#160;*
 ags_play_notation_audio_run_new ();</programlisting>
 <para>Creates an <link linkend="AgsPlayNotationAudioRun"><type>AgsPlayNotationAudioRun</type></link></para>
-<refsect3 role="parameters">
-<title>Parameters</title>
-<informaltable role="parameters_table" pgwide="1" frame="none">
-<tgroup cols="3">
-<colspec colname="parameters_name" colwidth="150px"/>
-<colspec colname="parameters_description"/>
-<colspec colname="parameters_annotations" colwidth="200px"/>
-<tbody>
-<row><entry role="parameter_name"><para>count_beats_audio_run</para></entry>
-<entry role="parameter_description"><para>an <link linkend="AgsCountBeatsAudioRun"><type>AgsCountBeatsAudioRun</type></link> as dependency</para></entry>
-<entry role="parameter_annotations"></entry></row>
-</tbody></tgroup></informaltable>
-</refsect3><refsect3 role="returns">
+<refsect3 role="returns">
 <title>Returns</title>
 <para> a new <link linkend="AgsPlayNotationAudioRun"><type>AgsPlayNotationAudioRun</type></link></para>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>

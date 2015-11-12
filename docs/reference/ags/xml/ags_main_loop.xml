@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsMainLoop">
 <refmeta>
@@ -83,19 +81,51 @@ ags_main_loop_get_tree_lock (<parameter><link linkend="AgsMainLoop"><type>AgsMai
 <title>Returns</title>
 <para> the mutex</para>
 </refsect3><para role="since">Since: <link linkend="api-index-0.6">0.6</link></para></refsect2>
-<refsect2 id="ags-main-loop-set-application-context" role="function">
+<refsect2 id="ags-main-loop-set-application-context" role="function" condition="since:0.6.0">
 <title>ags_main_loop_set_application_context&#160;()</title>
-<indexterm zone="ags-main-loop-set-application-context"><primary>ags_main_loop_set_application_context</primary></indexterm>
+<indexterm zone="ags-main-loop-set-application-context" role="0.6.0"><primary>ags_main_loop_set_application_context</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_main_loop_set_application_context (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>,
                                        <parameter><link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link> *application_context</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-main-loop-get-application-context" role="function">
+<para>Sets the application context.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>main_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMainLoop"><type>AgsMainLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>application_context</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.6.0">0.6.0</link></para></refsect2>
+<refsect2 id="ags-main-loop-get-application-context" role="function" condition="since:0.6.0">
 <title>ags_main_loop_get_application_context&#160;()</title>
-<indexterm zone="ags-main-loop-get-application-context"><primary>ags_main_loop_get_application_context</primary></indexterm>
+<indexterm zone="ags-main-loop-get-application-context" role="0.6.0"><primary>ags_main_loop_get_application_context</primary></indexterm>
 <programlisting language="C"><link linkend="AgsApplicationContext"><returnvalue>AgsApplicationContext</returnvalue></link>&#160;*
 ags_main_loop_get_application_context (<parameter><link linkend="AgsMainLoop"><type>AgsMainLoop</type></link> *main_loop</parameter>);</programlisting>
-</refsect2>
+<para>Retrieve the <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link>.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>main_loop</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMainLoop"><type>AgsMainLoop</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.6.0">0.6.0</link></para></refsect2>
 <refsect2 id="ags-main-loop-set-tic" role="function" condition="since:0.4">
 <title>ags_main_loop_set_tic&#160;()</title>
 <indexterm zone="ags-main-loop-set-tic" role="0.4"><primary>ags_main_loop_set_tic</primary></indexterm>

@@ -376,6 +376,30 @@ is the persisting layer of Advanced Gtk+ Sequencer.</p>
 <pre class="programlisting"><GTKDOCLINK HREF="gchar"><span class="returnvalue">gchar</span></GTKDOCLINK> *
 ags_file_str2md5 (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *content</code></em>,
                   <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> strlen</code></em>);</pre>
+<p>Compute MD5 sums of a buffer.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>content</p></td>
+<td class="parameter_description"><p>the string buffer</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>content_length</p></td>
+<td class="parameter_description"><p>the length of the string</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -383,6 +407,35 @@ ags_file_str2md5 (<em class="parameter"><code><GTKDOCLINK HREF="gchar"><span cla
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_add_id_ref (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
                      <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *id_ref</code></em>);</pre>
+<p>Find a reference by its XML node.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <em class="parameter"><code>AgsFile</code></em>
+</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>node</p></td>
+<td class="parameter_description"><p>a XML node</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.5.3.10.4.6"></a><h4>Returns</h4>
+<p> the matching <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -397,6 +450,35 @@ ags_file_find_id_ref_by_node (<em class="parameter"><code><a class="link" href="
 <pre class="programlisting"><GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *
 ags_file_find_id_ref_by_xpath (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
                                <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *xpath</code></em>);</pre>
+<p>Lookup a reference by <em class="parameter"><code>xpath</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.6.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>xpath</p></td>
+<td class="parameter_description"><p>a XPath expression</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.5.3.10.6.6"></a><h4>Returns</h4>
+<p> the matching <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -404,6 +486,35 @@ ags_file_find_id_ref_by_xpath (<em class="parameter"><code><a class="link" href=
 <pre class="programlisting"><GTKDOCLINK HREF="GObject"><span class="returnvalue">GObject</span></GTKDOCLINK> *
 ags_file_find_id_ref_by_reference (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
                                    <em class="parameter"><code><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> ref</code></em>);</pre>
+<p>Find a reference matching <em class="parameter"><code>ref</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.7.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>ref</p></td>
+<td class="parameter_description"><p>a <GTKDOCLINK HREF="gpointer"><code class="literal">gpointer</code></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.5.3.10.7.6"></a><h4>Returns</h4>
+<p> the matching <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -411,6 +522,31 @@ ags_file_find_id_ref_by_reference (<em class="parameter"><code><a class="link" h
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_add_lookup (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
                      <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *file_lookup</code></em>);</pre>
+<p>Add <em class="parameter"><code>file_lookup</code></em>
+ for later invoking.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.8.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>file_lookup</p></td>
+<td class="parameter_description"><p>a <a class="link" href="AgsFileLookup.html" title="AgsFileLookup"><span class="type">AgsFileLookup</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -418,12 +554,61 @@ ags_file_add_lookup (<em class="parameter"><code><a class="link" href="AgsFile.h
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_add_launch (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
                      <em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *file_launch</code></em>);</pre>
+<p>Add <em class="parameter"><code>file_launch</code></em>
+ for later invoking.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>file_launch</p></td>
+<td class="parameter_description"><p>a <a class="link" href="AgsFileLaunch.html" title="AgsFileLaunch"><span class="type">AgsFileLaunch</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-file-open"></a><h3>ags_file_open ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_open (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>Opens the file specified by :filename property in read-write mode.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.10.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>create</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> create the file as needed</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -446,18 +631,77 @@ ags_file_rw_open (<em class="parameter"><code><a class="link" href="AgsFile.html
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_open_filename (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>,
                         <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *filename</code></em>);</pre>
+<p>Opens the file specified by <em class="parameter"><code>filename</code></em>
+ property.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.13.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>filename</p></td>
+<td class="parameter_description"><p>a path</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-file-close"></a><h3>ags_file_close ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_close (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>Closes <em class="parameter"><code>file</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.14.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-file-write"></a><h3>ags_file_write ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_write (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>Write the XML document to disk.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.15.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -470,12 +714,46 @@ ags_file_write_concurrent (<em class="parameter"><code><a class="link" href="Ags
 <a name="ags-file-write-resolve"></a><h3>ags_file_write_resolve ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_write_resolve (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>Resolve references to XPath expressions.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.17.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-file-read"></a><h3>ags_file_read ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_file_read (<em class="parameter"><code><a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file</code></em>);</pre>
+<p>Update or start the application.</p>
+<div class="refsect3">
+<a name="id-1.5.3.10.18.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -602,33 +880,37 @@ ags_file_new ();</pre>
 <div class="refsect2">
 <a name="AgsFile--audio-encoding"></a><h3>The <code class="literal">“audio-encoding”</code> property</h3>
 <pre class="programlisting">  “audio-encoding”           <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</pre>
-<p>The audio encoding used to embedded audio.</p>
+<p>The encoding to use for embedding audio data.</p>
 <p>Flags: Read / Write</p>
 <p>Default value: "base64"</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.5.0">0.5.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="AgsFile--audio-format"></a><h3>The <code class="literal">“audio-format”</code> property</h3>
 <pre class="programlisting">  “audio-format”             <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</pre>
-<p>The audio format used to embedded audio.</p>
+<p>The format of embedded audio data.</p>
 <p>Flags: Read / Write</p>
 <p>Default value: "raw"</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.5.0">0.5.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="AgsFile--encoding"></a><h3>The <code class="literal">“encoding”</code> property</h3>
 <pre class="programlisting">  “encoding”                 <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</pre>
-<p>The encoding of the XML document.</p>
+<p>The application context assigned with.</p>
 <p>Flags: Read / Write</p>
 <p>Default value: NULL</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="AgsFile--filename"></a><h3>The <code class="literal">“filename”</code> property</h3>
 <pre class="programlisting">  “filename”                 <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</pre>
-<p>The filename to read or write to.</p>
+<p>The assigned filename to open and read from.</p>
 <p>Flags: Read / Write</p>
 <p>Default value: NULL</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.5.0">0.5.0</GTKDOCLINK></p>
 </div>
 </div>
 <div class="refsect1">
@@ -636,25 +918,104 @@ ags_file_new ();</pre>
 <div class="refsect2">
 <a name="AgsFile-open"></a><h3>The <code class="literal">“open”</code> signal</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file,
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> user_data)</pre>
+<p>Open <em class="parameter"><code>file</code></em>
+ with appropriate filename.</p>
+<div class="refsect3">
+<a name="id-1.5.3.13.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
 <p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.5.0">0.5.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="AgsFile-open-from-data"></a><h3>The <code class="literal">“open-from-data”</code> signal</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file,
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> user_data)</pre>
+<p>Open <em class="parameter"><code>file</code></em>
+ in read-write mode.</p>
+<div class="refsect3">
+<a name="id-1.5.3.13.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>create</p></td>
+<td class="parameter_description"><p>if <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> the file will be created if not exists</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
 <p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.5.0">0.5.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="AgsFile-read"></a><h3>The <code class="literal">“read”</code> signal</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file,
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> user_data)</pre>
+<p>Read a XML document from disk with specified filename.</p>
+<div class="refsect3">
+<a name="id-1.5.3.13.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
 <p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.5.0">0.5.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -684,9 +1045,33 @@ user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="
 <div class="refsect2">
 <a name="AgsFile-write"></a><h3>The <code class="literal">“write”</code> signal</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file,
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> user_data)</pre>
+<p>Write XML Document to disk.</p>
+<div class="refsect3">
+<a name="id-1.5.3.13.8.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
 <p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.5.0">0.5.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -700,9 +1085,34 @@ user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="
 <div class="refsect2">
 <a name="AgsFile-write-resolve"></a><h3>The <code class="literal">“write-resolve”</code> signal</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
-user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *agsfile,
+user_function (<a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a> *file,
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> user_data)</pre>
+<p>Resolve references and generate thus XPath expressions just
+before writing to disk.</p>
+<div class="refsect3">
+<a name="id-1.5.3.13.10.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>file</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsFile.html" title="AgsFile"><span class="type">AgsFile</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
 <p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.5.0">0.5.0</GTKDOCLINK></p>
 </div>
 </div>
 </div>

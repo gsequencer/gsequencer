@@ -2,31 +2,33 @@
 <book xmlns="http://www.devhelp.net/book" title="Advanced Gtk+ Sequencer Reference Manual" link="index.html" author="" name="ags" version="2" language="c">
   <chapters>
     <sub name="Library - Completion routines" link="lib.html">
-      <sub name="AgsComboBoxText" link="ags-AgsComboBoxText.html"/>
-      <sub name="ags_container" link="ags-ags-container.html"/>
-      <sub name="ags_list" link="ags-ags-list.html"/>
+      <sub name="AgsComplex" link="AgsComplex.html"/>
       <sub name="AgsParameter" link="ags-AgsParameter.html"/>
+      <sub name="AgsTurtle" link="AgsTurtle.html"/>
     </sub>
     <sub name="Util - Helper functions" link="util.html">
       <sub name="AgsIdGenerator" link="ags-AgsIdGenerator.html"/>
     </sub>
     <sub name="Object - Interfaces and marshallers" link="object.html">
+      <sub name="AgsAsyncQueue" link="AgsAsyncQueue.html"/>
       <sub name="AgsApplicable" link="AgsApplicable.html"/>
       <sub name="AgsApplicationContext" link="AgsApplicationContext.html"/>
+      <sub name="AgsConcurrentTree" link="AgsConcurrentTree.html"/>
       <sub name="AgsConfig" link="AgsConfig.html"/>
       <sub name="AgsConnectable" link="AgsConnectable.html"/>
       <sub name="AgsCountable" link="AgsCountable.html"/>
+      <sub name="AgsDistributedManager" link="AgsDistributedManager.html"/>
       <sub name="AgsDynamicConnectable" link="AgsDynamicConnectable.html"/>
       <sub name="AgsMainLoop" link="AgsMainLoop.html"/>
       <sub name="ags_marshal" link="ags-ags-marshal.html"/>
       <sub name="AgsMutable" link="AgsMutable.html"/>
       <sub name="AgsPackable" link="AgsPackable.html"/>
       <sub name="AgsPortlet" link="AgsPortlet.html"/>
-      <sub name="AgsRunnable" link="ags-AgsRunnable.html"/>
       <sub name="AgsSeekable" link="AgsSeekable.html"/>
+      <sub name="AgsSequencer" link="AgsSequencer.html"/>
+      <sub name="AgsSoundcard" link="AgsSoundcard.html"/>
       <sub name="AgsTactable" link="AgsTactable.html"/>
-      <sub name="AgsStackable" link="ags-AgsStackable.html"/>
-      <sub name="AgsPersistable" link="ags-AgsPersistable.html"/>
+      <sub name="AgsTreeIterator" link="AgsTreeIterator.html"/>
       <sub name="AgsPlugin" link="AgsPlugin.html"/>
     </sub>
     <sub name="XML Input/Output - Persist project" link="xml-io.html">
@@ -39,11 +41,15 @@
       <sub name="ags_file_util" link="ags-ags-file-util.html"/>
     </sub>
     <sub name="Plugin - API of plugins" link="plugin.html">
+      <sub name="AgsDssiManager" link="AgsDssiManager.html"/>
       <sub name="AgsLadspaManager" link="AgsLadspaManager.html"/>
+      <sub name="AgsLv2Manager" link="AgsLv2Manager.html"/>
+      <sub name="AgsLv2uiManager" link="AgsLv2uiManager.html"/>
       <sub name="AgsPluginFactory" link="AgsPluginFactory.html"/>
       <sub name="ags_plugin_stock" link="ags-ags-plugin-stock.html"/>
     </sub>
     <sub name="Widget - GUI elements" link="widget.html">
+      <sub name="AgsContainer" link="ags-AgsContainer.html"/>
       <sub name="AgsDial" link="AgsDial.html"/>
       <sub name="AgsExpander" link="AgsExpander.html"/>
       <sub name="AgsExpanderSet" link="AgsExpanderSet.html"/>
@@ -55,6 +61,7 @@
     <sub name="Thread - Multi-threaded tree" link="thread.html">
       <sub name="AgsAutosaveThread" link="AgsAutosaveThread.html"/>
       <sub name="AgsConcurrencyProvider" link="AgsConcurrencyProvider.html"/>
+      <sub name="AgsHistory" link="AgsHistory.html"/>
       <sub name="AgsIteratorThread" link="AgsIteratorThread.html"/>
       <sub name="AgsMutexManager" link="AgsMutexManager.html"/>
       <sub name="AgsReturnableThread" link="AgsReturnableThread.html"/>
@@ -62,6 +69,7 @@
       <sub name="AgsTaskThread" link="AgsTaskThread.html"/>
       <sub name="AgsTimestampThread" link="AgsTimestampThread.html"/>
       <sub name="AgsThread" link="AgsThread.html"/>
+      <sub name="AgsThreadApplicationContext" link="AgsThreadApplicationContext.html"/>
       <sub name="AgsThreadPool" link="AgsThreadPool.html"/>
       <sub name="Thread files - Reading/Writing audio data from disk" link="thread-file.html">
         <sub name="ags_thread_file_xml" link="ags-ags-thread-file-xml.html"/>
@@ -76,6 +84,7 @@
       <sub name="AgsChannel" link="AgsChannel.html"/>
       <sub name="AgsDevout" link="AgsDevout.html"/>
       <sub name="AgsInput" link="AgsInput.html"/>
+      <sub name="AgsMidiin" link="AgsMidiin.html"/>
       <sub name="AgsNotation" link="AgsNotation.html"/>
       <sub name="AgsNote" link="AgsNote.html"/>
       <sub name="AgsOutput" link="AgsOutput.html"/>
@@ -94,6 +103,8 @@
       <sub name="AgsRecallDependency" link="AgsRecallDependency.html"/>
       <sub name="AgsRecallFactory" link="AgsRecallFactory.html"/>
       <sub name="AgsRecallID" link="AgsRecallID.html"/>
+      <sub name="AgsRecallDssi" link="AgsRecallDssi.html"/>
+      <sub name="AgsRecallDssiRun" link="AgsRecallDssiRun.html"/>
       <sub name="AgsRecallLadspa" link="AgsRecallLadspa.html"/>
       <sub name="AgsRecallLadspaRun" link="AgsRecallLadspaRun.html"/>
       <sub name="AgsRecallRecycling" link="AgsRecallRecycling.html"/>
@@ -113,10 +124,26 @@
         <sub name="ags_recycling_thread_callbacks" link="ags-ags-recycling-thread-callbacks.html"/>
         <sub name="AgsSoundcardThread" link="AgsSoundcardThread.html"/>
       </sub>
+      <sub name="Audio JACK - JACK support" link="audio-jack.html">
+        <sub name="AgsJackServer" link="AgsJackServer.html"/>
+        <sub name="AgsJackClient" link="AgsJackClient.html"/>
+        <sub name="AgsJackPort" link="AgsJackPort.html"/>
+        <sub name="AgsJackDevout" link="AgsJackDevout.html"/>
+        <sub name="AgsJackMidiin" link="AgsJackMidiin.html"/>
+      </sub>
+      <sub name="Audio MIDI - MIDI support" link="audio-midi.html">
+        <sub name="AgsMidiFile" link="AgsMidiFile.html"/>
+        <sub name="AgsMidiFileReader" link="AgsMidiFileReader.html"/>
+        <sub name="AgsMidiFileWriter" link="AgsMidiFileWriter.html"/>
+        <sub name="AgsMidiBuilder" link="AgsMidiBuilder.html"/>
+        <sub name="AgsMidiParser" link="AgsMidiParser.html"/>
+      </sub>
       <sub name="Audio files - Reading/Writing audio data from disk" link="audio-file.html">
         <sub name="AgsAudioFile" link="AgsAudioFile.html"/>
+        <sub name="AgsAudioFileLink" link="AgsAudioFileLink.html"/>
         <sub name="AgsIpatch" link="AgsIpatch.html"/>
         <sub name="AgsIpatchSF2Reader" link="AgsIpatchSF2Reader.html"/>
+        <sub name="AgsIpatchDLS2Reader" link="AgsIpatchDLS2Reader.html"/>
         <sub name="AgsSndfile" link="AgsSndfile.html"/>
         <sub name="AgsPlayable" link="AgsPlayable.html"/>
       </sub>
@@ -139,6 +166,10 @@
         <sub name="AgsCountBeatsAudioRun" link="AgsCountBeatsAudioRun.html"/>
         <sub name="AgsDelayAudio" link="AgsDelayAudio.html"/>
         <sub name="AgsDelayAudioRun" link="AgsDelayAudioRun.html"/>
+        <sub name="AgsEnvelopeAudioSignal" link="AgsEnvelopeAudioSignal.html"/>
+        <sub name="AgsEnvelopeChannel" link="AgsEnvelopeChannel.html"/>
+        <sub name="AgsEnvelopeChannelRun" link="AgsEnvelopeChannelRun.html"/>
+        <sub name="AgsEnvelopeRecycling" link="AgsEnvelopeRecycling.html"/>
         <sub name="AgsLoopChannel" link="AgsLoopChannel.html"/>
         <sub name="AgsLoopChannelRun" link="AgsLoopChannelRun.html"/>
         <sub name="AgsPeakChannel" link="AgsPeakChannel.html"/>
@@ -158,6 +189,10 @@
         <sub name="AgsPlayNote" link="AgsPlayNote.html"/>
         <sub name="AgsPlayPattern" link="AgsPlayPattern.html"/>
         <sub name="AgsPlayRecycling" link="AgsPlayRecycling.html"/>
+        <sub name="AgsRouteDssiAudio" link="AgsRouteDssiAudio.html"/>
+        <sub name="AgsRouteDssiAudioRun" link="AgsRouteDssiAudioRun.html"/>
+        <sub name="AgsRouteLv2Audio" link="AgsRouteLv2Audio.html"/>
+        <sub name="AgsRouteLv2AudioRun" link="AgsRouteLv2AudioRun.html"/>
         <sub name="AgsStreamAudioSignal" link="AgsStreamAudioSignal.html"/>
         <sub name="AgsStreamChannel" link="AgsStreamChannel.html"/>
         <sub name="AgsStreamChannelRun" link="AgsStreamChannelRun.html"/>
@@ -170,6 +205,7 @@
         <sub name="AgsAddNote" link="AgsAddNote.html"/>
         <sub name="AgsAddPointToSelection" link="AgsAddPointToSelection.html"/>
         <sub name="AgsAddRecall" link="AgsAddRecall.html"/>
+        <sub name="AgsAddRecallContainer" link="AgsAddRecallContainer.html"/>
         <sub name="AgsAddRegionToSelection" link="AgsAddRegionToSelection.html"/>
         <sub name="AgsAppendAudio" link="AgsAppendAudio.html"/>
         <sub name="AgsAppendAudioThreaded" link="AgsAppendAudioThreaded.html"/>
@@ -218,14 +254,25 @@
       <sub name="ags_automation_editor_callbacks" link="ags-ags-automation-editor-callbacks.html"/>
       <sub name="AgsEditor" link="AgsEditor.html"/>
       <sub name="ags_editor_callbacks" link="ags-ags-editor-callbacks.html"/>
+      <sub name="AgsEffectBridge" link="AgsEffectBridge.html"/>
+      <sub name="AgsEffectBridge" link="AgsEffectBridge.html"/>
+      <sub name="AgsEffectBulk" link="AgsEffectBulk.html"/>
+      <sub name="ags_effect_bulk_callbacks" link="ags-ags-effect-bulk-callbacks.html"/>
+      <sub name="AgsEffectLine" link="AgsEffectLine.html"/>
+      <sub name="ags_effect_line_callbacks" link="ags-ags-effect-line-callbacks.html"/>
+      <sub name="AgsEffectPad" link="AgsEffectPad.html"/>
       <sub name="AgsExportWindow" link="AgsExportWindow.html"/>
       <sub name="ags_export_window_callbacks" link="ags-ags-export-window-callbacks.html"/>
       <sub name="AgsFileSelection" link="AgsFileSelection.html"/>
       <sub name="ags_file_selection_callbacks" link="ags-ags-file-selection-callbacks.html"/>
+      <sub name="AgsGenericPreferences" link="AgsGenericPreferences.html"/>
+      <sub name="ags_generic_preferences_callbacks" link="ags-ags-generic-preferences-callbacks.html"/>
       <sub name="AgsGuiThread" link="AgsGuiThread.html"/>
       <sub name="AgsInlinePlayer" link="AgsInlinePlayer.html"/>
       <sub name="AgsLadspaBrowser" link="AgsLadspaBrowser.html"/>
       <sub name="ags_ladspa_browser_callbacks" link="ags-ags-ladspa-browser-callbacks.html"/>
+      <sub name="AgsLv2Browser" link="AgsLv2Browser.html"/>
+      <sub name="ags_lv2_browser_callbacks" link="ags-ags-lv2-browser-callbacks.html"/>
       <sub name="AgsLine" link="AgsLine.html"/>
       <sub name="ags_line_callbacks" link="ags-ags-line-callbacks.html"/>
       <sub name="AgsLineEditor" link="AgsLineEditor.html"/>
@@ -254,6 +301,8 @@
       <sub name="AgsPadEditor" link="AgsPadEditor.html"/>
       <sub name="ags_pad_editor_callbacks" link="ags-ags-pad-editor-callbacks.html"/>
       <sub name="AgsPerformancePreferences" link="AgsPerformancePreferences.html"/>
+      <sub name="AgsPluginBrowser" link="AgsPluginBrowser.html"/>
+      <sub name="ags_plugin_browser_callbacks" link="ags-ags-plugin-browser-callbacks.html"/>
       <sub name="AgsPluginPreferences" link="AgsPluginPreferences.html"/>
       <sub name="AgsPluginPreferences" link="AgsPreferences.html"/>
       <sub name="ags_preferences_callbacks" link="ags-ags-preferences-callbacks.html"/>
@@ -266,12 +315,15 @@
       <sub name="AgsServerPreferences" link="AgsServerPreferences.html"/>
       <sub name="AgsWindow" link="AgsWindow.html"/>
       <sub name="ags_window_callbacks" link="ags-ags-window-callbacks.html"/>
+      <sub name="AgsXorgApplicationContext" link="AgsXorgApplicationContext.html"/>
       <sub name="GSequencer files - Reading/Writing data from disk" link="gsequencer-file.html">
         <sub name="ags_gui_file_xml" link="ags-ags-gui-file-xml.html"/>
       </sub>
       <sub name="GSequencer tasks - Data exchanged between Audio and GUI" link="gsequencer-task.html">
+        <sub name="AgsBlinkCellPatternCursor" link="AgsBlinkCellPatternCursor.html"/>
         <sub name="AgsChangeIndicator" link="AgsChangeIndicator.html"/>
         <sub name="AgsChangeTact" link="AgsChangeTact.html"/>
+        <sub name="AgsDisplayTact" link="AgsDisplayTact.html"/>
         <sub name="AgsScrollOnPlay" link="AgsScrollOnPlay.html"/>
         <sub name="AgsToggleLed" link="AgsToggleLed.html"/>
         <sub name="AgsTogglePatternBit" link="AgsTogglePatternBit.html"/>
@@ -319,6 +371,7 @@
         <sub name="ags_drum_output_pad_callbacks" link="ags-ags-drum-output-pad-callbacks.html"/>
         <sub name="AgsMatrix" link="AgsMatrix.html"/>
         <sub name="ags_matrix_callbacks" link="ags-ags-matrix-callbacks.html"/>
+        <sub name="AgsCellPattern" link="AgsCellPattern.html"/>
         <sub name="AgsSynth" link="AgsSynth.html"/>
         <sub name="ags_synth_callbacks" link="ags-ags-synth-callbacks.html"/>
         <sub name="AgsSynthInputLine" link="AgsSynthInputLine.html"/>
@@ -327,24 +380,55 @@
         <sub name="ags_oscillator_callbacks" link="ags-ags-oscillator-callbacks.html"/>
         <sub name="AgsFFPlayer" link="AgsFFPlayer.html"/>
         <sub name="ags_ffplayer_callbacks" link="ags-ags-ffplayer-callbacks.html"/>
+        <sub name="AgsFFPlayerBridge" link="AgsFFPlayerBridge.html"/>
+        <sub name="AgsFFPlayerBulkInput" link="AgsFFPlayerBulkInput.html"/>
+        <sub name="AgsFFPlayerBulkInput" link="AgsFFPlayerBulkInput.html"/>
+        <sub name="AgsFFPlayerInputLine" link="AgsFFPlayerInputLine.html"/>
+        <sub name="ags_ffplayer_input_line_callbacks" link="ags-ags-ffplayer-input-line-callbacks.html"/>
+        <sub name="AgsFFPlayerInputPad" link="AgsFFPlayerInputPad.html"/>
+        <sub name="AgsFFPlayer" link="AgsFFPlayer.html"/>
+        <sub name="ags_ffplayer_callbacks" link="ags-ags-ffplayer-callbacks.html"/>
+        <sub name="AgsLadspaBridge" link="AgsLadspaBridge.html"/>
+        <sub name="AgsLv2Bridge" link="AgsLv2Bridge.html"/>
       </sub>
     </sub>
     <sub name="XML-RPC - planned server" link="xml-rpc.html">
       <sub name="AgsRegistry" link="AgsRegistry.html"/>
       <sub name="AgsRemoteTask" link="AgsRemoteTask.html"/>
       <sub name="AgsServer" link="AgsServer.html"/>
+      <sub name="AgsServerApplicationContext" link="AgsServerApplicationContext.html"/>
+      <sub name="AgsServiceProvider" link="AgsServiceProvider.html"/>
     </sub>
     <sub name="API Index" link="api-index-full.html"/>
     <sub name="Index of deprecated API" link="deprecated-api-index.html"/>
   </chapters>
   <functions>
-    <keyword type="function" name="ags_combo_box_text_remove_all ()" link="ags-AgsComboBoxText.html#ags-combo-box-text-remove-all" since="0.4"/>
-    <keyword type="function" name="ags_container_add_all ()" link="ags-ags-container.html#ags-container-add-all"/>
-    <keyword type="function" name="ags_list_free_and_free_link ()" link="ags-ags-list.html#ags-list-free-and-free-link"/>
-    <keyword type="function" name="ags_list_free_and_unref_link ()" link="ags-ags-list.html#ags-list-free-and-unref-link"/>
-    <keyword type="function" name="ags_list_duplicate_list ()" link="ags-ags-list.html#ags-list-duplicate-list"/>
+    <keyword type="function" name="ags_complex_alloc ()" link="AgsComplex.html#ags-complex-alloc" since="0.7.1"/>
+    <keyword type="function" name="ags_complex_copy ()" link="AgsComplex.html#ags-complex-copy" since="0.7.1"/>
+    <keyword type="function" name="ags_complex_free ()" link="AgsComplex.html#ags-complex-free" since="0.7.1"/>
+    <keyword type="function" name="ags_complex_get ()" link="AgsComplex.html#ags-complex-get" since="0.7.1"/>
+    <keyword type="function" name="ags_complex_set ()" link="AgsComplex.html#ags-complex-set"/>
     <keyword type="function" name="ags_parameter_grow ()" link="ags-AgsParameter.html#ags-parameter-grow" since="0.3"/>
+    <keyword type="function" name="ags_turtle_parser_context_alloc ()" link="AgsTurtle.html#ags-turtle-parser-context-alloc"/>
+    <keyword type="function" name="ags_turtle_parser_context_free ()" link="AgsTurtle.html#ags-turtle-parser-context-free"/>
+    <keyword type="function" name="ags_turtle_find_xpath ()" link="AgsTurtle.html#ags-turtle-find-xpath" since="0.4.3"/>
+    <keyword type="function" name="ags_turtle_load ()" link="AgsTurtle.html#ags-turtle-load" since="0.4.3"/>
+    <keyword type="function" name="ags_turtle_new ()" link="AgsTurtle.html#ags-turtle-new" since="0.4.3"/>
+    <keyword type="macro" name="AGS_TURTLE_DEFAULT_ENCODING" link="AgsTurtle.html#AGS-TURTLE-DEFAULT-ENCODING:CAPS"/>
+    <keyword type="macro" name="AGS_TURTLE_STRING_LITERAL_QUOTE" link="AgsTurtle.html#AGS-TURTLE-STRING-LITERAL-QUOTE:CAPS"/>
+    <keyword type="macro" name="AGS_TURTLE_STRING_LITERAL_SINGLE_QUOTE" link="AgsTurtle.html#AGS-TURTLE-STRING-LITERAL-SINGLE-QUOTE:CAPS"/>
+    <keyword type="macro" name="AGS_TURTLE_STRING_LITERAL_LONG_QUOTE" link="AgsTurtle.html#AGS-TURTLE-STRING-LITERAL-LONG-QUOTE:CAPS"/>
+    <keyword type="macro" name="AGS_TURTLE_STRING_LITERAL_LONG_SINGLE_QUOTE" link="AgsTurtle.html#AGS-TURTLE-STRING-LITERAL-LONG-SINGLE-QUOTE:CAPS"/>
+    <keyword type="enum" name="enum AgsTurtleFlags" link="AgsTurtle.html#AgsTurtleFlags"/>
+    <keyword type="struct" name="struct AgsTurtleParserContext" link="AgsTurtle.html#AgsTurtleParserContext"/>
+    <keyword type="property" name="The “filename” property" link="AgsTurtle.html#AgsTurtle--filename"/>
     <keyword type="function" name="ags_id_generator_create_uuid ()" link="ags-AgsIdGenerator.html#ags-id-generator-create-uuid" since="0.4"/>
+    <keyword type="function" name="ags_async_queue_set_run_mutex ()" link="AgsAsyncQueue.html#ags-async-queue-set-run-mutex" since="0.7.0"/>
+    <keyword type="function" name="ags_async_queue_get_run_mutex ()" link="AgsAsyncQueue.html#ags-async-queue-get-run-mutex" since="0.7.0"/>
+    <keyword type="function" name="ags_async_queue_set_run_cond ()" link="AgsAsyncQueue.html#ags-async-queue-set-run-cond" since="0.7.0"/>
+    <keyword type="function" name="ags_async_queue_get_run_cond ()" link="AgsAsyncQueue.html#ags-async-queue-get-run-cond" since="0.7.0"/>
+    <keyword type="function" name="ags_async_queue_set_run ()" link="AgsAsyncQueue.html#ags-async-queue-set-run"/>
+    <keyword type="function" name="ags_async_queue_is_run ()" link="AgsAsyncQueue.html#ags-async-queue-is-run" since="0.7.0"/>
     <keyword type="function" name="ags_applicable_set_update ()" link="AgsApplicable.html#ags-applicable-set-update" since="0.3"/>
     <keyword type="function" name="ags_applicable_apply ()" link="AgsApplicable.html#ags-applicable-apply" since="0.3"/>
     <keyword type="function" name="ags_applicable_reset ()" link="AgsApplicable.html#ags-applicable-reset" since="0.3"/>
@@ -355,8 +439,8 @@
     <keyword type="function" name="ags_application_context_remove_sibling ()" link="AgsApplicationContext.html#ags-application-context-remove-sibling"/>
     <keyword type="function" name="ags_application_context_find_default ()" link="AgsApplicationContext.html#ags-application-context-find-default"/>
     <keyword type="function" name="ags_application_context_find_main_loop ()" link="AgsApplicationContext.html#ags-application-context-find-main-loop"/>
-    <keyword type="function" name="ags_application_context_quit ()" link="AgsApplicationContext.html#ags-application-context-quit"/>
-    <keyword type="function" name="ags_application_context_get_instance ()" link="AgsApplicationContext.html#ags-application-context-get-instance"/>
+    <keyword type="function" name="ags_application_context_quit ()" link="AgsApplicationContext.html#ags-application-context-quit" since="0.7.0"/>
+    <keyword type="function" name="ags_application_context_get_instance ()" link="AgsApplicationContext.html#ags-application-context-get-instance" since="0.7.0"/>
     <keyword type="function" name="ags_application_context_new ()" link="AgsApplicationContext.html#ags-application-context-new"/>
     <keyword type="macro" name="AGS_VERSION" link="AgsApplicationContext.html#AGS-VERSION:CAPS"/>
     <keyword type="macro" name="AGS_BUILD_ID" link="AgsApplicationContext.html#AGS-BUILD-ID:CAPS"/>
@@ -367,18 +451,23 @@
     <keyword type="property" name="The “main-loop” property" link="AgsApplicationContext.html#AgsApplicationContext--main-loop"/>
     <keyword type="signal" name="The “load-config” signal" link="AgsApplicationContext.html#AgsApplicationContext-load-config"/>
     <keyword type="signal" name="The “register-types” signal" link="AgsApplicationContext.html#AgsApplicationContext-register-types"/>
+    <keyword type="function" name="ags_concurrent_tree_get_lock ()" link="AgsConcurrentTree.html#ags-concurrent-tree-get-lock" since="0.6"/>
+    <keyword type="function" name="ags_concurrent_tree_get_parent_lock ()" link="AgsConcurrentTree.html#ags-concurrent-tree-get-parent-lock" since="0.6"/>
+    <keyword type="function" name="ags_concurrent_tree_lock_context ()" link="AgsConcurrentTree.html#ags-concurrent-tree-lock-context" since="0.6.0"/>
+    <keyword type="function" name="ags_concurrent_tree_unlock_context ()" link="AgsConcurrentTree.html#ags-concurrent-tree-unlock-context" since="0.6.0"/>
     <keyword type="function" name="ags_config_load_defaults ()" link="AgsConfig.html#ags-config-load-defaults" since="0.4.2"/>
     <keyword type="function" name="ags_config_load_from_file ()" link="AgsConfig.html#ags-config-load-from-file" since="0.4.2"/>
     <keyword type="function" name="ags_config_set_value ()" link="AgsConfig.html#ags-config-set-value" since="0.4.2"/>
     <keyword type="function" name="ags_config_get_value ()" link="AgsConfig.html#ags-config-get-value" since="0.4.2"/>
     <keyword type="function" name="ags_config_save ()" link="AgsConfig.html#ags-config-save" since="0.4.2"/>
-    <keyword type="function" name="ags_config_get_instance ()" link="AgsConfig.html#ags-config-get-instance"/>
+    <keyword type="function" name="ags_config_get_instance ()" link="AgsConfig.html#ags-config-get-instance" since="0.7.0"/>
     <keyword type="function" name="ags_config_new ()" link="AgsConfig.html#ags-config-new" since="0.4.2"/>
     <keyword type="macro" name="AGS_CONFIG_DEFAULT_VERSION" link="AgsConfig.html#AGS-CONFIG-DEFAULT-VERSION:CAPS"/>
     <keyword type="macro" name="AGS_CONFIG_DEFAULT_BUILD_ID" link="AgsConfig.html#AGS-CONFIG-DEFAULT-BUILD-ID:CAPS"/>
     <keyword type="macro" name="AGS_CONFIG_GENERIC" link="AgsConfig.html#AGS-CONFIG-GENERIC:CAPS"/>
     <keyword type="macro" name="AGS_CONFIG_THREAD" link="AgsConfig.html#AGS-CONFIG-THREAD:CAPS"/>
     <keyword type="macro" name="AGS_CONFIG_SOUNDCARD" link="AgsConfig.html#AGS-CONFIG-SOUNDCARD:CAPS"/>
+    <keyword type="macro" name="AGS_CONFIG_SEQUENCER" link="AgsConfig.html#AGS-CONFIG-SEQUENCER:CAPS"/>
     <keyword type="macro" name="AGS_CONFIG_RECALL" link="AgsConfig.html#AGS-CONFIG-RECALL:CAPS"/>
     <keyword type="property" name="The “application-context” property" link="AgsConfig.html#AgsConfig--application-context"/>
     <keyword type="signal" name="The “get-value” signal" link="AgsConfig.html#AgsConfig-get-value"/>
@@ -389,18 +478,33 @@
     <keyword type="function" name="ags_connectable_disconnect ()" link="AgsConnectable.html#ags-connectable-disconnect" since="0.4.0"/>
     <keyword type="function" name="ags_countable_get_notation_counter ()" link="AgsCountable.html#ags-countable-get-notation-counter" since="0.4"/>
     <keyword type="function" name="ags_countable_get_sequencer_counter ()" link="AgsCountable.html#ags-countable-get-sequencer-counter" since="0.4"/>
+    <keyword type="function" name="ags_distributed_manager_set_url ()" link="AgsDistributedManager.html#ags-distributed-manager-set-url" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_get_url ()" link="AgsDistributedManager.html#ags-distributed-manager-get-url" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_set_ports ()" link="AgsDistributedManager.html#ags-distributed-manager-set-ports" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_get_ports ()" link="AgsDistributedManager.html#ags-distributed-manager-get-ports" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_set_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-set-soundcard" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_get_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-get-soundcard" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_set_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-set-sequencer" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_get_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-get-sequencer" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_register_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-register-soundcard" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_unregister_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-unregister-soundcard" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_register_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-register-sequencer" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_unregister_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-unregister-sequencer" since="0.7.0"/>
     <keyword type="function" name="ags_dynamic_connectable_connect ()" link="AgsDynamicConnectable.html#ags-dynamic-connectable-connect"/>
     <keyword type="function" name="ags_dynamic_connectable_disconnect ()" link="AgsDynamicConnectable.html#ags-dynamic-connectable-disconnect"/>
     <keyword type="function" name="ags_main_loop_get_tree_lock ()" link="AgsMainLoop.html#ags-main-loop-get-tree-lock" since="0.6"/>
-    <keyword type="function" name="ags_main_loop_set_application_context ()" link="AgsMainLoop.html#ags-main-loop-set-application-context"/>
-    <keyword type="function" name="ags_main_loop_get_application_context ()" link="AgsMainLoop.html#ags-main-loop-get-application-context"/>
+    <keyword type="function" name="ags_main_loop_set_application_context ()" link="AgsMainLoop.html#ags-main-loop-set-application-context" since="0.6.0"/>
+    <keyword type="function" name="ags_main_loop_get_application_context ()" link="AgsMainLoop.html#ags-main-loop-get-application-context" since="0.6.0"/>
     <keyword type="function" name="ags_main_loop_set_tic ()" link="AgsMainLoop.html#ags-main-loop-set-tic" since="0.4"/>
     <keyword type="function" name="ags_main_loop_get_tic ()" link="AgsMainLoop.html#ags-main-loop-get-tic" since="0.4"/>
     <keyword type="function" name="ags_main_loop_set_last_sync ()" link="AgsMainLoop.html#ags-main-loop-set-last-sync" since="0.4"/>
     <keyword type="function" name="ags_main_loop_get_last_sync ()" link="AgsMainLoop.html#ags-main-loop-get-last-sync" since="0.4"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__UINT_BOOLEAN ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--UINT-BOOLEAN"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__UINT_UINT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--UINT-UINT"/>
+    <keyword type="function" name="g_cclosure_user_marshal_VOID__UINT_UINT_BOOLEAN ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--UINT-UINT-BOOLEAN"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__UINT_UINT_UINT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--UINT-UINT-UINT"/>
+    <keyword type="function" name="g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--UINT-UINT-UINT-UINT-UINT"/>
+    <keyword type="function" name="g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--UINT-UINT-UINT-UINT-UINT-UINT-UINT"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--UINT-DOUBLE-UINT"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__UINT_INT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--UINT-INT"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__UINT_DOUBLE ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--UINT-DOUBLE"/>
@@ -409,8 +513,11 @@
     <keyword type="function" name="g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--DOUBLE-DOUBLE"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__ULONG_UINT_UINT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--ULONG-UINT-UINT"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__STRING_UINT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--STRING-UINT"/>
+    <keyword type="function" name="g_cclosure_user_marshal_VOID__STRING_UINT_DOUBLE ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--STRING-UINT-DOUBLE"/>
+    <keyword type="function" name="g_cclosure_user_marshal_VOID__STRING_UINT_STRING_DOUBLE ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--STRING-UINT-STRING-DOUBLE"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__STRING_POINTER ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--STRING-POINTER"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__STRING_STRING_STRING ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--STRING-STRING-STRING"/>
+    <keyword type="function" name="g_cclosure_user_marshal_VOID__POINTER_UINT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--POINTER-UINT"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__OBJECT_UINT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--OBJECT-UINT"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__OBJECT_OBJECT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--OBJECT-OBJECT"/>
     <keyword type="function" name="g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-VOID--OBJECT-OBJECT-OBJECT-INT-BOOLEAN"/>
@@ -428,7 +535,7 @@
     <keyword type="function" name="g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-OBJECT--STRING-STRING-STRING"/>
     <keyword type="function" name="g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-OBJECT--OBJECT-POINTER-POINTER"/>
     <keyword type="function" name="g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT ()" link="ags-ags-marshal.html#g-cclosure-user-marshal-OBJECT--OBJECT-OBJECT"/>
-    <keyword type="function" name="ags_mutable_set_muted ()" link="AgsMutable.html#ags-mutable-set-muted"/>
+    <keyword type="function" name="ags_mutable_set_muted ()" link="AgsMutable.html#ags-mutable-set-muted" since="0.4"/>
     <keyword type="function" name="ags_packable_pack ()" link="AgsPackable.html#ags-packable-pack" since="0.4"/>
     <keyword type="function" name="ags_packable_unpack ()" link="AgsPackable.html#ags-packable-unpack" since="0.4"/>
     <keyword type="function" name="ags_portlet_get_port ()" link="AgsPortlet.html#ags-portlet-get-port" since="0.4"/>
@@ -436,10 +543,100 @@
     <keyword type="function" name="ags_portlet_list_safe_properties ()" link="AgsPortlet.html#ags-portlet-list-safe-properties" since="0.4"/>
     <keyword type="function" name="ags_portlet_safe_get_property ()" link="AgsPortlet.html#ags-portlet-safe-get-property" since="0.4"/>
     <keyword type="function" name="ags_portlet_safe_set_property ()" link="AgsPortlet.html#ags-portlet-safe-set-property" since="0.4"/>
-    <keyword type="function" name="ags_runnable_run ()" link="ags-AgsRunnable.html#ags-runnable-run"/>
-    <keyword type="function" name="ags_runnable_stop ()" link="ags-AgsRunnable.html#ags-runnable-stop"/>
-    <keyword type="function" name="ags_seekable_seek ()" link="AgsSeekable.html#ags-seekable-seek"/>
+    <keyword type="function" name="ags_seekable_seek ()" link="AgsSeekable.html#ags-seekable-seek" since="0.5.0"/>
     <keyword type="signal" name="The “seek” signal" link="AgsSeekable.html#AgsSeekable-seek"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_SAMPLERATE" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-SAMPLERATE:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_BUFFER_SIZE" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-BUFFER-SIZE:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_BPM" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-BPM:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_DELAY_FACTOR" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-DELAY-FACTOR:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_JIFFIE" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-JIFFIE:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_TACT" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-TACT:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_TACT_JIFFIE" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-TACT-JIFFIE:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_TACTRATE" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-TACTRATE:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_SCALE" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-SCALE:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_DELAY" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-DELAY:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_PERIOD" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-PERIOD:CAPS"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_LATENCY" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-LATENCY:CAPS"/>
+    <keyword type="function" name="ags_sequencer_set_application_context ()" link="AgsSequencer.html#ags-sequencer-set-application-context" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_get_application_context ()" link="AgsSequencer.html#ags-sequencer-get-application-context" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_set_application_mutex ()" link="AgsSequencer.html#ags-sequencer-set-application-mutex" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_get_application_mutex ()" link="AgsSequencer.html#ags-sequencer-get-application-mutex" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_set_device ()" link="AgsSequencer.html#ags-sequencer-set-device" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_get_device ()" link="AgsSequencer.html#ags-sequencer-get-device" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_list_cards ()" link="AgsSequencer.html#ags-sequencer-list-cards" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_is_starting ()" link="AgsSequencer.html#ags-sequencer-is-starting" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_is_playing ()" link="AgsSequencer.html#ags-sequencer-is-playing" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_is_recording ()" link="AgsSequencer.html#ags-sequencer-is-recording" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_play_init ()" link="AgsSequencer.html#ags-sequencer-play-init"/>
+    <keyword type="function" name="ags_sequencer_play ()" link="AgsSequencer.html#ags-sequencer-play" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_record_init ()" link="AgsSequencer.html#ags-sequencer-record-init"/>
+    <keyword type="function" name="ags_sequencer_record ()" link="AgsSequencer.html#ags-sequencer-record" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_stop ()" link="AgsSequencer.html#ags-sequencer-stop" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_tic ()" link="AgsSequencer.html#ags-sequencer-tic" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_offset_changed ()" link="AgsSequencer.html#ags-sequencer-offset-changed"/>
+    <keyword type="function" name="ags_sequencer_get_buffer ()" link="AgsSequencer.html#ags-sequencer-get-buffer" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_get_next_buffer ()" link="AgsSequencer.html#ags-sequencer-get-next-buffer" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_set_bpm ()" link="AgsSequencer.html#ags-sequencer-set-bpm" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_get_bpm ()" link="AgsSequencer.html#ags-sequencer-get-bpm" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_set_delay_factor ()" link="AgsSequencer.html#ags-sequencer-set-delay-factor" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_get_delay_factor ()" link="AgsSequencer.html#ags-sequencer-get-delay-factor" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_set_note_offset ()" link="AgsSequencer.html#ags-sequencer-set-note-offset" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_get_note_offset ()" link="AgsSequencer.html#ags-sequencer-get-note-offset" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_set_audio ()" link="AgsSequencer.html#ags-sequencer-set-audio" since="0.7.0"/>
+    <keyword type="function" name="ags_sequencer_get_audio ()" link="AgsSequencer.html#ags-sequencer-get-audio" since="0.7.0"/>
+    <keyword type="macro" name="AGS_SEQUENCER_DEFAULT_DEVICE" link="AgsSequencer.html#AGS-SEQUENCER-DEFAULT-DEVICE:CAPS"/>
+    <keyword type="signal" name="The “offset-changed” signal" link="AgsSequencer.html#AgsSequencer-offset-changed"/>
+    <keyword type="signal" name="The “tic” signal" link="AgsSequencer.html#AgsSequencer-tic"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-DSP-CHANNELS:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-PCM-CHANNELS:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_SAMPLERATE" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-SAMPLERATE:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_FORMAT" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-FORMAT:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-BUFFER-SIZE:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_BPM" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-BPM:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-DELAY-FACTOR:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_JIFFIE" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-JIFFIE:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_TACT" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-TACT:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_TACT_JIFFIE" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-TACT-JIFFIE:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_TACTRATE" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-TACTRATE:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_SCALE" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-SCALE:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_DELAY" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-DELAY:CAPS"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_PERIOD" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-PERIOD:CAPS"/>
+    <keyword type="function" name="ags_soundcard_set_application_context ()" link="AgsSoundcard.html#ags-soundcard-set-application-context" since="0.4.3"/>
+    <keyword type="function" name="ags_soundcard_get_application_context ()" link="AgsSoundcard.html#ags-soundcard-get-application-context" since="0.4.3"/>
+    <keyword type="function" name="ags_soundcard_set_application_mutex ()" link="AgsSoundcard.html#ags-soundcard-set-application-mutex" since="0.7.0"/>
+    <keyword type="function" name="ags_soundcard_get_application_mutex ()" link="AgsSoundcard.html#ags-soundcard-get-application-mutex" since="0.7.0"/>
+    <keyword type="function" name="ags_soundcard_set_device ()" link="AgsSoundcard.html#ags-soundcard-set-device" since="0.4.3"/>
+    <keyword type="function" name="ags_soundcard_get_device ()" link="AgsSoundcard.html#ags-soundcard-get-device" since="0.4.3"/>
+    <keyword type="function" name="ags_soundcard_set_presets ()" link="AgsSoundcard.html#ags-soundcard-set-presets" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_get_presets ()" link="AgsSoundcard.html#ags-soundcard-get-presets" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_list_cards ()" link="AgsSoundcard.html#ags-soundcard-list-cards" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_pcm_info ()" link="AgsSoundcard.html#ags-soundcard-pcm-info" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_is_starting ()" link="AgsSoundcard.html#ags-soundcard-is-starting" since="0.4.3"/>
+    <keyword type="function" name="ags_soundcard_is_playing ()" link="AgsSoundcard.html#ags-soundcard-is-playing" since="0.4.3"/>
+    <keyword type="function" name="ags_soundcard_is_recording ()" link="AgsSoundcard.html#ags-soundcard-is-recording" since="0.7.0"/>
+    <keyword type="function" name="ags_soundcard_play_init ()" link="AgsSoundcard.html#ags-soundcard-play-init"/>
+    <keyword type="function" name="ags_soundcard_play ()" link="AgsSoundcard.html#ags-soundcard-play" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_record_init ()" link="AgsSoundcard.html#ags-soundcard-record-init"/>
+    <keyword type="function" name="ags_soundcard_record ()" link="AgsSoundcard.html#ags-soundcard-record" since="0.7.0"/>
+    <keyword type="function" name="ags_soundcard_stop ()" link="AgsSoundcard.html#ags-soundcard-stop" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_tic ()" link="AgsSoundcard.html#ags-soundcard-tic" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_offset_changed ()" link="AgsSoundcard.html#ags-soundcard-offset-changed"/>
+    <keyword type="function" name="ags_soundcard_get_buffer ()" link="AgsSoundcard.html#ags-soundcard-get-buffer" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_get_next_buffer ()" link="AgsSoundcard.html#ags-soundcard-get-next-buffer" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_set_bpm ()" link="AgsSoundcard.html#ags-soundcard-set-bpm" since="0.4.3"/>
+    <keyword type="function" name="ags_soundcard_get_bpm ()" link="AgsSoundcard.html#ags-soundcard-get-bpm" since="0.4.3"/>
+    <keyword type="function" name="ags_soundcard_set_delay_factor ()" link="AgsSoundcard.html#ags-soundcard-set-delay-factor" since="0.7.0"/>
+    <keyword type="function" name="ags_soundcard_get_delay_factor ()" link="AgsSoundcard.html#ags-soundcard-get-delay-factor" since="0.7.0"/>
+    <keyword type="function" name="ags_soundcard_get_delay ()" link="AgsSoundcard.html#ags-soundcard-get-delay" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_get_attack ()" link="AgsSoundcard.html#ags-soundcard-get-attack" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_set_note_offset ()" link="AgsSoundcard.html#ags-soundcard-set-note-offset" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_get_note_offset ()" link="AgsSoundcard.html#ags-soundcard-get-note-offset" since="0.4.2"/>
+    <keyword type="function" name="ags_soundcard_set_audio ()" link="AgsSoundcard.html#ags-soundcard-set-audio" since="0.4.3"/>
+    <keyword type="function" name="ags_soundcard_get_audio ()" link="AgsSoundcard.html#ags-soundcard-get-audio" since="0.4.3"/>
+    <keyword type="macro" name="AGS_SOUNDCARD_DEFAULT_DEVICE" link="AgsSoundcard.html#AGS-SOUNDCARD-DEFAULT-DEVICE:CAPS"/>
+    <keyword type="enum" name="enum AgsSoundcardResolutionMode" link="AgsSoundcard.html#AgsSoundcardResolutionMode"/>
+    <keyword type="signal" name="The “offset-changed” signal" link="AgsSoundcard.html#AgsSoundcard-offset-changed"/>
+    <keyword type="signal" name="The “tic” signal" link="AgsSoundcard.html#AgsSoundcard-tic"/>
     <keyword type="function" name="ags_tactable_change_sequencer_duration ()" link="AgsTactable.html#ags-tactable-change-sequencer-duration"/>
     <keyword type="function" name="ags_tactable_change_notation_duration ()" link="AgsTactable.html#ags-tactable-change-notation-duration"/>
     <keyword type="function" name="ags_tactable_change_tact ()" link="AgsTactable.html#ags-tactable-change-tact"/>
@@ -448,37 +645,24 @@
     <keyword type="signal" name="The “change-notation-duration” signal" link="AgsTactable.html#AgsTactable-change-notation-duration"/>
     <keyword type="signal" name="The “change-sequencer-duration” signal" link="AgsTactable.html#AgsTactable-change-sequencer-duration"/>
     <keyword type="signal" name="The “change-tact” signal" link="AgsTactable.html#AgsTactable-change-tact"/>
-    <keyword type="function" name="ags_stackable_push ()" link="ags-AgsStackable.html#ags-stackable-push"/>
-    <keyword type="function" name="ags_stackable_pop ()" link="ags-AgsStackable.html#ags-stackable-pop"/>
-    <keyword type="function" name="ags_persistable_read ()" link="ags-AgsPersistable.html#ags-persistable-read"/>
-    <keyword type="function" name="ags_persistable_read_link ()" link="ags-AgsPersistable.html#ags-persistable-read-link"/>
-    <keyword type="function" name="ags_persistable_write ()" link="ags-AgsPersistable.html#ags-persistable-write"/>
-    <keyword type="function" name="ags_persistable_write_link ()" link="ags-AgsPersistable.html#ags-persistable-write-link"/>
-    <keyword type="function" name="ags_plugin_get_name ()" link="AgsPlugin.html#ags-plugin-get-name"/>
-    <keyword type="function" name="ags_plugin_set_name ()" link="AgsPlugin.html#ags-plugin-set-name"/>
-    <keyword type="function" name="ags_plugin_get_version ()" link="AgsPlugin.html#ags-plugin-get-version"/>
-    <keyword type="function" name="ags_plugin_set_version ()" link="AgsPlugin.html#ags-plugin-set-version"/>
-    <keyword type="function" name="ags_plugin_get_build_id ()" link="AgsPlugin.html#ags-plugin-get-build-id"/>
-    <keyword type="function" name="ags_plugin_set_build_id ()" link="AgsPlugin.html#ags-plugin-set-build-id"/>
-    <keyword type="function" name="ags_plugin_get_xml_type ()" link="AgsPlugin.html#ags-plugin-get-xml-type"/>
-    <keyword type="function" name="ags_plugin_set_xml_type ()" link="AgsPlugin.html#ags-plugin-set-xml-type"/>
-    <keyword type="function" name="ags_plugin_get_ports ()" link="AgsPlugin.html#ags-plugin-get-ports"/>
-    <keyword type="function" name="ags_plugin_set_ports ()" link="AgsPlugin.html#ags-plugin-set-ports"/>
-    <keyword type="function" name="ags_plugin_read ()" link="AgsPlugin.html#ags-plugin-read"/>
-    <keyword type="function" name="ags_plugin_write ()" link="AgsPlugin.html#ags-plugin-write"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_LED" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-LED:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_VINDICATOR" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-VINDICATOR:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_HINDICATOR" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-HINDICATOR:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_LABEL" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-LABEL:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_WAVEFORM" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-WAVEFORM:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_BUTTON" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-BUTTON:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_TOGGLE_BUTTON" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-TOGGLE-BUTTON:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_CHECK_BUTTON" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-CHECK-BUTTON:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_SPIN_BUTTON" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-SPIN-BUTTON:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_VSCALE" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-VSCALE:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_HSCALE" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-HSCALE:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_DIAL" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-DIAL:CAPS"/>
-    <keyword type="macro" name="AGS_FILE_DYNAMIC_WIDGET_CARTESIAN" link="ags-ags-file-stock.html#AGS-FILE-DYNAMIC-WIDGET-CARTESIAN:CAPS"/>
+    <keyword type="function" name="ags_tree_iterator_set_inverse_mode ()" link="AgsTreeIterator.html#ags-tree-iterator-set-inverse-mode"/>
+    <keyword type="function" name="ags_tree_iterator_is_inverse_mode ()" link="AgsTreeIterator.html#ags-tree-iterator-is-inverse-mode"/>
+    <keyword type="function" name="ags_tree_iterator_iterate ()" link="AgsTreeIterator.html#ags-tree-iterator-iterate"/>
+    <keyword type="function" name="ags_tree_iterator_iterate_nested ()" link="AgsTreeIterator.html#ags-tree-iterator-iterate-nested"/>
+    <keyword type="function" name="ags_tree_iterator_safe_iterate ()" link="AgsTreeIterator.html#ags-tree-iterator-safe-iterate"/>
+    <keyword type="function" name="ags_tree_iterator_safe_iterate_nested ()" link="AgsTreeIterator.html#ags-tree-iterator-safe-iterate-nested"/>
+    <keyword type="function" name="ags_plugin_get_name ()" link="AgsPlugin.html#ags-plugin-get-name" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_set_name ()" link="AgsPlugin.html#ags-plugin-set-name" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_get_version ()" link="AgsPlugin.html#ags-plugin-get-version" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_set_version ()" link="AgsPlugin.html#ags-plugin-set-version" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_get_build_id ()" link="AgsPlugin.html#ags-plugin-get-build-id" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_set_build_id ()" link="AgsPlugin.html#ags-plugin-set-build-id" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_get_xml_type ()" link="AgsPlugin.html#ags-plugin-get-xml-type" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_set_xml_type ()" link="AgsPlugin.html#ags-plugin-set-xml-type" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_get_ports ()" link="AgsPlugin.html#ags-plugin-get-ports" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_set_ports ()" link="AgsPlugin.html#ags-plugin-set-ports" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_read ()" link="AgsPlugin.html#ags-plugin-read" since="0.4.0"/>
+    <keyword type="function" name="ags_plugin_write ()" link="AgsPlugin.html#ags-plugin-write" since="0.4.0"/>
     <keyword type="macro" name="AGS_FILE_DEFAULT_VERSION" link="ags-ags-file-stock.html#AGS-FILE-DEFAULT-VERSION:CAPS"/>
     <keyword type="macro" name="AGS_FILE_EFFECTS_DEFAULT_VERSION" link="ags-ags-file-stock.html#AGS-FILE-EFFECTS-DEFAULT-VERSION:CAPS"/>
     <keyword type="macro" name="AGS_CLIPBOARD_DEFAULT_VERSION" link="ags-ags-file-stock.html#AGS-CLIPBOARD-DEFAULT-VERSION:CAPS"/>
@@ -508,22 +692,22 @@
     <keyword type="macro" name="AGS_FILE_FLAGS_PROP" link="ags-ags-file-stock.html#AGS-FILE-FLAGS-PROP:CAPS"/>
     <keyword type="macro" name="AGS_FILE_CONTEXT_PROP" link="ags-ags-file-stock.html#AGS-FILE-CONTEXT-PROP:CAPS"/>
     <keyword type="macro" name="AGS_FILE_CHECKSUM_LENGTH" link="AgsFile.html#AGS-FILE-CHECKSUM-LENGTH:CAPS"/>
-    <keyword type="function" name="ags_file_str2md5 ()" link="AgsFile.html#ags-file-str2md5"/>
-    <keyword type="function" name="ags_file_add_id_ref ()" link="AgsFile.html#ags-file-add-id-ref"/>
+    <keyword type="function" name="ags_file_str2md5 ()" link="AgsFile.html#ags-file-str2md5" since="0.4.0"/>
+    <keyword type="function" name="ags_file_add_id_ref ()" link="AgsFile.html#ags-file-add-id-ref" since="0.4.0"/>
     <keyword type="function" name="ags_file_find_id_ref_by_node ()" link="AgsFile.html#ags-file-find-id-ref-by-node"/>
-    <keyword type="function" name="ags_file_find_id_ref_by_xpath ()" link="AgsFile.html#ags-file-find-id-ref-by-xpath"/>
-    <keyword type="function" name="ags_file_find_id_ref_by_reference ()" link="AgsFile.html#ags-file-find-id-ref-by-reference"/>
-    <keyword type="function" name="ags_file_add_lookup ()" link="AgsFile.html#ags-file-add-lookup"/>
-    <keyword type="function" name="ags_file_add_launch ()" link="AgsFile.html#ags-file-add-launch"/>
-    <keyword type="function" name="ags_file_open ()" link="AgsFile.html#ags-file-open"/>
+    <keyword type="function" name="ags_file_find_id_ref_by_xpath ()" link="AgsFile.html#ags-file-find-id-ref-by-xpath" since="0.4.0"/>
+    <keyword type="function" name="ags_file_find_id_ref_by_reference ()" link="AgsFile.html#ags-file-find-id-ref-by-reference" since="0.4.0"/>
+    <keyword type="function" name="ags_file_add_lookup ()" link="AgsFile.html#ags-file-add-lookup" since="0.4.0"/>
+    <keyword type="function" name="ags_file_add_launch ()" link="AgsFile.html#ags-file-add-launch" since="0.4.0"/>
+    <keyword type="function" name="ags_file_open ()" link="AgsFile.html#ags-file-open" since="0.4.0"/>
     <keyword type="function" name="ags_file_open_from_data ()" link="AgsFile.html#ags-file-open-from-data"/>
     <keyword type="function" name="ags_file_rw_open ()" link="AgsFile.html#ags-file-rw-open"/>
-    <keyword type="function" name="ags_file_open_filename ()" link="AgsFile.html#ags-file-open-filename"/>
+    <keyword type="function" name="ags_file_open_filename ()" link="AgsFile.html#ags-file-open-filename" since="0.4.0"/>
     <keyword type="function" name="ags_file_close ()" link="AgsFile.html#ags-file-close"/>
-    <keyword type="function" name="ags_file_write ()" link="AgsFile.html#ags-file-write"/>
+    <keyword type="function" name="ags_file_write ()" link="AgsFile.html#ags-file-write" since="0.4.0"/>
     <keyword type="function" name="ags_file_write_concurrent ()" link="AgsFile.html#ags-file-write-concurrent"/>
-    <keyword type="function" name="ags_file_write_resolve ()" link="AgsFile.html#ags-file-write-resolve"/>
-    <keyword type="function" name="ags_file_read ()" link="AgsFile.html#ags-file-read"/>
+    <keyword type="function" name="ags_file_write_resolve ()" link="AgsFile.html#ags-file-write-resolve" since="0.4.0"/>
+    <keyword type="function" name="ags_file_read ()" link="AgsFile.html#ags-file-read" since="0.4.0"/>
     <keyword type="function" name="ags_file_read_resolve ()" link="AgsFile.html#ags-file-read-resolve"/>
     <keyword type="function" name="ags_file_read_start ()" link="AgsFile.html#ags-file-read-start"/>
     <keyword type="function" name="ags_file_read_application_context ()" link="AgsFile.html#ags-file-read-application-context"/>
@@ -592,6 +776,18 @@
     <keyword type="function" name="ags_file_write_file_link ()" link="ags-ags-file-util.html#ags-file-write-file-link"/>
     <keyword type="function" name="ags_file_read_file_link_list ()" link="ags-ags-file-util.html#ags-file-read-file-link-list"/>
     <keyword type="function" name="ags_file_write_file_link_list ()" link="ags-ags-file-util.html#ags-file-write-file-link-list"/>
+    <keyword type="macro" name="AGS_DSSI_PLUGIN()" link="AgsDssiManager.html#AGS-DSSI-PLUGIN:CAPS"/>
+    <keyword type="function" name="ags_dssi_plugin_alloc ()" link="AgsDssiManager.html#ags-dssi-plugin-alloc" since="0.7.0"/>
+    <keyword type="function" name="ags_dssi_plugin_free ()" link="AgsDssiManager.html#ags-dssi-plugin-free" since="0.7.0"/>
+    <keyword type="function" name="ags_dssi_manager_get_filenames ()" link="AgsDssiManager.html#ags-dssi-manager-get-filenames" since="0.7.0"/>
+    <keyword type="function" name="ags_dssi_manager_find_dssi_plugin ()" link="AgsDssiManager.html#ags-dssi-manager-find-dssi-plugin" since="0.7.0"/>
+    <keyword type="function" name="ags_dssi_manager_load_file ()" link="AgsDssiManager.html#ags-dssi-manager-load-file" since="0.7.0"/>
+    <keyword type="function" name="ags_dssi_manager_load_default_directory ()" link="AgsDssiManager.html#ags-dssi-manager-load-default-directory" since="0.7.0"/>
+    <keyword type="function" name="ags_dssi_manager_effect_index ()" link="AgsDssiManager.html#ags-dssi-manager-effect-index" since="0.7.0"/>
+    <keyword type="function" name="ags_dssi_manager_get_instance ()" link="AgsDssiManager.html#ags-dssi-manager-get-instance" since="0.7.0"/>
+    <keyword type="function" name="ags_dssi_manager_new ()" link="AgsDssiManager.html#ags-dssi-manager-new" since="0.7.0"/>
+    <keyword type="enum" name="enum AgsDssiPluginFlags" link="AgsDssiManager.html#AgsDssiPluginFlags"/>
+    <keyword type="struct" name="struct AgsDssiPlugin" link="AgsDssiManager.html#AgsDssiPlugin"/>
     <keyword type="macro" name="AGS_LADSPA_PLUGIN()" link="AgsLadspaManager.html#AGS-LADSPA-PLUGIN:CAPS"/>
     <keyword type="function" name="ags_ladspa_plugin_alloc ()" link="AgsLadspaManager.html#ags-ladspa-plugin-alloc" since="0.4"/>
     <keyword type="function" name="ags_ladspa_plugin_free ()" link="AgsLadspaManager.html#ags-ladspa-plugin-free" since="0.4"/>
@@ -599,10 +795,37 @@
     <keyword type="function" name="ags_ladspa_manager_find_ladspa_plugin ()" link="AgsLadspaManager.html#ags-ladspa-manager-find-ladspa-plugin" since="0.4"/>
     <keyword type="function" name="ags_ladspa_manager_load_file ()" link="AgsLadspaManager.html#ags-ladspa-manager-load-file" since="0.4"/>
     <keyword type="function" name="ags_ladspa_manager_load_default_directory ()" link="AgsLadspaManager.html#ags-ladspa-manager-load-default-directory" since="0.4"/>
+    <keyword type="function" name="ags_ladspa_manager_effect_index ()" link="AgsLadspaManager.html#ags-ladspa-manager-effect-index" since="0.4"/>
     <keyword type="function" name="ags_ladspa_manager_get_instance ()" link="AgsLadspaManager.html#ags-ladspa-manager-get-instance" since="0.4"/>
     <keyword type="function" name="ags_ladspa_manager_new ()" link="AgsLadspaManager.html#ags-ladspa-manager-new" since="0.4"/>
     <keyword type="enum" name="enum AgsLadspaPluginFlags" link="AgsLadspaManager.html#AgsLadspaPluginFlags"/>
     <keyword type="struct" name="struct AgsLadspaPlugin" link="AgsLadspaManager.html#AgsLadspaPlugin"/>
+    <keyword type="macro" name="AGS_LV2_PLUGIN()" link="AgsLv2Manager.html#AGS-LV2-PLUGIN:CAPS"/>
+    <keyword type="function" name="ags_lv2_plugin_alloc ()" link="AgsLv2Manager.html#ags-lv2-plugin-alloc" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2_plugin_free ()" link="AgsLv2Manager.html#ags-lv2-plugin-free" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2_manager_get_filenames ()" link="AgsLv2Manager.html#ags-lv2-manager-get-filenames" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2_manager_find_lv2_plugin ()" link="AgsLv2Manager.html#ags-lv2-manager-find-lv2-plugin" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2_manager_load_file ()" link="AgsLv2Manager.html#ags-lv2-manager-load-file" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2_manager_load_default_directory ()" link="AgsLv2Manager.html#ags-lv2-manager-load-default-directory" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2_manager_uri_index ()" link="AgsLv2Manager.html#ags-lv2-manager-uri-index" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2_manager_get_instance ()" link="AgsLv2Manager.html#ags-lv2-manager-get-instance" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2_manager_new ()" link="AgsLv2Manager.html#ags-lv2-manager-new" since="0.4.3"/>
+    <keyword type="macro" name="AGS_LV2_MANAGER_DEFAULT_LOCALE" link="AgsLv2Manager.html#AGS-LV2-MANAGER-DEFAULT-LOCALE:CAPS"/>
+    <keyword type="enum" name="enum AgsLv2PluginFlags" link="AgsLv2Manager.html#AgsLv2PluginFlags"/>
+    <keyword type="struct" name="struct AgsLv2Plugin" link="AgsLv2Manager.html#AgsLv2Plugin"/>
+    <keyword type="property" name="The “locale” property" link="AgsLv2Manager.html#AgsLv2Manager--locale"/>
+    <keyword type="macro" name="AGS_LV2UI_PLUGIN()" link="AgsLv2uiManager.html#AGS-LV2UI-PLUGIN:CAPS"/>
+    <keyword type="function" name="ags_lv2ui_plugin_alloc ()" link="AgsLv2uiManager.html#ags-lv2ui-plugin-alloc" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2ui_plugin_free ()" link="AgsLv2uiManager.html#ags-lv2ui-plugin-free" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2ui_manager_get_filenames ()" link="AgsLv2uiManager.html#ags-lv2ui-manager-get-filenames" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2ui_manager_find_lv2ui_plugin ()" link="AgsLv2uiManager.html#ags-lv2ui-manager-find-lv2ui-plugin" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2ui_manager_load_file ()" link="AgsLv2uiManager.html#ags-lv2ui-manager-load-file" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2ui_manager_load_default_directory ()" link="AgsLv2uiManager.html#ags-lv2ui-manager-load-default-directory" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2ui_manager_uri_index ()" link="AgsLv2uiManager.html#ags-lv2ui-manager-uri-index" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2ui_manager_get_instance ()" link="AgsLv2uiManager.html#ags-lv2ui-manager-get-instance" since="0.4.3"/>
+    <keyword type="function" name="ags_lv2ui_manager_new ()" link="AgsLv2uiManager.html#ags-lv2ui-manager-new" since="0.4.3"/>
+    <keyword type="enum" name="enum AgsLv2uiPluginFlags" link="AgsLv2uiManager.html#AgsLv2uiPluginFlags"/>
+    <keyword type="struct" name="struct AgsLv2uiPlugin" link="AgsLv2uiManager.html#AgsLv2uiPlugin"/>
     <keyword type="function" name="ags_plugin_factory_read_file ()" link="AgsPluginFactory.html#ags-plugin-factory-read-file"/>
     <keyword type="function" name="ags_plugin_factory_list_by_name ()" link="AgsPluginFactory.html#ags-plugin-factory-list-by-name"/>
     <keyword type="function" name="ags_plugin_factory_add ()" link="AgsPluginFactory.html#ags-plugin-factory-add"/>
@@ -614,6 +837,7 @@
     <keyword type="signal" name="The “add” signal" link="AgsPluginFactory.html#AgsPluginFactory-add"/>
     <keyword type="signal" name="The “create” signal" link="AgsPluginFactory.html#AgsPluginFactory-create"/>
     <keyword type="macro" name="AGS_PLUGIN_NAME_VOLUME" link="ags-ags-plugin-stock.html#AGS-PLUGIN-NAME-VOLUME:CAPS"/>
+    <keyword type="function" name="ags_container_add_all ()" link="ags-AgsContainer.html#ags-container-add-all"/>
     <keyword type="macro" name="AGS_DIAL_DEFAULT_PRECISION" link="AgsDial.html#AGS-DIAL-DEFAULT-PRECISION:CAPS"/>
     <keyword type="function" name="ags_dial_value_changed ()" link="AgsDial.html#ags-dial-value-changed"/>
     <keyword type="function" name="ags_dial_new ()" link="AgsDial.html#ags-dial-new" since="0.4"/>
@@ -661,16 +885,18 @@
     <keyword type="function" name="ags_concurrency_provider_get_main_loop ()" link="AgsConcurrencyProvider.html#ags-concurrency-provider-get-main-loop" since="0.7.0"/>
     <keyword type="function" name="ags_concurrency_provider_get_task_thread ()" link="AgsConcurrencyProvider.html#ags-concurrency-provider-get-task-thread" since="0.7.0"/>
     <keyword type="function" name="ags_concurrency_provider_get_thread_pool ()" link="AgsConcurrencyProvider.html#ags-concurrency-provider-get-thread-pool" since="0.7.0"/>
+    <keyword type="function" name="ags_history_new ()" link="AgsHistory.html#ags-history-new"/>
+    <keyword type="struct" name="AgsHistoryAppend" link="AgsHistory.html#AgsHistoryAppend"/>
     <keyword type="function" name="ags_iterator_thread_children_ready ()" link="AgsIteratorThread.html#ags-iterator-thread-children-ready"/>
     <keyword type="function" name="ags_iterator_thread_new ()" link="AgsIteratorThread.html#ags-iterator-thread-new"/>
     <keyword type="enum" name="enum AgsIteratorThreadFlags" link="AgsIteratorThread.html#AgsIteratorThreadFlags"/>
     <keyword type="signal" name="The “children-ready” signal" link="AgsIteratorThread.html#AgsIteratorThread-children-ready"/>
-    <keyword type="function" name="ags_mutex_manager_get_application_mutex ()" link="AgsMutexManager.html#ags-mutex-manager-get-application-mutex"/>
-    <keyword type="function" name="ags_mutex_manager_insert ()" link="AgsMutexManager.html#ags-mutex-manager-insert"/>
-    <keyword type="function" name="ags_mutex_manager_remove ()" link="AgsMutexManager.html#ags-mutex-manager-remove"/>
-    <keyword type="function" name="ags_mutex_manager_lookup ()" link="AgsMutexManager.html#ags-mutex-manager-lookup"/>
-    <keyword type="function" name="ags_mutex_manager_get_instance ()" link="AgsMutexManager.html#ags-mutex-manager-get-instance"/>
-    <keyword type="function" name="ags_mutex_manager_new ()" link="AgsMutexManager.html#ags-mutex-manager-new"/>
+    <keyword type="function" name="ags_mutex_manager_get_application_mutex ()" link="AgsMutexManager.html#ags-mutex-manager-get-application-mutex" since="0.7.0"/>
+    <keyword type="function" name="ags_mutex_manager_insert ()" link="AgsMutexManager.html#ags-mutex-manager-insert" since="0.5.0"/>
+    <keyword type="function" name="ags_mutex_manager_remove ()" link="AgsMutexManager.html#ags-mutex-manager-remove" since="0.5.0"/>
+    <keyword type="function" name="ags_mutex_manager_lookup ()" link="AgsMutexManager.html#ags-mutex-manager-lookup" since="0.5.0"/>
+    <keyword type="function" name="ags_mutex_manager_get_instance ()" link="AgsMutexManager.html#ags-mutex-manager-get-instance" since="0.5.0"/>
+    <keyword type="function" name="ags_mutex_manager_new ()" link="AgsMutexManager.html#ags-mutex-manager-new" since="0.5.0"/>
     <keyword type="macro" name="AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE" link="AgsReturnableThread.html#AGS-RETURNABLE-THREAD-DEFAULT-JIFFIE:CAPS"/>
     <keyword type="function" name="AgsReturnableThreadCallback ()" link="AgsReturnableThread.html#AgsReturnableThreadCallback"/>
     <keyword type="function" name="ags_returnable_thread_safe_run ()" link="AgsReturnableThread.html#ags-returnable-thread-safe-run"/>
@@ -694,7 +920,7 @@
     <keyword type="macro" name="AGS_TIMESTAMP_THREAD_DEFAULT_TIC" link="AgsTimestampThread.html#AGS-TIMESTAMP-THREAD-DEFAULT-TIC:CAPS"/>
     <keyword type="function" name="ags_timestamp_thread_new ()" link="AgsTimestampThread.html#ags-timestamp-thread-new"/>
     <keyword type="macro" name="AGS_ACCOUNTING_TABLE()" link="AgsThread.html#AGS-ACCOUNTING-TABLE:CAPS"/>
-    <keyword type="macro" name="MSEC_PER_SEC" link="AgsThread.html#MSEC-PER-SEC:CAPS"/>
+    <keyword type="macro" name="USEC_PER_SEC" link="AgsThread.html#USEC-PER-SEC:CAPS"/>
     <keyword type="macro" name="NSEC_PER_SEC" link="AgsThread.html#NSEC-PER-SEC:CAPS"/>
     <keyword type="macro" name="AGS_PRIORITY" link="AgsThread.html#AGS-PRIORITY:CAPS"/>
     <keyword type="macro" name="AGS_RT_PRIORITY" link="AgsThread.html#AGS-RT-PRIORITY:CAPS"/>
@@ -746,6 +972,7 @@
     <keyword type="function" name="ags_thread_stop ()" link="AgsThread.html#ags-thread-stop" since="0.4"/>
     <keyword type="function" name="ags_thread_hangcheck ()" link="AgsThread.html#ags-thread-hangcheck" since="0.4"/>
     <keyword type="function" name="ags_thread_find_type ()" link="AgsThread.html#ags-thread-find-type"/>
+    <keyword type="function" name="ags_thread_self ()" link="AgsThread.html#ags-thread-self"/>
     <keyword type="function" name="ags_thread_new ()" link="AgsThread.html#ags-thread-new" since="0.4"/>
     <keyword type="macro" name="AGS_THREAD_RESUME_SIG" link="AgsThread.html#AGS-THREAD-RESUME-SIG:CAPS"/>
     <keyword type="macro" name="AGS_THREAD_SUSPEND_SIG" link="AgsThread.html#AGS-THREAD-SUSPEND-SIG:CAPS"/>
@@ -765,6 +992,12 @@
     <keyword type="signal" name="The “stop” signal" link="AgsThread.html#AgsThread-stop"/>
     <keyword type="signal" name="The “suspend” signal" link="AgsThread.html#AgsThread-suspend"/>
     <keyword type="signal" name="The “timelock” signal" link="AgsThread.html#AgsThread-timelock"/>
+    <keyword type="function" name="ags_thread_application_context_new ()" link="AgsThreadApplicationContext.html#ags-thread-application-context-new"/>
+    <keyword type="macro" name="AGS_THREAD_BUILD_ID" link="AgsThreadApplicationContext.html#AGS-THREAD-BUILD-ID:CAPS"/>
+    <keyword type="macro" name="AGS_THREAD_DEFAULT_VERSION" link="AgsThreadApplicationContext.html#AGS-THREAD-DEFAULT-VERSION:CAPS"/>
+    <keyword type="enum" name="enum AgsThreadApplicationContextFlags" link="AgsThreadApplicationContext.html#AgsThreadApplicationContextFlags"/>
+    <keyword type="property" name="The “autosave-thread” property" link="AgsThreadApplicationContext.html#AgsThreadApplicationContext--autosave-thread"/>
+    <keyword type="property" name="The “thread-pool” property" link="AgsThreadApplicationContext.html#AgsThreadApplicationContext--thread-pool"/>
     <keyword type="function" name="ags_thread_pool_pull ()" link="AgsThreadPool.html#ags-thread-pool-pull" since="0.4"/>
     <keyword type="function" name="ags_thread_pool_start ()" link="AgsThreadPool.html#ags-thread-pool-start" since="0.4"/>
     <keyword type="function" name="ags_thread_pool_new ()" link="AgsThreadPool.html#ags-thread-pool-new" since="0.4"/>
@@ -815,6 +1048,8 @@
     <keyword type="function" name="ags_audio_recursive_play_init ()" link="AgsAudio.html#ags-audio-recursive-play-init" since="0.4"/>
     <keyword type="function" name="ags_audio_new ()" link="AgsAudio.html#ags-audio-new" since="0.3"/>
     <keyword type="enum" name="enum AgsAudioFlags" link="AgsAudio.html#AgsAudioFlags"/>
+    <keyword type="property" name="The “midi-file” property" link="AgsAudio.html#AgsAudio--midi-file"/>
+    <keyword type="property" name="The “sequencer” property" link="AgsAudio.html#AgsAudio--sequencer"/>
     <keyword type="property" name="The “soundcard” property" link="AgsAudio.html#AgsAudio--soundcard"/>
     <keyword type="signal" name="The “done” signal" link="AgsAudio.html#AgsAudio-done"/>
     <keyword type="signal" name="The “init-run” signal" link="AgsAudio.html#AgsAudio-init-run"/>
@@ -912,6 +1147,8 @@
     <keyword type="function" name="ags_channel_remove_recall_container ()" link="AgsChannel.html#ags-channel-remove-recall-container" since="0.4"/>
     <keyword type="function" name="ags_channel_remove_recall ()" link="AgsChannel.html#ags-channel-remove-recall" since="0.4"/>
     <keyword type="function" name="ags_channel_add_recall ()" link="AgsChannel.html#ags-channel-add-recall" since="0.4"/>
+    <keyword type="function" name="ags_channel_add_effect ()" link="AgsChannel.html#ags-channel-add-effect"/>
+    <keyword type="function" name="ags_channel_remove_effect ()" link="AgsChannel.html#ags-channel-remove-effect"/>
     <keyword type="function" name="ags_channel_safe_resize_audio_signal ()" link="AgsChannel.html#ags-channel-safe-resize-audio-signal" since="0.4"/>
     <keyword type="function" name="ags_channel_duplicate_recall ()" link="AgsChannel.html#ags-channel-duplicate-recall" since="0.3"/>
     <keyword type="function" name="ags_channel_resolve_recall ()" link="AgsChannel.html#ags-channel-resolve-recall" since="0.4"/>
@@ -936,12 +1173,14 @@
     <keyword type="enum" name="enum AgsChannelError" link="AgsChannel.html#AgsChannelError"/>
     <keyword type="property" name="The “audio” property" link="AgsChannel.html#AgsChannel--audio"/>
     <keyword type="property" name="The “soundcard” property" link="AgsChannel.html#AgsChannel--soundcard"/>
+    <keyword type="signal" name="The “add-effect” signal" link="AgsChannel.html#AgsChannel-add-effect"/>
     <keyword type="signal" name="The “done” signal" link="AgsChannel.html#AgsChannel-done"/>
     <keyword type="signal" name="The “recycling-changed” signal" link="AgsChannel.html#AgsChannel-recycling-changed"/>
+    <keyword type="signal" name="The “remove-effect” signal" link="AgsChannel.html#AgsChannel-remove-effect"/>
     <keyword type="macro" name="AGS_DEVOUT_ERROR" link="AgsDevout.html#AGS-DEVOUT-ERROR:CAPS"/>
     <keyword type="function" name="ags_devout_error_quark ()" link="AgsDevout.html#ags-devout-error-quark"/>
-    <keyword type="function" name="ags_devout_adjust_delay_and_attack ()" link="AgsDevout.html#ags-devout-adjust-delay-and-attack"/>
-    <keyword type="function" name="ags_devout_realloc_buffer ()" link="AgsDevout.html#ags-devout-realloc-buffer"/>
+    <keyword type="function" name="ags_devout_adjust_delay_and_attack ()" link="AgsDevout.html#ags-devout-adjust-delay-and-attack" since="0.7.0"/>
+    <keyword type="function" name="ags_devout_realloc_buffer ()" link="AgsDevout.html#ags-devout-realloc-buffer" since="0.7.0"/>
     <keyword type="function" name="ags_devout_new ()" link="AgsDevout.html#ags-devout-new" since="0.3"/>
     <keyword type="enum" name="enum AgsDevoutFlags" link="AgsDevout.html#AgsDevoutFlags"/>
     <keyword type="enum" name="enum AgsDevoutError" link="AgsDevout.html#AgsDevoutError"/>
@@ -959,6 +1198,19 @@
     <keyword type="property" name="The “samplerate” property" link="AgsDevout.html#AgsDevout--samplerate"/>
     <keyword type="function" name="ags_input_new ()" link="AgsInput.html#ags-input-new" since="0.3"/>
     <keyword type="property" name="The “file-link” property" link="AgsInput.html#AgsInput--file-link"/>
+    <keyword type="macro" name="AGS_MIDIIN_DEFAULT_BUFFER_SIZE" link="AgsMidiin.html#AGS-MIDIIN-DEFAULT-BUFFER-SIZE:CAPS"/>
+    <keyword type="macro" name="AGS_MIDIIN_ERROR" link="AgsMidiin.html#AGS-MIDIIN-ERROR:CAPS"/>
+    <keyword type="function" name="ags_midiin_error_quark ()" link="AgsMidiin.html#ags-midiin-error-quark"/>
+    <keyword type="function" name="ags_midiin_new ()" link="AgsMidiin.html#ags-midiin-new" since="0.7.0"/>
+    <keyword type="enum" name="enum AgsMidiinFlags" link="AgsMidiin.html#AgsMidiinFlags"/>
+    <keyword type="enum" name="enum AgsMidiinError" link="AgsMidiin.html#AgsMidiinError"/>
+    <keyword type="property" name="The “application-context” property" link="AgsMidiin.html#AgsMidiin--application-context"/>
+    <keyword type="property" name="The “application-mutex” property" link="AgsMidiin.html#AgsMidiin--application-mutex"/>
+    <keyword type="property" name="The “attack” property" link="AgsMidiin.html#AgsMidiin--attack"/>
+    <keyword type="property" name="The “bpm” property" link="AgsMidiin.html#AgsMidiin--bpm"/>
+    <keyword type="property" name="The “buffer” property" link="AgsMidiin.html#AgsMidiin--buffer"/>
+    <keyword type="property" name="The “delay-factor” property" link="AgsMidiin.html#AgsMidiin--delay-factor"/>
+    <keyword type="property" name="The “device” property" link="AgsMidiin.html#AgsMidiin--device"/>
     <keyword type="macro" name="AGS_NOTATION_DEFAULT_BPM" link="AgsNotation.html#AGS-NOTATION-DEFAULT-BPM:CAPS"/>
     <keyword type="macro" name="AGS_NOTATION_TICS_PER_BEAT" link="AgsNotation.html#AGS-NOTATION-TICS-PER-BEAT:CAPS"/>
     <keyword type="macro" name="AGS_NOTATION_MINIMUM_NOTE_LENGTH" link="AgsNotation.html#AGS-NOTATION-MINIMUM-NOTE-LENGTH:CAPS"/>
@@ -991,6 +1243,10 @@
     <keyword type="property" name="The “current-notes” property" link="AgsNotation.html#AgsNotation--current-notes"/>
     <keyword type="property" name="The “next-notes” property" link="AgsNotation.html#AgsNotation--next-notes"/>
     <keyword type="property" name="The “port” property" link="AgsNotation.html#AgsNotation--port"/>
+    <keyword type="function" name="ags_note_to_raw_midi ()" link="AgsNote.html#ags-note-to-raw-midi"/>
+    <keyword type="function" name="ags_note_to_seq_event ()" link="AgsNote.html#ags-note-to-seq-event" since="0.7.1"/>
+    <keyword type="function" name="ags_note_from_raw_midi ()" link="AgsNote.html#ags-note-from-raw-midi" since="0.7.1"/>
+    <keyword type="function" name="ags_note_from_seq_event ()" link="AgsNote.html#ags-note-from-seq-event" since="0.7.1"/>
     <keyword type="function" name="ags_note_duplicate ()" link="AgsNote.html#ags-note-duplicate" since="0.4"/>
     <keyword type="function" name="ags_note_new ()" link="AgsNote.html#ags-note-new" since="0.4"/>
     <keyword type="enum" name="enum AgsNoteFlags" link="AgsNote.html#AgsNoteFlags"/>
@@ -1054,16 +1310,17 @@
     <keyword type="function" name="ags_recall_remove_child ()" link="AgsRecall.html#ags-recall-remove-child" since="0.4"/>
     <keyword type="function" name="ags_recall_add_child ()" link="AgsRecall.html#ags-recall-add-child" since="0.4"/>
     <keyword type="function" name="ags_recall_get_children ()" link="AgsRecall.html#ags-recall-get-children" since="0.4"/>
-    <keyword type="function" name="ags_recall_set_effect ()" link="AgsRecall.html#ags-recall-set-effect"/>
-    <keyword type="function" name="ags_recall_find_by_effect ()" link="AgsRecall.html#ags-recall-find-by-effect" since="0.4"/>
+    <keyword type="function" name="ags_recall_get_by_effect ()" link="AgsRecall.html#ags-recall-get-by-effect" since="0.4.3"/>
+    <keyword type="function" name="ags_recall_find_by_effect ()" link="AgsRecall.html#ags-recall-find-by-effect" since="0.4.3"/>
     <keyword type="function" name="ags_recall_find_type ()" link="AgsRecall.html#ags-recall-find-type" since="0.4"/>
     <keyword type="function" name="ags_recall_find_template ()" link="AgsRecall.html#ags-recall-find-template" since="0.4"/>
-    <keyword type="function" name="ags_recall_template_find_type ()" link="AgsRecall.html#ags-recall-template-find-type" since="0.4"/>
-    <keyword type="function" name="ags_recall_find_type_with_recycling_container ()" link="AgsRecall.html#ags-recall-find-type-with-recycling-container"/>
-    <keyword type="function" name="ags_recall_find_recycling_container ()" link="AgsRecall.html#ags-recall-find-recycling-container"/>
+    <keyword type="function" name="ags_recall_template_find_type ()" link="AgsRecall.html#ags-recall-template-find-type" since="0.4.3"/>
+    <keyword type="function" name="ags_recall_template_find_all_type ()" link="AgsRecall.html#ags-recall-template-find-all-type"/>
+    <keyword type="function" name="ags_recall_find_type_with_recycling_context ()" link="AgsRecall.html#ags-recall-find-type-with-recycling-context" since="0.4"/>
+    <keyword type="function" name="ags_recall_find_recycling_context ()" link="AgsRecall.html#ags-recall-find-recycling-context" since="0.4"/>
     <keyword type="function" name="ags_recall_find_provider ()" link="AgsRecall.html#ags-recall-find-provider" since="0.4"/>
     <keyword type="function" name="ags_recall_template_find_provider ()" link="AgsRecall.html#ags-recall-template-find-provider"/>
-    <keyword type="function" name="ags_recall_find_provider_with_recycling_container ()" link="AgsRecall.html#ags-recall-find-provider-with-recycling-container"/>
+    <keyword type="function" name="ags_recall_find_provider_with_recycling_context ()" link="AgsRecall.html#ags-recall-find-provider-with-recycling-context" since="0.4"/>
     <keyword type="function" name="ags_recall_run_init ()" link="AgsRecall.html#ags-recall-run-init"/>
     <keyword type="function" name="ags_recall_handler_alloc ()" link="AgsRecall.html#ags-recall-handler-alloc" since="0.4"/>
     <keyword type="function" name="ags_recall_add_handler ()" link="AgsRecall.html#ags-recall-add-handler" since="0.4"/>
@@ -1152,10 +1409,19 @@
     <keyword type="enum" name="enum AgsRecallIDFlags" link="AgsRecallID.html#AgsRecallIDFlags"/>
     <keyword type="property" name="The “recycling” property" link="AgsRecallID.html#AgsRecallID--recycling"/>
     <keyword type="property" name="The “recycling-context” property" link="AgsRecallID.html#AgsRecallID--recycling-context"/>
+    <keyword type="function" name="ags_recall_dssi_load_ports ()" link="AgsRecallDssi.html#ags-recall-dssi-load-ports" since="0.7.0"/>
+    <keyword type="function" name="ags_recall_dssi_short_to_float ()" link="AgsRecallDssi.html#ags-recall-dssi-short-to-float" since="0.7.0"/>
+    <keyword type="function" name="ags_recall_dssi_float_to_short ()" link="AgsRecallDssi.html#ags-recall-dssi-float-to-short" since="0.7.0"/>
+    <keyword type="function" name="ags_recall_dssi_find ()" link="AgsRecallDssi.html#ags-recall-dssi-find" since="0.7.0"/>
+    <keyword type="function" name="ags_recall_dssi_new ()" link="AgsRecallDssi.html#ags-recall-dssi-new" since="0.7.0"/>
+    <keyword type="property" name="The “effect” property" link="AgsRecallDssi.html#AgsRecallDssi--effect"/>
+    <keyword type="property" name="The “filename” property" link="AgsRecallDssi.html#AgsRecallDssi--filename"/>
+    <keyword type="property" name="The “index” property" link="AgsRecallDssi.html#AgsRecallDssi--index"/>
+    <keyword type="function" name="ags_recall_dssi_run_new ()" link="AgsRecallDssiRun.html#ags-recall-dssi-run-new" since="0.7.0"/>
     <keyword type="function" name="ags_recall_ladspa_load_ports ()" link="AgsRecallLadspa.html#ags-recall-ladspa-load-ports" since="0.4"/>
     <keyword type="function" name="ags_recall_ladspa_short_to_float ()" link="AgsRecallLadspa.html#ags-recall-ladspa-short-to-float" since="0.4"/>
     <keyword type="function" name="ags_recall_ladspa_float_to_short ()" link="AgsRecallLadspa.html#ags-recall-ladspa-float-to-short" since="0.4"/>
-    <keyword type="function" name="ags_recall_ladpsa_find ()" link="AgsRecallLadspa.html#ags-recall-ladpsa-find" since="0.4"/>
+    <keyword type="function" name="ags_recall_ladspa_find ()" link="AgsRecallLadspa.html#ags-recall-ladspa-find" since="0.4"/>
     <keyword type="function" name="ags_recall_ladspa_new ()" link="AgsRecallLadspa.html#ags-recall-ladspa-new" since="0.4"/>
     <keyword type="property" name="The “effect” property" link="AgsRecallLadspa.html#AgsRecallLadspa--effect"/>
     <keyword type="property" name="The “filename” property" link="AgsRecallLadspa.html#AgsRecallLadspa--filename"/>
@@ -1264,6 +1530,207 @@
     <keyword type="macro" name="AGS_SOUNDCARD_THREAD_DEFAULT_JIFFIE" link="AgsSoundcardThread.html#AGS-SOUNDCARD-THREAD-DEFAULT-JIFFIE:CAPS"/>
     <keyword type="function" name="ags_soundcard_thread_new ()" link="AgsSoundcardThread.html#ags-soundcard-thread-new" since="0.4"/>
     <keyword type="property" name="The “soundcard” property" link="AgsSoundcardThread.html#AgsSoundcardThread--soundcard"/>
+    <keyword type="function" name="ags_jack_server_new ()" link="AgsJackServer.html#ags-jack-server-new" since="0.7.1"/>
+    <keyword type="enum" name="enum AgsJackServerFlags" link="AgsJackServer.html#AgsJackServerFlags"/>
+    <keyword type="property" name="The “application-context” property" link="AgsJackServer.html#AgsJackServer--application-context"/>
+    <keyword type="property" name="The “url” property" link="AgsJackServer.html#AgsJackServer--url"/>
+    <keyword type="function" name="ags_jack_client_open ()" link="AgsJackClient.html#ags-jack-client-open"/>
+    <keyword type="function" name="ags_jack_client_new ()" link="AgsJackClient.html#ags-jack-client-new" since="0.7.1"/>
+    <keyword type="enum" name="enum AgsJackClientFlags" link="AgsJackClient.html#AgsJackClientFlags"/>
+    <keyword type="property" name="The “jack-server” property" link="AgsJackClient.html#AgsJackClient--jack-server"/>
+    <keyword type="function" name="ags_jack_port_register ()" link="AgsJackPort.html#ags-jack-port-register" since="0.7.1"/>
+    <keyword type="function" name="ags_jack_port_new ()" link="AgsJackPort.html#ags-jack-port-new" since="0.7.1"/>
+    <keyword type="enum" name="enum AgsJackPortFlags" link="AgsJackPort.html#AgsJackPortFlags"/>
+    <keyword type="property" name="The “jack-client” property" link="AgsJackPort.html#AgsJackPort--jack-client"/>
+    <keyword type="macro" name="AGS_JACK_DEVOUT_ERROR" link="AgsJackDevout.html#AGS-JACK-DEVOUT-ERROR:CAPS"/>
+    <keyword type="function" name="ags_jack_devout_error_quark ()" link="AgsJackDevout.html#ags-jack-devout-error-quark"/>
+    <keyword type="function" name="ags_jack_devout_adjust_delay_and_attack ()" link="AgsJackDevout.html#ags-jack-devout-adjust-delay-and-attack" since="0.7.0"/>
+    <keyword type="function" name="ags_jack_devout_realloc_buffer ()" link="AgsJackDevout.html#ags-jack-devout-realloc-buffer" since="0.7.0"/>
+    <keyword type="function" name="ags_jack_devout_new ()" link="AgsJackDevout.html#ags-jack-devout-new" since="0.3"/>
+    <keyword type="enum" name="enum AgsJackDevoutFlags" link="AgsJackDevout.html#AgsJackDevoutFlags"/>
+    <keyword type="enum" name="enum AgsJackDevoutError" link="AgsJackDevout.html#AgsJackDevoutError"/>
+    <keyword type="property" name="The “application-context” property" link="AgsJackDevout.html#AgsJackDevout--application-context"/>
+    <keyword type="property" name="The “application-mutex” property" link="AgsJackDevout.html#AgsJackDevout--application-mutex"/>
+    <keyword type="property" name="The “attack” property" link="AgsJackDevout.html#AgsJackDevout--attack"/>
+    <keyword type="property" name="The “bpm” property" link="AgsJackDevout.html#AgsJackDevout--bpm"/>
+    <keyword type="property" name="The “buffer” property" link="AgsJackDevout.html#AgsJackDevout--buffer"/>
+    <keyword type="property" name="The “buffer-size” property" link="AgsJackDevout.html#AgsJackDevout--buffer-size"/>
+    <keyword type="property" name="The “delay-factor” property" link="AgsJackDevout.html#AgsJackDevout--delay-factor"/>
+    <keyword type="property" name="The “device” property" link="AgsJackDevout.html#AgsJackDevout--device"/>
+    <keyword type="property" name="The “dsp-channels” property" link="AgsJackDevout.html#AgsJackDevout--dsp-channels"/>
+    <keyword type="property" name="The “format” property" link="AgsJackDevout.html#AgsJackDevout--format"/>
+    <keyword type="property" name="The “pcm-channels” property" link="AgsJackDevout.html#AgsJackDevout--pcm-channels"/>
+    <keyword type="property" name="The “samplerate” property" link="AgsJackDevout.html#AgsJackDevout--samplerate"/>
+    <keyword type="macro" name="AGS_JACK_MIDIIN_DEFAULT_BUFFER_SIZE" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-DEFAULT-BUFFER-SIZE:CAPS"/>
+    <keyword type="macro" name="AGS_JACK_MIDIIN_ERROR" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-ERROR:CAPS"/>
+    <keyword type="function" name="ags_jack_midiin_error_quark ()" link="AgsJackMidiin.html#ags-jack-midiin-error-quark"/>
+    <keyword type="function" name="ags_jack_midiin_new ()" link="AgsJackMidiin.html#ags-jack-midiin-new" since="0.7.0"/>
+    <keyword type="enum" name="enum AgsJackMidiinFlags" link="AgsJackMidiin.html#AgsJackMidiinFlags"/>
+    <keyword type="enum" name="enum AgsJackMidiinError" link="AgsJackMidiin.html#AgsJackMidiinError"/>
+    <keyword type="property" name="The “application-context” property" link="AgsJackMidiin.html#AgsJackMidiin--application-context"/>
+    <keyword type="property" name="The “application-mutex” property" link="AgsJackMidiin.html#AgsJackMidiin--application-mutex"/>
+    <keyword type="property" name="The “attack” property" link="AgsJackMidiin.html#AgsJackMidiin--attack"/>
+    <keyword type="property" name="The “bpm” property" link="AgsJackMidiin.html#AgsJackMidiin--bpm"/>
+    <keyword type="property" name="The “buffer” property" link="AgsJackMidiin.html#AgsJackMidiin--buffer"/>
+    <keyword type="property" name="The “delay-factor” property" link="AgsJackMidiin.html#AgsJackMidiin--delay-factor"/>
+    <keyword type="property" name="The “device” property" link="AgsJackMidiin.html#AgsJackMidiin--device"/>
+    <keyword type="macro" name="AGS_MIDI_FILE_TRACK()" link="AgsMidiFile.html#AGS-MIDI-FILE-TRACK:CAPS"/>
+    <keyword type="macro" name="USEC_PER_SEC" link="AgsMidiFile.html#USEC-PER-SEC:CAPS"/>
+    <keyword type="macro" name="AGS_MIDI_FILE_MAX_TEXT_LENGTH" link="AgsMidiFile.html#AGS-MIDI-FILE-MAX-TEXT-LENGTH:CAPS"/>
+    <keyword type="macro" name="AGS_MIDI_FILE_DEFAULT_OFFSET" link="AgsMidiFile.html#AGS-MIDI-FILE-DEFAULT-OFFSET:CAPS"/>
+    <keyword type="macro" name="AGS_MIDI_FILE_DEFAULT_FORMAT" link="AgsMidiFile.html#AGS-MIDI-FILE-DEFAULT-FORMAT:CAPS"/>
+    <keyword type="macro" name="AGS_MIDI_FILE_DEFAULT_BEATS" link="AgsMidiFile.html#AGS-MIDI-FILE-DEFAULT-BEATS:CAPS"/>
+    <keyword type="macro" name="AGS_MIDI_FILE_DEFAULT_FPS" link="AgsMidiFile.html#AGS-MIDI-FILE-DEFAULT-FPS:CAPS"/>
+    <keyword type="macro" name="AGS_MIDI_FILE_DEFAULT_TICKS" link="AgsMidiFile.html#AGS-MIDI-FILE-DEFAULT-TICKS:CAPS"/>
+    <keyword type="function" name="ags_midi_file_open ()" link="AgsMidiFile.html#ags-midi-file-open" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_open_from_data ()" link="AgsMidiFile.html#ags-midi-file-open-from-data" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_rw_open ()" link="AgsMidiFile.html#ags-midi-file-rw-open" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_close ()" link="AgsMidiFile.html#ags-midi-file-close" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_read ()" link="AgsMidiFile.html#ags-midi-file-read" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_write ()" link="AgsMidiFile.html#ags-midi-file-write" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_seek ()" link="AgsMidiFile.html#ags-midi-file-seek" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_flush ()" link="AgsMidiFile.html#ags-midi-file-flush" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_read_gint16 ()" link="AgsMidiFile.html#ags-midi-file-read-gint16" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_read_gint24 ()" link="AgsMidiFile.html#ags-midi-file-read-gint24" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_read_gint32 ()" link="AgsMidiFile.html#ags-midi-file-read-gint32" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_read_varlength ()" link="AgsMidiFile.html#ags-midi-file-read-varlength" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_read_text ()" link="AgsMidiFile.html#ags-midi-file-read-text" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_write_gint16 ()" link="AgsMidiFile.html#ags-midi-file-write-gint16" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_write_gint24 ()" link="AgsMidiFile.html#ags-midi-file-write-gint24" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_write_gint32 ()" link="AgsMidiFile.html#ags-midi-file-write-gint32" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_write_varlength ()" link="AgsMidiFile.html#ags-midi-file-write-varlength"/>
+    <keyword type="function" name="ags_midi_file_write_text ()" link="AgsMidiFile.html#ags-midi-file-write-text" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_read_header ()" link="AgsMidiFile.html#ags-midi-file-read-header" since="0.7.1"/>
+    <keyword type="function" name="ags_midi_file_write_header ()" link="AgsMidiFile.html#ags-midi-file-write-header"/>
+    <keyword type="function" name="ags_midi_file_read_track_data ()" link="AgsMidiFile.html#ags-midi-file-read-track-data"/>
+    <keyword type="function" name="ags_midi_file_write_track_data ()" link="AgsMidiFile.html#ags-midi-file-write-track-data"/>
+    <keyword type="function" name="ags_midi_file_new ()" link="AgsMidiFile.html#ags-midi-file-new"/>
+    <keyword type="macro" name="AGS_MIDI_FILE_MTHD" link="AgsMidiFile.html#AGS-MIDI-FILE-MTHD:CAPS"/>
+    <keyword type="macro" name="AGS_MIDI_FILE_MTRK" link="AgsMidiFile.html#AGS-MIDI-FILE-MTRK:CAPS"/>
+    <keyword type="enum" name="enum AgsMidiFileStatus" link="AgsMidiFile.html#AgsMidiFileStatus"/>
+    <keyword type="enum" name="enum AgsMidiFileFlags" link="AgsMidiFile.html#AgsMidiFileFlags"/>
+    <keyword type="struct" name="struct AgsMidiFileTrack" link="AgsMidiFile.html#AgsMidiFileTrack"/>
+    <keyword type="function" name="ags_midi_file_reader_read_channel_message ()" link="AgsMidiFileReader.html#ags-midi-file-reader-read-channel-message"/>
+    <keyword type="function" name="ags_midi_file_reader_read_status_message ()" link="AgsMidiFileReader.html#ags-midi-file-reader-read-status-message"/>
+    <keyword type="function" name="ags_midi_file_reader_new ()" link="AgsMidiFileReader.html#ags-midi-file-reader-new"/>
+    <keyword type="function" name="ags_midi_file_writer_write_channel_message ()" link="AgsMidiFileWriter.html#ags-midi-file-writer-write-channel-message"/>
+    <keyword type="function" name="ags_midi_file_writer_write_status_message ()" link="AgsMidiFileWriter.html#ags-midi-file-writer-write-status-message"/>
+    <keyword type="function" name="ags_midi_file_writer_new ()" link="AgsMidiFileWriter.html#ags-midi-file-writer-new"/>
+    <keyword type="function" name="ags_midi_builder_midi_putc ()" link="AgsMidiBuilder.html#ags-midi-builder-midi-putc"/>
+    <keyword type="function" name="ags_midi_builder_on_error ()" link="AgsMidiBuilder.html#ags-midi-builder-on-error"/>
+    <keyword type="function" name="ags_midi_builder_append_header ()" link="AgsMidiBuilder.html#ags-midi-builder-append-header"/>
+    <keyword type="function" name="ags_midi_builder_append_track ()" link="AgsMidiBuilder.html#ags-midi-builder-append-track"/>
+    <keyword type="function" name="ags_midi_builder_append_key_on ()" link="AgsMidiBuilder.html#ags-midi-builder-append-key-on"/>
+    <keyword type="function" name="ags_midi_builder_append_key_off ()" link="AgsMidiBuilder.html#ags-midi-builder-append-key-off"/>
+    <keyword type="function" name="ags_midi_builder_append_key_pressure ()" link="AgsMidiBuilder.html#ags-midi-builder-append-key-pressure"/>
+    <keyword type="function" name="ags_midi_builder_append_change_parameter ()" link="AgsMidiBuilder.html#ags-midi-builder-append-change-parameter"/>
+    <keyword type="function" name="ags_midi_builder_append_change_pitch_bend ()" link="AgsMidiBuilder.html#ags-midi-builder-append-change-pitch-bend"/>
+    <keyword type="function" name="ags_midi_builder_append_change_program ()" link="AgsMidiBuilder.html#ags-midi-builder-append-change-program"/>
+    <keyword type="function" name="ags_midi_builder_append_change_pressure ()" link="AgsMidiBuilder.html#ags-midi-builder-append-change-pressure"/>
+    <keyword type="function" name="ags_midi_builder_append_sysex ()" link="AgsMidiBuilder.html#ags-midi-builder-append-sysex"/>
+    <keyword type="function" name="ags_midi_builder_append_quarter_frame ()" link="AgsMidiBuilder.html#ags-midi-builder-append-quarter-frame"/>
+    <keyword type="function" name="ags_midi_builder_append_song_position ()" link="AgsMidiBuilder.html#ags-midi-builder-append-song-position"/>
+    <keyword type="function" name="ags_midi_builder_append_song_select ()" link="AgsMidiBuilder.html#ags-midi-builder-append-song-select"/>
+    <keyword type="function" name="ags_midi_builder_append_tune_request ()" link="AgsMidiBuilder.html#ags-midi-builder-append-tune-request"/>
+    <keyword type="function" name="ags_midi_builder_append_sequence_number ()" link="AgsMidiBuilder.html#ags-midi-builder-append-sequence-number"/>
+    <keyword type="function" name="ags_midi_builder_append_smtpe ()" link="AgsMidiBuilder.html#ags-midi-builder-append-smtpe"/>
+    <keyword type="function" name="ags_midi_builder_append_tempo ()" link="AgsMidiBuilder.html#ags-midi-builder-append-tempo"/>
+    <keyword type="function" name="ags_midi_builder_append_time_signature ()" link="AgsMidiBuilder.html#ags-midi-builder-append-time-signature"/>
+    <keyword type="function" name="ags_midi_builder_append_key_signature ()" link="AgsMidiBuilder.html#ags-midi-builder-append-key-signature"/>
+    <keyword type="function" name="ags_midi_builder_append_sequencer_meta_event ()" link="AgsMidiBuilder.html#ags-midi-builder-append-sequencer-meta-event"/>
+    <keyword type="function" name="ags_midi_builder_append_text_event ()" link="AgsMidiBuilder.html#ags-midi-builder-append-text-event"/>
+    <keyword type="function" name="ags_midi_builder_append_xml_node ()" link="AgsMidiBuilder.html#ags-midi-builder-append-xml-node"/>
+    <keyword type="function" name="ags_midi_builder_from_xml_doc ()" link="AgsMidiBuilder.html#ags-midi-builder-from-xml-doc"/>
+    <keyword type="function" name="ags_midi_builder_build ()" link="AgsMidiBuilder.html#ags-midi-builder-build"/>
+    <keyword type="function" name="ags_midi_builder_new ()" link="AgsMidiBuilder.html#ags-midi-builder-new"/>
+    <keyword type="struct" name="AgsMidiBuilderHeader" link="AgsMidiBuilder.html#AgsMidiBuilderHeader"/>
+    <keyword type="struct" name="AgsMidiBuilderTrack" link="AgsMidiBuilder.html#AgsMidiBuilderTrack"/>
+    <keyword type="property" name="The “file” property" link="AgsMidiBuilder.html#AgsMidiBuilder--file"/>
+    <keyword type="signal" name="The “append-header” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-append-header"/>
+    <keyword type="signal" name="The “append-track” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-append-track"/>
+    <keyword type="signal" name="The “change-channel-pressure” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-change-channel-pressure"/>
+    <keyword type="signal" name="The “change-parameter” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-change-parameter"/>
+    <keyword type="signal" name="The “change-pitch-bend” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-change-pitch-bend"/>
+    <keyword type="signal" name="The “change-program” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-change-program"/>
+    <keyword type="signal" name="The “key-off” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-key-off"/>
+    <keyword type="signal" name="The “key-on” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-key-on"/>
+    <keyword type="signal" name="The “key-pressure” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-key-pressure"/>
+    <keyword type="signal" name="The “key-signature” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-key-signature"/>
+    <keyword type="signal" name="The “on-error” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-on-error"/>
+    <keyword type="signal" name="The “quarter-frame” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-quarter-frame"/>
+    <keyword type="signal" name="The “sequence-number” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-sequence-number"/>
+    <keyword type="signal" name="The “sequencer-meta-event” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-sequencer-meta-event"/>
+    <keyword type="signal" name="The “smtpe” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-smtpe"/>
+    <keyword type="signal" name="The “song-position” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-song-position"/>
+    <keyword type="signal" name="The “song-select” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-song-select"/>
+    <keyword type="signal" name="The “sysex” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-sysex"/>
+    <keyword type="signal" name="The “tempo” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-tempo"/>
+    <keyword type="signal" name="The “text-event” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-text-event"/>
+    <keyword type="signal" name="The “time-signature” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-time-signature"/>
+    <keyword type="signal" name="The “tune-request” signal" link="AgsMidiBuilder.html#AgsMidiBuilder-tune-request"/>
+    <keyword type="macro" name="AGS_MIDI_PARSER_MAX_TEXT_LENGTH" link="AgsMidiParser.html#AGS-MIDI-PARSER-MAX-TEXT-LENGTH:CAPS"/>
+    <keyword type="function" name="ags_midi_parser_read_gint16 ()" link="AgsMidiParser.html#ags-midi-parser-read-gint16"/>
+    <keyword type="function" name="ags_midi_parser_read_gint24 ()" link="AgsMidiParser.html#ags-midi-parser-read-gint24"/>
+    <keyword type="function" name="ags_midi_parser_read_gint32 ()" link="AgsMidiParser.html#ags-midi-parser-read-gint32"/>
+    <keyword type="function" name="ags_midi_parser_read_varlength ()" link="AgsMidiParser.html#ags-midi-parser-read-varlength"/>
+    <keyword type="function" name="ags_midi_parser_read_text ()" link="AgsMidiParser.html#ags-midi-parser-read-text"/>
+    <keyword type="function" name="ags_midi_parser_ticks_to_sec ()" link="AgsMidiParser.html#ags-midi-parser-ticks-to-sec"/>
+    <keyword type="function" name="ags_midi_parser_midi_getc ()" link="AgsMidiParser.html#ags-midi-parser-midi-getc"/>
+    <keyword type="function" name="ags_midi_parser_on_error ()" link="AgsMidiParser.html#ags-midi-parser-on-error"/>
+    <keyword type="function" name="ags_midi_parser_parse_full ()" link="AgsMidiParser.html#ags-midi-parser-parse-full"/>
+    <keyword type="function" name="ags_midi_parser_parse_header ()" link="AgsMidiParser.html#ags-midi-parser-parse-header"/>
+    <keyword type="function" name="ags_midi_parser_parse_track ()" link="AgsMidiParser.html#ags-midi-parser-parse-track"/>
+    <keyword type="function" name="ags_midi_parser_channel_message ()" link="AgsMidiParser.html#ags-midi-parser-channel-message"/>
+    <keyword type="function" name="ags_midi_parser_key_on ()" link="AgsMidiParser.html#ags-midi-parser-key-on"/>
+    <keyword type="function" name="ags_midi_parser_key_off ()" link="AgsMidiParser.html#ags-midi-parser-key-off"/>
+    <keyword type="function" name="ags_midi_parser_key_pressure ()" link="AgsMidiParser.html#ags-midi-parser-key-pressure"/>
+    <keyword type="function" name="ags_midi_parser_change_parameter ()" link="AgsMidiParser.html#ags-midi-parser-change-parameter"/>
+    <keyword type="function" name="ags_midi_parser_change_pitch_bend ()" link="AgsMidiParser.html#ags-midi-parser-change-pitch-bend"/>
+    <keyword type="function" name="ags_midi_parser_change_program ()" link="AgsMidiParser.html#ags-midi-parser-change-program"/>
+    <keyword type="function" name="ags_midi_parser_change_channel_pressure ()" link="AgsMidiParser.html#ags-midi-parser-change-channel-pressure"/>
+    <keyword type="function" name="ags_midi_parser_not_defined ()" link="AgsMidiParser.html#ags-midi-parser-not-defined"/>
+    <keyword type="function" name="ags_midi_parser_sysex ()" link="AgsMidiParser.html#ags-midi-parser-sysex"/>
+    <keyword type="function" name="ags_midi_parser_system_common ()" link="AgsMidiParser.html#ags-midi-parser-system-common"/>
+    <keyword type="function" name="ags_midi_parser_meta_event ()" link="AgsMidiParser.html#ags-midi-parser-meta-event"/>
+    <keyword type="function" name="ags_midi_parser_sequence_number ()" link="AgsMidiParser.html#ags-midi-parser-sequence-number"/>
+    <keyword type="function" name="ags_midi_parser_end_of_track ()" link="AgsMidiParser.html#ags-midi-parser-end-of-track"/>
+    <keyword type="function" name="ags_midi_parser_smtpe ()" link="AgsMidiParser.html#ags-midi-parser-smtpe"/>
+    <keyword type="function" name="ags_midi_parser_tempo ()" link="AgsMidiParser.html#ags-midi-parser-tempo"/>
+    <keyword type="function" name="ags_midi_parser_time_signature ()" link="AgsMidiParser.html#ags-midi-parser-time-signature"/>
+    <keyword type="function" name="ags_midi_parser_key_signature ()" link="AgsMidiParser.html#ags-midi-parser-key-signature"/>
+    <keyword type="function" name="ags_midi_parser_sequencer_meta_event ()" link="AgsMidiParser.html#ags-midi-parser-sequencer-meta-event"/>
+    <keyword type="function" name="ags_midi_parser_meta_misc ()" link="AgsMidiParser.html#ags-midi-parser-meta-misc"/>
+    <keyword type="function" name="ags_midi_parser_text_event ()" link="AgsMidiParser.html#ags-midi-parser-text-event"/>
+    <keyword type="function" name="ags_midi_parser_new ()" link="AgsMidiParser.html#ags-midi-parser-new"/>
+    <keyword type="macro" name="AGS_MIDI_PARSER_MTHD" link="AgsMidiParser.html#AGS-MIDI-PARSER-MTHD:CAPS"/>
+    <keyword type="macro" name="AGS_MIDI_PARSER_MTCK" link="AgsMidiParser.html#AGS-MIDI-PARSER-MTCK:CAPS"/>
+    <keyword type="enum" name="enum AgsMidiParserFlags" link="AgsMidiParser.html#AgsMidiParserFlags"/>
+    <keyword type="enum" name="enum AgsMidiChunkFlags" link="AgsMidiParser.html#AgsMidiChunkFlags"/>
+    <keyword type="property" name="The “file” property" link="AgsMidiParser.html#AgsMidiParser--file"/>
+    <keyword type="signal" name="The “change-channel-pressure” signal" link="AgsMidiParser.html#AgsMidiParser-change-channel-pressure"/>
+    <keyword type="signal" name="The “change-parameter” signal" link="AgsMidiParser.html#AgsMidiParser-change-parameter"/>
+    <keyword type="signal" name="The “change-pitch-bend” signal" link="AgsMidiParser.html#AgsMidiParser-change-pitch-bend"/>
+    <keyword type="signal" name="The “change-program” signal" link="AgsMidiParser.html#AgsMidiParser-change-program"/>
+    <keyword type="signal" name="The “end-of-track” signal" link="AgsMidiParser.html#AgsMidiParser-end-of-track"/>
+    <keyword type="signal" name="The “key-off” signal" link="AgsMidiParser.html#AgsMidiParser-key-off"/>
+    <keyword type="signal" name="The “key-on” signal" link="AgsMidiParser.html#AgsMidiParser-key-on"/>
+    <keyword type="signal" name="The “key-pressure” signal" link="AgsMidiParser.html#AgsMidiParser-key-pressure"/>
+    <keyword type="signal" name="The “key-signature” signal" link="AgsMidiParser.html#AgsMidiParser-key-signature"/>
+    <keyword type="signal" name="The “meta-event” signal" link="AgsMidiParser.html#AgsMidiParser-meta-event"/>
+    <keyword type="signal" name="The “midi-getc” signal" link="AgsMidiParser.html#AgsMidiParser-midi-getc"/>
+    <keyword type="signal" name="The “not-defined” signal" link="AgsMidiParser.html#AgsMidiParser-not-defined"/>
+    <keyword type="signal" name="The “on-error” signal" link="AgsMidiParser.html#AgsMidiParser-on-error"/>
+    <keyword type="signal" name="The “parse-full” signal" link="AgsMidiParser.html#AgsMidiParser-parse-full"/>
+    <keyword type="signal" name="The “parse-header” signal" link="AgsMidiParser.html#AgsMidiParser-parse-header"/>
+    <keyword type="signal" name="The “parse-track” signal" link="AgsMidiParser.html#AgsMidiParser-parse-track"/>
+    <keyword type="signal" name="The “sequence-number” signal" link="AgsMidiParser.html#AgsMidiParser-sequence-number"/>
+    <keyword type="signal" name="The “sequencer-meta-event” signal" link="AgsMidiParser.html#AgsMidiParser-sequencer-meta-event"/>
+    <keyword type="signal" name="The “smtpe” signal" link="AgsMidiParser.html#AgsMidiParser-smtpe"/>
+    <keyword type="signal" name="The “sysex” signal" link="AgsMidiParser.html#AgsMidiParser-sysex"/>
+    <keyword type="signal" name="The “system-common” signal" link="AgsMidiParser.html#AgsMidiParser-system-common"/>
+    <keyword type="signal" name="The “tempo” signal" link="AgsMidiParser.html#AgsMidiParser-tempo"/>
+    <keyword type="signal" name="The “text-event” signal" link="AgsMidiParser.html#AgsMidiParser-text-event"/>
+    <keyword type="signal" name="The “time-signature” signal" link="AgsMidiParser.html#AgsMidiParser-time-signature"/>
     <keyword type="function" name="ags_audio_file_open ()" link="AgsAudioFile.html#ags-audio-file-open" since="0.3"/>
     <keyword type="function" name="ags_audio_file_open_from_data ()" link="AgsAudioFile.html#ags-audio-file-open-from-data" since="0.4"/>
     <keyword type="function" name="ags_audio_file_rw_open ()" link="AgsAudioFile.html#ags-audio-file-rw-open" since="0.4.2"/>
@@ -1281,6 +1748,9 @@
     <keyword type="property" name="The “samplerate” property" link="AgsAudioFile.html#AgsAudioFile--samplerate"/>
     <keyword type="property" name="The “soundcard” property" link="AgsAudioFile.html#AgsAudioFile--soundcard"/>
     <keyword type="property" name="The “start-channel” property" link="AgsAudioFile.html#AgsAudioFile--start-channel"/>
+    <keyword type="function" name="ags_audio_file_link_new ()" link="AgsAudioFileLink.html#ags-audio-file-link-new" since="0.4"/>
+    <keyword type="property" name="The “audio-channel” property" link="AgsAudioFileLink.html#AgsAudioFileLink--audio-channel"/>
+    <keyword type="property" name="The “timestamp” property" link="AgsAudioFileLink.html#AgsAudioFileLink--timestamp"/>
     <keyword type="function" name="ags_ipatch_new ()" link="AgsIpatch.html#ags-ipatch-new" since="0.4"/>
     <keyword type="macro" name="AGS_IPATCH_DEFAULT_CHANNELS" link="AgsIpatch.html#AGS-IPATCH-DEFAULT-CHANNELS:CAPS"/>
     <keyword type="macro" name="AGS_IPATCH_READ" link="AgsIpatch.html#AGS-IPATCH-READ:CAPS"/>
@@ -1290,6 +1760,8 @@
     <keyword type="property" name="The “mode” property" link="AgsIpatch.html#AgsIpatch--mode"/>
     <keyword type="function" name="ags_ipatch_sf2_reader_new ()" link="AgsIpatchSF2Reader.html#ags-ipatch-sf2-reader-new" since="0.4"/>
     <keyword type="enum" name="enum AgsSF2Levels" link="AgsIpatchSF2Reader.html#AgsSF2Levels"/>
+    <keyword type="function" name="ags_ipatch_dls2_reader_new ()" link="AgsIpatchDLS2Reader.html#ags-ipatch-dls2-reader-new" since="0.7.1"/>
+    <keyword type="enum" name="enum AgsDLS2Levels" link="AgsIpatchDLS2Reader.html#AgsDLS2Levels"/>
     <keyword type="function" name="ags_sndfile_new ()" link="AgsSndfile.html#ags-sndfile-new" since="0.3"/>
     <keyword type="enum" name="enum AgsSndfileFlags" link="AgsSndfile.html#AgsSndfileFlags"/>
     <keyword type="macro" name="AGS_PLAYABLE_ERROR" link="AgsPlayable.html#AGS-PLAYABLE-ERROR:CAPS"/>
@@ -1386,6 +1858,15 @@
     <keyword type="signal" name="The “sequencer-alloc-input” signal" link="AgsDelayAudioRun.html#AgsDelayAudioRun-sequencer-alloc-input"/>
     <keyword type="signal" name="The “sequencer-alloc-output” signal" link="AgsDelayAudioRun.html#AgsDelayAudioRun-sequencer-alloc-output"/>
     <keyword type="signal" name="The “sequencer-count” signal" link="AgsDelayAudioRun.html#AgsDelayAudioRun-sequencer-count"/>
+    <keyword type="function" name="ags_envelope_audio_signal_new ()" link="AgsEnvelopeAudioSignal.html#ags-envelope-audio-signal-new" since="0.6"/>
+    <keyword type="function" name="ags_envelope_channel_new ()" link="AgsEnvelopeChannel.html#ags-envelope-channel-new" since="0.6"/>
+    <keyword type="property" name="The “attack” property" link="AgsEnvelopeChannel.html#AgsEnvelopeChannel--attack"/>
+    <keyword type="property" name="The “decay” property" link="AgsEnvelopeChannel.html#AgsEnvelopeChannel--decay"/>
+    <keyword type="property" name="The “ratio” property" link="AgsEnvelopeChannel.html#AgsEnvelopeChannel--ratio"/>
+    <keyword type="property" name="The “release” property" link="AgsEnvelopeChannel.html#AgsEnvelopeChannel--release"/>
+    <keyword type="property" name="The “sustain” property" link="AgsEnvelopeChannel.html#AgsEnvelopeChannel--sustain"/>
+    <keyword type="function" name="ags_envelope_channel_run_new ()" link="AgsEnvelopeChannelRun.html#ags-envelope-channel-run-new"/>
+    <keyword type="function" name="ags_envelope_recycling_new ()" link="AgsEnvelopeRecycling.html#ags-envelope-recycling-new" since="0.6"/>
     <keyword type="function" name="ags_loop_channel_new ()" link="AgsLoopChannel.html#ags-loop-channel-new" since="0.4"/>
     <keyword type="property" name="The “delay-audio” property" link="AgsLoopChannel.html#AgsLoopChannel--delay-audio"/>
     <keyword type="function" name="ags_loop_channel_run_new ()" link="AgsLoopChannelRun.html#ags-loop-channel-run-new" since="0.4"/>
@@ -1426,6 +1907,18 @@
     <keyword type="function" name="ags_play_note_new ()" link="AgsPlayNote.html#ags-play-note-new"/>
     <keyword type="function" name="ags_play_pattern_connect ()" link="AgsPlayPattern.html#ags-play-pattern-connect"/>
     <keyword type="function" name="ags_play_recycling_new ()" link="AgsPlayRecycling.html#ags-play-recycling-new" since="0.4"/>
+    <keyword type="function" name="ags_route_dssi_audio_new ()" link="AgsRouteDssiAudio.html#ags-route-dssi-audio-new" since="0.7.1"/>
+    <keyword type="property" name="The “notation-input” property" link="AgsRouteDssiAudio.html#AgsRouteDssiAudio--notation-input"/>
+    <keyword type="property" name="The “sequencer-input” property" link="AgsRouteDssiAudio.html#AgsRouteDssiAudio--sequencer-input"/>
+    <keyword type="function" name="ags_route_dssi_audio_run_new ()" link="AgsRouteDssiAudioRun.html#ags-route-dssi-audio-run-new" since="0.7.1"/>
+    <keyword type="property" name="The “count-beats-audio-run” property" link="AgsRouteDssiAudioRun.html#AgsRouteDssiAudioRun--count-beats-audio-run"/>
+    <keyword type="property" name="The “delay-audio-run” property" link="AgsRouteDssiAudioRun.html#AgsRouteDssiAudioRun--delay-audio-run"/>
+    <keyword type="function" name="ags_route_lv2_audio_new ()" link="AgsRouteLv2Audio.html#ags-route-lv2-audio-new" since="0.7.1"/>
+    <keyword type="property" name="The “notation-input” property" link="AgsRouteLv2Audio.html#AgsRouteLv2Audio--notation-input"/>
+    <keyword type="property" name="The “sequencer-input” property" link="AgsRouteLv2Audio.html#AgsRouteLv2Audio--sequencer-input"/>
+    <keyword type="function" name="ags_route_lv2_audio_run_new ()" link="AgsRouteLv2AudioRun.html#ags-route-lv2-audio-run-new" since="0.7.1"/>
+    <keyword type="property" name="The “count-beats-audio-run” property" link="AgsRouteLv2AudioRun.html#AgsRouteLv2AudioRun--count-beats-audio-run"/>
+    <keyword type="property" name="The “delay-audio-run” property" link="AgsRouteLv2AudioRun.html#AgsRouteLv2AudioRun--delay-audio-run"/>
     <keyword type="function" name="ags_stream_audio_signal_new ()" link="AgsStreamAudioSignal.html#ags-stream-audio-signal-new" since="0.4"/>
     <keyword type="function" name="ags_stream_channel_new ()" link="AgsStreamChannel.html#ags-stream-channel-new" since="0.4"/>
     <keyword type="property" name="The “auto-sense” property" link="AgsStreamChannel.html#AgsStreamChannel--auto-sense"/>
@@ -1437,6 +1930,7 @@
     <keyword type="function" name="ags_add_note_new ()" link="AgsAddNote.html#ags-add-note-new" since="0.4"/>
     <keyword type="function" name="ags_add_point_to_selection_new ()" link="AgsAddPointToSelection.html#ags-add-point-to-selection-new" since="0.4"/>
     <keyword type="function" name="ags_add_recall_new ()" link="AgsAddRecall.html#ags-add-recall-new" since="0.4"/>
+    <keyword type="function" name="ags_add_recall_container_new ()" link="AgsAddRecallContainer.html#ags-add-recall-container-new" since="0.4"/>
     <keyword type="function" name="ags_add_region_to_selection_new ()" link="AgsAddRegionToSelection.html#ags-add-region-to-selection-new" since="0.4"/>
     <keyword type="function" name="ags_append_audio_new ()" link="AgsAppendAudio.html#ags-append-audio-new" since="0.4"/>
     <keyword type="function" name="ags_append_audio_threaded_new ()" link="AgsAppendAudioThreaded.html#ags-append-audio-threaded-new"/>
@@ -1496,7 +1990,7 @@
     <keyword type="macro" name="AGS_EDITOR_CHILD()" link="AgsEditor.html#AGS-EDITOR-CHILD:CAPS"/>
     <keyword type="function" name="ags_editor_child_alloc ()" link="AgsEditor.html#ags-editor-child-alloc"/>
     <keyword type="function" name="ags_editor_machine_changed ()" link="AgsEditor.html#ags-editor-machine-changed" since="0.4"/>
-    <keyword type="function" name="ags_editor_select_all ()" link="AgsEditor.html#ags-editor-select-all" since="0.4.2"/>
+    <keyword type="function" name="ags_editor_select_all ()" link="AgsEditor.html#ags-editor-select-all" since="0.5.0"/>
     <keyword type="function" name="ags_editor_paste ()" link="AgsEditor.html#ags-editor-paste" since="0.4.2"/>
     <keyword type="function" name="ags_editor_copy ()" link="AgsEditor.html#ags-editor-copy" since="0.4.2"/>
     <keyword type="function" name="ags_editor_cut ()" link="AgsEditor.html#ags-editor-cut" since="0.4.2"/>
@@ -1511,6 +2005,69 @@
     <keyword type="function" name="ags_editor_parent_set_callback ()" link="ags-ags-editor-callbacks.html#ags-editor-parent-set-callback"/>
     <keyword type="function" name="ags_editor_tic_callback ()" link="ags-ags-editor-callbacks.html#ags-editor-tic-callback"/>
     <keyword type="function" name="ags_editor_machine_changed_callback ()" link="ags-ags-editor-callbacks.html#ags-editor-machine-changed-callback"/>
+    <keyword type="macro" name="AGS_EFFECT_BRIDGE_MAX_COLUMNS" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-MAX-COLUMNS:CAPS"/>
+    <keyword type="function" name="ags_effect_bridge_resize_audio_channels ()" link="AgsEffectBridge.html#ags-effect-bridge-resize-audio-channels"/>
+    <keyword type="function" name="ags_effect_bridge_resize_pads ()" link="AgsEffectBridge.html#ags-effect-bridge-resize-pads"/>
+    <keyword type="function" name="ags_effect_bridge_new ()" link="AgsEffectBridge.html#ags-effect-bridge-new" since="0.4.3"/>
+    <keyword type="macro" name="AGS_EFFECT_BRIDGE_DEFAULT_VERSION" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DEFAULT-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DEFAULT-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsEffectBridgeFlags" link="AgsEffectBridge.html#AgsEffectBridgeFlags"/>
+    <keyword type="property" name="The “audio” property" link="AgsEffectBridge.html#AgsEffectBridge--audio"/>
+    <keyword type="signal" name="The “resize-audio-channels” signal" link="AgsEffectBridge.html#AgsEffectBridge-resize-audio-channels"/>
+    <keyword type="signal" name="The “resize-pads” signal" link="AgsEffectBridge.html#AgsEffectBridge-resize-pads"/>
+    <keyword type="macro" name="AGS_EFFECT_BRIDGE_MAX_COLUMNS" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-MAX-COLUMNS:CAPS"/>
+    <keyword type="function" name="ags_effect_bridge_resize_audio_channels ()" link="AgsEffectBridge.html#ags-effect-bridge-resize-audio-channels"/>
+    <keyword type="function" name="ags_effect_bridge_resize_pads ()" link="AgsEffectBridge.html#ags-effect-bridge-resize-pads"/>
+    <keyword type="function" name="ags_effect_bridge_new ()" link="AgsEffectBridge.html#ags-effect-bridge-new" since="0.4.3"/>
+    <keyword type="macro" name="AGS_EFFECT_BRIDGE_DEFAULT_VERSION" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DEFAULT-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DEFAULT-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsEffectBridgeFlags" link="AgsEffectBridge.html#AgsEffectBridgeFlags"/>
+    <keyword type="property" name="The “audio” property" link="AgsEffectBridge.html#AgsEffectBridge--audio"/>
+    <keyword type="signal" name="The “resize-audio-channels” signal" link="AgsEffectBridge.html#AgsEffectBridge-resize-audio-channels"/>
+    <keyword type="signal" name="The “resize-pads” signal" link="AgsEffectBridge.html#AgsEffectBridge-resize-pads"/>
+    <keyword type="macro" name="AGS_EFFECT_BULK_PLUGIN()" link="AgsEffectBulk.html#AGS-EFFECT-BULK-PLUGIN:CAPS"/>
+    <keyword type="macro" name="AGS_EFFECT_BULK_COLUMNS_COUNT" link="AgsEffectBulk.html#AGS-EFFECT-BULK-COLUMNS-COUNT:CAPS"/>
+    <keyword type="function" name="ags_effect_bulk_plugin_alloc ()" link="AgsEffectBulk.html#ags-effect-bulk-plugin-alloc"/>
+    <keyword type="function" name="ags_effect_bulk_add_effect ()" link="AgsEffectBulk.html#ags-effect-bulk-add-effect"/>
+    <keyword type="function" name="ags_effect_bulk_remove_effect ()" link="AgsEffectBulk.html#ags-effect-bulk-remove-effect"/>
+    <keyword type="function" name="ags_effect_bulk_resize_audio_channels ()" link="AgsEffectBulk.html#ags-effect-bulk-resize-audio-channels"/>
+    <keyword type="function" name="ags_effect_bulk_resize_pads ()" link="AgsEffectBulk.html#ags-effect-bulk-resize-pads"/>
+    <keyword type="function" name="ags_effect_bulk_new ()" link="AgsEffectBulk.html#ags-effect-bulk-new" since="0.4"/>
+    <keyword type="macro" name="AGS_EFFECT_BULK_DEFAULT_VERSION" link="AgsEffectBulk.html#AGS-EFFECT-BULK-DEFAULT-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_EFFECT_BULK_DEFAULT_BUILD_ID" link="AgsEffectBulk.html#AGS-EFFECT-BULK-DEFAULT-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsEffectBulkFlags" link="AgsEffectBulk.html#AgsEffectBulkFlags"/>
+    <keyword type="struct" name="struct AgsEffectBulkPlugin" link="AgsEffectBulk.html#AgsEffectBulkPlugin"/>
+    <keyword type="property" name="The “audio” property" link="AgsEffectBulk.html#AgsEffectBulk--audio"/>
+    <keyword type="property" name="The “channel-type” property" link="AgsEffectBulk.html#AgsEffectBulk--channel-type"/>
+    <keyword type="signal" name="The “add-effect” signal" link="AgsEffectBulk.html#AgsEffectBulk-add-effect"/>
+    <keyword type="signal" name="The “remove-effect” signal" link="AgsEffectBulk.html#AgsEffectBulk-remove-effect"/>
+    <keyword type="signal" name="The “resize-audio-channels” signal" link="AgsEffectBulk.html#AgsEffectBulk-resize-audio-channels"/>
+    <keyword type="signal" name="The “resize-pads” signal" link="AgsEffectBulk.html#AgsEffectBulk-resize-pads"/>
+    <keyword type="function" name="ags_effect_bulk_add_callback ()" link="ags-ags-effect-bulk-callbacks.html#ags-effect-bulk-add-callback"/>
+    <keyword type="function" name="ags_effect_bulk_remove_callback ()" link="ags-ags-effect-bulk-callbacks.html#ags-effect-bulk-remove-callback"/>
+    <keyword type="function" name="ags_effect_bulk_plugin_browser_response_callback ()" link="ags-ags-effect-bulk-callbacks.html#ags-effect-bulk-plugin-browser-response-callback"/>
+    <keyword type="function" name="ags_effect_bulk_set_audio_channels_callback ()" link="ags-ags-effect-bulk-callbacks.html#ags-effect-bulk-set-audio-channels-callback"/>
+    <keyword type="function" name="ags_effect_bulk_set_pads_callback ()" link="ags-ags-effect-bulk-callbacks.html#ags-effect-bulk-set-pads-callback"/>
+    <keyword type="function" name="ags_effect_bulk_lv2ui_write_function ()" link="ags-ags-effect-bulk-callbacks.html#ags-effect-bulk-lv2ui-write-function"/>
+    <keyword type="macro" name="AGS_EFFECT_LINE_COLUMNS_COUNT" link="AgsEffectLine.html#AGS-EFFECT-LINE-COLUMNS-COUNT:CAPS"/>
+    <keyword type="function" name="ags_effect_line_add_effect ()" link="AgsEffectLine.html#ags-effect-line-add-effect"/>
+    <keyword type="function" name="ags_effect_line_remove_effect ()" link="AgsEffectLine.html#ags-effect-line-remove-effect"/>
+    <keyword type="function" name="ags_effect_line_new ()" link="AgsEffectLine.html#ags-effect-line-new" since="0.4"/>
+    <keyword type="macro" name="AGS_EFFECT_LINE_DEFAULT_VERSION" link="AgsEffectLine.html#AGS-EFFECT-LINE-DEFAULT-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_EFFECT_LINE_DEFAULT_BUILD_ID" link="AgsEffectLine.html#AGS-EFFECT-LINE-DEFAULT-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsEffectLineFlags" link="AgsEffectLine.html#AgsEffectLineFlags"/>
+    <keyword type="property" name="The “channel” property" link="AgsEffectLine.html#AgsEffectLine--channel"/>
+    <keyword type="signal" name="The “add-effect” signal" link="AgsEffectLine.html#AgsEffectLine-add-effect"/>
+    <keyword type="signal" name="The “remove-effect” signal" link="AgsEffectLine.html#AgsEffectLine-remove-effect"/>
+    <keyword type="function" name="ags_effect_line_add_effect_callback ()" link="ags-ags-effect-line-callbacks.html#ags-effect-line-add-effect-callback"/>
+    <keyword type="macro" name="AGS_EFFECT_PAD_COLUMNS_COUNT" link="AgsEffectPad.html#AGS-EFFECT-PAD-COLUMNS-COUNT:CAPS"/>
+    <keyword type="function" name="ags_effect_pad_resize_lines ()" link="AgsEffectPad.html#ags-effect-pad-resize-lines"/>
+    <keyword type="function" name="ags_effect_pad_new ()" link="AgsEffectPad.html#ags-effect-pad-new" since="0.4"/>
+    <keyword type="macro" name="AGS_EFFECT_PAD_DEFAULT_VERSION" link="AgsEffectPad.html#AGS-EFFECT-PAD-DEFAULT-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_EFFECT_PAD_DEFAULT_BUILD_ID" link="AgsEffectPad.html#AGS-EFFECT-PAD-DEFAULT-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsEffectPadFlags" link="AgsEffectPad.html#AgsEffectPadFlags"/>
+    <keyword type="property" name="The “channel” property" link="AgsEffectPad.html#AgsEffectPad--channel"/>
+    <keyword type="signal" name="The “resize-lines” signal" link="AgsEffectPad.html#AgsEffectPad-resize-lines"/>
     <keyword type="function" name="ags_export_window_new ()" link="AgsExportWindow.html#ags-export-window-new"/>
     <keyword type="enum" name="enum AgsExportWindowFlags" link="AgsExportWindow.html#AgsExportWindowFlags"/>
     <keyword type="property" name="The “application-context” property" link="AgsExportWindow.html#AgsExportWindow--application-context"/>
@@ -1532,23 +2089,30 @@
     <keyword type="signal" name="The “completed” signal" link="AgsFileSelection.html#AgsFileSelection-completed"/>
     <keyword type="signal" name="The “remove-entry” signal" link="AgsFileSelection.html#AgsFileSelection-remove-entry"/>
     <keyword type="function" name="ags_file_selection_remove_callback ()" link="ags-ags-file-selection-callbacks.html#ags-file-selection-remove-callback"/>
+    <keyword type="function" name="ags_generic_preferences_new ()" link="AgsGenericPreferences.html#ags-generic-preferences-new" since="0.4"/>
+    <keyword type="function" name="ags_generic_preferences_autosave_thread_clicked_callback ()" link="ags-ags-generic-preferences-callbacks.html#ags-generic-preferences-autosave-thread-clicked-callback"/>
     <keyword type="macro" name="AGS_GUI_THREAD_DEFAULT_JIFFIE" link="AgsGuiThread.html#AGS-GUI-THREAD-DEFAULT-JIFFIE:CAPS"/>
     <keyword type="function" name="ags_gui_thread_new ()" link="AgsGuiThread.html#ags-gui-thread-new" since="0.4"/>
     <keyword type="function" name="ags_inline_player_new ()" link="AgsInlinePlayer.html#ags-inline-player-new"/>
     <keyword type="property" name="The “playable” property" link="AgsInlinePlayer.html#AgsInlinePlayer--playable"/>
-    <keyword type="function" name="ags_ladspa_browser_get_plugin_filename ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-get-plugin-filename" since="0.4"/>
-    <keyword type="function" name="ags_ladspa_browser_get_plugin_effect ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-get-plugin-effect" since="0.4"/>
-    <keyword type="function" name="ags_ladspa_browser_combo_box_boolean_controls_new ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-combo-box-boolean-controls-new"/>
-    <keyword type="function" name="ags_ladspa_browser_combo_box_float_controls_new ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-combo-box-float-controls-new" since="0.4"/>
+    <keyword type="function" name="ags_ladspa_browser_get_plugin_filename ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-get-plugin-filename" since="0.4.2"/>
+    <keyword type="function" name="ags_ladspa_browser_get_plugin_effect ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-get-plugin-effect" since="0.4.2"/>
+    <keyword type="function" name="ags_ladspa_browser_combo_box_controls_new ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-combo-box-controls-new" since="0.4.2"/>
     <keyword type="function" name="ags_ladspa_browser_preview_new ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-preview-new"/>
-    <keyword type="function" name="ags_ladspa_browser_new ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-new" since="0.4"/>
+    <keyword type="function" name="ags_ladspa_browser_new ()" link="AgsLadspaBrowser.html#ags-ladspa-browser-new" since="0.4.2"/>
     <keyword type="function" name="ags_ladspa_browser_plugin_filename_callback ()" link="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-plugin-filename-callback"/>
     <keyword type="function" name="ags_ladspa_browser_plugin_effect_callback ()" link="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-plugin-effect-callback"/>
-    <keyword type="function" name="ags_ladspa_browser_preview_close_callback ()" link="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-preview-close-callback"/>
-    <keyword type="function" name="ags_ladspa_browser_ok_callback ()" link="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-ok-callback"/>
-    <keyword type="function" name="ags_ladspa_browser_cancel_callback ()" link="ags-ags-ladspa-browser-callbacks.html#ags-ladspa-browser-cancel-callback"/>
+    <keyword type="function" name="ags_lv2_browser_get_plugin_filename ()" link="AgsLv2Browser.html#ags-lv2-browser-get-plugin-filename" since="0.4.2"/>
+    <keyword type="function" name="ags_lv2_browser_get_plugin_effect ()" link="AgsLv2Browser.html#ags-lv2-browser-get-plugin-effect"/>
+    <keyword type="function" name="ags_lv2_browser_combo_box_controls_new ()" link="AgsLv2Browser.html#ags-lv2-browser-combo-box-controls-new" since="0.4.2"/>
+    <keyword type="function" name="ags_lv2_browser_preview_new ()" link="AgsLv2Browser.html#ags-lv2-browser-preview-new"/>
+    <keyword type="function" name="ags_lv2_browser_new ()" link="AgsLv2Browser.html#ags-lv2-browser-new" since="0.4.2"/>
+    <keyword type="function" name="ags_lv2_browser_plugin_filename_callback ()" link="ags-ags-lv2-browser-callbacks.html#ags-lv2-browser-plugin-filename-callback"/>
+    <keyword type="function" name="ags_lv2_browser_plugin_uri_callback ()" link="ags-ags-lv2-browser-callbacks.html#ags-lv2-browser-plugin-uri-callback"/>
     <keyword type="function" name="ags_line_set_channel ()" link="AgsLine.html#ags-line-set-channel" since="0.3"/>
     <keyword type="function" name="ags_line_group_changed ()" link="AgsLine.html#ags-line-group-changed" since="0.4"/>
+    <keyword type="function" name="ags_line_add_effect ()" link="AgsLine.html#ags-line-add-effect" since="0.4.3"/>
+    <keyword type="function" name="ags_line_remove_effect ()" link="AgsLine.html#ags-line-remove-effect" since="0.4.3"/>
     <keyword type="function" name="ags_line_find_next_grouped ()" link="AgsLine.html#ags-line-find-next-grouped" since="0.4"/>
     <keyword type="function" name="ags_line_map_recall ()" link="AgsLine.html#ags-line-map-recall" since="0.4"/>
     <keyword type="function" name="ags_line_find_port ()" link="AgsLine.html#ags-line-find-port" since="0.4"/>
@@ -1558,13 +2122,17 @@
     <keyword type="enum" name="enum AgsLineFlags" link="AgsLine.html#AgsLineFlags"/>
     <keyword type="property" name="The “channel” property" link="AgsLine.html#AgsLine--channel"/>
     <keyword type="property" name="The “pad” property" link="AgsLine.html#AgsLine--pad"/>
+    <keyword type="signal" name="The “add-effect” signal" link="AgsLine.html#AgsLine-add-effect"/>
     <keyword type="signal" name="The “find-port” signal" link="AgsLine.html#AgsLine-find-port"/>
     <keyword type="signal" name="The “group-changed” signal" link="AgsLine.html#AgsLine-group-changed"/>
     <keyword type="signal" name="The “map-recall” signal" link="AgsLine.html#AgsLine-map-recall"/>
+    <keyword type="signal" name="The “remove-effect” signal" link="AgsLine.html#AgsLine-remove-effect"/>
     <keyword type="signal" name="The “set-channel” signal" link="AgsLine.html#AgsLine-set-channel"/>
     <keyword type="function" name="ags_line_parent_set_callback ()" link="ags-ags-line-callbacks.html#ags-line-parent-set-callback"/>
     <keyword type="function" name="ags_line_remove_recall_callback ()" link="ags-ags-line-callbacks.html#ags-line-remove-recall-callback"/>
     <keyword type="function" name="ags_line_group_clicked_callback ()" link="ags-ags-line-callbacks.html#ags-line-group-clicked-callback"/>
+    <keyword type="function" name="ags_line_add_effect_callback ()" link="ags-ags-line-callbacks.html#ags-line-add-effect-callback"/>
+    <keyword type="function" name="ags_line_remove_effect_callback ()" link="ags-ags-line-callbacks.html#ags-line-remove-effect-callback"/>
     <keyword type="function" name="ags_line_volume_callback ()" link="ags-ags-line-callbacks.html#ags-line-volume-callback"/>
     <keyword type="function" name="ags_line_peak_run_post_callback ()" link="ags-ags-line-callbacks.html#ags-line-peak-run-post-callback"/>
     <keyword type="function" name="ags_line_copy_pattern_done ()" link="ags-ags-line-callbacks.html#ags-line-copy-pattern-done"/>
@@ -1611,7 +2179,7 @@
     <keyword type="function" name="ags_line_member_editor_new ()" link="AgsLineMemberEditor.html#ags-line-member-editor-new" since="0.4"/>
     <keyword type="function" name="ags_line_member_editor_add_callback ()" link="ags-ags-line-member-editor-callbacks.html#ags-line-member-editor-add-callback"/>
     <keyword type="function" name="ags_line_member_editor_remove_callback ()" link="ags-ags-line-member-editor-callbacks.html#ags-line-member-editor-remove-callback"/>
-    <keyword type="function" name="ags_line_member_editor_ladspa_browser_response_callback ()" link="ags-ags-line-member-editor-callbacks.html#ags-line-member-editor-ladspa-browser-response-callback"/>
+    <keyword type="function" name="ags_line_member_editor_plugin_browser_response_callback ()" link="ags-ags-line-member-editor-callbacks.html#ags-line-member-editor-plugin-browser-response-callback"/>
     <keyword type="function" name="ags_link_channel_new ()" link="AgsLinkChannel.html#ags-link-channel-new" since="0.4"/>
     <keyword type="function" name="ags_link_collection_editor_check_first_line ()" link="AgsLinkCollectionEditor.html#ags-link-collection-editor-check-first-line"/>
     <keyword type="function" name="ags_link_collection_editor_check_first_link ()" link="AgsLinkCollectionEditor.html#ags-link-collection-editor-check-first-link"/>
@@ -1652,6 +2220,7 @@
     <keyword type="enum" name="enum AgsMachineFileInputFlags" link="AgsMachine.html#AgsMachineFileInputFlags"/>
     <keyword type="enum" name="enum AgsMachineMappingFlags" link="AgsMachine.html#AgsMachineMappingFlags"/>
     <keyword type="enum" name="enum AgsMachineEditOptions" link="AgsMachine.html#AgsMachineEditOptions"/>
+    <keyword type="enum" name="enum AgsMachineConnectionOptions" link="AgsMachine.html#AgsMachineConnectionOptions"/>
     <keyword type="property" name="The “audio” property" link="AgsMachine.html#AgsMachine--audio"/>
     <keyword type="signal" name="The “find-port” signal" link="AgsMachine.html#AgsMachine-find-port"/>
     <keyword type="signal" name="The “map-recall” signal" link="AgsMachine.html#AgsMachine-map-recall"/>
@@ -1667,6 +2236,7 @@
     <keyword type="function" name="ags_machine_popup_properties_activate_callback ()" link="ags-ags-machine-callbacks.html#ags-machine-popup-properties-activate-callback"/>
     <keyword type="function" name="ags_machine_popup_copy_pattern_callback ()" link="ags-ags-machine-callbacks.html#ags-machine-popup-copy-pattern-callback"/>
     <keyword type="function" name="ags_machine_popup_paste_pattern_callback ()" link="ags-ags-machine-callbacks.html#ags-machine-popup-paste-pattern-callback"/>
+    <keyword type="function" name="ags_machine_popup_midi_dialog_callback ()" link="ags-ags-machine-callbacks.html#ags-machine-popup-midi-dialog-callback"/>
     <keyword type="function" name="ags_machine_open_response_callback ()" link="ags-ags-machine-callbacks.html#ags-machine-open-response-callback"/>
     <keyword type="function" name="ags_machine_play_callback ()" link="ags-ags-machine-callbacks.html#ags-machine-play-callback"/>
     <keyword type="function" name="ags_machine_tact_callback ()" link="ags-ags-machine-callbacks.html#ags-machine-tact-callback"/>
@@ -1775,6 +2345,12 @@
     <keyword type="function" name="ags_pad_editor_show_callback ()" link="ags-ags-pad-editor-callbacks.html#ags-pad-editor-show-callback"/>
     <keyword type="function" name="ags_pad_editor_set_audio_channels_callback ()" link="ags-ags-pad-editor-callbacks.html#ags-pad-editor-set-audio-channels-callback"/>
     <keyword type="function" name="ags_performance_preferences_new ()" link="AgsPerformancePreferences.html#ags-performance-preferences-new" since="0.4"/>
+    <keyword type="function" name="ags_plugin_browser_get_plugin_filename ()" link="AgsPluginBrowser.html#ags-plugin-browser-get-plugin-filename" since="0.4.3"/>
+    <keyword type="function" name="ags_plugin_browser_get_plugin_effect ()" link="AgsPluginBrowser.html#ags-plugin-browser-get-plugin-effect" since="0.4.3"/>
+    <keyword type="function" name="ags_plugin_browser_new ()" link="AgsPluginBrowser.html#ags-plugin-browser-new" since="0.4.3"/>
+    <keyword type="function" name="ags_plugin_browser_plugin_type_changed_callback ()" link="ags-ags-plugin-browser-callbacks.html#ags-plugin-browser-plugin-type-changed-callback"/>
+    <keyword type="function" name="ags_plugin_browser_ok_callback ()" link="ags-ags-plugin-browser-callbacks.html#ags-plugin-browser-ok-callback"/>
+    <keyword type="function" name="ags_plugin_browser_cancel_callback ()" link="ags-ags-plugin-browser-callbacks.html#ags-plugin-browser-cancel-callback"/>
     <keyword type="function" name="ags_ladspa_plugin_preferences_alloc ()" link="AgsPluginPreferences.html#ags-ladspa-plugin-preferences-alloc"/>
     <keyword type="function" name="ags_plugin_preferences_new ()" link="AgsPluginPreferences.html#ags-plugin-preferences-new" since="0.4"/>
     <keyword type="struct" name="struct AgsLadspaPluginPreferences" link="AgsPluginPreferences.html#AgsLadspaPluginPreferences"/>
@@ -1802,6 +2378,11 @@
     <keyword type="property" name="The “application-context” property" link="AgsWindow.html#AgsWindow--application-context"/>
     <keyword type="property" name="The “soundcard” property" link="AgsWindow.html#AgsWindow--soundcard"/>
     <keyword type="function" name="ags_window_delete_event_callback ()" link="ags-ags-window-callbacks.html#ags-window-delete-event-callback"/>
+    <keyword type="function" name="ags_xorg_application_context_new ()" link="AgsXorgApplicationContext.html#ags-xorg-application-context-new"/>
+    <keyword type="macro" name="AGS_XORG_VERSION" link="AgsXorgApplicationContext.html#AGS-XORG-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_XORG_BUILD_ID" link="AgsXorgApplicationContext.html#AGS-XORG-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsXorgApplicationContextFlags" link="AgsXorgApplicationContext.html#AgsXorgApplicationContextFlags"/>
+    <keyword type="property" name="The “window” property" link="AgsXorgApplicationContext.html#AgsXorgApplicationContext--window"/>
     <keyword type="function" name="ags_file_read_widget ()" link="ags-ags-gui-file-xml.html#ags-file-read-widget"/>
     <keyword type="function" name="ags_file_write_widget ()" link="ags-ags-gui-file-xml.html#ags-file-write-widget"/>
     <keyword type="function" name="ags_file_read_window ()" link="ags-ags-gui-file-xml.html#ags-file-read-window"/>
@@ -1867,8 +2448,10 @@
     <keyword type="function" name="ags_file_write_notebook_tab ()" link="ags-ags-gui-file-xml.html#ags-file-write-notebook-tab"/>
     <keyword type="function" name="ags_file_read_navigation ()" link="ags-ags-gui-file-xml.html#ags-file-read-navigation"/>
     <keyword type="function" name="ags_file_write_navigation ()" link="ags-ags-gui-file-xml.html#ags-file-write-navigation"/>
+    <keyword type="function" name="ags_blink_cell_pattern_cursor_new ()" link="AgsBlinkCellPatternCursor.html#ags-blink-cell-pattern-cursor-new" since="0.4"/>
     <keyword type="function" name="ags_change_indicator_new ()" link="AgsChangeIndicator.html#ags-change-indicator-new" since="0.4"/>
     <keyword type="function" name="ags_change_tact_new ()" link="AgsChangeTact.html#ags-change-tact-new"/>
+    <keyword type="function" name="ags_display_tact_new ()" link="AgsDisplayTact.html#ags-display-tact-new" since="0.4"/>
     <keyword type="function" name="ags_scroll_on_play_new ()" link="AgsScrollOnPlay.html#ags-scroll-on-play-new" since="0.4"/>
     <keyword type="function" name="ags_toggle_led_new ()" link="AgsToggleLed.html#ags-toggle-led-new" since="0.4"/>
     <keyword type="function" name="ags_toggle_pattern_bit_refresh_gui ()" link="AgsTogglePatternBit.html#ags-toggle-pattern-bit-refresh-gui"/>
@@ -1958,6 +2541,8 @@
     <keyword type="function" name="ags_meter_expose_event ()" link="ags-ags-meter-callbacks.html#ags-meter-expose-event"/>
     <keyword type="function" name="ags_meter_configure_event ()" link="ags-ags-meter-callbacks.html#ags-meter-configure-event"/>
     <keyword type="macro" name="AGS_NOTEBOOK_TAB()" link="AgsNotebook.html#AGS-NOTEBOOK-TAB:CAPS"/>
+    <keyword type="macro" name="AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT" link="AgsNotebook.html#AGS-NOTEBOOK-TAB-DEFAULT-HEIGHT:CAPS"/>
+    <keyword type="macro" name="AGS_NOTEBOOK_TAB_DEFAULT_WIDTH" link="AgsNotebook.html#AGS-NOTEBOOK-TAB-DEFAULT-WIDTH:CAPS"/>
     <keyword type="function" name="ags_notebook_tab_index ()" link="AgsNotebook.html#ags-notebook-tab-index"/>
     <keyword type="function" name="ags_notebook_next_active_tab ()" link="AgsNotebook.html#ags-notebook-next-active-tab"/>
     <keyword type="function" name="ags_notebook_add_tab ()" link="AgsNotebook.html#ags-notebook-add-tab"/>
@@ -1969,7 +2554,8 @@
     <keyword type="enum" name="enum AgsNotebookFlags" link="AgsNotebook.html#AgsNotebookFlags"/>
     <keyword type="enum" name="enum AgsNotebookTabFlags" link="AgsNotebook.html#AgsNotebookTabFlags"/>
     <keyword type="struct" name="struct AgsNotebookTab" link="AgsNotebook.html#AgsNotebookTab"/>
-    <keyword type="function" name="ags_notebook_machine_changed_callback ()" link="ags-ags-notebook-callbacks.html#ags-notebook-machine-changed-callback"/>
+    <keyword type="function" name="ags_notebook_scroll_prev_callback ()" link="ags-ags-notebook-callbacks.html#ags-notebook-scroll-prev-callback"/>
+    <keyword type="function" name="ags_notebook_scroll_next_callback ()" link="ags-ags-notebook-callbacks.html#ags-notebook-scroll-next-callback"/>
     <keyword type="function" name="ags_note_edit_set_map_height ()" link="AgsNoteEdit.html#ags-note-edit-set-map-height" since="0.4"/>
     <keyword type="function" name="ags_note_edit_reset_vertically ()" link="AgsNoteEdit.html#ags-note-edit-reset-vertically" since="0.4"/>
     <keyword type="function" name="ags_note_edit_reset_horizontally ()" link="AgsNoteEdit.html#ags-note-edit-reset-horizontally" since="0.4"/>
@@ -1993,14 +2579,6 @@
     <keyword type="function" name="ags_note_edit_drawing_area_key_release_event ()" link="ags-ags-note-edit-callbacks.html#ags-note-edit-drawing-area-key-release-event"/>
     <keyword type="function" name="ags_note_edit_vscrollbar_value_changed ()" link="ags-ags-note-edit-callbacks.html#ags-note-edit-vscrollbar-value-changed"/>
     <keyword type="function" name="ags_note_edit_hscrollbar_value_changed ()" link="ags-ags-note-edit-callbacks.html#ags-note-edit-hscrollbar-value-changed"/>
-    <keyword type="function" name="ags_sf2_chooser_open ()" link="AgsSF2Chooser.html#ags-sf2-chooser-open"/>
-    <keyword type="function" name="ags_sf2_chooser_completed ()" link="AgsSF2Chooser.html#ags-sf2-chooser-completed"/>
-    <keyword type="function" name="ags_sf2_chooser_remove_all_from_combo ()" link="AgsSF2Chooser.html#ags-sf2-chooser-remove-all-from-combo"/>
-    <keyword type="function" name="ags_sf2_chooser_new ()" link="AgsSF2Chooser.html#ags-sf2-chooser-new"/>
-    <keyword type="property" name="The “ipatch” property" link="AgsSF2Chooser.html#AgsSF2Chooser--ipatch"/>
-    <keyword type="function" name="ags_sf2_chooser_preset_changed ()" link="ags-ags-sf2-chooser-callbacks.html#ags-sf2-chooser-preset-changed"/>
-    <keyword type="function" name="ags_sf2_chooser_instrument_changed ()" link="ags-ags-sf2-chooser-callbacks.html#ags-sf2-chooser-instrument-changed"/>
-    <keyword type="function" name="ags_sf2_chooser_sample_changed ()" link="ags-ags-sf2-chooser-callbacks.html#ags-sf2-chooser-sample-changed"/>
     <keyword type="function" name="ags_panel_new ()" link="AgsPanel.html#ags-panel-new" since="0.3"/>
     <keyword type="function" name="ags_panel_parent_set_callback ()" link="ags-ags-panel-callbacks.html#ags-panel-parent-set-callback"/>
     <keyword type="function" name="ags_panel_input_line_new ()" link="AgsPanelInputLine.html#ags-panel-input-line-new" since="0.4"/>
@@ -2049,6 +2627,24 @@
     <keyword type="function" name="ags_matrix_loop_button_callback ()" link="ags-ags-matrix-callbacks.html#ags-matrix-loop-button-callback"/>
     <keyword type="function" name="ags_matrix_tact_callback ()" link="ags-ags-matrix-callbacks.html#ags-matrix-tact-callback"/>
     <keyword type="function" name="ags_matrix_done_callback ()" link="ags-ags-matrix-callbacks.html#ags-matrix-done-callback"/>
+    <keyword type="macro" name="AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH" link="AgsCellPattern.html#AGS-CELL-PATTERN-DEFAULT-CELL-WIDTH:CAPS"/>
+    <keyword type="macro" name="AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT" link="AgsCellPattern.html#AGS-CELL-PATTERN-DEFAULT-CELL-HEIGHT:CAPS"/>
+    <keyword type="macro" name="AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY" link="AgsCellPattern.html#AGS-CELL-PATTERN-MAX-CONTROLS-SHOWN-HORIZONTALLY:CAPS"/>
+    <keyword type="macro" name="AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY" link="AgsCellPattern.html#AGS-CELL-PATTERN-MAX-CONTROLS-SHOWN-VERTICALLY:CAPS"/>
+    <keyword type="macro" name="AGS_CELL_PATTERN_DEFAULT_CONTROLS_HORIZONTALLY" link="AgsCellPattern.html#AGS-CELL-PATTERN-DEFAULT-CONTROLS-HORIZONTALLY:CAPS"/>
+    <keyword type="macro" name="AGS_CELL_PATTERN_DEFAULT_CONTROLS_VERTICALLY" link="AgsCellPattern.html#AGS-CELL-PATTERN-DEFAULT-CONTROLS-VERTICALLY:CAPS"/>
+    <keyword type="function" name="ags_cell_pattern_paint ()" link="AgsCellPattern.html#ags-cell-pattern-paint"/>
+    <keyword type="function" name="ags_cell_pattern_draw_gutter ()" link="AgsCellPattern.html#ags-cell-pattern-draw-gutter"/>
+    <keyword type="function" name="ags_cell_pattern_draw_matrix ()" link="AgsCellPattern.html#ags-cell-pattern-draw-matrix"/>
+    <keyword type="function" name="ags_cell_pattern_draw_cursor ()" link="AgsCellPattern.html#ags-cell-pattern-draw-cursor"/>
+    <keyword type="function" name="ags_cell_pattern_redraw_gutter_point ()" link="AgsCellPattern.html#ags-cell-pattern-redraw-gutter-point"/>
+    <keyword type="function" name="ags_cell_pattern_highlight_gutter_point ()" link="AgsCellPattern.html#ags-cell-pattern-highlight-gutter-point"/>
+    <keyword type="function" name="ags_cell_pattern_unpaint_gutter_point ()" link="AgsCellPattern.html#ags-cell-pattern-unpaint-gutter-point"/>
+    <keyword type="function" name="ags_cell_pattern_blink_worker ()" link="AgsCellPattern.html#ags-cell-pattern-blink-worker"/>
+    <keyword type="function" name="ags_cell_pattern_new ()" link="AgsCellPattern.html#ags-cell-pattern-new" since="0.5"/>
+    <keyword type="enum" name="enum AgsCellPatternFlags" link="AgsCellPattern.html#AgsCellPatternFlags"/>
+    <keyword type="enum" name="enum AgsCellPatternKeyMask" link="AgsCellPattern.html#AgsCellPatternKeyMask"/>
+    <keyword type="enum" name="enum AgsCellPatternAction" link="AgsCellPattern.html#AgsCellPatternAction"/>
     <keyword type="function" name="ags_synth_new ()" link="AgsSynth.html#ags-synth-new" since="0.3"/>
     <keyword type="enum" name="enum AgsSynthFlags" link="AgsSynth.html#AgsSynthFlags"/>
     <keyword type="function" name="ags_synth_parent_set_callback ()" link="ags-ags-synth-callbacks.html#ags-synth-parent-set-callback"/>
@@ -2078,6 +2674,46 @@
     <keyword type="function" name="ags_ffplayer_drawing_area_configure_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-configure-callback"/>
     <keyword type="function" name="ags_ffplayer_drawing_area_button_press_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-button-press-callback"/>
     <keyword type="function" name="ags_ffplayer_hscrollbar_value_changed ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-hscrollbar-value-changed"/>
+    <keyword type="function" name="ags_ffplayer_bridge_new ()" link="AgsFFPlayerBridge.html#ags-ffplayer-bridge-new" since="0.4"/>
+    <keyword type="function" name="ags_ffplayer_bulk_input_new ()" link="AgsFFPlayerBulkInput.html#ags-ffplayer-bulk-input-new" since="0.4"/>
+    <keyword type="macro" name="AGS_FFPLAYER_BULK_INPUT_DEFAULT_VERSION" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-DEFAULT-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_FFPLAYER_BULK_INPUT_DEFAULT_BUILD_ID" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-DEFAULT-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsFFPlayerBulkInputFlags" link="AgsFFPlayerBulkInput.html#AgsFFPlayerBulkInputFlags"/>
+    <keyword type="function" name="ags_ffplayer_bulk_input_new ()" link="AgsFFPlayerBulkInput.html#ags-ffplayer-bulk-input-new" since="0.4"/>
+    <keyword type="macro" name="AGS_FFPLAYER_BULK_INPUT_DEFAULT_VERSION" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-DEFAULT-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_FFPLAYER_BULK_INPUT_DEFAULT_BUILD_ID" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-DEFAULT-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsFFPlayerBulkInputFlags" link="AgsFFPlayerBulkInput.html#AgsFFPlayerBulkInputFlags"/>
+    <keyword type="function" name="ags_ffplayer_input_line_new ()" link="AgsFFPlayerInputLine.html#ags-ffplayer-input-line-new" since="0.4"/>
+    <keyword type="function" name="ags_ffplayer_input_line_notify_channel_callback ()" link="ags-ags-ffplayer-input-line-callbacks.html#ags-ffplayer-input-line-notify-channel-callback"/>
+    <keyword type="function" name="ags_ffplayer_input_pad_new ()" link="AgsFFPlayerInputPad.html#ags-ffplayer-input-pad-new" since="0.4"/>
+    <keyword type="function" name="ags_ffplayer_paint ()" link="AgsFFPlayer.html#ags-ffplayer-paint"/>
+    <keyword type="function" name="ags_ffplayer_new ()" link="AgsFFPlayer.html#ags-ffplayer-new" since="0.3"/>
+    <keyword type="function" name="ags_ffplayer_parent_set_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-parent-set-callback"/>
+    <keyword type="function" name="ags_ffplayer_destroy_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-destroy-callback"/>
+    <keyword type="function" name="ags_ffplayer_open_clicked_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-open-clicked-callback"/>
+    <keyword type="function" name="ags_ffplayer_open_dialog_response_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-open-dialog-response-callback"/>
+    <keyword type="function" name="ags_ffplayer_preset_changed_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-preset-changed-callback"/>
+    <keyword type="function" name="ags_ffplayer_instrument_changed_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-instrument-changed-callback"/>
+    <keyword type="function" name="ags_ffplayer_drawing_area_expose_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-expose-callback"/>
+    <keyword type="function" name="ags_ffplayer_drawing_area_configure_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-configure-callback"/>
+    <keyword type="function" name="ags_ffplayer_drawing_area_button_press_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-button-press-callback"/>
+    <keyword type="function" name="ags_ffplayer_hscrollbar_value_changed ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-hscrollbar-value-changed"/>
+    <keyword type="function" name="ags_ladspa_bridge_load ()" link="AgsLadspaBridge.html#ags-ladspa-bridge-load"/>
+    <keyword type="function" name="ags_ladspa_bridge_new ()" link="AgsLadspaBridge.html#ags-ladspa-bridge-new" since="0.4.3"/>
+    <keyword type="macro" name="AGS_LADSPA_BRIDGE_DEFAULT_VERSION" link="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-DEFAULT-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID" link="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-DEFAULT-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsLadspaBridgeFlags" link="AgsLadspaBridge.html#AgsLadspaBridgeFlags"/>
+    <keyword type="property" name="The “effect” property" link="AgsLadspaBridge.html#AgsLadspaBridge--effect"/>
+    <keyword type="property" name="The “filename” property" link="AgsLadspaBridge.html#AgsLadspaBridge--filename"/>
+    <keyword type="property" name="The “index” property" link="AgsLadspaBridge.html#AgsLadspaBridge--index"/>
+    <keyword type="function" name="ags_lv2_bridge_load ()" link="AgsLv2Bridge.html#ags-lv2-bridge-load"/>
+    <keyword type="function" name="ags_lv2_bridge_new ()" link="AgsLv2Bridge.html#ags-lv2-bridge-new" since="0.4.3"/>
+    <keyword type="macro" name="AGS_LV2_BRIDGE_DEFAULT_VERSION" link="AgsLv2Bridge.html#AGS-LV2-BRIDGE-DEFAULT-VERSION:CAPS"/>
+    <keyword type="macro" name="AGS_LV2_BRIDGE_DEFAULT_BUILD_ID" link="AgsLv2Bridge.html#AGS-LV2-BRIDGE-DEFAULT-BUILD-ID:CAPS"/>
+    <keyword type="enum" name="enum AgsLv2BridgeFlags" link="AgsLv2Bridge.html#AgsLv2BridgeFlags"/>
+    <keyword type="property" name="The “filename” property" link="AgsLv2Bridge.html#AgsLv2Bridge--filename"/>
+    <keyword type="property" name="The “index” property" link="AgsLv2Bridge.html#AgsLv2Bridge--index"/>
+    <keyword type="property" name="The “uri” property" link="AgsLv2Bridge.html#AgsLv2Bridge--uri"/>
     <keyword type="function" name="ags_registry_entry_alloc ()" link="AgsRegistry.html#ags-registry-entry-alloc"/>
     <keyword type="function" name="ags_registry_add ()" link="AgsRegistry.html#ags-registry-add"/>
     <keyword type="function" name="ags_registry_entry_find ()" link="AgsRegistry.html#ags-registry-entry-find"/>
@@ -2097,6 +2733,15 @@
     <keyword type="enum" name="enum AgsServerFlags" link="AgsServer.html#AgsServerFlags"/>
     <keyword type="property" name="The “application-context” property" link="AgsServer.html#AgsServer--application-context"/>
     <keyword type="signal" name="The “start” signal" link="AgsServer.html#AgsServer-start"/>
+    <keyword type="function" name="ags_server_application_context_new ()" link="AgsServerApplicationContext.html#ags-server-application-context-new"/>
+    <keyword type="macro" name="AGS_SERVER_BUILD_ID" link="AgsServerApplicationContext.html#AGS-SERVER-BUILD-ID:CAPS"/>
+    <keyword type="macro" name="AGS_SERVER_DEFAULT_VERSION" link="AgsServerApplicationContext.html#AGS-SERVER-DEFAULT-VERSION:CAPS"/>
+    <keyword type="enum" name="enum AgsServerApplicationContextFlags" link="AgsServerApplicationContext.html#AgsServerApplicationContextFlags"/>
+    <keyword type="function" name="ags_service_provider_get_server ()" link="AgsServiceProvider.html#ags-service-provider-get-server"/>
+    <keyword type="constant" name="AGS_TURTLE_READ_SUBJECT" link="AgsTurtle.html#AGS-TURTLE-READ-SUBJECT:CAPS"/>
+    <keyword type="constant" name="AGS_TURTLE_READ_VERB" link="AgsTurtle.html#AGS-TURTLE-READ-VERB:CAPS"/>
+    <keyword type="constant" name="AGS_TURTLE_READ_OBJECT" link="AgsTurtle.html#AGS-TURTLE-READ-OBJECT:CAPS"/>
+    <keyword type="constant" name="AGS_TURTLE_TRIPLE_END" link="AgsTurtle.html#AGS-TURTLE-TRIPLE-END:CAPS"/>
     <keyword type="constant" name="AGS_APPLICATION_CONTEXT_DEFAULT" link="AgsApplicationContext.html#AGS-APPLICATION-CONTEXT-DEFAULT:CAPS"/>
     <keyword type="constant" name="AGS_APPLICATION_CONTEXT_REGISTER_TYPES" link="AgsApplicationContext.html#AGS-APPLICATION-CONTEXT-REGISTER-TYPES:CAPS"/>
     <keyword type="constant" name="AGS_APPLICATION_CONTEXT_ADD_TO_REGISTRY" link="AgsApplicationContext.html#AGS-APPLICATION-CONTEXT-ADD-TO-REGISTRY:CAPS"/>
@@ -2104,13 +2749,21 @@
     <keyword type="constant" name="AGS_APPLICATION_CONTEXT_TYPES_REGISTERED" link="AgsApplicationContext.html#AGS-APPLICATION-CONTEXT-TYPES-REGISTERED:CAPS"/>
     <keyword type="constant" name="AGS_APPLICATION_CONTEXT_READY" link="AgsApplicationContext.html#AGS-APPLICATION-CONTEXT-READY:CAPS"/>
     <keyword type="constant" name="AGS_APPLICATION_CONTEXT_CONNECTED" link="AgsApplicationContext.html#AGS-APPLICATION-CONTEXT-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_SOUNDCARD_RESOLUTION_8_BIT" link="AgsSoundcard.html#AGS-SOUNDCARD-RESOLUTION-8-BIT:CAPS"/>
+    <keyword type="constant" name="AGS_SOUNDCARD_RESOLUTION_16_BIT" link="AgsSoundcard.html#AGS-SOUNDCARD-RESOLUTION-16-BIT:CAPS"/>
+    <keyword type="constant" name="AGS_SOUNDCARD_RESOLUTION_24_BIT" link="AgsSoundcard.html#AGS-SOUNDCARD-RESOLUTION-24-BIT:CAPS"/>
+    <keyword type="constant" name="AGS_SOUNDCARD_RESOLUTION_32_BIT" link="AgsSoundcard.html#AGS-SOUNDCARD-RESOLUTION-32-BIT:CAPS"/>
+    <keyword type="constant" name="AGS_SOUNDCARD_RESOLUTION_64_BIT" link="AgsSoundcard.html#AGS-SOUNDCARD-RESOLUTION-64-BIT:CAPS"/>
     <keyword type="constant" name="AGS_FILE_READ" link="AgsFile.html#AGS-FILE-READ:CAPS"/>
     <keyword type="constant" name="AGS_FILE_READ_AUDIO_SIGNAL" link="AgsFile.html#AGS-FILE-READ-AUDIO-SIGNAL:CAPS"/>
     <keyword type="constant" name="AGS_FILE_READ_EMBEDDED_AUDIO" link="AgsFile.html#AGS-FILE-READ-EMBEDDED-AUDIO:CAPS"/>
     <keyword type="constant" name="AGS_FILE_WRITE" link="AgsFile.html#AGS-FILE-WRITE:CAPS"/>
     <keyword type="constant" name="AGS_FILE_WRITE_AUDIO_SIGNAL" link="AgsFile.html#AGS-FILE-WRITE-AUDIO-SIGNAL:CAPS"/>
     <keyword type="constant" name="AGS_FILE_WRITE_EMBEDDED_AUDIO" link="AgsFile.html#AGS-FILE-WRITE-EMBEDDED-AUDIO:CAPS"/>
+    <keyword type="constant" name="AGS_DSSI_PLUGIN_IS_LOADED" link="AgsDssiManager.html#AGS-DSSI-PLUGIN-IS-LOADED:CAPS"/>
     <keyword type="constant" name="AGS_LADSPA_PLUGIN_IS_LOADED" link="AgsLadspaManager.html#AGS-LADSPA-PLUGIN-IS-LOADED:CAPS"/>
+    <keyword type="constant" name="AGS_LV2_PLUGIN_IS_LOADED" link="AgsLv2Manager.html#AGS-LV2-PLUGIN-IS-LOADED:CAPS"/>
+    <keyword type="constant" name="AGS_LV2UI_PLUGIN_IS_LOADED" link="AgsLv2uiManager.html#AGS-LV2UI-PLUGIN-IS-LOADED:CAPS"/>
     <keyword type="constant" name="AGS_DIAL_WITH_BUTTONS" link="AgsDial.html#AGS-DIAL-WITH-BUTTONS:CAPS"/>
     <keyword type="constant" name="AGS_DIAL_MOUSE_BUTTON_PRESSED" link="AgsDial.html#AGS-DIAL-MOUSE-BUTTON-PRESSED:CAPS"/>
     <keyword type="constant" name="AGS_DIAL_BUTTON_DOWN_PRESSED" link="AgsDial.html#AGS-DIAL-BUTTON-DOWN-PRESSED:CAPS"/>
@@ -2162,6 +2815,8 @@
     <keyword type="constant" name="AGS_THREAD_SINGLE_LOOP" link="AgsThread.html#AGS-THREAD-SINGLE-LOOP:CAPS"/>
     <keyword type="constant" name="AGS_THREAD_READY" link="AgsThread.html#AGS-THREAD-READY:CAPS"/>
     <keyword type="constant" name="AGS_THREAD_UNREF_ON_EXIT" link="AgsThread.html#AGS-THREAD-UNREF-ON-EXIT:CAPS"/>
+    <keyword type="constant" name="AGS_THREAD_CONNECTED" link="AgsThread.html#AGS-THREAD-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_THREAD_APPLICATION_CONTEXT_SINGLE_THREAD" link="AgsThreadApplicationContext.html#AGS-THREAD-APPLICATION-CONTEXT-SINGLE-THREAD:CAPS"/>
     <keyword type="constant" name="AGS_THREAD_POOL_RUNNING" link="AgsThreadPool.html#AGS-THREAD-POOL-RUNNING:CAPS"/>
     <keyword type="constant" name="AGS_THREAD_POOL_READY" link="AgsThreadPool.html#AGS-THREAD-POOL-READY:CAPS"/>
     <keyword type="constant" name="AGS_ACCELERATION_DEFAULT_START" link="AgsAcceleration.html#AGS-ACCELERATION-DEFAULT-START:CAPS"/>
@@ -2189,6 +2844,7 @@
     <keyword type="constant" name="AGS_ATTACK_INITIAL_RUN" link="AgsAudioSignal.html#AGS-ATTACK-INITIAL-RUN:CAPS"/>
     <keyword type="constant" name="AGS_ATTACK_SWAP" link="AgsAudioSignal.html#AGS-ATTACK-SWAP:CAPS"/>
     <keyword type="constant" name="AGS_AUTOMATION_BYPASS" link="AgsAutomation.html#AGS-AUTOMATION-BYPASS:CAPS"/>
+    <keyword type="constant" name="AGS_CHANNEL_CONNECTED" link="AgsChannel.html#AGS-CHANNEL-CONNECTED:CAPS"/>
     <keyword type="constant" name="AGS_CHANNEL_RUNNING" link="AgsChannel.html#AGS-CHANNEL-RUNNING:CAPS"/>
     <keyword type="constant" name="AGS_CHANNEL_RECALL_ID_RUN_STAGE" link="AgsChannel.html#AGS-CHANNEL-RECALL-ID-RUN-STAGE:CAPS"/>
     <keyword type="constant" name="AGS_CHANNEL_RECALL_ID_CANCEL" link="AgsChannel.html#AGS-CHANNEL-RECALL-ID-CANCEL:CAPS"/>
@@ -2206,6 +2862,19 @@
     <keyword type="constant" name="AGS_DEVOUT_NONBLOCKING" link="AgsDevout.html#AGS-DEVOUT-NONBLOCKING:CAPS"/>
     <keyword type="constant" name="AGS_DEVOUT_INITIALIZED" link="AgsDevout.html#AGS-DEVOUT-INITIALIZED:CAPS"/>
     <keyword type="constant" name="AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD" link="AgsDevout.html#AGS-DEVOUT-ERROR-LOCKED-SOUNDCARD:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_BUFFER0" link="AgsMidiin.html#AGS-MIDIIN-BUFFER0:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_BUFFER1" link="AgsMidiin.html#AGS-MIDIIN-BUFFER1:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_BUFFER2" link="AgsMidiin.html#AGS-MIDIIN-BUFFER2:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_BUFFER3" link="AgsMidiin.html#AGS-MIDIIN-BUFFER3:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_ATTACK_FIRST" link="AgsMidiin.html#AGS-MIDIIN-ATTACK-FIRST:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_RECORD" link="AgsMidiin.html#AGS-MIDIIN-RECORD:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_OSS" link="AgsMidiin.html#AGS-MIDIIN-OSS:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_ALSA" link="AgsMidiin.html#AGS-MIDIIN-ALSA:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_SHUTDOWN" link="AgsMidiin.html#AGS-MIDIIN-SHUTDOWN:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_START_RECORD" link="AgsMidiin.html#AGS-MIDIIN-START-RECORD:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_NONBLOCKING" link="AgsMidiin.html#AGS-MIDIIN-NONBLOCKING:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_INITIALIZED" link="AgsMidiin.html#AGS-MIDIIN-INITIALIZED:CAPS"/>
+    <keyword type="constant" name="AGS_MIDIIN_ERROR_LOCKED_SOUNDCARD" link="AgsMidiin.html#AGS-MIDIIN-ERROR-LOCKED-SOUNDCARD:CAPS"/>
     <keyword type="constant" name="AGS_NOTATION_STICKY" link="AgsNotation.html#AGS-NOTATION-STICKY:CAPS"/>
     <keyword type="constant" name="AGS_NOTATION_PATTERN_MODE" link="AgsNotation.html#AGS-NOTATION-PATTERN-MODE:CAPS"/>
     <keyword type="constant" name="AGS_NOTE_GUI" link="AgsNote.html#AGS-NOTE-GUI:CAPS"/>
@@ -2314,6 +2983,71 @@
     <keyword type="constant" name="AGS_RECYCLING_THREAD_LOCKED_PARENT" link="AgsRecyclingThread.html#AGS-RECYCLING-THREAD-LOCKED-PARENT:CAPS"/>
     <keyword type="constant" name="AGS_RECYCLING_THREAD_WORKER_WAIT" link="AgsRecyclingThread.html#AGS-RECYCLING-THREAD-WORKER-WAIT:CAPS"/>
     <keyword type="constant" name="AGS_RECYCLING_THREAD_WORKER_DONE" link="AgsRecyclingThread.html#AGS-RECYCLING-THREAD-WORKER-DONE:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_SERVER_CONNECTED" link="AgsJackServer.html#AGS-JACK-SERVER-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_CLIENT_CONNECTED" link="AgsJackClient.html#AGS-JACK-CLIENT-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_PORT_CONNECTED" link="AgsJackPort.html#AGS-JACK-PORT-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_BUFFER0" link="AgsJackDevout.html#AGS-JACK-DEVOUT-BUFFER0:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_BUFFER1" link="AgsJackDevout.html#AGS-JACK-DEVOUT-BUFFER1:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_BUFFER2" link="AgsJackDevout.html#AGS-JACK-DEVOUT-BUFFER2:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_BUFFER3" link="AgsJackDevout.html#AGS-JACK-DEVOUT-BUFFER3:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_ATTACK_FIRST" link="AgsJackDevout.html#AGS-JACK-DEVOUT-ATTACK-FIRST:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_PLAY" link="AgsJackDevout.html#AGS-JACK-DEVOUT-PLAY:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_SHUTDOWN" link="AgsJackDevout.html#AGS-JACK-DEVOUT-SHUTDOWN:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_START_PLAY" link="AgsJackDevout.html#AGS-JACK-DEVOUT-START-PLAY:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_NONBLOCKING" link="AgsJackDevout.html#AGS-JACK-DEVOUT-NONBLOCKING:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_INITIALIZED" link="AgsJackDevout.html#AGS-JACK-DEVOUT-INITIALIZED:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_DUMMY" link="AgsJackDevout.html#AGS-JACK-DEVOUT-DUMMY:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_OSS" link="AgsJackDevout.html#AGS-JACK-DEVOUT-OSS:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_ALSA" link="AgsJackDevout.html#AGS-JACK-DEVOUT-ALSA:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_FREEBOB" link="AgsJackDevout.html#AGS-JACK-DEVOUT-FREEBOB:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_FIREWIRE" link="AgsJackDevout.html#AGS-JACK-DEVOUT-FIREWIRE:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_NET" link="AgsJackDevout.html#AGS-JACK-DEVOUT-NET:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_SUN" link="AgsJackDevout.html#AGS-JACK-DEVOUT-SUN:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_PORTAUDIO" link="AgsJackDevout.html#AGS-JACK-DEVOUT-PORTAUDIO:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_DEVOUT_ERROR_LOCKED_SOUNDCARD" link="AgsJackDevout.html#AGS-JACK-DEVOUT-ERROR-LOCKED-SOUNDCARD:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_BUFFER0" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-BUFFER0:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_BUFFER1" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-BUFFER1:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_BUFFER2" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-BUFFER2:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_BUFFER3" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-BUFFER3:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_ATTACK_FIRST" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-ATTACK-FIRST:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_RECORD" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-RECORD:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_SHUTDOWN" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-SHUTDOWN:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_START_RECORD" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-START-RECORD:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_NONBLOCKING" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-NONBLOCKING:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_INITIALIZED" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-INITIALIZED:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_DUMMY" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-DUMMY:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_OSS" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-OSS:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_ALSA" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-ALSA:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_FREEBOB" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-FREEBOB:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_FIREWIRE" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-FIREWIRE:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_NET" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-NET:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_SUN" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-SUN:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_PORTAUDIO" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-PORTAUDIO:CAPS"/>
+    <keyword type="constant" name="AGS_JACK_MIDIIN_ERROR_LOCKED_SOUNDCARD" link="AgsJackMidiin.html#AGS-JACK-MIDIIN-ERROR-LOCKED-SOUNDCARD:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_KEY_OFF" link="AgsMidiFile.html#AGS-MIDI-FILE-KEY-OFF:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_KEY_ON" link="AgsMidiFile.html#AGS-MIDI-FILE-KEY-ON:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_KEY_PRESSURE" link="AgsMidiFile.html#AGS-MIDI-FILE-KEY-PRESSURE:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_CHANGE_PARAMETER" link="AgsMidiFile.html#AGS-MIDI-FILE-CHANGE-PARAMETER:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_CHANGE_PROGRAM" link="AgsMidiFile.html#AGS-MIDI-FILE-CHANGE-PROGRAM:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_CHANNEL_PRESSURE" link="AgsMidiFile.html#AGS-MIDI-FILE-CHANNEL-PRESSURE:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_CHANGE_PITCH_BEND" link="AgsMidiFile.html#AGS-MIDI-FILE-CHANGE-PITCH-BEND:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_SYSEX" link="AgsMidiFile.html#AGS-MIDI-FILE-SYSEX:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_QUARTER_FRAME" link="AgsMidiFile.html#AGS-MIDI-FILE-QUARTER-FRAME:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_SONG_POSITION" link="AgsMidiFile.html#AGS-MIDI-FILE-SONG-POSITION:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_SONG_SELECT" link="AgsMidiFile.html#AGS-MIDI-FILE-SONG-SELECT:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_UNDEFINED_0" link="AgsMidiFile.html#AGS-MIDI-FILE-UNDEFINED-0:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_UNDEFINED_1" link="AgsMidiFile.html#AGS-MIDI-FILE-UNDEFINED-1:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_TUNE_REQUEST" link="AgsMidiFile.html#AGS-MIDI-FILE-TUNE-REQUEST:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_SYSEX_END" link="AgsMidiFile.html#AGS-MIDI-FILE-SYSEX-END:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_META_EVENT" link="AgsMidiFile.html#AGS-MIDI-FILE-META-EVENT:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_EOF" link="AgsMidiFile.html#AGS-MIDI-FILE-EOF:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_SMTPE" link="AgsMidiFile.html#AGS-MIDI-FILE-SMTPE:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_FILE_DROP_FRAME" link="AgsMidiFile.html#AGS-MIDI-FILE-DROP-FRAME:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_PARSER_EOF" link="AgsMidiParser.html#AGS-MIDI-PARSER-EOF:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_PARSER_EOT" link="AgsMidiParser.html#AGS-MIDI-PARSER-EOT:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_CHUNK_HEADER" link="AgsMidiParser.html#AGS-MIDI-CHUNK-HEADER:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_CHUNK_TRACK" link="AgsMidiParser.html#AGS-MIDI-CHUNK-TRACK:CAPS"/>
+    <keyword type="constant" name="AGS_MIDI_CHUNK_UNKNOWN" link="AgsMidiParser.html#AGS-MIDI-CHUNK-UNKNOWN:CAPS"/>
     <keyword type="constant" name="AGS_IPATCH_DLS2" link="AgsIpatch.html#AGS-IPATCH-DLS2:CAPS"/>
     <keyword type="constant" name="AGS_IPATCH_SF2" link="AgsIpatch.html#AGS-IPATCH-SF2:CAPS"/>
     <keyword type="constant" name="AGS_IPATCH_GIG" link="AgsIpatch.html#AGS-IPATCH-GIG:CAPS"/>
@@ -2321,6 +3055,9 @@
     <keyword type="constant" name="AGS_SF2_PHDR" link="AgsIpatchSF2Reader.html#AGS-SF2-PHDR:CAPS"/>
     <keyword type="constant" name="AGS_SF2_IHDR" link="AgsIpatchSF2Reader.html#AGS-SF2-IHDR:CAPS"/>
     <keyword type="constant" name="AGS_SF2_SHDR" link="AgsIpatchSF2Reader.html#AGS-SF2-SHDR:CAPS"/>
+    <keyword type="constant" name="AGS_DLS2_FILENAME" link="AgsIpatchDLS2Reader.html#AGS-DLS2-FILENAME:CAPS"/>
+    <keyword type="constant" name="AGS_DLS2_IHDR" link="AgsIpatchDLS2Reader.html#AGS-DLS2-IHDR:CAPS"/>
+    <keyword type="constant" name="AGS_DLS2_SHDR" link="AgsIpatchDLS2Reader.html#AGS-DLS2-SHDR:CAPS"/>
     <keyword type="constant" name="AGS_SNDFILE_ITER_START" link="AgsSndfile.html#AGS-SNDFILE-ITER-START:CAPS"/>
     <keyword type="constant" name="AGS_SNDFILE_VIRTUAL" link="AgsSndfile.html#AGS-SNDFILE-VIRTUAL:CAPS"/>
     <keyword type="constant" name="AGS_PLAYABLE_ERROR_NO_SUCH_LEVEL" link="AgsPlayable.html#AGS-PLAYABLE-ERROR-NO-SUCH-LEVEL:CAPS"/>
@@ -2337,6 +3074,27 @@
     <keyword type="constant" name="AGS_APPLY_SYNTH_SAW" link="AgsApplySynth.html#AGS-APPLY-SYNTH-SAW:CAPS"/>
     <keyword type="constant" name="AGS_APPLY_SYNTH_SQUARE" link="AgsApplySynth.html#AGS-APPLY-SYNTH-SQUARE:CAPS"/>
     <keyword type="constant" name="AGS_APPLY_SYNTH_TRIANGLE" link="AgsApplySynth.html#AGS-APPLY-SYNTH-TRIANGLE:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_CONNECTED" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_DISPLAY_INPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DISPLAY-INPUT:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_BULK_OUTPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-BULK-OUTPUT:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DISPLAY-OUTPUT:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_BULK_INPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-BULK-INPUT:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_CONNECTED" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_DISPLAY_INPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DISPLAY-INPUT:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_BULK_OUTPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-BULK-OUTPUT:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DISPLAY-OUTPUT:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BRIDGE_BULK_INPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-BULK-INPUT:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BULK_CONNECTED" link="AgsEffectBulk.html#AGS-EFFECT-BULK-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BULK_HIDE_BUTTONS" link="AgsEffectBulk.html#AGS-EFFECT-BULK-HIDE-BUTTONS:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BULK_HIDE_ENTRIES" link="AgsEffectBulk.html#AGS-EFFECT-BULK-HIDE-ENTRIES:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_BULK_SHOW_LABELS" link="AgsEffectBulk.html#AGS-EFFECT-BULK-SHOW-LABELS:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_LINE_CONNECTED" link="AgsEffectLine.html#AGS-EFFECT-LINE-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_PAD_CONNECTED" link="AgsEffectPad.html#AGS-EFFECT-PAD-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_PAD_SHOW_GROUPING" link="AgsEffectPad.html#AGS-EFFECT-PAD-SHOW-GROUPING:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_PAD_GROUP_ALL" link="AgsEffectPad.html#AGS-EFFECT-PAD-GROUP-ALL:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_PAD_GROUP_LINE" link="AgsEffectPad.html#AGS-EFFECT-PAD-GROUP-LINE:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_PAD_MAPPED_RECALL" link="AgsEffectPad.html#AGS-EFFECT-PAD-MAPPED-RECALL:CAPS"/>
+    <keyword type="constant" name="AGS_EFFECT_PAD_PREMAPPED_RECALL" link="AgsEffectPad.html#AGS-EFFECT-PAD-PREMAPPED-RECALL:CAPS"/>
     <keyword type="constant" name="AGS_EXPORT_WINDOW_LIVE_EXPORT" link="AgsExportWindow.html#AGS-EXPORT-WINDOW-LIVE-EXPORT:CAPS"/>
     <keyword type="constant" name="AGS_FILE_SELECTION_COMPLETED" link="AgsFileSelection.html#AGS-FILE-SELECTION-COMPLETED:CAPS"/>
     <keyword type="constant" name="AGS_LINE_CONNECTED" link="AgsLine.html#AGS-LINE-CONNECTED:CAPS"/>
@@ -2370,6 +3128,7 @@
     <keyword type="constant" name="AGS_MACHINE_MONO" link="AgsMachine.html#AGS-MACHINE-MONO:CAPS"/>
     <keyword type="constant" name="AGS_MACHINE_POPUP_COPY_PATTERN" link="AgsMachine.html#AGS-MACHINE-POPUP-COPY-PATTERN:CAPS"/>
     <keyword type="constant" name="AGS_MACHINE_POPUP_PASTE_PATTERN" link="AgsMachine.html#AGS-MACHINE-POPUP-PASTE-PATTERN:CAPS"/>
+    <keyword type="constant" name="AGS_MACHINE_POPUP_MIDI_DIALOG" link="AgsMachine.html#AGS-MACHINE-POPUP-MIDI-DIALOG:CAPS"/>
     <keyword type="constant" name="AGS_MACHINE_EDITOR_CLOSING" link="AgsMachineEditor.html#AGS-MACHINE-EDITOR-CLOSING:CAPS"/>
     <keyword type="constant" name="AGS_NAVIGATION_BLOCK_TACT" link="AgsNavigation.html#AGS-NAVIGATION-BLOCK-TACT:CAPS"/>
     <keyword type="constant" name="AGS_NAVIGATION_BLOCK_PLAY" link="AgsNavigation.html#AGS-NAVIGATION-BLOCK-PLAY:CAPS"/>
@@ -2386,6 +3145,7 @@
     <keyword type="constant" name="AGS_WINDOW_LOADING" link="AgsWindow.html#AGS-WINDOW-LOADING:CAPS"/>
     <keyword type="constant" name="AGS_WINDOW_SAVING" link="AgsWindow.html#AGS-WINDOW-SAVING:CAPS"/>
     <keyword type="constant" name="AGS_WINDOW_TERMINATING" link="AgsWindow.html#AGS-WINDOW-TERMINATING:CAPS"/>
+    <keyword type="constant" name="AGS_XORG_APPLICATION_CONTEXT_SHOW_GUI" link="AgsXorgApplicationContext.html#AGS-XORG-APPLICATION-CONTEXT-SHOW-GUI:CAPS"/>
     <keyword type="constant" name="AGS_AUTOMATION_EDIT_RESETING_VERTICALLY" link="AgsAutomationEdit.html#AGS-AUTOMATION-EDIT-RESETING-VERTICALLY:CAPS"/>
     <keyword type="constant" name="AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY" link="AgsAutomationEdit.html#AGS-AUTOMATION-EDIT-RESETING-HORIZONTALLY:CAPS"/>
     <keyword type="constant" name="AGS_AUTOMATION_EDIT_POSITION_CURSOR" link="AgsAutomationEdit.html#AGS-AUTOMATION-EDIT-POSITION-CURSOR:CAPS"/>
@@ -2402,6 +3162,7 @@
     <keyword type="constant" name="AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL" link="AgsNotebook.html#AGS-NOTEBOOK-SHOW-AUDIO-CHANNEL:CAPS"/>
     <keyword type="constant" name="AGS_NOTEBOOK_SHOW_PAD" link="AgsNotebook.html#AGS-NOTEBOOK-SHOW-PAD:CAPS"/>
     <keyword type="constant" name="AGS_NOTEBOOK_SHOW_LINE" link="AgsNotebook.html#AGS-NOTEBOOK-SHOW-LINE:CAPS"/>
+    <keyword type="constant" name="AGS_NOTEBOOK_SHOW_SCROLL_BUTTONS" link="AgsNotebook.html#AGS-NOTEBOOK-SHOW-SCROLL-BUTTONS:CAPS"/>
     <keyword type="constant" name="AGS_NOTEBOOK_TAB_VISIBLE" link="AgsNotebook.html#AGS-NOTEBOOK-TAB-VISIBLE:CAPS"/>
     <keyword type="constant" name="AGS_NOTEBOOK_TAB_MODE_NORMAL" link="AgsNotebook.html#AGS-NOTEBOOK-TAB-MODE-NORMAL:CAPS"/>
     <keyword type="constant" name="AGS_NOTEBOOK_TAB_MODE_OVERLAY" link="AgsNotebook.html#AGS-NOTEBOOK-TAB-MODE-OVERLAY:CAPS"/>
@@ -2422,11 +3183,32 @@
     <keyword type="constant" name="AGS_NOTE_EDIT_KEY_R_SHIFT" link="AgsNoteEdit.html#AGS-NOTE-EDIT-KEY-R-SHIFT:CAPS"/>
     <keyword type="constant" name="AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE" link="AgsDrumInputPad.html#AGS-DRUM-INPUT-PAD-OPEN-PLAY-DONE:CAPS"/>
     <keyword type="constant" name="AGS_DRUM_OUTPUT_PAD_PLAY_DONE" link="AgsDrumOutputPad.html#AGS-DRUM-OUTPUT-PAD-PLAY-DONE:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_CONNECTED" link="AgsCellPattern.html#AGS-CELL-PATTERN-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_CURSOR_ON" link="AgsCellPattern.html#AGS-CELL-PATTERN-CURSOR-ON:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_KEY_L_CONTROL" link="AgsCellPattern.html#AGS-CELL-PATTERN-KEY-L-CONTROL:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_KEY_R_CONTROL" link="AgsCellPattern.html#AGS-CELL-PATTERN-KEY-R-CONTROL:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_MOVE_LEFT" link="AgsCellPattern.html#AGS-CELL-PATTERN-MOVE-LEFT:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_MOVE_RIGHT" link="AgsCellPattern.html#AGS-CELL-PATTERN-MOVE-RIGHT:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_MOVE_UP" link="AgsCellPattern.html#AGS-CELL-PATTERN-MOVE-UP:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_MOVE_DOWN" link="AgsCellPattern.html#AGS-CELL-PATTERN-MOVE-DOWN:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_TOGGLE_PAD" link="AgsCellPattern.html#AGS-CELL-PATTERN-TOGGLE-PAD:CAPS"/>
+    <keyword type="constant" name="AGS_CELL_PATTERN_COPY_PATTERN" link="AgsCellPattern.html#AGS-CELL-PATTERN-COPY-PATTERN:CAPS"/>
     <keyword type="constant" name="AGS_SYNTH_AUTO_UPDATE" link="AgsSynth.html#AGS-SYNTH-AUTO-UPDATE:CAPS"/>
+    <keyword type="constant" name="AGS_FFPLAYER_BULK_INPUT_CONNECTED" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_FFPLAYER_BULK_INPUT_CONNECTED" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_LADSPA_BRIDGE_DISPLAY_INPUT" link="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-DISPLAY-INPUT:CAPS"/>
+    <keyword type="constant" name="AGS_LADSPA_BRIDGE_BULK_OUTPUT" link="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-BULK-OUTPUT:CAPS"/>
+    <keyword type="constant" name="AGS_LADSPA_BRIDGE_DISPLAY_OUTPUT" link="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-DISPLAY-OUTPUT:CAPS"/>
+    <keyword type="constant" name="AGS_LADSPA_BRIDGE_BULK_INPUT" link="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-BULK-INPUT:CAPS"/>
+    <keyword type="constant" name="AGS_LV2_BRIDGE_DISPLAY_INPUT" link="AgsLv2Bridge.html#AGS-LV2-BRIDGE-DISPLAY-INPUT:CAPS"/>
+    <keyword type="constant" name="AGS_LV2_BRIDGE_BULK_OUTPUT" link="AgsLv2Bridge.html#AGS-LV2-BRIDGE-BULK-OUTPUT:CAPS"/>
+    <keyword type="constant" name="AGS_LV2_BRIDGE_DISPLAY_OUTPUT" link="AgsLv2Bridge.html#AGS-LV2-BRIDGE-DISPLAY-OUTPUT:CAPS"/>
+    <keyword type="constant" name="AGS_LV2_BRIDGE_BULK_INPUT" link="AgsLv2Bridge.html#AGS-LV2-BRIDGE-BULK-INPUT:CAPS"/>
     <keyword type="constant" name="AGS_REGISTRY_XML_DOCUMENT" link="AgsRegistry.html#AGS-REGISTRY-XML-DOCUMENT:CAPS"/>
     <keyword type="constant" name="AGS_REGISTRY_XML_RPC" link="AgsRegistry.html#AGS-REGISTRY-XML-RPC:CAPS"/>
     <keyword type="constant" name="AGS_REGISTRY_DIRTY" link="AgsRegistry.html#AGS-REGISTRY-DIRTY:CAPS"/>
     <keyword type="constant" name="AGS_SERVER_STARTED" link="AgsServer.html#AGS-SERVER-STARTED:CAPS"/>
     <keyword type="constant" name="AGS_SERVER_RUNNING" link="AgsServer.html#AGS-SERVER-RUNNING:CAPS"/>
+    <keyword type="constant" name="AGS_SERVER_APPLICATION_CONTEXT_ENABLE_SERVER" link="AgsServerApplicationContext.html#AGS-SERVER-APPLICATION-CONTEXT-ENABLE-SERVER:CAPS"/>
   </functions>
 </book>

@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <indexdiv id="api-index-0.4.2">
 <indexdiv><title>A</title>
@@ -35,10 +33,22 @@
 <indexentry><primaryie linkends="ags-editor-copy"><link linkend="ags-editor-copy">ags_editor_copy</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-editor-cut"><link linkend="ags-editor-cut">ags_editor_cut</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-editor-paste"><link linkend="ags-editor-paste">ags_editor_paste</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
-<indexentry><primaryie linkends="ags-editor-select-all"><link linkend="ags-editor-select-all">ags_editor_select_all</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>J</title>
+<indexentry><primaryie linkends="AgsJackDevout--delay-factor"><link linkend="AgsJackDevout--delay-factor">AgsJackDevout:delay-factor</link>, object property in <link linkend="AgsJackDevout">AgsJackDevout</link></primaryie></indexentry>
+</indexdiv>
+<indexdiv><title>L</title>
+<indexentry><primaryie linkends="ags-ladspa-browser-combo-box-controls-new"><link linkend="ags-ladspa-browser-combo-box-controls-new">ags_ladspa_browser_combo_box_controls_new</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ladspa-browser-get-plugin-effect"><link linkend="ags-ladspa-browser-get-plugin-effect">ags_ladspa_browser_get_plugin_effect</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ladspa-browser-get-plugin-filename"><link linkend="ags-ladspa-browser-get-plugin-filename">ags_ladspa_browser_get_plugin_filename</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ladspa-browser-new"><link linkend="ags-ladspa-browser-new">ags_ladspa_browser_new</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-lv2-browser-combo-box-controls-new"><link linkend="ags-lv2-browser-combo-box-controls-new">ags_lv2_browser_combo_box_controls_new</link>, function in <link linkend="AgsLv2Browser">AgsLv2Browser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-lv2-browser-get-plugin-filename"><link linkend="ags-lv2-browser-get-plugin-filename">ags_lv2_browser_get_plugin_filename</link>, function in <link linkend="AgsLv2Browser">AgsLv2Browser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-lv2-browser-new"><link linkend="ags-lv2-browser-new">ags_lv2_browser_new</link>, function in <link linkend="AgsLv2Browser">AgsLv2Browser</link></primaryie></indexentry>
 </indexdiv>
 <indexdiv><title>M</title>
 <indexentry><primaryie linkends="ags-machine-set-run-extended"><link linkend="ags-machine-set-run-extended">ags_machine_set_run_extended</link>, function in <link linkend="AgsMachine">AgsMachine</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsMidiParser--file"><link linkend="AgsMidiParser--file">AgsMidiParser:file</link>, object property in <link linkend="AgsMidiParser">AgsMidiParser</link></primaryie></indexentry>
 </indexdiv>
 <indexdiv><title>N</title>
 <indexentry><primaryie linkends="ags-notation-add-all-to-selection"><link linkend="ags-notation-add-all-to-selection">ags_notation_add_all_to_selection</link>, function in <link linkend="AgsNotation">AgsNotation</link></primaryie></indexentry>

@@ -44,10 +44,13 @@
 <span class="refentrytitle"><a href="AgsChannel.html">AgsChannel</a></span><span class="refpurpose"> — Acts as entry point to the audio tree.</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsDevout.html">AgsDevout</a></span><span class="refpurpose"> — Outputting to soundcard</span>
+<span class="refentrytitle"><a href="AgsDevout.html">AgsDevout</a></span><span class="refpurpose"> — Output to soundcard</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsInput.html">AgsInput</a></span><span class="refpurpose"> — Input of <span class="type">AgsAudio</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiin.html">AgsMidiin</a></span><span class="refpurpose"> — Input from sequencer</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsNotation.html">AgsNotation</a></span><span class="refpurpose"> — Notation class supporting selection and clipboard.</span>
@@ -104,6 +107,12 @@
 <span class="refentrytitle"><a href="AgsRecallID.html">AgsRecallID</a></span><span class="refpurpose"> — The object specifies run context.</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsRecallDssi.html">AgsRecallDssi</a></span><span class="refpurpose"> — The object interfacing with DSSI</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallDssiRun.html">AgsRecallDssiRun</a></span><span class="refpurpose"> — The object interfacing with DSSI</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsRecallLadspa.html">AgsRecallLadspa</a></span><span class="refpurpose"> — The object interfacing with LADSPA</span>
 </dt>
 <dt>
@@ -157,16 +166,58 @@
 <span class="refentrytitle"><a href="AgsSoundcardThread.html">AgsSoundcardThread</a></span><span class="refpurpose"> — soundcard thread</span>
 </dt>
 </dl></dd>
+<dt><span class="chapter"><a href="audio-jack.html">Audio JACK - JACK support</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsJackServer.html">AgsJackServer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsJackClient.html">AgsJackClient</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsJackPort.html">AgsJackPort</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsJackDevout.html">AgsJackDevout</a></span><span class="refpurpose"> — Output to soundcard</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsJackMidiin.html">AgsJackMidiin</a></span><span class="refpurpose"> — Input from sequencer</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="audio-midi.html">Audio MIDI - MIDI support</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiFile.html">AgsMidiFile</a></span><span class="refpurpose"> — the menu bar.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiFileReader.html">AgsMidiFileReader</a></span><span class="refpurpose"> — the menu bar.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiFileWriter.html">AgsMidiFileWriter</a></span><span class="refpurpose"> — the menu bar.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiBuilder.html">AgsMidiBuilder</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiParser.html">AgsMidiParser</a></span><span class="refpurpose"> — the menu bar.</span>
+</dt>
+</dl></dd>
 <dt><span class="chapter"><a href="audio-file.html">Audio files - Reading/Writing audio data from disk</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="AgsAudioFile.html">AgsAudioFile</a></span><span class="refpurpose"> — Audio file input/output</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsAudioFileLink.html">AgsAudioFileLink</a></span><span class="refpurpose"> — link objects read of file.</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsIpatch.html">AgsIpatch</a></span><span class="refpurpose"> — Libinstpatch wrapper</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsIpatchSF2Reader.html">AgsIpatchSF2Reader</a></span><span class="refpurpose"> — interfacing Soundfont2 related API of libinstpatch</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsIpatchDLS2Reader.html">AgsIpatchDLS2Reader</a></span><span class="refpurpose"> — interfacing Soundfont2 related API of libinstpatch</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsSndfile.html">AgsSndfile</a></span><span class="refpurpose"> — Libsndfile wrapper</span>
@@ -232,6 +283,18 @@
 <span class="refentrytitle"><a href="AgsDelayAudioRun.html">AgsDelayAudioRun</a></span><span class="refpurpose"> — delay</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsEnvelopeAudioSignal.html">AgsEnvelopeAudioSignal</a></span><span class="refpurpose"> — envelopes audio signal</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEnvelopeChannel.html">AgsEnvelopeChannel</a></span><span class="refpurpose"> — envelopes channel</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEnvelopeChannelRun.html">AgsEnvelopeChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEnvelopeRecycling.html">AgsEnvelopeRecycling</a></span><span class="refpurpose"> — envelopes recycling</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsLoopChannel.html">AgsLoopChannel</a></span><span class="refpurpose"> — loops channel</span>
 </dt>
 <dt>
@@ -289,6 +352,18 @@
 <span class="refentrytitle"><a href="AgsPlayRecycling.html">AgsPlayRecycling</a></span><span class="refpurpose"> — plays recycling</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsRouteDssiAudio.html">AgsRouteDssiAudio</a></span><span class="refpurpose"> — route MIDI to DSSI</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRouteDssiAudioRun.html">AgsRouteDssiAudioRun</a></span><span class="refpurpose"> — route MIDI</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRouteLv2Audio.html">AgsRouteLv2Audio</a></span><span class="refpurpose"> — route MIDI to LV2</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRouteLv2AudioRun.html">AgsRouteLv2AudioRun</a></span><span class="refpurpose"> — route MIDI</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsStreamAudioSignal.html">AgsStreamAudioSignal</a></span><span class="refpurpose"> — streams audio signal</span>
 </dt>
 <dt>
@@ -320,6 +395,9 @@
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsAddRecall.html">AgsAddRecall</a></span><span class="refpurpose"> — add recall object to context</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAddRecallContainer.html">AgsAddRecallContainer</a></span><span class="refpurpose"> — add recall object to context</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsAddRegionToSelection.html">AgsAddRegionToSelection</a></span><span class="refpurpose"> — add region to notation selection</span>

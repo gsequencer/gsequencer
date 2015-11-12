@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsTask">
 <refmeta>
@@ -69,6 +67,8 @@
     <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsTask
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddAudio">AgsAddAudio</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddAudioSignal">AgsAddAudioSignal</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddBulkMember">AgsAddBulkMember</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddEffect">AgsAddEffect</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddLineMember">AgsAddLineMember</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddNote">AgsAddNote</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddPointToSelection">AgsAddPointToSelection</link>
@@ -83,7 +83,6 @@
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplySequencerLength">AgsApplySequencerLength</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplySynth">AgsApplySynth</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplyTact">AgsApplyTact</link>
-        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplyWavetable">AgsApplyWavetable</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAudioSetRecycling">AgsAudioSetRecycling</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsBlinkCellPatternCursor">AgsBlinkCellPatternCursor</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCancelAudio">AgsCancelAudio</link>
@@ -119,7 +118,8 @@
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsStartSoundcard">AgsStartSoundcard</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsToggleLed">AgsToggleLed</link>
         <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsTogglePatternBit">AgsTogglePatternBit</link>
-        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsUnrefAudioSignal">AgsUnrefAudioSignal</link>
+        <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsUnrefAudioSignal">AgsUnrefAudioSignal</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsUpdateBulkMember">AgsUpdateBulkMember</link>
 </screen>
 </refsect1>
 

@@ -2,12 +2,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>AgsSoundcard:  Reference Manual</title>
+<title>AgsSoundcard: Advanced Gtk+ Sequencer Reference Manual</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
-<link rel="home" href="index.html" title="Reference Manual">
-<link rel="up" href="ch01.html" title="[Insert title here]">
-<link rel="prev" href="AgsSoundProvider.html" title="AgsSoundProvider">
-<link rel="next" href="AgsSoundcardThread.html" title="AgsSoundcardThread">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
+<link rel="prev" href="AgsSequencer.html" title="AgsSequencer">
+<link rel="next" href="AgsTactable.html" title="AgsTactable">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -20,9 +20,9 @@
                   <a href="#AgsSoundcard.signals" class="shortcut">Signals</a></span>
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
-<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="AgsSoundProvider.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="AgsSoundcardThread.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsSequencer.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsTactable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="AgsSoundcard"></a><div class="titlepage"></div>
@@ -195,6 +195,14 @@
 </tr>
 <tr>
 <td class="function_type">
+<GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsSoundcard.html#ags-soundcard-is-recording" title="ags_soundcard_is_recording ()">ags_soundcard_is_recording</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
 <GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 </td>
 <td class="function_name">
@@ -207,6 +215,22 @@
 </td>
 <td class="function_name">
 <a class="link" href="AgsSoundcard.html#ags-soundcard-play" title="ags_soundcard_play ()">ags_soundcard_play</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsSoundcard.html#ags-soundcard-record-init" title="ags_soundcard_record_init ()">ags_soundcard_record_init</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsSoundcard.html#ags-soundcard-record" title="ags_soundcard_record ()">ags_soundcard_record</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
 <tr>
@@ -475,7 +499,7 @@ ags_soundcard_set_application_context (<em class="parameter"><code><a class="lin
                                        <em class="parameter"><code><a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a> *application_context</code></em>);</pre>
 <p>Set application context.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.16.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.16.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -505,7 +529,7 @@ ags_soundcard_set_application_context (<em class="parameter"><code><a class="lin
 ags_soundcard_get_application_context (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get application context.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.17.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.17.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -520,7 +544,7 @@ ags_soundcard_get_application_context (<em class="parameter"><code><a class="lin
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.17.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.17.6"></a><h4>Returns</h4>
 <p> <a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
@@ -533,7 +557,7 @@ ags_soundcard_set_application_mutex (<em class="parameter"><code><a class="link"
                                      <em class="parameter"><code><GTKDOCLINK HREF="pthread-mutex-t"><span class="type">pthread_mutex_t</span></GTKDOCLINK> *application_mutex</code></em>);</pre>
 <p>Set application mutex.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.18.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.18.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -563,7 +587,7 @@ ags_soundcard_set_application_mutex (<em class="parameter"><code><a class="link"
 ags_soundcard_get_application_mutex (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get application mutex.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.19.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.19.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -578,7 +602,7 @@ ags_soundcard_get_application_mutex (<em class="parameter"><code><a class="link"
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.19.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.19.6"></a><h4>Returns</h4>
 <p> <GTKDOCLINK HREF="AgsApplicationMutex"><span class="type">AgsApplicationMutex</span></GTKDOCLINK></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -591,7 +615,7 @@ ags_soundcard_set_device (<em class="parameter"><code><a class="link" href="AgsS
                           <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *device_id</code></em>);</pre>
 <p>Set device.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.20.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.20.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -621,7 +645,7 @@ ags_soundcard_set_device (<em class="parameter"><code><a class="link" href="AgsS
 ags_soundcard_get_device (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get device.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.21.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.21.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -636,7 +660,7 @@ ags_soundcard_get_device (<em class="parameter"><code><a class="link" href="AgsS
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.21.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.21.6"></a><h4>Returns</h4>
 <p> the device's identifier</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
@@ -652,7 +676,7 @@ ags_soundcard_set_presets (<em class="parameter"><code><a class="link" href="Ags
                            <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> format</code></em>);</pre>
 <p>Set presets.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.22.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.22.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -686,7 +710,7 @@ ags_soundcard_get_presets (<em class="parameter"><code><a class="link" href="Ags
                            <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> *format</code></em>);</pre>
 <p>Get presets.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.23.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.23.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -713,7 +737,7 @@ ags_soundcard_list_cards (<em class="parameter"><code><a class="link" href="AgsS
  and <em class="parameter"><code>card_name</code></em>
  as a list of strings.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.24.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.24.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -762,7 +786,7 @@ ags_soundcard_pcm_info (<em class="parameter"><code><a class="link" href="AgsSou
 <p>Retrieve detailed information of <em class="parameter"><code>card_id</code></em>
  soundcard.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.25.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.25.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -827,7 +851,7 @@ ags_soundcard_pcm_info (<em class="parameter"><code><a class="link" href="AgsSou
 ags_soundcard_is_starting (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get starting.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.26.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.26.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -842,7 +866,7 @@ ags_soundcard_is_starting (<em class="parameter"><code><a class="link" href="Ags
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.26.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.26.6"></a><h4>Returns</h4>
 <p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if starting, else <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
@@ -854,7 +878,7 @@ ags_soundcard_is_starting (<em class="parameter"><code><a class="link" href="Ags
 ags_soundcard_is_playing (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get playing.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.27.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.27.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -869,10 +893,37 @@ ags_soundcard_is_playing (<em class="parameter"><code><a class="link" href="AgsS
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.27.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.27.6"></a><h4>Returns</h4>
 <p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if playing, else <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-soundcard-is-recording"></a><h3>ags_soundcard_is_recording ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
+ags_soundcard_is_recording (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
+<p>Get recording.</p>
+<div class="refsect3">
+<a name="id-1.4.18.8.28.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>soundcard</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.4.18.8.28.6"></a><h4>Returns</h4>
+<p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if recording, else <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -889,7 +940,7 @@ ags_soundcard_play (<em class="parameter"><code><a class="link" href="AgsSoundca
                     <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);</pre>
 <p>Plays the current buffer of soundcard.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.29.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.30.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -914,12 +965,50 @@ ags_soundcard_play (<em class="parameter"><code><a class="link" href="AgsSoundca
 </div>
 <hr>
 <div class="refsect2">
+<a name="ags-soundcard-record-init"></a><h3>ags_soundcard_record_init ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_soundcard_record_init (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-soundcard-record"></a><h3>ags_soundcard_record ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_soundcard_record (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>,
+                      <em class="parameter"><code><GTKDOCLINK HREF="GError"><span class="type">GError</span></GTKDOCLINK> **error</code></em>);</pre>
+<p>Records the current buffer of soundcard.</p>
+<div class="refsect3">
+<a name="id-1.4.18.8.32.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>soundcard</p></td>
+<td class="parameter_description"><p>an <a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>an error that may occure</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="ags-soundcard-stop"></a><h3>ags_soundcard_stop ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_soundcard_stop (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Stops the soundcard from playing to it.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.30.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.33.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -942,7 +1031,7 @@ ags_soundcard_stop (<em class="parameter"><code><a class="link" href="AgsSoundca
 ags_soundcard_tic (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Callback when counter expires minor note offset.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.31.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.34.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -972,7 +1061,7 @@ ags_soundcard_offset_changed (<em class="parameter"><code><a class="link" href="
 ags_soundcard_get_buffer (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get current playback buffer.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.33.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.36.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -987,7 +1076,7 @@ ags_soundcard_get_buffer (<em class="parameter"><code><a class="link" href="AgsS
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.33.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.36.6"></a><h4>Returns</h4>
 <p> current playback buffer</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.2">0.4.2</GTKDOCLINK></p>
@@ -999,7 +1088,7 @@ ags_soundcard_get_buffer (<em class="parameter"><code><a class="link" href="AgsS
 ags_soundcard_get_next_buffer (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get future playback buffer.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.34.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.37.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1014,7 +1103,7 @@ ags_soundcard_get_next_buffer (<em class="parameter"><code><a class="link" href=
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.34.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.37.6"></a><h4>Returns</h4>
 <p> next playback buffer</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.2">0.4.2</GTKDOCLINK></p>
@@ -1027,7 +1116,7 @@ ags_soundcard_set_bpm (<em class="parameter"><code><a class="link" href="AgsSoun
                        <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> bpm</code></em>);</pre>
 <p>Set current playback bpm.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.35.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.38.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1057,7 +1146,7 @@ ags_soundcard_set_bpm (<em class="parameter"><code><a class="link" href="AgsSoun
 ags_soundcard_get_bpm (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get current playback bpm.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.36.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.39.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1072,7 +1161,7 @@ ags_soundcard_get_bpm (<em class="parameter"><code><a class="link" href="AgsSoun
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.36.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.39.6"></a><h4>Returns</h4>
 <p> bpm</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
@@ -1085,7 +1174,7 @@ ags_soundcard_set_delay_factor (<em class="parameter"><code><a class="link" href
                                 <em class="parameter"><code><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK> delay_factor</code></em>);</pre>
 <p>Set current playback delay factor.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.37.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.40.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1115,7 +1204,7 @@ ags_soundcard_set_delay_factor (<em class="parameter"><code><a class="link" href
 ags_soundcard_get_delay_factor (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get current playback delay factor.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.38.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.41.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1130,7 +1219,7 @@ ags_soundcard_get_delay_factor (<em class="parameter"><code><a class="link" href
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.38.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.41.6"></a><h4>Returns</h4>
 <p> delay factor</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
@@ -1142,7 +1231,7 @@ ags_soundcard_get_delay_factor (<em class="parameter"><code><a class="link" href
 ags_soundcard_get_delay (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get current playback delay.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.39.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.42.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1157,7 +1246,7 @@ ags_soundcard_get_delay (<em class="parameter"><code><a class="link" href="AgsSo
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.39.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.42.6"></a><h4>Returns</h4>
 <p> delay</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.2">0.4.2</GTKDOCLINK></p>
@@ -1169,7 +1258,7 @@ ags_soundcard_get_delay (<em class="parameter"><code><a class="link" href="AgsSo
 ags_soundcard_get_attack (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get current playback attack.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.40.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.43.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1184,7 +1273,7 @@ ags_soundcard_get_attack (<em class="parameter"><code><a class="link" href="AgsS
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.40.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.43.6"></a><h4>Returns</h4>
 <p> attack</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.2">0.4.2</GTKDOCLINK></p>
@@ -1197,7 +1286,7 @@ ags_soundcard_set_note_offset (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> note_offset</code></em>);</pre>
 <p>Set current playback note offset.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.41.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.44.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1227,7 +1316,7 @@ ags_soundcard_set_note_offset (<em class="parameter"><code><a class="link" href=
 ags_soundcard_get_note_offset (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get current playback note offset.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.42.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.45.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1242,7 +1331,7 @@ ags_soundcard_get_note_offset (<em class="parameter"><code><a class="link" href=
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.42.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.45.6"></a><h4>Returns</h4>
 <p> offset</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.2">0.4.2</GTKDOCLINK></p>
@@ -1255,7 +1344,7 @@ ags_soundcard_set_audio (<em class="parameter"><code><a class="link" href="AgsSo
                          <em class="parameter"><code><GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> *audio</code></em>);</pre>
 <p>Set audio.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.43.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.46.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1285,7 +1374,7 @@ ags_soundcard_set_audio (<em class="parameter"><code><a class="link" href="AgsSo
 ags_soundcard_get_audio (<em class="parameter"><code><a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> *soundcard</code></em>);</pre>
 <p>Get audio.</p>
 <div class="refsect3">
-<a name="id-1.2.321.8.44.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.8.47.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1300,7 +1389,7 @@ ags_soundcard_get_audio (<em class="parameter"><code><a class="link" href="AgsSo
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.2.321.8.44.6"></a><h4>Returns</h4>
+<a name="id-1.4.18.8.47.6"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> container <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
@@ -1317,7 +1406,7 @@ ags_soundcard_get_audio (<em class="parameter"><code><a class="link" href="AgsSo
 <div class="refsect2">
 <a name="AgsSoundcardResolutionMode"></a><h3>enum AgsSoundcardResolutionMode</h3>
 <div class="refsect3">
-<a name="id-1.2.321.9.3.3"></a><h4>Members</h4>
+<a name="id-1.4.18.9.3.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -1366,7 +1455,7 @@ user_function (<a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><sp
 <p>The ::offset-changed signal notifies about changed position within
 notation.</p>
 <div class="refsect3">
-<a name="id-1.2.321.10.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.10.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1403,7 +1492,7 @@ user_function (<a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><sp
 <p>The ::tic signal is emitted every tic of the soundcard. This notifies
 about a newly played buffer.</p>
 <div class="refsect3">
-<a name="id-1.2.321.10.3.5"></a><h4>Parameters</h4>
+<a name="id-1.4.18.10.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">

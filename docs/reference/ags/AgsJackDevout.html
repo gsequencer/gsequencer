@@ -1,0 +1,524 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsJackDevout: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="audio-jack.html" title="Audio JACK - JACK support">
+<link rel="prev" href="AgsJackPort.html" title="AgsJackPort">
+<link rel="next" href="AgsJackMidiin.html" title="AgsJackMidiin">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsJackDevout.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsJackDevout.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsJackDevout.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="audio-jack.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsJackPort.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsJackMidiin.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsJackDevout"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsJackDevout.top_of_page"></a>AgsJackDevout</span></h2>
+<p>AgsJackDevout — Output to soundcard</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsJackDevout.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsJackDevout.html#AGS-JACK-DEVOUT-ERROR:CAPS" title="AGS_JACK_DEVOUT_ERROR">AGS_JACK_DEVOUT_ERROR</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="GQuark"><span class="returnvalue">GQuark</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsJackDevout.html#ags-jack-devout-error-quark" title="ags_jack_devout_error_quark ()">ags_jack_devout_error_quark</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsJackDevout.html#ags-jack-devout-adjust-delay-and-attack" title="ags_jack_devout_adjust_delay_and_attack ()">ags_jack_devout_adjust_delay_and_attack</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsJackDevout.html#ags-jack-devout-realloc-buffer" title="ags_jack_devout_realloc_buffer ()">ags_jack_devout_realloc_buffer</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsJackDevout.html" title="AgsJackDevout"><span class="returnvalue">AgsJackDevout</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsJackDevout.html#ags-jack-devout-new" title="ags_jack_devout_new ()">ags_jack_devout_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsJackDevout.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type">
+<a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--application-context" title="The “application-context” property">application-context</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--application-mutex" title="The “application-mutex” property">application-mutex</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--attack" title="The “attack” property">attack</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--bpm" title="The “bpm” property">bpm</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--buffer" title="The “buffer” property">buffer</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--buffer-size" title="The “buffer-size” property">buffer-size</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--delay-factor" title="The “delay-factor” property">delay-factor</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--device" title="The “device” property">device</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--dsp-channels" title="The “dsp-channels” property">dsp-channels</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--format" title="The “format” property">format</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--pcm-channels" title="The “pcm-channels” property">pcm-channels</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></td>
+<td class="property_name"><a class="link" href="AgsJackDevout.html#AgsJackDevout--samplerate" title="The “samplerate” property">samplerate</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsJackDevout.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsJackDevout.html#AgsJackDevoutFlags" title="enum AgsJackDevoutFlags">AgsJackDevoutFlags</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsJackDevout.html#AgsJackDevoutError" title="enum AgsJackDevoutError">AgsJackDevoutError</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsJackDevout.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> AgsJackDevout
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsJackDevout.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/object/ags_soundcard.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsJackDevout.description"></a><h2>Description</h2>
+<p><a class="link" href="AgsJackDevout.html" title="AgsJackDevout"><span class="type">AgsJackDevout</span></a> represents a soundcard and supports output.</p>
+</div>
+<div class="refsect1">
+<a name="AgsJackDevout.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="AGS-JACK-DEVOUT-ERROR:CAPS"></a><h3>AGS_JACK_DEVOUT_ERROR</h3>
+<pre class="programlisting">#define AGS_JACK_DEVOUT_ERROR (ags_jack_devout_error_quark())
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-jack-devout-error-quark"></a><h3>ags_jack_devout_error_quark ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GQuark"><span class="returnvalue">GQuark</span></GTKDOCLINK>
+ags_jack_devout_error_quark ();</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-jack-devout-adjust-delay-and-attack"></a><h3>ags_jack_devout_adjust_delay_and_attack ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_jack_devout_adjust_delay_and_attack
+                               (<em class="parameter"><code><a class="link" href="AgsJackDevout.html" title="AgsJackDevout"><span class="type">AgsJackDevout</span></a> *jack_devout</code></em>);</pre>
+<p>Calculate delay and attack and reset it.</p>
+<div class="refsect3">
+<a name="id-1.9.42.5.9.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>jack_devout</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsJackDevout.html" title="AgsJackDevout"><span class="type">AgsJackDevout</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-jack-devout-realloc-buffer"></a><h3>ags_jack_devout_realloc_buffer ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_jack_devout_realloc_buffer (<em class="parameter"><code><a class="link" href="AgsJackDevout.html" title="AgsJackDevout"><span class="type">AgsJackDevout</span></a> *jack_devout</code></em>);</pre>
+<p>Reallocate the internal audio buffer.</p>
+<div class="refsect3">
+<a name="id-1.9.42.5.9.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>jack_devout</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsJackDevout.html" title="AgsJackDevout"><span class="type">AgsJackDevout</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-jack-devout-new"></a><h3>ags_jack_devout_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsJackDevout.html" title="AgsJackDevout"><span class="returnvalue">AgsJackDevout</span></a> *
+ags_jack_devout_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *application_context</code></em>);</pre>
+<p>Creates an <a class="link" href="AgsJackDevout.html" title="AgsJackDevout"><span class="type">AgsJackDevout</span></a>, refering to <em class="parameter"><code>application_context</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.9.42.5.9.6.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>application_context</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.9.42.5.9.6.6"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsJackDevout.html" title="AgsJackDevout"><span class="type">AgsJackDevout</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsJackDevout.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AgsJackDevoutFlags"></a><h3>enum AgsJackDevoutFlags</h3>
+<div class="refsect3">
+<a name="id-1.9.42.5.10.2.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-BUFFER0:CAPS"></a>AGS_JACK_DEVOUT_BUFFER0</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-BUFFER1:CAPS"></a>AGS_JACK_DEVOUT_BUFFER1</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-BUFFER2:CAPS"></a>AGS_JACK_DEVOUT_BUFFER2</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-BUFFER3:CAPS"></a>AGS_JACK_DEVOUT_BUFFER3</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-ATTACK-FIRST:CAPS"></a>AGS_JACK_DEVOUT_ATTACK_FIRST</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-PLAY:CAPS"></a>AGS_JACK_DEVOUT_PLAY</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-SHUTDOWN:CAPS"></a>AGS_JACK_DEVOUT_SHUTDOWN</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-START-PLAY:CAPS"></a>AGS_JACK_DEVOUT_START_PLAY</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-NONBLOCKING:CAPS"></a>AGS_JACK_DEVOUT_NONBLOCKING</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-INITIALIZED:CAPS"></a>AGS_JACK_DEVOUT_INITIALIZED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-DUMMY:CAPS"></a>AGS_JACK_DEVOUT_DUMMY</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-OSS:CAPS"></a>AGS_JACK_DEVOUT_OSS</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-ALSA:CAPS"></a>AGS_JACK_DEVOUT_ALSA</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-FREEBOB:CAPS"></a>AGS_JACK_DEVOUT_FREEBOB</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-FIREWIRE:CAPS"></a>AGS_JACK_DEVOUT_FIREWIRE</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-NET:CAPS"></a>AGS_JACK_DEVOUT_NET</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-SUN:CAPS"></a>AGS_JACK_DEVOUT_SUN</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-PORTAUDIO:CAPS"></a>AGS_JACK_DEVOUT_PORTAUDIO</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevoutError"></a><h3>enum AgsJackDevoutError</h3>
+<div class="refsect3">
+<a name="id-1.9.42.5.10.3.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="enum_member_name"><p><a name="AGS-JACK-DEVOUT-ERROR-LOCKED-SOUNDCARD:CAPS"></a>AGS_JACK_DEVOUT_ERROR_LOCKED_SOUNDCARD</p></td>
+<td> </td>
+<td> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsJackDevout.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsJackDevout--application-context"></a><h3>The <code class="literal">“application-context”</code> property</h3>
+<pre class="programlisting">  “application-context”      <a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a> *</pre>
+<p>The assigned <a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a></p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--application-mutex"></a><h3>The <code class="literal">“application-mutex”</code> property</h3>
+<pre class="programlisting">  “application-mutex”        <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK></pre>
+<p>The assigned application mutex</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.7.0">0.7.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--attack"></a><h3>The <code class="literal">“attack”</code> property</h3>
+<pre class="programlisting">  “attack”                   <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK></pre>
+<p>Attack of the buffer</p>
+<p>Flags: Read</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--bpm"></a><h3>The <code class="literal">“bpm”</code> property</h3>
+<pre class="programlisting">  “bpm”                      <GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK></pre>
+<p>Beats per minute</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: [1,240]</p>
+<p>Default value: 120</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--buffer"></a><h3>The <code class="literal">“buffer”</code> property</h3>
+<pre class="programlisting">  “buffer”                   <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK></pre>
+<p>The buffer</p>
+<p>Flags: Read</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--buffer-size"></a><h3>The <code class="literal">“buffer-size”</code> property</h3>
+<pre class="programlisting">  “buffer-size”              <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></pre>
+<p>The buffer size</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: [1,44100]</p>
+<p>Default value: 940</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--delay-factor"></a><h3>The <code class="literal">“delay-factor”</code> property</h3>
+<pre class="programlisting">  “delay-factor”             <GTKDOCLINK HREF="gdouble"><span class="type">gdouble</span></GTKDOCLINK></pre>
+<p>tact</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: [0,16]</p>
+<p>Default value: 1</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.2">0.4.2</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--device"></a><h3>The <code class="literal">“device”</code> property</h3>
+<pre class="programlisting">  “device”                   <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *</pre>
+<p>The jack soundcard indentifier</p>
+<p>Flags: Read / Write</p>
+<p>Default value: "hw:0"</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--dsp-channels"></a><h3>The <code class="literal">“dsp-channels”</code> property</h3>
+<pre class="programlisting">  “dsp-channels”             <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></pre>
+<p>The dsp channel count</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: [1,64]</p>
+<p>Default value: 2</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--format"></a><h3>The <code class="literal">“format”</code> property</h3>
+<pre class="programlisting">  “format”                   <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></pre>
+<p>The precision of the buffer</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: [1,64]</p>
+<p>Default value: 16</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--pcm-channels"></a><h3>The <code class="literal">“pcm-channels”</code> property</h3>
+<pre class="programlisting">  “pcm-channels”             <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></pre>
+<p>The pcm channel count</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: [1,64]</p>
+<p>Default value: 2</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsJackDevout--samplerate"></a><h3>The <code class="literal">“samplerate”</code> property</h3>
+<pre class="programlisting">  “samplerate”               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK></pre>
+<p>The samplerate</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: [8000,96000]</p>
+<p>Default value: 44100</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

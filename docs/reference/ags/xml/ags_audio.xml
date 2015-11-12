@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsAudio">
 <refmeta>
@@ -103,6 +101,8 @@
 <colspec colname="properties_name" colwidth="300px"/>
 <colspec colname="properties_flags" colwidth="200px"/>
 <tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--midi-file">midi-file</link></entry><entry role="property_flags">Read / Write</entry></row>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--sequencer">sequencer</link></entry><entry role="property_flags">Read / Write</entry></row>
 <row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsAudio--soundcard">soundcard</link></entry><entry role="property_flags">Read / Write</entry></row>
 
 </tbody>
@@ -1000,6 +1000,18 @@ ags_audio_new ();</programlisting>
 </refsect1>
 <refsect1 id="AgsAudio.property-details" role="property_details">
 <title role="property_details.title">Property Details</title>
+<refsect2 id="AgsAudio--midi-file" role="property"><title>The <literal>“midi-file”</literal> property</title>
+<indexterm zone="AgsAudio--midi-file" role="0.4"><primary>AgsAudio:midi-file</primary></indexterm>
+<programlisting>  “midi-file”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsMidiFile"><type>AgsMidiFile</type></link> acting as default sink.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+<refsect2 id="AgsAudio--sequencer" role="property"><title>The <literal>“sequencer”</literal> property</title>
+<indexterm zone="AgsAudio--sequencer" role="0.4"><primary>AgsAudio:sequencer</primary></indexterm>
+<programlisting>  “sequencer”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsSequencer"><type>AgsSequencer</type></link> acting as default sink.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
 <refsect2 id="AgsAudio--soundcard" role="property"><title>The <literal>“soundcard”</literal> property</title>
 <indexterm zone="AgsAudio--soundcard" role="0.4"><primary>AgsAudio:soundcard</primary></indexterm>
 <programlisting>  “soundcard”                <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>

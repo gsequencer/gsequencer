@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsRecallChannel">
 <refmeta>
@@ -61,7 +59,9 @@
             <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMuteChannel">AgsMuteChannel</link>
             <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPeakChannel">AgsPeakChannel</link>
             <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayChannel">AgsPlayChannel</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallDssi">AgsRecallDssi</link>
             <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallLadspa">AgsRecallLadspa</link>
+            <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallLv2">AgsRecallLv2</link>
             <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsStreamChannel">AgsStreamChannel</link>
             <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsVolumeChannel">AgsVolumeChannel</link>
 </screen>

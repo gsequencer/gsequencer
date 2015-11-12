@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsLadspaBrowser">
 <refmeta>
@@ -29,9 +27,7 @@
 <row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-ladspa-browser-get-plugin-effect">ags_ladspa_browser_get_plugin_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
-</entry><entry role="function_name"><link linkend="ags-ladspa-browser-combo-box-boolean-controls-new">ags_ladspa_browser_combo_box_boolean_controls_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
-</entry><entry role="function_name"><link linkend="ags-ladspa-browser-combo-box-float-controls-new">ags_ladspa_browser_combo_box_float_controls_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+</entry><entry role="function_name"><link linkend="ags-ladspa-browser-combo-box-controls-new">ags_ladspa_browser_combo_box_controls_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-ladspa-browser-preview-new">ags_ladspa_browser_preview_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="AgsLadspaBrowser"><returnvalue>AgsLadspaBrowser</returnvalue></link>&#160;*
@@ -48,10 +44,9 @@
         <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
             <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
                 <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
-                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
-                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWindow">GtkWindow</link>
-                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkDialog">GtkDialog</link>
-                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsLadspaBrowser
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBox">GtkBox</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkVBox">GtkVBox</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsLadspaBrowser
 </screen>
 </refsect1>
 
@@ -66,9 +61,9 @@ effect.</para>
 </refsect1>
 <refsect1 id="AgsLadspaBrowser.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-ladspa-browser-get-plugin-filename" role="function" condition="since:0.4">
+<refsect2 id="ags-ladspa-browser-get-plugin-filename" role="function" condition="since:0.4.2">
 <title>ags_ladspa_browser_get_plugin_filename&#160;()</title>
-<indexterm zone="ags-ladspa-browser-get-plugin-filename" role="0.4"><primary>ags_ladspa_browser_get_plugin_filename</primary></indexterm>
+<indexterm zone="ags-ladspa-browser-get-plugin-filename" role="0.4.2"><primary>ags_ladspa_browser_get_plugin_filename</primary></indexterm>
 <programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
 ags_ladspa_browser_get_plugin_filename
                                (<parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);</programlisting>
@@ -76,51 +71,44 @@ ags_ladspa_browser_get_plugin_filename
 <refsect3 role="returns">
 <title>Returns</title>
 <para> the active ladspa filename</para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
-<refsect2 id="ags-ladspa-browser-get-plugin-effect" role="function" condition="since:0.4">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.2">0.4.2</link></para></refsect2>
+<refsect2 id="ags-ladspa-browser-get-plugin-effect" role="function" condition="since:0.4.2">
 <title>ags_ladspa_browser_get_plugin_effect&#160;()</title>
-<indexterm zone="ags-ladspa-browser-get-plugin-effect" role="0.4"><primary>ags_ladspa_browser_get_plugin_effect</primary></indexterm>
+<indexterm zone="ags-ladspa-browser-get-plugin-effect" role="0.4.2"><primary>ags_ladspa_browser_get_plugin_effect</primary></indexterm>
 <programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
 ags_ladspa_browser_get_plugin_effect (<parameter><link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link> *ladspa_browser</parameter>);</programlisting>
 <para>Retrieve selected ladspa effect.</para>
 <refsect3 role="returns">
 <title>Returns</title>
 <para> the active ladspa effect</para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
-<refsect2 id="ags-ladspa-browser-combo-box-boolean-controls-new" role="function">
-<title>ags_ladspa_browser_combo_box_boolean_controls_new&#160;()</title>
-<indexterm zone="ags-ladspa-browser-combo-box-boolean-controls-new"><primary>ags_ladspa_browser_combo_box_boolean_controls_new</primary></indexterm>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.2">0.4.2</link></para></refsect2>
+<refsect2 id="ags-ladspa-browser-combo-box-controls-new" role="function" condition="since:0.4.2">
+<title>ags_ladspa_browser_combo_box_controls_new&#160;()</title>
+<indexterm zone="ags-ladspa-browser-combo-box-controls-new" role="0.4.2"><primary>ags_ladspa_browser_combo_box_controls_new</primary></indexterm>
 <programlisting language="C"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
-ags_ladspa_browser_combo_box_boolean_controls_new
-                               ();</programlisting>
-</refsect2>
-<refsect2 id="ags-ladspa-browser-combo-box-float-controls-new" role="function" condition="since:0.4">
-<title>ags_ladspa_browser_combo_box_float_controls_new&#160;()</title>
-<indexterm zone="ags-ladspa-browser-combo-box-float-controls-new" role="0.4"><primary>ags_ladspa_browser_combo_box_float_controls_new</primary></indexterm>
-<programlisting language="C"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
-ags_ladspa_browser_combo_box_float_controls_new
+ags_ladspa_browser_combo_box_controls_new
                                ();</programlisting>
 <para>Creates a <link linkend="GtkComboBox"><type>GtkComboBox</type></link> containing suitable widgets as controls.</para>
 <refsect3 role="returns">
 <title>Returns</title>
 <para> a new <link linkend="GtkComboBox"><type>GtkComboBox</type></link></para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.2">0.4.2</link></para></refsect2>
 <refsect2 id="ags-ladspa-browser-preview-new" role="function">
 <title>ags_ladspa_browser_preview_new&#160;()</title>
 <indexterm zone="ags-ladspa-browser-preview-new"><primary>ags_ladspa_browser_preview_new</primary></indexterm>
 <programlisting language="C"><link linkend="GtkWidget"><returnvalue>GtkWidget</returnvalue></link>&#160;*
 ags_ladspa_browser_preview_new ();</programlisting>
 </refsect2>
-<refsect2 id="ags-ladspa-browser-new" role="function" condition="since:0.4">
+<refsect2 id="ags-ladspa-browser-new" role="function" condition="since:0.4.2">
 <title>ags_ladspa_browser_new&#160;()</title>
-<indexterm zone="ags-ladspa-browser-new" role="0.4"><primary>ags_ladspa_browser_new</primary></indexterm>
+<indexterm zone="ags-ladspa-browser-new" role="0.4.2"><primary>ags_ladspa_browser_new</primary></indexterm>
 <programlisting language="C"><link linkend="AgsLadspaBrowser"><returnvalue>AgsLadspaBrowser</returnvalue></link>&#160;*
-ags_ladspa_browser_new (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *parent</parameter>);</programlisting>
+ags_ladspa_browser_new ();</programlisting>
 <para>Creates an <link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link></para>
 <refsect3 role="returns">
 <title>Returns</title>
 <para> a new <link linkend="AgsLadspaBrowser"><type>AgsLadspaBrowser</type></link></para>
-</refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.2">0.4.2</link></para></refsect2>
 
 </refsect1>
 <refsect1 id="AgsLadspaBrowser.other_details" role="details">

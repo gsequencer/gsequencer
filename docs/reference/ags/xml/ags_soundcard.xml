@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsSoundcard">
 <refmeta>
@@ -62,10 +60,16 @@
 </entry><entry role="function_name"><link linkend="ags-soundcard-is-starting">ags_soundcard_is_starting</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-soundcard-is-playing">ags_soundcard_is_playing</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-is-recording">ags_soundcard_is_recording</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-soundcard-play-init">ags_soundcard_play_init</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-soundcard-play">ags_soundcard_play</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-record-init">ags_soundcard_record_init</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-soundcard-record">ags_soundcard_record</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-soundcard-stop">ags_soundcard_stop</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
@@ -540,6 +544,28 @@ ags_soundcard_is_playing (<parameter><link linkend="AgsSoundcard"><type>AgsSound
 <title>Returns</title>
 <para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if playing, else <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4.3">0.4.3</link></para></refsect2>
+<refsect2 id="ags-soundcard-is-recording" role="function" condition="since:0.7.0">
+<title>ags_soundcard_is_recording&#160;()</title>
+<indexterm zone="ags-soundcard-is-recording" role="0.7.0"><primary>ags_soundcard_is_recording</primary></indexterm>
+<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
+ags_soundcard_is_recording (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>);</programlisting>
+<para>Get recording.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if recording, else <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
 <refsect2 id="ags-soundcard-play-init" role="function">
 <title>ags_soundcard_play_init&#160;()</title>
 <indexterm zone="ags-soundcard-play-init"><primary>ags_soundcard_play_init</primary></indexterm>
@@ -570,6 +596,36 @@ ags_soundcard_play (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4.2">0.4.2</link></para></refsect2>
+<refsect2 id="ags-soundcard-record-init" role="function">
+<title>ags_soundcard_record_init&#160;()</title>
+<indexterm zone="ags-soundcard-record-init"><primary>ags_soundcard_record_init</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_record_init (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                           <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-soundcard-record" role="function" condition="since:0.7.0">
+<title>ags_soundcard_record&#160;()</title>
+<indexterm zone="ags-soundcard-record" role="0.7.0"><primary>ags_soundcard_record</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_soundcard_record (<parameter><link linkend="AgsSoundcard"><type>AgsSoundcard</type></link> *soundcard</parameter>,
+                      <parameter><link linkend="GError"><type>GError</type></link> **error</parameter>);</programlisting>
+<para>Records the current buffer of soundcard.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>an <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>error</para></entry>
+<entry role="parameter_description"><para>an error that may occure</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
 <refsect2 id="ags-soundcard-stop" role="function" condition="since:0.4.2">
 <title>ags_soundcard_stop&#160;()</title>
 <indexterm zone="ags-soundcard-stop" role="0.4.2"><primary>ags_soundcard_stop</primary></indexterm>

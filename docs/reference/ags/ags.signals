@@ -80,6 +80,23 @@ GObject *arg1
 </SIGNAL>
 
 <SIGNAL>
+<NAME>AgsBulkMember::change-port</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsBulkMember *agsbulkmember
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsChannel::add-effect</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsChannel *agschannel
+gchar *arg1
+gchar *arg2
+</SIGNAL>
+
+<SIGNAL>
 <NAME>AgsChannel::done</NAME>
 <RETURNS>void</RETURNS>
 <FLAGS>l</FLAGS>
@@ -100,6 +117,14 @@ GObject *arg5
 GObject *arg6
 GObject *arg7
 GObject *arg8
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsChannel::remove-effect</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsChannel *agschannel
+guint  arg1
 </SIGNAL>
 
 <SIGNAL>
@@ -266,6 +291,87 @@ GObject *arg1
 </SIGNAL>
 
 <SIGNAL>
+<NAME>AgsEffectBridge::resize-audio-channels</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEffectBridge *agseffectbridge
+guint  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsEffectBridge::resize-pads</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEffectBridge *agseffectbridge
+gulong  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsEffectBulk::add-effect</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEffectBulk *agseffectbulk
+gchar *arg1
+gchar *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsEffectBulk::remove-effect</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEffectBulk *agseffectbulk
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsEffectBulk::resize-audio-channels</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEffectBulk *agseffectbulk
+guint  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsEffectBulk::resize-pads</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEffectBulk *agseffectbulk
+guint  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsEffectLine::add-effect</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEffectLine *agseffectline
+gchar *arg1
+gchar *arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsEffectLine::remove-effect</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEffectLine *agseffectline
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsEffectPad::resize-lines</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsEffectPad *agseffectpad
+gulong  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
 <NAME>AgsFile::open</NAME>
 <RETURNS>void</RETURNS>
 <FLAGS>l</FLAGS>
@@ -382,6 +488,15 @@ GObject *arg2
 </SIGNAL>
 
 <SIGNAL>
+<NAME>AgsLine::add-effect</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsLine *agsline
+gchar *arg1
+gchar *arg2
+</SIGNAL>
+
+<SIGNAL>
 <NAME>AgsLine::find-port</NAME>
 <RETURNS>void</RETURNS>
 <FLAGS>l</FLAGS>
@@ -397,6 +512,14 @@ AgsLine *agsline
 
 <SIGNAL>
 <NAME>AgsLine::map-recall</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsLine *agsline
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsLine::remove-effect</NAME>
 <RETURNS>void</RETURNS>
 <FLAGS>l</FLAGS>
 AgsLine *agsline
@@ -447,6 +570,400 @@ AgsMachine *agsmachine
 <FLAGS>l</FLAGS>
 AgsMachineSelector *agsmachineselector
 GObject *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::append-header</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+guint  arg3
+guint  arg4
+guint  arg5
+guint  arg6
+guint  arg7
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::append-track</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+gchar *arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::change-channel-pressure</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::change-parameter</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::change-pitch-bend</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::change-program</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::key-off</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::key-on</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::key-pressure</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::key-signature</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::on-error</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::quarter-frame</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::sequence-number</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::sequencer-meta-event</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+guint  arg3
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::smtpe</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+guint  arg3
+guint  arg4
+guint  arg5
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::song-position</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::song-select</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::sysex</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+gpointer  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::tempo</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::text-event</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::time-signature</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+guint  arg1
+guint  arg2
+guint  arg3
+guint  arg4
+guint  arg5
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiBuilder::tune-request</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiBuilder *agsmidibuilder
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::change-channel-pressure</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::change-parameter</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::change-pitch-bend</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::change-program</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::end-of-track</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::key-off</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::key-on</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::key-pressure</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::key-signature</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::meta-event</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::midi-getc</NAME>
+<RETURNS>gint</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::not-defined</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::on-error</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+gpointer  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::parse-full</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::parse-header</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::parse-track</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::sequence-number</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::sequencer-meta-event</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::smtpe</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::sysex</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::system-common</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::tempo</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::text-event</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsMidiParser::time-signature</NAME>
+<RETURNS>gpointer</RETURNS>
+<FLAGS>l</FLAGS>
+AgsMidiParser *agsmidiparser
+guint  arg1
 </SIGNAL>
 
 <SIGNAL>
@@ -718,6 +1235,21 @@ AgsReturnableThread *agsreturnablethread
 AgsSeekable *agsseekable
 guint  arg1
 gboolean  arg2
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsSequencer::offset-changed</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsSequencer *agssequencer
+guint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>AgsSequencer::tic</NAME>
+<RETURNS>void</RETURNS>
+<FLAGS>l</FLAGS>
+AgsSequencer *agssequencer
 </SIGNAL>
 
 <SIGNAL>

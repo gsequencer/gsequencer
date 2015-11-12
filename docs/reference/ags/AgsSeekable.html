@@ -6,8 +6,8 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="object.html" title="Part III. Object - Interfaces and marshallers">
-<link rel="prev" href="ags-AgsRunnable.html" title="AgsRunnable">
-<link rel="next" href="AgsTactable.html" title="AgsTactable">
+<link rel="prev" href="AgsPortlet.html" title="AgsPortlet">
+<link rel="next" href="AgsSequencer.html" title="AgsSequencer">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -21,15 +21,15 @@
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="object.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="ags-AgsRunnable.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="AgsTactable.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="p" href="AgsPortlet.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsSequencer.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="AgsSeekable"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2><span class="refentrytitle"><a name="AgsSeekable.top_of_page"></a>AgsSeekable</span></h2>
-<p>AgsSeekable</p>
+<p>AgsSeekable — unique access to recalls</p>
 </td>
 <td class="gallery_image" valign="top" align="right"></td>
 </tr></table></div>
@@ -72,7 +72,14 @@
 </pre>
 </div>
 <div class="refsect1">
+<a name="AgsSeekable.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/object/ags_seekable.h&gt;
+</pre>
+</div>
+<div class="refsect1">
 <a name="AgsSeekable.description"></a><h2>Description</h2>
+<p>The <a class="link" href="AgsSeekable.html" title="AgsSeekable"><span class="type">AgsSeekable</span></a> interface gives you the <a class="link" href="AgsSeekable.html#AgsSeekable-seek" title="The “seek” signal">AgsSeekable::<code class="function">seek()</code></a> signal
+what notifies about changed offset of pattern or notation.</p>
 </div>
 <div class="refsect1">
 <a name="AgsSeekable.functions_details"></a><h2>Functions</h2>
@@ -82,6 +89,35 @@
 ags_seekable_seek (<em class="parameter"><code><a class="link" href="AgsSeekable.html" title="AgsSeekable"><span class="type">AgsSeekable</span></a> *seekable</code></em>,
                    <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> steps</code></em>,
                    <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> forward</code></em>);</pre>
+<p>Seek relatively.</p>
+<div class="refsect3">
+<a name="id-1.4.16.8.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>seekable</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsSeekable.html" title="AgsSeekable"><span class="type">AgsSeekable</span></a> interface</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>steps</p></td>
+<td class="parameter_description"><p>the amount of seeking</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>forward</p></td>
+<td class="parameter_description"><p>the direction, <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> for moving ahead</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.5.0">0.5.0</GTKDOCLINK></p>
 </div>
 </div>
 <div class="refsect1">
@@ -99,7 +135,7 @@ user_function (<a class="link" href="AgsSeekable.html" title="AgsSeekable"><span
 <p>The ::seek signal notifies about changed position
 of sequencer.</p>
 <div class="refsect3">
-<a name="id-1.4.14.9.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.16.10.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">

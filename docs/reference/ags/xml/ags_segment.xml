@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-AgsSegment">
 <refmeta>
@@ -17,40 +15,6 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsect1 id="ags-AgsSegment.functions" role="functions_proto">
-<title role="functions_proto.title">Functions</title>
-<informaltable pgwide="1" frame="none">
-<tgroup cols="2">
-<colspec colname="functions_return" colwidth="150px"/>
-<colspec colname="functions_name"/>
-<tbody>
-<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-segment-field-on">ags_segment_field_on</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-segment-field-off">ags_segment_field_off</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-segment-draw-string">ags_segment_draw_string</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-<row><entry role="function_type"><link linkend="AgsSegment"><returnvalue>AgsSegment</returnvalue></link>&#160;*
-</entry><entry role="function_name"><link linkend="ags-segment-new">ags_segment_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-
-</tbody>
-</tgroup>
-</informaltable>
-</refsect1>
-<refsect1 id="ags-AgsSegment.other" role="other_proto">
-<title role="other_proto.title">Types and Values</title>
-<informaltable role="enum_members_table" pgwide="1" frame="none">
-<tgroup cols="2">
-<colspec colname="name" colwidth="150px"/>
-<colspec colname="description"/>
-<tbody>
-<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AGS-SEGMENT-FLAGS:CAPS">AGS_SEGMENT_FLAGS</link></entry></row>
-<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsSegmentFields">AgsSegmentFields</link></entry></row>
-
-</tbody>
-</tgroup>
-</informaltable>
-</refsect1>
 
 
 <refsect1 id="ags-AgsSegment.description" role="desc">
@@ -59,135 +23,10 @@
 </refsect1>
 <refsect1 id="ags-AgsSegment.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-segment-field-on" role="function">
-<title>ags_segment_field_on&#160;()</title>
-<indexterm zone="ags-segment-field-on"><primary>ags_segment_field_on</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_segment_field_on (<parameter><link linkend="AgsSegment"><type>AgsSegment</type></link> *segment</parameter>,
-                      <parameter><link linkend="guint"><type>guint</type></link> field</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-segment-field-off" role="function">
-<title>ags_segment_field_off&#160;()</title>
-<indexterm zone="ags-segment-field-off"><primary>ags_segment_field_off</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_segment_field_off (<parameter><link linkend="AgsSegment"><type>AgsSegment</type></link> *segment</parameter>,
-                       <parameter><link linkend="guint"><type>guint</type></link> field</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-segment-draw-string" role="function">
-<title>ags_segment_draw_string&#160;()</title>
-<indexterm zone="ags-segment-draw-string"><primary>ags_segment_draw_string</primary></indexterm>
-<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_segment_draw_string (<parameter><link linkend="AgsSegment"><type>AgsSegment</type></link> *segment</parameter>,
-                         <parameter><link linkend="gchar"><type>gchar</type></link> **string</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-segment-new" role="function">
-<title>ags_segment_new&#160;()</title>
-<indexterm zone="ags-segment-new"><primary>ags_segment_new</primary></indexterm>
-<programlisting language="C"><link linkend="AgsSegment"><returnvalue>AgsSegment</returnvalue></link>&#160;*
-ags_segment_new ();</programlisting>
-</refsect2>
-
+<para />
 </refsect1>
 <refsect1 id="ags-AgsSegment.other_details" role="details">
 <title role="details.title">Types and Values</title>
-<refsect2 id="AGS-SEGMENT-FLAGS:CAPS" role="enum">
-<title>enum AGS_SEGMENT_FLAGS</title>
-<indexterm zone="AGS-SEGMENT-FLAGS:CAPS"><primary>AGS_SEGMENT_FLAGS</primary></indexterm>
-<refsect3 role="enum_members">
-<title>Members</title>
-<informaltable role="enum_members_table" pgwide="1" frame="none">
-<tgroup cols="3">
-<colspec colname="enum_members_name" colwidth="300px"/>
-<colspec colname="enum_members_description"/>
-<colspec colname="enum_members_annotations" colwidth="200px"/>
-<tbody>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-MONOCHROME:CAPS">AGS_SEGMENT_MONOCHROME</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-COLOR-RED:CAPS">AGS_SEGMENT_COLOR_RED</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-COLOR-BLUE:CAPS">AGS_SEGMENT_COLOR_BLUE</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SGEMENT-COLOR-GREEN:CAPS">AGS_SGEMENT_COLOR_GREEN</para></entry>
-<entry /><entry />
-</row>
-</tbody></tgroup></informaltable>
-</refsect3></refsect2>
-<refsect2 id="AgsSegmentFields" role="enum">
-<title>enum AgsSegmentFields</title>
-<indexterm zone="AgsSegmentFields"><primary>AgsSegmentFields</primary></indexterm>
-<refsect3 role="enum_members">
-<title>Members</title>
-<informaltable role="enum_members_table" pgwide="1" frame="none">
-<tgroup cols="3">
-<colspec colname="enum_members_name" colwidth="300px"/>
-<colspec colname="enum_members_description"/>
-<colspec colname="enum_members_annotations" colwidth="200px"/>
-<tbody>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-UPPER-LEFT:CAPS">AGS_SEGMENT_UPPER_LEFT</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-UPPER-RIGHT:CAPS">AGS_SEGMENT_UPPER_RIGHT</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-LOWER-LEFT:CAPS">AGS_SEGMENT_LOWER_LEFT</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-LOWER-RIGHT:CAPS">AGS_SEGMENT_LOWER_RIGHT</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-LEFT-UPPER-1:CAPS">AGS_SEGMENT_LEFT_UPPER_1</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-LEFT-UPPER-2:CAPS">AGS_SEGMENT_LEFT_UPPER_2</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-LEFT-LOWER-1:CAPS">AGS_SEGMENT_LEFT_LOWER_1</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-LEFT-LOWER-2:CAPS">AGS_SEGMENT_LEFT_LOWER_2</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-RIGHT-UPPER-1:CAPS">AGS_SEGMENT_RIGHT_UPPER_1</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-RIGHT-UPPER-2:CAPS">AGS_SEGMENT_RIGHT_UPPER_2</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-RIGHT-LOWER-1:CAPS">AGS_SEGMENT_RIGHT_LOWER_1</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-RIGHT-LOWER-2:CAPS">AGS_SEGMENT_RIGHT_LOWER_2</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-DIAGONAL-UPPER-LEFT-1:CAPS">AGS_SEGMENT_DIAGONAL_UPPER_LEFT_1</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-DIAGONAL-UPPER-LEFT-2:CAPS">AGS_SEGMENT_DIAGONAL_UPPER_LEFT_2</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-DIAGONAL-UPPER-RIGHT-1:CAPS">AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_1</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-DIAGONAL-UPPER-RIGHT-2:CAPS">AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_2</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-DIAGONAL-LOWER-LEFT-1:CAPS">AGS_SEGMENT_DIAGONAL_LOWER_LEFT_1</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-DIAGONAL-LOWER-LEFT-2:CAPS">AGS_SEGMENT_DIAGONAL_LOWER_LEFT_2</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-DIAGONAL-LOWER-RIGHT-1:CAPS">AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_1</para></entry>
-<entry /><entry />
-</row>
-<row role="constant"><entry role="enum_member_name"><para id="AGS-SEGMENT-DIAGONAL-LOWER-RIGHT-2:CAPS">AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_2</para></entry>
-<entry /><entry />
-</row>
-</tbody></tgroup></informaltable>
-</refsect3></refsect2>
 
 </refsect1>
 

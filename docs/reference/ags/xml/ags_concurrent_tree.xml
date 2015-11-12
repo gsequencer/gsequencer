@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsConcurrentTree">
 <refmeta>
@@ -14,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsConcurrentTree</refname>
-<refpurpose>unique access to recalls</refpurpose>
+<refpurpose>thread-safe locking of tree</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsConcurrentTree.functions" role="functions_proto">
@@ -69,18 +67,49 @@ ags_concurrent_tree_get_lock (<parameter><link linkend="AgsConcurrentTree"><type
 ags_concurrent_tree_get_parent_lock (<parameter><link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> *concurrent_tree</parameter>);</programlisting>
 <para>Get tree node's parent lock.</para>
 <para role="since">Since: <link linkend="api-index-0.6">0.6</link></para></refsect2>
-<refsect2 id="ags-concurrent-tree-lock-context" role="function">
+<refsect2 id="ags-concurrent-tree-lock-context" role="function" condition="since:0.6.0">
 <title>ags_concurrent_tree_lock_context&#160;()</title>
-<indexterm zone="ags-concurrent-tree-lock-context"><primary>ags_concurrent_tree_lock_context</primary></indexterm>
+<indexterm zone="ags-concurrent-tree-lock-context" role="0.6.0"><primary>ags_concurrent_tree_lock_context</primary></indexterm>
 <programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
 ags_concurrent_tree_lock_context (<parameter><link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> *concurrent_tree</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-concurrent-tree-unlock-context" role="function">
+<para>Locks the context of <parameter>concurrent_tree</parameter>
+ and blocks until success.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>concurrent_tree</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.6.0">0.6.0</link></para></refsect2>
+<refsect2 id="ags-concurrent-tree-unlock-context" role="function" condition="since:0.6.0">
 <title>ags_concurrent_tree_unlock_context&#160;()</title>
-<indexterm zone="ags-concurrent-tree-unlock-context"><primary>ags_concurrent_tree_unlock_context</primary></indexterm>
+<indexterm zone="ags-concurrent-tree-unlock-context" role="0.6.0"><primary>ags_concurrent_tree_unlock_context</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_concurrent_tree_unlock_context (<parameter><link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link> *concurrent_tree</parameter>);</programlisting>
-</refsect2>
+<para>Unlocks the context of <parameter>concurrent_tree</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>concurrent_tree</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsConcurrentTree"><type>AgsConcurrentTree</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.6.0">0.6.0</link></para></refsect2>
 
 </refsect1>
 <refsect1 id="AgsConcurrentTree.other_details" role="details">

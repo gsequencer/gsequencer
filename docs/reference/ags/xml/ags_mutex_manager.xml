@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsMutexManager">
 <refmeta>
@@ -14,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsMutexManager</refname>
-<refpurpose></refpurpose>
+<refpurpose>mutex manager</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsMutexManager.functions" role="functions_proto">
@@ -48,54 +46,146 @@
 </screen>
 </refsect1>
 
+<refsect1 id="AgsMutexManager.includes"><title>Includes</title><synopsis>#include &lt;ags/thread/ags_mutex_manager.h&gt;
+</synopsis></refsect1>
 
 <refsect1 id="AgsMutexManager.description" role="desc">
 <title role="desc.title">Description</title>
+<para>The <link linkend="AgsMutexManager"><type>AgsMutexManager</type></link> keeps your mutex in a hash table where you can lookup your
+mutices.</para>
 
 </refsect1>
 <refsect1 id="AgsMutexManager.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-mutex-manager-get-application-mutex" role="function">
+<refsect2 id="ags-mutex-manager-get-application-mutex" role="function" condition="since:0.7.0">
 <title>ags_mutex_manager_get_application_mutex&#160;()</title>
-<indexterm zone="ags-mutex-manager-get-application-mutex"><primary>ags_mutex_manager_get_application_mutex</primary></indexterm>
+<indexterm zone="ags-mutex-manager-get-application-mutex" role="0.7.0"><primary>ags_mutex_manager_get_application_mutex</primary></indexterm>
 <programlisting language="C"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
 ags_mutex_manager_get_application_mutex
                                (<parameter><link linkend="AgsMutexManager"><type>AgsMutexManager</type></link> *mutex_manager</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-mutex-manager-insert" role="function">
+<para>Retrieve the application mutex as per process pointer.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>mutex_manager</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMutexManager"><type>AgsMutexManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the application mutex</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-mutex-manager-insert" role="function" condition="since:0.5.0">
 <title>ags_mutex_manager_insert&#160;()</title>
-<indexterm zone="ags-mutex-manager-insert"><primary>ags_mutex_manager_insert</primary></indexterm>
+<indexterm zone="ags-mutex-manager-insert" role="0.5.0"><primary>ags_mutex_manager_insert</primary></indexterm>
 <programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
 ags_mutex_manager_insert (<parameter><link linkend="AgsMutexManager"><type>AgsMutexManager</type></link> *mutex_manager</parameter>,
                           <parameter><link linkend="GObject"><type>GObject</type></link> *lock_object</parameter>,
                           <parameter><link linkend="pthread-mutex-t"><type>pthread_mutex_t</type></link> *mutex</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-mutex-manager-remove" role="function">
+<para>Inserts a mutex into hash map associated with <parameter>lock_object</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>mutex_manager</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMutexManager"><type>AgsMutexManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>lock_object</para></entry>
+<entry role="parameter_description"><para>the object as key</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>mutex</para></entry>
+<entry role="parameter_description"><para>the mutex to insert</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> on success, otherwise <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
+<refsect2 id="ags-mutex-manager-remove" role="function" condition="since:0.5.0">
 <title>ags_mutex_manager_remove&#160;()</title>
-<indexterm zone="ags-mutex-manager-remove"><primary>ags_mutex_manager_remove</primary></indexterm>
+<indexterm zone="ags-mutex-manager-remove" role="0.5.0"><primary>ags_mutex_manager_remove</primary></indexterm>
 <programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
 ags_mutex_manager_remove (<parameter><link linkend="AgsMutexManager"><type>AgsMutexManager</type></link> *mutex_manager</parameter>,
                           <parameter><link linkend="GObject"><type>GObject</type></link> *lock_object</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-mutex-manager-lookup" role="function">
+<para>Removes a lock associated with <parameter>lock_object.3</parameter>
+</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>mutex_manager</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMutexManager"><type>AgsMutexManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>lock_object</para></entry>
+<entry role="parameter_description"><para>the object to remove</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> as successfully removed, otherwise <link linkend="FALSE:CAPS"><literal>FALSE</literal></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
+<refsect2 id="ags-mutex-manager-lookup" role="function" condition="since:0.5.0">
 <title>ags_mutex_manager_lookup&#160;()</title>
-<indexterm zone="ags-mutex-manager-lookup"><primary>ags_mutex_manager_lookup</primary></indexterm>
+<indexterm zone="ags-mutex-manager-lookup" role="0.5.0"><primary>ags_mutex_manager_lookup</primary></indexterm>
 <programlisting language="C"><link linkend="pthread-mutex-t"><returnvalue>pthread_mutex_t</returnvalue></link>&#160;*
 ags_mutex_manager_lookup (<parameter><link linkend="AgsMutexManager"><type>AgsMutexManager</type></link> *mutex_manager</parameter>,
                           <parameter><link linkend="GObject"><type>GObject</type></link> *lock_object</parameter>);</programlisting>
-</refsect2>
-<refsect2 id="ags-mutex-manager-get-instance" role="function">
+<para>Lookup a mutex associated with <parameter>lock_object</parameter>
+ in <parameter>mutex_manager</parameter>
+</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>mutex_manager</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsMutexManager"><type>AgsMutexManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>lock_object</para></entry>
+<entry role="parameter_description"><para>the object to lookup</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the mutex on success, else <link linkend="NULL:CAPS"><literal>NULL</literal></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
+<refsect2 id="ags-mutex-manager-get-instance" role="function" condition="since:0.5.0">
 <title>ags_mutex_manager_get_instance&#160;()</title>
-<indexterm zone="ags-mutex-manager-get-instance"><primary>ags_mutex_manager_get_instance</primary></indexterm>
+<indexterm zone="ags-mutex-manager-get-instance" role="0.5.0"><primary>ags_mutex_manager_get_instance</primary></indexterm>
 <programlisting language="C"><link linkend="AgsMutexManager"><returnvalue>AgsMutexManager</returnvalue></link>&#160;*
 ags_mutex_manager_get_instance ();</programlisting>
-</refsect2>
-<refsect2 id="ags-mutex-manager-new" role="function">
+<para>Singleton function to optain the mutex manager instance.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> an instance of <link linkend="AgsMutexManager"><type>AgsMutexManager</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
+<refsect2 id="ags-mutex-manager-new" role="function" condition="since:0.5.0">
 <title>ags_mutex_manager_new&#160;()</title>
-<indexterm zone="ags-mutex-manager-new"><primary>ags_mutex_manager_new</primary></indexterm>
+<indexterm zone="ags-mutex-manager-new" role="0.5.0"><primary>ags_mutex_manager_new</primary></indexterm>
 <programlisting language="C"><link linkend="AgsMutexManager"><returnvalue>AgsMutexManager</returnvalue></link>&#160;*
 ags_mutex_manager_new ();</programlisting>
-</refsect2>
+<para>Instantiate a mutex manager.</para>
+<refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsMutexManager"><type>AgsMutexManager</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
 
 </refsect1>
 <refsect1 id="AgsMutexManager.other_details" role="details">

@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE screen PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <screen>
     <link linkend="GObject">GObject</link>
@@ -12,6 +10,8 @@
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsTask">AgsTask</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddAudio">AgsAddAudio</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddAudioSignal">AgsAddAudioSignal</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddBulkMember">AgsAddBulkMember</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddEffect">AgsAddEffect</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddLineMember">AgsAddLineMember</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddNote">AgsAddNote</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAddPointToSelection">AgsAddPointToSelection</link>
@@ -26,7 +26,6 @@
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplySequencerLength">AgsApplySequencerLength</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplySynth">AgsApplySynth</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplyTact">AgsApplyTact</link>
-    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplyWavetable">AgsApplyWavetable</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAudioSetRecycling">AgsAudioSetRecycling</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsBlinkCellPatternCursor">AgsBlinkCellPatternCursor</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCancelAudio">AgsCancelAudio</link>
@@ -62,7 +61,8 @@
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsStartSoundcard">AgsStartSoundcard</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsToggleLed">AgsToggleLed</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsTogglePatternBit">AgsTogglePatternBit</link>
-    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsUnrefAudioSignal">AgsUnrefAudioSignal</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsUnrefAudioSignal">AgsUnrefAudioSignal</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsUpdateBulkMember">AgsUpdateBulkMember</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplicationContext">AgsApplicationContext</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAudioApplicationContext">AgsAudioApplicationContext</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsServerApplicationContext">AgsServerApplicationContext</link>
@@ -82,6 +82,7 @@
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecordThread">AgsRecordThread</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecyclingThread">AgsRecyclingThread</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsReturnableThread">AgsReturnableThread</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsSequencerThread">AgsSequencerThread</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsSingleThread">AgsSingleThread</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsSoundcardThread">AgsSoundcardThread</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsTaskThread">AgsTaskThread</link>
@@ -107,15 +108,25 @@
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPanelInputPad">AgsPanelInputPad</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsSynthInputPad">AgsSynthInputPad</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsEditor">AgsEditor</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsEffectBridge">AgsEffectBridge</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsFFPlayerBridge">AgsFFPlayerBridge</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsEffectBulk">AgsEffectBulk</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsFFPlayerBulkInput">AgsFFPlayerBulkInput</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsEffectLine">AgsEffectLine</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsFFPlayerInputLine">AgsFFPlayerInputLine</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsEffectPad">AgsEffectPad</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsFFPlayerInputPad">AgsFFPlayerInputPad</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsFileSelection">AgsFileSelection</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsGenericPreferences">AgsGenericPreferences</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsInlinePlayer">AgsInlinePlayer</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLineEditor">AgsLineEditor</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLineMemberEditor">AgsLineMemberEditor</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPropertyEditor">AgsPropertyEditor</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPropertyListingEditor">AgsPropertyListingEditor</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsListingEditor">AgsListingEditor</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPropertyCollectionEditor">AgsPropertyCollectionEditor</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLv2Browser">AgsLv2Browser</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMachineSelector">AgsMachineSelector</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsNavigation">AgsNavigation</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsNotebook">AgsNotebook</link>
@@ -132,11 +143,10 @@
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCellPattern">AgsCellPattern</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsExpanderSet">AgsExpanderSet</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLinkCollectionEditor">AgsLinkCollectionEditor</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsTable">AgsTable</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMenuItem">AgsMenuItem</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsNoteEdit">AgsNoteEdit</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPatternBox">AgsPatternBox</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPatternEdit">AgsPatternEdit</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPatternEdit">AgsPatternEdit</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTable">AgsTable</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="GtkToolbar">GtkToolbar</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAutomationToolbar">AgsAutomationToolbar</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsToolbar">AgsToolbar</link>
@@ -144,17 +154,25 @@
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="GtkWindow">GtkWindow</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAutomationWindow">AgsAutomationWindow</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsExportWindow">AgsExportWindow</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsHistoryBrowser">AgsHistoryBrowser</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="GtkDialog">GtkDialog</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMachineEditor">AgsMachineEditor</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMachineSelection">AgsMachineSelection</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMidiDialog">AgsMidiDialog</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPluginBrowser">AgsPluginBrowser</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPreferences">AgsPreferences</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMenu">AgsMenu</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsWindow">AgsWindow</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="GtkFrame">GtkFrame</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsBulkMember">AgsBulkMember</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLineMember">AgsLineMember</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsOscillator">AgsOscillator</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="GtkHandleBox">GtkHandleBox</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMachine">AgsMachine</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>       <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDrum">AgsDrum</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>       <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsFFPlayer">AgsFFPlayer</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>       <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLadspaBridge">AgsLadspaBridge</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>       <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLv2Bridge">AgsLv2Bridge</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>       <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMatrix">AgsMatrix</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>       <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMixer">AgsMixer</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>       <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPanel">AgsPanel</link>
@@ -162,9 +180,6 @@
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="GtkExpander">GtkExpander</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsExpander">AgsExpander</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLed">AgsLed</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="GtkFrame">GtkFrame</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLineMember">AgsLineMember</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsOscillator">AgsOscillator</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkButton">GtkButton</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>       <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkToggleButton">GtkToggleButton</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkCheckButton">GtkCheckButton</link>
@@ -173,16 +188,13 @@
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkMenuShell">GtkMenuShell</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>       <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkMenuBar">GtkMenuBar</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsMenuBar">AgsMenuBar</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCartesian">AgsCartesian</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDial">AgsDial</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsIndicator">AgsIndicator</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsHIndicator">AgsHIndicator</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsVIndicator">AgsVIndicator</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="GtkDrawingArea">GtkDrawingArea</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMeter">AgsMeter</link>
     <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsScale">AgsScale</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRuler">AgsRuler</link>
-    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsWaveform">AgsWaveform</link>
+    <phrase role="lineart">&#9474;</phrase>           <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRuler">AgsRuler</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAudioSignal">AgsAudioSignal</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAutomationArea">AgsAutomationArea</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsAutomation">AgsAutomation</link>
@@ -194,7 +206,9 @@
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMuteAudioSignal">AgsMuteAudioSignal</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPeakAudioSignal">AgsPeakAudioSignal</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayAudioSignal">AgsPlayAudioSignal</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallDssiRun">AgsRecallDssiRun</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallLadspaRun">AgsRecallLadspaRun</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallLv2Run">AgsRecallLv2Run</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsStreamAudioSignal">AgsStreamAudioSignal</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsVolumeAudioSignal">AgsVolumeAudioSignal</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannel">AgsRecallChannel</link>
@@ -206,7 +220,9 @@
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMuteChannel">AgsMuteChannel</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPeakChannel">AgsPeakChannel</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayChannel">AgsPlayChannel</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallDssi">AgsRecallDssi</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallLadspa">AgsRecallLadspa</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallLv2">AgsRecallLv2</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsStreamChannel">AgsStreamChannel</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsVolumeChannel">AgsVolumeChannel</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallChannelRun">AgsRecallChannelRun</link>
@@ -239,32 +255,52 @@
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDelayAudio">AgsDelayAudio</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMuteAudio">AgsMuteAudio</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayAudio">AgsPlayAudio</link>
-    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPlayNotationAudio">AgsPlayNotationAudio</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayNotationAudio">AgsPlayNotationAudio</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecordMidiAudio">AgsRecordMidiAudio</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRouteDssiAudio">AgsRouteDssiAudio</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRouteLv2Audio">AgsRouteLv2Audio</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecallAudioRun">AgsRecallAudioRun</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCopyNotationAudioRun">AgsCopyNotationAudioRun</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCopyPatternAudioRun">AgsCopyPatternAudioRun</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCountBeatsAudioRun">AgsCountBeatsAudioRun</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDelayAudioRun">AgsDelayAudioRun</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMuteAudioRun">AgsMuteAudioRun</link>
-    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPlayNotationAudioRun">AgsPlayNotationAudioRun</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayNotationAudioRun">AgsPlayNotationAudioRun</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRecordMidiAudioRun">AgsRecordMidiAudioRun</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsRouteDssiAudioRun">AgsRouteDssiAudioRun</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsRouteLv2AudioRun">AgsRouteLv2AudioRun</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayAudioFile">AgsPlayAudioFile</link>
-    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayNote">AgsPlayNote</link>
-    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPlayPattern">AgsPlayPattern</link>
+    <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsPlayNote">AgsPlayNote</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsChannel">AgsChannel</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsInput">AgsInput</link>
     <phrase role="lineart">&#9474;</phrase>   <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsOutput">AgsOutput</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsConfig">AgsConfig</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDevout">AgsDevout</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDssiManager">AgsDssiManager</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsFile">AgsFile</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsFileIdRef">AgsFileIdRef</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsFileLaunch">AgsFileLaunch</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsFileLink">AgsFileLink</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsFileLookup">AgsFileLookup</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsHistory">AgsHistory</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsIpatchDLS2Reader">AgsIpatchDLS2Reader</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsIpatch">AgsIpatch</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsIpatchSF2Reader">AgsIpatchSF2Reader</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsJackClient">AgsJackClient</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsJackDevout">AgsJackDevout</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsJackMidiin">AgsJackMidiin</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsJackPort">AgsJackPort</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsJackServer">AgsJackServer</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLadspaManager">AgsLadspaManager</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLibao">AgsLibao</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLv2Manager">AgsLv2Manager</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsLv2uiManager">AgsLv2uiManager</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMidiBuilder">AgsMidiBuilder</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMidiFile">AgsMidiFile</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMidiFileReader">AgsMidiFileReader</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMidiFileWriter">AgsMidiFileWriter</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMidiParser">AgsMidiParser</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMidiin">AgsMidiin</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsMutexManager">AgsMutexManager</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsNotation">AgsNotation</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsNote">AgsNote</link>
@@ -288,7 +324,8 @@
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsTaskCompletion">AgsTaskCompletion</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsThreadPool">AgsThreadPool</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsTimestampFactory">AgsTimestampFactory</link>
-    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTimestamp">AgsTimestamp</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsTimestamp">AgsTimestamp</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTurtle">AgsTurtle</link>
     <link linkend="GInterface">GInterface</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsConnectable">AgsConnectable</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsApplicable">AgsApplicable</link>
@@ -305,8 +342,12 @@
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsCountable">AgsCountable</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsSeekable">AgsSeekable</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsSoundcard">AgsSoundcard</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsDistributedManager">AgsDistributedManager</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsPlayable">AgsPlayable</link>
+    <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsSequencer">AgsSequencer</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsServiceProvider">AgsServiceProvider</link>
     <phrase role="lineart">&#9500;&#9472;&#9472;</phrase> <link linkend="AgsSoundProvider">AgsSoundProvider</link>
     <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsTreeIterator">AgsTreeIterator</link>
+    <link linkend="GBoxed">GBoxed</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="AgsComplex">AgsComplex</link>
 </screen>

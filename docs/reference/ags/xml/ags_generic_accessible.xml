@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-AgsGenericAccessible">
 <refmeta>
@@ -17,20 +15,6 @@
 <refpurpose></refpurpose>
 </refnamediv>
 
-<refsect1 id="ags-AgsGenericAccessible.functions" role="functions_proto">
-<title role="functions_proto.title">Functions</title>
-<informaltable pgwide="1" frame="none">
-<tgroup cols="2">
-<colspec colname="functions_return" colwidth="150px"/>
-<colspec colname="functions_name"/>
-<tbody>
-<row><entry role="function_type"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-generic-accessible-get-global-accessible">ags_generic_accessible_get_global_accessible</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
-
-</tbody>
-</tgroup>
-</informaltable>
-</refsect1>
 
 
 <refsect1 id="ags-AgsGenericAccessible.description" role="desc">
@@ -39,14 +23,7 @@
 </refsect1>
 <refsect1 id="ags-AgsGenericAccessible.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-generic-accessible-get-global-accessible" role="function">
-<title>ags_generic_accessible_get_global_accessible&#160;()</title>
-<indexterm zone="ags-generic-accessible-get-global-accessible"><primary>ags_generic_accessible_get_global_accessible</primary></indexterm>
-<programlisting language="C"><link linkend="gboolean"><returnvalue>gboolean</returnvalue></link>
-ags_generic_accessible_get_global_accessible
-                               (<parameter><link linkend="AgsGenericAccessible"><type>AgsGenericAccessible</type></link> *generic_accessible</parameter>);</programlisting>
-</refsect2>
-
+<para />
 </refsect1>
 <refsect1 id="ags-AgsGenericAccessible.other_details" role="details">
 <title role="details.title">Types and Values</title>

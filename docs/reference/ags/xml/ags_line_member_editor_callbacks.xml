@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="ags-ags-line-member-editor-callbacks">
 <refmeta>
@@ -29,7 +27,7 @@
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-line-member-editor-remove-callback">ags_line_member_editor_remove_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
-</entry><entry role="function_name"><link linkend="ags-line-member-editor-ladspa-browser-response-callback">ags_line_member_editor_ladspa_browser_response_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+</entry><entry role="function_name"><link linkend="ags-line-member-editor-plugin-browser-response-callback">ags_line_member_editor_plugin_browser_response_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
 </tbody>
 </tgroup>
@@ -58,11 +56,11 @@ ags_line_member_editor_remove_callback
                                (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *button</parameter>,
                                 <parameter><link linkend="AgsLineMemberEditor"><type>AgsLineMemberEditor</type></link> *line_member_editor</parameter>);</programlisting>
 </refsect2>
-<refsect2 id="ags-line-member-editor-ladspa-browser-response-callback" role="function">
-<title>ags_line_member_editor_ladspa_browser_response_callback&#160;()</title>
-<indexterm zone="ags-line-member-editor-ladspa-browser-response-callback"><primary>ags_line_member_editor_ladspa_browser_response_callback</primary></indexterm>
+<refsect2 id="ags-line-member-editor-plugin-browser-response-callback" role="function">
+<title>ags_line_member_editor_plugin_browser_response_callback&#160;()</title>
+<indexterm zone="ags-line-member-editor-plugin-browser-response-callback"><primary>ags_line_member_editor_plugin_browser_response_callback</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
-ags_line_member_editor_ladspa_browser_response_callback
+ags_line_member_editor_plugin_browser_response_callback
                                (<parameter><link linkend="GtkDialog"><type>GtkDialog</type></link> *dialog</parameter>,
                                 <parameter><link linkend="gint"><type>gint</type></link> response</parameter>,
                                 <parameter><link linkend="AgsLineMemberEditor"><type>AgsLineMemberEditor</type></link> *line_member_editor</parameter>);</programlisting>

@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsSoundProvider">
 <refmeta>
@@ -24,8 +22,18 @@
 <colspec colname="functions_return" colwidth="150px"/>
 <colspec colname="functions_name"/>
 <tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-sound-provider-set-soundcard">ags_sound_provider_set_soundcard</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-sound-provider-get-soundcard">ags_sound_provider_get_soundcard</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-sound-provider-set-sequencer">ags_sound_provider_set_sequencer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-sound-provider-get-sequencer">ags_sound_provider_get_sequencer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-sound-provider-set-distributed-manager">ags_sound_provider_set_distributed_manager</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-sound-provider-get-distributed-manager">ags_sound_provider_get_distributed_manager</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 
 </tbody>
 </tgroup>
@@ -45,11 +53,46 @@
 </refsect1>
 <refsect1 id="AgsSoundProvider.functions_details" role="details">
 <title role="details.title">Functions</title>
+<refsect2 id="ags-sound-provider-set-soundcard" role="function">
+<title>ags_sound_provider_set_soundcard&#160;()</title>
+<indexterm zone="ags-sound-provider-set-soundcard"><primary>ags_sound_provider_set_soundcard</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_sound_provider_set_soundcard (<parameter><link linkend="AgsSoundProvider"><type>AgsSoundProvider</type></link> *sound_provider</parameter>,
+                                  <parameter><link linkend="GList"><type>GList</type></link> *soundcard</parameter>);</programlisting>
+</refsect2>
 <refsect2 id="ags-sound-provider-get-soundcard" role="function">
 <title>ags_sound_provider_get_soundcard&#160;()</title>
 <indexterm zone="ags-sound-provider-get-soundcard"><primary>ags_sound_provider_get_soundcard</primary></indexterm>
 <programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 ags_sound_provider_get_soundcard (<parameter><link linkend="AgsSoundProvider"><type>AgsSoundProvider</type></link> *sound_provider</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-sound-provider-set-sequencer" role="function">
+<title>ags_sound_provider_set_sequencer&#160;()</title>
+<indexterm zone="ags-sound-provider-set-sequencer"><primary>ags_sound_provider_set_sequencer</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_sound_provider_set_sequencer (<parameter><link linkend="AgsSoundProvider"><type>AgsSoundProvider</type></link> *sound_provider</parameter>,
+                                  <parameter><link linkend="GList"><type>GList</type></link> *sequencer</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-sound-provider-get-sequencer" role="function">
+<title>ags_sound_provider_get_sequencer&#160;()</title>
+<indexterm zone="ags-sound-provider-get-sequencer"><primary>ags_sound_provider_get_sequencer</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_sound_provider_get_sequencer (<parameter><link linkend="AgsSoundProvider"><type>AgsSoundProvider</type></link> *sound_provider</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-sound-provider-set-distributed-manager" role="function">
+<title>ags_sound_provider_set_distributed_manager&#160;()</title>
+<indexterm zone="ags-sound-provider-set-distributed-manager"><primary>ags_sound_provider_set_distributed_manager</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_sound_provider_set_distributed_manager
+                               (<parameter><link linkend="AgsSoundProvider"><type>AgsSoundProvider</type></link> *sound_provider</parameter>,
+                                <parameter><link linkend="GList"><type>GList</type></link> *distributed_manager</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-sound-provider-get-distributed-manager" role="function">
+<title>ags_sound_provider_get_distributed_manager&#160;()</title>
+<indexterm zone="ags-sound-provider-get-distributed-manager"><primary>ags_sound_provider_get_distributed_manager</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_sound_provider_get_distributed_manager
+                               (<parameter><link linkend="AgsSoundProvider"><type>AgsSoundProvider</type></link> *sound_provider</parameter>);</programlisting>
 </refsect2>
 
 </refsect1>

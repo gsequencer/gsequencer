@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsMidiFileWriter">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsMidiFileWriter.top_of_page">AgsMidiFileWriter</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsMidiFileWriter</refname>
+<refpurpose>the menu bar.</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsMidiFileWriter.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-file-writer-write-channel-message">ags_midi_file_writer_write_channel_message</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-file-writer-write-status-message">ags_midi_file_writer_write_status_message</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMidiFileWriter"><returnvalue>AgsMidiFileWriter</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-file-writer-new">ags_midi_file_writer_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiFileWriter.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMidiFileWriter
+</screen>
+</refsect1>
+
+<refsect1 id="AgsMidiFileWriter.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_midi_file_writer.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsMidiFileWriter.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsMidiFileWriter"><type>AgsMidiFileWriter</type></link> reads your midi files.</para>
+
+</refsect1>
+<refsect1 id="AgsMidiFileWriter.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-midi-file-writer-write-channel-message" role="function">
+<title>ags_midi_file_writer_write_channel_message&#160;()</title>
+<indexterm zone="ags-midi-file-writer-write-channel-message"><primary>ags_midi_file_writer_write_channel_message</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_midi_file_writer_write_channel_message
+                               (<parameter><link linkend="AgsMidiFileWriter"><type>AgsMidiFileWriter</type></link> *midi_file_writer</parameter>,
+                                <parameter><link linkend="gchar"><type>gchar</type></link> *track_name</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> status</parameter>,
+                                <parameter>...</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-file-writer-write-status-message" role="function">
+<title>ags_midi_file_writer_write_status_message&#160;()</title>
+<indexterm zone="ags-midi-file-writer-write-status-message"><primary>ags_midi_file_writer_write_status_message</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_midi_file_writer_write_status_message
+                               (<parameter><link linkend="AgsMidiFileWriter"><type>AgsMidiFileWriter</type></link> *midi_file_writer</parameter>,
+                                <parameter><link linkend="gchar"><type>gchar</type></link> *track_name</parameter>,
+                                <parameter><link linkend="guint"><type>guint</type></link> status</parameter>,
+                                <parameter>...</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-file-writer-new" role="function">
+<title>ags_midi_file_writer_new&#160;()</title>
+<indexterm zone="ags-midi-file-writer-new"><primary>ags_midi_file_writer_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMidiFileWriter"><returnvalue>AgsMidiFileWriter</returnvalue></link>&#160;*
+ags_midi_file_writer_new (<parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsMidiFileWriter.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

@@ -152,6 +152,13 @@ ags_file_class_init(AgsFileClass *file)
   gobject->finalize = ags_file_finalize;
 
   /* properties */
+  /**
+   * AgsFile:filename:
+   *
+   * The assigned filename to open and read from.
+   *
+   * Since: 0.5.0
+   */
   param_spec = g_param_spec_string("filename\0",
 				   "filename to read or write\0",
 				   "The filename to read or write to.\0",
@@ -161,6 +168,13 @@ ags_file_class_init(AgsFileClass *file)
 				  PROP_FILENAME,
 				  param_spec);
 
+  /**
+   * AgsFile:encoding:
+   *
+   * The charset encoding to use.
+   *
+   * Since: 0.5.0
+   */
   param_spec = g_param_spec_string("encoding\0",
 				   "encoding to use\0",
 				   "The encoding of the XML document.\0",
@@ -170,7 +184,14 @@ ags_file_class_init(AgsFileClass *file)
 				  PROP_ENCODING,
 				  param_spec);
 
-  param_spec = g_param_spec_string("audio format\0",
+  /**
+   * AgsFile:audio-format:
+   *
+   * The format of embedded audio data.
+   *
+   * Since: 0.5.0
+   */
+  param_spec = g_param_spec_string("audio-format\0",
 				   "audio format to use\0",
 				   "The audio format used to embedded audio.\0",
 				   AGS_FILE_DEFAULT_AUDIO_FORMAT,
@@ -179,7 +200,14 @@ ags_file_class_init(AgsFileClass *file)
 				  PROP_AUDIO_FORMAT,
 				  param_spec);
 
-  param_spec = g_param_spec_string("audio encoding\0",
+  /**
+   * AgsFile:audio-encoding:
+   *
+   * The encoding to use for embedding audio data.
+   *
+   * Since: 0.5.0
+   */
+  param_spec = g_param_spec_string("audio-encoding\0",
 				   "audio encoding to use\0",
 				   "The audio encoding used to embedded audio.\0",
 				   AGS_FILE_DEFAULT_AUDIO_ENCODING,
@@ -188,6 +216,13 @@ ags_file_class_init(AgsFileClass *file)
 				  PROP_AUDIO_ENCODING,
 				  param_spec);
 
+  /**
+   * AgsFile:encoding:
+   *
+   * The application context assigned with.
+   *
+   * Since: 0.7.0
+   */
   param_spec = g_param_spec_object("application-context\0",
 				   "application context of file\0",
 				   "The application context to write to file.\0",
@@ -209,6 +244,15 @@ ags_file_class_init(AgsFileClass *file)
   file->read_resolve = ags_file_real_read_resolve;
   file->read_start = ags_file_real_read_start;
 
+  /* signals */
+  /**
+   * AgsFile::open:
+   * @file: the #AgsFile
+   * 
+   * Open @file with appropriate filename.
+   *
+   * Since: 0.5.0
+   */
   file_signals[OPEN] =
     g_signal_new("open\0",
 		 G_TYPE_FROM_CLASS(file),
@@ -218,6 +262,16 @@ ags_file_class_init(AgsFileClass *file)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsFile::open-from-data:
+   * @file: the #AgsFile
+   * @buffer: the buffer containing the file
+   * @length: the buffer length
+   * 
+   * Open @file from a buffer containing the file.
+   *
+   * Since: 0.5.0
+   */
   file_signals[OPEN_FROM_DATA] =
     g_signal_new("open-from-data\0",
 		 G_TYPE_FROM_CLASS(file),
@@ -227,6 +281,15 @@ ags_file_class_init(AgsFileClass *file)
 		 g_cclosure_user_marshal_VOID__STRING_UINT,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsFile::open-from-data:
+   * @file: the #AgsFile
+   * @create: if %TRUE the file will be created if not exists
+   * 
+   * Open @file in read-write mode.
+   *
+   * Since: 0.5.0
+   */
   file_signals[RW_OPEN] =
     g_signal_new("rw-open\0",
 		 G_TYPE_FROM_CLASS(file),
@@ -236,6 +299,14 @@ ags_file_class_init(AgsFileClass *file)
 		 g_cclosure_marshal_VOID__BOOLEAN,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsFile::write:
+   * @file: the #AgsFile
+   * 
+   * Write XML Document to disk.
+   *
+   * Since: 0.5.0
+   */
   file_signals[WRITE] =
     g_signal_new("write\0",
 		 G_TYPE_FROM_CLASS(file),
@@ -254,6 +325,15 @@ ags_file_class_init(AgsFileClass *file)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsFile::write-resolve:
+   * @file: the #AgsFile
+   *
+   * Resolve references and generate thus XPath expressions just
+   * before writing to disk.
+   *
+   * Since: 0.5.0
+   */
   file_signals[WRITE_RESOLVE] =
     g_signal_new("write_resolve\0",
 		 G_TYPE_FROM_CLASS(file),
@@ -263,6 +343,14 @@ ags_file_class_init(AgsFileClass *file)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * AgsFile::read:
+   * @file: the #AgsFile
+   *
+   * Read a XML document from disk with specified filename.
+   * 
+   * Since: 0.5.0
+   */
   file_signals[READ] =
     g_signal_new("read\0",
 		 G_TYPE_FROM_CLASS(file),
@@ -272,6 +360,14 @@ ags_file_class_init(AgsFileClass *file)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * @file: the #AgsFile
+   *
+   * Resolve XPath expressions to their counterpart the newly created
+   * instances refering to.
+   * 
+   * Since: 0.5.0
+   */
   file_signals[READ_RESOLVE] =
     g_signal_new("read_resolve\0",
 		 G_TYPE_FROM_CLASS(file),
@@ -281,6 +377,13 @@ ags_file_class_init(AgsFileClass *file)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
+  /**
+   * @file: the #AgsFile
+   *
+   * Hook after reading XML document to update or start the application.
+   * 
+   * Since: 0.5.0
+   */
   file_signals[READ_START] =
     g_signal_new("read_start\0",
 		 G_TYPE_FROM_CLASS(file),
@@ -478,19 +581,37 @@ ags_file_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_file_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_file_str2md5:
+ * @content: the string buffer
+ * @content_length: the length of the string
+ *
+ * Compute MD5 sums of a buffer.
+ *
+ * Since: 0.4.0
+ */
 gchar*
-ags_file_str2md5(gchar *content, guint strlen)
+ags_file_str2md5(gchar *content, guint content_length)
 {
   GChecksum *checksum;
   gchar *str;
 
   str = g_compute_checksum_for_string(G_CHECKSUM_MD5,
 				      content,
-				      strlen);
+				      content_length);
 
   return(str);
 }
 
+/**
+ * ags_file_add_id_ref:
+ * @file: the @AgsFile
+ * @id_ref: a reference
+ *
+ * Adds @id_ref to @file.
+ * 
+ * Since: 0.4.0
+ */
 void
 ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
 {
@@ -503,6 +624,17 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
 				 id_ref);
 }
 
+/**
+ * ags_file_add_id_ref:
+ * @file: the @AgsFile
+ * @node: a XML node
+ *
+ * Find a reference by its XML node.
+ * 
+ * Returns: the matching #GObject
+ *
+ * Since: 0.4.0
+ */
 GObject*
 ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
 {
@@ -524,6 +656,17 @@ ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
   return(NULL);
 }
 
+/**
+ * ags_file_find_id_ref_by_xpath:
+ * @file: the #AgsFile
+ * @xpath: a XPath expression
+ *
+ * Lookup a reference by @xpath.
+ * 
+ * Returns: the matching #GObject
+ *
+ * Since: 0.4.0
+ */
 GObject*
 ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
 {
@@ -574,6 +717,17 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
   return(NULL);
 }
 
+/**
+ * ags_file_find_id_ref_by_reference:
+ * @file: the #AgsFile
+ * @ref: a %gpointer
+ *
+ * Find a reference matching @ref.
+ * 
+ * Returns: the matching #GObject
+ *
+ * Since: 0.4.0
+ */
 GObject*
 ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
 {
@@ -595,6 +749,15 @@ ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
   return(NULL);
 }
 
+/**
+ * ags_file_add_lookup:
+ * @file: the #AgsFile
+ * @file_lookup: a #AgsFileLookup
+ *
+ * Add @file_lookup for later invoking.
+ *
+ * Since: 0.4.0
+ */
 void
 ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
 {
@@ -608,6 +771,15 @@ ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
 				file_lookup);
 }
 
+/**
+ * ags_file_add_launch:
+ * @file: the #AgsFile
+ * @file_launch: a #AgsFileLaunch
+ *
+ * Add @file_launch for later invoking.
+ *
+ * Since: 0.4.0
+ */
 void
 ags_file_add_launch(AgsFile *file, GObject *file_launch)
 {
@@ -659,6 +831,14 @@ ags_file_real_open(AgsFile *file)
   file->root_node = xmlDocGetRootElement(file->doc);
 }
 
+/**
+ * ags_file_open:
+ * @file: the #AgsFile
+ *
+ * Opens the file specified by :filename property.
+ *
+ * Since: 0.4.0 
+ */
 void
 ags_file_open(AgsFile *file)
 {
@@ -708,6 +888,16 @@ ags_file_real_open_from_data(AgsFile *file,
   file->root_node = xmlDocGetRootElement(file->doc);
 }
 
+/**
+ * ags_file_open:
+ * @file: the #AgsFile
+ * @data: a buffer containing the XML document
+ * @length: the buffer length
+ *
+ * Opens the file provided by @data.
+ *
+ * Since: 0.4.0 
+ */
 void
 ags_file_open_from_data(AgsFile *file,
 			gchar *data, guint length)
@@ -736,6 +926,15 @@ ags_file_real_rw_open(AgsFile *file,
   xmlDocSetRootElement(file->doc, file->root_node);
 }
 
+/**
+ * ags_file_open:
+ * @file: the #AgsFile
+ * @create: if %TRUE create the file as needed
+ *
+ * Opens the file specified by :filename property in read-write mode.
+ *
+ * Since: 0.4.0 
+ */
 void
 ags_file_rw_open(AgsFile *file,
 		 gboolean create)
@@ -749,6 +948,15 @@ ags_file_rw_open(AgsFile *file,
   g_object_unref(G_OBJECT(file));
 }
 
+/**
+ * ags_file_open_filename:
+ * @file: the #AgsFile
+ * @filename: a path
+ *
+ * Opens the file specified by @filename property.
+ *
+ * Since: 0.4.0 
+ */
 void
 ags_file_open_filename(AgsFile *file,
 		       gchar *filename)
@@ -767,6 +975,12 @@ ags_file_open_filename(AgsFile *file,
   ags_file_open(file);
 }
 
+/**
+ * ags_file_close:
+ * @file: the #AgsFile
+ *
+ * Closes @file.
+ */
 void
 ags_file_close(AgsFile *file)
 {
@@ -847,6 +1061,14 @@ ags_file_real_write(AgsFile *file)
   fflush(file->out);
 }
 
+/**
+ * ags_file_write:
+ * @file: the #AgsFile
+ *
+ * Write the XML document to disk.
+ *
+ * Since: 0.4.0
+ */
 void
 ags_file_write(AgsFile *file)
 {
@@ -967,6 +1189,14 @@ ags_file_real_write_resolve(AgsFile *file)
   }
 }
 
+/**
+ * ags_file_write_resolve:
+ * @file: the #AgsFile
+ *
+ * Resolve references to XPath expressions.
+ *
+ * Since: 0.4.0
+ */
 void
 ags_file_write_resolve(AgsFile *file)
 {
@@ -1030,6 +1260,14 @@ ags_file_real_read(AgsFile *file)
   ags_file_read_start(file);
 }
 
+/**
+ * ags_file_read:
+ * @file: the #AgsFile
+ *
+ * Read XML document from disk.
+ *
+ * Since: 0.4.0
+ */
 void
 ags_file_read(AgsFile *file)
 {
@@ -1057,6 +1295,14 @@ ags_file_real_read_resolve(AgsFile *file)
   }
 }
 
+/**
+ * ags_file_read:
+ * @file: the #AgsFile
+ *
+ * Resolve XPath expressions to references.
+ *
+ * Since: 0.4.0
+ */
 void
 ags_file_read_resolve(AgsFile *file)
 {
@@ -1082,6 +1328,14 @@ ags_file_real_read_start(AgsFile *file)
   }
 }
 
+/**
+ * ags_file_read:
+ * @file: the #AgsFile
+ *
+ * Update or start the application.
+ *
+ * Since: 0.4.0
+ */
 void
 ags_file_read_start(AgsFile *file)
 {

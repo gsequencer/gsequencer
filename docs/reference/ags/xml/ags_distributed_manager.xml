@@ -1,0 +1,391 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsDistributedManager">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsDistributedManager.top_of_page">AgsDistributedManager</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsDistributedManager</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsDistributedManager.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-set-url">ags_distributed_manager_set_url</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-get-url">ags_distributed_manager_get_url</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-set-ports">ags_distributed_manager_set_ports</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;**
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-get-ports">ags_distributed_manager_get_ports</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-set-soundcard">ags_distributed_manager_set_soundcard</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-get-soundcard">ags_distributed_manager_get_soundcard</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-set-sequencer">ags_distributed_manager_set_sequencer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-get-sequencer">ags_distributed_manager_get_sequencer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-register-soundcard">ags_distributed_manager_register_soundcard</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-unregister-soundcard">ags_distributed_manager_unregister_soundcard</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-register-sequencer">ags_distributed_manager_register_sequencer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-distributed-manager-unregister-sequencer">ags_distributed_manager_unregister_sequencer</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsDistributedManager.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GInterface">GInterface</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsDistributedManager
+</screen>
+</refsect1>
+
+
+<refsect1 id="AgsDistributedManager.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="AgsDistributedManager.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-distributed-manager-set-url" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_set_url&#160;()</title>
+<indexterm zone="ags-distributed-manager-set-url" role="0.7.0"><primary>ags_distributed_manager_set_url</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_distributed_manager_set_url (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                 <parameter><link linkend="gchar"><type>gchar</type></link> *url</parameter>);</programlisting>
+<para>Sets the url of <parameter>distributed_manager</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>The <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>url</para></entry>
+<entry role="parameter_description"><para>the url to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-get-url" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_get_url&#160;()</title>
+<indexterm zone="ags-distributed-manager-get-url" role="0.7.0"><primary>ags_distributed_manager_get_url</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
+ags_distributed_manager_get_url (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>);</programlisting>
+<para>Gets the URL of <parameter>distributed_manager</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the URL as string</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-set-ports" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_set_ports&#160;()</title>
+<indexterm zone="ags-distributed-manager-set-ports" role="0.7.0"><primary>ags_distributed_manager_set_ports</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_distributed_manager_set_ports (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                   <parameter><link linkend="gchar"><type>gchar</type></link> **ports</parameter>);</programlisting>
+<para>Sets the ports of <parameter>distributed_manager</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>The <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>ports</para></entry>
+<entry role="parameter_description"><para>the ports to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-get-ports" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_get_ports&#160;()</title>
+<indexterm zone="ags-distributed-manager-get-ports" role="0.7.0"><primary>ags_distributed_manager_get_ports</primary></indexterm>
+<programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;**
+ags_distributed_manager_get_ports (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>);</programlisting>
+<para>Gets the ports of <parameter>distributed_manager</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the port as string <link linkend="NULL:CAPS"><literal>NULL</literal></link>-terminated array</para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-set-soundcard" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_set_soundcard&#160;()</title>
+<indexterm zone="ags-distributed-manager-set-soundcard" role="0.7.0"><primary>ags_distributed_manager_set_soundcard</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_distributed_manager_set_soundcard (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                       <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>,
+                                       <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Sets the soundcard at <parameter>uri</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>The <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>uri</para></entry>
+<entry role="parameter_description"><para>the location to fetch from</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the soundcard to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-get-soundcard" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_get_soundcard&#160;()</title>
+<indexterm zone="ags-distributed-manager-get-soundcard" role="0.7.0"><primary>ags_distributed_manager_get_soundcard</primary></indexterm>
+<programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+ags_distributed_manager_get_soundcard (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                       <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>);</programlisting>
+<para>Gets the soundcard of <parameter>distributed_manager</parameter>
+ associated with <parameter>uri</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>uri</para></entry>
+<entry role="parameter_description"><para>the URI</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the soundcard as <link linkend="GObject"><type>GObject</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-set-sequencer" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_set_sequencer&#160;()</title>
+<indexterm zone="ags-distributed-manager-set-sequencer" role="0.7.0"><primary>ags_distributed_manager_set_sequencer</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_distributed_manager_set_sequencer (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                       <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>,
+                                       <parameter><link linkend="GObject"><type>GObject</type></link> *sequencer</parameter>);</programlisting>
+<para>Sets the sequencer at <parameter>uri</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>The <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>uri</para></entry>
+<entry role="parameter_description"><para>the location to fetch from</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>sequencer</para></entry>
+<entry role="parameter_description"><para>the sequencer to set</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-get-sequencer" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_get_sequencer&#160;()</title>
+<indexterm zone="ags-distributed-manager-get-sequencer" role="0.7.0"><primary>ags_distributed_manager_get_sequencer</primary></indexterm>
+<programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+ags_distributed_manager_get_sequencer (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                       <parameter><link linkend="gchar"><type>gchar</type></link> *uri</parameter>);</programlisting>
+<para>Gets the sequencer of <parameter>distributed_manager</parameter>
+ associated with <parameter>uri</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>uri</para></entry>
+<entry role="parameter_description"><para>the URI</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> the sequencer as <link linkend="GObject"><type>GObject</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-register-soundcard" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_register_soundcard&#160;()</title>
+<indexterm zone="ags-distributed-manager-register-soundcard" role="0.7.0"><primary>ags_distributed_manager_register_soundcard</primary></indexterm>
+<programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+ags_distributed_manager_register_soundcard
+                               (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                <parameter><link linkend="gboolean"><type>gboolean</type></link> is_output</parameter>);</programlisting>
+<para>Fetches <parameter>soundcard</parameter>
+ of <parameter>distributed_manager</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>The <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>is_output</para></entry>
+<entry role="parameter_description"><para>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> the used as sink, else as source</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-unregister-soundcard" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_unregister_soundcard&#160;()</title>
+<indexterm zone="ags-distributed-manager-unregister-soundcard" role="0.7.0"><primary>ags_distributed_manager_unregister_soundcard</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_distributed_manager_unregister_soundcard
+                               (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                <parameter><link linkend="GObject"><type>GObject</type></link> *soundcard</parameter>);</programlisting>
+<para>Releases <parameter>soundcard</parameter>
+ in <parameter>distributed_manager</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>The <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>soundcard</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsSoundcard"><type>AgsSoundcard</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-register-sequencer" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_register_sequencer&#160;()</title>
+<indexterm zone="ags-distributed-manager-register-sequencer" role="0.7.0"><primary>ags_distributed_manager_register_sequencer</primary></indexterm>
+<programlisting language="C"><link linkend="GObject"><returnvalue>GObject</returnvalue></link>&#160;*
+ags_distributed_manager_register_sequencer
+                               (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                <parameter><link linkend="gboolean"><type>gboolean</type></link> is_output</parameter>);</programlisting>
+<para>Fetches <parameter>sequencer</parameter>
+ of <parameter>distributed_manager</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>The <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>is_output</para></entry>
+<entry role="parameter_description"><para>if <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> the used as sink, else as source</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsSequencer"><type>AgsSequencer</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+<refsect2 id="ags-distributed-manager-unregister-sequencer" role="function" condition="since:0.7.0">
+<title>ags_distributed_manager_unregister_sequencer&#160;()</title>
+<indexterm zone="ags-distributed-manager-unregister-sequencer" role="0.7.0"><primary>ags_distributed_manager_unregister_sequencer</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_distributed_manager_unregister_sequencer
+                               (<parameter><link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link> *distributed_manager</parameter>,
+                                <parameter><link linkend="GObject"><type>GObject</type></link> *sequencer</parameter>);</programlisting>
+<para>Releases <parameter>sequencer</parameter>
+ in <parameter>distributed_manager</parameter>
+.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>distributed_manager</para></entry>
+<entry role="parameter_description"><para>The <link linkend="AgsDistributedManager"><type>AgsDistributedManager</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>sequencer</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsSequencer"><type>AgsSequencer</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsDistributedManager.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

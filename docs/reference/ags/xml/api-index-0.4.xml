@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE indexdiv PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <indexdiv id="api-index-0.4">
 <indexdiv><title>A</title>
 <indexentry><primaryie linkends="ags-add-audio-new"><link linkend="ags-add-audio-new">ags_add_audio_new</link>, function in <link linkend="AgsAddAudio">AgsAddAudio</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-add-audio-signal-new"><link linkend="ags-add-audio-signal-new">ags_add_audio_signal_new</link>, function in <link linkend="AgsAddAudioSignal">AgsAddAudioSignal</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-add-bulk-member-new"><link linkend="ags-add-bulk-member-new">ags_add_bulk_member_new</link>, function in <link linkend="AgsAddBulkMember">AgsAddBulkMember</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-add-line-member-new"><link linkend="ags-add-line-member-new">ags_add_line_member_new</link>, function in <link linkend="AgsAddLineMember">AgsAddLineMember</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-add-note-new"><link linkend="ags-add-note-new">ags_add_note_new</link>, function in <link linkend="AgsAddNote">AgsAddNote</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-add-point-to-selection-new"><link linkend="ags-add-point-to-selection-new">ags_add_point_to_selection_new</link>, function in <link linkend="AgsAddPointToSelection">AgsAddPointToSelection</link></primaryie></indexentry>
@@ -25,6 +24,8 @@
 <indexentry><primaryie linkends="ags-apply-sequencer-length-new"><link linkend="ags-apply-sequencer-length-new">ags_apply_sequencer_length_new</link>, function in <link linkend="AgsApplySequencerLength">AgsApplySequencerLength</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-apply-synth-new"><link linkend="ags-apply-synth-new">ags_apply_synth_new</link>, function in <link linkend="AgsApplySynth">AgsApplySynth</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-apply-tact-new"><link linkend="ags-apply-tact-new">ags_apply_tact_new</link>, function in <link linkend="AgsApplyTact">AgsApplyTact</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudio--midi-file"><link linkend="AgsAudio--midi-file">AgsAudio:midi-file</link>, object property in <link linkend="AgsAudio">AgsAudio</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsAudio--sequencer"><link linkend="AgsAudio--sequencer">AgsAudio:sequencer</link>, object property in <link linkend="AgsAudio">AgsAudio</link></primaryie></indexentry>
 <indexentry><primaryie linkends="AgsAudio--soundcard"><link linkend="AgsAudio--soundcard">AgsAudio:soundcard</link>, object property in <link linkend="AgsAudio">AgsAudio</link></primaryie></indexentry>
 <indexentry><primaryie linkends="AgsAudioApplicationContext--soundcard"><link linkend="AgsAudioApplicationContext--soundcard">AgsAudioApplicationContext:soundcard</link>, object property in <link linkend="AgsAudioApplicationContext">AgsAudioApplicationContext</link></primaryie></indexentry>
 <indexentry><primaryie linkends="AgsAudioLoop--play-audio"><link linkend="AgsAudioLoop--play-audio">AgsAudioLoop:play-audio</link>, object property in <link linkend="AgsAudioLoop">AgsAudioLoop</link></primaryie></indexentry>
@@ -109,7 +110,6 @@
 <indexentry><primaryie linkends="ags-channel-safe-resize-audio-signal"><link linkend="ags-channel-safe-resize-audio-signal">ags_channel_safe_resize_audio_signal</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-channel-set-soundcard"><link linkend="ags-channel-set-soundcard">ags_channel_set_soundcard</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-channel-tillrecycling-cancel"><link linkend="ags-channel-tillrecycling-cancel">ags_channel_tillrecycling_cancel</link>, function in <link linkend="AgsChannel">AgsChannel</link></primaryie></indexentry>
-<indexentry><primaryie linkends="ags-combo-box-text-remove-all"><link linkend="ags-combo-box-text-remove-all">ags_combo_box_text_remove_all</link>, function in <link linkend="ags-AgsComboBoxText">AgsComboBoxText</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-copy-audio-signal-new"><link linkend="ags-copy-audio-signal-new">ags_copy_audio_signal_new</link>, function in <link linkend="AgsCopyAudioSignal">AgsCopyAudioSignal</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-copy-channel-new"><link linkend="ags-copy-channel-new">ags_copy_channel_new</link>, function in <link linkend="AgsCopyChannel">AgsCopyChannel</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-copy-channel-run-new"><link linkend="ags-copy-channel-run-new">ags_copy_channel_run_new</link>, function in <link linkend="AgsCopyChannelRun">AgsCopyChannelRun</link></primaryie></indexentry>
@@ -162,6 +162,13 @@
 <indexdiv><title>E</title>
 <indexentry><primaryie linkends="AgsEditor--soundcard"><link linkend="AgsEditor--soundcard">AgsEditor:soundcard</link>, object property in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-editor-machine-changed"><link linkend="ags-editor-machine-changed">ags_editor_machine_changed</link>, function in <link linkend="AgsEditor">AgsEditor</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsEffectBulk--audio"><link linkend="AgsEffectBulk--audio">AgsEffectBulk:audio</link>, object property in <link linkend="AgsEffectBulk">AgsEffectBulk</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsEffectBulk--channel-type"><link linkend="AgsEffectBulk--channel-type">AgsEffectBulk:channel-type</link>, object property in <link linkend="AgsEffectBulk">AgsEffectBulk</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsEffectLine--channel"><link linkend="AgsEffectLine--channel">AgsEffectLine:channel</link>, object property in <link linkend="AgsEffectLine">AgsEffectLine</link></primaryie></indexentry>
+<indexentry><primaryie linkends="AgsEffectPad--channel"><link linkend="AgsEffectPad--channel">AgsEffectPad:channel</link>, object property in <link linkend="AgsEffectPad">AgsEffectPad</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-effect-bulk-new"><link linkend="ags-effect-bulk-new">ags_effect_bulk_new</link>, function in <link linkend="AgsEffectBulk">AgsEffectBulk</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-effect-line-new"><link linkend="ags-effect-line-new">ags_effect_line_new</link>, function in <link linkend="AgsEffectLine">AgsEffectLine</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-effect-pad-new"><link linkend="ags-effect-pad-new">ags_effect_pad_new</link>, function in <link linkend="AgsEffectPad">AgsEffectPad</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-expander-add"><link linkend="ags-expander-add">ags_expander_add</link>, function in <link linkend="AgsExpander">AgsExpander</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-expander-new"><link linkend="ags-expander-new">ags_expander_new</link>, function in <link linkend="AgsExpander">AgsExpander</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-expander-remove"><link linkend="ags-expander-remove">ags_expander_remove</link>, function in <link linkend="AgsExpander">AgsExpander</link></primaryie></indexentry>
@@ -176,6 +183,10 @@
 <indexentry><primaryie linkends="ags-export-thread-new"><link linkend="ags-export-thread-new">ags_export_thread_new</link>, function in <link linkend="AgsExportThread">AgsExportThread</link></primaryie></indexentry>
 </indexdiv>
 <indexdiv><title>F</title>
+<indexentry><primaryie linkends="ags-ffplayer-bridge-new"><link linkend="ags-ffplayer-bridge-new">ags_ffplayer_bridge_new</link>, function in <link linkend="AgsFFPlayerBridge">AgsFFPlayerBridge</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ffplayer-bulk-input-new"><link linkend="ags-ffplayer-bulk-input-new">ags_ffplayer_bulk_input_new</link>, function in <link linkend="AgsFFPlayerBulkInput">AgsFFPlayerBulkInput</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ffplayer-input-line-new"><link linkend="ags-ffplayer-input-line-new">ags_ffplayer_input_line_new</link>, function in <link linkend="AgsFFPlayerInputLine">AgsFFPlayerInputLine</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ffplayer-input-pad-new"><link linkend="ags-ffplayer-input-pad-new">ags_ffplayer_input_pad_new</link>, function in <link linkend="AgsFFPlayerInputPad">AgsFFPlayerInputPad</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-file-id-ref-new"><link linkend="ags-file-id-ref-new">ags_file_id_ref_new</link>, function in <link linkend="AgsFileIdRef">AgsFileIdRef</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-file-launch-new"><link linkend="ags-file-launch-new">ags_file_launch_new</link>, function in <link linkend="AgsFileLaunch">AgsFileLaunch</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-file-link-new"><link linkend="ags-file-link-new">ags_file_link_new</link>, function in <link linkend="AgsFileLink">AgsFileLink</link></primaryie></indexentry>
@@ -195,10 +206,7 @@
 <indexentry><primaryie linkends="ags-ipatch-sf2-reader-new"><link linkend="ags-ipatch-sf2-reader-new">ags_ipatch_sf2_reader_new</link>, function in <link linkend="AgsIpatchSF2Reader">AgsIpatchSF2Reader</link></primaryie></indexentry>
 </indexdiv>
 <indexdiv><title>L</title>
-<indexentry><primaryie linkends="ags-ladspa-browser-combo-box-float-controls-new"><link linkend="ags-ladspa-browser-combo-box-float-controls-new">ags_ladspa_browser_combo_box_float_controls_new</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
-<indexentry><primaryie linkends="ags-ladspa-browser-get-plugin-effect"><link linkend="ags-ladspa-browser-get-plugin-effect">ags_ladspa_browser_get_plugin_effect</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
-<indexentry><primaryie linkends="ags-ladspa-browser-get-plugin-filename"><link linkend="ags-ladspa-browser-get-plugin-filename">ags_ladspa_browser_get_plugin_filename</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
-<indexentry><primaryie linkends="ags-ladspa-browser-new"><link linkend="ags-ladspa-browser-new">ags_ladspa_browser_new</link>, function in <link linkend="AgsLadspaBrowser">AgsLadspaBrowser</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-ladspa-manager-effect-index"><link linkend="ags-ladspa-manager-effect-index">ags_ladspa_manager_effect_index</link>, function in <link linkend="AgsLadspaManager">AgsLadspaManager</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-ladspa-manager-find-ladspa-plugin"><link linkend="ags-ladspa-manager-find-ladspa-plugin">ags_ladspa_manager_find_ladspa_plugin</link>, function in <link linkend="AgsLadspaManager">AgsLadspaManager</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-ladspa-manager-get-filenames"><link linkend="ags-ladspa-manager-get-filenames">ags_ladspa_manager_get_filenames</link>, function in <link linkend="AgsLadspaManager">AgsLadspaManager</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-ladspa-manager-get-instance"><link linkend="ags-ladspa-manager-get-instance">ags_ladspa_manager_get_instance</link>, function in <link linkend="AgsLadspaManager">AgsLadspaManager</link></primaryie></indexentry>
@@ -247,6 +255,7 @@
 <indexentry><primaryie linkends="ags-meter-new"><link linkend="ags-meter-new">ags_meter_new</link>, function in <link linkend="AgsMeter">AgsMeter</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-mixer-input-line-new"><link linkend="ags-mixer-input-line-new">ags_mixer_input_line_new</link>, function in <link linkend="AgsMixerInputLine">AgsMixerInputLine</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-mixer-input-pad-new"><link linkend="ags-mixer-input-pad-new">ags_mixer_input_pad_new</link>, function in <link linkend="AgsMixerInputPad">AgsMixerInputPad</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-mutable-set-muted"><link linkend="ags-mutable-set-muted">ags_mutable_set_muted</link>, function in <link linkend="AgsMutable">AgsMutable</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-mute-audio-new"><link linkend="ags-mute-audio-new">ags_mute_audio_new</link>, function in <link linkend="AgsMuteAudio">AgsMuteAudio</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-mute-audio-run-new"><link linkend="ags-mute-audio-run-new">ags_mute_audio_run_new</link>, function in <link linkend="AgsMuteAudioRun">AgsMuteAudioRun</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-mute-audio-signal-new"><link linkend="ags-mute-audio-signal-new">ags_mute_audio_signal_new</link>, function in <link linkend="AgsMuteAudioSignal">AgsMuteAudioSignal</link></primaryie></indexentry>
@@ -356,10 +365,12 @@
 <indexentry><primaryie linkends="ags-recall-duplicate"><link linkend="ags-recall-duplicate">ags_recall_duplicate</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-factory-create"><link linkend="ags-recall-factory-create">ags_recall_factory_create</link>, function in <link linkend="AgsRecallFactory">AgsRecallFactory</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-factory-new"><link linkend="ags-recall-factory-new">ags_recall_factory_new</link>, function in <link linkend="AgsRecallFactory">AgsRecallFactory</link></primaryie></indexentry>
-<indexentry><primaryie linkends="ags-recall-find-by-effect"><link linkend="ags-recall-find-by-effect">ags_recall_find_by_effect</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-find-provider"><link linkend="ags-recall-find-provider">ags_recall_find_provider</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-find-provider-with-recycling-context"><link linkend="ags-recall-find-provider-with-recycling-context">ags_recall_find_provider_with_recycling_context</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-find-recycling-context"><link linkend="ags-recall-find-recycling-context">ags_recall_find_recycling_context</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-find-template"><link linkend="ags-recall-find-template">ags_recall_find_template</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-find-type"><link linkend="ags-recall-find-type">ags_recall_find_type</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-find-type-with-recycling-context"><link linkend="ags-recall-find-type-with-recycling-context">ags_recall_find_type_with_recycling_context</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-get-children"><link linkend="ags-recall-get-children">ags_recall_get_children</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-get-dependencies"><link linkend="ags-recall-get-dependencies">ags_recall_get_dependencies</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-handler-alloc"><link linkend="ags-recall-handler-alloc">ags_recall_handler_alloc</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
@@ -367,7 +378,7 @@
 <indexentry><primaryie linkends="ags-recall-id-find-parent-recycling-context"><link linkend="ags-recall-id-find-parent-recycling-context">ags_recall_id_find_parent_recycling_context</link>, function in <link linkend="AgsRecallID">AgsRecallID</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-id-find-recycling-context"><link linkend="ags-recall-id-find-recycling-context">ags_recall_id_find_recycling_context</link>, function in <link linkend="AgsRecallID">AgsRecallID</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-is-done"><link linkend="ags-recall-is-done">ags_recall_is_done</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
-<indexentry><primaryie linkends="ags-recall-ladpsa-find"><link linkend="ags-recall-ladpsa-find">ags_recall_ladpsa_find</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-recall-ladspa-find"><link linkend="ags-recall-ladspa-find">ags_recall_ladspa_find</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-ladspa-float-to-short"><link linkend="ags-recall-ladspa-float-to-short">ags_recall_ladspa_float_to_short</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-ladspa-load-ports"><link linkend="ags-recall-ladspa-load-ports">ags_recall_ladspa_load_ports</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-ladspa-new"><link linkend="ags-recall-ladspa-new">ags_recall_ladspa_new</link>, function in <link linkend="AgsRecallLadspa">AgsRecallLadspa</link></primaryie></indexentry>
@@ -389,7 +400,7 @@
 <indexentry><primaryie linkends="ags-recall-set-flags"><link linkend="ags-recall-set-flags">ags_recall_set_flags</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-set-recall-id"><link linkend="ags-recall-set-recall-id">ags_recall_set_recall_id</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recall-stop-persistent"><link linkend="ags-recall-stop-persistent">ags_recall_stop_persistent</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
-<indexentry><primaryie linkends="ags-recall-template-find-type"><link linkend="ags-recall-template-find-type">ags_recall_template_find_type</link>, function in <link linkend="AgsRecall">AgsRecall</link></primaryie></indexentry>
+<indexentry><primaryie linkends="ags-record-midi-audio-new"><link linkend="ags-record-midi-audio-new">ags_record_midi_audio_new</link>, function in <link linkend="AgsRecordMidiAudio">AgsRecordMidiAudio</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recycling-context-add"><link linkend="ags-recycling-context-add">ags_recycling_context_add</link>, function in <link linkend="AgsRecyclingContext">AgsRecyclingContext</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recycling-context-add-child"><link linkend="ags-recycling-context-add-child">ags_recycling_context_add_child</link>, function in <link linkend="AgsRecyclingContext">AgsRecyclingContext</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ags-recycling-context-find"><link linkend="ags-recycling-context-find">ags_recycling_context_find</link>, function in <link linkend="AgsRecyclingContext">AgsRecyclingContext</link></primaryie></indexentry>

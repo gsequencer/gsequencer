@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsSeekable">
 <refmeta>
@@ -14,7 +12,7 @@
 </refmeta>
 <refnamediv>
 <refname>AgsSeekable</refname>
-<refpurpose></refpurpose>
+<refpurpose>unique access to recalls</refpurpose>
 </refnamediv>
 
 <refsect1 id="AgsSeekable.functions" role="functions_proto">
@@ -52,21 +50,44 @@
 </screen>
 </refsect1>
 
+<refsect1 id="AgsSeekable.includes"><title>Includes</title><synopsis>#include &lt;ags/object/ags_seekable.h&gt;
+</synopsis></refsect1>
 
 <refsect1 id="AgsSeekable.description" role="desc">
 <title role="desc.title">Description</title>
+<para>The <link linkend="AgsSeekable"><type>AgsSeekable</type></link> interface gives you the <link linkend="AgsSeekable-seek"><function>AgsSeekable::<link linkend="seek"><function>seek()</function></link></function></link> signal
+what notifies about changed offset of pattern or notation.</para>
 
 </refsect1>
 <refsect1 id="AgsSeekable.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-seekable-seek" role="function">
+<refsect2 id="ags-seekable-seek" role="function" condition="since:0.5.0">
 <title>ags_seekable_seek&#160;()</title>
-<indexterm zone="ags-seekable-seek"><primary>ags_seekable_seek</primary></indexterm>
+<indexterm zone="ags-seekable-seek" role="0.5.0"><primary>ags_seekable_seek</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_seekable_seek (<parameter><link linkend="AgsSeekable"><type>AgsSeekable</type></link> *seekable</parameter>,
                    <parameter><link linkend="guint"><type>guint</type></link> steps</parameter>,
                    <parameter><link linkend="gboolean"><type>gboolean</type></link> forward</parameter>);</programlisting>
-</refsect2>
+<para>Seek relatively.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>seekable</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsSeekable"><type>AgsSeekable</type></link> interface</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>steps</para></entry>
+<entry role="parameter_description"><para>the amount of seeking</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>forward</para></entry>
+<entry role="parameter_description"><para>the direction, <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> for moving ahead</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
 
 </refsect1>
 <refsect1 id="AgsSeekable.other_details" role="details">

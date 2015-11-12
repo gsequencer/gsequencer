@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsEditor">
 <refmeta>
@@ -152,12 +150,13 @@ ags_editor_machine_changed (<parameter><link linkend="AgsEditor"><type>AgsEditor
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
-<refsect2 id="ags-editor-select-all" role="function" condition="since:0.4.2">
+<refsect2 id="ags-editor-select-all" role="function" condition="since:0.5.0">
 <title>ags_editor_select_all&#160;()</title>
-<indexterm zone="ags-editor-select-all" role="0.4.2"><primary>ags_editor_select_all</primary></indexterm>
+<indexterm zone="ags-editor-select-all" role="0.5.0"><primary>ags_editor_select_all</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_editor_select_all (<parameter><link linkend="AgsEditor"><type>AgsEditor</type></link> *editor</parameter>);</programlisting>
-<para>Is emitted as machine changed of editor.</para>
+<para>Invert all notation of <parameter>editor</parameter>
+'s selected machine.</para>
 <refsect3 role="parameters">
 <title>Parameters</title>
 <informaltable role="parameters_table" pgwide="1" frame="none">
@@ -170,7 +169,7 @@ ags_editor_select_all (<parameter><link linkend="AgsEditor"><type>AgsEditor</typ
 <entry role="parameter_description"><para>an <link linkend="AgsEditor"><type>AgsEditor</type></link></para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3><para role="since">Since: <link linkend="api-index-0.4.2">0.4.2</link></para></refsect2>
+</refsect3><para role="since">Since: <link linkend="api-index-0.5.0">0.5.0</link></para></refsect2>
 <refsect2 id="ags-editor-paste" role="function" condition="since:0.4.2">
 <title>ags_editor_paste&#160;()</title>
 <indexterm zone="ags-editor-paste" role="0.4.2"><primary>ags_editor_paste</primary></indexterm>

@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="ags-ags-midi-dialog-callbacks">
+<refmeta>
+<refentrytitle role="top_of_page" id="ags-ags-midi-dialog-callbacks.top_of_page">ags_midi_dialog_callbacks</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>ags_midi_dialog_callbacks</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsect1 id="ags-ags-midi-dialog-callbacks.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-dialog-backend-changed-callback">ags_midi_dialog_backend_changed_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-dialog-add-callback">ags_midi_dialog_add_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-dialog-remove-callback">ags_midi_dialog_remove_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-dialog-apply-callback">ags_midi_dialog_apply_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-dialog-ok-callback">ags_midi_dialog_ok_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="int"><returnvalue>int</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-dialog-cancel-callback">ags_midi_dialog_cancel_callback</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+
+
+<refsect1 id="ags-ags-midi-dialog-callbacks.description" role="desc">
+<title role="desc.title">Description</title>
+
+</refsect1>
+<refsect1 id="ags-ags-midi-dialog-callbacks.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-midi-dialog-backend-changed-callback" role="function">
+<title>ags_midi_dialog_backend_changed_callback&#160;()</title>
+<indexterm zone="ags-midi-dialog-backend-changed-callback"><primary>ags_midi_dialog_backend_changed_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_midi_dialog_backend_changed_callback
+                               (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link> *midi_dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-dialog-add-callback" role="function">
+<title>ags_midi_dialog_add_callback&#160;()</title>
+<indexterm zone="ags-midi-dialog-add-callback"><primary>ags_midi_dialog_add_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_midi_dialog_add_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                              <parameter><link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link> *midi_dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-dialog-remove-callback" role="function">
+<title>ags_midi_dialog_remove_callback&#160;()</title>
+<indexterm zone="ags-midi-dialog-remove-callback"><primary>ags_midi_dialog_remove_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_midi_dialog_remove_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                 <parameter><link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link> *midi_dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-dialog-apply-callback" role="function">
+<title>ags_midi_dialog_apply_callback&#160;()</title>
+<indexterm zone="ags-midi-dialog-apply-callback"><primary>ags_midi_dialog_apply_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_midi_dialog_apply_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                <parameter><link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link> *midi_dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-dialog-ok-callback" role="function">
+<title>ags_midi_dialog_ok_callback&#160;()</title>
+<indexterm zone="ags-midi-dialog-ok-callback"><primary>ags_midi_dialog_ok_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_midi_dialog_ok_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                             <parameter><link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link> *midi_dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-dialog-cancel-callback" role="function">
+<title>ags_midi_dialog_cancel_callback&#160;()</title>
+<indexterm zone="ags-midi-dialog-cancel-callback"><primary>ags_midi_dialog_cancel_callback</primary></indexterm>
+<programlisting language="C"><link linkend="int"><returnvalue>int</returnvalue></link>
+ags_midi_dialog_cancel_callback (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link> *widget</parameter>,
+                                 <parameter><link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link> *midi_dialog</parameter>);</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="ags-ags-midi-dialog-callbacks.other_details" role="details">
+<title role="details.title">Types and Values</title>
+
+</refsect1>
+
+</refentry>

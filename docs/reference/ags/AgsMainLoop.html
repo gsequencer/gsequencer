@@ -123,7 +123,7 @@ threads.</p>
 ags_main_loop_get_tree_lock (<em class="parameter"><code><a class="link" href="AgsMainLoop.html" title="AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);</pre>
 <p>Retrieve the tree mutex.</p>
 <div class="refsect3">
-<a name="id-1.4.8.7.2.5"></a><h4>Parameters</h4>
+<a name="id-1.4.11.7.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -138,7 +138,7 @@ ags_main_loop_get_tree_lock (<em class="parameter"><code><a class="link" href="A
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.8.7.2.6"></a><h4>Returns</h4>
+<a name="id-1.4.11.7.2.6"></a><h4>Returns</h4>
 <p> the mutex</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.6">0.6</GTKDOCLINK></p>
@@ -149,12 +149,57 @@ ags_main_loop_get_tree_lock (<em class="parameter"><code><a class="link" href="A
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_main_loop_set_application_context (<em class="parameter"><code><a class="link" href="AgsMainLoop.html" title="AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>,
                                        <em class="parameter"><code><a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a> *application_context</code></em>);</pre>
+<p>Sets the application context.</p>
+<div class="refsect3">
+<a name="id-1.4.11.7.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>main_loop</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsMainLoop.html" title="AgsMainLoop"><span class="type">AgsMainLoop</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>application_context</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.6.0">0.6.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-main-loop-get-application-context"></a><h3>ags_main_loop_get_application_context ()</h3>
 <pre class="programlisting"><a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="returnvalue">AgsApplicationContext</span></a> *
 ags_main_loop_get_application_context (<em class="parameter"><code><a class="link" href="AgsMainLoop.html" title="AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);</pre>
+<p>Retrieve the <a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a>.</p>
+<div class="refsect3">
+<a name="id-1.4.11.7.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>main_loop</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsMainLoop.html" title="AgsMainLoop"><span class="type">AgsMainLoop</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.4.11.7.4.6"></a><h4>Returns</h4>
+<p> the <a class="link" href="AgsApplicationContext.html" title="AgsApplicationContext"><span class="type">AgsApplicationContext</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.6.0">0.6.0</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
@@ -165,7 +210,7 @@ ags_main_loop_set_tic (<em class="parameter"><code><a class="link" href="AgsMain
 <p>Sets tic to <em class="parameter"><code>tic</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.8.7.5.5"></a><h4>Parameters</h4>
+<a name="id-1.4.11.7.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -195,7 +240,7 @@ ags_main_loop_set_tic (<em class="parameter"><code><a class="link" href="AgsMain
 ags_main_loop_get_tic (<em class="parameter"><code><a class="link" href="AgsMainLoop.html" title="AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);</pre>
 <p>Retrieve current tic of synchronization context.</p>
 <div class="refsect3">
-<a name="id-1.4.8.7.6.5"></a><h4>Parameters</h4>
+<a name="id-1.4.11.7.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -210,7 +255,7 @@ ags_main_loop_get_tic (<em class="parameter"><code><a class="link" href="AgsMain
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.8.7.6.6"></a><h4>Returns</h4>
+<a name="id-1.4.11.7.6.6"></a><h4>Returns</h4>
 <p> current tic</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -224,7 +269,7 @@ ags_main_loop_set_last_sync (<em class="parameter"><code><a class="link" href="A
 <p>Sets last sync to <em class="parameter"><code>last_sync</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.4.8.7.7.5"></a><h4>Parameters</h4>
+<a name="id-1.4.11.7.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -254,7 +299,7 @@ ags_main_loop_set_last_sync (<em class="parameter"><code><a class="link" href="A
 ags_main_loop_get_last_sync (<em class="parameter"><code><a class="link" href="AgsMainLoop.html" title="AgsMainLoop"><span class="type">AgsMainLoop</span></a> *main_loop</code></em>);</pre>
 <p>Retrieve last sync as tic of synchronization context.</p>
 <div class="refsect3">
-<a name="id-1.4.8.7.8.5"></a><h4>Parameters</h4>
+<a name="id-1.4.11.7.8.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -269,7 +314,7 @@ ags_main_loop_get_last_sync (<em class="parameter"><code><a class="link" href="A
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.4.8.7.8.6"></a><h4>Returns</h4>
+<a name="id-1.4.11.7.8.6"></a><h4>Returns</h4>
 <p> last synced tic</p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>

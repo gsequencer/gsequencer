@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsLine">
 <refmeta>
@@ -28,6 +26,10 @@
 </entry><entry role="function_name"><link linkend="ags-line-set-channel">ags_line_set_channel</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
 </entry><entry role="function_name"><link linkend="ags-line-group-changed">ags_line_group_changed</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-line-add-effect">ags_line_add_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-line-remove-effect">ags_line_remove_effect</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 </entry><entry role="function_name"><link linkend="ags-line-find-next-grouped">ags_line_find_next_grouped</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
 <row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
@@ -64,9 +66,11 @@
 <colspec colname="signals_name" colwidth="300px"/>
 <colspec colname="signals_flags" colwidth="200px"/>
 <tbody>
+<row><entry role="signal_type"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsLine-add-effect">add-effect</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 <row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsLine-find-port">find-port</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 <row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsLine-group-changed">group-changed</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 <row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsLine-map-recall">map-recall</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
+<row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsLine-remove-effect">remove-effect</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 <row><entry role="signal_type"><link linkend="void"><returnvalue>void</returnvalue></link></entry><entry role="signal_name"><link linkend="AgsLine-set-channel">set-channel</link></entry><entry role="signal_flags"><link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></entry></row>
 
 </tbody>
@@ -160,6 +164,53 @@ ags_line_group_changed (<parameter><link linkend="AgsLine"><type>AgsLine</type><
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
 </refsect3><para role="since">Since: <link linkend="api-index-0.4">0.4</link></para></refsect2>
+<refsect2 id="ags-line-add-effect" role="function" condition="since:0.4.3">
+<title>ags_line_add_effect&#160;()</title>
+<indexterm zone="ags-line-add-effect" role="0.4.3"><primary>ags_line_add_effect</primary></indexterm>
+<programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
+ags_line_add_effect (<parameter><link linkend="AgsLine"><type>AgsLine</type></link> *line</parameter>,
+                     <parameter><link linkend="gchar"><type>gchar</type></link> *filename</parameter>,
+                     <parameter><link linkend="gchar"><type>gchar</type></link> *effect</parameter>);</programlisting>
+<para>Add a line member.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>filename</para></entry>
+<entry role="parameter_description"><para>the filename of the plugin</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>effect</para></entry>
+<entry role="parameter_description"><para>the effect's name</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.3">0.4.3</link></para></refsect2>
+<refsect2 id="ags-line-remove-effect" role="function" condition="since:0.4.3">
+<title>ags_line_remove_effect&#160;()</title>
+<indexterm zone="ags-line-remove-effect" role="0.4.3"><primary>ags_line_remove_effect</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_line_remove_effect (<parameter><link linkend="AgsLine"><type>AgsLine</type></link> *line</parameter>,
+                        <parameter><link linkend="guint"><type>guint</type></link> nth</parameter>);</programlisting>
+<para>Remove a line member.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>line</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsLine"><type>AgsLine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>nth</para></entry>
+<entry role="parameter_description"><para>nth effect to remove</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.3">0.4.3</link></para></refsect2>
 <refsect2 id="ags-line-find-next-grouped" role="function" condition="since:0.4">
 <title>ags_line_find_next_grouped&#160;()</title>
 <indexterm zone="ags-line-find-next-grouped" role="0.4"><primary>ags_line_find_next_grouped</primary></indexterm>
@@ -257,13 +308,13 @@ ags_line_new (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link>
 <refsect2 id="AGS-LINE-DEFAULT-VERSION:CAPS" role="macro">
 <title>AGS_LINE_DEFAULT_VERSION</title>
 <indexterm zone="AGS-LINE-DEFAULT-VERSION:CAPS"><primary>AGS_LINE_DEFAULT_VERSION</primary></indexterm>
-<programlisting language="C">#define AGS_LINE_DEFAULT_VERSION "0.4.2\0"
+<programlisting language="C">#define AGS_LINE_DEFAULT_VERSION "0.7.0\0"
 </programlisting>
 </refsect2>
 <refsect2 id="AGS-LINE-DEFAULT-BUILD-ID:CAPS" role="macro">
 <title>AGS_LINE_DEFAULT_BUILD_ID</title>
 <indexterm zone="AGS-LINE-DEFAULT-BUILD-ID:CAPS"><primary>AGS_LINE_DEFAULT_BUILD_ID</primary></indexterm>
-<programlisting language="C">#define AGS_LINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+<programlisting language="C">#define AGS_LINE_DEFAULT_BUILD_ID "CEST 31-10-2015 19:49\0"
 </programlisting>
 </refsect2>
 <refsect2 id="AgsLineFlags" role="enum">
@@ -311,7 +362,34 @@ ags_line_new (<parameter><link linkend="GtkWidget"><type>GtkWidget</type></link>
 </refsect1>
 <refsect1 id="AgsLine.signal-details" role="signals">
 <title role="signals.title">Signal Details</title>
-<refsect2 id="AgsLine-find-port" role="signal"><title>The <literal>“find-port”</literal> signal</title>
+<refsect2 id="AgsLine-add-effect" role="signal"><title>The <literal>“add-effect”</literal> signal</title>
+<indexterm zone="AgsLine-add-effect"><primary>AgsLine::add-effect</primary></indexterm>
+<programlisting language="C"><link linkend="gpointer"><returnvalue>gpointer</returnvalue></link>
+user_function (<link linkend="AgsLine"><type>AgsLine</type></link> *line,
+               <link linkend="gchar"><type>gchar</type></link>   *effect,
+               <link linkend="gchar"><type>gchar</type></link>   *arg2,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>The ::add-effect signal notifies about added effect.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>line</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsLine"><type>AgsLine</type></link> to modify</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>effect</para></entry>
+<entry role="parameter_description"><para>the effect's name</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsLine-find-port" role="signal"><title>The <literal>“find-port”</literal> signal</title>
 <indexterm zone="AgsLine-find-port"><primary>AgsLine::find-port</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 user_function (<link linkend="AgsLine"><type>AgsLine</type></link> *line,
@@ -376,6 +454,32 @@ user_function (<link linkend="AgsLine"><type>AgsLine</type></link> *line,
 <tbody>
 <row><entry role="parameter_name"><para>line</para></entry>
 <entry role="parameter_description"><para>the <link linkend="AgsLine"><type>AgsLine</type></link></para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><simpara>user_data</simpara></entry>
+<entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><para>Flags: <link linkend="G-SIGNAL-RUN-LAST:CAPS">Run Last</link></para>
+</refsect2><refsect2 id="AgsLine-remove-effect" role="signal"><title>The <literal>“remove-effect”</literal> signal</title>
+<indexterm zone="AgsLine-remove-effect"><primary>AgsLine::remove-effect</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+user_function (<link linkend="AgsLine"><type>AgsLine</type></link> *line,
+               <link linkend="guint"><type>guint</type></link>    nth,
+               <link linkend="gpointer"><type>gpointer</type></link> user_data)</programlisting>
+<para>The ::remove-effect signal notifies about removed effect.</para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>line</para></entry>
+<entry role="parameter_description"><para>the <link linkend="AgsLine"><type>AgsLine</type></link> to modify</para></entry>
+<entry role="parameter_annotations"></entry></row>
+<row><entry role="parameter_name"><para>nth</para></entry>
+<entry role="parameter_description"><para>the nth effect</para></entry>
 <entry role="parameter_annotations"></entry></row>
 <row><entry role="parameter_name"><simpara>user_data</simpara></entry>
 <entry role="parameter_description"><simpara>user data set when the signal handler was connected.</simpara></entry>

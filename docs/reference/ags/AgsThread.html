@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="thread.html" title="Part VII. Thread - Multi-threaded tree">
 <link rel="prev" href="AgsTimestampThread.html" title="AgsTimestampThread">
-<link rel="next" href="AgsThreadPool.html" title="AgsThreadPool">
+<link rel="next" href="AgsThreadApplicationContext.html" title="AgsThreadApplicationContext">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -23,7 +23,7 @@
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="thread.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
 <td><a accesskey="p" href="AgsTimestampThread.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
-<td><a accesskey="n" href="AgsThreadPool.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="AgsThreadApplicationContext.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
 <a name="AgsThread"></a><div class="titlepage"></div>
@@ -50,7 +50,7 @@
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
-<td class="function_name"><a class="link" href="AgsThread.html#MSEC-PER-SEC:CAPS" title="MSEC_PER_SEC">MSEC_PER_SEC</a></td>
+<td class="function_name"><a class="link" href="AgsThread.html#USEC-PER-SEC:CAPS" title="USEC_PER_SEC">USEC_PER_SEC</a></td>
 </tr>
 <tr>
 <td class="define_keyword">#define</td>
@@ -441,6 +441,14 @@
 <a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *
 </td>
 <td class="function_name">
+<a class="link" href="AgsThread.html#ags-thread-self" title="ags_thread_self ()">ags_thread_self</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *
+</td>
+<td class="function_name">
 <a class="link" href="AgsThread.html#ags-thread-new" title="ags_thread_new ()">ags_thread_new</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
@@ -582,6 +590,7 @@
         <span class="lineart">├──</span> <GTKDOCLINK HREF="AgsRecordThread">AgsRecordThread</GTKDOCLINK>
         <span class="lineart">├──</span> <a class="link" href="AgsRecyclingThread.html" title="AgsRecyclingThread">AgsRecyclingThread</a>
         <span class="lineart">├──</span> <a class="link" href="AgsReturnableThread.html" title="AgsReturnableThread">AgsReturnableThread</a>
+        <span class="lineart">├──</span> <GTKDOCLINK HREF="AgsSequencerThread">AgsSequencerThread</GTKDOCLINK>
         <span class="lineart">├──</span> <a class="link" href="AgsSingleThread.html" title="AgsSingleThread">AgsSingleThread</a>
         <span class="lineart">├──</span> <a class="link" href="AgsSoundcardThread.html" title="AgsSoundcardThread">AgsSoundcardThread</a>
         <span class="lineart">├──</span> <a class="link" href="AgsTaskThread.html" title="AgsTaskThread">AgsTaskThread</a>
@@ -607,8 +616,8 @@ perform syncing and frequencies.</p>
 </div>
 <hr>
 <div class="refsect2">
-<a name="MSEC-PER-SEC:CAPS"></a><h3>MSEC_PER_SEC</h3>
-<pre class="programlisting">#define             MSEC_PER_SEC</pre>
+<a name="USEC-PER-SEC:CAPS"></a><h3>USEC_PER_SEC</h3>
+<pre class="programlisting">#define             USEC_PER_SEC</pre>
 </div>
 <hr>
 <div class="refsect2">
@@ -678,28 +687,6 @@ ags_accounting_table_set_sanity (<em class="parameter"><code><GTKDOCLINK HREF="G
 ags_thread_set_sync (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
                      <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> tic</code></em>);</pre>
 <p>Calls <a class="link" href="AgsThread.html#ags-thread-set-sync" title="ags_thread_set_sync ()"><code class="function">ags_thread_set_sync()</code></a> on all threads.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.14.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>tic</p></td>
-<td class="parameter_description"><p>the tic as sync occured.</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -715,21 +702,6 @@ ags_thread_set_sync_all (<em class="parameter"><code><a class="link" href="AgsTh
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_lock (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Locks the threads own mutex and sets the appropriate flag.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.16.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -741,7 +713,7 @@ ags_thread_trylock (<em class="parameter"><code><a class="link" href="AgsThread.
 appropriate flag and returning <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK>. Otherwise return <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK>
 without lock.</p>
 <div class="refsect3">
-<a name="id-1.8.10.10.17.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.10.17.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -763,21 +735,6 @@ without lock.</p>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_unlock (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Unlocks the threads own mutex and unsets the appropriate flag.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.18.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -787,7 +744,7 @@ ags_thread_unlock (<em class="parameter"><code><a class="link" href="AgsThread.h
 ags_thread_get_toplevel (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Retrieve toplevel thread.</p>
 <div class="refsect3">
-<a name="id-1.8.10.10.19.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.10.19.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -802,7 +759,7 @@ ags_thread_get_toplevel (<em class="parameter"><code><a class="link" href="AgsTh
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.8.10.10.19.6"></a><h4>Returns</h4>
+<a name="id-1.8.11.10.19.6"></a><h4>Returns</h4>
 <p> the toplevevel <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -813,25 +770,6 @@ ags_thread_get_toplevel (<em class="parameter"><code><a class="link" href="AgsTh
 <pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *
 ags_thread_first (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Retrieve first sibling.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.20.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.8.10.10.20.6"></a><h4>Returns</h4>
-<p> the very first <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> within same tree level</p>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -840,26 +778,6 @@ ags_thread_first (<em class="parameter"><code><a class="link" href="AgsThread.ht
 <pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *
 ags_thread_last (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Retrieve last sibling.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.21.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.8.10.10.21.6"></a><h4>Returns</h4>
-<p> the very last <em class="parameter"><code>AgsThread</code></em>
-within same tree level</p>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -870,7 +788,7 @@ ags_thread_remove_child (<em class="parameter"><code><a class="link" href="AgsTh
                          <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *child</code></em>);</pre>
 <p>Remove child of thread.</p>
 <div class="refsect3">
-<a name="id-1.8.10.10.22.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.10.22.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -901,7 +819,7 @@ ags_thread_add_child (<em class="parameter"><code><a class="link" href="AgsThrea
                       <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *child</code></em>);</pre>
 <p>Add child to thread.</p>
 <div class="refsect3">
-<a name="id-1.8.10.10.23.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.10.23.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -950,32 +868,6 @@ ags_thread_add_child_extended (<em class="parameter"><code><a class="link" href=
 ags_thread_parental_is_locked (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
                                <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
 <p>Check the AGS_THREAD_LOCKED flag in parental levels.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.25.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>parent</p></td>
-<td class="parameter_description"><p>where to stop iteration</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.8.10.10.25.6"></a><h4>Returns</h4>
-<p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if locked otherwise <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK></p>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -984,25 +876,6 @@ ags_thread_parental_is_locked (<em class="parameter"><code><a class="link" href=
 <pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
 ags_thread_sibling_is_locked (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Check the AGS_THREAD_LOCKED flag within sibling.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.26.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.8.10.10.26.6"></a><h4>Returns</h4>
-<p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if locked otherwise <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK></p>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1010,39 +883,22 @@ ags_thread_sibling_is_locked (<em class="parameter"><code><a class="link" href="
 <a name="ags-thread-children-is-locked"></a><h3>ags_thread_children_is_locked ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
 ags_thread_children_is_locked (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
-<p>Check the AGS_THREAD_LOCKED flag within children.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.27.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
-<div class="refsect3">
-<a name="id-1.8.10.10.27.6"></a><h4>Returns</h4>
-<p> <GTKDOCLINK HREF="TRUE:CAPS"><code class="literal">TRUE</code></GTKDOCLINK> if locked otherwise <GTKDOCLINK HREF="FALSE:CAPS"><code class="literal">FALSE</code></GTKDOCLINK></p>
-</div>
+<p>Check the AGS_THREAD_LOCKED flag within sibling.</p>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-thread-is-current-ready"></a><h3>ags_thread_is_current_ready ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
-ags_thread_is_current_ready (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *current</code></em>);</pre>
+ags_thread_is_current_ready (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *current</code></em>,
+                             <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> tic</code></em>);</pre>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ags-thread-is-tree-ready"></a><h3>ags_thread_is_tree_ready ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="gboolean"><span class="returnvalue">gboolean</span></GTKDOCLINK>
-ags_thread_is_tree_ready (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
+ags_thread_is_tree_ready (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
+                          <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> tic</code></em>);</pre>
 </div>
 <hr>
 <div class="refsect2">
@@ -1052,28 +908,6 @@ ags_thread_next_parent_locked (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
 <p>Retrieve next locked thread above <em class="parameter"><code>thread</code></em>
 .</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.30.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>parent</p></td>
-<td class="parameter_description"><p>the parent <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> where to stop.</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1083,21 +917,6 @@ ags_thread_next_parent_locked (<em class="parameter"><code><a class="link" href=
 ags_thread_next_sibling_locked (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Retrieve next locked thread neighbooring <em class="parameter"><code>thread</code></em>
 </p>
-<div class="refsect3">
-<a name="id-1.8.10.10.31.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1107,21 +926,6 @@ ags_thread_next_sibling_locked (<em class="parameter"><code><a class="link" href
 ags_thread_next_children_locked (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Retrieve next locked thread following <em class="parameter"><code>thread</code></em>
 </p>
-<div class="refsect3">
-<a name="id-1.8.10.10.32.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1131,28 +935,6 @@ ags_thread_next_children_locked (<em class="parameter"><code><a class="link" hre
 ags_thread_lock_parent (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
 <p>Lock parent tree structure.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.33.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>parent</p></td>
-<td class="parameter_description"><p>the parent <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> where to stop.</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1161,21 +943,6 @@ ags_thread_lock_parent (<em class="parameter"><code><a class="link" href="AgsThr
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_lock_sibling (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Lock sibling tree structure.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.34.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1184,21 +951,6 @@ ags_thread_lock_sibling (<em class="parameter"><code><a class="link" href="AgsTh
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_lock_children (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Lock child tree structure.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.35.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1214,28 +966,6 @@ ags_thread_lock_all (<em class="parameter"><code><a class="link" href="AgsThread
 ags_thread_unlock_parent (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
                           <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
 <p>Unlock parent tree structure.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.37.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>parent</p></td>
-<td class="parameter_description"><p>the parent <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> where to stop.</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1244,21 +974,6 @@ ags_thread_unlock_parent (<em class="parameter"><code><a class="link" href="AgsT
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_unlock_sibling (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Unlock sibling tree structure.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.38.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1267,21 +982,6 @@ ags_thread_unlock_sibling (<em class="parameter"><code><a class="link" href="Ags
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_unlock_children (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Unlock child tree structure.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.39.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1297,28 +997,6 @@ ags_thread_unlock_all (<em class="parameter"><code><a class="link" href="AgsThre
 ags_thread_wait_parent (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
                         <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>);</pre>
 <p>Wait on parent tree structure.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.41.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>parent</p></td>
-<td class="parameter_description"><p>the parent <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> where to stop.</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1327,21 +1005,6 @@ ags_thread_wait_parent (<em class="parameter"><code><a class="link" href="AgsThr
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_wait_sibling (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Wait on sibling tree structure.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.42.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1350,21 +1013,6 @@ ags_thread_wait_sibling (<em class="parameter"><code><a class="link" href="AgsTh
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_wait_children (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Wait on child tree structure.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.43.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1375,28 +1023,6 @@ ags_thread_signal_parent (<em class="parameter"><code><a class="link" href="AgsT
                           <em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *parent</code></em>,
                           <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> broadcast</code></em>);</pre>
 <p>Signals the tree in higher levels.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.44.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>broadcast</p></td>
-<td class="parameter_description"><p>whether to perforam a signal or to broadcast</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1406,28 +1032,6 @@ ags_thread_signal_parent (<em class="parameter"><code><a class="link" href="AgsT
 ags_thread_signal_sibling (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
                            <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> broadcast</code></em>);</pre>
 <p>Signals the tree on same level.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.45.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>broadcast</p></td>
-<td class="parameter_description"><p>whether to perforam a signal or to broadcast</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1437,28 +1041,6 @@ ags_thread_signal_sibling (<em class="parameter"><code><a class="link" href="Ags
 ags_thread_signal_children (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>,
                             <em class="parameter"><code><GTKDOCLINK HREF="gboolean"><span class="type">gboolean</span></GTKDOCLINK> broadcast</code></em>);</pre>
 <p>Signals the tree in lower levels.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.46.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody>
-<tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>an <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a></p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-<tr>
-<td class="parameter_name"><p>broadcast</p></td>
-<td class="parameter_description"><p>whether to perforam a signal or to broadcast</p></td>
-<td class="parameter_annotations"> </td>
-</tr>
-</tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1467,21 +1049,6 @@ ags_thread_signal_children (<em class="parameter"><code><a class="link" href="Ag
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_start (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Start the thread.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.47.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>the <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> instance</p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1491,21 +1058,6 @@ ags_thread_start (<em class="parameter"><code><a class="link" href="AgsThread.ht
 ags_thread_run (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Only for internal use of ags_thread_loop but you may want to set the your very own
 class function namely your thread's routine.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.48.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>the <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> instance</p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1532,21 +1084,6 @@ ags_thread_timelock (<em class="parameter"><code><a class="link" href="AgsThread
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_stop (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Stop the threads loop by unsetting AGS_THREAD_RUNNING flag.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.52.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>the <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> instance</p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1555,21 +1092,6 @@ ags_thread_stop (<em class="parameter"><code><a class="link" href="AgsThread.htm
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_thread_hangcheck (<em class="parameter"><code><a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> *thread</code></em>);</pre>
 <p>Performs hangcheck of thread.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.53.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>thread</p></td>
-<td class="parameter_description"><p>the <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> instance</p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 <hr>
@@ -1581,27 +1103,18 @@ ags_thread_find_type (<em class="parameter"><code><a class="link" href="AgsThrea
 </div>
 <hr>
 <div class="refsect2">
+<a name="ags-thread-self"></a><h3>ags_thread_self ()</h3>
+<pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *
+ags_thread_self (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
 <a name="ags-thread-new"></a><h3>ags_thread_new ()</h3>
 <pre class="programlisting"><a class="link" href="AgsThread.html" title="AgsThread"><span class="returnvalue">AgsThread</span></a> *
 ags_thread_new (<em class="parameter"><code><GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> data</code></em>);</pre>
 <p>Create a new <a class="link" href="AgsThread.html" title="AgsThread"><span class="type">AgsThread</span></a> you may provide a <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK> as <em class="parameter"><code>data</code></em>
 
 to your thread routine.</p>
-<div class="refsect3">
-<a name="id-1.8.10.10.55.5"></a><h4>Parameters</h4>
-<div class="informaltable"><table width="100%" border="0">
-<colgroup>
-<col width="150px" class="parameters_name">
-<col class="parameters_description">
-<col width="200px" class="parameters_annotations">
-</colgroup>
-<tbody><tr>
-<td class="parameter_name"><p>data</p></td>
-<td class="parameter_description"><p>an <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK></p></td>
-<td class="parameter_annotations"> </td>
-</tr></tbody>
-</table></div>
-</div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
 </div>
 </div>
@@ -1620,7 +1133,7 @@ to your thread routine.</p>
 <div class="refsect2">
 <a name="AgsThreadFlags"></a><h3>enum AgsThreadFlags</h3>
 <div class="refsect3">
-<a name="id-1.8.10.11.4.3"></a><h4>Members</h4>
+<a name="id-1.8.11.11.4.3"></a><h4>Members</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="300px" class="enum_members_name">
@@ -1783,6 +1296,11 @@ to your thread routine.</p>
 <td> </td>
 <td> </td>
 </tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-THREAD-CONNECTED:CAPS"></a>AGS_THREAD_CONNECTED</p></td>
+<td> </td>
+<td> </td>
+</tr>
 </tbody>
 </table></div>
 </div>
@@ -1828,7 +1346,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::resume signal is invoked during resuming.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.2.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1864,7 +1382,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::run signal is invoked during run loop.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.3.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1895,7 +1413,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::start signal is invoked as thread started.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.4.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1927,7 +1445,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
 <p>The ::stop signal is invoked as <em class="parameter"><code>thread</code></em>
  stopped.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.5.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1963,7 +1481,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::suspend signal is invoked during suspending.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.6.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1995,7 +1513,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
 <p>The ::timelock signal is invoked as standard compution
 time exceeded.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.7.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2031,7 +1549,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::resume signal is invoked during resuming.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.8.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.8.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2067,7 +1585,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::run signal is invoked during run loop.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.9.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.9.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2098,7 +1616,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::start signal is invoked as thread started.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.10.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.10.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2130,7 +1648,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
 <p>The ::stop signal is invoked as <em class="parameter"><code>thread</code></em>
  stopped.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.11.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.11.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2166,7 +1684,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::suspend signal is invoked during suspending.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.12.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.12.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -2198,7 +1716,7 @@ user_function (<a class="link" href="AgsThread.html" title="AgsThread"><span cla
 <p>The ::timelock signal is invoked as standard compution
 time exceeded.</p>
 <div class="refsect3">
-<a name="id-1.8.10.13.13.5"></a><h4>Parameters</h4>
+<a name="id-1.8.11.13.13.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">

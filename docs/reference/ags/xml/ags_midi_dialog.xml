@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsMidiDialog">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsMidiDialog.top_of_page">AgsMidiDialog</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsMidiDialog</refname>
+<refpurpose>pack pad editors.</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsMidiDialog.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="void"><returnvalue>void</returnvalue></link>
+</entry><entry role="function_name"><link linkend="ags-midi-dialog-load-sequencers">ags_midi_dialog_load_sequencers</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+<row><entry role="function_type"><link linkend="AgsMidiDialog"><returnvalue>AgsMidiDialog</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-midi-dialog-new">ags_midi_dialog_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiDialog.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="AgsMachine"><type>AgsMachine</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsMidiDialog--machine">machine</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiDialog.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MIDI-DIALOG-DEFAULT-VERSION:CAPS">AGS_MIDI_DIALOG_DEFAULT_VERSION</link></entry></row>
+<row><entry role="define_keyword">#define</entry><entry role="function_name"><link linkend="AGS-MIDI-DIALOG-DEFAULT-BUILD-ID:CAPS">AGS_MIDI_DIALOG_DEFAULT_BUILD_ID</link></entry></row>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsMidiDialogFlags">AgsMidiDialogFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsMidiDialog.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWindow">GtkWindow</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkDialog">GtkDialog</link>
+                                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsMidiDialog
+</screen>
+</refsect1>
+
+<refsect1 id="AgsMidiDialog.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_midi_dialog.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsMidiDialog.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link> is a composite widget to edit all aspects of <link linkend="AgsAudio"><type>AgsAudio</type></link>.
+It consists of multiple child editors.</para>
+
+</refsect1>
+<refsect1 id="AgsMidiDialog.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-midi-dialog-load-sequencers" role="function">
+<title>ags_midi_dialog_load_sequencers&#160;()</title>
+<indexterm zone="ags-midi-dialog-load-sequencers"><primary>ags_midi_dialog_load_sequencers</primary></indexterm>
+<programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
+ags_midi_dialog_load_sequencers (<parameter><link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link> *midi_dialog</parameter>);</programlisting>
+</refsect2>
+<refsect2 id="ags-midi-dialog-new" role="function" condition="since:0.7.0">
+<title>ags_midi_dialog_new&#160;()</title>
+<indexterm zone="ags-midi-dialog-new" role="0.7.0"><primary>ags_midi_dialog_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsMidiDialog"><returnvalue>AgsMidiDialog</returnvalue></link>&#160;*
+ags_midi_dialog_new (<parameter><link linkend="AgsMachine"><type>AgsMachine</type></link> *machine</parameter>);</programlisting>
+<para>Creates an <link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link></para>
+<refsect3 role="parameters">
+<title>Parameters</title>
+<informaltable role="parameters_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="parameters_name" colwidth="150px"/>
+<colspec colname="parameters_description"/>
+<colspec colname="parameters_annotations" colwidth="200px"/>
+<tbody>
+<row><entry role="parameter_name"><para>machine</para></entry>
+<entry role="parameter_description"><para>the assigned machine.</para></entry>
+<entry role="parameter_annotations"></entry></row>
+</tbody></tgroup></informaltable>
+</refsect3><refsect3 role="returns">
+<title>Returns</title>
+<para> a new <link linkend="AgsMidiDialog"><type>AgsMidiDialog</type></link></para>
+</refsect3><para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMidiDialog.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AGS-MIDI-DIALOG-DEFAULT-VERSION:CAPS" role="macro">
+<title>AGS_MIDI_DIALOG_DEFAULT_VERSION</title>
+<indexterm zone="AGS-MIDI-DIALOG-DEFAULT-VERSION:CAPS"><primary>AGS_MIDI_DIALOG_DEFAULT_VERSION</primary></indexterm>
+<programlisting language="C">#define AGS_MIDI_DIALOG_DEFAULT_VERSION "0.7.0\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AGS-MIDI-DIALOG-DEFAULT-BUILD-ID:CAPS" role="macro">
+<title>AGS_MIDI_DIALOG_DEFAULT_BUILD_ID</title>
+<indexterm zone="AGS-MIDI-DIALOG-DEFAULT-BUILD-ID:CAPS"><primary>AGS_MIDI_DIALOG_DEFAULT_BUILD_ID</primary></indexterm>
+<programlisting language="C">#define AGS_MIDI_DIALOG_DEFAULT_BUILD_ID "CEST 02-11-2015 19:44\0"
+</programlisting>
+</refsect2>
+<refsect2 id="AgsMidiDialogFlags" role="enum">
+<title>enum AgsMidiDialogFlags</title>
+<indexterm zone="AgsMidiDialogFlags"><primary>AgsMidiDialogFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-MIDI-DIALOG-CONNECTED:CAPS">AGS_MIDI_DIALOG_CONNECTED</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsMidiDialog.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsMidiDialog--machine" role="property"><title>The <literal>“machine”</literal> property</title>
+<indexterm zone="AgsMidiDialog--machine"><primary>AgsMidiDialog:machine</primary></indexterm>
+<programlisting>  “machine”                  <link linkend="AgsMachine"><type>AgsMachine</type></link>&#160;*</programlisting>
+<para>The machine which this machine editor is assigned with.</para><para>Flags: Read / Write</para>
+</refsect2>
+
+</refsect1>
+
+</refentry>

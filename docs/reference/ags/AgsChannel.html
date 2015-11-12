@@ -200,6 +200,22 @@
 </tr>
 <tr>
 <td class="function_type">
+<GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsChannel.html#ags-channel-add-effect" title="ags_channel_add_effect ()">ags_channel_add_effect</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsChannel.html#ags-channel-remove-effect" title="ags_channel_remove_effect ()">ags_channel_remove_effect</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
 <GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 </td>
 <td class="function_name">
@@ -387,6 +403,11 @@
 </colgroup>
 <tbody>
 <tr>
+<td class="signal_type"><GTKDOCLINK HREF="gpointer"><span class="returnvalue">gpointer</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsChannel.html#AgsChannel-add-effect" title="The “add-effect” signal">add-effect</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
 <td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
 <td class="signal_name"><a class="link" href="AgsChannel.html#AgsChannel-done" title="The “done” signal">done</a></td>
 <td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
@@ -394,6 +415,11 @@
 <tr>
 <td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
 <td class="signal_name"><a class="link" href="AgsChannel.html#AgsChannel-recycling-changed" title="The “recycling-changed” signal">recycling-changed</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsChannel.html#AgsChannel-remove-effect" title="The “remove-effect” signal">remove-effect</a></td>
 <td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
 </tr>
 </tbody>
@@ -941,13 +967,28 @@ ags_channel_add_recall (<em class="parameter"><code><a class="link" href="AgsCha
 </div>
 <hr>
 <div class="refsect2">
+<a name="ags-channel-add-effect"></a><h3>ags_channel_add_effect ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="GList"><span class="returnvalue">GList</span></GTKDOCLINK> *
+ags_channel_add_effect (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="char"><span class="type">char</span></GTKDOCLINK> *filename</code></em>,
+                        <em class="parameter"><code><GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK> *effect</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-channel-remove-effect"></a><h3>ags_channel_remove_effect ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_channel_remove_effect (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
+                           <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> nth</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
 <a name="ags-channel-safe-resize-audio-signal"></a><h3>ags_channel_safe_resize_audio_signal ()</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
 ags_channel_safe_resize_audio_signal (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>,
                                       <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> size</code></em>);</pre>
 <p>Resize audio data.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.22.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.24.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -979,7 +1020,7 @@ ags_channel_duplicate_recall (<em class="parameter"><code><a class="link" href="
 <p>Duplicate <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> templates for use with <GTKDOCLINK HREF="ags-channel-recursive-play"><code class="function">ags_channel_recursive_play()</code></GTKDOCLINK>,
 but <a class="link" href="AgsChannel.html#ags-channel-recursive-play-init" title="ags_channel_recursive_play_init ()"><code class="function">ags_channel_recursive_play_init()</code></a> may call this function for you.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.23.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.25.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1010,7 +1051,7 @@ ags_channel_resolve_recall (<em class="parameter"><code><a class="link" href="Ag
                             <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
 <p>Resolve step of initialization.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.24.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.26.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1043,7 +1084,7 @@ ags_channel_init_recall (<em class="parameter"><code><a class="link" href="AgsCh
 <p>Prepare <a class="link" href="AgsRecall.html" title="AgsRecall"><span class="type">AgsRecall</span></a> objects to become runnning, <a class="link" href="AgsChannel.html#ags-channel-recursive-play-init" title="ags_channel_recursive_play_init ()"><code class="function">ags_channel_recursive_play_init()</code></a>
 may call this function for you.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.25.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.27.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1076,7 +1117,7 @@ ags_channel_play (<em class="parameter"><code><a class="link" href="AgsChannel.h
 <p>Play one single run of <em class="parameter"><code>stage</code></em>
  step.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.26.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.28.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1112,7 +1153,7 @@ ags_channel_done (<em class="parameter"><code><a class="link" href="AgsChannel.h
                   <em class="parameter"><code><a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a> *recall_id</code></em>);</pre>
 <p>Is emitted as playing channel is done.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.27.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.29.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1144,7 +1185,7 @@ ags_channel_cancel (<em class="parameter"><code><a class="link" href="AgsChannel
 <p>Calls for every matching <em class="parameter"><code>recall_id</code></em>
  <a class="link" href="AgsRecall.html#ags-recall-cancel" title="ags_recall_cancel ()"><code class="function">ags_recall_cancel()</code></a></p>
 <div class="refsect3">
-<a name="id-1.9.7.10.28.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.30.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1176,7 +1217,7 @@ ags_channel_remove (<em class="parameter"><code><a class="link" href="AgsChannel
 <p>Calls for every matching <em class="parameter"><code>recall_id</code></em>
  <a class="link" href="AgsRecall.html#ags-recall-remove" title="ags_recall_remove ()"><code class="function">ags_recall_remove()</code></a></p>
 <div class="refsect3">
-<a name="id-1.9.7.10.29.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.31.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1216,7 +1257,7 @@ ags_channel_recall_id_set (<em class="parameter"><code><a class="link" href="Ags
 ags_channel_find_port (<em class="parameter"><code><a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel</code></em>);</pre>
 <p>Retrieve all ports of <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a></p>
 <div class="refsect3">
-<a name="id-1.9.7.10.31.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.33.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1231,7 +1272,7 @@ ags_channel_find_port (<em class="parameter"><code><a class="link" href="AgsChan
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.7.10.31.6"></a><h4>Returns</h4>
+<a name="id-1.9.7.10.33.6"></a><h4>Returns</h4>
 <p> a <GTKDOCLINK HREF="GList"><span class="type">GList</span></GTKDOCLINK> containing <a class="link" href="AgsPort.html" title="AgsPort"><span class="type">AgsPort</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4">0.4</GTKDOCLINK></p>
@@ -1247,7 +1288,7 @@ ags_channel_set_link (<em class="parameter"><code><a class="link" href="AgsChann
 and <a class="link" href="AgsChannel.html#ags-channel-recursive-reset-recall-ids" title="ags_channel_recursive_reset_recall_ids ()"><code class="function">ags_channel_recursive_reset_recall_ids()</code></a>. Further it does loop detection and makes
 your machine running. Thus it adds <a class="link" href="AgsRecallID.html" title="AgsRecallID"><span class="type">AgsRecallID</span></a>. Asynchronously only.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.32.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.34.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1287,7 +1328,7 @@ ags_channel_set_recycling (<em class="parameter"><code><a class="link" href="Ags
 <p>Called by <a class="link" href="AgsChannel.html#ags-channel-set-link" title="ags_channel_set_link ()"><code class="function">ags_channel_set_link()</code></a> to handle outdated <a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> references.
 Asynchronously only.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.33.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.35.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1335,7 +1376,7 @@ ags_channel_recursive_reset_recycling_context
                                 <em class="parameter"><code><a class="link" href="AgsRecyclingContext.html" title="AgsRecyclingContext"><span class="type">AgsRecyclingContext</span></a> *recycling_context</code></em>);</pre>
 <p>Resets the recycling container context. Asynchronously only.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.34.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.36.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1378,7 +1419,7 @@ ags_channel_recycling_changed (<em class="parameter"><code><a class="link" href=
                                <em class="parameter"><code><a class="link" href="AgsRecycling.html" title="AgsRecycling"><span class="type">AgsRecycling</span></a> *new_end_changed_region</code></em>);</pre>
 <p>Modify recycling. Asynchronously only.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.35.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.37.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1452,7 +1493,7 @@ ags_channel_recursive_play_init (<em class="parameter"><code><a class="link" hre
 <p>Make the tree ready for a new <a class="link" href="AgsPlayback.html" title="AgsPlayback"><span class="type">AgsPlayback</span></a>. Only for asynchronous use, take a look at <a class="link" href="AgsInitChannel.html" title="AgsInitChannel"><span class="type">AgsInitChannel</span></a> or
 <a class="link" href="AgsInitAudio.html" title="AgsInitAudio"><span class="type">AgsInitAudio</span></a> task.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.36.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.38.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1528,7 +1569,7 @@ ags_channel_recursive_play_threaded (<em class="parameter"><code><a class="link"
 function expects to be called by <a class="link" href="AgsIteratorThread.html" title="AgsIteratorThread"><span class="type">AgsIteratorThread</span></a> and having a functional <a class="link" href="AgsRecyclingThread.html" title="AgsRecyclingThread"><span class="type">AgsRecyclingThread</span></a>
 setup.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.37.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.39.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1566,7 +1607,7 @@ ags_channel_tillrecycling_cancel (<em class="parameter"><code><a class="link" hr
 <em class="parameter"><code>recall_id</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.38.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.40.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1607,7 +1648,7 @@ By the clean up the invalid <a class="link" href="AgsRecall.html" title="AgsReca
 Once the clean up has done <a class="link" href="AgsChannel.html#ags-channel-recursive-play-init" title="ags_channel_recursive_play_init ()"><code class="function">ags_channel_recursive_play_init()</code></a> will be called for every
 playing instance that was found.</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.39.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.41.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1652,7 +1693,7 @@ ags_channel_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 <p>Creates a <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a>, linking tree to <em class="parameter"><code>audio</code></em>
 .</p>
 <div class="refsect3">
-<a name="id-1.9.7.10.40.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.10.42.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1667,7 +1708,7 @@ ags_channel_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 </table></div>
 </div>
 <div class="refsect3">
-<a name="id-1.9.7.10.40.6"></a><h4>Returns</h4>
+<a name="id-1.9.7.10.42.6"></a><h4>Returns</h4>
 <p> a new <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
@@ -1685,11 +1726,18 @@ ags_channel_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 <col class="enum_members_description">
 <col width="200px" class="enum_members_annotations">
 </colgroup>
-<tbody><tr>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-CHANNEL-CONNECTED:CAPS"></a>AGS_CHANNEL_CONNECTED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
 <td class="enum_member_name"><p><a name="AGS-CHANNEL-RUNNING:CAPS"></a>AGS_CHANNEL_RUNNING</p></td>
 <td> </td>
 <td> </td>
-</tr></tbody>
+</tr>
+</tbody>
 </table></div>
 </div>
 </div>
@@ -1752,13 +1800,51 @@ ags_channel_new (<em class="parameter"><code><GTKDOCLINK HREF="GObject"><span cl
 <div class="refsect2">
 <a name="AgsChannel--soundcard"></a><h3>The <code class="literal">“soundcard”</code> property</h3>
 <pre class="programlisting">  “soundcard”                <GTKDOCLINK HREF="GObject"><span class="type">GObject</span></GTKDOCLINK> *</pre>
-<p>The assigned <GTKDOCLINK HREF="AgsSoundcard"><span class="type">AgsSoundcard</span></GTKDOCLINK> acting as default sink.</p>
+<p>The assigned <a class="link" href="AgsSoundcard.html" title="AgsSoundcard"><span class="type">AgsSoundcard</span></a> acting as default sink.</p>
 <p>Flags: Read / Write</p>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.0">0.4.0</GTKDOCLINK></p>
 </div>
 </div>
 <div class="refsect1">
 <a name="AgsChannel.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsChannel-add-effect"></a><h3>The <code class="literal">“add-effect”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="gpointer"><span class="returnvalue">gpointer</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel,
+               <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>      *effect,
+               <GTKDOCLINK HREF="gchar"><span class="type">gchar</span></GTKDOCLINK>      *arg2,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>    user_data)</pre>
+<p>The ::add-effect signal notifies about added effect.</p>
+<div class="refsect3">
+<a name="id-1.9.7.13.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>channel</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>effect</p></td>
+<td class="parameter_description"><p>the effect's name</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
 <div class="refsect2">
 <a name="AgsChannel-done"></a><h3>The <code class="literal">“done”</code> signal</h3>
 <pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
@@ -1767,7 +1853,7 @@ user_function (<a class="link" href="AgsChannel.html" title="AgsChannel"><span c
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>    user_data)</pre>
 <p>The ::done signal is invoked during termination of playback.</p>
 <div class="refsect3">
-<a name="id-1.9.7.13.2.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.13.3.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1811,7 +1897,7 @@ user_function (<a class="link" href="AgsChannel.html" title="AgsChannel"><span c
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>    user_data)</pre>
 <p>The ::recycling-changed signal is invoked to notify modified recycling tree.</p>
 <div class="refsect3">
-<a name="id-1.9.7.13.3.5"></a><h4>Parameters</h4>
+<a name="id-1.9.7.13.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -1857,6 +1943,43 @@ user_function (<a class="link" href="AgsChannel.html" title="AgsChannel"><span c
 <tr>
 <td class="parameter_name"><p>new_end_changed_region</p></td>
 <td class="parameter_description"><p>replacing link recycling end</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsChannel-remove-effect"></a><h3>The <code class="literal">“remove-effect”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> *channel,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>       nth,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>    user_data)</pre>
+<p>The ::remove-effect signal notifies about removed effect.</p>
+<div class="refsect3">
+<a name="id-1.9.7.13.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>channel</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>nth</p></td>
+<td class="parameter_description"><p>the nth effect</p></td>
 <td class="parameter_annotations"> </td>
 </tr>
 <tr>

@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
-               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
 [
-  <!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
-  <!ENTITY % gtkdocentities SYSTEM "../xml/gtkdocentities.ent">
-  %gtkdocentities;
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
 ]>
 <refentry id="AgsPlugin">
 <refmeta>
@@ -71,9 +69,9 @@ line members, lines, pads or machines ...</para>
 </refsect1>
 <refsect1 id="AgsPlugin.functions_details" role="details">
 <title role="details.title">Functions</title>
-<refsect2 id="ags-plugin-get-name" role="function">
+<refsect2 id="ags-plugin-get-name" role="function" condition="since:0.4.0">
 <title>ags_plugin_get_name&#160;()</title>
-<indexterm zone="ags-plugin-get-name"><primary>ags_plugin_get_name</primary></indexterm>
+<indexterm zone="ags-plugin-get-name" role="0.4.0"><primary>ags_plugin_get_name</primary></indexterm>
 <programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
 ags_plugin_get_name (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
 <para>Retrieve the name of the plugin.</para>
@@ -93,10 +91,10 @@ ags_plugin_get_name (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type>
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the plugins name</para>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-set-name" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-set-name" role="function" condition="since:0.4.0">
 <title>ags_plugin_set_name&#160;()</title>
-<indexterm zone="ags-plugin-set-name"><primary>ags_plugin_set_name</primary></indexterm>
+<indexterm zone="ags-plugin-set-name" role="0.4.0"><primary>ags_plugin_set_name</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_plugin_set_name (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
                      <parameter><link linkend="gchar"><type>gchar</type></link> *name</parameter>);</programlisting>
@@ -117,10 +115,10 @@ ags_plugin_set_name (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type>
 <entry role="parameter_description"><para>the name of plugin</para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-get-version" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-get-version" role="function" condition="since:0.4.0">
 <title>ags_plugin_get_version&#160;()</title>
-<indexterm zone="ags-plugin-get-version"><primary>ags_plugin_get_version</primary></indexterm>
+<indexterm zone="ags-plugin-get-version" role="0.4.0"><primary>ags_plugin_get_version</primary></indexterm>
 <programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
 ags_plugin_get_version (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
 <para>Retrieve the version of the plugin.</para>
@@ -140,10 +138,10 @@ ags_plugin_get_version (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</ty
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the plugins version</para>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-set-version" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-set-version" role="function" condition="since:0.4.0">
 <title>ags_plugin_set_version&#160;()</title>
-<indexterm zone="ags-plugin-set-version"><primary>ags_plugin_set_version</primary></indexterm>
+<indexterm zone="ags-plugin-set-version" role="0.4.0"><primary>ags_plugin_set_version</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_plugin_set_version (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
                         <parameter><link linkend="gchar"><type>gchar</type></link> *version</parameter>);</programlisting>
@@ -164,10 +162,10 @@ ags_plugin_set_version (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</ty
 <entry role="parameter_description"><para>the version of plugin</para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-get-build-id" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-get-build-id" role="function" condition="since:0.4.0">
 <title>ags_plugin_get_build_id&#160;()</title>
-<indexterm zone="ags-plugin-get-build-id"><primary>ags_plugin_get_build_id</primary></indexterm>
+<indexterm zone="ags-plugin-get-build-id" role="0.4.0"><primary>ags_plugin_get_build_id</primary></indexterm>
 <programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
 ags_plugin_get_build_id (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
 <para>Retrieve the build id of the plugin.</para>
@@ -187,10 +185,10 @@ ags_plugin_get_build_id (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</t
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the plugins build id</para>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-set-build-id" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-set-build-id" role="function" condition="since:0.4.0">
 <title>ags_plugin_set_build_id&#160;()</title>
-<indexterm zone="ags-plugin-set-build-id"><primary>ags_plugin_set_build_id</primary></indexterm>
+<indexterm zone="ags-plugin-set-build-id" role="0.4.0"><primary>ags_plugin_set_build_id</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_plugin_set_build_id (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
                          <parameter><link linkend="gchar"><type>gchar</type></link> *build_id</parameter>);</programlisting>
@@ -211,10 +209,10 @@ ags_plugin_set_build_id (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</t
 <entry role="parameter_description"><para>the build id of plugin</para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-get-xml-type" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-get-xml-type" role="function" condition="since:0.4.0">
 <title>ags_plugin_get_xml_type&#160;()</title>
-<indexterm zone="ags-plugin-get-xml-type"><primary>ags_plugin_get_xml_type</primary></indexterm>
+<indexterm zone="ags-plugin-get-xml-type" role="0.4.0"><primary>ags_plugin_get_xml_type</primary></indexterm>
 <programlisting language="C"><link linkend="gchar"><returnvalue>gchar</returnvalue></link>&#160;*
 ags_plugin_get_xml_type (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
 <para>Retrieve the xml type of the plugin.</para>
@@ -234,10 +232,10 @@ ags_plugin_get_xml_type (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</t
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the plugins xml type</para>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-set-xml-type" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-set-xml-type" role="function" condition="since:0.4.0">
 <title>ags_plugin_set_xml_type&#160;()</title>
-<indexterm zone="ags-plugin-set-xml-type"><primary>ags_plugin_set_xml_type</primary></indexterm>
+<indexterm zone="ags-plugin-set-xml-type" role="0.4.0"><primary>ags_plugin_set_xml_type</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_plugin_set_xml_type (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
                          <parameter><link linkend="gchar"><type>gchar</type></link> *xml_type</parameter>);</programlisting>
@@ -258,10 +256,10 @@ ags_plugin_set_xml_type (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</t
 <entry role="parameter_description"><para>the build id of plugin</para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-get-ports" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-get-ports" role="function" condition="since:0.4.0">
 <title>ags_plugin_get_ports&#160;()</title>
-<indexterm zone="ags-plugin-get-ports"><primary>ags_plugin_get_ports</primary></indexterm>
+<indexterm zone="ags-plugin-get-ports" role="0.4.0"><primary>ags_plugin_get_ports</primary></indexterm>
 <programlisting language="C"><link linkend="GList"><returnvalue>GList</returnvalue></link>&#160;*
 ags_plugin_get_ports (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>);</programlisting>
 <para>Retrieve the ports of the plugin.</para>
@@ -281,10 +279,10 @@ ags_plugin_get_ports (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the plugins ports</para>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-set-ports" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-set-ports" role="function" condition="since:0.4.0">
 <title>ags_plugin_set_ports&#160;()</title>
-<indexterm zone="ags-plugin-set-ports"><primary>ags_plugin_set_ports</primary></indexterm>
+<indexterm zone="ags-plugin-set-ports" role="0.4.0"><primary>ags_plugin_set_ports</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_plugin_set_ports (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type></link> *plugin</parameter>,
                       <parameter><link linkend="GList"><type>GList</type></link> *ports</parameter>);</programlisting>
@@ -305,10 +303,10 @@ ags_plugin_set_ports (<parameter><link linkend="AgsPlugin"><type>AgsPlugin</type
 <entry role="parameter_description"><para>the build id of plugin</para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-read" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-read" role="function" condition="since:0.4.0">
 <title>ags_plugin_read&#160;()</title>
-<indexterm zone="ags-plugin-read"><primary>ags_plugin_read</primary></indexterm>
+<indexterm zone="ags-plugin-read" role="0.4.0"><primary>ags_plugin_read</primary></indexterm>
 <programlisting language="C"><link linkend="void"><returnvalue>void</returnvalue></link>
 ags_plugin_read (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                  <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *node</parameter>,
@@ -332,10 +330,10 @@ ags_plugin_read (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> 
 <entry role="parameter_description"><para>the <link linkend="AgsPlugin"><type>AgsPlugin</type></link></para></entry>
 <entry role="parameter_annotations"></entry></row>
 </tbody></tgroup></informaltable>
-</refsect3></refsect2>
-<refsect2 id="ags-plugin-write" role="function">
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
+<refsect2 id="ags-plugin-write" role="function" condition="since:0.4.0">
 <title>ags_plugin_write&#160;()</title>
-<indexterm zone="ags-plugin-write"><primary>ags_plugin_write</primary></indexterm>
+<indexterm zone="ags-plugin-write" role="0.4.0"><primary>ags_plugin_write</primary></indexterm>
 <programlisting language="C"><link linkend="xmlNode"><returnvalue>xmlNode</returnvalue></link>&#160;*
 ags_plugin_write (<parameter><link linkend="AgsFile"><type>AgsFile</type></link> *file</parameter>,
                   <parameter><link linkend="xmlNode"><type>xmlNode</type></link> *parent</parameter>,
@@ -362,7 +360,7 @@ ags_plugin_write (<parameter><link linkend="AgsFile"><type>AgsFile</type></link>
 </refsect3><refsect3 role="returns">
 <title>Returns</title>
 <para> the new node you created</para>
-</refsect3></refsect2>
+</refsect3><para role="since">Since: <link linkend="api-index-0.4.0">0.4.0</link></para></refsect2>
 
 </refsect1>
 <refsect1 id="AgsPlugin.other_details" role="details">

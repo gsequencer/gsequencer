@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+]>
+<refentry id="AgsHistoryBrowser">
+<refmeta>
+<refentrytitle role="top_of_page" id="AgsHistoryBrowser.top_of_page">AgsHistoryBrowser</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>AGS Library</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>AgsHistoryBrowser</refname>
+<refpurpose>The history dialog</refpurpose>
+</refnamediv>
+
+<refsect1 id="AgsHistoryBrowser.functions" role="functions_proto">
+<title role="functions_proto.title">Functions</title>
+<informaltable pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="functions_return" colwidth="150px"/>
+<colspec colname="functions_name"/>
+<tbody>
+<row><entry role="function_type"><link linkend="AgsHistoryBrowser"><returnvalue>AgsHistoryBrowser</returnvalue></link>&#160;*
+</entry><entry role="function_name"><link linkend="ags-history-browser-new">ags_history_browser_new</link>&#160;<phrase role="c_punctuation">()</phrase></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsHistoryBrowser.properties" role="properties">
+<title role="properties.title">Properties</title>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colname="properties_type" colwidth="150px"/>
+<colspec colname="properties_name" colwidth="300px"/>
+<colspec colname="properties_flags" colwidth="200px"/>
+<tbody>
+<row><entry role="property_type"><link linkend="GObject"><type>GObject</type></link>&#160;*</entry><entry role="property_name"><link linkend="AgsHistoryBrowser--application-context">application-context</link></entry><entry role="property_flags">Read / Write</entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsHistoryBrowser.other" role="other_proto">
+<title role="other_proto.title">Types and Values</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="2">
+<colspec colname="name" colwidth="150px"/>
+<colspec colname="description"/>
+<tbody>
+<row><entry role="datatype_keyword">enum</entry><entry role="function_name"><link linkend="AgsHistoryBrowserFlags">AgsHistoryBrowserFlags</link></entry></row>
+
+</tbody>
+</tgroup>
+</informaltable>
+</refsect1>
+<refsect1 id="AgsHistoryBrowser.object-hierarchy" role="object_hierarchy">
+<title role="object_hierarchy.title">Object Hierarchy</title>
+<screen>    <link linkend="GObject">GObject</link>
+    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GInitiallyUnowned">GInitiallyUnowned</link>
+        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkObject">GtkObject</link>
+            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWidget">GtkWidget</link>
+                <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkContainer">GtkContainer</link>
+                    <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkBin">GtkBin</link>
+                        <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> <link linkend="GtkWindow">GtkWindow</link>
+                            <phrase role="lineart">&#9584;&#9472;&#9472;</phrase> AgsHistoryBrowser
+</screen>
+</refsect1>
+
+<refsect1 id="AgsHistoryBrowser.includes"><title>Includes</title><synopsis>#include &lt;ags/X/ags_history_browser.h&gt;
+</synopsis></refsect1>
+
+<refsect1 id="AgsHistoryBrowser.description" role="desc">
+<title role="desc.title">Description</title>
+<para><link linkend="AgsHistoryBrowser"><type>AgsHistoryBrowser</type></link> lets edit history.</para>
+
+</refsect1>
+<refsect1 id="AgsHistoryBrowser.functions_details" role="details">
+<title role="details.title">Functions</title>
+<refsect2 id="ags-history-browser-new" role="function">
+<title>ags_history_browser_new&#160;()</title>
+<indexterm zone="ags-history-browser-new"><primary>ags_history_browser_new</primary></indexterm>
+<programlisting language="C"><link linkend="AgsHistoryBrowser"><returnvalue>AgsHistoryBrowser</returnvalue></link>&#160;*
+ags_history_browser_new ();</programlisting>
+</refsect2>
+
+</refsect1>
+<refsect1 id="AgsHistoryBrowser.other_details" role="details">
+<title role="details.title">Types and Values</title>
+<refsect2 id="AgsHistoryBrowserFlags" role="enum">
+<title>enum AgsHistoryBrowserFlags</title>
+<indexterm zone="AgsHistoryBrowserFlags"><primary>AgsHistoryBrowserFlags</primary></indexterm>
+<refsect3 role="enum_members">
+<title>Members</title>
+<informaltable role="enum_members_table" pgwide="1" frame="none">
+<tgroup cols="3">
+<colspec colname="enum_members_name" colwidth="300px"/>
+<colspec colname="enum_members_description"/>
+<colspec colname="enum_members_annotations" colwidth="200px"/>
+<tbody>
+<row role="constant"><entry role="enum_member_name"><para id="AGS-HISTORY-BROWSER-CONNECTED:CAPS">AGS_HISTORY_BROWSER_CONNECTED</para></entry>
+<entry /><entry />
+</row>
+</tbody></tgroup></informaltable>
+</refsect3></refsect2>
+
+</refsect1>
+<refsect1 id="AgsHistoryBrowser.property-details" role="property_details">
+<title role="property_details.title">Property Details</title>
+<refsect2 id="AgsHistoryBrowser--application-context" role="property"><title>The <literal>“application-context”</literal> property</title>
+<indexterm zone="AgsHistoryBrowser--application-context" role="0.7.0"><primary>AgsHistoryBrowser:application-context</primary></indexterm>
+<programlisting>  “application-context”      <link linkend="GObject"><type>GObject</type></link>&#160;*</programlisting>
+<para>The assigned <link linkend="AgsApplicationContext"><type>AgsApplicationContext</type></link> to give control of application.</para>
+<para>Flags: Read / Write</para>
+<para role="since">Since: <link linkend="api-index-0.7.0">0.7.0</link></para></refsect2>
+
+</refsect1>
+
+</refentry>

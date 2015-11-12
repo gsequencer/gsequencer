@@ -1,0 +1,395 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>AgsEffectBridge: Advanced Gtk+ Sequencer Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
+<link rel="up" href="pt09.html" title="Part IX. Graphical user interface">
+<link rel="prev" href="AgsEffectBridge.html" title="AgsEffectBridge">
+<link rel="next" href="AgsEffectBulk.html" title="AgsEffectBulk">
+<meta name="generator" content="GTK-Doc V1.24 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#AgsEffectBridge.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#AgsEffectBridge.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#AgsEffectBridge.properties" class="shortcut">Properties</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#AgsEffectBridge.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="pt09.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="AgsEffectBridge.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="AgsEffectBulk.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="AgsEffectBridge"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="AgsEffectBridge.top_of_page"></a>AgsEffectBridge</span></h2>
+<p>AgsEffectBridge — A composite widget to visualize a bunch of <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a></p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="AgsEffectBridge.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-MAX-COLUMNS:CAPS" title="AGS_EFFECT_BRIDGE_MAX_COLUMNS">AGS_EFFECT_BRIDGE_MAX_COLUMNS</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBridge.html#ags-effect-bridge-resize-audio-channels" title="ags_effect_bridge_resize_audio_channels ()">ags_effect_bridge_resize_audio_channels</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBridge.html#ags-effect-bridge-resize-pads" title="ags_effect_bridge_resize_pads ()">ags_effect_bridge_resize_pads</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="returnvalue">AgsEffectBridge</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="AgsEffectBridge.html#ags-effect-bridge-new" title="ags_effect_bridge_new ()">ags_effect_bridge_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody><tr>
+<td class="property_type">
+<a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *</td>
+<td class="property_name"><a class="link" href="AgsEffectBridge.html#AgsEffectBridge--audio" title="The “audio” property">audio</a></td>
+<td class="property_flags">Read / Write</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsEffectBridge.html#AgsEffectBridge-resize-audio-channels" title="The “resize-audio-channels” signal">resize-audio-channels</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+<tr>
+<td class="signal_type"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK></td>
+<td class="signal_name"><a class="link" href="AgsEffectBridge.html#AgsEffectBridge-resize-pads" title="The “resize-pads” signal">resize-pads</a></td>
+<td class="signal_flags"><GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DEFAULT-VERSION:CAPS" title="AGS_EFFECT_BRIDGE_DEFAULT_VERSION">AGS_EFFECT_BRIDGE_DEFAULT_VERSION</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DEFAULT-BUILD-ID:CAPS" title="AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID">AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="AgsEffectBridge.html#AgsEffectBridgeFlags" title="enum AgsEffectBridgeFlags">AgsEffectBridgeFlags</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <GTKDOCLINK HREF="GObject">GObject</GTKDOCLINK>
+    <span class="lineart">╰──</span> <GTKDOCLINK HREF="GInitiallyUnowned">GInitiallyUnowned</GTKDOCLINK>
+        <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkObject">GtkObject</GTKDOCLINK>
+            <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkWidget">GtkWidget</GTKDOCLINK>
+                <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkContainer">GtkContainer</GTKDOCLINK>
+                    <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkBox">GtkBox</GTKDOCLINK>
+                        <span class="lineart">╰──</span> <GTKDOCLINK HREF="GtkVBox">GtkVBox</GTKDOCLINK>
+                            <span class="lineart">╰──</span> AgsEffectBridge
+                                <span class="lineart">╰──</span> <a class="link" href="AgsFFPlayerBridge.html" title="AgsFFPlayerBridge">AgsFFPlayerBridge</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.includes"></a><h2>Includes</h2>
+<pre class="synopsis">#include &lt;ags/X/ags_effect_bridge.h&gt;
+</pre>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.description"></a><h2>Description</h2>
+<p><a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="type">AgsEffectBridge</span></a> is a composite widget containing <a class="link" href="AgsEffectBulk.html" title="AgsEffectBulk"><span class="type">AgsEffectBulk</span></a> or <a class="link" href="AgsEffectPad.html" title="AgsEffectPad"><span class="type">AgsEffectPad</span></a>. It should be
+packed by an <a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a>.</p>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="AGS-EFFECT-BRIDGE-MAX-COLUMNS:CAPS"></a><h3>AGS_EFFECT_BRIDGE_MAX_COLUMNS</h3>
+<pre class="programlisting">#define AGS_EFFECT_BRIDGE_MAX_COLUMNS (2)
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-effect-bridge-resize-audio-channels"></a><h3>ags_effect_bridge_resize_audio_channels ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_effect_bridge_resize_audio_channels
+                               (<em class="parameter"><code><a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="type">AgsEffectBridge</span></a> *effect_bridge</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> new_size</code></em>,
+                                <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> old_size</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-effect-bridge-resize-pads"></a><h3>ags_effect_bridge_resize_pads ()</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+ags_effect_bridge_resize_pads (<em class="parameter"><code><a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="type">AgsEffectBridge</span></a> *effect_bridge</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="GType"><span class="type">GType</span></GTKDOCLINK> channel_type</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> new_size</code></em>,
+                               <em class="parameter"><code><GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK> old_size</code></em>);</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ags-effect-bridge-new"></a><h3>ags_effect_bridge_new ()</h3>
+<pre class="programlisting"><a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="returnvalue">AgsEffectBridge</span></a> *
+ags_effect_bridge_new (<em class="parameter"><code><a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *audio</code></em>);</pre>
+<p>Creates an <a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="type">AgsEffectBridge</span></a></p>
+<div class="refsect3">
+<a name="id-1.10.9.10.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>effect_bridge</p></td>
+<td class="parameter_description"><p>the parent effect_bridge</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>audio</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> to visualize</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.10.9.10.5.6"></a><h4>Returns</h4>
+<p> a new <a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="type">AgsEffectBridge</span></a></p>
+</div>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="AGS-EFFECT-BRIDGE-DEFAULT-VERSION:CAPS"></a><h3>AGS_EFFECT_BRIDGE_DEFAULT_VERSION</h3>
+<pre class="programlisting">#define AGS_EFFECT_BRIDGE_DEFAULT_VERSION "0.4.3\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AGS-EFFECT-BRIDGE-DEFAULT-BUILD-ID:CAPS"></a><h3>AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID</h3>
+<pre class="programlisting">#define AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID "CEST 15-03-2015 13:40\0"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEffectBridgeFlags"></a><h3>enum AgsEffectBridgeFlags</h3>
+<div class="refsect3">
+<a name="id-1.10.9.11.4.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-EFFECT-BRIDGE-CONNECTED:CAPS"></a>AGS_EFFECT_BRIDGE_CONNECTED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-EFFECT-BRIDGE-DISPLAY-INPUT:CAPS"></a>AGS_EFFECT_BRIDGE_DISPLAY_INPUT</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-EFFECT-BRIDGE-BULK-OUTPUT:CAPS"></a>AGS_EFFECT_BRIDGE_BULK_OUTPUT</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-EFFECT-BRIDGE-DISPLAY-OUTPUT:CAPS"></a>AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="AGS-EFFECT-BRIDGE-BULK-INPUT:CAPS"></a>AGS_EFFECT_BRIDGE_BULK_INPUT</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="AgsEffectBridge--audio"></a><h3>The <code class="literal">“audio”</code> property</h3>
+<pre class="programlisting">  “audio”                    <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> *</pre>
+<p>The start of a bunch of <a class="link" href="AgsAudio.html" title="AgsAudio"><span class="type">AgsAudio</span></a> to visualize.</p>
+<p>Flags: Read / Write</p>
+<p class="since">Since: <GTKDOCLINK HREF="api-index-0.4.3">0.4.3</GTKDOCLINK></p>
+</div>
+</div>
+<div class="refsect1">
+<a name="AgsEffectBridge.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="AgsEffectBridge-resize-audio-channels"></a><h3>The <code class="literal">“resize-audio-channels”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="type">AgsEffectBridge</span></a> *effect_bridge,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>            channel,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>            new_size,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>         user_data)</pre>
+<p>The ::resize-audio-channels signal notifies about changed channel allocation within
+audio.</p>
+<div class="refsect3">
+<a name="id-1.10.9.13.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>effect_bridge</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="type">AgsEffectBridge</span></a> to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>channel</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to set</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>new_size</p></td>
+<td class="parameter_description"><p>the new size</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>old_size</p></td>
+<td class="parameter_description"><p>the old size</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="AgsEffectBridge-resize-pads"></a><h3>The <code class="literal">“resize-pads”</code> signal</h3>
+<pre class="programlisting"><GTKDOCLINK HREF="void"><span class="returnvalue">void</span></GTKDOCLINK>
+user_function (<a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="type">AgsEffectBridge</span></a> *effect_bridge,
+               <GTKDOCLINK HREF="gulong"><span class="type">gulong</span></GTKDOCLINK>           channel,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>            channel_type,
+               <GTKDOCLINK HREF="guint"><span class="type">guint</span></GTKDOCLINK>            new_size,
+               <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>         user_data)</pre>
+<p>The ::resize-pads signal notifies about changed channel allocation within
+audio.</p>
+<div class="refsect3">
+<a name="id-1.10.9.13.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>effect_bridge</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsEffectBridge.html" title="AgsEffectBridge"><span class="type">AgsEffectBridge</span></a> to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>channel</p></td>
+<td class="parameter_description"><p>the <a class="link" href="AgsChannel.html" title="AgsChannel"><span class="type">AgsChannel</span></a> to set</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>channel_type</p></td>
+<td class="parameter_description"><p>either <GTKDOCLINK HREF="AGS-TYPE-INPUT:CAPS"><code class="literal">AGS_TYPE_INPUT</code></GTKDOCLINK> or <GTKDOCLINK HREF="AGS-TYPE-OUTPUT:CAPS"><code class="literal">AGS_TYPE_OUTPUT</code></GTKDOCLINK></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>new_size</p></td>
+<td class="parameter_description"><p>the new size</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>old_size</p></td>
+<td class="parameter_description"><p>the old size</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: <GTKDOCLINK HREF="G-SIGNAL-RUN-LAST:CAPS">Run Last</GTKDOCLINK></p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.24</div>
+</body>
+</html>

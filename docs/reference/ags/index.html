@@ -26,16 +26,13 @@
 <dt><span class="part"><a href="lib.html">I. Library - Completion routines</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="ags-AgsComboBoxText.html">AgsComboBoxText</a></span><span class="refpurpose"> — Complete GtkComboBox</span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ags-ags-container.html">ags_container</a></span><span class="refpurpose"></span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ags-ags-list.html">ags_list</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsComplex.html">AgsComplex</a></span><span class="refpurpose"> — Boxed type of complex</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="ags-AgsParameter.html">AgsParameter</a></span><span class="refpurpose"> — Complete GParameter</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsTurtle.html">AgsTurtle</a></span><span class="refpurpose"> — Boxed type of turtle</span>
 </dt>
 </dl></dd>
 <dt><span class="part"><a href="util.html">II. Util - Helper functions</a></span></dt>
@@ -45,19 +42,28 @@
 <dt><span class="part"><a href="object.html">III. Object - Interfaces and marshallers</a></span></dt>
 <dd><dl>
 <dt>
+<span class="refentrytitle"><a href="AgsAsyncQueue.html">AgsAsyncQueue</a></span><span class="refpurpose"> — asynchronous run</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsApplicable.html">AgsApplicable</a></span><span class="refpurpose"> — unique access to dialogs</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsApplicationContext.html">AgsApplicationContext</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsApplicationContext.html">AgsApplicationContext</a></span><span class="refpurpose"> — The application context</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsConcurrentTree.html">AgsConcurrentTree</a></span><span class="refpurpose"> — thread-safe locking of tree</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsConfig.html">AgsConfig</a></span><span class="refpurpose"> — Config Advanced Gtk+ Sequencer</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsConnectable.html">AgsConnectable</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsConnectable.html">AgsConnectable</a></span><span class="refpurpose"> — unique access to recalls</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsCountable.html">AgsCountable</a></span><span class="refpurpose"> — unique access to dialogs</span>
+<span class="refentrytitle"><a href="AgsCountable.html">AgsCountable</a></span><span class="refpurpose"> — a counter interface</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDistributedManager.html">AgsDistributedManager</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsDynamicConnectable.html">AgsDynamicConnectable</a></span><span class="refpurpose"> — unique access to recalls</span>
@@ -69,7 +75,7 @@
 <span class="refentrytitle"><a href="ags-ags-marshal.html">ags_marshal</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsMutable.html">AgsMutable</a></span><span class="refpurpose"> — unique access to dialogs</span>
+<span class="refentrytitle"><a href="AgsMutable.html">AgsMutable</a></span><span class="refpurpose"> — unique access to recalls</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsPackable.html">AgsPackable</a></span><span class="refpurpose"> — packing recalls</span>
@@ -78,19 +84,19 @@
 <span class="refentrytitle"><a href="AgsPortlet.html">AgsPortlet</a></span><span class="refpurpose"> — interfacing portlets</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="ags-AgsRunnable.html">AgsRunnable</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsSeekable.html">AgsSeekable</a></span><span class="refpurpose"> — unique access to recalls</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsSeekable.html">AgsSeekable</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsSequencer.html">AgsSequencer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsSoundcard.html">AgsSoundcard</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsTactable.html">AgsTactable</a></span><span class="refpurpose"> — Unique tempo set or attributes access</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="ags-AgsStackable.html">AgsStackable</a></span><span class="refpurpose"></span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ags-AgsPersistable.html">AgsPersistable</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsTreeIterator.html">AgsTreeIterator</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsPlugin.html">AgsPlugin</a></span><span class="refpurpose"> — interfacing plugins</span>
@@ -123,7 +129,16 @@
 <dt><span class="part"><a href="plugin.html">V. Plugin - API of plugins</a></span></dt>
 <dd><dl>
 <dt>
+<span class="refentrytitle"><a href="AgsDssiManager.html">AgsDssiManager</a></span><span class="refpurpose"> — Singleton pattern to organize DSSI</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsLadspaManager.html">AgsLadspaManager</a></span><span class="refpurpose"> — Singleton pattern to organize LADSPA</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLv2Manager.html">AgsLv2Manager</a></span><span class="refpurpose"> — Singleton pattern to organize LV2</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLv2uiManager.html">AgsLv2uiManager</a></span><span class="refpurpose"> — Singleton pattern to organize LV2UI</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsPluginFactory.html">AgsPluginFactory</a></span><span class="refpurpose"></span>
@@ -134,6 +149,9 @@
 </dl></dd>
 <dt><span class="part"><a href="widget.html">VI. Widget - GUI elements</a></span></dt>
 <dd><dl>
+<dt>
+<span class="refentrytitle"><a href="ags-AgsContainer.html">AgsContainer</a></span><span class="refpurpose"> — Complete GtkContainer</span>
+</dt>
 <dt>
 <span class="refentrytitle"><a href="AgsDial.html">AgsDial</a></span><span class="refpurpose"> — A dial widget</span>
 </dt>
@@ -165,10 +183,13 @@
 <span class="refentrytitle"><a href="AgsConcurrencyProvider.html">AgsConcurrencyProvider</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsHistory.html">AgsHistory</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsIteratorThread.html">AgsIteratorThread</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsMutexManager.html">AgsMutexManager</a></span><span class="refpurpose"></span>
+<span class="refentrytitle"><a href="AgsMutexManager.html">AgsMutexManager</a></span><span class="refpurpose"> — mutex manager</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsReturnableThread.html">AgsReturnableThread</a></span><span class="refpurpose"> — returnable thread</span>
@@ -184,6 +205,9 @@
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsThread.html">AgsThread</a></span><span class="refpurpose"> — threads</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsThreadApplicationContext.html">AgsThreadApplicationContext</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsThreadPool.html">AgsThreadPool</a></span><span class="refpurpose"> — thread pool</span>
@@ -214,10 +238,13 @@
 <span class="refentrytitle"><a href="AgsChannel.html">AgsChannel</a></span><span class="refpurpose"> — Acts as entry point to the audio tree.</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="AgsDevout.html">AgsDevout</a></span><span class="refpurpose"> — Outputting to soundcard</span>
+<span class="refentrytitle"><a href="AgsDevout.html">AgsDevout</a></span><span class="refpurpose"> — Output to soundcard</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsInput.html">AgsInput</a></span><span class="refpurpose"> — Input of <span class="type">AgsAudio</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiin.html">AgsMidiin</a></span><span class="refpurpose"> — Input from sequencer</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsNotation.html">AgsNotation</a></span><span class="refpurpose"> — Notation class supporting selection and clipboard.</span>
@@ -274,6 +301,12 @@
 <span class="refentrytitle"><a href="AgsRecallID.html">AgsRecallID</a></span><span class="refpurpose"> — The object specifies run context.</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsRecallDssi.html">AgsRecallDssi</a></span><span class="refpurpose"> — The object interfacing with DSSI</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRecallDssiRun.html">AgsRecallDssiRun</a></span><span class="refpurpose"> — The object interfacing with DSSI</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsRecallLadspa.html">AgsRecallLadspa</a></span><span class="refpurpose"> — The object interfacing with LADSPA</span>
 </dt>
 <dt>
@@ -327,16 +360,58 @@
 <span class="refentrytitle"><a href="AgsSoundcardThread.html">AgsSoundcardThread</a></span><span class="refpurpose"> — soundcard thread</span>
 </dt>
 </dl></dd>
+<dt><span class="chapter"><a href="audio-jack.html">Audio JACK - JACK support</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsJackServer.html">AgsJackServer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsJackClient.html">AgsJackClient</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsJackPort.html">AgsJackPort</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsJackDevout.html">AgsJackDevout</a></span><span class="refpurpose"> — Output to soundcard</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsJackMidiin.html">AgsJackMidiin</a></span><span class="refpurpose"> — Input from sequencer</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="audio-midi.html">Audio MIDI - MIDI support</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiFile.html">AgsMidiFile</a></span><span class="refpurpose"> — the menu bar.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiFileReader.html">AgsMidiFileReader</a></span><span class="refpurpose"> — the menu bar.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiFileWriter.html">AgsMidiFileWriter</a></span><span class="refpurpose"> — the menu bar.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiBuilder.html">AgsMidiBuilder</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsMidiParser.html">AgsMidiParser</a></span><span class="refpurpose"> — the menu bar.</span>
+</dt>
+</dl></dd>
 <dt><span class="chapter"><a href="audio-file.html">Audio files - Reading/Writing audio data from disk</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="AgsAudioFile.html">AgsAudioFile</a></span><span class="refpurpose"> — Audio file input/output</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsAudioFileLink.html">AgsAudioFileLink</a></span><span class="refpurpose"> — link objects read of file.</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsIpatch.html">AgsIpatch</a></span><span class="refpurpose"> — Libinstpatch wrapper</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsIpatchSF2Reader.html">AgsIpatchSF2Reader</a></span><span class="refpurpose"> — interfacing Soundfont2 related API of libinstpatch</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsIpatchDLS2Reader.html">AgsIpatchDLS2Reader</a></span><span class="refpurpose"> — interfacing Soundfont2 related API of libinstpatch</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsSndfile.html">AgsSndfile</a></span><span class="refpurpose"> — Libsndfile wrapper</span>
@@ -402,6 +477,18 @@
 <span class="refentrytitle"><a href="AgsDelayAudioRun.html">AgsDelayAudioRun</a></span><span class="refpurpose"> — delay</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsEnvelopeAudioSignal.html">AgsEnvelopeAudioSignal</a></span><span class="refpurpose"> — envelopes audio signal</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEnvelopeChannel.html">AgsEnvelopeChannel</a></span><span class="refpurpose"> — envelopes channel</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEnvelopeChannelRun.html">AgsEnvelopeChannelRun</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEnvelopeRecycling.html">AgsEnvelopeRecycling</a></span><span class="refpurpose"> — envelopes recycling</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsLoopChannel.html">AgsLoopChannel</a></span><span class="refpurpose"> — loops channel</span>
 </dt>
 <dt>
@@ -459,6 +546,18 @@
 <span class="refentrytitle"><a href="AgsPlayRecycling.html">AgsPlayRecycling</a></span><span class="refpurpose"> — plays recycling</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsRouteDssiAudio.html">AgsRouteDssiAudio</a></span><span class="refpurpose"> — route MIDI to DSSI</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRouteDssiAudioRun.html">AgsRouteDssiAudioRun</a></span><span class="refpurpose"> — route MIDI</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRouteLv2Audio.html">AgsRouteLv2Audio</a></span><span class="refpurpose"> — route MIDI to LV2</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsRouteLv2AudioRun.html">AgsRouteLv2AudioRun</a></span><span class="refpurpose"> — route MIDI</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsStreamAudioSignal.html">AgsStreamAudioSignal</a></span><span class="refpurpose"> — streams audio signal</span>
 </dt>
 <dt>
@@ -490,6 +589,9 @@
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsAddRecall.html">AgsAddRecall</a></span><span class="refpurpose"> — add recall object to context</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsAddRecallContainer.html">AgsAddRecallContainer</a></span><span class="refpurpose"> — add recall object to context</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsAddRegionToSelection.html">AgsAddRegionToSelection</a></span><span class="refpurpose"> — add region to notation selection</span>
@@ -631,6 +733,27 @@
 <span class="refentrytitle"><a href="ags-ags-editor-callbacks.html">ags_editor_callbacks</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsEffectBridge.html">AgsEffectBridge</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEffectBridge.html">AgsEffectBridge</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEffectBulk.html">AgsEffectBulk</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-effect-bulk-callbacks.html">ags_effect_bulk_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEffectLine.html">AgsEffectLine</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-effect-line-callbacks.html">ags_effect_line_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsEffectPad.html">AgsEffectPad</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsExportWindow.html">AgsExportWindow</a></span><span class="refpurpose"> — The export dialog</span>
 </dt>
 <dt>
@@ -643,6 +766,12 @@
 <span class="refentrytitle"><a href="ags-ags-file-selection-callbacks.html">ags_file_selection_callbacks</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsGenericPreferences.html">AgsGenericPreferences</a></span><span class="refpurpose"> — A composite widget to do generic related preferences</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-generic-preferences-callbacks.html">ags_generic_preferences_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsGuiThread.html">AgsGuiThread</a></span><span class="refpurpose"> — gui thread</span>
 </dt>
 <dt>
@@ -653,6 +782,12 @@
 </dt>
 <dt>
 <span class="refentrytitle"><a href="ags-ags-ladspa-browser-callbacks.html">ags_ladspa_browser_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLv2Browser.html">AgsLv2Browser</a></span><span class="refpurpose"> — A composite to select lv2 uri.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-lv2-browser-callbacks.html">ags_lv2_browser_callbacks</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsLine.html">AgsLine</a></span><span class="refpurpose"> — A composite widget to visualize <span class="type">AgsChannel</span></span>
@@ -739,6 +874,12 @@
 <span class="refentrytitle"><a href="AgsPerformancePreferences.html">AgsPerformancePreferences</a></span><span class="refpurpose"> — A composite widget to do performance related preferences</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsPluginBrowser.html">AgsPluginBrowser</a></span><span class="refpurpose"> — A composite to select plugin effect.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-plugin-browser-callbacks.html">ags_plugin_browser_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsPluginPreferences.html">AgsPluginPreferences</a></span><span class="refpurpose"> — A composite widget to do plugin related preferences</span>
 </dt>
 <dt>
@@ -774,6 +915,9 @@
 <dt>
 <span class="refentrytitle"><a href="ags-ags-window-callbacks.html">ags_window_callbacks</a></span><span class="refpurpose"></span>
 </dt>
+<dt>
+<span class="refentrytitle"><a href="AgsXorgApplicationContext.html">AgsXorgApplicationContext</a></span><span class="refpurpose"></span>
+</dt>
 <dt><span class="chapter"><a href="gsequencer-file.html">GSequencer files - Reading/Writing data from disk</a></span></dt>
 <dd><dl><dt>
 <span class="refentrytitle"><a href="ags-ags-gui-file-xml.html">ags_gui_file_xml</a></span><span class="refpurpose"></span>
@@ -781,10 +925,16 @@
 <dt><span class="chapter"><a href="gsequencer-task.html">GSequencer tasks - Data exchanged between Audio and GUI</a></span></dt>
 <dd><dl>
 <dt>
+<span class="refentrytitle"><a href="AgsBlinkCellPatternCursor.html">AgsBlinkCellPatternCursor</a></span><span class="refpurpose"> — toggle led object</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsChangeIndicator.html">AgsChangeIndicator</a></span><span class="refpurpose"> — change indicator object</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsChangeTact.html">AgsChangeTact</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsDisplayTact.html">AgsDisplayTact</a></span><span class="refpurpose"> — display tact object</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsScrollOnPlay.html">AgsScrollOnPlay</a></span><span class="refpurpose"> — scrolls the editor</span>
@@ -922,6 +1072,9 @@
 <span class="refentrytitle"><a href="ags-ags-matrix-callbacks.html">ags_matrix_callbacks</a></span><span class="refpurpose"></span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="AgsCellPattern.html">AgsCellPattern</a></span><span class="refpurpose"> — cell_pattern sequencer</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="AgsSynth.html">AgsSynth</a></span><span class="refpurpose"> — synth</span>
 </dt>
 <dt>
@@ -945,6 +1098,36 @@
 <dt>
 <span class="refentrytitle"><a href="ags-ags-ffplayer-callbacks.html">ags_ffplayer_callbacks</a></span><span class="refpurpose"></span>
 </dt>
+<dt>
+<span class="refentrytitle"><a href="AgsFFPlayerBridge.html">AgsFFPlayerBridge</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsFFPlayerBulkInput.html">AgsFFPlayerBulkInput</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsFFPlayerBulkInput.html">AgsFFPlayerBulkInput</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsFFPlayerInputLine.html">AgsFFPlayerInputLine</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-ffplayer-input-line-callbacks.html">ags_ffplayer_input_line_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsFFPlayerInputPad.html">AgsFFPlayerInputPad</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsFFPlayer.html">AgsFFPlayer</a></span><span class="refpurpose"> — ffplayer notation</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ags-ags-ffplayer-callbacks.html">ags_ffplayer_callbacks</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLadspaBridge.html">AgsLadspaBridge</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsLv2Bridge.html">AgsLv2Bridge</a></span><span class="refpurpose"> — A composite widget to visualize a bunch of <span class="type">AgsChannel</span></span>
+</dt>
 </dl></dd>
 </dl></dd>
 <dt><span class="part"><a href="xml-rpc.html">X. XML-RPC - planned server</a></span></dt>
@@ -957,6 +1140,12 @@
 </dt>
 <dt>
 <span class="refentrytitle"><a href="AgsServer.html">AgsServer</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsServerApplicationContext.html">AgsServerApplicationContext</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="AgsServiceProvider.html">AgsServiceProvider</a></span><span class="refpurpose"></span>
 </dt>
 </dl></dd>
 <dt><span class="index"><a href="api-index-full.html">API Index</a></span></dt>
