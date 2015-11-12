@@ -129,6 +129,26 @@
 </ARG>
 
 <ARG>
+<NAME>AgsAudio::midi-file</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned midi_file</NICK>
+<BLURB>The midi file it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAudio::sequencer</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned sequencer</NICK>
+<BLURB>The sequencer it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsAudio::soundcard</NAME>
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
@@ -365,6 +385,76 @@
 <FLAGS>rw</FLAGS>
 <NICK>mute channel</NICK>
 <BLURB>Mute the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsBulkMember::control-port</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>control port index</NICK>
+<BLURB>The index of the port to control.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsBulkMember::effect</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the effect</NICK>
+<BLURB>The effect of the plugin.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsBulkMember::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the filename</NICK>
+<BLURB>The filename of the plugin.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsBulkMember::plugin-name</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>plugin name to control</NICK>
+<BLURB>The plugin's name to control.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsBulkMember::specifier</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>port specifier</NICK>
+<BLURB>The specifier of the port.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsBulkMember::widget-label</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>label to display</NICK>
+<BLURB>The label to display.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsBulkMember::widget-type</NAME>
+<TYPE>gulong</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>widget type of bulk member</NICK>
+<BLURB>The widget type this bulk member packs.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -799,6 +889,56 @@
 </ARG>
 
 <ARG>
+<NAME>AgsEffectBridge::audio</NAME>
+<TYPE>AgsAudio*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned audio</NICK>
+<BLURB>The audio it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsEffectBulk::audio</NAME>
+<TYPE>AgsAudio*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned audio</NICK>
+<BLURB>The audio it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsEffectBulk::channel-type</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>AgsChannel</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned channel type</NICK>
+<BLURB>The channel type it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsEffectLine::channel</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned channel</NICK>
+<BLURB>The channel it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsEffectPad::channel</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned channel</NICK>
+<BLURB>The channel it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsEnvelopeChannel::attack</NAME>
 <TYPE>AgsPort*</TYPE>
 <RANGE></RANGE>
@@ -1099,6 +1239,16 @@
 </ARG>
 
 <ARG>
+<NAME>AgsHistoryBrowser::application-context</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned application context</NICK>
+<BLURB>The AgsApplicationContext it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsIndicator::adjustment</NAME>
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
@@ -1145,6 +1295,266 @@
 <FLAGS>rw</FLAGS>
 <NICK>the mode</NICK>
 <BLURB>The mode to open the file.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackClient::jack-server</NAME>
+<TYPE>AgsJackServer*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned JACK server</NICK>
+<BLURB>The assigned JACK server.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::application-context</NAME>
+<TYPE>AgsApplicationContext*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application context object</NICK>
+<BLURB>The application context object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::application-mutex</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application mutex object</NICK>
+<BLURB>The application mutex object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::attack</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>attack of buffer</NICK>
+<BLURB>The attack to use for the buffer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::bpm</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[1,240]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>beats per minute</NICK>
+<BLURB>Beats per minute to use.</BLURB>
+<DEFAULT>120</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::buffer</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>the buffer</NICK>
+<BLURB>The buffer to play.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::buffer-size</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,44100]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>frame count of a buffer</NICK>
+<BLURB>The count of frames a buffer contains.</BLURB>
+<DEFAULT>940</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::delay-factor</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[0,16]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>delay factor</NICK>
+<BLURB>The delay factor.</BLURB>
+<DEFAULT>1</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::device</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the device identifier</NICK>
+<BLURB>The device to perform output to.</BLURB>
+<DEFAULT>"hw:0"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::dsp-channels</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,64]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>count of DSP channels</NICK>
+<BLURB>The count of DSP channels to use.</BLURB>
+<DEFAULT>2</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::format</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,64]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>precision of buffer</NICK>
+<BLURB>The precision to use for a frame.</BLURB>
+<DEFAULT>16</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::pcm-channels</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,64]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>count of PCM channels</NICK>
+<BLURB>The count of PCM channels to use.</BLURB>
+<DEFAULT>2</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::samplerate</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[8000,96000]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>frames per second</NICK>
+<BLURB>The frames count played during a second.</BLURB>
+<DEFAULT>44100</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::application-context</NAME>
+<TYPE>AgsApplicationContext*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application context object</NICK>
+<BLURB>The application context object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::application-mutex</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application mutex object</NICK>
+<BLURB>The application mutex object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::attack</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>attack of buffer</NICK>
+<BLURB>The attack to use for the buffer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::bpm</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[1,240]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>beats per minute</NICK>
+<BLURB>Beats per minute to use.</BLURB>
+<DEFAULT>120</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::buffer</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>the buffer</NICK>
+<BLURB>The buffer to play.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::delay-factor</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[0,16]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>delay factor</NICK>
+<BLURB>The delay factor.</BLURB>
+<DEFAULT>1</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::device</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the device identifier</NICK>
+<BLURB>The device to perform output to.</BLURB>
+<DEFAULT>"hw:0"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackPort::jack-client</NAME>
+<TYPE>AgsJackClient*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned JACK client</NICK>
+<BLURB>The assigned JACK client.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackServer::application-context</NAME>
+<TYPE>AgsApplicationContext*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application context object</NICK>
+<BLURB>The application context object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackServer::url</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the URL</NICK>
+<BLURB>The URL.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLadspaBridge::effect</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the effect</NICK>
+<BLURB>The effect's string representation.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLadspaBridge::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the object file</NICK>
+<BLURB>The filename as string of object file.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLadspaBridge::index</NAME>
+<TYPE>gulong</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>index of effect</NICK>
+<BLURB>The numerical index of effect.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -1399,6 +1809,46 @@
 </ARG>
 
 <ARG>
+<NAME>AgsLv2Bridge::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the object file</NICK>
+<BLURB>The filename as string of object file.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLv2Bridge::index</NAME>
+<TYPE>gulong</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>index of uri</NICK>
+<BLURB>The numerical index of uri.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLv2Bridge::uri</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the uri</NICK>
+<BLURB>The uri's string representation.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsLv2Manager::locale</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>locale of lv2 manager</NICK>
+<BLURB>The locale this lv2 manager is assigned to.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsMachineEditor::machine</NAME>
 <TYPE>AgsMachine*</TYPE>
 <RANGE></RANGE>
@@ -1426,6 +1876,106 @@
 <NICK>assigned machine</NICK>
 <BLURB>The machine it is assigned to.</BLURB>
 <DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiBuilder::file</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the file stream</NICK>
+<BLURB>The file stream to parse.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiDialog::machine</NAME>
+<TYPE>AgsMachine*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned machine</NICK>
+<BLURB>The machine which this machine editor is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiParser::file</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the file stream</NICK>
+<BLURB>The file stream to parse.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::application-context</NAME>
+<TYPE>AgsApplicationContext*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application context object</NICK>
+<BLURB>The application context object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::application-mutex</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application mutex object</NICK>
+<BLURB>The application mutex object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::attack</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>attack of buffer</NICK>
+<BLURB>The attack to use for the buffer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::bpm</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[1,240]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>beats per minute</NICK>
+<BLURB>Beats per minute to use.</BLURB>
+<DEFAULT>120</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::buffer</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>the buffer</NICK>
+<BLURB>The buffer to play.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::delay-factor</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[0,16]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>delay factor</NICK>
+<BLURB>The delay factor.</BLURB>
+<DEFAULT>1</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::device</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the device identifier</NICK>
+<BLURB>The device to perform output to.</BLURB>
+<DEFAULT>"hw:0"</DEFAULT>
 </ARG>
 
 <ARG>
@@ -1929,6 +2479,36 @@
 </ARG>
 
 <ARG>
+<NAME>AgsRecallDssi::effect</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the effect</NICK>
+<BLURB>The effect's string representation.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallDssi::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the object file</NICK>
+<BLURB>The filename as string of object file.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallDssi::index</NAME>
+<TYPE>gulong</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>index of effect</NICK>
+<BLURB>The numerical index of effect.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsRecall::child</NAME>
 <TYPE>AgsRecall*</TYPE>
 <RANGE></RANGE>
@@ -2039,6 +2619,46 @@
 </ARG>
 
 <ARG>
+<NAME>AgsRecallLv2::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the object file</NICK>
+<BLURB>The filename as string of object file.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallLv2::index</NAME>
+<TYPE>gulong</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>index of uri</NICK>
+<BLURB>The numerical index of uri.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallLv2::turtle</NAME>
+<TYPE>AgsTurtle*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>turtle of recall lv2</NICK>
+<BLURB>The turtle which this recall lv2 is described by.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallLv2::uri</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the uri</NICK>
+<BLURB>The uri's string representation.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsRecallRecycling::audio-channel</NAME>
 <TYPE>guint</TYPE>
 <RANGE><= 65536</RANGE>
@@ -2085,6 +2705,46 @@
 <FLAGS>rw</FLAGS>
 <NICK>AgsRecycling source of this recall</NICK>
 <BLURB>The AgsRecycling source of this recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecordMidiAudio::playback</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>if do playback</NICK>
+<BLURB>If playback should be performed.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecordMidiAudio::record</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>if do record</NICK>
+<BLURB>If record data for later use should be done.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecordMidiAudioRun::count-beats-audio-run</NAME>
+<TYPE>AgsCountBeatsAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>the AgsCountBeatsAudioRun which just counts.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecordMidiAudioRun::delay-audio-run</NAME>
+<TYPE>AgsDelayAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsDelayAudioRun</NICK>
+<BLURB>the AgsDelayAudioRun which emits midi_alloc_input signal.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -2179,12 +2839,102 @@
 </ARG>
 
 <ARG>
+<NAME>AgsRouteDssiAudio::notation-input</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>route notation input</NICK>
+<BLURB>Route notation as input to the DSSI recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteDssiAudio::sequencer-input</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>route sequencer input</NICK>
+<BLURB>Route sequencer as input to the DSSI recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteDssiAudioRun::count-beats-audio-run</NAME>
+<TYPE>AgsCountBeatsAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>the AgsCountBeatsAudioRun which just counts.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteDssiAudioRun::delay-audio-run</NAME>
+<TYPE>AgsDelayAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsDelayAudioRun</NICK>
+<BLURB>the AgsDelayAudioRun which emits notation_alloc_input signal.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteLv2Audio::notation-input</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>route notation input</NICK>
+<BLURB>Route notation as input to the LV2 recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteLv2Audio::sequencer-input</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>route sequencer input</NICK>
+<BLURB>Route sequencer as input to the LV2 recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteLv2AudioRun::count-beats-audio-run</NAME>
+<TYPE>AgsCountBeatsAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>the AgsCountBeatsAudioRun which just counts.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteLv2AudioRun::delay-audio-run</NAME>
+<TYPE>AgsDelayAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsDelayAudioRun</NICK>
+<BLURB>the AgsDelayAudioRun which emits notation_alloc_input signal.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsRuler::adjustment</NAME>
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
 <NICK>assigned adjustment</NICK>
 <BLURB>The adjustment it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsSequencerThread::sequencer</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>sequencer assigned to</NICK>
+<BLURB>The AgsSequencer it is assigned to.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -2286,6 +3036,16 @@
 <NICK>maximum unused threads</NICK>
 <BLURB>The maximum of unused threads.</BLURB>
 <DEFAULT>24</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsTurtle::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>filename of turtle</NICK>
+<BLURB>The filename this turtle is assigned to.</BLURB>
+<DEFAULT>NULL</DEFAULT>
 </ARG>
 
 <ARG>

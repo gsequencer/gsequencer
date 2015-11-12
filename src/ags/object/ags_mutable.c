@@ -59,11 +59,11 @@ ags_mutable_base_init(AgsMutableInterface *interface)
 }
 
 /**
- * ags_mutable_set_update:
+ * ags_mutable_set_muted:
  * @mutable: an #AgsMutable
- * @update: if %TRUE then muted, else playing
+ * @muted: if %TRUE then muted, else playing
  *
- * Mute an #AgsChannel within run iteration.
+ * Mute an #AgsRecall instance.
  *
  * Since: 0.4
  */

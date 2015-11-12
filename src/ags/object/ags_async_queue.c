@@ -59,6 +59,15 @@ ags_async_queue_base_init(AgsAsyncQueueInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_async_queue_set_run_mutex:
+ * @async_queue: the #AgsAsyncQueue
+ * @run_mutex: a pthread_mutex_t
+ *
+ * Sets the mutex to access the condition variable.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_async_queue_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex)
 {
@@ -70,6 +79,16 @@ ags_async_queue_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_m
   async_queue_interface->set_run_mutex(async_queue, run_mutex);
 }
 
+/**
+ * ags_async_queue_get_run_mutex:
+ * @async_queue: the #AgsAsyncQueue
+ *
+ * Get the mutex to access the condition variable.
+ *
+ * Returns: a pthread_mutex_t
+ *
+ * Since: 0.7.0
+ */
 pthread_mutex_t*
 ags_async_queue_get_run_mutex(AgsAsyncQueue *async_queue)
 {
@@ -82,6 +101,15 @@ ags_async_queue_get_run_mutex(AgsAsyncQueue *async_queue)
   return(async_queue_interface->get_run_mutex(async_queue));
 }
 
+/**
+ * ags_async_queue_set_run_cond:
+ * @async_queue: the #AgsAsyncQueue
+ * @run_cond: a pthread_cond_t
+ *
+ * Sets the condition to determine if @async_queue was run.
+ * 
+ * Since: 0.7.0
+ */
 void
 ags_async_queue_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_cond)
 {
@@ -93,6 +121,16 @@ ags_async_queue_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_con
   async_queue_interface->set_run_cond(async_queue, run_cond);
 }
 
+/**
+ * ags_async_queue_get_run_cond:
+ * @async_queue: the #AgsAsyncQueue
+ *
+ * Get the condition to wait for @async_queue. 
+ *
+ * Returns: the pthread_cond_t
+ *
+ * Since: 0.7.0
+ */
 pthread_cond_t*
 ags_async_queue_get_run_cond(AgsAsyncQueue *async_queue)
 {
@@ -105,6 +143,14 @@ ags_async_queue_get_run_cond(AgsAsyncQueue *async_queue)
   return(async_queue_interface->get_run_cond(async_queue));
 }
 
+/**
+ * @async_queue: the #AgsAsyncQueue
+ * @is_run: if %TRUE the queue was already running
+ * 
+ * Determine if you are allowed to pass the condition.
+ *
+ * Since: 0.7.0
+ */
 void
 ags_async_queue_set_run(AgsAsyncQueue *async_queue, gboolean is_run)
 {
@@ -116,6 +162,16 @@ ags_async_queue_set_run(AgsAsyncQueue *async_queue, gboolean is_run)
   async_queue_interface->set_run(async_queue, is_run);
 }
 
+/**
+ * ags_async_queue_is_run:
+ * @async_queue: the #AgsAsyncQueue
+ * 
+ * Decide if you are allowed to pass the condition.
+ *
+ * Returns: if %TRUE it is safe to continue, else you should wait for the condition.
+ *
+ * Since: 0.7.0
+ */
 gboolean
 ags_async_queue_is_run(AgsAsyncQueue *async_queue)
 {

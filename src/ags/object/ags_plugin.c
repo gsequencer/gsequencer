@@ -67,6 +67,8 @@ ags_plugin_base_init(AgsPluginInterface *interface)
  * Retrieve the name of the plugin.
  *
  * Returns: the plugins name
+ *
+ * Since: 0.4.0
  */
 gchar*
 ags_plugin_get_name(AgsPlugin *plugin)
@@ -88,6 +90,8 @@ ags_plugin_get_name(AgsPlugin *plugin)
  * @name: the name of plugin
  *
  * Set the name of the plugin.
+ *
+ * Since: 0.4.0
  */
 void
 ags_plugin_set_name(AgsPlugin *plugin, gchar *name)
@@ -107,6 +111,8 @@ ags_plugin_set_name(AgsPlugin *plugin, gchar *name)
  * Retrieve the version of the plugin.
  *
  * Returns: the plugins version
+ *
+ * Since: 0.4.0
  */
 gchar*
 ags_plugin_get_version(AgsPlugin *plugin)
@@ -128,6 +134,8 @@ ags_plugin_get_version(AgsPlugin *plugin)
  * @version: the version of plugin
  *
  * Set the version of the plugin.
+ *
+ * Since: 0.4.0
  */
 void
 ags_plugin_set_version(AgsPlugin *plugin, gchar *version)
@@ -147,6 +155,8 @@ ags_plugin_set_version(AgsPlugin *plugin, gchar *version)
  * Retrieve the build id of the plugin.
  *
  * Returns: the plugins build id
+ *
+ * Since: 0.4.0
  */
 gchar*
 ags_plugin_get_build_id(AgsPlugin *plugin)
@@ -168,6 +178,8 @@ ags_plugin_get_build_id(AgsPlugin *plugin)
  * @build_id: the build id of plugin
  *
  * Set the build id of the plugin.
+ *
+ * Since: 0.4.0
  */
 void
 ags_plugin_set_build_id(AgsPlugin *plugin, gchar *build_id)
@@ -187,6 +199,8 @@ ags_plugin_set_build_id(AgsPlugin *plugin, gchar *build_id)
  * Retrieve the xml type of the plugin.
  *
  * Returns: the plugins xml type
+ *
+ * Since: 0.4.0
  */
 gchar*
 ags_plugin_get_xml_type(AgsPlugin *plugin)
@@ -208,6 +222,8 @@ ags_plugin_get_xml_type(AgsPlugin *plugin)
  * @xml_type: the build id of plugin
  *
  * Set the build id of the plugin.
+ *
+ * Since: 0.4.0
  */
 void
 ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
@@ -227,6 +243,8 @@ ags_plugin_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
  * Retrieve the ports of the plugin.
  *
  * Returns: the plugins ports
+ *
+ * Since: 0.4.0
  */
 GList*
 ags_plugin_get_ports(AgsPlugin *plugin)
@@ -248,6 +266,8 @@ ags_plugin_get_ports(AgsPlugin *plugin)
  * @ports: the build id of plugin
  *
  * Set the build id of the plugin.
+ *
+ * Since: 0.4.0
  */
 void
 ags_plugin_set_ports(AgsPlugin *plugin, GList *ports)
@@ -267,6 +287,8 @@ ags_plugin_set_ports(AgsPlugin *plugin, GList *ports)
  * @plugin: the #AgsPlugin
  *
  * Read of file.
+ *
+ * Since: 0.4.0
  */
 void
 ags_plugin_read(AgsFile *file,
@@ -291,6 +313,8 @@ ags_plugin_read(AgsFile *file,
  * Write to file.
  *
  * Returns: the new node you created
+ *
+ * Since: 0.4.0
  */
 xmlNode*
 ags_plugin_write(AgsFile *file,

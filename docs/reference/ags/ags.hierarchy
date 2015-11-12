@@ -3,6 +3,8 @@ GObject
   AgsTask
     AgsAddAudio
     AgsAddAudioSignal
+    AgsAddBulkMember
+    AgsAddEffect
     AgsAddLineMember
     AgsAddNote
     AgsAddPointToSelection
@@ -17,7 +19,6 @@ GObject
     AgsApplySequencerLength
     AgsApplySynth
     AgsApplyTact
-    AgsApplyWavetable
     AgsAudioSetRecycling
     AgsBlinkCellPatternCursor
     AgsCancelAudio
@@ -54,6 +55,7 @@ GObject
     AgsToggleLed
     AgsTogglePatternBit
     AgsUnrefAudioSignal
+    AgsUpdateBulkMember
   AgsApplicationContext
     AgsAudioApplicationContext
     AgsServerApplicationContext
@@ -73,6 +75,7 @@ GObject
     AgsRecordThread
     AgsRecyclingThread
     AgsReturnableThread
+    AgsSequencerThread
     AgsSingleThread
     AgsSoundcardThread
     AgsTaskThread
@@ -98,15 +101,25 @@ GObject
                 AgsPanelInputPad
                 AgsSynthInputPad
               AgsEditor
+              AgsEffectBridge
+                AgsFFPlayerBridge
+              AgsEffectBulk
+                AgsFFPlayerBulkInput
+              AgsEffectLine
+                AgsFFPlayerInputLine
+              AgsEffectPad
+                AgsFFPlayerInputPad
               AgsFileSelection
               AgsGenericPreferences
               AgsInlinePlayer
+              AgsLadspaBrowser
               AgsLineEditor
               AgsLineMemberEditor
               AgsPropertyEditor
                 AgsPropertyListingEditor
                   AgsListingEditor
                 AgsPropertyCollectionEditor
+              AgsLv2Browser
               AgsMachineSelector
               AgsNavigation
               AgsNotebook
@@ -123,11 +136,10 @@ GObject
             AgsCellPattern
             AgsExpanderSet
             AgsLinkCollectionEditor
-            AgsTable
-              AgsMenuItem
             AgsNoteEdit
             AgsPatternBox
             AgsPatternEdit
+            AgsTable
           GtkToolbar
             AgsAutomationToolbar
             AgsToolbar
@@ -135,17 +147,25 @@ GObject
             GtkWindow
               AgsAutomationWindow
               AgsExportWindow
+              AgsHistoryBrowser
               GtkDialog
-                AgsLadspaBrowser
                 AgsMachineEditor
                 AgsMachineSelection
+                AgsMidiDialog
+                AgsPluginBrowser
                 AgsPreferences
               AgsMenu
               AgsWindow
+            GtkFrame
+              AgsBulkMember
+              AgsLineMember
+              AgsOscillator
             GtkHandleBox
               AgsMachine
                 AgsDrum
                 AgsFFPlayer
+                AgsLadspaBridge
+                AgsLv2Bridge
                 AgsMatrix
                 AgsMixer
                 AgsPanel
@@ -153,9 +173,6 @@ GObject
             GtkExpander
               AgsExpander
             AgsLed
-            GtkFrame
-              AgsLineMember
-              AgsOscillator
             GtkButton
               GtkToggleButton
                 GtkCheckButton
@@ -164,16 +181,13 @@ GObject
           GtkMenuShell
             GtkMenuBar
               AgsMenuBar
-        AgsCartesian
         AgsDial
         AgsIndicator
-          AgsHIndicator
           AgsVIndicator
         GtkDrawingArea
           AgsMeter
           AgsScale
         AgsRuler
-        AgsWaveform
   AgsAudioSignal
   AgsAutomationArea
   AgsAutomation
@@ -185,7 +199,9 @@ GObject
       AgsMuteAudioSignal
       AgsPeakAudioSignal
       AgsPlayAudioSignal
+      AgsRecallDssiRun
       AgsRecallLadspaRun
+      AgsRecallLv2Run
       AgsStreamAudioSignal
       AgsVolumeAudioSignal
     AgsRecallChannel
@@ -197,7 +213,9 @@ GObject
       AgsMuteChannel
       AgsPeakChannel
       AgsPlayChannel
+      AgsRecallDssi
       AgsRecallLadspa
+      AgsRecallLv2
       AgsStreamChannel
       AgsVolumeChannel
     AgsRecallChannelRun
@@ -231,6 +249,9 @@ GObject
       AgsMuteAudio
       AgsPlayAudio
       AgsPlayNotationAudio
+      AgsRecordMidiAudio
+      AgsRouteDssiAudio
+      AgsRouteLv2Audio
     AgsRecallAudioRun
       AgsCopyNotationAudioRun
       AgsCopyPatternAudioRun
@@ -238,24 +259,41 @@ GObject
       AgsDelayAudioRun
       AgsMuteAudioRun
       AgsPlayNotationAudioRun
+      AgsRecordMidiAudioRun
+      AgsRouteDssiAudioRun
+      AgsRouteLv2AudioRun
     AgsPlayAudioFile
     AgsPlayNote
-    AgsPlayPattern
   AgsChannel
     AgsInput
     AgsOutput
   AgsConfig
   AgsDevout
+  AgsDssiManager
   AgsFile
   AgsFileIdRef
   AgsFileLaunch
   AgsFileLink
   AgsFileLookup
   AgsHistory
+  AgsIpatchDLS2Reader
   AgsIpatch
   AgsIpatchSF2Reader
+  AgsJackClient
+  AgsJackDevout
+  AgsJackMidiin
+  AgsJackPort
+  AgsJackServer
   AgsLadspaManager
   AgsLibao
+  AgsLv2Manager
+  AgsLv2uiManager
+  AgsMidiBuilder
+  AgsMidiFile
+  AgsMidiFileReader
+  AgsMidiFileWriter
+  AgsMidiParser
+  AgsMidiin
   AgsMutexManager
   AgsNotation
   AgsNote
@@ -280,6 +318,7 @@ GObject
   AgsThreadPool
   AgsTimestampFactory
   AgsTimestamp
+  AgsTurtle
   GtkStyle
   GdkDrawable
     GdkWindow
@@ -309,10 +348,21 @@ GInterface
   AgsCountable
   AgsSeekable
   AgsSoundcard
+  AgsDistributedManager
   AgsPlayable
+  AgsSequencer
   GtkActivatable
   AgsServiceProvider
   AgsSoundProvider
   AgsTreeIterator
   GIcon
   GLoadableIcon
+GBoxed
+  GValueArray
+  AgsComplex
+  GtkRequisition
+  GdkRectangle
+  GdkEvent
+  GtkSelectionData
+  GdkColor
+  GtkBorder
