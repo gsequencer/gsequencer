@@ -315,7 +315,7 @@
     <xi:include href="xml/ags_editor.xml"/>
     <xi:include href="xml/ags_editor_callbacks.xml"/>
     <xi:include href="xml/ags_effect_bridge.xml"/>
-    <xi:include href="xml/ags_effect_bridge.xml"/>
+    <xi:include href="xml/ags_effect_bridge_callbacks.xml"/>
     <xi:include href="xml/ags_effect_bulk.xml"/>
     <xi:include href="xml/ags_effect_bulk_callbacks.xml"/>
     <xi:include href="xml/ags_effect_line.xml"/>
@@ -456,13 +456,10 @@
       <xi:include href="xml/ags_ffplayer_bridge.xml"/>
 <!--      <xi:include href="xml/ags_ffplayer_bridge_callbacks.xml"/> -->
       <xi:include href="xml/ags_ffplayer_bulk_input.xml"/>
-      <xi:include href="xml/ags_ffplayer_bulk_input.xml"/>
       <xi:include href="xml/ags_ffplayer_input_line.xml"/>
       <xi:include href="xml/ags_ffplayer_input_line_callbacks.xml"/>
       <xi:include href="xml/ags_ffplayer_input_pad.xml"/>
 <!--      <xi:include href="xml/ags_ffplayer_input_pad_callbacks.xml"/> -->
-      <xi:include href="xml/ags_ffplayer.xml"/>
-      <xi:include href="xml/ags_ffplayer_callbacks.xml"/>
       <xi:include href="xml/ags_ladspa_bridge.xml"/>
 <!--      <xi:include href="xml/ags_ladspa_bridge_callbacks.xml"/> -->
       <xi:include href="xml/ags_lv2_bridge.xml"/>

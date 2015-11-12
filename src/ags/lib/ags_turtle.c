@@ -34,12 +34,12 @@
 
 /**
  * SECTION:ags_turtle
- * @short_description: Boxed type of turtle
+ * @short_description: Terse RDF Triple Language
  * @title: AgsTurtle
  * @section_id:
  * @include: ags/lib/ags_turtle.h
  *
- * The #AgsTurtle object converts Tearse Triple Language files
+ * The #AgsTurtle object converts Terse RDF Triple Language files
  * into XML.
  */
 

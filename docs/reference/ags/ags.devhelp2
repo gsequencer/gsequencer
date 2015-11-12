@@ -255,7 +255,7 @@
       <sub name="AgsEditor" link="AgsEditor.html"/>
       <sub name="ags_editor_callbacks" link="ags-ags-editor-callbacks.html"/>
       <sub name="AgsEffectBridge" link="AgsEffectBridge.html"/>
-      <sub name="AgsEffectBridge" link="AgsEffectBridge.html"/>
+      <sub name="ags_effect_bridge_callbacks" link="ags-ags-effect-bridge-callbacks.html"/>
       <sub name="AgsEffectBulk" link="AgsEffectBulk.html"/>
       <sub name="ags_effect_bulk_callbacks" link="ags-ags-effect-bulk-callbacks.html"/>
       <sub name="AgsEffectLine" link="AgsEffectLine.html"/>
@@ -382,12 +382,9 @@
         <sub name="ags_ffplayer_callbacks" link="ags-ags-ffplayer-callbacks.html"/>
         <sub name="AgsFFPlayerBridge" link="AgsFFPlayerBridge.html"/>
         <sub name="AgsFFPlayerBulkInput" link="AgsFFPlayerBulkInput.html"/>
-        <sub name="AgsFFPlayerBulkInput" link="AgsFFPlayerBulkInput.html"/>
         <sub name="AgsFFPlayerInputLine" link="AgsFFPlayerInputLine.html"/>
         <sub name="ags_ffplayer_input_line_callbacks" link="ags-ags-ffplayer-input-line-callbacks.html"/>
         <sub name="AgsFFPlayerInputPad" link="AgsFFPlayerInputPad.html"/>
-        <sub name="AgsFFPlayer" link="AgsFFPlayer.html"/>
-        <sub name="ags_ffplayer_callbacks" link="ags-ags-ffplayer-callbacks.html"/>
         <sub name="AgsLadspaBridge" link="AgsLadspaBridge.html"/>
         <sub name="AgsLv2Bridge" link="AgsLv2Bridge.html"/>
       </sub>
@@ -407,7 +404,7 @@
     <keyword type="function" name="ags_complex_copy ()" link="AgsComplex.html#ags-complex-copy" since="0.7.1"/>
     <keyword type="function" name="ags_complex_free ()" link="AgsComplex.html#ags-complex-free" since="0.7.1"/>
     <keyword type="function" name="ags_complex_get ()" link="AgsComplex.html#ags-complex-get" since="0.7.1"/>
-    <keyword type="function" name="ags_complex_set ()" link="AgsComplex.html#ags-complex-set"/>
+    <keyword type="function" name="ags_complex_set ()" link="AgsComplex.html#ags-complex-set" since="0.7.1"/>
     <keyword type="function" name="ags_parameter_grow ()" link="ags-AgsParameter.html#ags-parameter-grow" since="0.3"/>
     <keyword type="function" name="ags_turtle_parser_context_alloc ()" link="AgsTurtle.html#ags-turtle-parser-context-alloc"/>
     <keyword type="function" name="ags_turtle_parser_context_free ()" link="AgsTurtle.html#ags-turtle-parser-context-free"/>
@@ -478,18 +475,18 @@
     <keyword type="function" name="ags_connectable_disconnect ()" link="AgsConnectable.html#ags-connectable-disconnect" since="0.4.0"/>
     <keyword type="function" name="ags_countable_get_notation_counter ()" link="AgsCountable.html#ags-countable-get-notation-counter" since="0.4"/>
     <keyword type="function" name="ags_countable_get_sequencer_counter ()" link="AgsCountable.html#ags-countable-get-sequencer-counter" since="0.4"/>
-    <keyword type="function" name="ags_distributed_manager_set_url ()" link="AgsDistributedManager.html#ags-distributed-manager-set-url" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_get_url ()" link="AgsDistributedManager.html#ags-distributed-manager-get-url" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_set_ports ()" link="AgsDistributedManager.html#ags-distributed-manager-set-ports" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_get_ports ()" link="AgsDistributedManager.html#ags-distributed-manager-get-ports" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_set_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-set-soundcard" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_get_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-get-soundcard" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_set_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-set-sequencer" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_get_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-get-sequencer" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_register_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-register-soundcard" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_unregister_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-unregister-soundcard" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_register_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-register-sequencer" since="0.7.0"/>
-    <keyword type="function" name="ags_distributed_manager_unregister_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-unregister-sequencer" since="0.7.0"/>
+    <keyword type="function" name="ags_distributed_manager_set_url ()" link="AgsDistributedManager.html#ags-distributed-manager-set-url" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_get_url ()" link="AgsDistributedManager.html#ags-distributed-manager-get-url" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_set_ports ()" link="AgsDistributedManager.html#ags-distributed-manager-set-ports" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_get_ports ()" link="AgsDistributedManager.html#ags-distributed-manager-get-ports" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_set_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-set-soundcard" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_get_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-get-soundcard" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_set_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-set-sequencer" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_get_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-get-sequencer" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_register_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-register-soundcard" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_unregister_soundcard ()" link="AgsDistributedManager.html#ags-distributed-manager-unregister-soundcard" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_register_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-register-sequencer" since="0.7.1"/>
+    <keyword type="function" name="ags_distributed_manager_unregister_sequencer ()" link="AgsDistributedManager.html#ags-distributed-manager-unregister-sequencer" since="0.7.1"/>
     <keyword type="function" name="ags_dynamic_connectable_connect ()" link="AgsDynamicConnectable.html#ags-dynamic-connectable-connect"/>
     <keyword type="function" name="ags_dynamic_connectable_disconnect ()" link="AgsDynamicConnectable.html#ags-dynamic-connectable-disconnect"/>
     <keyword type="function" name="ags_main_loop_get_tree_lock ()" link="AgsMainLoop.html#ags-main-loop-get-tree-lock" since="0.6"/>
@@ -700,8 +697,8 @@
     <keyword type="function" name="ags_file_add_lookup ()" link="AgsFile.html#ags-file-add-lookup" since="0.4.0"/>
     <keyword type="function" name="ags_file_add_launch ()" link="AgsFile.html#ags-file-add-launch" since="0.4.0"/>
     <keyword type="function" name="ags_file_open ()" link="AgsFile.html#ags-file-open" since="0.4.0"/>
-    <keyword type="function" name="ags_file_open_from_data ()" link="AgsFile.html#ags-file-open-from-data"/>
-    <keyword type="function" name="ags_file_rw_open ()" link="AgsFile.html#ags-file-rw-open"/>
+    <keyword type="function" name="ags_file_open_from_data ()" link="AgsFile.html#ags-file-open-from-data" since="0.4.0"/>
+    <keyword type="function" name="ags_file_rw_open ()" link="AgsFile.html#ags-file-rw-open" since="0.4.0"/>
     <keyword type="function" name="ags_file_open_filename ()" link="AgsFile.html#ags-file-open-filename" since="0.4.0"/>
     <keyword type="function" name="ags_file_close ()" link="AgsFile.html#ags-file-close"/>
     <keyword type="function" name="ags_file_write ()" link="AgsFile.html#ags-file-write" since="0.4.0"/>
@@ -2015,16 +2012,8 @@
     <keyword type="property" name="The “audio” property" link="AgsEffectBridge.html#AgsEffectBridge--audio"/>
     <keyword type="signal" name="The “resize-audio-channels” signal" link="AgsEffectBridge.html#AgsEffectBridge-resize-audio-channels"/>
     <keyword type="signal" name="The “resize-pads” signal" link="AgsEffectBridge.html#AgsEffectBridge-resize-pads"/>
-    <keyword type="macro" name="AGS_EFFECT_BRIDGE_MAX_COLUMNS" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-MAX-COLUMNS:CAPS"/>
-    <keyword type="function" name="ags_effect_bridge_resize_audio_channels ()" link="AgsEffectBridge.html#ags-effect-bridge-resize-audio-channels"/>
-    <keyword type="function" name="ags_effect_bridge_resize_pads ()" link="AgsEffectBridge.html#ags-effect-bridge-resize-pads"/>
-    <keyword type="function" name="ags_effect_bridge_new ()" link="AgsEffectBridge.html#ags-effect-bridge-new" since="0.4.3"/>
-    <keyword type="macro" name="AGS_EFFECT_BRIDGE_DEFAULT_VERSION" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DEFAULT-VERSION:CAPS"/>
-    <keyword type="macro" name="AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DEFAULT-BUILD-ID:CAPS"/>
-    <keyword type="enum" name="enum AgsEffectBridgeFlags" link="AgsEffectBridge.html#AgsEffectBridgeFlags"/>
-    <keyword type="property" name="The “audio” property" link="AgsEffectBridge.html#AgsEffectBridge--audio"/>
-    <keyword type="signal" name="The “resize-audio-channels” signal" link="AgsEffectBridge.html#AgsEffectBridge-resize-audio-channels"/>
-    <keyword type="signal" name="The “resize-pads” signal" link="AgsEffectBridge.html#AgsEffectBridge-resize-pads"/>
+    <keyword type="function" name="ags_effect_bridge_set_audio_channels_callback ()" link="ags-ags-effect-bridge-callbacks.html#ags-effect-bridge-set-audio-channels-callback"/>
+    <keyword type="function" name="ags_effect_bridge_set_pads_callback ()" link="ags-ags-effect-bridge-callbacks.html#ags-effect-bridge-set-pads-callback"/>
     <keyword type="macro" name="AGS_EFFECT_BULK_PLUGIN()" link="AgsEffectBulk.html#AGS-EFFECT-BULK-PLUGIN:CAPS"/>
     <keyword type="macro" name="AGS_EFFECT_BULK_COLUMNS_COUNT" link="AgsEffectBulk.html#AGS-EFFECT-BULK-COLUMNS-COUNT:CAPS"/>
     <keyword type="function" name="ags_effect_bulk_plugin_alloc ()" link="AgsEffectBulk.html#ags-effect-bulk-plugin-alloc"/>
@@ -2679,25 +2668,9 @@
     <keyword type="macro" name="AGS_FFPLAYER_BULK_INPUT_DEFAULT_VERSION" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-DEFAULT-VERSION:CAPS"/>
     <keyword type="macro" name="AGS_FFPLAYER_BULK_INPUT_DEFAULT_BUILD_ID" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-DEFAULT-BUILD-ID:CAPS"/>
     <keyword type="enum" name="enum AgsFFPlayerBulkInputFlags" link="AgsFFPlayerBulkInput.html#AgsFFPlayerBulkInputFlags"/>
-    <keyword type="function" name="ags_ffplayer_bulk_input_new ()" link="AgsFFPlayerBulkInput.html#ags-ffplayer-bulk-input-new" since="0.4"/>
-    <keyword type="macro" name="AGS_FFPLAYER_BULK_INPUT_DEFAULT_VERSION" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-DEFAULT-VERSION:CAPS"/>
-    <keyword type="macro" name="AGS_FFPLAYER_BULK_INPUT_DEFAULT_BUILD_ID" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-DEFAULT-BUILD-ID:CAPS"/>
-    <keyword type="enum" name="enum AgsFFPlayerBulkInputFlags" link="AgsFFPlayerBulkInput.html#AgsFFPlayerBulkInputFlags"/>
     <keyword type="function" name="ags_ffplayer_input_line_new ()" link="AgsFFPlayerInputLine.html#ags-ffplayer-input-line-new" since="0.4"/>
     <keyword type="function" name="ags_ffplayer_input_line_notify_channel_callback ()" link="ags-ags-ffplayer-input-line-callbacks.html#ags-ffplayer-input-line-notify-channel-callback"/>
     <keyword type="function" name="ags_ffplayer_input_pad_new ()" link="AgsFFPlayerInputPad.html#ags-ffplayer-input-pad-new" since="0.4"/>
-    <keyword type="function" name="ags_ffplayer_paint ()" link="AgsFFPlayer.html#ags-ffplayer-paint"/>
-    <keyword type="function" name="ags_ffplayer_new ()" link="AgsFFPlayer.html#ags-ffplayer-new" since="0.3"/>
-    <keyword type="function" name="ags_ffplayer_parent_set_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-parent-set-callback"/>
-    <keyword type="function" name="ags_ffplayer_destroy_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-destroy-callback"/>
-    <keyword type="function" name="ags_ffplayer_open_clicked_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-open-clicked-callback"/>
-    <keyword type="function" name="ags_ffplayer_open_dialog_response_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-open-dialog-response-callback"/>
-    <keyword type="function" name="ags_ffplayer_preset_changed_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-preset-changed-callback"/>
-    <keyword type="function" name="ags_ffplayer_instrument_changed_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-instrument-changed-callback"/>
-    <keyword type="function" name="ags_ffplayer_drawing_area_expose_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-expose-callback"/>
-    <keyword type="function" name="ags_ffplayer_drawing_area_configure_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-configure-callback"/>
-    <keyword type="function" name="ags_ffplayer_drawing_area_button_press_callback ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-drawing-area-button-press-callback"/>
-    <keyword type="function" name="ags_ffplayer_hscrollbar_value_changed ()" link="ags-ags-ffplayer-callbacks.html#ags-ffplayer-hscrollbar-value-changed"/>
     <keyword type="function" name="ags_ladspa_bridge_load ()" link="AgsLadspaBridge.html#ags-ladspa-bridge-load"/>
     <keyword type="function" name="ags_ladspa_bridge_new ()" link="AgsLadspaBridge.html#ags-ladspa-bridge-new" since="0.4.3"/>
     <keyword type="macro" name="AGS_LADSPA_BRIDGE_DEFAULT_VERSION" link="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-DEFAULT-VERSION:CAPS"/>
@@ -3079,11 +3052,6 @@
     <keyword type="constant" name="AGS_EFFECT_BRIDGE_BULK_OUTPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-BULK-OUTPUT:CAPS"/>
     <keyword type="constant" name="AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DISPLAY-OUTPUT:CAPS"/>
     <keyword type="constant" name="AGS_EFFECT_BRIDGE_BULK_INPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-BULK-INPUT:CAPS"/>
-    <keyword type="constant" name="AGS_EFFECT_BRIDGE_CONNECTED" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-CONNECTED:CAPS"/>
-    <keyword type="constant" name="AGS_EFFECT_BRIDGE_DISPLAY_INPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DISPLAY-INPUT:CAPS"/>
-    <keyword type="constant" name="AGS_EFFECT_BRIDGE_BULK_OUTPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-BULK-OUTPUT:CAPS"/>
-    <keyword type="constant" name="AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DISPLAY-OUTPUT:CAPS"/>
-    <keyword type="constant" name="AGS_EFFECT_BRIDGE_BULK_INPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-BULK-INPUT:CAPS"/>
     <keyword type="constant" name="AGS_EFFECT_BULK_CONNECTED" link="AgsEffectBulk.html#AGS-EFFECT-BULK-CONNECTED:CAPS"/>
     <keyword type="constant" name="AGS_EFFECT_BULK_HIDE_BUTTONS" link="AgsEffectBulk.html#AGS-EFFECT-BULK-HIDE-BUTTONS:CAPS"/>
     <keyword type="constant" name="AGS_EFFECT_BULK_HIDE_ENTRIES" link="AgsEffectBulk.html#AGS-EFFECT-BULK-HIDE-ENTRIES:CAPS"/>
@@ -3194,7 +3162,6 @@
     <keyword type="constant" name="AGS_CELL_PATTERN_TOGGLE_PAD" link="AgsCellPattern.html#AGS-CELL-PATTERN-TOGGLE-PAD:CAPS"/>
     <keyword type="constant" name="AGS_CELL_PATTERN_COPY_PATTERN" link="AgsCellPattern.html#AGS-CELL-PATTERN-COPY-PATTERN:CAPS"/>
     <keyword type="constant" name="AGS_SYNTH_AUTO_UPDATE" link="AgsSynth.html#AGS-SYNTH-AUTO-UPDATE:CAPS"/>
-    <keyword type="constant" name="AGS_FFPLAYER_BULK_INPUT_CONNECTED" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-CONNECTED:CAPS"/>
     <keyword type="constant" name="AGS_FFPLAYER_BULK_INPUT_CONNECTED" link="AgsFFPlayerBulkInput.html#AGS-FFPLAYER-BULK-INPUT-CONNECTED:CAPS"/>
     <keyword type="constant" name="AGS_LADSPA_BRIDGE_DISPLAY_INPUT" link="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-DISPLAY-INPUT:CAPS"/>
     <keyword type="constant" name="AGS_LADSPA_BRIDGE_BULK_OUTPUT" link="AgsLadspaBridge.html#AGS-LADSPA-BRIDGE-BULK-OUTPUT:CAPS"/>

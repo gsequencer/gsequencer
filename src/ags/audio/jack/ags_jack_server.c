@@ -72,6 +72,16 @@ GObject* ags_jack_server_register_sequencer(AgsDistributedManager *distributed_m
 void ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
 					  GObject *sequencer);
 
+/**
+ * SECTION:ags_jack_server
+ * @short_description: JACK instance
+ * @title: AgsJackServer
+ * @section_id:
+ * @include: ags/jack_server/ags_jack_server.h
+ *
+ * The #AgsJackServer is an object to represent a running JACK instance.
+ */
+
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,

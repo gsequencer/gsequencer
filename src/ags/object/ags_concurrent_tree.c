@@ -66,6 +66,8 @@ ags_concurrent_tree_base_init(AgsConcurrentTreeInterface *interface)
  *
  * Get tree node's lock.
  *
+ * Returns: the pthread_mutex_t
+ *
  * Since: 0.6
  */
 pthread_mutex_t*
@@ -85,6 +87,8 @@ ags_concurrent_tree_get_lock(AgsConcurrentTree *concurrent_tree)
  * @concurrent_tree an #AgsConcurrent_Tree
  *
  * Get tree node's parent lock.
+ *
+ * Returns: the pthread_mutex_t
  *
  * Since: 0.6
  */

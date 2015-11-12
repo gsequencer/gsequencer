@@ -889,7 +889,7 @@ ags_file_real_open_from_data(AgsFile *file,
 }
 
 /**
- * ags_file_open:
+ * ags_file_open_from_data:
  * @file: the #AgsFile
  * @data: a buffer containing the XML document
  * @length: the buffer length
@@ -927,7 +927,7 @@ ags_file_real_rw_open(AgsFile *file,
 }
 
 /**
- * ags_file_open:
+ * ags_file_rw_open:
  * @file: the #AgsFile
  * @create: if %TRUE create the file as needed
  *

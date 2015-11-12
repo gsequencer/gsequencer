@@ -125,7 +125,7 @@ ags_complex_get(AgsComplex *ptr)
 }
 
 /**
- * ags_complex_get:
+ * ags_complex_set:
  * @ptr: the #AgsComplex
  * @z: the complex data to set
  * 
