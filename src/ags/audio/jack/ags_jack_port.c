@@ -26,6 +26,8 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
@@ -47,6 +49,7 @@ void ags_jack_port_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_JACK_CLIENT,
 };
 
 static gpointer ags_jack_port_parent_class = NULL;
@@ -105,6 +108,21 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
   gobject->finalize = ags_jack_port_finalize;
 
   /* properties */
+  /**
+   * AgsJackPort:jack-client:
+   *
+   * The assigned #AgsJackClient.
+   * 
+   * Since: 0.7.1
+   */
+  param_spec = g_param_spec_object("jack-client\0",
+				   "assigned JACK client\0",
+				   "The assigned JACK client.\0",
+				   AGS_TYPE_JACK_CLIENT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_JACK_CLIENT,
+				  param_spec);
 }
 
 void
@@ -119,6 +137,8 @@ ags_jack_port_init(AgsJackPort *jack_port)
 {
   jack_port->flags = 0;
 
+  jack_port->jack_client = NULL;
+  
   jack_port->uuid = NULL;
   jack_port->name = NULL;
   jack_port->uri = NULL;
@@ -139,6 +159,27 @@ ags_jack_port_set_property(GObject *gobject,
   jack_port = AGS_JACK_PORT(gobject);
 
   switch(prop_id){
+  case PROP_JACK_CLIENT:
+    {
+      AgsJackClient *jack_client;
+
+      jack_client = (AgsJackClient *) g_value_get_object(value);
+
+      if(jack_client == jack_port->jack_client){
+	return;
+      }
+
+      if(jack_port->jack_client != NULL){
+	g_object_unref(jack_port->jack_client);
+      }
+
+      if(jack_client != NULL){
+	g_object_ref(jack_client);
+      }
+      
+      jack_port->jack_client = jack_client;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -156,6 +197,11 @@ ags_jack_port_get_property(GObject *gobject,
   jack_port = AGS_JACK_PORT(gobject);
   
   switch(prop_id){
+  case PROP_JACK_CLIENT:
+    {
+      g_value_set_object(value, jack_port->jack_client);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -185,7 +231,50 @@ ags_jack_port_finalize(GObject *gobject)
 }
 
 /**
+ * ags_jack_port_register:
+ * @port_name: the name as string
+ * @is_audio: if %TRUE interpreted as audio port
+ * @is_midi: if %TRUE interpreted as midi port
+ * @is_output: if %TRUE port is acting as output, otherwise as input
+ *
+ * Register a new JACK port.
+ *
+ * Since: 0.7.1
+ */
+void
+ags_jack_port_register(AgsJackPort *jack_port,
+		       gchar *port_name,
+		       gboolean is_audio, gboolean is_midi,
+		       gboolean is_output)
+{
+  if(jack_port == NULL || port_name == NULL){
+    return;
+  }
+
+  if(jack_port->jack_client == NULL){
+    g_warning("ags_jack_port.c - no assigned AgsJackClient\0");
+    
+    return;
+  }
+
+  if(is_audio){
+    jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
+		       port_name,
+		       JACK_DEFAULT_AUDIO_TYPE,
+		       (is_output ? JackPortIsOutput: JackPortIsInput),
+		       AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
+  }else if(is_audio){
+    jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
+		       port_name,
+		       JACK_DEFAULT_MIDI_TYPE,
+		       (is_output ? JackPortIsOutput: JackPortIsInput),
+		       AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
+  }
+}
+
+/**
  * ags_jack_port_new:
+ * @jack_client: the #AgsJackClient assigned to
  *
  * Instantiate a new #AgsJackPort.
  *
@@ -194,12 +283,12 @@ ags_jack_port_finalize(GObject *gobject)
  * Since: 0.7.1
  */
 AgsJackPort*
-ags_jack_port_new(GObject *application_context,
-		  gchar *url)
+ags_jack_port_new(GObject *jack_client)
 {
   AgsJackPort *jack_port;
 
   jack_port = (AgsJackPort *) g_object_new(AGS_TYPE_JACK_PORT,
+					   "jack-client\0", jack_client,
 					   NULL);
 
   return(jack_port);

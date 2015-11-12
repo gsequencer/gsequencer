@@ -19,7 +19,6 @@
 
 #include <ags/audio/ags_recall_channel.h>
 
-#include <ags/lib/ags_list.h>
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_connectable.h>

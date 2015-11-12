@@ -379,6 +379,7 @@ GObject*
 ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 				   gboolean is_output)
 {
+  AgsJackServer *jack_server;
   AgsJackClient *default_client;
   AgsJackPort *soundcard;
   gchar *str;
@@ -388,42 +389,41 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
     return(NULL);
   }
 
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+  
   /* the default client */
-  default_client = AGS_JACK_SERVER(distributed_manager)->default_client;
+  if(jack_server->default_client == NULL){
+    jack_server->default_client = ags_jack_client_new(jack_server);
+    ags_jack_client_open(jack_server->default_client,
+			 g_strdup("ags-default-client\0"));
 
-  if(default_client == NULL){
-    AGS_JACK_SERVER(distributed_manager)->default_client = 
-      default_client = ags_jack_client_new();
-
-    default_client->client = jack_client_open(g_strdup("ags-default-client\0"),
-					      0,
-					      NULL);
-
-    if(default_client->client == NULL){
+    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
       g_warning("ags_jack_server.c - can't open JACK client");
       
       return;
     }
 
-    AGS_JACK_SERVER(distributed_manager)->client = g_list_prepend(AGS_JACK_SERVER(distributed_manager)->client,
-								  default_client);
+    jack_server->client = g_list_prepend(jack_server->client,
+					 default_client);
+    g_object_ref(default_client);
   }
+
+  default_client = jack_server->default_client;
 
   /* register soundcard */
   str = g_strdup_printf("ags-soundcard-%04d\0",
-			AGS_JACK_SERVER(distributed_manager)->n_soundcards);
+			jack_server->n_soundcards);
   g_message("%s\0", str);
   
-  soundcard = ags_jack_port_new();
-  soundcard->port = jack_port_register(default_client->client,
-				       str,
-				       JACK_DEFAULT_AUDIO_TYPE,
-				       JackPortIsOutput,
-				       AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
-  soundcard->device = ags_jack_devout_new(AGS_JACK_SERVER(distributed_manager)->application_context);
+  soundcard = ags_jack_port_new(default_client);
+  ags_jack_port_register(soundcard,
+			 str,
+			 TRUE, FALSE,
+			 TRUE);
+  soundcard->device = ags_jack_devout_new(jack_server->application_context);
   AGS_JACK_DEVOUT(soundcard->device)->out_port = soundcard->port;
 
-  AGS_JACK_SERVER(distributed_manager)->n_soundcards += 1;
+  jack_server->n_soundcards += 1;
   
   return(soundcard->device);
 }
@@ -451,6 +451,7 @@ GObject*
 ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 				   gboolean is_output)
 {
+  AgsJackServer *jack_server;
   AgsJackClient *default_client;
   AgsJackPort *sequencer;
   gchar *str;
@@ -460,42 +461,41 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
     return(NULL);
   }
   
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+  
   /* the default client */
-  default_client = AGS_JACK_SERVER(distributed_manager)->default_client;
+  if(jack_server->default_client == NULL){
+    jack_server->default_client = ags_jack_client_new(jack_server);
+    ags_jack_client_open(jack_server->default_client,
+			 g_strdup("ags-default-client\0"));
 
-  if(default_client == NULL){
-    AGS_JACK_SERVER(distributed_manager)->default_client = 
-      default_client = ags_jack_client_new();
-
-    default_client->client = jack_client_open(g_strdup("ags-default-client\0"),
-					      0,
-					      NULL);
-
-    if(default_client->client == NULL){
+    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
       g_warning("ags_jack_server.c - can't open JACK client");
       
       return;
     }
-    
-    AGS_JACK_SERVER(distributed_manager)->client = g_list_prepend(AGS_JACK_SERVER(distributed_manager)->client,
-								  default_client);
+
+    jack_server->client = g_list_prepend(jack_server->client,
+					 default_client);
+    g_object_ref(default_client);
   }
+
+  default_client = jack_server->default_client;
   
   /* register sequencer */
   str = g_strdup_printf("ags-sequencer-%04d\0",
-			AGS_JACK_SERVER(distributed_manager)->n_soundcards);
+			jack_server->n_soundcards);
   g_message("%s\0", str);
 
-  sequencer = ags_jack_port_new();
-  sequencer->port = jack_port_register(default_client->client,
-				       str,
-				       JACK_DEFAULT_MIDI_TYPE,
-				       JackPortIsOutput,
-				       AGS_SEQUENCER_DEFAULT_BUFFER_SIZE);
-  sequencer->device = ags_jack_midiin_new(AGS_JACK_SERVER(distributed_manager)->application_context);
+  sequencer = ags_jack_port_new(default_client);
+  ags_jack_port_register(sequencer,
+			 str,
+			 FALSE, TRUE,
+			 FALSE);
+  sequencer->device = ags_jack_midiin_new(jack_server->application_context);
   AGS_JACK_MIDIIN(sequencer->device)->in_port = sequencer->port;
 
-  AGS_JACK_SERVER(distributed_manager)->n_sequencers += 1;
+  jack_server->n_sequencers += 1;
   
   return(sequencer->device);
 }
@@ -525,30 +525,35 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   AgsJackClient *default_client;
   AgsJackPort *default_soundcard;
 
+  gchar *str;
+
   default_client = jack_server->default_client;
 
   if(default_client == NULL){
     jack_server->default_client = 
-      default_client = ags_jack_client_new();
+      default_client = ags_jack_client_new(jack_server);
 
-    default_client->client = jack_client_open("ags-default-client\0",
-					      0,
-					      NULL);
+    ags_jack_client_open(jack_server->default_client,
+			 g_strdup("ags-default-client\0"));
     
     jack_server->client = g_list_prepend(jack_server->client,
 					 default_client);
   }
 
+  str = g_strdup_printf("ags-soundcard-%04d\0",
+			jack_server->n_soundcards);
+
   jack_server->default_soundcard = 
-    default_soundcard = ags_jack_port_new();
-  default_soundcard->port = jack_port_register(default_client,
-					       "ags-default-soundcard\0",
-					       JACK_DEFAULT_AUDIO_TYPE,
-					       JackPortIsOutput,
-					       AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
-  default_soundcard->device = ags_jack_devout_new(NULL);
+    default_soundcard = ags_jack_port_new(default_client);
+  ags_jack_port_register(default_soundcard,
+			 str,
+			 TRUE, FALSE,
+			 TRUE);
+  default_soundcard->device = ags_jack_devout_new(jack_server->application_context);
   AGS_JACK_DEVOUT(default_soundcard->device)->out_port = default_soundcard->port;
 
+  jack_server->n_soundcards += 1;
+  
   return(default_soundcard->device);
 }
 

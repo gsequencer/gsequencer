@@ -23,8 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <gtk/gtk.h>
-
 #define AGS_FILE_DEFAULT_VERSION "0.4.2\0"
 #define AGS_FILE_EFFECTS_DEFAULT_VERSION "0.4.2\0"
 #define AGS_CLIPBOARD_DEFAULT_VERSION "0.4.2\0"

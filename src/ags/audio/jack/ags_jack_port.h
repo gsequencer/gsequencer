@@ -44,6 +44,8 @@ struct _AgsJackPort
   GObject object;
 
   guint flags;
+
+  GObject *jack_client;
   
   gchar *uuid;
   gchar *name;
@@ -61,7 +63,12 @@ struct _AgsJackPortClass
 
 GType ags_jack_port_get_type();
 
-AgsJackPort* ags_jack_port_new();
+void ags_jack_port_register(AgsJackPort *jack_port,
+			    gchar *name,
+			    gboolean is_audio, gboolean is_midi,
+			    gboolean is_output);
+
+AgsJackPort* ags_jack_port_new(GObject *jack_client);
 
 #endif /*__AGS_JACK_PORT_H__*/
 

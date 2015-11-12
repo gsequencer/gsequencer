@@ -26,6 +26,8 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
@@ -47,6 +49,7 @@ void ags_jack_client_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_JACK_SERVER,
 };
 
 static gpointer ags_jack_client_parent_class = NULL;
@@ -105,6 +108,21 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
   gobject->finalize = ags_jack_client_finalize;
 
   /* properties */
+  /**
+   * AgsJackClient:jack-server:
+   *
+   * The assigned #AgsJackServer.
+   * 
+   * Since: 0.7.1
+   */
+  param_spec = g_param_spec_object("jack-server\0",
+				   "assigned JACK server\0",
+				   "The assigned JACK server.\0",
+				   AGS_TYPE_JACK_SERVER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_JACK_SERVER,
+				  param_spec);
 }
 
 void
@@ -119,6 +137,8 @@ ags_jack_client_init(AgsJackClient *jack_client)
 {
   jack_client->flags = 0;
 
+  jack_client->jack_server = NULL;
+  
   jack_client->uuid = NULL;
 
   jack_client->client = NULL;
@@ -137,6 +157,27 @@ ags_jack_client_set_property(GObject *gobject,
   jack_client = AGS_JACK_CLIENT(gobject);
 
   switch(prop_id){
+  case PROP_JACK_SERVER:
+    {
+      AgsJackServer *jack_server;
+
+      jack_server = (AgsJackServer *) g_value_get_object(value);
+
+      if(jack_server == jack_client->jack_server){
+	return;
+      }
+
+      if(jack_client->jack_server != NULL){
+	g_object_unref(jack_client->jack_server);
+      }
+
+      if(jack_server != NULL){
+	g_object_ref(jack_server);
+      }
+      
+      jack_client->jack_server = jack_server;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -154,6 +195,11 @@ ags_jack_client_get_property(GObject *gobject,
   jack_client = AGS_JACK_CLIENT(gobject);
   
   switch(prop_id){
+  case PROP_JACK_SERVER:
+    {
+      g_value_set_object(value, jack_client->jack_server);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -182,8 +228,23 @@ ags_jack_client_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }
 
+void
+ags_jack_client_open(AgsJackClient *jack_client,
+		     gchar *client_name)
+{
+  if(jack_client == NULL ||
+     client_name == NULL){
+    return;
+  }
+  
+  jack_client->client = jack_client_open(client_name,
+					 0,
+					 NULL);
+}
+
 /**
  * ags_jack_client_new:
+ * @jack_server: the assigned #AgsJackServer
  *
  * Instantiate a new #AgsJackClient.
  *
@@ -192,12 +253,12 @@ ags_jack_client_finalize(GObject *gobject)
  * Since: 0.7.1
  */
 AgsJackClient*
-ags_jack_client_new(GObject *application_context,
-		    gchar *url)
+ags_jack_client_new(GObject *jack_server)
 {
   AgsJackClient *jack_client;
 
   jack_client = (AgsJackClient *) g_object_new(AGS_TYPE_JACK_CLIENT,
+					       "jack-server\0", jack_server,
 					       NULL);
 
   return(jack_client);

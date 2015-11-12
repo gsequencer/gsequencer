@@ -398,6 +398,7 @@ ags_thread_init(AgsThread *thread)
   g_atomic_pointer_set(&(thread->prev),
 		       NULL);
 
+  thread->main_loop = NULL;
   thread->data = NULL;
 }
 

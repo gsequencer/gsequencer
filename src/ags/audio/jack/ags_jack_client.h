@@ -45,6 +45,8 @@ struct _AgsJackClient
 
   guint flags;
 
+  GObject *jack_server;
+  
   gchar *uuid;
   
   jack_client_t *client;
@@ -59,7 +61,10 @@ struct _AgsJackClientClass
 
 GType ags_jack_client_get_type();
 
-AgsJackClient* ags_jack_client_new();
+void ags_jack_client_open(AgsJackClient *jack_client,
+			  gchar *client_name);
+
+AgsJackClient* ags_jack_client_new(GObject *jack_server);
 
 #endif /*__AGS_JACK_CLIENT_H__*/
 
