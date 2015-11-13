@@ -8,7 +8,7 @@
   <bookinfo>
     <title>Advanced Gtk+ Sequencer Reference Manual</title>
     <releaseinfo>
-      for Advanced Gtk+ Sequencer 0.7.0.
+      for Advanced Gtk+ Sequencer 0.7.1.
       The latest version of this documentation can be found on-line at
       <ulink role="online-location" url="http://gsequencer.org/api/ags/index.html">http://gsequencer.org/api/ags/</ulink>.
     </releaseinfo>
@@ -312,6 +312,8 @@
     <xi:include href="xml/ags_audio_preferences_callbacks.xml"/>
     <xi:include href="xml/ags_automation_editor.xml"/>
     <xi:include href="xml/ags_automation_editor_callbacks.xml"/>
+    <xi:include href="xml/ags_bulk_member.xml"/>
+    <xi:include href="xml/ags_bulk_member_callbacks.xml"/>
     <xi:include href="xml/ags_editor.xml"/>
     <xi:include href="xml/ags_editor_callbacks.xml"/>
     <xi:include href="xml/ags_effect_bridge.xml"/>
@@ -442,9 +444,12 @@
       <xi:include href="xml/ags_drum_output_line_callbacks.xml"/>
       <xi:include href="xml/ags_drum_output_pad.xml"/>
       <xi:include href="xml/ags_drum_output_pad_callbacks.xml"/>
+      <xi:include href="xml/ags_pattern_box.xml"/>
+      <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
       <xi:include href="xml/ags_matrix.xml"/>
       <xi:include href="xml/ags_matrix_callbacks.xml"/>
       <xi:include href="xml/ags_cell_pattern.xml"/>
+      <xi:include href="xml/ags_cell_pattern_callbacks.xml"/>
       <xi:include href="xml/ags_synth.xml"/>
       <xi:include href="xml/ags_synth_callbacks.xml"/>
       <xi:include href="xml/ags_synth_input_line.xml"/>
