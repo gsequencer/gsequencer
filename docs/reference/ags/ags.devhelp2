@@ -252,6 +252,8 @@
       <sub name="ags_audio_preferences_callbacks" link="ags-ags-audio-preferences-callbacks.html"/>
       <sub name="AgsAutomationEditor" link="AgsAutomationEditor.html"/>
       <sub name="ags_automation_editor_callbacks" link="ags-ags-automation-editor-callbacks.html"/>
+      <sub name="AgsBulkMember" link="AgsBulkMember.html"/>
+      <sub name="ags_bulk_member_callbacks" link="ags-ags-bulk-member-callbacks.html"/>
       <sub name="AgsEditor" link="AgsEditor.html"/>
       <sub name="ags_editor_callbacks" link="ags-ags-editor-callbacks.html"/>
       <sub name="AgsEffectBridge" link="AgsEffectBridge.html"/>
@@ -369,9 +371,12 @@
         <sub name="ags_drum_output_line_callbacks" link="ags-ags-drum-output-line-callbacks.html"/>
         <sub name="AgsDrumOutputPad" link="AgsDrumOutputPad.html"/>
         <sub name="ags_drum_output_pad_callbacks" link="ags-ags-drum-output-pad-callbacks.html"/>
+        <sub name="AgsPatternBox" link="AgsPatternBox.html"/>
+        <sub name="ags_pattern_box_callbacks" link="ags-ags-pattern-box-callbacks.html"/>
         <sub name="AgsMatrix" link="AgsMatrix.html"/>
         <sub name="ags_matrix_callbacks" link="ags-ags-matrix-callbacks.html"/>
         <sub name="AgsCellPattern" link="AgsCellPattern.html"/>
+        <sub name="ags_cell_pattern_callbacks" link="ags-ags-cell-pattern-callbacks.html"/>
         <sub name="AgsSynth" link="AgsSynth.html"/>
         <sub name="ags_synth_callbacks" link="ags-ags-synth-callbacks.html"/>
         <sub name="AgsSynthInputLine" link="AgsSynthInputLine.html"/>
@@ -1984,6 +1989,32 @@
     <keyword type="function" name="ags_automation_editor_machine_changed_callback ()" link="ags-ags-automation-editor-callbacks.html#ags-automation-editor-machine-changed-callback"/>
     <keyword type="function" name="ags_automation_editor_change_position_callback ()" link="ags-ags-automation-editor-callbacks.html#ags-automation-editor-change-position-callback"/>
     <keyword type="function" name="ags_automation_editor_edit_vscrollbar_value_changed_callback ()" link="ags-ags-automation-editor-callbacks.html#ags-automation-editor-edit-vscrollbar-value-changed-callback"/>
+    <keyword type="macro" name="AGS_BULK_PORT()" link="AgsBulkMember.html#AGS-BULK-PORT:CAPS"/>
+    <keyword type="function" name="ags_bulk_port_alloc ()" link="AgsBulkMember.html#ags-bulk-port-alloc"/>
+    <keyword type="function" name="ags_bulk_member_get_widget ()" link="AgsBulkMember.html#ags-bulk-member-get-widget"/>
+    <keyword type="function" name="ags_bulk_member_set_label ()" link="AgsBulkMember.html#ags-bulk-member-set-label"/>
+    <keyword type="function" name="ags_bulk_member_change_port ()" link="AgsBulkMember.html#ags-bulk-member-change-port"/>
+    <keyword type="function" name="ags_bulk_member_find_port ()" link="AgsBulkMember.html#ags-bulk-member-find-port" since="0.4.3"/>
+    <keyword type="function" name="ags_bulk_member_new ()" link="AgsBulkMember.html#ags-bulk-member-new" since="0.4.3"/>
+    <keyword type="enum" name="enum AgsBulkMemberFlags" link="AgsBulkMember.html#AgsBulkMemberFlags"/>
+    <keyword type="struct" name="struct AgsBulkPort" link="AgsBulkMember.html#AgsBulkPort"/>
+    <keyword type="property" name="The “control-port” property" link="AgsBulkMember.html#AgsBulkMember--control-port"/>
+    <keyword type="property" name="The “effect” property" link="AgsBulkMember.html#AgsBulkMember--effect"/>
+    <keyword type="property" name="The “filename” property" link="AgsBulkMember.html#AgsBulkMember--filename"/>
+    <keyword type="property" name="The “plugin-name” property" link="AgsBulkMember.html#AgsBulkMember--plugin-name"/>
+    <keyword type="property" name="The “specifier” property" link="AgsBulkMember.html#AgsBulkMember--specifier"/>
+    <keyword type="property" name="The “widget-label” property" link="AgsBulkMember.html#AgsBulkMember--widget-label"/>
+    <keyword type="property" name="The “widget-type” property" link="AgsBulkMember.html#AgsBulkMember--widget-type"/>
+    <keyword type="signal" name="The “change-port” signal" link="AgsBulkMember.html#AgsBulkMember-change-port"/>
+    <keyword type="function" name="ags_bulk_member_parent_set_callback ()" link="ags-ags-bulk-member-callbacks.html#ags-bulk-member-parent-set-callback"/>
+    <keyword type="function" name="ags_bulk_member_dial_changed_callback ()" link="ags-ags-bulk-member-callbacks.html#ags-bulk-member-dial-changed-callback"/>
+    <keyword type="function" name="ags_bulk_member_vscale_changed_callback ()" link="ags-ags-bulk-member-callbacks.html#ags-bulk-member-vscale-changed-callback"/>
+    <keyword type="function" name="ags_bulk_member_hscale_changed_callback ()" link="ags-ags-bulk-member-callbacks.html#ags-bulk-member-hscale-changed-callback"/>
+    <keyword type="function" name="ags_bulk_member_spin_button_changed_callback ()" link="ags-ags-bulk-member-callbacks.html#ags-bulk-member-spin-button-changed-callback"/>
+    <keyword type="function" name="ags_bulk_member_check_button_clicked_callback ()" link="ags-ags-bulk-member-callbacks.html#ags-bulk-member-check-button-clicked-callback"/>
+    <keyword type="function" name="ags_bulk_member_toggle_button_clicked_callback ()" link="ags-ags-bulk-member-callbacks.html#ags-bulk-member-toggle-button-clicked-callback"/>
+    <keyword type="function" name="ags_bulk_member_button_clicked_callback ()" link="ags-ags-bulk-member-callbacks.html#ags-bulk-member-button-clicked-callback"/>
+    <keyword type="function" name="ags_bulk_member_port_safe_write_callback ()" link="ags-ags-bulk-member-callbacks.html#ags-bulk-member-port-safe-write-callback"/>
     <keyword type="macro" name="AGS_EDITOR_CHILD()" link="AgsEditor.html#AGS-EDITOR-CHILD:CAPS"/>
     <keyword type="function" name="ags_editor_child_alloc ()" link="AgsEditor.html#ags-editor-child-alloc"/>
     <keyword type="function" name="ags_editor_machine_changed ()" link="AgsEditor.html#ags-editor-machine-changed" since="0.4"/>
@@ -2602,6 +2633,23 @@
     <keyword type="enum" name="enum AgsDrumOutputPadFlags" link="AgsDrumOutputPad.html#AgsDrumOutputPadFlags"/>
     <keyword type="function" name="ags_drum_output_pad_play_done ()" link="ags-ags-drum-output-pad-callbacks.html#ags-drum-output-pad-play-done"/>
     <keyword type="function" name="ags_drum_output_pad_play_cancel ()" link="ags-ags-drum-output-pad-callbacks.html#ags-drum-output-pad-play-cancel"/>
+    <keyword type="macro" name="AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH" link="AgsPatternBox.html#AGS-PATTERN-BOX-DEFAULT-PAD-WIDTH:CAPS"/>
+    <keyword type="macro" name="AGS_PATTERN_BOX_DEFAULT_PAD_HEIGHT" link="AgsPatternBox.html#AGS-PATTERN-BOX-DEFAULT-PAD-HEIGHT:CAPS"/>
+    <keyword type="macro" name="AGS_PATTERN_BOX_LED_DEFAULT_WIDTH" link="AgsPatternBox.html#AGS-PATTERN-BOX-LED-DEFAULT-WIDTH:CAPS"/>
+    <keyword type="macro" name="AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT" link="AgsPatternBox.html#AGS-PATTERN-BOX-LED-DEFAULT-HEIGHT:CAPS"/>
+    <keyword type="macro" name="AGS_PATTERN_BOX_N_CONTROLS" link="AgsPatternBox.html#AGS-PATTERN-BOX-N-CONTROLS:CAPS"/>
+    <keyword type="macro" name="AGS_PATTERN_BOX_N_INDICES" link="AgsPatternBox.html#AGS-PATTERN-BOX-N-INDICES:CAPS"/>
+    <keyword type="function" name="ags_pattern_box_set_pattern ()" link="AgsPatternBox.html#ags-pattern-box-set-pattern" since="0.5.0"/>
+    <keyword type="function" name="ags_pattern_box_new ()" link="AgsPatternBox.html#ags-pattern-box-new" since="0.5"/>
+    <keyword type="enum" name="enum AgsPatternBoxFlags" link="AgsPatternBox.html#AgsPatternBoxFlags"/>
+    <keyword type="enum" name="enum AgsPatternBoxKeyMask" link="AgsPatternBox.html#AgsPatternBoxKeyMask"/>
+    <keyword type="enum" name="enum AgsPatternBoxAction" link="AgsPatternBox.html#AgsPatternBoxAction"/>
+    <keyword type="function" name="ags_pattern_box_focus_in_callback ()" link="ags-ags-pattern-box-callbacks.html#ags-pattern-box-focus-in-callback"/>
+    <keyword type="function" name="ags_pattern_box_focus_out_callback ()" link="ags-ags-pattern-box-callbacks.html#ags-pattern-box-focus-out-callback"/>
+    <keyword type="function" name="ags_pattern_box_key_press_event ()" link="ags-ags-pattern-box-callbacks.html#ags-pattern-box-key-press-event"/>
+    <keyword type="function" name="ags_pattern_box_key_release_event ()" link="ags-ags-pattern-box-callbacks.html#ags-pattern-box-key-release-event"/>
+    <keyword type="function" name="ags_pattern_box_pad_callback ()" link="ags-ags-pattern-box-callbacks.html#ags-pattern-box-pad-callback"/>
+    <keyword type="function" name="ags_pattern_box_offset_callback ()" link="ags-ags-pattern-box-callbacks.html#ags-pattern-box-offset-callback"/>
     <keyword type="function" name="ags_matrix_input_map_recall ()" link="AgsMatrix.html#ags-matrix-input-map-recall"/>
     <keyword type="function" name="ags_matrix_output_map_recall ()" link="AgsMatrix.html#ags-matrix-output-map-recall"/>
     <keyword type="function" name="ags_matrix_new ()" link="AgsMatrix.html#ags-matrix-new" since="0.3"/>
@@ -2634,6 +2682,13 @@
     <keyword type="enum" name="enum AgsCellPatternFlags" link="AgsCellPattern.html#AgsCellPatternFlags"/>
     <keyword type="enum" name="enum AgsCellPatternKeyMask" link="AgsCellPattern.html#AgsCellPatternKeyMask"/>
     <keyword type="enum" name="enum AgsCellPatternAction" link="AgsCellPattern.html#AgsCellPatternAction"/>
+    <keyword type="function" name="ags_cell_pattern_focus_in_callback ()" link="ags-ags-cell-pattern-callbacks.html#ags-cell-pattern-focus-in-callback"/>
+    <keyword type="function" name="ags_cell_pattern_drawing_area_configure_callback ()" link="ags-ags-cell-pattern-callbacks.html#ags-cell-pattern-drawing-area-configure-callback"/>
+    <keyword type="function" name="ags_cell_pattern_drawing_area_expose_callback ()" link="ags-ags-cell-pattern-callbacks.html#ags-cell-pattern-drawing-area-expose-callback"/>
+    <keyword type="function" name="ags_cell_pattern_drawing_area_button_press_callback ()" link="ags-ags-cell-pattern-callbacks.html#ags-cell-pattern-drawing-area-button-press-callback"/>
+    <keyword type="function" name="ags_cell_pattern_drawing_area_key_press_event ()" link="ags-ags-cell-pattern-callbacks.html#ags-cell-pattern-drawing-area-key-press-event"/>
+    <keyword type="function" name="ags_cell_pattern_drawing_area_key_release_event ()" link="ags-ags-cell-pattern-callbacks.html#ags-cell-pattern-drawing-area-key-release-event"/>
+    <keyword type="function" name="ags_cell_pattern_adjustment_value_changed_callback ()" link="ags-ags-cell-pattern-callbacks.html#ags-cell-pattern-adjustment-value-changed-callback"/>
     <keyword type="function" name="ags_synth_new ()" link="AgsSynth.html#ags-synth-new" since="0.3"/>
     <keyword type="enum" name="enum AgsSynthFlags" link="AgsSynth.html#AgsSynthFlags"/>
     <keyword type="function" name="ags_synth_parent_set_callback ()" link="ags-ags-synth-callbacks.html#ags-synth-parent-set-callback"/>
@@ -3047,6 +3102,10 @@
     <keyword type="constant" name="AGS_APPLY_SYNTH_SAW" link="AgsApplySynth.html#AGS-APPLY-SYNTH-SAW:CAPS"/>
     <keyword type="constant" name="AGS_APPLY_SYNTH_SQUARE" link="AgsApplySynth.html#AGS-APPLY-SYNTH-SQUARE:CAPS"/>
     <keyword type="constant" name="AGS_APPLY_SYNTH_TRIANGLE" link="AgsApplySynth.html#AGS-APPLY-SYNTH-TRIANGLE:CAPS"/>
+    <keyword type="constant" name="AGS_BULK_MEMBER_DEFAULT_TEMPLATE" link="AgsBulkMember.html#AGS-BULK-MEMBER-DEFAULT-TEMPLATE:CAPS"/>
+    <keyword type="constant" name="AGS_BULK_MEMBER_RESET_BY_ATOMIC" link="AgsBulkMember.html#AGS-BULK-MEMBER-RESET-BY-ATOMIC:CAPS"/>
+    <keyword type="constant" name="AGS_BULK_MEMBER_RESET_BY_TASK" link="AgsBulkMember.html#AGS-BULK-MEMBER-RESET-BY-TASK:CAPS"/>
+    <keyword type="constant" name="AGS_BULK_MEMBER_APPLY_RECALL" link="AgsBulkMember.html#AGS-BULK-MEMBER-APPLY-RECALL:CAPS"/>
     <keyword type="constant" name="AGS_EFFECT_BRIDGE_CONNECTED" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-CONNECTED:CAPS"/>
     <keyword type="constant" name="AGS_EFFECT_BRIDGE_DISPLAY_INPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-DISPLAY-INPUT:CAPS"/>
     <keyword type="constant" name="AGS_EFFECT_BRIDGE_BULK_OUTPUT" link="AgsEffectBridge.html#AGS-EFFECT-BRIDGE-BULK-OUTPUT:CAPS"/>
@@ -3151,6 +3210,16 @@
     <keyword type="constant" name="AGS_NOTE_EDIT_KEY_R_SHIFT" link="AgsNoteEdit.html#AGS-NOTE-EDIT-KEY-R-SHIFT:CAPS"/>
     <keyword type="constant" name="AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE" link="AgsDrumInputPad.html#AGS-DRUM-INPUT-PAD-OPEN-PLAY-DONE:CAPS"/>
     <keyword type="constant" name="AGS_DRUM_OUTPUT_PAD_PLAY_DONE" link="AgsDrumOutputPad.html#AGS-DRUM-OUTPUT-PAD-PLAY-DONE:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_BLOCK_PATTERN" link="AgsPatternBox.html#AGS-PATTERN-BOX-BLOCK-PATTERN:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_CONNECTED" link="AgsPatternBox.html#AGS-PATTERN-BOX-CONNECTED:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_KEY_L_CONTROL" link="AgsPatternBox.html#AGS-PATTERN-BOX-KEY-L-CONTROL:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_KEY_R_CONTROL" link="AgsPatternBox.html#AGS-PATTERN-BOX-KEY-R-CONTROL:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_MOVE_LEFT" link="AgsPatternBox.html#AGS-PATTERN-BOX-MOVE-LEFT:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_MOVE_RIGHT" link="AgsPatternBox.html#AGS-PATTERN-BOX-MOVE-RIGHT:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_INDEX_DECREMENT" link="AgsPatternBox.html#AGS-PATTERN-BOX-INDEX-DECREMENT:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_INDEX_INCREMENT" link="AgsPatternBox.html#AGS-PATTERN-BOX-INDEX-INCREMENT:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_TOGGLE_PAD" link="AgsPatternBox.html#AGS-PATTERN-BOX-TOGGLE-PAD:CAPS"/>
+    <keyword type="constant" name="AGS_PATTERN_BOX_COPY_PATTERN" link="AgsPatternBox.html#AGS-PATTERN-BOX-COPY-PATTERN:CAPS"/>
     <keyword type="constant" name="AGS_CELL_PATTERN_CONNECTED" link="AgsCellPattern.html#AGS-CELL-PATTERN-CONNECTED:CAPS"/>
     <keyword type="constant" name="AGS_CELL_PATTERN_CURSOR_ON" link="AgsCellPattern.html#AGS-CELL-PATTERN-CURSOR-ON:CAPS"/>
     <keyword type="constant" name="AGS_CELL_PATTERN_KEY_L_CONTROL" link="AgsCellPattern.html#AGS-CELL-PATTERN-KEY-L-CONTROL:CAPS"/>

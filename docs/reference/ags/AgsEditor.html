@@ -6,7 +6,7 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
 <link rel="home" href="index.html" title="Advanced Gtk+ Sequencer Reference Manual">
 <link rel="up" href="pt09.html" title="Part IX. Graphical user interface">
-<link rel="prev" href="ags-ags-automation-editor-callbacks.html" title="ags_automation_editor_callbacks">
+<link rel="prev" href="ags-ags-bulk-member-callbacks.html" title="ags_bulk_member_callbacks">
 <link rel="next" href="ags-ags-editor-callbacks.html" title="ags_editor_callbacks">
 <meta name="generator" content="GTK-Doc V1.24 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
@@ -22,7 +22,7 @@
 </td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
 <td><a accesskey="u" href="pt09.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
-<td><a accesskey="p" href="ags-ags-automation-editor-callbacks.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="p" href="ags-ags-bulk-member-callbacks.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
 <td><a accesskey="n" href="ags-ags-editor-callbacks.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="refentry">
@@ -219,7 +219,7 @@ ags_editor_machine_changed (<em class="parameter"><code><a class="link" href="Ag
                             <em class="parameter"><code><a class="link" href="AgsMachine.html" title="AgsMachine"><span class="type">AgsMachine</span></a> *machine</code></em>);</pre>
 <p>Is emitted as machine changed of editor.</p>
 <div class="refsect3">
-<a name="id-1.10.6.10.4.5"></a><h4>Parameters</h4>
+<a name="id-1.10.8.10.4.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -250,7 +250,7 @@ ags_editor_select_all (<em class="parameter"><code><a class="link" href="AgsEdit
 <p>Invert all notation of <em class="parameter"><code>editor</code></em>
 's selected machine.</p>
 <div class="refsect3">
-<a name="id-1.10.6.10.5.5"></a><h4>Parameters</h4>
+<a name="id-1.10.8.10.5.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -273,7 +273,7 @@ ags_editor_select_all (<em class="parameter"><code><a class="link" href="AgsEdit
 ags_editor_paste (<em class="parameter"><code><a class="link" href="AgsEditor.html" title="AgsEditor"><span class="type">AgsEditor</span></a> *editor</code></em>);</pre>
 <p>Is emitted as machine changed of editor.</p>
 <div class="refsect3">
-<a name="id-1.10.6.10.6.5"></a><h4>Parameters</h4>
+<a name="id-1.10.8.10.6.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -296,7 +296,7 @@ ags_editor_paste (<em class="parameter"><code><a class="link" href="AgsEditor.ht
 ags_editor_copy (<em class="parameter"><code><a class="link" href="AgsEditor.html" title="AgsEditor"><span class="type">AgsEditor</span></a> *editor</code></em>);</pre>
 <p>Is emitted as machine changed of editor.</p>
 <div class="refsect3">
-<a name="id-1.10.6.10.7.5"></a><h4>Parameters</h4>
+<a name="id-1.10.8.10.7.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -319,7 +319,7 @@ ags_editor_copy (<em class="parameter"><code><a class="link" href="AgsEditor.htm
 ags_editor_cut (<em class="parameter"><code><a class="link" href="AgsEditor.html" title="AgsEditor"><span class="type">AgsEditor</span></a> *editor</code></em>);</pre>
 <p>Is emitted as machine changed of editor.</p>
 <div class="refsect3">
-<a name="id-1.10.6.10.8.5"></a><h4>Parameters</h4>
+<a name="id-1.10.8.10.8.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
@@ -348,7 +348,7 @@ ags_editor_invert (<em class="parameter"><code><a class="link" href="AgsEditor.h
 ags_editor_new ();</pre>
 <p>Creates an <a class="link" href="AgsEditor.html" title="AgsEditor"><span class="type">AgsEditor</span></a></p>
 <div class="refsect3">
-<a name="id-1.10.6.10.10.5"></a><h4>Returns</h4>
+<a name="id-1.10.8.10.10.5"></a><h4>Returns</h4>
 <p> a new <a class="link" href="AgsEditor.html" title="AgsEditor"><span class="type">AgsEditor</span></a></p>
 </div>
 <p class="since">Since: <GTKDOCLINK HREF="api-index-0.3">0.3</GTKDOCLINK></p>
@@ -406,7 +406,7 @@ user_function (<a class="link" href="AgsEditor.html" title="AgsEditor"><span cla
                <GTKDOCLINK HREF="gpointer"><span class="type">gpointer</span></GTKDOCLINK>   user_data)</pre>
 <p>The ::machine-changed signal notifies about changed machine.</p>
 <div class="refsect3">
-<a name="id-1.10.6.13.2.5"></a><h4>Parameters</h4>
+<a name="id-1.10.8.13.2.5"></a><h4>Parameters</h4>
 <div class="informaltable"><table width="100%" border="0">
 <colgroup>
 <col width="150px" class="parameters_name">
