@@ -1100,7 +1100,7 @@ libgsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_matrix_bridge_callbacks.h \
 	src/ags/X/machine/ags_matrix_bridge.h \
 	src/ags/X/machine/ags_matrix_bulk_input_callbacks.h \
-	src/ags/X/machine/ags_matrix_bulk_input_bridge.h \
+	src/ags/X/machine/ags_matrix_bulk_input.h \
 	src/ags/X/machine/ags_mixer_callbacks.h \
 	src/ags/X/machine/ags_mixer.h \
 	src/ags/X/machine/ags_mixer_input_line.h \
@@ -1172,10 +1172,6 @@ libgsequencer_machine_c_sources = \
 	src/ags/X/machine/ags_pattern_box.c \
 	src/ags/X/machine/ags_synth.c \
 	src/ags/X/machine/ags_synth_callbacks.c \
-	src/ags/X/machine/ags_synth_input_line.c \
-	src/ags/X/machine/ags_synth_input_line_callbacks.c \
-	src/ags/X/machine/ags_synth_input_pad.c \
-	src/ags/X/machine/ags_synth_input_pad_callbacks.c \
 	src/ags/X/machine/ags_synth_input_line.c \
 	src/ags/X/machine/ags_synth_input_pad.c
 

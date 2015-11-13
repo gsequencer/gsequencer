@@ -73,6 +73,11 @@ struct _AgsNoteClass
 
 GType ags_note_get_type();
 
+GList* ags_note_find_prev(GList *note,
+			  guint x0, guint y);
+GList* ags_note_find_next(GList *note,
+			  guint x0, guint y);
+
 char* ags_note_to_raw_midi(AgsNote *note,
 			   guint *buffer_length);
 snd_seq_event_t* ags_note_to_seq_event(AgsNote *note,
