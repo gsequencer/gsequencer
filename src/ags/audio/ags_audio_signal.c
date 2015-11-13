@@ -68,6 +68,20 @@ enum{
   PROP_SOUNDCARD,
   PROP_RECYCLING,
   PROP_RECALL_ID,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_FORMAT,
+  PROP_WORD_SIZE,
+  PROP_LENGTH,
+  PROP_FIRST_FRAME,
+  PROP_LAST_FRAME,
+  PROP_LOOP_START,
+  PROP_LOOP_END,
+  PROP_DELAY,
+  PROP_ATTACK,
+  PROP_STREAM,
+  PROP_STREAM_END,
+  PROP_STREAM_CURRENT,
 };
 
 enum{
@@ -181,6 +195,251 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  PROP_RECALL_ID,
 				  param_spec);
 
+  /**
+   * AgsAudioSignal:samplerate:
+   *
+   * The samplerate to be used.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("samplerate\0",
+				 "using samplerate\0",
+				 "The samplerate to be used\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:buffer-size:
+   *
+   * The buffer size to be used.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("buffer-size\0",
+				 "using buffer size\0",
+				 "The buffer size to be used\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:format:
+   *
+   * The format to be used.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("format\0",
+				 "using format\0",
+				 "The format to be used\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:word-size:
+   *
+   * The word size of frame.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("word-size\0",
+				 "frame word size\0",
+				 "The word size of a frame\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WORD_SIZE,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:length:
+   *
+   * The length of the stream.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("length\0",
+				 "stream length\0",
+				 "The length of the stream\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LENGTH,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:first-frame:
+   *
+   * The first frame of stream.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("first-frame\0",
+				 "stream's first frame\0",
+				 "The first frame of the stream\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FIRST_FRAME,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:last-frame:
+   *
+   * The last frame of stream.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("last-frame\0",
+				 "stream's last frame\0",
+				 "The last frame of the stream\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LAST_FRAME,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:loop-start:
+   *
+   * The loop start of stream.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("loop-start\0",
+				 "stream's loop start\0",
+				 "The loop start of the stream\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOOP_START,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:loop-end:
+   *
+   * The loop end of stream.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("loop-end\0",
+				 "stream's loop end\0",
+				 "The loop end of the stream\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOOP_END,
+				  param_spec);
+
+
+  /**
+   * AgsAudioSignal:delay:
+   *
+   * The delay to be used.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_double("delay\0",
+				   "using delay\0",
+				   "The delay to be used\0",
+				   0.0,
+				   65535.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:attack:
+   *
+   * The attack to be used.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("attack\0",
+				 "using attack\0",
+				 "The attack to be used\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
+
+
+  /**
+   * AgsAudioSignal:stream:
+   *
+   * The stream it contains.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_pointer("stream\0",
+				    "containing stream\0",
+				    "The stream it contains\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STREAM,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:stream-end:
+   *
+   * The end of stream.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_pointer("stream-end\0",
+				    "end of stream\0",
+				    "The stream's end\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STREAM_END,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:stream-current:
+   *
+   * The current stream.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_pointer("stream-current\0",
+				    "current stream\0",
+				    "The current stream\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STREAM_CURRENT,
+				  param_spec);
+  
   /* AgsAudioSignalClass */
   audio_signal->realloc_buffer_size = ags_audio_signal_real_realloc_buffer_size;
   audio_signal->morph_samplerate = ags_audio_signal_real_morph_samplerate;
@@ -353,6 +612,125 @@ ags_audio_signal_set_property(GObject *gobject,
       audio_signal->recall_id = recall_id;
     }
     break;
+  case PROP_SAMPLERATE:
+    {
+      guint samplerate;
+
+      samplerate = g_value_get_uint(value);
+
+      audio_signal->samplerate = samplerate;
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size;
+
+      buffer_size = g_value_get_uint(value);
+
+      audio_signal->buffer_size = buffer_size;
+    }
+  case PROP_FORMAT:
+    {
+      guint format;
+
+      format = g_value_get_uint(value);
+
+      audio_signal->format = format;
+    }
+    break;
+  case PROP_WORD_SIZE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+  case PROP_LENGTH:
+    {
+      guint length;
+
+      length = g_value_get_uint(value);
+
+      audio_signal->length = length;
+    }
+    break;
+  case PROP_FIRST_FRAME:
+    {
+      guint first_frame;
+
+      first_frame = g_value_get_uint(value);
+
+      audio_signal->first_frame = first_frame;
+    }
+    break;
+  case PROP_LAST_FRAME:
+    {
+      guint last_frame;
+
+      last_frame = g_value_get_uint(value);
+
+      audio_signal->last_frame = last_frame;
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      guint loop_start;
+
+      loop_start = g_value_get_uint(value);
+
+      audio_signal->loop_start = loop_start;
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      guint loop_end;
+
+      loop_end = g_value_get_uint(value);
+
+      audio_signal->loop_end = loop_end;
+    }
+    break;
+  case PROP_DELAY:
+    {
+      gdouble delay;
+
+      delay = g_value_get_double(value);
+
+      audio_signal->delay = delay;
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      guint attack;
+
+      attack = g_value_get_uint(value);
+
+      audio_signal->attack = attack;
+    }
+    break;
+  case PROP_STREAM:
+    {
+      gpointer data;
+
+      data = g_value_get_pointer(value);
+
+      if(data == NULL ||
+	 g_list_find(audio_signal->stream_beginning,
+		     data) != NULL){
+      }
+
+      audio_signal = g_list_append(audio_signal->stream_beginning,
+				   data);
+      audio_signal->stream_end = g_list_last(audio_signal->stream_beginning);
+    }
+    break;
+  case PROP_STREAM_CURRENT:
+    {
+      GList *current;
+
+      current = g_value_get_pointer(value);
+
+      audio_signal->stream_current = current;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -378,6 +756,75 @@ ags_audio_signal_get_property(GObject *gobject,
     break;
   case PROP_RECALL_ID:
     g_value_set_object(value, audio_signal->recall_id);
+    break;
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value, audio_signal->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, audio_signal->buffer_size);
+    }
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, audio_signal->format);
+    }
+    break;
+  case PROP_WORD_SIZE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+  case PROP_LENGTH:
+    {
+      g_value_set_uint(value, audio_signal->length);
+    }
+    break;
+  case PROP_FIRST_FRAME:
+    {
+      g_value_set_uint(value, audio_signal->first_frame);
+    }
+    break;
+  case PROP_LAST_FRAME:
+    {
+      g_value_set_uint(value, audio_signal->last_frame);
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      g_value_set_uint(value, audio_signal->loop_start);
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      g_value_set_uint(value, audio_signal->loop_end);
+    }
+    break;
+  case PROP_DELAY:
+    {
+      g_value_set_double(value, audio_signal->delay);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      g_value_set_uint(value, audio_signal->attack);
+    }
+    break;
+  case PROP_STREAM:
+    {
+      g_value_set_pointer(value, g_list_copy(audio_signal->stream_beginning));
+    }
+    break;
+  case PROP_STREAM_END:
+    {
+      g_value_set_pointer(value, audio_signal->stream_end);
+    }
+    break;
+  case PROP_STREAM_CURRENT:
+    {
+      g_value_set_pointer(value, audio_signal->stream_current);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

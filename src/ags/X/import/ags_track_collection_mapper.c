@@ -19,6 +19,8 @@
 #include <ags/X/import/ags_track_collection_mapper.h>
 #include <ags/X/import/ags_track_collection_mapper_callbacks.h>
 
+#include <ags/lib/ags_complex.h>
+
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
@@ -41,6 +43,8 @@
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 #include <ags/X/import/ags_track_collection.h>
+
+#include <ags/X/editor/ags_note_edit.h>
 
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
@@ -595,8 +599,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    note->x[0] = x;
 	    note->x[1] = x + 1;
 	    note->y = y;
-	    note->velocity[0] = velocity;
-	    note->velocity[1] = 0.0;
+	    ags_complex_set(note->attack,
+			    velocity);
 
 	    ags_notation_add_note(notation->data,
 				  note,
@@ -630,7 +634,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    
 	    note->x[1] = x;
 	    note->y = y;
-	    note->velocity[1] = velocity;
+	    ags_complex_set(note->release,
+			    velocity);
 	    
 	    notation = notation->next;
 	  }

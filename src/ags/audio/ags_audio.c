@@ -32,10 +32,13 @@
 #include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_registry.h>
 
+#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
+#include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
@@ -107,6 +110,21 @@ enum{
   PROP_SOUNDCARD,
   PROP_SEQUENCER,
   PROP_MIDI_FILE,
+  PROP_AUDIO_CHANNELS,
+  PROP_INPUT_PADS,
+  PROP_INPUT_LINES,
+  PROP_OUTPUT_PADS,
+  PROP_OUTPUT_LINES,
+  PROP_OUTPUT,
+  PROP_INPUT,
+  PROP_PLAYBACK_DOMAIN,
+  PROP_NOTATION,
+  PROP_AUTOMATION,
+  PROP_RECALL_ID,
+  PROP_RECYCLING_CONTEXT,
+  PROP_RECALL_CONTAINER,
+  PROP_PLAY,
+  PROP_RECALL,
 };
 
 static gpointer ags_audio_parent_class = NULL;
@@ -213,6 +231,259 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  PROP_MIDI_FILE,
 				  param_spec);
 
+  /**
+   * AgsAudio:audio-channels:
+   *
+   * The audio channels count.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("audio-channels\0",
+				  "audio channels count\0",
+				  "The count of audio channels of audio\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNELS,
+				  param_spec);
+
+
+  /**
+   * AgsAudio:input-pads:
+   *
+   * The input pads count.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("input-pads\0",
+				  "input pads count\0",
+				  "The count of input pads of audio\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT_PADS,
+				  param_spec);
+
+  /**
+   * AgsAudio:input-lines:
+   *
+   * The input lines count.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("input-lines\0",
+				  "input lines count\0",
+				  "The count of input lines of audio\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT_LINES,
+				  param_spec);
+
+  /**
+   * AgsAudio:output-pads:
+   *
+   * The output pads count.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("output-pads\0",
+				  "output pads count\0",
+				  "The count of output pads of audio\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OUTPUT_PADS,
+				  param_spec);
+
+  /**
+   * AgsAudio:output-lines:
+   *
+   * The output lines count.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("output-lines\0",
+				  "output lines count\0",
+				  "The count of output lines of audio\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OUTPUT_LINES,
+				  param_spec);
+
+
+  /**
+   * AgsAudio:output:
+   *
+   * The #AgsOutput it contains.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("output\0",
+				   "containing output\0",
+				   "The output it contains\0",
+				   AGS_TYPE_OUTPUT,
+				   G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OUTPUT,
+				  param_spec);
+
+  /**
+   * AgsAudio:input:
+   *
+   * The #AgsInput it contains.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("input\0",
+				   "containing input\0",
+				   "The input it contains\0",
+				   AGS_TYPE_INPUT,
+				   G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT,
+				  param_spec);
+
+  /**
+   * AgsAudio:playback-domain:
+   *
+   * The assigned #AgsPlaybackDomain.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("playback-domain\0",
+				   "assigned playback domain\0",
+				   "The assigned playback domain\0",
+				   AGS_TYPE_PLAYBACK_DOMAIN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAYBACK_DOMAIN,
+				  param_spec);
+
+  /**
+   * AgsAudio:notation:
+   *
+   * The #AgsNotation it contains.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("notation\0",
+				   "containing notation\0",
+				   "The notation it contains\0",
+				   AGS_TYPE_NOTATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTATION,
+				  param_spec);
+
+  /**
+   * AgsAudio:automation:
+   *
+   * The #AgsAutomation it contains.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("automation\0",
+				   "containing automation\0",
+				   "The automation it contains\0",
+				   AGS_TYPE_AUTOMATION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUTOMATION,
+				  param_spec);
+
+  /**
+   * AgsAudio:recall-id:
+   *
+   * The assigned #AgsRecallID.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("recall-id\0",
+				   "assigned recall id\0",
+				   "The assigned recall id\0",
+				   AGS_TYPE_RECALL_ID,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OUTPUT,
+				  param_spec);
+
+  /**
+   * AgsAudio:recycling-context:
+   *
+   * The assigned #AgsRecyclingContext.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("recycling-context\0",
+				   "assigned recycling context\0",
+				   "The assigned recall id\0",
+				   AGS_TYPE_RECYCLING_CONTEXT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OUTPUT,
+				  param_spec);
+
+  /**
+   * AgsAudio:recall-container:
+   *
+   * The #AgsRecallContainer it contains in container-context.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("recall-container\0",
+				   "containing recall container\0",
+				   "The recall container it contains\0",
+				   AGS_TYPE_RECALL_CONTAINER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CONTAINER,
+				  param_spec);
+
+  /**
+   * AgsAudio:play:
+   *
+   * The #AgsRecall it contains in play-context.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("play\0",
+				   "containing play\0",
+				   "The play it contains\0",
+				   AGS_TYPE_RECALL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY,
+				  param_spec);
+
+  /**
+   * AgsAudio:recall:
+   *
+   * The #AgsRecall it contains in recall-context.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_object("recall\0",
+				   "containing recall\0",
+				   "The recall it contains\0",
+				   AGS_TYPE_RECALL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL,
+				  param_spec);
+
+  
   /* AgsAudioClass */
   audio->set_audio_channels = ags_audio_real_set_audio_channels;
   audio->set_pads = ags_audio_real_set_pads;
@@ -506,6 +777,164 @@ ags_audio_set_property(GObject *gobject,
 
       audio->midi_file = midi_file;
     }
+  case PROP_AUDIO_CHANNELS:
+    {
+      guint audio_channels;
+
+      audio_channels = g_value_get_uint(value);
+
+      ags_audio_set_audio_channels(audio,
+				   audio_channels);
+    }
+    break;
+  case PROP_INPUT_PADS:
+    {
+      guint input_pads;
+
+      input_pads = g_value_get_uint(value);
+
+      ags_audio_set_pads(audio, AGS_TYPE_INPUT,
+			 input_pads);
+    }
+    break;
+  case PROP_OUTPUT_PADS:
+    {
+      guint output_pads;
+
+      output_pads = g_value_get_uint(value);
+
+      ags_audio_set_pads(audio, AGS_TYPE_OUTPUT,
+			 output_pads);
+    }
+    break;
+  case PROP_PLAYBACK_DOMAIN:
+    {
+      AgsPlaybackDomain *playback_domain;
+
+      playback_domain = (AgsPlaybackDomain *) g_value_get_object(value);
+
+      if(audio->playback_domain == playback_domain){
+	return;
+      }
+
+      if(audio->playback_domain != NULL){
+	g_object_unref(audio->playback_domain);
+      }
+
+      if(playback_domain != NULL){
+	g_object_ref(playback_domain);
+      }
+
+      audio->playback_domain = playback_domain;
+    }
+    break;
+  case PROP_NOTATION:
+    {
+      AgsNotation *notation;
+
+      notation = (AgsNotation *) g_value_get_object(value);
+
+      if(notation == NULL ||
+	 g_list_find(audio->notation, notation) != NULL){
+	return;
+      }
+
+      ags_audio_add_notation(audio,
+			     notation);
+    }
+    break;
+  case PROP_AUTOMATION:
+    {
+      AgsAutomation *automation;
+
+      automation = (AgsAutomation *) g_value_get_object(value);
+
+      if(automation == NULL ||
+	 g_list_find(audio->automation, automation) != NULL){
+	return;
+      }
+
+      ags_audio_add_automation(audio,
+			       automation);
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      AgsRecallID *recall_id;
+
+      recall_id = (AgsRecallID *) g_value_get_object(value);
+
+      if(recall_id == NULL ||
+	 g_list_find(audio->recall_id, recall_id) != NULL){
+	return;
+      }
+
+      ags_audio_add_recall_id(audio,
+			      recall_id);
+    }
+    break;
+  case PROP_RECYCLING_CONTEXT:
+    {
+      AgsRecyclingContext *recycling_context;
+
+      recycling_context = (AgsRecyclingContext *) g_value_get_object(value);
+
+      if(recycling_context == NULL ||
+	 g_list_find(audio->recycling_context, recycling_context) != NULL){
+	return;
+      }
+
+      ags_audio_add_recycling_context(audio,
+				      recycling_context);
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      AgsRecallContainer *recall_container;
+
+      recall_container = (AgsRecallContainer *) g_value_get_object(value);
+
+      if(recall_container == NULL ||
+	 g_list_find(audio->container, recall_container) != NULL){
+	return;
+      }
+
+      ags_audio_add_recall_container(audio,
+				     recall_container);
+    }
+    break;
+  case PROP_PLAY:
+    {
+      AgsRecall *recall;
+
+      recall = (AgsRecall *) g_value_get_object(value);
+
+      if(recall == NULL ||
+	 g_list_find(audio->play, recall) != NULL){
+	return;
+      }
+
+      ags_audio_add_recall(audio,
+			   recall,
+			   TRUE);
+    }
+    break;
+  case PROP_RECALL:
+    {
+      AgsRecall *recall;
+
+      recall = (AgsRecall *) g_value_get_object(value);
+
+      if(recall == NULL ||
+	 g_list_find(audio->recall, recall) != NULL){
+	return;
+      }
+
+      ags_audio_add_recall(audio,
+			   recall,
+			   FALSE);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -531,6 +960,81 @@ ags_audio_get_property(GObject *gobject,
     break;
   case PROP_MIDI_FILE:
     g_value_set_object(value, audio->midi_file);
+    break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      g_value_set_uint(value, audio->audio_channels);
+    }
+    break;
+  case PROP_INPUT_PADS:
+    {
+      g_value_set_uint(value, audio->input_pads);
+    }
+    break;
+  case PROP_INPUT_LINES:
+    {
+      g_value_set_uint(value, audio->input_lines);
+    }
+    break;
+  case PROP_OUTPUT_PADS:
+    {
+      g_value_set_uint(value, audio->output_pads);
+    }
+    break;
+  case PROP_OUTPUT_LINES:
+    {
+      g_value_set_uint(value, audio->output_lines);
+    }
+    break;
+  case PROP_INPUT:
+    {
+      g_value_set_object(value, audio->input);
+    }
+    break;
+  case PROP_OUTPUT:
+    {
+      g_value_set_object(value, audio->output);
+    }
+    break;
+  case PROP_PLAYBACK_DOMAIN:
+    {
+      g_value_set_object(value, audio->playback_domain);
+    }
+    break;
+  case PROP_NOTATION:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->notation));
+    }
+    break;
+  case PROP_AUTOMATION:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->automation));
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->recall_id));
+    }
+    break;
+  case PROP_RECYCLING_CONTEXT:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->recycling_context));
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->container));
+    }
+    break;
+  case PROP_PLAY:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->play));
+    }
+    break;
+  case PROP_RECALL:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->recall));
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -1408,7 +1912,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       list = list->next;
 
     ags_audio_set_audio_channels_grow_notation0:
-      list->data = (gpointer) ags_notation_new(i);
+      list->data = (gpointer) ags_notation_new(audio,
+					       i);
     } 
   }
   
@@ -1826,7 +2331,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
       list = list->next;
     ags_audio_set_pads_alloc_notation0:
 
-      list->data = (gpointer) ags_notation_new(i);
+      list->data = (gpointer) ags_notation_new(audio,
+					       i);
     }
   }
 

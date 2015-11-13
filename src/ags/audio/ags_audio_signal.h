@@ -58,8 +58,10 @@ struct _AgsAudioSignal
   guint samplerate;
   guint buffer_size;
   guint format;
-
+  guint word_size;
+  
   guint length;
+  guint first_frame;
   guint last_frame; // the last frame at stream_end
   guint loop_start;
   guint loop_end;
