@@ -1,0 +1,13 @@
+#ifndef __AGS_TRACK_COLLECTION_CALLBACKS_H__
+#define __AGS_TRACK_COLLECTION_CALLBACKS_H__
+
+#include <glib.h>
+#include <glib-object.h>
+#include <gtk/gtk.h>
+
+#include <ags/X/ags_track_collection.h>
+
+void ags_track_collection_enable_callback(GtkToggleButton *toggle,
+					  AgsTrackCollection *track_collection);
+
+#endif /*__AGS_TRACK_COLLECTION_CALLBACKS_H__*/

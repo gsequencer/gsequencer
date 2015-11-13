@@ -1,0 +1,181 @@
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2005-2011 Joël Krähemann
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_machine_editor_callbacks.h>
+
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_applicable.h>
+
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_link_collection_editor.h>
+
+void ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor);
+void ags_machine_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_machine_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+void ags_machine_editor_init(AgsMachineEditor *machine_editor);
+void ags_machine_editor_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+void ags_machine_editor_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
+void ags_machine_editor_connect(AgsConnectable *connectable);
+void ags_machine_editor_disconnect(AgsConnectable *connectable);
+void ags_machine_editor_set_update(AgsApplicable *applicable, gboolean update);
+void ags_machine_editor_apply(AgsApplicable *applicable);
+void ags_machine_editor_reset(AgsApplicable *applicable);
+void ags_machine_editor_destroy(GtkObject *object);
+void ags_machine_editor_show(GtkWidget *widget);
+
+void ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor,
+					 AgsMachine *machine);
+
+/**
+ * SECTION:ags_machine_editor
+ * @short_description: pack pad editors.
+ * @title: AgsMachineEditor
+ * @section_id:
+ * @include: ags/X/ags_machine_editor.h
+ *
+ * #AgsMachineEditor is a composite widget to edit all aspects of #AgsAudio.
+ * It consists of multiple child editors.
+ */
+
+enum{
+  SET_MACHINE,
+  LAST_SIGNAL,
+};
+
+enum{
+  PROP_0,
+  PROP_MACHINE,
+};
+
+static guint machine_editor_signals[LAST_SIGNAL];
+
+GType
+ags_machine_editor_get_type(void)
+{
+  static GType ags_type_machine_editor = 0;
+
+  if(!ags_type_machine_editor){
+    static const GTypeInfo ags_machine_editor_info = {
+      sizeof (AgsMachineEditorClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_machine_editor_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsMachineEditor),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_machine_editor_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_machine_editor_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_applicable_interface_info = {
+      (GInterfaceInitFunc) ags_machine_editor_applicable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    ags_type_machine_editor = g_type_register_static(GTK_TYPE_DIALOG,
+						     "AgsMachineEditor\0", &ags_machine_editor_info,
+						     0);
+
+    g_type_add_interface_static(ags_type_machine_editor,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_machine_editor,
+				AGS_TYPE_APPLICABLE,
+				&ags_applicable_interface_info);
+  }
+  
+  return(ags_type_machine_editor);
+}
+
+void
+ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
+{
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) machine_editor;
+}
+
+void
+ags_machine_editor_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_machine_editor_connect;
+  connectable->disconnect = ags_machine_editor_disconnect;
+}
+
+void
+ags_machine_editor_init(AgsMachineEditor *machine_editor)
+{
+}
+
+void
+ags_machine_editor_connect(AgsConnectable *connectable)
+{
+  AgsMachineEditor *machine_editor;
+
+  machine_editor = AGS_MACHINE_EDITOR(connectable);
+}
+
+void
+ags_machine_editor_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+/**
+ * ags_machine_editor_new:
+ * @machine: the assigned machine.
+ *
+ * Creates an #AgsMachineEditor
+ *
+ * Returns: a new #AgsMachineEditor
+ *
+ * Since: 0.4.3
+ */
+AgsMachineEditor*
+ags_machine_editor_new(AgsMachine *machine)
+{
+  AgsMachineEditor *machine_editor;
+
+  machine_editor = (AgsMachineEditor *) g_object_new(AGS_TYPE_MACHINE_EDITOR,
+						     "machine\0", machine,
+						     NULL);
+
+  return(machine_editor);
+}
