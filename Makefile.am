@@ -85,8 +85,8 @@ libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sour
 libags_audio_la_HEADERS = $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS = $(libags_gui_h_sources)
-libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
-libgsequencer_la_HEADERS = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
+libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
+libgsequencer_la_HEADERS = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders) $(libags_la_HEADERS) $(libags_thread_la_HEADERS) $(libags_server_la_HEADERS) $(libags_audio_la_HEADERS) $(libags_gui_la_HEADERS) $(libgsequencer_la_HEADERS)
 
 # testing
@@ -1041,6 +1041,29 @@ libgsequencer_task_c_sources = \
 	src/ags/X/task/ags_toggle_led.c \
 	src/ags/X/task/ags_update_bulk_member.c
 
+# libgsequencer - import
+deprecated_libgsequencer_import_h_sources =
+
+libgsequencer_import_h_sources = \
+	$(deprecated_libgsequencer_import_h_sources) \
+	src/ags/X/import/ags_midi_import_wizard.h \
+	src/ags/X/import/ags_midi_import_wizard_callbacks.h \
+	src/ags/X/import/ags_track_collection.h \
+	src/ags/X/import/ags_track_collection_callbacks.h \
+	src/ags/X/import/ags_track_collection_mapper.h \
+	src/ags/X/import/ags_track_collection_mapper_callbacks.h
+
+deprecated_libgsequencer_import_c_sources =
+
+libgsequencer_import_c_sources = \
+	$(deprecated_libgsequencer_import_c_sources) \
+	src/ags/X/import/ags_midi_import_wizard.c \
+	src/ags/X/import/ags_midi_import_wizard_callbacks.c \
+	src/ags/X/import/ags_track_collection.c \
+	src/ags/X/import/ags_track_collection_callbacks.c \
+	src/ags/X/import/ags_track_collection_mapper.c \
+	src/ags/X/import/ags_track_collection_mapper_callbacks.c
+
 # libgsequencer - machine
 deprecated_libgsequencer_machine_h_sources =
 
@@ -1074,6 +1097,10 @@ libgsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_lv2_bridge.h \
 	src/ags/X/machine/ags_matrix_callbacks.h \
 	src/ags/X/machine/ags_matrix.h \
+	src/ags/X/machine/ags_matrix_bridge_callbacks.h \
+	src/ags/X/machine/ags_matrix_bridge.h \
+	src/ags/X/machine/ags_matrix_bulk_input_callbacks.h \
+	src/ags/X/machine/ags_matrix_bulk_input_bridge.h \
 	src/ags/X/machine/ags_mixer_callbacks.h \
 	src/ags/X/machine/ags_mixer.h \
 	src/ags/X/machine/ags_mixer_input_line.h \
@@ -1088,6 +1115,10 @@ libgsequencer_machine_h_sources = \
 	src/ags/X/machine/ags_pattern_box.h \
 	src/ags/X/machine/ags_synth_callbacks.h \
 	src/ags/X/machine/ags_synth.h \
+	src/ags/X/machine/ags_synth_output_line_callbacks.h \
+	src/ags/X/machine/ags_synth_output_line.h \
+	src/ags/X/machine/ags_synth_output_pad.h \
+	src/ags/X/machine/ags_synth_output_pad_callbacks.h \
 	src/ags/X/machine/ags_synth_input_line.h \
 	src/ags/X/machine/ags_synth_input_pad.h
 
@@ -1123,6 +1154,10 @@ libgsequencer_machine_c_sources = \
 	src/ags/X/machine/ags_lv2_bridge_callbacks.c \
 	src/ags/X/machine/ags_matrix.c \
 	src/ags/X/machine/ags_matrix_callbacks.c \
+	src/ags/X/machine/ags_matrix_bridge.c \
+	src/ags/X/machine/ags_matrix_bridge_callbacks.c \
+	src/ags/X/machine/ags_matrix_bulk_input.c \
+	src/ags/X/machine/ags_matrix_bulk_input_callbacks.c \
 	src/ags/X/machine/ags_mixer.c \
 	src/ags/X/machine/ags_mixer_callbacks.c \
 	src/ags/X/machine/ags_mixer_input_line.c \
@@ -1137,6 +1172,10 @@ libgsequencer_machine_c_sources = \
 	src/ags/X/machine/ags_pattern_box.c \
 	src/ags/X/machine/ags_synth.c \
 	src/ags/X/machine/ags_synth_callbacks.c \
+	src/ags/X/machine/ags_synth_input_line.c \
+	src/ags/X/machine/ags_synth_input_line_callbacks.c \
+	src/ags/X/machine/ags_synth_input_pad.c \
+	src/ags/X/machine/ags_synth_input_pad_callbacks.c \
 	src/ags/X/machine/ags_synth_input_line.c \
 	src/ags/X/machine/ags_synth_input_pad.c
 

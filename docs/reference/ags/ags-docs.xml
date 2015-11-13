@@ -398,6 +398,17 @@
       <xi:include href="xml/ags_toggle_pattern_bit.xml"/>
     </chapter>
 
+    <chapter id="import">
+      <title>Import - Wizards to import foreign data</title>
+      
+      <xi:include href="xml/ags_import_wizard.xml"/>
+      <xi:include href="xml/ags_import_wizard_callbacks.xml"/>
+      <xi:include href="xml/ags_track_collection.xml"/>
+      <xi:include href="xml/ags_track_collection_callbacks.xml"/>
+      <xi:include href="xml/ags_track_collection_mapper.xml"/>
+      <xi:include href="xml/ags_track_collection_mapper_callbacks.xml"/>
+    </chapter>
+    
     <chapter id="editor">
       <title>Editor - Piano roll and its controls</title>
       
@@ -448,10 +459,20 @@
       <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
       <xi:include href="xml/ags_matrix.xml"/>
       <xi:include href="xml/ags_matrix_callbacks.xml"/>
+      <xi:include href="xml/ags_matrix_bridge.xml"/>
+      <xi:include href="xml/ags_matrix_bridge_callbacks.xml"/>
+      <xi:include href="xml/ags_matrix_bulk_input.xml"/>
+      <xi:include href="xml/ags_matrix_bulk_input_callbacks.xml"/>
       <xi:include href="xml/ags_cell_pattern.xml"/>
       <xi:include href="xml/ags_cell_pattern_callbacks.xml"/>
       <xi:include href="xml/ags_synth.xml"/>
       <xi:include href="xml/ags_synth_callbacks.xml"/>
+      <xi:include href="xml/ags_synth_bridge.xml"/>
+      <xi:include href="xml/ags_synth_bridge_callbacks.xml"/>
+      <xi:include href="xml/ags_synth_output_line.xml"/>
+      <xi:include href="xml/ags_synth_output_line_callbacks.xml"/>
+      <xi:include href="xml/ags_synth_output_pad.xml"/>
+      <xi:include href="xml/ags_synth_output_pad_callbacks.xml"/>
       <xi:include href="xml/ags_synth_input_line.xml"/>
       <xi:include href="xml/ags_synth_input_pad.xml"/>
       <xi:include href="xml/ags_oscillator.xml"/>
@@ -459,14 +480,14 @@
       <xi:include href="xml/ags_ffplayer.xml"/>
       <xi:include href="xml/ags_ffplayer_callbacks.xml"/>
       <xi:include href="xml/ags_ffplayer_bridge.xml"/>
-<!--      <xi:include href="xml/ags_ffplayer_bridge_callbacks.xml"/> -->
+      <xi:include href="xml/ags_ffplayer_bridge_callbacks.xml"/>
       <xi:include href="xml/ags_ffplayer_bulk_input.xml"/>
       <xi:include href="xml/ags_ffplayer_input_line.xml"/>
       <xi:include href="xml/ags_ffplayer_input_line_callbacks.xml"/>
       <xi:include href="xml/ags_ffplayer_input_pad.xml"/>
-<!--      <xi:include href="xml/ags_ffplayer_input_pad_callbacks.xml"/> -->
+      <xi:include href="xml/ags_ffplayer_input_pad_callbacks.xml"/>
       <xi:include href="xml/ags_ladspa_bridge.xml"/>
-<!--      <xi:include href="xml/ags_ladspa_bridge_callbacks.xml"/> -->
+      <xi:include href="xml/ags_ladspa_bridge_callbacks.xml"/>
       <xi:include href="xml/ags_lv2_bridge.xml"/>
     </chapter>
   </part>
