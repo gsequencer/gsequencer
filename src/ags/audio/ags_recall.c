@@ -19,14 +19,14 @@
 
 #include <ags/audio/ags_recall.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
@@ -35,10 +35,15 @@
 #include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_server.h>
 
+#include <ags/server/ags_server.h>
+#include <ags/server/ags_service_provider.h>
+#include <ags/server/ags_registry.h>
+
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
 
 #include <ags/audio/ags_audio.h>
@@ -52,6 +57,8 @@
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
@@ -354,7 +361,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   g_object_class_install_property(gobject,
 				  PROP_PORT,
 				  param_spec);
-
+  
   /* AgsRecallClass */
   recall->resolve_dependencies = NULL;
 
@@ -701,17 +708,20 @@ ags_recall_set_property(GObject *gobject,
       GObject *soundcard;
       GList *current;
       
-      soundcard = (GObject *) g_value_get_object(value);
+      soundcard = g_value_get_object(value);
 
-      if(soundcard == ((GObject *) recall->soundcard))
+      if(soundcard == recall->soundcard){
 	return;
+      }
 
-      if(recall->soundcard != NULL)
+      if(recall->soundcard != NULL){
 	g_object_unref(recall->soundcard);
-
-      if(soundcard != NULL)
+      }
+      
+      if(soundcard != NULL){
 	g_object_ref(G_OBJECT(soundcard));
-
+      }
+      
       recall->soundcard = (GObject *) soundcard;
 
       current = recall->children;
@@ -886,18 +896,16 @@ void
 ags_recall_add_to_registry(AgsConnectable *connectable)
 {
   AgsApplicationContext *application_context;
+  AgsServer *server;
   AgsRecall *recall;
   
   recall = AGS_RECALL(connectable);
 
-  application_context = ags_soundcard_get_application_context(recall->soundcard);
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(recall->soundcard));
 
-  if(AGS_IS_SERVICE_PROVIDER(application_context)){
-    AgsServer *server;
-    AgsRegistryEntry *entry;
-    
-    server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
-  
+  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
+
+  if(server != NULL){
     entry = ags_registry_entry_alloc(server->registry);
     g_value_set_object(&(entry->entry),
 		       (gpointer) recall);
@@ -1071,6 +1079,10 @@ ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 
   recall = AGS_RECALL(dynamic_connectable);
 
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) == 0){
+    return;
+  }
+
   /* disconnect children */
   list = recall->children;
 
@@ -1090,6 +1102,8 @@ ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 
     list = list->next;
   }
+
+  recall->flags &= (~AGS_RECALL_DYNAMIC_CONNECTED);
 }
 
 gchar*
@@ -1155,7 +1169,7 @@ ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall,
@@ -1181,7 +1195,7 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-contex\0", file->application_context,
+				   "main\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", recall,
@@ -1639,13 +1653,13 @@ ags_recall_real_cancel(AgsRecall *recall)
   }
 
   /* call cancel for children */
-  //  list = recall->children;
+  list = recall->children;
 
-  //  while(list != NULL){
-  //    ags_recall_cancel(AGS_RECALL(list->data));
-
-  //    list = list->next;
-  //  }
+  while(list != NULL){
+    ags_recall_cancel(AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
      (AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) != 0){
@@ -1728,7 +1742,7 @@ ags_recall_remove(AgsRecall *recall)
 /**
  * ags_recall_is_done:
  * @recall: an #AgsRecall
- * @recycling_context: an #RecyclingContext
+ * @recycling_context: an #AgsRecyclingContext
  *
  * Check if recall is over.
  * 
@@ -1751,7 +1765,7 @@ ags_recall_is_done(GList *recalls, GObject *recycling_context)
        !AGS_IS_RECALL_AUDIO(recall) &&
        !AGS_IS_RECALL_CHANNEL(recall) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_context == recycling_context){
+       recall->recall_id->recycling_context == (GObject *) recycling_context){
       if((AGS_RECALL_DONE & (recall->flags)) == 0){
 	recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
 	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
@@ -2219,6 +2233,7 @@ ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar
   return(NULL);
 }
 
+
 /**
  * ags_recall_find_type:
  * @recall_i: a #GList containing recalls
@@ -2371,10 +2386,10 @@ ags_recall_template_find_all_type(GList *recall_i, ...)
  * ags_recall_find_type_with_recycling_context:
  * @recall_i: a #GList containing recalls
  * @type: a #GType
- * @recycling_context: an #RecyclingContext
+ * @recycling_context: an #AgsRecyclingContext
  * 
  * Finds next matching recall for type which has @recycling_context, see #AgsRecallId for further
- * details about #RecyclingContext. Intended to be used as iteration function.
+ * details about #AgsRecyclingContext. Intended to be used as iteration function.
  *
  * Returns: a #GList containing recalls, or %NULL if not found
  *
@@ -2390,7 +2405,7 @@ ags_recall_find_type_with_recycling_context(GList *recall_i, GType type, GObject
 
     if(g_type_is_a(G_OBJECT_TYPE(recall), type) &&
        recall->recall_id != NULL &&
-       recall->recall_id->recycling_context == recycling_context)
+       recall->recall_id->recycling_context == (GObject *) recycling_context)
       return(recall_i);
 
     recall_i = recall_i->next;
@@ -2402,10 +2417,10 @@ ags_recall_find_type_with_recycling_context(GList *recall_i, GType type, GObject
 /**
  * ags_recall_find_recycling_context:
  * @recall_i: a #GList containing recalls
- * @recycling_context: an #RecyclingContext
+ * @recycling_context: an #AgsRecyclingContext
  * 
  * Finds next matching recall which has @recycling_context, see #AgsRecallId for further
- * details about #RecyclingContext. Intended to be used as iteration function.
+ * details about #AgsRecyclingContext. Intended to be used as iteration function.
  *
  * Returns: a #GList containing recalls, or %NULL if not found
  *
@@ -2536,7 +2551,7 @@ ags_recall_template_find_provider(GList *recall, GObject *provider)
  * ags_recall_find_provider_with_recycling_context:
  * @recall_i: a #GList containing recalls
  * @provider: a #GObject
- * @recycling_context: an #RecyclingContext
+ * @recycling_context: an #AgsRecyclingContext
  * 
  * Like ags_recall_template_find_provider() but given additionally @recycling_context as search parameter.
  *
@@ -2553,7 +2568,7 @@ ags_recall_find_provider_with_recycling_context(GList *recall_i, GObject *provid
     recall = AGS_RECALL(recall_i->data);
     
     if(recall->recall_id != NULL &&
-       recall->recall_id->recycling_context == recycling_context){
+       recall->recall_id->recycling_context == (GObject *) recycling_context){
       return(recall_i);
     }
 

@@ -20,6 +20,7 @@
 #include <ags/audio/task/ags_add_audio.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_add_audio_class_init(AgsAddAudioClass *add_audio);
 void ags_add_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -152,7 +153,7 @@ ags_add_audio_launch(AgsTask *task)
   /* add audio */
   g_object_ref(G_OBJECT(add_audio->audio));
   
-  list = ags_soundcard_get_audio(add_audio->soundcard);
+  list = ags_soundcard_get_audio(AGS_SOUNDCARD(add_audio->soundcard));
   list = g_list_prepend(list,
 			add_audio->audio);
   ags_soundcard_set_audio(add_audio->soundcard,

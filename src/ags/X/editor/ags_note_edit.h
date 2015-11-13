@@ -57,6 +57,13 @@ typedef enum{
   AGS_NOTE_EDIT_RESET_HEIGHT       = 1 <<  3, // reserved
 }AgsNoteEditResetFlags;
 
+typedef enum{
+  AGS_NOTE_EDIT_KEY_L_CONTROL       = 1,
+  AGS_NOTE_EDIT_KEY_R_CONTROL       = 1 <<  1,
+  AGS_NOTE_EDIT_KEY_L_SHIFT         = 1 <<  2,
+  AGS_NOTE_EDIT_KEY_R_SHIFT         = 1 <<  3,
+}AgsNoteEditKeyMask;
+
 struct _AgsNoteEdit
 {
   GtkTable table;
@@ -121,7 +128,7 @@ struct _AgsNoteEdit
 
   guint selected_x;
   guint selected_y;
-  
+
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
 };

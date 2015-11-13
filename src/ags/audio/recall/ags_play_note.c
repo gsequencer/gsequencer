@@ -178,7 +178,7 @@ ags_play_note_map_play_audio_signal(AgsRecall *recall, AgsRecallID *recall_id, g
     }else{
       guint length;
       
-      length = ((double) (play_note->note->x[1] - play_note->note->x[0]) * ((double) play_note->soundcard->samplerate * 60.0 / play_notation_audio_run->bpm[0] / 16.0));
+      length = ((double) (play_note->note->x[1] - play_note->note->x[0]) * ((double) play_note->soundcard->frequence * 60.0 / play_notation_audio_run->bpm[0] / 16.0));
 
       while(recycling != channel->last_recycling->next){
 	audio_signal = ags_recycling_add_audio_signal_with_length(recycling, length);

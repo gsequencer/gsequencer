@@ -25,6 +25,8 @@
 
 #include <ags/thread/ags_task.h>
 
+#include <ags/object/ags_soundcard.h>
+
 #define AGS_TYPE_APPEND_CHANNEL                (ags_append_channel_get_type())
 #define AGS_APPEND_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPEND_CHANNEL, AgsAppendChannel))
 #define AGS_APPEND_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_APPEND_CHANNEL, AgsAppendChannelClass))

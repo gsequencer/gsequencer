@@ -49,7 +49,7 @@ enum{
   PROP_0,
   PROP_NODE,
   PROP_FILE,
-  PROP_MAIN,
+  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_file_launch_parent_class = NULL;
@@ -116,13 +116,13 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 				  PROP_FILE,
 				  param_spec);
 
-  param_spec = g_param_spec_object("main\0",
-				   "main access\0",
-				   "The main object to access the tree\0",
+  param_spec = g_param_spec_object("application-context\0",
+				   "application context access\0",
+				   "The application context to access the tree\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
   /* AgsFileLaunchClass */
@@ -141,7 +141,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 void
 ags_file_launch_init(AgsFileLaunch *file_launch)
 {
-  file_launch->ags_main = NULL;
+  file_launch->application_context = NULL;
   file_launch->node = NULL;
   file_launch->file = NULL;
 }
@@ -181,19 +181,19 @@ ags_file_launch_set_property(GObject *gobject,
       file_launch->file = file;
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
-      GObject *ags_main;
+      GObject *application_context;
 
-      ags_main = (GObject *) g_value_get_object(value);
+      application_context = (GObject *) g_value_get_object(value);
 
-      if(file_launch->ags_main != NULL)
-	g_object_unref(file_launch->ags_main);
+      if(file_launch->application_context != NULL)
+	g_object_unref(file_launch->application_context);
 
-      if(ags_main != NULL)
-	g_object_ref(ags_main);
+      if(application_context != NULL)
+	g_object_ref(application_context);
 
-      file_launch->ags_main = ags_main;
+      file_launch->application_context = application_context;
     }
     break;
   default:
@@ -223,9 +223,9 @@ ags_file_launch_get_property(GObject *gobject,
       g_value_set_object(value, file_launch->file);
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
-      g_value_set_object(value, file_launch->ags_main);
+      g_value_set_object(value, file_launch->application_context);
     }
     break;
   default:
@@ -256,8 +256,8 @@ ags_file_launch_finalize(GObject *gobject)
     g_object_unref(file_launch->file);
   }
 
-  if(file_launch->ags_main != NULL){
-    g_object_unref(file_launch->ags_main);
+  if(file_launch->application_context != NULL){
+    g_object_unref(file_launch->application_context);
   }
 
   G_OBJECT_CLASS(ags_file_launch_parent_class)->finalize(gobject);

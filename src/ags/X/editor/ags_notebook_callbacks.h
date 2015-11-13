@@ -25,4 +25,12 @@
 
 #include <ags/X/editor/ags_notebook.h>
 
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_editor.h>
+
+void ags_notebook_scroll_prev_callback(GtkWidget *button,
+				       AgsNotebook *notebook);
+void ags_notebook_scroll_next_callback(GtkWidget *button,
+				       AgsNotebook *notebook);
+
 #endif /*__AGS_NOTEBOOK_CALLBACKS_H__*/

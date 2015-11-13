@@ -19,10 +19,9 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>
@@ -244,7 +243,7 @@ ags_preferences_apply(AgsApplicable *applicable)
   preferences = AGS_PREFERENCES(applicable);
   window = preferences->parent;
 
-  application_context = window->application_context;
+  config = ags_config_get_instance();
 
   config = application_context->config;
   
@@ -264,7 +263,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 			     AGS_PREFERENCES_DEFAULT_FILENAME);
     
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "application-context\0", application_context,
+				  "main\0", AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context),
 				  "filename\0", filename,
 				  NULL);
   ags_file_write_concurrent(file);
@@ -276,7 +275,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 					     filename),
 			     &error);
 
-  ags_main_quit(application_context);
+  ags_application_context_quit(AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context));
 }
 
 void

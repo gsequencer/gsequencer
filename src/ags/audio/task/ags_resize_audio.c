@@ -25,8 +25,6 @@
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
-#include <ags/X/ags_machine.h>
-
 void ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio);
 void ags_resize_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_resize_audio_init(AgsResizeAudio *resize_audio);
@@ -152,7 +150,6 @@ ags_resize_audio_launch(AgsTask *task)
 {
   AgsResizeAudio *resize_audio;
   AgsChannel *iter;
-  GList *list;
   guint pads_old;
   
   resize_audio = AGS_RESIZE_AUDIO(task);
@@ -197,6 +194,9 @@ ags_resize_audio_launch(AgsTask *task)
   }
 
   if(resize_audio->audio->audio_channels != resize_audio->audio_channels){
+    guint audio_channels_old;
+
+    audio_channels_old = resize_audio->audio->audio_channels;
     ags_audio_set_audio_channels(resize_audio->audio,
 				 resize_audio->audio_channels);
   }

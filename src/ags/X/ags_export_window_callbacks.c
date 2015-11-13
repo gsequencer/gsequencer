@@ -19,20 +19,17 @@
 #include <ags/X/ags_export_window_callbacks.h>
 
 #include <ags/object/ags_application_context.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-#include <ags/thread/ags_task_thread.h>
-
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/audio/task/ags_export_output.h>
 
+#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
 
@@ -68,11 +65,12 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 {
   gdouble bpm;
 
-  bpm = AGS_NAVIGATION(AGS_WINDOW(export_window->parent)->navigation)->bpm->adjustment->value;
+  window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
 
   gtk_label_set_text(export_window->duration,
-		     ags_navigation_tact_to_time_string(gtk_spin_button_get_value(export_window->tact),
-							bpm));
+		     ags_navigation_absolute_tact_to_time_string(gtk_spin_button_get_value(export_window->tact) * 16.0,
+								 window->navigation->bpm->adjustment->value,
+								 ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard))));
 }
 
 void
@@ -81,21 +79,38 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 {
   AgsWindow *window;
   AgsMachine *machine;
-
-  AgsThread *main_loop;
+  
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
-  AgsSoundcard *soundcard;
   
   GList *machines_start;
   guint delay, attack;
   guint tic_counter_incr;
   gboolean success;
 
-  window = export_window->parent;
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
 
   application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+      
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task and soundcard thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
   
   main_loop = application_context->main_loop;
   task_thread = ags_thread_find_type(main_loop,
@@ -119,8 +134,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     gchar *filename;
     gboolean live_performance;
 
-    export_thread = ags_thread_find_type(main_loop,
-					 AGS_TYPE_EXPORT_THREAD);
+    export_thread = (AgsExportThread *) ags_thread_find_type(audio_loop,
+							     AGS_TYPE_EXPORT_THREAD);
 
     filename = gtk_entry_get_text(export_window->filename);
 
@@ -178,8 +193,21 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     /* create start task */
     if(success){
       guint tic;
+      gdouble delay;
+      
+      pthread_mutex_lock(application_mutex);
 
-      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * delay;
+      soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      (GObject *) window->soundcard);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      pthread_mutex_lock(soundcard_mutex);
+
+      /* create task */
+      delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
+
+      tic = (gtk_spin_button_get_value(export_window->tact) + 1) * delay * 16.0;
 
       export_output = ags_export_output_new(export_thread,
 					    window->soundcard,
@@ -189,9 +217,11 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       g_signal_connect(export_thread, "stop\0",
 		       G_CALLBACK(ags_export_window_stop_callback), export_window);
 
+      pthread_mutex_unlock(soundcard_mutex);
+
       /* append AgsStartSoundcard */
       ags_task_thread_append_task(task_thread,
-				  export_output);
+				  (AgsTask *) export_output);
 
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   FALSE);

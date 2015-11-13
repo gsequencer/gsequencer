@@ -21,12 +21,9 @@
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_volume_audio_signal.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/lib/ags_parameter.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_audio_signal.h>

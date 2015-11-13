@@ -23,9 +23,6 @@
 #include <ags/audio/recall/ags_stream_audio_signal.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/task/ags_unref_audio_signal.h>

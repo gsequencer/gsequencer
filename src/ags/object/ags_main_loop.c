@@ -59,6 +59,37 @@ ags_main_loop_base_init(AgsMainLoopInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_main_loop_get_tree_lock:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Retrieve the tree mutex.
+ *
+ * Returns: the mutex
+ *
+ * Since: 0.6
+ */
+pthread_mutex_t*
+ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
+{
+  AgsMainLoopInterface *main_loop_interface;
+
+  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), NULL);
+  main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
+  g_return_val_if_fail(main_loop_interface->get_tree_lock, NULL);
+
+  return(main_loop_interface->get_tree_lock(main_loop));
+}
+
+/**
+ * ags_main_loop_set_application_context:
+ * @main_loop: the #AgsMainLoop
+ * @application_context: the #AgsApplicationContext
+ *
+ * Sets the application context.
+ *
+ * Since: 0.6.0
+ */
 void
 ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context)
 {
@@ -70,6 +101,16 @@ ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationCont
   main_loop_interface->set_application_context(main_loop, application_context);
 }
 
+/**
+ * ags_main_loop_get_application_context:
+ * @main_loop: the #AgsMainLoop
+ *
+ * Retrieve the #AgsApplicationContext.
+ *
+ * Returns: the #AgsApplicationContext
+ *
+ * Since: 0.6.0
+ */
 AgsApplicationContext*
 ags_main_loop_get_application_context(AgsMainLoop *main_loop)
 {
@@ -81,6 +122,15 @@ ags_main_loop_get_application_context(AgsMainLoop *main_loop)
   return(main_loop_interface->get_application_context(main_loop));
 }
 
+/**
+ * ags_main_loop_set_async_queue:
+ * @main_loop: the #AgsMainLoop
+ * @async_queue: the #AgsAsyncQueue
+ *
+ * Sets the asynchronous queue.
+ *
+ * Since: 0.4
+ */
 void
 ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
 {
@@ -100,6 +150,7 @@ ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
   g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), NULL);
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
   g_return_val_if_fail(main_loop_interface->get_async_queue, NULL);
+
   return(main_loop_interface->get_async_queue(main_loop));
 }
 
@@ -137,6 +188,7 @@ ags_main_loop_get_tic(AgsMainLoop *main_loop)
   g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
   g_return_val_if_fail(main_loop_interface->get_tic, G_MAXUINT);
+
   return(main_loop_interface->get_tic(main_loop));
 }
 
@@ -174,5 +226,6 @@ ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
   g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), G_MAXUINT);
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
   g_return_val_if_fail(main_loop_interface->get_last_sync, G_MAXUINT);
+
   return(main_loop_interface->get_last_sync(main_loop));
 }

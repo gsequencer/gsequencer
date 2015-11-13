@@ -23,6 +23,7 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -237,7 +238,7 @@ ags_play_recycling_duplicate(AgsRecall *recall,
 /**
  * ags_play_recycling_new:
  * @source: the source #AgsRecycling
- * @soundcard: the #AgsSoundcard outputting to
+ * @soundcard: the #GObject outputting to
  * @audio_channel: the audio channel to use
  *
  * Creates an #AgsPlayRecycling

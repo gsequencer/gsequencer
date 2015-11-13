@@ -236,6 +236,74 @@ ags_server_get_property(GObject *gobject,
 }
 
 void
+ags_server_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsServer *server;
+
+  server = AGS_SERVER(gobject);
+
+  //TODO:JK: implement set functionality
+  
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = g_value_get_object(value);
+
+      if(server->application_context == application_context){
+	return;
+      }
+
+      if(server->application_context != NULL){
+	g_object_unref(G_OBJECT(server->application_context));
+      }
+
+      if(application_context != NULL){
+	AgsConfig *config;
+	
+	g_object_ref(G_OBJECT(application_context));
+
+	server->application_mutex = &(application_context->mutex);
+      }else{
+	server->application_mutex = NULL;
+      }
+
+      server->application_context = application_context;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_server_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsServer *server;
+
+  server = AGS_SERVER(gobject);
+  
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      g_value_set_object(value, server->application_context);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_server_add_to_registry(AgsConnectable *connectable)
 {
   AgsServer *server;

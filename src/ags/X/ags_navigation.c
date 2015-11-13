@@ -19,9 +19,17 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_navigation_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/object/ags_marshal.h>
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+
+#include <ags/audio/task/ags_seek_soundcard.h>
 
 #include <ags/X/ags_editor.h>
 
@@ -127,7 +135,7 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
   /**
    * AgsNavigation:soundcard:
    *
-   * The assigned #GObject to use as default sink.
+   * The assigned #AgsSoundcard to use as default sink.
    * 
    * Since: 0.4
    */
@@ -184,6 +192,9 @@ ags_navigation_init(AgsNavigation *navigation)
   g_signal_connect_after(G_OBJECT(navigation), "parent-set\0",
 			 G_CALLBACK(ags_navigation_parent_set_callback), NULL);
 
+  navigation->start_tact = 0.0;
+  navigation->note_offset = 0.0;
+  
   /* GtkWidget */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) navigation, (GtkWidget *) hbox, FALSE, FALSE, 2);
@@ -241,7 +252,7 @@ ags_navigation_init(AgsNavigation *navigation)
   label = (GtkLabel *) gtk_label_new("position\0");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
-  navigation->position_time = (GtkLabel *) gtk_label_new(g_strdup("00:00.00\0"));
+  navigation->position_time = (GtkLabel *) gtk_label_new(g_strdup("00:00.000\0"));
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_time, FALSE, FALSE, 2);
 
   navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
@@ -253,7 +264,7 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->duration_time = (GtkLabel *) gtk_label_new(NULL);
   g_object_set(navigation->duration_time,
-	       "label\0", g_strdup("0000:00.00\0"),
+	       "label\0", g_strdup("0000:00.000\0"),
 	       NULL);
   gtk_widget_queue_draw(navigation->duration_time);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
@@ -300,9 +311,9 @@ ags_navigation_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      GObject *soundcard;
+      AgsSoundcard *soundcard;
 
-      soundcard = (GObject *) g_value_get_object(value);
+      soundcard = (AgsSoundcard *) g_value_get_object(value);
 
       if(navigation->soundcard == soundcard)
 	return;
@@ -389,6 +400,9 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) navigation->soundcard, "tic\0",
   			 G_CALLBACK(ags_navigation_tic_callback), (gpointer) navigation);
 
+  g_signal_connect_after((GObject *) navigation->soundcard, "stop\0",
+  			 G_CALLBACK(ags_navigation_soundcard_stop_callback), (gpointer) navigation);
+
   /* expansion */
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed\0",
 		   G_CALLBACK(ags_navigation_loop_left_tact_callback), (gpointer) navigation);
@@ -430,18 +444,85 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 				    gdouble tact,
 				    gdouble bpm)
 {
-  gchar *timestr, *str;
+  AgsWindow *window;
+  AgsEditor *editor;
 
-  g_object_get(navigation->duration_time,
-	       "label\0", &str,
-	       NULL);
-  ags_navigation_update_time_string(tact,
-  				    str,
-				    bpm);
-  //  g_object_set(navigation->duration_time,
-  //	       "label\0", str,
-  //	       NULL);
-  //  gtk_widget_show_all(navigation->duration_time);
+  AgsSeekSoundcard *seek_soundcard;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
+  gchar *timestr;
+  double tact_factor, zoom_factor;
+  double tact;
+  gdouble delay;
+  guint steps;
+  gboolean move_forward;
+
+  pthread_mutex_t *application_mutex;
+  
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  editor = window->editor;
+
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  /* seek soundcard */
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
+
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
+  
+  if(tact < tact_counter){
+    steps = (guint) ((tact_counter - tact) * delay);
+    move_forward = TRUE;
+  }else{
+    steps = (guint) ((navigation->start_tact - tact) * delay);
+    move_forward = FALSE;
+  }
+  
+  seek_soundcard = ags_seek_soundcard_new(window->soundcard,
+				    steps,
+				    move_forward);
+
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(seek_soundcard));
+
+  /* update GUI */
+  zoom_factor = 0.25;
+
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
+
+  if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
+    gtk_adjustment_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment,
+			     tact_counter * AGS_NOTE_EDIT(editor->current_edit_widget)->control_current.control_width * (16.0 / tact_factor));
+  }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
+    gtk_adjustment_set_value(GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment,
+			     tact_counter * AGS_PATTERN_EDIT(editor->current_edit_widget)->control_current.control_width * (16.0 / tact_factor));
+  }
+  
+  timestr = ags_navigation_absolute_tact_to_time_string(16.0 * tact_counter,
+							navigation->bpm->adjustment->value,
+							ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard)));
+  gtk_label_set_text(navigation->position_time, timestr);
+  
+  g_free(timestr);
 }
 
 /**
@@ -482,21 +563,16 @@ gchar*
 ags_navigation_tact_to_time_string(gdouble tact,
 				   gdouble bpm)
 {
-  static gdouble delay_min, delay_sec, delay_hsec;
-  static gboolean initialized = FALSE;
+  gdouble delay_min, delay_sec, delay_msec;
   gchar *timestr;
   gdouble tact_redux;
-  guint min, sec, hsec;
+  guint min, sec, msec;
 
-  if(!initialized){
-    delay_min = bpm;
-    delay_sec = delay_min / 60.0;
-    delay_hsec = delay_sec / 100.0;
+  delay_min = bpm / delay_factor;
+  delay_sec = delay_min / 60.0;
+  delay_msec = delay_sec / 1000.0;
 
-    initialized = TRUE;
-  }
-
-  tact_redux = tact;
+  tact_redux = (tact + (tact / 16.0)) * 16.0;
 
   min = (guint) floor(tact_redux / delay_min);
 
@@ -510,9 +586,9 @@ ags_navigation_tact_to_time_string(gdouble tact,
     tact_redux = tact_redux - (sec * delay_sec);
   }
 
-  hsec = (guint) floor(tact_redux / delay_hsec);
+  msec = (guint) floor(tact_redux / delay_msec);
 
-  timestr = g_strdup_printf("%.4d:%.2d.%.2d\0", min, sec, hsec);
+  timestr = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
 
   return(timestr);
 }
@@ -531,19 +607,14 @@ ags_navigation_update_time_string(double tact,
 				  gchar *time_string,
 				  gdouble bpm)
 {
-  static gdouble delay_min, delay_sec, delay_hsec;
-  static gboolean initialized = FALSE;
+  gdouble delay_min, delay_sec, delay_msec;
   gchar *timestr;
   gdouble tact_redux;
-  guint min, sec, hsec;
+  guint min, sec, msec;
 
-  if(!initialized){
-    delay_min = bpm;
-    delay_sec = delay_min / 60.0;
-    delay_hsec = delay_sec / 100.0;
-
-    initialized = TRUE;
-  }
+  delay_min = bpm * (60.0 / bpm) * (60.0 / bpm) * delay_factor;
+  delay_sec = delay_min / 60.0;
+  delay_msec = delay_sec / 1000.0;
 
   tact_redux = 1.0 / 16.0;
 
@@ -559,9 +630,107 @@ ags_navigation_update_time_string(double tact,
     tact_redux = tact_redux - (sec * delay_sec);
   }
 
-  hsec = (guint) floor(tact_redux / delay_hsec);
+  msec = (guint) floor(tact_redux / delay_msec);
 
-  sprintf(time_string, "%.4d:%.2d.%.2d\0", min, sec, hsec);
+  sprintf(time_string, "%.4d:%.2d.%.3d\0", min, sec, msec);
+}
+
+gchar*
+ags_navigation_relative_tact_to_time_string(gchar *timestr,
+					    gdouble delay,
+					    gdouble bpm,
+					    gdouble delay_factor)
+{
+  gchar *tmp;
+  guint min, sec, msec;
+  guint prev_min, prev_sec, prev_msec;
+
+  gdouble sec_value;
+
+  tmp = sscanf(timestr, "%d:%d.%d", &prev_min, &prev_sec, &prev_msec);
+  sec_value = prev_min * 60.0;
+  sec_value += prev_sec;
+  sec_value += (1.0 / (16.0 * delay_factor) * (60.0 / bpm) + (1.0 / delay)) / 2.0;
+  
+  if(prev_msec != 0){
+    sec_value += (prev_msec / 1000.0);
+  }
+  
+  //  sec_value += (1.0 / delay);
+
+  min = (guint) floor(sec_value / 60.0);
+
+  sec = sec_value - 60 * min;
+
+  msec = (sec_value - sec - min * 60) * 1000;
+  
+  timestr = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
+  
+  return(timestr);
+}
+
+gchar*
+ags_navigation_absolute_tact_to_time_string(gdouble tact,
+					    gdouble bpm,
+					    gdouble delay_factor)
+{
+  AgsConfig *config;
+  
+  gchar *str;
+  guint samplerate;
+  guint buffer_size;
+  gdouble delay;
+  gdouble delay_min, delay_sec, delay_msec;
+  gchar *timestr;
+  gdouble tact_redux;
+  guint min, sec, msec;
+
+  config = ags_config_get_instance();
+  
+  /* retrieve some presets */
+  str = ags_config_get_value(config,
+		       AGS_CONFIG_SOUNDCARD,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
+				NULL,
+				10);
+  free(str);
+
+  str = ags_config_get_value(config,
+		       AGS_CONFIG_SOUNDCARD,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+  free(str);
+
+  /* calculate delays */
+  delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;
+  
+  delay_sec = ((bpm / delay_factor) / 60.0);
+  delay_min = delay_sec * 60.0;
+  delay_msec = delay_sec / 1000.0;
+
+  /* translate to time string */
+  tact_redux = tact;
+
+  min = (guint) floor(tact_redux / delay_min);
+
+  if(min > 0){
+    tact_redux = tact_redux - (min * delay_min);
+  }
+
+  sec = (guint) floor(tact_redux / delay_sec);
+
+  if(sec > 0){
+    tact_redux = tact_redux - (sec * delay_sec);
+  }
+
+  msec = (guint) floor(tact_redux / delay_msec);
+
+  timestr = g_strdup_printf("%.4d:%.2d.%.3d\0", min, sec, msec);
+
+  return(timestr);
 }
 
 /**

@@ -24,8 +24,6 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_note.h>
 
@@ -71,8 +69,6 @@ struct _AgsEditor
   gchar *build_id;
 
   GObject *soundcard;
-
-  GtkTable *table;
 
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;

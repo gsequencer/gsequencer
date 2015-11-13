@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
+
 #include <ags/audio/thread/ags_export_thread.h>
 
 #define AGS_TYPE_EXPORT_OUTPUT                (ags_export_output_get_type())

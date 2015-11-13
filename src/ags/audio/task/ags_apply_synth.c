@@ -19,13 +19,13 @@
 
 #include <ags/audio/task/ags_apply_synth.h>
 
-#include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_synths.h>
+
+#include <ags/object/ags_config.h>
 
 #include <math.h>
 
@@ -160,10 +160,14 @@ ags_apply_synth_finalize(GObject *gobject)
 void
 ags_apply_synth_launch(AgsTask *task)
 {
-  AgsApplySynth *apply_synth;
+  AgsSoundcard *soundcard;
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
-  GObject *soundcard;
+
+  AgsApplySynth *apply_synth;
+
+  AgsConfig *config;
+  
   GList *stream;
   gint wave;
   guint attack, frame_count, stop, phase, frequency;
@@ -209,12 +213,25 @@ ags_apply_synth_launch(AgsTask *task)
 
   apply_synth = AGS_APPLY_SYNTH(task);
   channel = apply_synth->start_channel;
-  soundcard = AGS_AUDIO(channel->audio)->soundcard;
-  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-			    NULL,
-			    &samplerate,
-			    &buffer_size,
-			    NULL);
+  soundcard = AGS_SOUNDCARD(channel>soundcard);
+
+  config = ags_config_get_instance();
+  
+  str = ags_config_get_value(config,
+		       AGS_CONFIG_SOUNDCARD,
+		       "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+  free(str);
+
+  str = ags_config_get_value(config,
+		       AGS_CONFIG_SOUNDCARD,
+		       "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
+				NULL,
+				10);
+  free(str);
   
   wave = (gint) apply_synth->wave;
   g_message("wave = %d\n\0", wave);

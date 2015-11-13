@@ -29,6 +29,7 @@
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/X/machine/ags_drum_input_pad.h>
+#include <ags/X/machine/ags_pattern_box.h>
 
 #define AGS_TYPE_DRUM                (ags_drum_get_type())
 #define AGS_DRUM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DRUM, AgsDrum))
@@ -37,21 +38,15 @@
 #define AGS_IS_DRUM_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_DRUM))
 #define AGS_DRUM_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_DRUM, AgsDrumClass))
 
-#define AGS_DRUM_PATTERN_CONTROLS (16)
-
 typedef struct _AgsDrum AgsDrum;
 typedef struct _AgsDrumClass AgsDrumClass;
-
-typedef enum{
-  AGS_DRUM_BLOCK_PATTERN    =  1,
-}AgsDrumFlags;
 
 struct _AgsDrum
 {
   AgsMachine machine;
 
   guint flags;
-
+  
   gchar *name;
   gchar *xml_type;
 
@@ -78,11 +73,7 @@ struct _AgsDrum
   GtkToggleButton *index1[12];
   GtkToggleButton *selected1;
 
-  guint active_led;
-  GtkHBox *led;
-  GtkHBox *pattern;
-
-  GtkVBox *offset;
+  AgsPatternBox *pattern_box;
 };
 
 struct _AgsDrumClass
@@ -91,8 +82,6 @@ struct _AgsDrumClass
 };
 
 GType ags_drum_get_type(void);
-
-void ags_drum_set_pattern(AgsDrum *drum);
 
 AgsDrum* ags_drum_new(GObject *soundcard);
 

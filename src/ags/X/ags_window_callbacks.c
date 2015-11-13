@@ -24,11 +24,9 @@
 
 #include <ags/file/ags_file.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/object/ags_application_context.h>
+
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/file/task/ags_save_file.h>
@@ -40,13 +38,16 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   GtkDialog *dialog;
   GtkWidget *cancel_button;
 
-  AgsApplicationContext *application_context;
-
+  AgsMutexManager *mutex_manager;
+  
   gint response;
 
+  pthread_mutex_t *application_mutex;
+  
   window = AGS_WINDOW(widget);
 
-  application_context = window->application_context;
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* ask the user if he wants save to a file */
   dialog = (GtkDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
@@ -65,8 +66,11 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     AgsThread *main_loop;
     AgsTaskThread *task_thread;
     AgsSaveFile *save_file;
+
+    AgsThread *audio_loop;
+    AgsThread *task_thread;
     
-    AgsFile *file;
+    AgsApplicationContext *application_context;
     
     char *filename;
     
@@ -75,10 +79,24 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     task_thread = ags_thread_find_type(main_loop,
 				       AGS_TYPE_TASK_THREAD);
 
+    application_context = window->application_context;
+
+    /* get audio loop */
+    pthread_mutex_lock(application_mutex);
+
+    audio_loop = application_context->main_loop;
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* get task thread */
+    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_TASK_THREAD);
+
+
     filename = window->name;
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context\0", application_context,
+				    "main\0", window->application_context,
 				    "filename\0", g_strdup(filename),
 				    NULL);
 
@@ -90,7 +108,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   }
 
   if(response != GTK_RESPONSE_CANCEL){
-    ags_main_quit(application_context);
+    ags_application_context_quit(AGS_APPLICATION_CONTEXT(window->application_context));
   }else{
     gtk_widget_destroy(GTK_WIDGET(dialog));
   }

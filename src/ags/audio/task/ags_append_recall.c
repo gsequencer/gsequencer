@@ -166,7 +166,7 @@ ags_append_recall_launch(AgsTask *task)
  */
 AgsAppendRecall*
 ags_append_recall_new(GObject *audio_loop,
-		      AgsPlayback *playback)
+		      GObject *playback)
 {
   AgsAppendRecall *append_recall;
 

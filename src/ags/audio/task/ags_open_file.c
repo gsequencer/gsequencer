@@ -30,8 +30,6 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
-#include <ags/X/ags_machine.h>
-
 void ags_open_file_class_init(AgsOpenFileClass *open_file);
 void ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_file_init(AgsOpenFile *open_file);
@@ -163,6 +161,7 @@ ags_open_file_launch(AgsTask *task)
   GList *audio_signal;
   gchar *current_filename;
   guint i, i_stop;
+  guint j;
   GError *error;
 
   open_file = AGS_OPEN_FILE(task);
@@ -181,6 +180,7 @@ ags_open_file_launch(AgsTask *task)
 
   /*  */
   if(open_file->create_channels){
+    GList *list;
     guint pads_old;
 
     i_stop = g_slist_length(open_file->filenames);
@@ -223,10 +223,12 @@ ags_open_file_launch(AgsTask *task)
 
     iter = channel;
     audio_signal = audio_file->audio_signal;
-
+    j = 0;
+    
     while(iter != channel->next_pad && audio_signal != NULL){
       file_link = g_object_new(AGS_TYPE_FILE_LINK,
 			       "filename\0", current_filename,
+			       "audio-channel\0", j,
 			       NULL);
       g_object_set(G_OBJECT(iter),
 		   "file-link", file_link,
@@ -251,6 +253,7 @@ ags_open_file_launch(AgsTask *task)
 
       audio_signal = audio_signal->next;
       iter = iter->next;
+      j++;
     }
 
     channel = channel->next_pad;

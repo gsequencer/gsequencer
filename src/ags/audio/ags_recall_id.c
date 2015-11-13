@@ -135,8 +135,8 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recycling-context\0",
-				   "assigned recycling container\0",
-				   "The recycling container it is assigned with\0",
+				   "assigned recycling context\0",
+				   "The recycling context it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -365,7 +365,7 @@ ags_recall_id_add(GList *recall_id_list,
  * @recall_id_list: a #GList containing #AgsRecallID
  * @recycling_context: the #AgsRecyclingContext to match
  *
- * Retrieve recall id by recycling container.
+ * Retrieve recall id by recycling context.
  *
  * Returns: Matching recall id.
  * 
@@ -373,7 +373,7 @@ ags_recall_id_add(GList *recall_id_list,
  */
 AgsRecallID*
 ags_recall_id_find_recycling_context(GList *recall_id_list,
-				     AgsRecyclingContext *recycling_context)
+				       AgsRecyclingContext *recycling_context)
 {
   AgsRecallID *recall_id;
 
@@ -395,7 +395,7 @@ ags_recall_id_find_recycling_context(GList *recall_id_list,
  * @recall_id_list: a #GList containing #AgsRecallID
  * @recycling_context: the #AgsRecyclingContext to match
  *
- * Retrieve recall id by recycling container.
+ * Retrieve recall id by recycling context.
  *
  * Returns: Matching recall id.
  * 
@@ -403,7 +403,7 @@ ags_recall_id_find_recycling_context(GList *recall_id_list,
  */
 AgsRecallID*
 ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
-					    AgsRecyclingContext *parent_recycling_context)
+					      AgsRecyclingContext *parent_recycling_context)
 {
   AgsRecallID *recall_id;
 

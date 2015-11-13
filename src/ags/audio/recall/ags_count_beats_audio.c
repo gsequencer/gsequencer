@@ -20,8 +20,6 @@
 #include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -665,7 +663,6 @@ ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdouble du
 
 /**
  * ags_count_beats_audio_new:
- * @loop: if %TRUE after exceeding counter, effect loops
  *
  * Creates an #AgsCountBeatsAudio
  *

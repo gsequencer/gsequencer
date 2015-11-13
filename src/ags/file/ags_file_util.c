@@ -24,8 +24,7 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
@@ -49,10 +48,10 @@ ags_file_util_read_value(AgsFile *file,
   xmlChar *value_str;
   xmlChar *content;
 
-
-  if(id != NULL)
+  if(id != NULL){
     *id = xmlGetProp(node, AGS_FILE_ID_PROP);
-
+  }
+  
   type_str = xmlGetProp(node, "type\0");
 
   content = xmlNodeGetContent(node);
@@ -800,9 +799,12 @@ ags_file_util_read_object(AgsFile *file,
       }else if(!xmlStrncmp(child->name,
 			   "ags-widget\0",
 			   11)){
+	//FIXME:JK: 
+	/*
 	ags_file_read_widget(file,
 			     child,
 			     gobject);
+	*/
       }
     }
 
@@ -881,12 +883,15 @@ ags_file_util_write_object(AgsFile *file,
 				ags_id_generator_create_uuid(),
 				parameter, n_properties);
 
+  //FIXME:JK: 
+  /*
   if(GTK_IS_WIDGET(gobject)){
     ags_file_write_widget(file,
 			  node,
 			  GTK_WIDGET(gobject));
   }
-
+  */
+  
   return(node);
 }
 
@@ -902,3 +907,201 @@ ags_file_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history)
   //TODO:JK: implement me
 }
 
+void
+ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link)
+{
+  AgsFileLink *gobject;
+  xmlNode *child;
+  
+  if(*file_link == NULL){
+    gobject = g_object_new(AGS_TYPE_FILE_LINK,
+			   NULL);
+    *file_link = gobject;
+  }else{
+    gobject = *file_link;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  /* iterate children */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(gobject)))){
+	/* read current plugin file link */	
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(gobject));
+      }
+    }
+
+    /* iterate */
+    child = child->next;
+  }
+}
+
+xmlNode*
+ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
+{
+  xmlNode *node;
+  gchar *id;
+  gchar *filename;
+
+  if(file_link == NULL){
+    return;
+  }
+
+  /* allocate new node with uuid */
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-file-link\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  /* add reference and node to file object */
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", file_link,
+				   NULL));
+
+  /* write type with URL */
+  xmlNewProp(node,
+	     "type\0",
+	     g_strdup("url\0"));
+
+  /* write filename */
+  if(file_link->filename != NULL){
+#ifdef AGS_DEBUG
+    g_message("XML outputting: %s\0", file_link->filename);
+#endif
+    
+    xmlNewProp(node,
+	       "filename\0",
+	       g_strdup(file_link->filename));
+  }else{
+    xmlNewProp(node,
+	       "filename\0",
+	       g_strdup("(null)\0"));
+  }
+
+  /* add to parent node */
+  xmlAddChild(parent,
+	      node);
+
+  /* children */
+  ags_plugin_write(file,
+		   node,
+		   AGS_PLUGIN(file_link));
+}
+
+void
+ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link)
+{
+  AgsFileLink *current;
+
+  xmlNode *child;
+  GList *list;
+  
+  xmlChar *id;
+
+  /* get uuid */
+  id = xmlGetProp(node, AGS_FILE_ID_PROP);
+
+  /* iterate children */
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-file-link\0",
+		     11)){
+	/* read current file link */
+	current = NULL;
+	
+	ags_file_read_file_link(file, child, &current);
+	
+	list = g_list_prepend(list,
+			      current);
+      }
+    }
+
+    /* iterate */
+    child = child->next;
+  }
+
+  /* reverse the created list */
+  list = g_list_reverse(list);
+
+  /* return reference */
+  *file_link = list;
+
+  /* add reference and node to file object */
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
+}
+
+xmlNode*
+ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link)
+{
+  AgsFileLink *current;
+  xmlNode *node;
+  GList *list;
+  gchar *id;
+
+  /* allocate new node with uuid */
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-file-link-list\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  /* add reference and node to file object */
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", list,
+				   NULL));
+
+  /* add to parent node */
+  xmlAddChild(parent,
+	      node);
+
+  /* iterate list and write file link */
+  list = file_link;
+
+  while(list != NULL){
+    ags_file_write_file_link(file, node, AGS_FILE_LINK(list->data));
+
+    list = list->next;
+  }
+
+  /* return created node */
+  return(node);
+}

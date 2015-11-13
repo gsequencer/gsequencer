@@ -222,7 +222,8 @@ ags_file_selection_finalize(GObject *gobject)
     free(file_selection->directory);
 
   /* free entries */
-  ags_list_free_and_free_link(file_selection->entry);
+  g_list_free_full(file_selection->entry,
+		   g_free);
 
   /* call finalize of parent class */
   G_OBJECT_CLASS(ags_file_selection_parent_class)->finalize(gobject);

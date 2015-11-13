@@ -18,11 +18,7 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
-#include <ags/main.h>
-
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_lv2_manager.h>
-
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_plugin.h>
 
 #ifdef AGS_USE_LINUX_THREADS
@@ -31,6 +27,10 @@
 #include <ags/thread/ags_thread-posix.h>
 #endif 
 #include <ags/thread/ags_task_thread.h>
+
+
+#include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
 
 #include <ags/audio/ags_output.h>
 

@@ -20,8 +20,9 @@
 #include <ags/X/ags_server_preferences_callbacks.h>
 
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>

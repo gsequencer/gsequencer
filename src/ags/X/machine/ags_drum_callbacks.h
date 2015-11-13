@@ -39,10 +39,6 @@ void ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum);
 void ags_drum_index0_callback(GtkWidget *toggle_button, AgsDrum *drum);
 void ags_drum_index1_callback(GtkWidget *toggle_button, AgsDrum *drum);
 
-void ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum);
-
-void ags_drum_offset_callback(GtkWidget *widget, AgsDrum *drum);
-
 /* audio */
 void ags_drum_tact_callback(AgsAudio *audio,
 			    AgsRecallID *recall_id,

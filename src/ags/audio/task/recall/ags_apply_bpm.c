@@ -41,7 +41,7 @@ void ags_apply_bpm_launch(AgsTask *task);
 void ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall);
 void ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel);
 void ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio);
-void ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, AgsSoundcard *soundcard);
+void ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard);
 
 /**
  * SECTION:ags_apply_bpm
@@ -160,9 +160,9 @@ ags_apply_bpm_launch(AgsTask *task)
   apply_bpm = AGS_APPLY_BPM(task);
   
   if(AGS_IS_SOUNDCARD(apply_bpm->gobject)){
-    AgsSoundcard *soundcard;
+    GObject *soundcard;
 
-    soundcard = AGS_SOUNDCARD(apply_bpm->gobject);
+    soundcard = apply_bpm->gobject;
 
     ags_apply_bpm_soundcard(apply_bpm, soundcard);
   }else if(AGS_IS_AUDIO(apply_bpm->gobject)){
@@ -260,13 +260,12 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 }
 
 void
-ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, AgsSoundcard *soundcard)
+ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard)
 {
   GList *list;
 
-  ags_soundcard_set_bpm(soundcard,
-			apply_bpm->bpm);
-  
+  ags_soundcard_set_bpm(AGS_SOUNDCARD(soundcard), apply_bpm->bpm);
+
   /* AgsAudio */
   list = ags_soundcard_get_audio(soundcard);
 

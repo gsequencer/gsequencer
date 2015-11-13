@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_recall_ladspa.h>
 
+#include <ags/object/ags_connectable.h>
+
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
@@ -32,6 +34,8 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_port.h>
 
 #include <dlfcn.h>
@@ -256,6 +260,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
+      GObject *soundcard;
       gchar *filename;
 
       filename = g_value_get_string(value);
@@ -469,7 +474,7 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -513,7 +518,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -687,16 +692,16 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
  */
 void
 ags_recall_ladspa_short_to_float(signed short *buffer,
-				 float *destination,
+				 LADSPA_Data *destination,
 				 guint buffer_size, guint lines)
 {
-  float *new_buffer;
+  LADSPA_Data *new_buffer;
   guint i;
 
   new_buffer = destination;
 
   for(i = 0; i < buffer_size; i++){
-    new_buffer[lines * i] += (float) buffer[i] * (1.0f / 32767.5f);
+    new_buffer[lines * i] = (LADSPA_Data) (buffer[i] * (1.0f / 32767.5f));
   }
 }
 
@@ -711,7 +716,7 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
  * Since: 0.4.2
  */
 void
-ags_recall_ladspa_float_to_short(float *buffer,
+ags_recall_ladspa_float_to_short(LADSPA_Data *buffer,
 				 signed short *destination,
 				 guint buffer_size, guint lines)
 {
@@ -721,7 +726,7 @@ ags_recall_ladspa_float_to_short(float *buffer,
   new_buffer = destination;
 
   for(i = 0; i < buffer_size; i++){
-    new_buffer[i] += (signed short) buffer[lines * i] * 32767.5f;
+    new_buffer[i] = (signed short) (buffer[lines * i] * 32767.5f);
   }
 }
 
@@ -780,7 +785,7 @@ ags_recall_ladspa_new(AgsChannel *source,
   AgsRecallLadspa *recall_ladspa;
 
   if(source != NULL){
-    soundcard = AGS_AUDIO(source->audio)->soundcard;
+    soundcard = (GObject *) source->soundcard;
   }else{
     soundcard = NULL;
   }

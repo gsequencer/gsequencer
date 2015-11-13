@@ -23,31 +23,31 @@
 short scale = 32000;
 
 void
-ags_synth_sin(AgsSoundcard *soundcard, signed short *buffer, guint offset,
+ags_synth_sin(GObject *soundcard, signed short *buffer, guint offset,
 	      guint freq, guint phase, guint length,
 	      double volume)
 {
   guint samplerate;
   guint i;
 
-  ags_soundcard_get_presets(soundcard,
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    &samplerate,
 			    NULL,
 			    NULL);
-
+  
   for (i = offset; i < offset + length; i++){
     buffer[i] = (signed short) (0xffff & ((int)buffer[i] + (int)(sin ((double)(i + phase) * 2.0 * M_PI * freq / (double)samplerate) * (double)scale * volume)));
   }
 }
 
 void
-ags_synth_saw(AgsSoundcard *soundcard, signed short *buffer, guint offset, guint freq, guint phase, guint length, double volume)
+ags_synth_saw(GObject *soundcard, signed short *buffer, guint offset, guint freq, guint phase, guint length, double volume)
 {
   guint samplerate;
   guint i;
 
-  ags_soundcard_get_presets(soundcard,
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    &samplerate,
 			    NULL,
@@ -62,12 +62,18 @@ ags_synth_saw(AgsSoundcard *soundcard, signed short *buffer, guint offset, guint
 }
 
 void
-ags_synth_triangle(AgsSoundcard *soundcard, signed short *buffer, guint offset, guint freq, guint phase, guint length, double volume)
+ags_synth_triangle(GObject *soundcard, signed short *buffer, guint offset, guint freq, guint phase, guint length, double volume)
 {
   guint samplerate;
   guint i;
   
   ags_soundcard_get_presets(soundcard,
+			    NULL,
+			    &samplerate,
+			    NULL,
+			    NULL);
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    &samplerate,
 			    NULL,
@@ -82,12 +88,18 @@ ags_synth_triangle(AgsSoundcard *soundcard, signed short *buffer, guint offset, 
 }
 
 void
-ags_synth_square(AgsSoundcard *soundcard, signed short *buffer, guint offset, guint freq, guint phase, guint length, double volume)
+ags_synth_square(GObject *soundcard, signed short *buffer, guint offset, guint freq, guint phase, guint length, double volume)
 {
   guint samplerate;
   guint i;
   
   ags_soundcard_get_presets(soundcard,
+			    NULL,
+			    &samplerate,
+			    NULL,
+			    NULL);
+
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    &samplerate,
 			    NULL,

@@ -29,9 +29,21 @@ void ags_mutex_manager_finalize(GObject *gobject);
 
 void ags_mutex_manager_destroy_data(gpointer data);
 
+/**
+ * SECTION:ags_mutex_manager
+ * @short_description: mutex manager
+ * @title: AgsMutexManager
+ * @section_id:
+ * @include: ags/thread/ags_mutex_manager.h
+ *
+ * The #AgsMutexManager keeps your mutex in a hash table where you can lookup your
+ * mutices.
+ */
+
 static gpointer ags_mutex_manager_parent_class = NULL;
 
 AgsMutexManager *ags_mutex_manager = NULL;
+pthread_mutex_t ags_application_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_mutex_manager_get_type()
@@ -127,6 +139,34 @@ ags_mutex_manager_destroy_data(gpointer data)
   pthread_mutex_destroy((pthread_mutex_t *) data);
 }
 
+/**
+ * ags_mutex_manager_get_application_mutex:
+ * @mutex_manager: the #AgsMutexManager
+ *
+ * Retrieve the application mutex as per process pointer.
+ *
+ * Returns: the application mutex
+ *
+ * Since: 0.7.0
+ */
+pthread_mutex_t*
+ags_mutex_manager_get_application_mutex(AgsMutexManager *mutex_manager)
+{
+  return(&ags_application_mutex);
+}
+
+/**
+ * ags_mutex_manager_insert:
+ * @mutex_manager: the #AgsMutexManager
+ * @lock_object: the object as key
+ * @mutex: the mutex to insert
+ *
+ * Inserts a mutex into hash map associated with @lock_object.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ *
+ * Since: 0.5.0
+ */
 gboolean
 ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
 			 GObject *lock_object, pthread_mutex_t *mutex)
@@ -135,6 +175,17 @@ ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
 			     lock_object, mutex));
 }
 
+/**
+ * ags_mutex_manager_remove:
+ * @mutex_manager: the #AgsMutexManager
+ * @lock_object: the object to remove
+ * 
+ * Removes a lock associated with @lock_object.3
+ *
+ * Returns: %TRUE as successfully removed, otherwise %FALSE
+ *
+ * Since: 0.5.0
+ */
 gboolean
 ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
 			 GObject *lock_object)
@@ -157,6 +208,17 @@ ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
   return(TRUE);
 }
 
+/**
+ * ags_mutex_manager_lookup:
+ * @mutex_manager: the #AgsMutexManager
+ * @lock_object: the object to lookup
+ *
+ * Lookup a mutex associated with @lock_object in @mutex_manager
+ *
+ * Returns: the mutex on success, else %NULL
+ *
+ * Since: 0.5.0
+ */
 pthread_mutex_t*
 ags_mutex_manager_lookup(AgsMutexManager *mutex_manager,
 			 GObject *lock_object)
@@ -169,6 +231,15 @@ ags_mutex_manager_lookup(AgsMutexManager *mutex_manager,
   return(mutex);
 }
 
+/**
+ * ags_mutex_manager_get_instance:
+ * 
+ * Singleton function to optain the mutex manager instance.
+ *
+ * Returns: an instance of #AgsMutexManager
+ *
+ * Since: 0.5.0
+ */
 AgsMutexManager*
 ags_mutex_manager_get_instance()
 {
@@ -179,6 +250,15 @@ ags_mutex_manager_get_instance()
   return(ags_mutex_manager);
 }
 
+/**
+ * ags_mutex_manager_new:
+ *
+ * Instantiate a mutex manager. 
+ *
+ * Returns: a new #AgsMutexManager
+ *
+ * Since: 0.5.0
+ */
 AgsMutexManager*
 ags_mutex_manager_new()
 {

@@ -20,7 +20,10 @@
 #include <ags/audio/task/ags_init_audio.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
@@ -116,9 +119,9 @@ ags_init_audio_init(AgsInitAudio *init_audio)
 {
   init_audio->audio = NULL;
 
-  init_audio->playback = FALSE;
-  init_audio->sequencer = FALSE;
-  init_audio->notation = FALSE;
+  init_audio->do_playback = FALSE;
+  init_audio->do_sequencer = FALSE;
+  init_audio->do_notation = FALSE;
 }
 
 void
@@ -158,8 +161,10 @@ ags_init_audio_launch(AgsTask *task)
 
   audio = init_audio->audio;
 
+  g_message("init\0");
+  
   /* init audio */
-  if(init_audio->playback){
+  if(init_audio->do_playback){
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_PLAYBACK);
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
@@ -177,7 +182,7 @@ ags_init_audio_launch(AgsTask *task)
     }
   }
 
-  if(init_audio->sequencer){
+  if(init_audio->do_sequencer){
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_SEQUENCER);
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
@@ -195,7 +200,7 @@ ags_init_audio_launch(AgsTask *task)
     }
   }
 
-  if(init_audio->notation){
+  if(init_audio->do_notation){
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_NOTATION);
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
@@ -217,9 +222,9 @@ ags_init_audio_launch(AgsTask *task)
 /**
  * ags_init_audio_new:
  * @audio: the #AgsAudio
- * @playback: init playback
- * @sequencer: init sequencer
- * @notation: init notation
+ * @do_playback: init playback
+ * @do_sequencer: init sequencer
+ * @do_notation: init notation
  *
  * Creates an #AgsInitAudio.
  *
@@ -229,7 +234,7 @@ ags_init_audio_launch(AgsTask *task)
  */
 AgsInitAudio*
 ags_init_audio_new(AgsAudio *audio,
-		   gboolean playback, gboolean sequencer, gboolean notation)
+		   gboolean do_playback, gboolean do_sequencer, gboolean do_notation)
 {
   AgsInitAudio *init_audio;
 
@@ -238,9 +243,9 @@ ags_init_audio_new(AgsAudio *audio,
 
   init_audio->audio = audio;
 
-  init_audio->playback = playback;
-  init_audio->sequencer = sequencer;
-  init_audio->notation = notation;
+  init_audio->do_playback = do_playback;
+  init_audio->do_sequencer = do_sequencer;
+  init_audio->do_notation = do_notation;
 
   return(init_audio);
 }

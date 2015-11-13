@@ -18,8 +18,6 @@
  */
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/lib/ags_list.h>
-
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_packable.h>
 

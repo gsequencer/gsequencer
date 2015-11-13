@@ -21,15 +21,17 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
+
+#include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_factory.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -184,6 +186,9 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
   
   ags_drum_output_line_parent_connectable_interface->connect(connectable);
 
+  g_signal_connect_after((GObject *) AGS_LINE(drum_output_line)->channel->audio, "set-pads\0",
+			 G_CALLBACK(ags_drum_output_line_set_pads_callback), NULL);
+
   /* empty */
 }
 
@@ -224,27 +229,65 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsDrumOutputLine *drum_output_line;
 
+  GObject *soundcard;
+  AgsAudio *audio;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
 
   drum_output_line = AGS_DRUM_OUTPUT_LINE(line);
 
+  audio = channel->audio;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get soundcard */
+  pthread_mutex_lock(audio_mutex);
+	
+  soundcard = audio->soundcard;
+  
+  pthread_mutex_unlock(audio_mutex);
+
   if(channel != NULL){
-    AgsSoundcard *soundcard;
+    AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
-    gdouble delay;
-    guint stop;
 
-    if(channel->audio != NULL &&
-       AGS_AUDIO(channel->audio)->soundcard != NULL){
-      soundcard = AGS_SOUNDCARD(AGS_AUDIO(channel->audio)->soundcard);
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
 
-      audio_signal = ags_audio_signal_new(soundcard,
-					  channel->first_recycling,
-					  NULL);
-      audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-      ags_recycling_add_audio_signal(channel->first_recycling,
-				     audio_signal);
-    }
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get recycling */
+    pthread_mutex_lock(channel_mutex);
+
+    recycling = channel->first_recycling;
+
+    pthread_mutex_unlock(channel_mutex);
+
+    /* instantiate template audio signal */
+    audio_signal = ags_audio_signal_new((GObject *) soundcard,
+					(GObject *) recycling,
+					NULL);
+    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+    ags_recycling_add_audio_signal(channel->first_recycling,
+				   audio_signal);
   }
 }
 
@@ -310,7 +353,7 @@ ags_drum_output_line_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -337,7 +380,7 @@ ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

@@ -22,8 +22,11 @@
 #include <ags/X/ags_machine_callbacks.h>
 
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/widget/ags_led.h>
+
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
@@ -32,9 +35,13 @@
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
 
@@ -67,6 +74,8 @@
 
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout\0"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall\0"
+
+void ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum);
 
 void
 ags_drum_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrum *drum)
@@ -121,6 +130,21 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
   GList *list;
   gboolean loop;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(audio_mutex);
+
   loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
 
   /* AgsCopyPatternAudio */
@@ -153,27 +177,39 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsWindow *window;
   
-  AgsApplySequencerLength *apply_sequencer_length;
-
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
+  AgsMutexManager *mutex_manager;
+  AgsThread *audio_loop;
+  AgsThread *task_thread;
 
   AgsApplicationContext *application_context;
   
   gdouble length;
-  
-  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
 
+  pthread_mutex_t *application_mutex;
+
+  /* get window and application_context  */
+  window = (AgsWindow *) gtk_widget_get_toplevel(drum);
+  
   application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  /*  */
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
-  apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(drum)->audio),
+  apply_sequencer_length = ags_apply_sequencer_length_new(AGS_MACHINE(drum)->audio,
 							  length);
 
   ags_task_thread_append_task(task_thread,
@@ -183,6 +219,23 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 void
 ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(audio_mutex);
+
   if(drum->selected0 != NULL){
     GtkToggleButton *toggle_button;
 
@@ -231,13 +284,30 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
       drum->selected0 = (GtkToggleButton*) widget;
     }
 
-    ags_drum_set_pattern(drum);
+    ags_pattern_box_set_pattern(drum->pattern_box);
   }
 }
 
 void
 ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+ 
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(audio_mutex);
+
   if(drum->selected1 != NULL){
     GtkToggleButton *toggle_button;
 
@@ -286,107 +356,10 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
       drum->selected1 = (GtkToggleButton*) widget;
     }
 
-    ags_drum_set_pattern(drum);
-  }
-}
-
-void
-ags_drum_pad_callback(GtkWidget *toggle_button, AgsDrum *drum)
-{
-  AgsWindow *window;
-  AgsLine *selected_line;
-  AgsPattern *pattern;
-  AgsTogglePatternBit *toggle_pattern_bit;
-
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
-  GList *list, *list_start;
-  GList *line, *line_start;
-  GList *tasks;
-  guint i, index0, index1, offset;
-
-  if(drum->selected_pad == NULL){
-    return;
+    ags_pattern_box_set_pattern(drum->pattern_box);
   }
 
-  if((AGS_DRUM_BLOCK_PATTERN & (drum->flags)) != 0){
-#ifdef AGS_DEBUG
-    g_message("AgsDrum pattern is blocked\n\0");
-#endif
-
-    return;
-  }
-    
-  window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(drum));
-
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
-  /* calculate offset */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) drum->pattern);
-
-  for(i = 0; i < 16 && toggle_button != list->data; i++)
-    list = list->next;
-
-  offset = i;
-  g_list_free(list_start);
-
-  /* calculate index 0 */
-  index0 = ((guint) drum->selected0->button.label_text[0] - 'a');
-
-  /* calculate index 1 */
-  index1 = ((guint) g_ascii_strtoull(drum->selected1->button.label_text, NULL, 10)) - 1;
-
-  /* calculate offset / page */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) drum->offset);
-
-  for(i = 0; i < 4 && ! GTK_TOGGLE_BUTTON(list->data)->active; i++)
-    list = list->next;
-
-  offset += (i * 16);
-
-  g_list_free(list_start);
-
-  /**/
-  line_start = 
-    line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(drum->selected_pad)->expander_set));
-  tasks = NULL;
-
-  while((line = ags_line_find_next_grouped(line)) != NULL){
-    selected_line = AGS_LINE(line->data);
-
-    toggle_pattern_bit = ags_toggle_pattern_bit_new(selected_line->channel->pattern->data,
-						    selected_line->channel->line,
-						    index0, index1,
-						    offset);
-    g_message("found %d %x\0", selected_line->channel, selected_line->channel->pattern->data);
-
-    tasks = g_list_prepend(tasks,
-			   toggle_pattern_bit);
-
-    line = line->next;
-  }
-
-  g_list_free(line_start);
-
-  /* append AgsTogglePatternBit */
-  ags_task_thread_append_tasks(task_thread,
-			       tasks);
-}
-
-void
-ags_drum_offset_callback(GtkWidget *widget, AgsDrum *drum)
-{
-  ags_drum_set_pattern(drum);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
@@ -400,25 +373,53 @@ ags_drum_tact_callback(AgsAudio *audio,
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
 
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
+  AgsToggleLed *toggle_led;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *audio_loop;
+  AgsThread *task_thread;
 
   AgsApplicationContext *application_context;
   
-  GList *list, *tmp;
+  GList *list;
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
   GValue value = {0,};
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum,
-						 AGS_TYPE_WINDOW);
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
+  if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) == 0){
+    return;
+  }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(drum)->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(audio_mutex);
+
+  /* get window and application_context  */
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
+  
   application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* get some recalls */
   list = ags_recall_find_type(audio->play,
@@ -437,21 +438,21 @@ ags_drum_tact_callback(AgsAudio *audio,
   }
 
   /* set optical feedback */
-  active_led_new = (guint) play_count_beats_audio_run->sequencer_counter % AGS_DRUM_PATTERN_CONTROLS;
-  drum->active_led = (guint) active_led_new;
+  active_led_new = (guint) play_count_beats_audio_run->sequencer_counter % AGS_PATTERN_BOX_N_CONTROLS;
+  drum->pattern_box->active_led = (guint) active_led_new;
 
   if(play_count_beats_audio_run->sequencer_counter == 0){
     g_value_init(&value, G_TYPE_DOUBLE);
     ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
 		       &value);
-
-    active_led_old = (guint) (g_value_get_double(&value) - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
+    
+    active_led_old = (guint) (g_value_get_double(&value) - 1.0) % AGS_PATTERN_BOX_N_CONTROLS;
+    g_value_unset(&value);
   }else{
-    active_led_old = (guint) (drum->active_led - 1.0) % AGS_DRUM_PATTERN_CONTROLS;
+    active_led_old = (guint) (drum->pattern_box->active_led - 1.0) % AGS_PATTERN_BOX_N_CONTROLS;
   }
 
-  tmp = gtk_container_get_children(GTK_CONTAINER(drum->led));
-  toggle_led = ags_toggle_led_new(tmp,
+  toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(drum->pattern_box->led)),
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
@@ -485,10 +486,9 @@ ags_drum_done_callback(AgsAudio *audio,
     GList *list;
     guint active_led;
 
-    /* get active led */
-    if(drum->active_led == 0){
-      AgsCountBeatsAudio *play_count_beats_audio;
-      GValue value = {0,};
+    /* unset led */
+    list_start = 
+      list = gtk_container_get_children(GTK_CONTAINER(drum->pattern_box->led));
 
       /* get some recalls */
       list = ags_recall_find_type(audio->play,

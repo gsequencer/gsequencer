@@ -19,6 +19,8 @@
 #include <ags/X/machine/ags_drum_output_pad.h>
 #include <ags/X/machine/ags_drum_output_pad_callbacks.h>
 
+#include <ags/object/ags_connectable.h>
+
 #include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_connectable.h>

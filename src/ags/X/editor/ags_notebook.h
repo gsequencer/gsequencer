@@ -33,6 +33,9 @@
 
 #define AGS_NOTEBOOK_TAB(x) ((AgsNotebookTab *)(x))
 
+#define AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT (32)
+#define AGS_NOTEBOOK_TAB_DEFAULT_WIDTH (100)
+
 typedef struct _AgsNotebook AgsNotebook;
 typedef struct _AgsNotebookClass AgsNotebookClass;
 typedef struct _AgsNotebookTab AgsNotebookTab;
@@ -43,6 +46,7 @@ typedef enum{
   AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL    = 1 <<  2,
   AGS_NOTEBOOK_SHOW_PAD              = 1 <<  3,
   AGS_NOTEBOOK_SHOW_LINE             = 1 <<  4,
+  AGS_NOTEBOOK_SHOW_SCROLL_BUTTONS   = 1 <<  5,
 }AgsNotebookFlags;
 
 typedef enum{
@@ -56,7 +60,14 @@ struct _AgsNotebook
   GtkVBox vbox;
 
   guint flags;
+  
+  GtkViewport *viewport;
+  GtkButton *scroll_prev;
+  GtkButton *scroll_next;
 
+  gulong scroll_prev_handler;
+  gulong scroll_next_handler;
+  
   GtkHBox *hbox;
 
   GList *tabs;
@@ -72,8 +83,9 @@ struct _AgsNotebookTab
 {
   guint flags;
 
+  GObject *notation;
+  
   GtkToggleButton *toggle;
-  gpointer data;
 };
 
 GType ags_notebook_get_type(void);

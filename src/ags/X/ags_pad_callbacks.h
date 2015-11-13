@@ -25,6 +25,9 @@
 
 #include <ags/X/ags_pad.h>
 
+#include <ags/thread/ags_task.h>
+#include <ags/thread/ags_task_completion.h>
+
 int ags_pad_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPad *pad);
 
 int ags_pad_option_changed_callback(GtkWidget *widget, AgsPad *pad);
@@ -32,5 +35,9 @@ int ags_pad_option_changed_callback(GtkWidget *widget, AgsPad *pad);
 int ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad);
 int ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad);
 int ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad);
+
+void ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
+				     AgsPad *pad);
+void ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad);
 
 #endif /*__AGS_PAD_CALLBACKS_H__*/

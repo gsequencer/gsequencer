@@ -213,6 +213,7 @@ ags_copy_audio_signal_finalize(GObject *gobject)
 void
 ags_copy_audio_signal_run_inter(AgsRecall *recall)
 {
+  GObject *soundcard;
   AgsCopyChannel *copy_channel;
   AgsCopyAudioSignal *copy_audio_signal;
   AgsAudioSignal *source, *destination;
@@ -224,6 +225,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
+  soundcard = AGS_RECALL(copy_audio_signal)->soundcard;
   source = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->source;
   stream_source = source->stream_current;
 
@@ -292,7 +294,7 @@ ags_copy_audio_signal_duplicate(AgsRecall *recall,
  * ags_copy_audio_signal_new:
  * @destination: the destination #AgsAudioSignal
  * @source: the source #AgsAudioSignal
- * @soundcard: the #AgsSoundcard defaulting to
+ * @soundcard: the #GObject defaulting to
  * @attack: the attack
  *
  * Creates an #AgsCopyAudioSignal
@@ -305,7 +307,7 @@ AgsCopyAudioSignal*
 ags_copy_audio_signal_new(AgsAudioSignal *destination,
 			  AgsAudioSignal *source,
 			  GObject *soundcard,
-			  guint attack)
+			  AgsAttack *attack)
 {
   AgsCopyAudioSignal *copy_audio_signal;
 

@@ -20,13 +20,9 @@
 #include <ags/audio/recall/ags_buffer_recycling.h>
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
-
-#include <ags/audio/task/ags_remove_audio_signal.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_buffer_recycling_class_init(AgsBufferRecyclingClass *buffer_recycling);
 void ags_buffer_recycling_connectable_interface_init(AgsConnectableInterface *connectable);

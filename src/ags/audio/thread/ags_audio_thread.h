@@ -42,10 +42,10 @@ typedef struct _AgsAudioThread AgsAudioThread;
 typedef struct _AgsAudioThreadClass AgsAudioThreadClass;
 
 typedef enum{
-  AGS_AUDIO_THREAD_WAITING    = 1,
-  AGS_AUDIO_THREAD_WAKEUP     = 1 <<  1,
-  AGS_AUDIO_THREAD_DONE       = 1 <<  2,
-  AGS_AUDIO_THREAD_NOTIFY     = 1 <<  3,
+  AGS_AUDIO_THREAD_DONE            = 1,
+  AGS_AUDIO_THREAD_WAIT            = 1 <<  1,
+  AGS_AUDIO_THREAD_DONE_SYNC       = 1 <<  2,
+  AGS_AUDIO_THREAD_WAIT_SYNC       = 1 <<  3,
 }AgsAudioThreadFlags;
 
 struct _AgsAudioThread
@@ -54,6 +54,8 @@ struct _AgsAudioThread
 
   volatile guint flags;
 
+  GObject *soundcard;
+  
   pthread_mutexattr_t wakeup_attr;
   pthread_mutex_t *wakeup_mutex;
   pthread_cond_t *wakeup_cond;
@@ -72,7 +74,7 @@ struct _AgsAudioThreadClass
 
 GType ags_audio_thread_get_type();
 
-AgsAudioThread* ags_audio_thread_new(GObject *devout,
+AgsAudioThread* ags_audio_thread_new(GObject *soundcard,
 				     GObject *audio);
 
 #endif /*__AGS_AUDIO_THREAD_H__*/

@@ -18,8 +18,6 @@
 
 #include "ags_expander_set.h"
 
-#include <ags/lib/ags_list.h>
-
 #include <stdlib.h>
 
 void ags_expander_set_class_init(AgsExpanderSetClass *expander_set);
@@ -219,11 +217,13 @@ ags_expander_set_finalize(GObject *gobject)
   expander_set = AGS_EXPANDER_SET(gobject);
 
   if(expander_set->ghost != NULL){
-    ags_list_free_and_free_link(expander_set->ghost);
+    g_list_free_full(expander_set->ghost,
+		     g_free);
   }
 
   if(expander_set->location != NULL){
-    ags_list_free_and_free_link(expander_set->location);
+    g_list_free_full(expander_set->location,
+		     g_free);
   }
 
   /* call parent */

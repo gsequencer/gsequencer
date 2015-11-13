@@ -24,6 +24,7 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_playable.h>
 
 #include <ags/audio/file/ags_playable.h>
 #include <ags/audio/file/ags_sndfile.h>
@@ -506,17 +507,23 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
     guint loop_start, loop_end;
 
     audio_file->playable = (GObject *) ags_sndfile_new();
-    ags_playable_set_presets(AGS_PLAYABLE(audio_file->playable),
-			     audio_file->samplerate,
-			     AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
-			     audio_file->channels,
-			     audio_file->format);
-    ags_playable_set_frames(AGS_PLAYABLE(audio_file->playable),
-			    audio_file->frames);
+
+    //TODO:JK: verify removal
+    //    ags_playable_set_presets(AGS_PLAYABLE(audio_file->playable),
+    //			     audio_file->samplerate,
+    //			     AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+    //			     audio_file->channels,
+    //			     audio_file->format);
+    //    ags_playable_set_frames(AGS_PLAYABLE(audio_file->playable),
+    //			    audio_file->frames);
     
     if(ags_playable_rw_open(AGS_PLAYABLE(audio_file->playable),
 			    audio_file->filename,
-			    create)){
+			    create,
+			    audio_file->samplerate,
+			    audio_file->channels,
+			    audio_file->frames,
+			    audio_file->format)){
       error = NULL;
 
       if(error != NULL){

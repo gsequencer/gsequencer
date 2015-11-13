@@ -20,8 +20,9 @@
 #include <ags/audio/file/ags_sndfile.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/file/ags_playable.h>
+#include <ags/audio/ags_playable.h>
 
 void ags_sndfile_class_init(AgsSndfileClass *sndfile);
 void ags_sndfile_connectable_interface_init(AgsConnectableInterface *connectable);

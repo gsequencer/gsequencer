@@ -25,17 +25,17 @@
 
 #include <ags/object/ags_soundcard.h>
 
-void ags_synth_sin(AgsSoundcard *soundcard, signed short *buffer, guint offset,
+void ags_synth_sin(GObject *soundcard, signed short *buffer, guint offset,
 		   guint freq, guint phase, guint length,
 		   double volume);
 
-void ags_synth_saw(AgsSoundcard *soundcard, signed short *buffer, guint offset,
+void ags_synth_saw(GObject *soundcard, signed short *buffer, guint offset,
 		   guint freq, guint phase, guint length,
 		   double volume);
-void ags_synth_triangle(AgsSoundcard *soundcard, signed short *buffer, guint offset,
+void ags_synth_triangle(GObject *soundcard, signed short *buffer, guint offset,
 			guint freq, guint phase, guint length,
 			double volume);
-void ags_synth_square(AgsSoundcard *soundcard, signed short *buffer, guint offset,
+void ags_synth_square(GObject *soundcard, signed short *buffer, guint offset,
 		      guint freq, guint phase, guint length,
 		      double volume);
 

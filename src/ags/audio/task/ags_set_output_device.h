@@ -39,7 +39,7 @@ struct _AgsSetOutputDevice
 {
   AgsTask task;
 
-  GObject *devout;
+  GObject *soundcard;
   char *card_id;
 };
 
@@ -50,7 +50,7 @@ struct _AgsSetOutputDeviceClass
 
 GType ags_set_output_device_get_type();
 
-AgsSetOutputDevice* ags_set_output_device_new(GObject *devout,
+AgsSetOutputDevice* ags_set_output_device_new(GObject *soundcard,
 					      char *card_id);
 
 #endif /*__AGS_SET_OUTPUT_DEVICE_H__*/

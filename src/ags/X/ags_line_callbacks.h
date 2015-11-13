@@ -37,6 +37,14 @@ void ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line);
 
 int ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
 
+void ags_line_add_effect_callback(AgsChannel *channel,
+				  gchar *filename,
+				  gchar *effect,
+				  AgsLine *line);
+void ags_line_remove_effect_callback(AgsChannel *channel,
+				     guint nth,
+				     AgsLine *line);
+
 /* AgsLine */
 void ags_line_volume_callback(GtkRange *range,
 			      AgsLine *line);

@@ -1,24 +1,27 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/thread/ags_record_thread.h>
 
 #include <ags/object/ags_connectable.h>
+
+#include <ags/object/ags_soundcard.h>
 
 void ags_record_thread_class_init(AgsRecordThreadClass *record_thread);
 void ags_record_thread_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -274,12 +277,12 @@ ags_record_thread_stop(AgsThread *thread)
 }
 
 AgsRecordThread*
-ags_record_thread_new(GObject *soundcard, AgsRegistry *registry)
+ags_record_thread_new(GObject *devout, AgsRegistry *registry)
 {
   AgsRecordThread *record_thread;
 
   record_thread = (AgsRecordThread *) g_object_new(AGS_TYPE_RECORD_THREAD,
-						   "soundcard\0", soundcard,
+						   "devout\0", devout,
 						   "registry\0", registry,
 						   NULL);
   

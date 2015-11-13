@@ -99,6 +99,8 @@ void ags_pad_map_recall(AgsPad *pad,
 
 GList* ags_pad_find_port(AgsPad *pad);
 
+void ags_pad_play(AgsPad *pad);
+
 AgsPad* ags_pad_new(AgsChannel *channel);
 
 #endif /*__AGS_PAD_H__*/

@@ -23,6 +23,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file_stock.h>
@@ -190,14 +191,21 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new("frequency\0"),
 			    2, 3, 1, 2);
-  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 0.0675);
-  oscillator->frequency->adjustment->value = AGS_OSCILLATOR_BASE_FREQUENCY;
-  gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frequency, 3, 4, 1, 2);
+  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
+  gtk_spin_button_set_digits(oscillator->frequency,
+			     3);
+  oscillator->frequency->adjustment->value = 27.5;
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) oscillator->frequency,
+			    3, 4,
+			    1, 2);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new("volume\0"),
 			    4, 5, 1, 2);
   oscillator->volume = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.1);
+  gtk_spin_button_set_digits(oscillator->volume,
+			     3);
   oscillator->volume->adjustment->value = 0.2;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->volume, 5, 6, 1, 2);
 }
@@ -269,7 +277,7 @@ ags_file_read_oscillator(AgsFile *file, xmlNode *node, AgsOscillator **oscillato
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -343,7 +351,7 @@ ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscilla
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

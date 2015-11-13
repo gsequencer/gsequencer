@@ -40,7 +40,7 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 
-#include <ags/X/file/ags_gsequencer_file_xml.h>
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_mixer_input_pad.h>
 #include <ags/X/machine/ags_mixer_input_line.h>
@@ -83,8 +83,6 @@ void ags_mixer_set_pads(AgsAudio *audio, GType type,
 static gpointer ags_mixer_parent_class = NULL;
 
 static AgsConnectableInterface *ags_mixer_parent_connectable_interface;
-
-extern const char *AGS_MIX_VOLUME;
 
 GType
 ags_mixer_get_type(void)
@@ -293,7 +291,7 @@ ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -357,7 +355,7 @@ ags_mixer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -405,13 +403,9 @@ ags_mixer_new(GObject *soundcard)
   mixer = (AgsMixer *) g_object_new(AGS_TYPE_MIXER,
 				    NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(mixer)->audio),
-			  "soundcard\0", &value);
-    g_value_unset(&value);
-  }
+  g_object_set(G_OBJECT(AGS_MACHINE(mixer)->audio),
+	       "soundcard\0", soundcard,
+	       NULL);
 
   return(mixer);
 }

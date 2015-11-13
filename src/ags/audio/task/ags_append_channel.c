@@ -21,11 +21,20 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/server/ags_server_application_context.h>
 #include <ags/server/ags_server.h>
+#include <ags/server/ags_service_provider.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
 
 void ags_append_channel_class_init(AgsAppendChannelClass *append_channel);
 void ags_append_channel_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -155,6 +164,10 @@ ags_append_channel_launch(AgsTask *task)
 
   GList *list;
 
+  AgsConfig *config;
+  
+  gchar *str0, *str1;
+  
   append_channel = AGS_APPEND_CHANNEL(task);
 
   audio_loop = AGS_AUDIO_LOOP(append_channel->audio_loop);
@@ -165,18 +178,38 @@ ags_append_channel_launch(AgsTask *task)
   ags_audio_loop_add_channel(audio_loop,
 			     append_channel->channel);
 
-  /* add to server registry */
-  server = NULL;
-  list = application_context->sibling;
+  /**/
+  config = ags_config_get_instance();
+  
+  str0 = ags_config_get_value(config,
+			AGS_CONFIG_THREAD,
+			"model\0");
 
-  while(list != NULL){
-    if(AGS_IS_SERVER_APPLICATION_CONTEXT(list->data)){
-      server = AGS_SERVER_APPLICATION_CONTEXT(list->data)->server;
-      break;
+  str1 = ags_config_get_value(config,
+			AGS_CONFIG_THREAD,
+			"super-threaded-scope\0");
+  
+  if(!g_ascii_strncasecmp(str0,
+			  "super-threaded\0",
+			  15)){
+    /* super threaed setup */
+    if(!g_ascii_strncasecmp(str1,
+			    "channel\0",
+			    8)){
+      if(AGS_PLAYBACK(channel->playback)->channel_thread[0]->parent == NULL &&
+	 (AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) != 0){
+	ags_thread_add_child_extended(audio_loop,
+				      AGS_PLAYBACK(channel->playback)->channel_thread[0],
+				      TRUE, TRUE);
+	ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(channel->playback)->channel_thread[0]));
+      }
     }
 
-    list = list->next;
-  }
+  free(str0);
+  free(str1);
+  
+  /* add to server registry */
+  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
 
   if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
     ags_connectable_add_to_registry(AGS_CONNECTABLE(append_channel->channel));

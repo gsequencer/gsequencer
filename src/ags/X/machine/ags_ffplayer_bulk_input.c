@@ -19,11 +19,8 @@
 #include <ags/X/machine/ags_ffplayer_bulk_input.h>
 #include <ags/X/machine/ags_ffplayer_bulk_input_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_marshal.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 void ags_ffplayer_bulk_input_class_init(AgsFFPlayerBulkInputClass *ffplayer_bulk_input);

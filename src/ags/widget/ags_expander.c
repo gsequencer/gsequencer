@@ -18,8 +18,6 @@
 
 #include "ags_expander.h"
 
-#include <ags/lib/ags_list.h>
-
 #include <stdlib.h>
 
 void ags_expander_class_init(AgsExpanderClass *expander);
@@ -291,7 +289,8 @@ ags_expander_finalize(GObject *gobject)
   expander = AGS_EXPANDER(gobject);
 
   if(expander->children != NULL){
-    ags_list_free_and_free_link(expander->children);
+    g_list_free_full(expander->children,
+		     g_free);
   }
 
   /* call parent */

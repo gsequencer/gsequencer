@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_playable.h>
+
 #include <ags/audio/file/ags_playable.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
@@ -319,9 +321,9 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
   GError *error;
 
   /* clear preset, instrument and sample*/
-  ags_combo_box_text_remove_all(sf2_chooser->preset);
-  ags_combo_box_text_remove_all(sf2_chooser->instrument);
-  ags_combo_box_text_remove_all(sf2_chooser->sample);
+  gtk_list_store_clear(GTK_LIST_STORE(sf2_chooser->preset));
+  gtk_list_store_clear(GTK_LIST_STORE(sf2_chooser->instrument));
+  gtk_list_store_clear(GTK_LIST_STORE(sf2_chooser->sample));
 
   /* Ipatch related */
   ipatch = g_object_new(AGS_TYPE_IPATCH,

@@ -20,22 +20,24 @@
 
 #include <ags/object/ags_application_context.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/task/ags_change_tact.h>
 #include <ags/X/task/ags_display_tact.h>
+
+#include <ags/X/editor/ags_note_edit.h>
+#include <ags/X/editor/ags_pattern_edit.h>
 
 void
 ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
@@ -100,6 +102,14 @@ ags_navigation_bpm_callback(GtkWidget *widget,
 {
   AgsWindow *window;
   AgsApplyBpm *apply_bpm;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
   
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
@@ -108,13 +118,22 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));
-
-  application_context = window->application_context;
   
-  main_loop = application_context->main_loop;
+  application_context = window->application_context;
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   apply_bpm = ags_apply_bpm_new(G_OBJECT(window->soundcard),
 				navigation->bpm->adjustment->value);
@@ -127,6 +146,13 @@ void
 ags_navigation_rewind_callback(GtkWidget *widget,
 			       AgsNavigation *navigation)
 {
+  AgsWindow *window;
+  gdouble tact;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
+  
   gtk_spin_button_set_value(navigation->position_tact,
 			    -1.0 * AGS_NAVIGATION_REWIND_STEPS +
 			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
@@ -136,6 +162,13 @@ void
 ags_navigation_prev_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
+  AgsWindow *window;
+  gdouble tact;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
+  
   gtk_spin_button_set_value(navigation->position_tact,
 			    -1.0 * AGS_NAVIGATION_SEEK_STEPS +
 			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
@@ -163,9 +196,17 @@ ags_navigation_play_callback(GtkWidget *widget,
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       printf("found machine to play!\n\0");
-
-      ags_machine_set_run(machine,
-			  TRUE);
+#endif
+      
+      if(!initialized_time){
+	initialized_time = TRUE;
+	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
+      }
+      
+      ags_machine_set_run_extended(machine,
+				   TRUE,
+				   !gtk_toggle_button_get_active(navigation->exclude_sequencer), TRUE);
+      g_message("well off\0");
     }
 
     machines = machines->next;
@@ -189,7 +230,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       printf("found machine to stop!\n\0");
 
@@ -208,12 +249,31 @@ ags_navigation_stop_callback(GtkWidget *widget,
 			       FALSE);
 
   navigation->flags &= (~AGS_NAVIGATION_BLOCK_PLAY);
+
+  navigation->start_tact = 0.0;
+
+  timestr = ags_navigation_tact_to_time_string(0.0,
+					       navigation->bpm->adjustment->value,
+					       ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard)));
+  gtk_label_set_text(navigation->duration_time, timestr);
+  
+  g_free(timestr);
+
+  /* reset editor */
+  window->editor->current_tact = 0.0;
 }
 
 void
 ags_navigation_next_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
+  AgsWindow *window;
+  gdouble tact;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
+
   gtk_spin_button_set_value(navigation->position_tact,
 			    AGS_NAVIGATION_REWIND_STEPS+
 			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
@@ -223,6 +283,12 @@ void
 ags_navigation_forward_callback(GtkWidget *widget,
 				AgsNavigation *navigation)
 {
+  AgsWindow *window;
+  gdouble tact;
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    AGS_NAVIGATION_SEEK_STEPS +
@@ -390,37 +456,55 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 }
 
 void
-ags_navigation_tic_callback(AgsSoundcard *soundcard,
+ags_navigation_tic_callback(GObject *soundcard,
 			    AgsNavigation *navigation)
-{ 
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-  
+{
+  AgsWindow *window;
+
   AgsChangeTact *change_tact;
   AgsDisplayTact *display_tact;
 
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
   AgsApplicationContext *application_context;
-  
-  GList *list;
 
-  application_context = ags_soundcard_get_application_context(soundcard);
-  
-  main_loop = application_context->main_loop;
+  pthread_mutex_t *application_mutex;
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-  list = NULL;
+  if((AGS_NAVIGATION_BLOCK_TIC & (navigation->flags)) != 0){
+    navigation->flags &= (~AGS_NAVIGATION_BLOCK_TIC);
+    return;
+  }
 
-  change_tact = ags_change_tact_new(navigation);
-  list = g_list_prepend(list,
-			change_tact);
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
-  display_tact = ags_display_tact_new(navigation);
-  list = g_list_prepend(list,
-			display_tact);
+  if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) != navigation->note_offset){
+    application_context = window->application_context;
 
-  list = g_list_reverse(list);
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  ags_task_thread_append_tasks(task_thread,
-			       list);
+    /* get audio loop */
+    pthread_mutex_lock(application_mutex);
+
+    audio_loop = application_context->main_loop;
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* get task thread */
+    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_TASK_THREAD);
+
+    display_tact = ags_display_tact_new((GtkWidget *) navigation);
+    ags_task_thread_append_task(task_thread,
+				display_tact);
+  }
+}
+
+void
+ags_navigation_soundcard_stop_callback(GObject *soundcard,
+				       AgsNavigation *navigation)
+{  
+  navigation->flags |= AGS_NAVIGATION_BLOCK_TIC;
 }

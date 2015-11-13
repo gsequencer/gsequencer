@@ -21,18 +21,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_lv2_manager.h>
-
-#include <dlfcn.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <ladspa.h>
-
 void ags_menu_bar_class_init(AgsMenuBarClass *menu_bar);
 void ags_menu_bar_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_menu_bar_init(AgsMenuBar *menu_bar);
@@ -113,21 +101,24 @@ void
 ags_menu_bar_init(AgsMenuBar *menu_bar)
 {
   GtkImageMenuItem *item;
-
+  GtkAccelGroup *accel_group;
+  
+  accel_group = gtk_accel_group_new();
+  
   /* File */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_FILE, NULL);
+  item = (GtkImageMenuItem *) gtk_menu_item_new_with_mnemonic("_File\0");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
   menu_bar->file = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->file);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE_AS, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE_AS, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
@@ -142,23 +133,23 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_EDIT, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_EDIT, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
   /* Edit */
   menu_bar->edit = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->edit);
 
-  //  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_UNDO, NULL);
+  //  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_UNDO, accel_group);
   //  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
 
-  //  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REDO, NULL);
+  //  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REDO, accel_group);
   //  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ADD, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ADD, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
   /* add */
@@ -186,58 +177,23 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("bridge\0");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  /* bridge */
-  menu_bar->bridge = (GtkMenu *) gtk_menu_new();
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->bridge);
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Replicator\0");
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Midi Input\0");
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Midi Output\0");
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("LADSPA\0");
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
-
-  /* LADSPA */
-  menu_bar->ladspa = ags_ladspa_menu_new();
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->ladspa);
-  
-  /* bridge */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("lv2\0");
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->bridge, (GtkWidget*) item);
-  
-  /* Lv2 */
-  menu_bar->lv2 = ags_lv2_menu_new();
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->lv2);
-  
-  /* edit */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_REMOVE, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Automation\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Automation Editor\0");
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
-
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
-			(GtkWidget*) gtk_separator_menu_item_new());
-
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
   /* Help */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
   menu_bar->help = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->help);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, NULL);
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->help, (GtkWidget*) item);
 }
 
@@ -371,9 +327,8 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_list_free(list3_start);
   g_list_free(list2_start);
 
-  /* edit */
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_remove_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_automation_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 

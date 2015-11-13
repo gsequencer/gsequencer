@@ -1,27 +1,26 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_SOUND_PROVIDER_H__
 #define __AGS_SOUND_PROVIDER_H__
 
 #include <glib-object.h>
-
-#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_SOUND_PROVIDER                    (ags_sound_provider_get_type())
 #define AGS_SOUND_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUND_PROVIDER, AgsSoundProvider))
@@ -37,11 +36,31 @@ struct _AgsSoundProviderInterface
 {
   GTypeInterface interface;
 
+  void (*set_soundcard)(AgsSoundProvider *sound_provider,
+			GList *soundcard);
   GList* (*get_soundcard)(AgsSoundProvider *sound_provider);
+
+  void (*set_sequencer)(AgsSoundProvider *sound_provider,
+			GList *sequencer);
+  GList* (*get_sequencer)(AgsSoundProvider *sound_provider);
+
+  void (*set_distributed_manager)(AgsSoundProvider *sound_provider,
+				 GList *distributed_manager);
+  GList* (*get_distributed_manager)(AgsSoundProvider *sound_provider);
 };
 
 GType ags_sound_provider_get_type();
 
+void ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
+				      GList *soundcard);
 GList* ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider);
+
+void ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
+				      GList *sequencer);
+GList* ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider);
+
+void ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
+					       GList *distributed_manager);
+GList* ags_sound_provider_get_distributed_manager(AgsSoundProvider *sound_provider);
 
 #endif /*__AGS_SOUND_PROVIDER_H__*/

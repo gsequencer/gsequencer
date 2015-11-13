@@ -25,6 +25,7 @@
 
 #include <ags/audio/ags_recall.h>
 
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_RECALL_AUDIO_SIGNAL                (ags_recall_audio_signal_get_type())

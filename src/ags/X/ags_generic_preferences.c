@@ -19,10 +19,8 @@
 #include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>
@@ -180,21 +178,24 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
-
-  application_context = AGS_WINDOW(preferences->parent)->application_context;
-  config = application_context->config;
+  config = ags_config_get_instance();
   
-  if(gtk_toggle_button_get_active(generic_preferences->autosave_thread)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->autosave_thread)){
     ags_config_set_value(config,
-			 AGS_CONFIG_GENERIC,
-			 "autosave-thread\0",
-			 "true\0");
+		   AGS_CONFIG_GENERIC,
+		   "autosave-thread\0",
+		   "true\0");
   }else{
     ags_config_set_value(config,
-			 AGS_CONFIG_GENERIC,
-			 "autosave-thread\0",
-			 "false\0");
+		   AGS_CONFIG_GENERIC,
+		   "autosave-thread\0",
+		   "false\0");
   }
+
+  ags_config_set_value(config,
+		 AGS_CONFIG_GENERIC,
+		 "segmentation\0",
+		 gtk_combo_box_text_get_active_text(generic_preferences->segmentation));
 }
 
 void
@@ -210,14 +211,12 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
-
-  application_context = AGS_WINDOW(preferences->parent)->application_context;
-  config = application_context->config;
+  config = ags_config_get_instance();
   
-  gtk_toggle_button_set_active(generic_preferences->autosave_thread,
-			       ((!strncmp(ags_config_get_value( config,
-								AGS_CONFIG_GENERIC,
-								"autosave-thread\0"),
+  gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
+			       ((!strncmp(ags_config_get_value(config,
+							 AGS_CONFIG_GENERIC,
+							 "autosave-thread\0"),
 					  "true\0",
 					  5)) ? TRUE: FALSE));
 }

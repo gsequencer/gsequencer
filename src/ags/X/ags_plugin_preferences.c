@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 

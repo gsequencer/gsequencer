@@ -42,10 +42,10 @@ typedef struct _AgsChannelThread AgsChannelThread;
 typedef struct _AgsChannelThreadClass AgsChannelThreadClass;
 
 typedef enum{
-  AGS_CHANNEL_THREAD_WAITING    = 1,
-  AGS_CHANNEL_THREAD_WAKEUP     = 1 <<  1,
-  AGS_CHANNEL_THREAD_DONE       = 1 <<  2,
-  AGS_CHANNEL_THREAD_NOTIFY     = 1 <<  3,
+  AGS_CHANNEL_THREAD_DONE            = 1,
+  AGS_CHANNEL_THREAD_WAIT            = 1 <<  1,
+  AGS_CHANNEL_THREAD_DONE_SYNC       = 1 <<  2,
+  AGS_CHANNEL_THREAD_WAIT_SYNC       = 1 <<  3,
 }AgsChannelThreadFlags;
 
 struct _AgsChannelThread
@@ -53,7 +53,9 @@ struct _AgsChannelThread
   AgsThread thread;
 
   volatile guint flags;
-  
+
+  GObject *soundcard;
+    
   pthread_mutexattr_t wakeup_attr;
   pthread_mutex_t *wakeup_mutex;
   pthread_cond_t *wakeup_cond;
@@ -72,7 +74,7 @@ struct _AgsChannelThreadClass
 
 GType ags_channel_thread_get_type();
 
-AgsChannelThread* ags_channel_thread_new(GObject *devout,
+AgsChannelThread* ags_channel_thread_new(GObject *soundcard,
 					 GObject *channel);
 
 #endif /*__AGS_CHANNEL_THREAD_H__*/

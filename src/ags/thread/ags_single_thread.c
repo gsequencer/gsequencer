@@ -229,5 +229,3 @@ ags_single_thread_new()
 
   return(single_thread);
 }
-
-

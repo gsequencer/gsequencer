@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2013 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/thread/ags_export_thread.h>
@@ -168,8 +169,39 @@ ags_export_thread_init(AgsExportThread *export_thread)
 {
   AgsThread *thread;
 
-  thread = AGS_THREAD(export_thread);
-  thread->freq = AGS_EXPORT_THREAD_DEFAULT_JIFFIE;
+  AgsConfig *config;
+  
+  gchar *str0, *str1;
+  
+  thread = (AgsThread *) export_thread;
+
+  config = ags_config_get_instance();
+  
+  str0 = ags_config_get_value(config,
+			AGS_CONFIG_SOUNDCARD,
+			"samplerate\0");
+  str0 = ags_config_get_value(config,
+			AGS_CONFIG_SOUNDCARD,
+			"buffer_size\0");
+
+  if(str0 == NULL || str1 == NULL){
+    thread->freq = AGS_EXPORT_THREAD_DEFAULT_JIFFIE;
+  }else{
+    guint samplerate;
+    guint buffer_size;
+
+    samplerate = g_ascii_strtoull(str0,
+				  NULL,
+				  10);
+    buffer_size = g_ascii_strtoull(str0,
+				   NULL,
+				   10);
+
+    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size);
+  }
+
+  g_free(str0);
+  g_free(str1);
 
   export_thread->flags = 0;
 
@@ -290,8 +322,14 @@ ags_export_thread_finalize(GObject *gobject)
 void
 ags_export_thread_start(AgsThread *thread)
 {
+  AgsExportThread *export_thread;
+  
   //TODO:JK: implement me
   g_message("export start");
+
+  export_thread = (AgsExportThread *) thread;
+  
+  export_thread->counter = 0;
 
   AGS_THREAD_CLASS(ags_export_thread_parent_class)->start(thread);
 }

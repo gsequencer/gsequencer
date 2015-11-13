@@ -36,20 +36,21 @@
 
 #define AGS_ACCOUNTING_TABLE(ptr) ((AgsAccountingTable *)(ptr))
 
-#define MSEC_PER_SEC    (1000000) /* The number of msecs per sec. */
+#define USEC_PER_SEC    (1000000) /* The number of usecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
 
+#define AGS_PRIORITY (5)
 #define AGS_RT_PRIORITY (49)
 
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
 #define AGS_THREAD_DEFAULT_JIFFIE (250)
-#define AGS_THREAD_MAX_PRECISION (1000)
+#define AGS_THREAD_MAX_PRECISION (250)
 #define AGS_THREAD_DEFAULT_ATTACK (1.0)
 
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
-typedef struct _AgsAccountingTable AgsAccountingTable;
+typedef struct _AgsAccountingTable AgsAccountingTable;;
 
 typedef enum{
   AGS_THREAD_RUNNING                 = 1,
@@ -99,7 +100,7 @@ struct _AgsThread
   volatile guint flags;
 
   sigset_t wait_mask;
-
+  
   pthread_t *thread;
   pthread_attr_t thread_attr;
 
@@ -110,8 +111,12 @@ struct _AgsThread
   pthread_mutexattr_t mutexattr;
   pthread_cond_t *cond;
 
+  volatile GList *start_queue;
+  
   pthread_mutex_t *start_mutex;
   pthread_cond_t *start_cond;
+  volatile gboolean start_wait;
+  volatile gboolean start_done;
 
   pthread_barrier_t **barrier;
   gboolean first_barrier;
@@ -132,13 +137,19 @@ struct _AgsThread
   pthread_mutex_t *suspend_mutex;
   volatile gboolean critical_region;
 
-  AgsThread *parent;
+  volatile gboolean timer_wait;
+  volatile gboolean timer_expired;
+  pthread_mutex_t *timer_mutex;
+  pthread_cond_t *timer_cond;
+  
+  volatile AgsThread *parent;
 
-  AgsThread *next;
-  AgsThread *prev;
+  volatile AgsThread *next;
+  volatile AgsThread *prev;
 
-  AgsThread *children;
+  volatile AgsThread *children;
 
+  GMainLoop *main_loop;
   gpointer data;
 };
 
@@ -161,6 +172,9 @@ struct _AgsAccountingTable
 };
 
 GType ags_thread_get_type();
+
+void ags_thread_resume_handler(int sig);
+void ags_thread_suspend_handler(int sig);
 
 AgsAccountingTable* ags_accounting_table_alloc(AgsThread *thread);
 void ags_accounting_table_set_sanity(GList *table,
@@ -221,6 +235,7 @@ void ags_thread_stop(AgsThread *thread);
 void ags_thread_hangcheck(AgsThread *thread);
 
 AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
+AgsThread* ags_thread_self(void);
 
 void ags_thread_cleanup(AgsThread *thread);
 

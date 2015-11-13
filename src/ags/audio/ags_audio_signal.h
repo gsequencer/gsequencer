@@ -70,7 +70,8 @@ struct _AgsAudioSignal
   guint samplerate;
   guint buffer_size;
   guint format;
-
+  guint word_size;
+  
   guint length;
   guint first_frame;
   guint last_frame; // the last frame at stream_end
@@ -137,6 +138,13 @@ void ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 void ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 			    AgsAudioSignal *template,
 			    guint length);
+
+void ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
+			       gdouble attack,
+			       gdouble decay,
+			       gdouble sustain,
+			       gdouble release,
+			       gdouble ratio);
 
 AgsAudioSignal* ags_audio_signal_new(GObject *soundcard,
 				     GObject *recycling,

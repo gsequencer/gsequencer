@@ -20,9 +20,6 @@
 #include <ags/audio/recall/ags_mute_recycling.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/recall/ags_mute_audio_signal.h>

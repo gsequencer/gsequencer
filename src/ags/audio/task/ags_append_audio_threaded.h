@@ -24,8 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/thread/ags_task.h>
-
-#include <ags/audio/ags_playback.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_APPEND_AUDIO_THREADED                (ags_append_audio_threaded_get_type())
 #define AGS_APPEND_AUDIO_THREADED(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPEND_AUDIO_THREADED, AgsAppendAudioThreaded))
@@ -42,7 +41,7 @@ struct _AgsAppendAudioThreaded
   AgsTask task;
 
   GObject *audio_loop;
-  AgsPlayback *playback;
+  GObject *playback;
 };
 
 struct _AgsAppendAudioThreadedClass
@@ -53,6 +52,6 @@ struct _AgsAppendAudioThreadedClass
 GType ags_append_audio_threaded_get_type();
 
 AgsAppendAudioThreaded* ags_append_audio_threaded_new(GObject *audio_loop,
-						      AgsPlayback *playback);
+						      GObject *playback);
 
 #endif /*__AGS_APPEND_AUDIO_THREADED_H__*/

@@ -18,10 +18,10 @@
 #include <xmlrpc-c/server_abyss.h>
 #endif
 
-//#include "config.h"
-
 #include <ags/server/ags_registry.h>
 #include <ags/server/ags_remote_task.h>
+
+#include <pthread.h>
 
 #define AGS_TYPE_SERVER                (ags_server_get_type())
 #define AGS_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER, AgsServer))
@@ -52,9 +52,9 @@ struct _AgsServer
   struct sockaddr_in address;
 
   void *server_info;
-
+  
   GObject *application_context;
-  pthread_mutex_t *application_mutex;
+  pthread_mutex_t  *application_mutex;
   
   AgsRegistry *registry;
   AgsRemoteTask *remote_task;

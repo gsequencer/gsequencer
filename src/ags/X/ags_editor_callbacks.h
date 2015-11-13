@@ -34,13 +34,8 @@
 void ags_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent,
 				    AgsEditor *editor);
 
-void ags_editor_set_audio_channels_callback(AgsAudio *audio,
-					    guint audio_channels, guint audio_channels_old,
-					    AgsEditor *editor);
-void ags_editor_set_pads_callback(AgsAudio *audio,
-				  GType channel_type,
-				  guint pads, guint pads_old,
-				  AgsEditor *editor);
+void ags_editor_tic_callback(GObject *soundcard,
+			     AgsEditor *editor);
 
 void ags_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 					 AgsEditor *editor);

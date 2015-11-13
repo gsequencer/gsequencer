@@ -38,7 +38,7 @@ struct _AgsAudioFile
   GObject object;
 
   GObject *soundcard;
-  
+
   gchar *filename;
   guint samplerate;
   guint frames;
@@ -47,9 +47,9 @@ struct _AgsAudioFile
 
   guint start_channel;
   guint audio_channels;
-  
+
   GObject *playable;
-  
+
   GList *audio_signal;
 };
 
@@ -72,7 +72,7 @@ void ags_audio_file_write(AgsAudioFile *audio_file,
 			  signed short *buffer, guint buffer_size);
 void ags_audio_file_flush(AgsAudioFile *audio_file);
 
-AgsAudioFile* ags_audio_file_new(gchar *filename,
+AgsAudioFile* ags_audio_file_new(gchar *name,
 				 GObject *soundcard,
 				 guint start_channel, guint audio_channels);
 

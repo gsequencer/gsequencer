@@ -22,40 +22,44 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback.h>
+#include <ags/audio/ags_notation.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
 
 #include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_remove_audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_midi_dialog.h>
 
 #include <ags/X/editor/ags_file_selection.h>
 
-#define AGS_RENAME_ENTRY "AgsRenameEntry\0"
+#define AGS_RENAME_ENTRY "AgsRenameEntry"
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-void ags_machine_start_failure_response(GtkWidget *dialog, AgsMachine *machine);
+int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_midi_dialog_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine);
+void ags_machine_start_complete_response(GtkWidget *dialog, gint response, AgsMachine *machine);
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
 {
   AgsWindow *window = AGS_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET(handle_box)));
 
-  if(event->button == 3)
+  if(event->button == 3){
     gtk_menu_popup (GTK_MENU (machine->popup),
                     NULL, NULL, NULL, NULL,
                     event->button, event->time);
-  else if(event->button == 1)
+  }else if(event->button == 1){
     window->selected = machine;
+  }
 
   return(0);
 }
@@ -126,19 +130,34 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   AgsWindow *window;
   
   AgsRemoveAudio *remove_audio;
-  
-  AgsThread *main_loop, *current;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
+
+  GList *list, *list_start;
+
+  pthread_mutex_t *application_mutex;
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   remove_audio = ags_remove_audio_new(window->soundcard,
 				      machine->audio);
@@ -207,6 +226,59 @@ ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *ma
   gtk_widget_show_all((GtkWidget *) machine->properties);
 
   return(0);
+}
+
+int
+ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  machine->properties = NULL;
+}
+
+int
+ags_machine_popup_copy_pattern_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  ags_machine_copy_pattern(machine);
+
+  return(0);
+}
+
+int
+ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  //TODO:JK: implement me
+  
+  return(0);
+}
+
+int
+ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  AgsMidiDialog *midi_dialog;
+  
+  if(machine->connection == NULL){
+    midi_dialog =
+      machine->connection = ags_midi_dialog_new(machine);
+
+    g_signal_connect(midi_dialog, "delete-event\0",
+		     G_CALLBACK(ags_machine_midi_dialog_delete_event_callback), machine);
+
+    ags_connectable_connect(AGS_CONNECTABLE(midi_dialog));
+    ags_applicable_reset(AGS_APPLICABLE(midi_dialog));
+  }else{
+    midi_dialog = machine->connection;
+  }
+
+  gtk_widget_show_all(midi_dialog);
+  
+  return(0);
+}
+
+void
+ags_machine_midi_dialog_delete_event_callback(GtkWidget *dialog, gint response, AgsMachine *machine)
+{
+  g_message("delete-event\0");
+  
+  machine->connection = NULL;
 }
 
 void
@@ -468,14 +540,26 @@ ags_machine_start_failure_callback(AgsTask *task, GError *error,
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_MACHINE);
   
-  dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-						       GTK_DIALOG_DESTROY_WITH_PARENT,
-						       GTK_MESSAGE_ERROR,
-						       GTK_BUTTONS_CLOSE,
-						       error->message);
-  g_signal_connect(dialog, "response\0",
-		   G_CALLBACK(ags_machine_start_failure_response), machine);
-  gtk_widget_show_all(dialog);
+  AgsSoundcardThread *soundcard_thread;
+  AgsTask *task;
+
+  task = (AgsTask *) task_completion->task;
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,
+								 AGS_TYPE_SOUNDCARD_THREAD);
+
+  if(soundcard_thread->error != NULL){
+    /* show error message */
+    dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
+							 GTK_DIALOG_DESTROY_WITH_PARENT,
+							 GTK_MESSAGE_ERROR,
+							 GTK_BUTTONS_CLOSE,
+							 "Error: %s\0", soundcard_thread->error->message);
+    g_signal_connect(dialog, "response\0",
+		     G_CALLBACK(ags_machine_start_complete_response), machine);
+    gtk_widget_show_all((GtkWidget *) dialog);
+  }
 }
 
 void

@@ -23,9 +23,10 @@
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_portlet.h>
 
+#include <ags/thread/ags_timestamp.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_timestamp.h>
 
 #include <stdlib.h>
 #include <errno.h>

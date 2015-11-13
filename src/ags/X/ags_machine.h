@@ -32,8 +32,8 @@
 #define AGS_IS_MACHINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MACHINE))
 #define AGS_MACHINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MACHINE, AgsMachineClass))
 
-#define AGS_MACHINE_DEFAULT_VERSION "0.4.2\0"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_MACHINE_DEFAULT_VERSION "0.7.0\0"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 30-10-2015 02:37\0"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineClass AgsMachineClass;
@@ -57,11 +57,24 @@ typedef enum{
   AGS_MACHINE_ACCEPT_SOUNDFONT2   = 1 <<  2,
 }AgsMachineFileInputFlags;
 
+typedef enum{
+  AGS_MACHINE_MONO = 1,
+}AgsMachineMappingFlags;
+
+typedef enum{
+  AGS_MACHINE_POPUP_COPY_PATTERN          = 1,
+  AGS_MACHINE_POPUP_PASTE_PATTERN         = 1 <<  1,
+}AgsMachineEditOptions;
+
+typedef enum{
+  AGS_MACHINE_POPUP_MIDI_DIALOG           = 1,
+}AgsMachineConnectionOptions;
+
 struct _AgsMachine
 {
   GtkHandleBox handle_box;
 
-  GObject *ags_main;
+  GObject *application_context;
 
   char *name;
 
@@ -79,17 +92,25 @@ struct _AgsMachine
   GType output_line_type;
   GtkContainer *output;
 
+  GtkWidget *selected_output_pad;
+  
   GType input_pad_type;
   GType input_line_type;
   GtkContainer *input;
+  
+  GtkWidget *selected_input_pad;
 
   GtkContainer *bridge;
+
+  GList *port;
+  gchar **automation_port;
 
   gchar **automation_port;
   
   GtkMenu *popup;
   GtkDialog *properties;
   GtkDialog *rename;
+  GtkDialog *connection;
 };
 
 struct _AgsMachineClass
@@ -129,6 +150,8 @@ void ags_machine_open_files(AgsMachine *machine,
 			    GSList *filenames,
 			    gboolean overwrite_channels,
 			    gboolean create_channels);
+
+void ags_machine_copy_pattern(AgsMachine *machine);
 
 AgsMachine* ags_machine_new(GObject *soundcard);
 

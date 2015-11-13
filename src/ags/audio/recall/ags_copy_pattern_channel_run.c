@@ -410,12 +410,15 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   
   ags_port_safe_set_property(copy_pattern_channel->pattern,
 			     "offset\0", &offset_value);
-
+  g_value_unset(&offset_value);
+  
   ags_port_safe_set_property(copy_pattern_channel->pattern,
 			     "first-index\0", &i_value);
+  g_value_unset(&i_value);
   
   ags_port_safe_set_property(copy_pattern_channel->pattern,
 			     "second-index\0", &j_value);
+  g_value_unset(&j_value);
   
   /* read pattern port - current bit */
   g_value_init(&current_bit_value, G_TYPE_BOOLEAN);
@@ -423,13 +426,17 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 			     "current-bit\0", &current_bit_value);
 
   current_bit = g_value_get_boolean(&current_bit_value);
-
+  g_value_unset(&current_bit_value);
+  
   /*  */
   if(current_bit){
+    GObject *soundcard;
     AgsRecycling *recycling;
     AgsAudioSignal *audio_signal;
     gdouble delay;
     guint attack;
+  
+    soundcard = AGS_RECALL(copy_pattern_channel_run)->soundcard;
 
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
@@ -458,7 +465,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	  while(list != NULL){
 	    if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_context){
-	      child_recall_id = list->data;
+	      child_recall_id = (AgsRecallID *) list->data;
 	      break;
 	    }
 	  
@@ -471,7 +478,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	}
 
 	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
-					    recycling,
+					    (GObject *) recycling,
 					    child_recall_id);
 	ags_recycling_create_audio_signal_with_defaults(recycling,
 							audio_signal,

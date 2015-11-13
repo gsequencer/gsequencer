@@ -22,10 +22,9 @@
 #include <ags/audio/recall/ags_mute_channel.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>

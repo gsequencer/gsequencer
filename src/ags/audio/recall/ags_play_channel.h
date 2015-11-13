@@ -23,9 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_channel.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_channel.h>
 
 #define AGS_TYPE_PLAY_CHANNEL                (ags_play_channel_get_type())
 #define AGS_PLAY_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_CHANNEL, AgsPlayChannel))

@@ -19,7 +19,6 @@
 #include <ags/X/ags_audio_preferences.h>
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
@@ -291,36 +290,46 @@ ags_audio_preferences_apply(AgsApplicable *applicable)
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
+  config = ags_config_get_instance();
 
   application_context = AGS_WINDOW(preferences->parent)->application_context;
 
   config = application_context->config;
   
+  //FIXME:JK: work-around for alsa-handle
+  str = g_strdup_printf("%s,0", g_value_get_string(&value));
+  g_message("%s\0", str);
+  ags_config_set_value(config,
+		 AGS_CONFIG_SOUNDCARD,
+		 "alsa-handle\0",
+		 str);
+  g_free(str);
+
   /* samplerate */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->samplerate));
   ags_config_set_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0",
-		       str);
+		 AGS_CONFIG_SOUNDCARD,
+		 "samplerate\0",
+		 str);
   g_free(str);
 
   /* buffer size */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->buffer_size));
   ags_config_set_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0",
-		       str);
+		 AGS_CONFIG_SOUNDCARD,
+		 "buffer-size\0",
+		 str);
   g_free(str);
 
   /* dsp channels */
   str = g_strdup_printf("%u\0",
 			(guint) gtk_spin_button_get_value(audio_preferences->audio_channels));
   ags_config_set_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "dsp-channels\0",
-		       str);
+		 AGS_CONFIG_SOUNDCARD,
+		 "dsp-channels\0",
+		 str);
   g_free(str);
 
   /* card */
@@ -336,15 +345,23 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   AgsWindow *window;
   AgsPreferences *preferences;
   AgsAudioPreferences *audio_preferences;
+  
+  AgsConfig *config;
   AgsSoundcard *soundcard;
   GtkListStore *model;
   GtkTreeIter iter;
   GList *card_id, *card_name;
-  char *device;
+
+  char *device, *str, *tmp;
+  guint nth;
+  gboolean found_card;
   int card_num;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
+
+  GValue value =  {0,};
+  
   GError *error;
 
   audio_preferences = AGS_AUDIO_PREFERENCES(applicable);
@@ -352,14 +369,23 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   /*  */
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = AGS_WINDOW(preferences->parent);
+  window = AGS_WINDOW(preferences->window);
+  config = ags_config_get_instance();
 
   soundcard = AGS_SOUNDCARD(window->soundcard);
 
   /* refresh */
-  ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard),
-			   &card_id, &card_name);
-  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+  ags_soundcard_list_cards(soundcard,
+			   &card_id, &card_name);    
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "alsa-handle\0");
+#ifdef AGS_DEBUG
+  g_message("configured soundcard: %s\0", str);
+#endif
+  
+  nth = 0;
+  found_card = FALSE;
 
   while(card_id != NULL){
     gtk_list_store_append(model, &iter);
@@ -379,12 +405,12 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			  GTK_TREE_MODEL(model));
 
   /*  */
-  g_object_get(G_OBJECT(soundcard),
-	       "device\0", &device,
-	       "pcm-channels\0", &channels,
-	       "frequency\0", &rate,
-	       "buffer-size\0", &buffer_size,
-	       NULL);
+  device = ags_soundcard_get_device(soundcard);
+  ags_soundcard_get_presets(soundcard,
+			    &channels,
+			    &rate,
+			    &buffer_size,
+			    NULL);
 
 
   error = NULL;
@@ -403,13 +429,27 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 			    (gdouble) buffer_size);
 
   /*  */
+  model = gtk_combo_box_get_model(audio_preferences->card);
+
+  if(!(gtk_combo_box_get_active_iter(audio_preferences->card,
+				     &current))){
+    return;
+  }
+
+  gtk_tree_model_get_value(model,
+			   &current,
+			   0,
+			   &value);
+  str = g_strdup(g_value_get_string(&value));
+
+  error = NULL;
   ags_soundcard_pcm_info(soundcard,
-			 gtk_combo_box_get_active_text(audio_preferences->card),
+			 str,
 			 &channels_min, &channels_max,
 			 &rate_min, &rate_max,
 			 &buffer_size_min, &buffer_size_max,
 			 &error);
-  
+
   if(error != NULL){
     GtkMessageDialog *dialog;
 

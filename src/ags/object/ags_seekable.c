@@ -20,6 +20,17 @@
 
 void ags_seekable_base_init(AgsSeekableInterface *interface);
 
+/**
+ * SECTION:ags_seekable
+ * @short_description: unique access to recalls
+ * @title: AgsSeekable
+ * @section_id:
+ * @include: ags/object/ags_seekable.h
+ *
+ * The #AgsSeekable interface gives you the #AgsSeekable::seek() signal
+ * what notifies about changed offset of pattern or notation.
+ */
+
 GType
 ags_seekable_get_type()
 {
@@ -46,6 +57,16 @@ ags_seekable_base_init(AgsSeekableInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_seekable_seek:
+ * @seekable: the #AgsSeekable interface
+ * @steps: the amount of seeking
+ * @forward: the direction, %TRUE for moving ahead
+ *
+ * Seek relatively.
+ *
+ * Since: 0.5.0
+ */
 void
 ags_seekable_seek(AgsSeekable *seekable, guint steps, gboolean forward)
 {

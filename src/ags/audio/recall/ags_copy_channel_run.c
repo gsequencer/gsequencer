@@ -21,9 +21,6 @@
 #include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -251,7 +248,7 @@ ags_copy_channel_run_duplicate(AgsRecall *recall,
  * ags_copy_channel_run_new:
  * @destination: the destination #AgsChannel
  * @source: the source #AgsChannel
- * @soundcard: the #GObject implementing #AgsSoundcard defaulting to
+ * @soundcard: the #GObject defaulting to
  *
  * Creates an #AgsCopyChannelRun
  *

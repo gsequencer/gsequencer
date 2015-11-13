@@ -20,7 +20,6 @@
 #include <ags/audio/ags_recall_audio_signal.h>
 #include <ags/audio/ags_recall_recycling.h>
 
-#include <ags/lib/ags_list.h>
 #include <ags/lib/ags_parameter.h>
 
 #include <ags/object/ags_connectable.h>
@@ -66,9 +65,9 @@ AgsRecall* ags_recall_audio_signal_duplicate(AgsRecall *recall,
 					     guint *n_params, GParameter *parameter);
 
 void ags_recall_audio_signal_notify_soundcard(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
-					   gpointer data);
+					      gpointer data);
 void ags_recall_audio_signal_notify_soundcard_after(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
-						 gpointer data);
+						    gpointer data);
 
 /**
  * SECTION:ags_recall_audio_signal
@@ -120,9 +119,9 @@ ags_recall_audio_signal_get_type()
     };
 
     ags_type_recall_audio_signal = g_type_register_static(AGS_TYPE_RECALL,
-							"AgsRecallAudioSignal\0",
-							&ags_recall_audio_signal_info,
-							0);
+							  "AgsRecallAudioSignal\0",
+							  &ags_recall_audio_signal_info,
+							  0);
 
     g_type_add_interface_static(ags_type_recall_audio_signal,
 				AGS_TYPE_CONNECTABLE,
@@ -259,9 +258,9 @@ ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal)
 
 void
 ags_recall_audio_signal_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec)
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec)
 {
   AgsRecallAudioSignal *recall_audio_signal;
 
@@ -321,9 +320,9 @@ ags_recall_audio_signal_set_property(GObject *gobject,
 
 void
 ags_recall_audio_signal_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec)
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec)
 {
   AgsRecallAudioSignal *recall_audio_signal;
 
@@ -531,14 +530,14 @@ ags_recall_audio_signal_done(AgsRecall *recall)
 
 void
 ags_recall_audio_signal_notify_soundcard(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
-				      gpointer data)
+					 gpointer data)
 {
   //TODO:JK: implement me
 }
 
 void
 ags_recall_audio_signal_notify_soundcard_after(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
-					    gpointer data)
+					       gpointer data)
 {
   //TODO:JK: implement me
 }

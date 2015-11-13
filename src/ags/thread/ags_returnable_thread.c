@@ -235,6 +235,7 @@ ags_returnable_thread_run(AgsThread *thread)
 				       thread));
 
     ags_returnable_thread_disconnect(returnable_thread);
+    ags_returnable_thread_disconnect_safe_run(returnable_thread);
     g_atomic_int_and(&(returnable_thread->flags),
 		     (~AGS_RETURNABLE_THREAD_IN_USE));
     

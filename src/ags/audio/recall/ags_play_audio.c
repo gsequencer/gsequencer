@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_play_audio.h>
 
-#include <ags/main.h>
-
 void ags_play_audio_class_init(AgsPlayAudioClass *play_audio);
 void ags_play_audio_init(AgsPlayAudio *play_audio);
 void ags_play_audio_finalize(GObject *gobject);

@@ -181,7 +181,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 		    label);
 
   automation_toolbar->zoom = ags_zoom_combo_box_new();
-  gtk_combo_box_set_active(automation_toolbar->zoom, 4);
+  gtk_combo_box_set_active(automation_toolbar->zoom, 2);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->zoom,
 			    NULL,

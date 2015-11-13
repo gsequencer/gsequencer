@@ -20,13 +20,9 @@
 #include <ags/audio/recall/ags_volume_audio_signal.h>
 #include <ags/audio/recall/ags_volume_channel.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
-#include <ags/lib/ags_list.h>
 #include <ags/lib/ags_parameter.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/ags_recall_channel_run.h>
@@ -227,6 +223,7 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     signed short *buffer;
     gdouble volume;
     guint buffer_size;
+    guint limit;
     guint i;
     GValue value = {0,};
 
@@ -240,8 +237,30 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 
     volume = g_value_get_double(&value);
 
-    for(i = 0; i < buffer_size; i++){
-      buffer[i] = (signed short) ((0xffff) & (int)((gdouble)volume * (gdouble)buffer[i]));
+    /* unrolled loop */
+    limit = buffer_size - 7;
+    
+    for(i = 0; i < limit; i += 8){
+      buffer[i] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i]));
+      
+      buffer[i + 1] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 1]));
+      
+      buffer[i + 2] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 2]));
+      
+      buffer[i + 3] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 3]));
+
+      buffer[i + 4] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 4]));
+
+      buffer[i + 5] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 5]));
+
+      buffer[i + 6] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 6]));
+
+      buffer[i + 7] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i + 7]));
+
+    }
+
+    for(; i < buffer_size; i++){
+      buffer[i] = (signed short) ((0xffff) & (signed long)((gdouble)volume * (gdouble)buffer[i]));
     }
   }else{
     ags_recall_done(recall);

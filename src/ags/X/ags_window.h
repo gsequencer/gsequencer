@@ -23,16 +23,14 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/X/ags_automation_window.h>
-
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_export_window.h>
+#include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_preferences.h>
+#include <ags/X/ags_history_browser.h>
 
 #define AGS_TYPE_WINDOW                (ags_window_get_type())
 #define AGS_WINDOW(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WINDOW, AgsWindow))
@@ -60,6 +58,10 @@ struct _AgsWindow
 
   guint flags;
 
+  GObject *application_context;
+
+  GObject *soundcard;
+
   char *name;
 
   GObject *application_context;
@@ -84,6 +86,7 @@ struct _AgsWindow
   GtkWidget *import_window;
 
   AgsPreferences *preferences;
+  AgsHistoryBrowser *history_browser;
 };
 
 struct _AgsWindowClass

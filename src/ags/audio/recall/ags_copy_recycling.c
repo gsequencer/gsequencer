@@ -20,9 +20,6 @@
 #include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_dynamic_connectable.h>
 
 #include <ags/audio/recall/ags_copy_audio_signal.h>
@@ -262,7 +259,7 @@ ags_copy_recycling_duplicate(AgsRecall *recall,
  * ags_copy_recycling_new:
  * @destination: the destination #AgsRecycling
  * @source: the source #AgsRecycling
- * @soundcard: the #GObject implementing #AgsSoundcard
+ * @soundcard: the #GObject defaulting to
  *
  * Creates an #AgsCopyRecycling
  *

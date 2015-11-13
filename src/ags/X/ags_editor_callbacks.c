@@ -18,12 +18,18 @@
 
 #include <ags/X/ags_editor_callbacks.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
+#include <ags/object/ags_application_context.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/ags_notation.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/X/ags_window.h>
+
+#include <ags/X/task/ags_scroll_on_play.h>
 
 #include <ags/X/editor/ags_toolbar.h>
 #include <ags/X/editor/ags_notebook.h>
@@ -73,18 +79,55 @@ ags_editor_set_audio_channels_callback(AgsAudio *audio,
 }
 
 void
-ags_editor_set_pads_callback(AgsAudio *audio,
-			     GType channel_type,
-			     guint pads, guint pads_old,
-			     AgsEditor *editor)
+ags_editor_tic_callback(GObject *soundcard,
+			AgsEditor *editor)
+
 {
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    if(!g_type_is_a(channel_type, AGS_TYPE_INPUT)){
-      return;
-    }
-  }else{
-    if(!g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
-      return;
+  AgsWindow *window;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+  
+  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
+
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task and soundcard thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  if(gtk_toggle_button_get_active(window->navigation->scroll)){
+    AgsScrollOnPlay *scroll_on_play;
+    double tact_factor, zoom_factor;
+    double tact;
+    gdouble step;
+    
+    zoom_factor = 0.25;
+
+    tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) window->editor->toolbar->zoom));
+    tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) window->editor->toolbar->zoom) - 2.0);
+
+    if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard)) > editor->current_tact){
+      editor->current_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+      
+      scroll_on_play = ags_scroll_on_play_new(editor, 64.0);
+      ags_task_thread_append_task(task_thread,
+				  AGS_TASK(scroll_on_play));
     }
   }
 

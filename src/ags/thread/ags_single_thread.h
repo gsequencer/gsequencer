@@ -57,4 +57,3 @@ GType ags_single_thread_get_type();
 AgsSingleThread* ags_single_thread_new();
 
 #endif /*__AGS_SINGLE_THREAD_H__*/
-

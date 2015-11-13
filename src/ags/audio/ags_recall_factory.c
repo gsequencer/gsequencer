@@ -22,6 +22,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall.h>
@@ -1034,7 +1036,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 	  }
       
 	  if(found_buffer){
-	    output = output->next;
+	    output = output->next_pad;
 	    continue;
 	  }
 	
@@ -1129,7 +1131,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 	  }
 	
 	  if(found_buffer){
-	    output = output->next;
+	    output = output->next_pad;
 	    continue;
 	  }
 
@@ -2892,12 +2894,25 @@ ags_recall_factory_create(AgsAudio *audio,
 			  guint start_pad, guint stop_pad,
 			  guint create_flags, guint recall_flags)
 {
-  AgsAutomation *automation;
+  GList *list;
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
-  GList *recall_start, *recall, *port;
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-  /*  */
-  recall_start = NULL;
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(audio_mutex);
+
+  list = NULL;
 
 #ifdef AGS_DEBUG
   g_message("AgsRecallFactory creating: %s[%d,%d]\0", plugin_name, stop_pad, stop_audio_channel);

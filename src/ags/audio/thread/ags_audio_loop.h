@@ -65,18 +65,13 @@ struct _AgsAudioLoop
   volatile guint tic;
   volatile guint last_sync;
 
-  GCond cond;
-  GMutex mutex;
-
-  gdouble frequency;
-
   GObject *application_context;
-  pthread_mutex_t *application_mutex;
-
-  GObject *async_queue;
-  
   GObject *soundcard;
   
+  GObject *async_queue;
+    
+  pthread_mutexattr_t tree_lock_mutexattr;
+  pthread_mutex_t *tree_lock;
   pthread_mutex_t *recall_mutex;
 
   guint play_recall_ref;
@@ -114,6 +109,6 @@ void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, GObject *playback);
 
 void ags_audio_loop_stopped_all(AgsAudioLoop *audio_loop);
 
-AgsAudioLoop* ags_audio_loop_new(GObject *soundcard, GObject *application_context);
+AgsAudioLoop* ags_audio_loop_new(GObject *devout, GObject *application_context);
 
 #endif /*__AGS_AUDIO_LOOP_H__*/

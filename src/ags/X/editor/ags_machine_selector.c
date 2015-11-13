@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_notation.h>
+
 void ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector);
 void ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_selector_init(AgsMachineSelector *machine_selector);
@@ -119,29 +121,29 @@ void
 ags_machine_selector_init(AgsMachineSelector *machine_selector)
 {
   GtkHBox *hbox;
-  GtkLabel *label;
-  GtkMenuToolButton *menu_button;
 
+  machine_selector->flags = 0;
+  
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start(GTK_BOX(machine_selector),
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) gtk_label_new("Notation\0");
+  machine_selector->label = (GtkLabel *) gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(label),
+		     GTK_WIDGET(machine_selector->label),
 		     FALSE, FALSE,
 		     0);
 
-  machine_selector->popup = ags_machine_selector_popup_new(machine_selector);
+  machine_selector->current = NULL;
+  machine_selector->popup = NULL;
 
-  menu_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+  machine_selector->menu_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 			     "stock-id\0", GTK_STOCK_EXECUTE,
-			     "menu\0", machine_selector->popup,
 			     NULL);
   gtk_box_pack_start(GTK_BOX(hbox),
-		     GTK_WIDGET(menu_button),
+		     GTK_WIDGET(machine_selector->menu_button),
 		     FALSE, FALSE,
 		     0);
 }
@@ -227,6 +229,57 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("link index\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
+  if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) != 0){
+    item = (GtkMenuItem *) gtk_check_menu_item_new_with_label(g_strdup("reverse mapping\0"));
+    gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
+  }
+
+  if((AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (machine_selector->flags)) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("shift piano\0"));
+    gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
+
+    keys = (GtkMenu *) gtk_menu_new();
+    gtk_menu_item_set_submenu(item,
+			      keys);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("A\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("A#\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("H\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("C\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("C#\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("D\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("D#\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("E\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("F\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("F#\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("G\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("G#\0"));
+    gtk_menu_shell_append((GtkMenuShell*) keys, (GtkWidget*) item);
+  }
+  
+  /* connect */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) popup);
 
@@ -249,7 +302,31 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_link_index_callback), (gpointer) machine_selector);
 
+  if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) != 0){
+    list = list->next;
+    g_signal_connect_after(G_OBJECT(list->data), "activate\0",
+			   G_CALLBACK(ags_machine_selector_popup_reverse_mapping_callback), (gpointer) machine_selector);
+  }
+
   g_list_free(list_start);
+
+  /* keys */
+  if((AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (machine_selector->flags)) != 0){
+    list_start = 
+      list = gtk_container_get_children((GtkContainer *) keys);
+
+    while(list != NULL){
+      g_signal_connect(G_OBJECT(list->data), "activate\0",
+		       G_CALLBACK(ags_machine_selector_popup_shift_piano_callback), (gpointer) machine_selector);
+
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+  }
+  
+  /* show */
+  gtk_widget_show_all((GtkWidget *) keys);
   gtk_widget_show_all((GtkWidget *) popup);
 
   return(popup);

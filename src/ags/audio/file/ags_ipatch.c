@@ -20,7 +20,8 @@
 #include <ags/audio/file/ags_ipatch.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/ags_playable.h>
 
 #include <ags/audio/file/ags_playable.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
@@ -59,7 +60,7 @@ signed short* ags_ipatch_read(AgsPlayable *playable, guint channel,
 			      GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
 GList* ags_ipatch_read_audio_signal(AgsPlayable *playable,
-				    AgsSoundcard *soundcard,
+				    GObject *soundcard,
 				    guint start_channel, guint channels);
 
 /**
@@ -715,6 +716,10 @@ ags_ipatch_info(AgsPlayable *playable,
   AgsIpatch *ipatch;
   IpatchSample *sample;
 
+  if(ipatch == NULL){
+    return;
+  }
+  
   ipatch = AGS_IPATCH(playable);
 
   if(ipatch->iter == NULL){
@@ -766,6 +771,10 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
   guint i;
   GError *this_error;
 
+  if(ipatch == NULL){
+    return(NULL);
+  }
+  
   ipatch = AGS_IPATCH(playable);
 
   this_error = NULL;
@@ -846,7 +855,7 @@ ags_ipatch_finalize(GObject *gobject)
  */
 GList*
 ags_ipatch_read_audio_signal(AgsPlayable *playable,
-			     AgsSoundcard *soundcard,
+			     GObject *soundcard,
 			     guint start_channel, guint channels)
 {
   AgsIpatch *ipatch;

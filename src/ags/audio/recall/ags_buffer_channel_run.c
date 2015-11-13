@@ -20,12 +20,10 @@
 #include <ags/audio/recall/ags_buffer_channel_run.h>
 #include <ags/audio/recall/ags_buffer_recycling.h>
 
-#include <ags-lib/object/ags_connectable.h>
-
-#include <ags/main.h>
-
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>

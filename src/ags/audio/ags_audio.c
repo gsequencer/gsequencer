@@ -19,30 +19,31 @@
 
 #include <ags/audio/ags_audio.h>
 
-#include <ags/lib/ags_list.h>
-
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
-#include <ags/server/ags_server_application_context.h>
 #include <ags/server/ags_server.h>
+#include <ags/server/ags_service_provider.h>
+#include <ags/server/ags_registry.h>
 
+#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>
+
+#include <ags/audio/thread/ags_audio_thread.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -106,6 +107,8 @@ enum{
 enum{
   PROP_0,
   PROP_SOUNDCARD,
+  PROP_SEQUENCER,
+  PROP_MIDI_FILE,
   PROP_AUDIO_CHANNELS,
   PROP_INPUT_PADS,
   PROP_INPUT_LINES,
@@ -124,8 +127,6 @@ enum{
 };
 
 static gpointer ags_audio_parent_class = NULL;
-
-static guint audio_signals[LAST_SIGNAL];
 
 GType
 ags_audio_get_type (void)
@@ -197,11 +198,43 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
+   * AgsAudio:sequencer:
+   *
+   * The assigned #AgsSequencer acting as default sink.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("sequencer\0",
+				   "assigned sequencer\0",
+				   "The sequencer it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEQUENCER,
+				  param_spec);
+
+  /**
+   * AgsAudio:midi-file:
+   *
+   * The assigned #AgsMidiFile acting as default sink.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("midi-file\0",
+				   "assigned midi_file\0",
+				   "The midi file it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI_FILE,
+				  param_spec);
+
+  /**
    * AgsAudio:audio-channels:
    *
    * The audio channels count.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec =  g_param_spec_uint("audio-channels\0",
 				  "audio channels count\0",
@@ -220,7 +253,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The input pads count.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec =  g_param_spec_uint("input-pads\0",
 				  "input pads count\0",
@@ -238,7 +271,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The input lines count.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec =  g_param_spec_uint("input-lines\0",
 				  "input lines count\0",
@@ -256,7 +289,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The output pads count.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec =  g_param_spec_uint("output-pads\0",
 				  "output pads count\0",
@@ -274,7 +307,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The output lines count.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec =  g_param_spec_uint("output-lines\0",
 				  "output lines count\0",
@@ -293,7 +326,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsOutput it contains.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("output\0",
 				   "containing output\0",
@@ -303,13 +336,13 @@ ags_audio_class_init(AgsAudioClass *audio)
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT,
 				  param_spec);
-  
+
   /**
    * AgsAudio:input:
    *
    * The #AgsInput it contains.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("input\0",
 				   "containing input\0",
@@ -325,7 +358,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsPlaybackDomain.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("playback-domain\0",
 				   "assigned playback domain\0",
@@ -341,7 +374,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsNotation it contains.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("notation\0",
 				   "containing notation\0",
@@ -357,7 +390,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsAutomation it contains.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("automation\0",
 				   "containing automation\0",
@@ -373,7 +406,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsRecallID.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("recall-id\0",
 				   "assigned recall id\0",
@@ -383,13 +416,13 @@ ags_audio_class_init(AgsAudioClass *audio)
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT,
 				  param_spec);
-  
+
   /**
    * AgsAudio:recycling-context:
    *
    * The assigned #AgsRecyclingContext.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("recycling-context\0",
 				   "assigned recycling context\0",
@@ -405,7 +438,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsRecallContainer it contains in container-context.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("recall-container\0",
 				   "containing recall container\0",
@@ -415,13 +448,13 @@ ags_audio_class_init(AgsAudioClass *audio)
   g_object_class_install_property(gobject,
 				  PROP_RECALL_CONTAINER,
 				  param_spec);
-  
+
   /**
    * AgsAudio:play:
    *
    * The #AgsRecall it contains in play-context.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("play\0",
 				   "containing play\0",
@@ -437,7 +470,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsRecall it contains in recall-context.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_object("recall\0",
 				   "containing recall\0",
@@ -447,7 +480,8 @@ ags_audio_class_init(AgsAudioClass *audio)
   g_object_class_install_property(gobject,
 				  PROP_RECALL,
 				  param_spec);
-    
+
+  
   /* AgsAudioClass */
   audio->set_audio_channels = ags_audio_real_set_audio_channels;
   audio->set_pads = ags_audio_real_set_pads;
@@ -567,10 +601,47 @@ ags_audio_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_audio_init(AgsAudio *audio)
 {
+  AgsConfig *config;
+  
+  AgsMutexManager *mutex_manager;
+
+  gchar *str0, *str1;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  /* insert audio mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) audio,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* base init */
   audio->flags = 0;
 
   audio->soundcard = NULL;
-
+  
+  audio->sequencer = NULL;
+  audio->midi_file = NULL;
+  
   audio->sequence_length = 0;
   audio->audio_channels = 0;
   audio->frequence = 0;
@@ -584,7 +655,48 @@ ags_audio_init(AgsAudio *audio)
   audio->input = NULL;
 
   audio->playback_domain = ags_playback_domain_new();
-  AGS_PLAYBACK_DOMAIN(audio->playback_domain)->domain = audio;
+  AGS_PLAYBACK_DOMAIN(audio->playback_domain)->domain = (GObject *) audio;
+
+  /**/
+  config = ags_config_get_instance();
+  
+  str0 = ags_config_get_value(config,
+			AGS_CONFIG_THREAD,
+			"model\0");
+  str1 = ags_config_get_value(config,
+			AGS_CONFIG_THREAD,
+			"super-threaded-scope\0");
+  
+  if(!g_ascii_strncasecmp(str0,
+			  "super-threaded\0",
+			  15)){
+    if(!g_ascii_strncasecmp(str1,
+			    "audio\0",
+			    6) ||
+       !g_ascii_strncasecmp(ags_config_get_value(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "channel\0",
+			    8) ||
+       !g_ascii_strncasecmp(ags_config_get_value(config,
+					   AGS_CONFIG_THREAD,
+					   "super-threaded-scope\0"),
+			    "recycling\0",
+			    10)){
+      g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+		      AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
+
+      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
+											  audio);
+      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
+											  audio);
+      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
+											  audio);
+    }
+  }
+
+  free(str0);
+  free(str1);
   
   audio->notation = NULL;
   audio->automation = NULL;
@@ -617,11 +729,52 @@ ags_audio_set_property(GObject *gobject,
     {
       GObject *soundcard;
 
-      soundcard = (GObject *) g_value_get_object(value);
+      soundcard = g_value_get_object(value);
 
       ags_audio_set_soundcard(audio, (GObject *) soundcard);
     }
     break;
+  case PROP_SEQUENCER:
+    {
+      GObject *sequencer;
+
+      sequencer = g_value_get_object(value);
+
+      if(audio->sequencer == sequencer){
+	return;
+      }
+
+      if(audio->sequencer != NULL){
+	g_object_unref(audio->sequencer);
+      }
+
+      if(sequencer != NULL) {
+	g_object_ref(sequencer);
+      }
+
+      audio->sequencer = sequencer;
+    }
+    break;
+  case PROP_MIDI_FILE:
+    {
+      GObject *midi_file;
+
+      midi_file = g_value_get_object(value);
+
+      if(audio->midi_file == midi_file){
+	return;
+      }
+
+      if(audio->midi_file != NULL){
+	g_object_unref(audio->midi_file);
+      }
+
+      if(midi_file != NULL) {
+	g_object_ref(midi_file);
+      }
+
+      audio->midi_file = midi_file;
+    }
   case PROP_AUDIO_CHANNELS:
     {
       guint audio_channels;
@@ -665,7 +818,7 @@ ags_audio_set_property(GObject *gobject,
       if(audio->playback_domain != NULL){
 	g_object_unref(audio->playback_domain);
       }
-      
+
       if(playback_domain != NULL){
 	g_object_ref(playback_domain);
       }
@@ -767,6 +920,235 @@ ags_audio_set_property(GObject *gobject,
   case PROP_RECALL:
     {
       AgsRecall *recall;
+
+      recall = (AgsRecall *) g_value_get_object(value);
+
+      if(recall == NULL ||
+	 g_list_find(audio->recall, recall) != NULL){
+	return;
+      }
+
+      ags_audio_add_recall(audio,
+			   recall,
+			   FALSE);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_audio_get_property(GObject *gobject,
+		       guint prop_id,
+		       GValue *value,
+		       GParamSpec *param_spec)
+{
+  AgsAudio *audio;
+
+  audio = AGS_AUDIO(gobject);
+
+  switch(prop_id){
+  case PROP_SOUNDCARD:
+    g_value_set_object(value, audio->soundcard);
+    break;
+  case PROP_SEQUENCER:
+    g_value_set_object(value, audio->sequencer);
+    break;
+  case PROP_MIDI_FILE:
+    g_value_set_object(value, audio->midi_file);
+    break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      g_value_set_uint(value, audio->audio_channels);
+    }
+    break;
+  case PROP_INPUT_PADS:
+    {
+      g_value_set_uint(value, audio->input_pads);
+    }
+    break;
+  case PROP_INPUT_LINES:
+    {
+      g_value_set_uint(value, audio->input_lines);
+    }
+    break;
+  case PROP_OUTPUT_PADS:
+    {
+      g_value_set_uint(value, audio->output_pads);
+    }
+    break;
+  case PROP_OUTPUT_LINES:
+    {
+      g_value_set_uint(value, audio->output_lines);
+    }
+    break;
+  case PROP_INPUT:
+    {
+      g_value_set_object(value, audio->input);
+    }
+    break;
+  case PROP_OUTPUT:
+    {
+      g_value_set_object(value, audio->output);
+    }
+    break;
+  case PROP_PLAYBACK_DOMAIN:
+    {
+      g_value_set_object(value, audio->playback_domain);
+    }
+    break;
+  case PROP_NOTATION:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->notation));
+    }
+    break;
+  case PROP_AUTOMATION:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->automation));
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->recall_id));
+    }
+    break;
+  case PROP_RECYCLING_CONTEXT:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->recycling_context));
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->container));
+    }
+    break;
+  case PROP_PLAY:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->play));
+    }
+    break;
+  case PROP_RECALL:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->recall));
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_audio_finalize(GObject *gobject)
+{
+  AgsAudio *audio;
+  AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  audio = AGS_AUDIO(gobject);
+
+  if(audio->soundcard != NULL){
+    g_object_unref(audio->soundcard);
+  }
+
+  if(audio->sequencer != NULL){
+    g_object_unref(audio->sequencer);
+  }
+
+  if(audio->midi_file != NULL){
+    g_object_unref(audio->midi_file);
+  }
+  
+  /* output */
+  channel = audio->output;
+
+  if(channel != NULL){
+    while(channel->next != NULL){
+      channel = channel->next;
+      g_object_unref((GObject *) channel->prev);
+    }
+
+    g_object_unref((GObject *) channel);
+  }
+
+  /* input */
+  channel = audio->input;
+
+  if(channel != NULL){
+    while(channel->next != NULL){
+      channel = channel->next;
+      g_object_unref((GObject *) channel->prev);
+    }
+
+    g_object_unref(channel);
+  }
+
+  /* free some lists */
+  g_list_free_full(audio->notation,
+		   g_object_unref);
+
+  g_list_free_full(audio->recall_id,
+		   g_object_unref);
+
+  g_list_free_full(audio->recall,
+		   g_object_unref);
+  g_list_free_full(audio->play,
+		   g_object_unref);
+
+  g_list_free_full(audio->recall_remove,
+		   g_object_unref);
+  g_list_free_full(audio->play_remove,
+		   g_object_unref);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_parent_class)->finalize(gobject);
+}
+
+void
+ags_audio_add_to_registry(AgsConnectable *connectable)
+{
+  AgsAudio *audio;
+  AgsChannel *channel;
+
+  AgsServer *server;
+  AgsRegistryEntry *entry;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+  
+  audio = AGS_AUDIO(connectable);
+
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
+
+  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(application_context));
+
+  entry = ags_registry_entry_alloc(server->registry);
+  g_value_set_object(&(entry->entry),
+		     (gpointer) audio);
+  ags_registry_add(server->registry,
+		   entry);
+
+  /* add play */
+  list = audio->play;
+
+  while(list != NULL){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
 
       recall = (AgsRecall *) g_value_get_object(value);
 
@@ -1118,7 +1500,7 @@ ags_audio_connect(AgsConnectable *connectable)
   
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
+    
     list = list->next;
   }
 }
@@ -1218,6 +1600,98 @@ ags_audio_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_audio_set_soundcard:
+ * @audio: the #AgsAudio
+ * @soundcard: an #AgsSoundcard
+ *
+ * Sets a soundcard object on audio.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
+{
+  AgsChannel *channel;
+  GList *list;
+  AgsMutexManager *mutex_manager;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+  
+  /* audio */
+  if(audio->soundcard == soundcard){
+    pthread_mutex_unlock(mutex);
+    return;
+  }
+
+  if(audio->soundcard != NULL)
+    g_object_unref(audio->soundcard);
+
+  if(soundcard != NULL)
+    g_object_ref(soundcard);
+
+  audio->soundcard = (GObject *) soundcard;
+
+  /* recall */
+  list = audio->play;
+  
+  while(list != NULL){
+    g_object_set(G_OBJECT(list->data),
+		 "soundcard\0", soundcard,
+		 NULL);
+    
+    list = list->next;
+  }
+  
+  list = audio->recall;
+  
+  while(list != NULL){
+    g_object_set(G_OBJECT(list->data),
+		 "soundcard\0", soundcard,
+		 NULL);
+    
+    list = list->next;
+  }
+  
+  /* input */
+  channel = audio->input;
+
+  while(channel != NULL){
+    g_object_set(G_OBJECT(channel),
+		 "soundcard\0", soundcard,
+		 NULL);
+    
+    channel = channel->next;
+  }
+
+  /* output */
+  channel = audio->output;
+
+  while(channel != NULL){
+    g_object_set(G_OBJECT(channel),
+		 "soundcard\0", soundcard,
+		 NULL);
+    
+    channel = channel->next;
+  }
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
  * ags_audio_set_flags:
  * @audio: an AgsAudio
  * @flags: see enum AgsAudioFlags
@@ -1303,8 +1777,6 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(audio_set_recycling));
   }
 
   if(audio == NULL || !AGS_IS_AUDIO(audio)){
@@ -1405,8 +1877,6 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 						      parameter);
 
     /* append AgsAudioSetRecycling */
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(audio_set_recycling));
   }
 
   if(audio == NULL || !AGS_IS_AUDIO(audio)){
@@ -1440,14 +1910,22 @@ void
 ags_audio_real_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old)
 {
-  AgsChannel *channel, *prev_pad, *input, *input_pad_last;
-  AgsRecycling *recycling;
-  GObject *parent; // of recycling
-  GList *list;
-  guint pads, i, j;
+  AgsMutexManager *mutex_manager;
+  
   gboolean alloc_recycling;
   gboolean link_recycling; // affects AgsInput
   gboolean set_sync_link, set_async_link; // affects AgsOutput
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *prev_mutex, *prev_pad_mutex, *current_mutex;
+  
+  auto void ags_audio_set_audio_channels_init_parameters(GType type);
+  auto void ags_audio_set_audio_channels_grow(GType type);
+  auto void ags_audio_set_audio_channels_shrink_zero();
+  auto void ags_audio_set_audio_channels_shrink();
+  auto void ags_audio_set_audio_channels_grow_notation();
+  auto void ags_audio_set_audio_channels_shrink_notation();
+  
   void ags_audio_set_audio_channels_init_parameters(GType type){
     if(type == AGS_TYPE_OUTPUT){
       link_recycling = FALSE;
@@ -1458,15 +1936,12 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	alloc_recycling = FALSE;
 
 	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
-	  input = ags_channel_nth(audio->input, audio->audio_channels);
-
 	  if((AGS_AUDIO_SYNC & (audio->flags)) != 0 && (AGS_AUDIO_ASYNC & (audio->flags)) == 0){
 	    set_sync_link = FALSE;
 	    set_async_link = TRUE;
 	  }else if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
 	    set_async_link = TRUE;
 	    set_sync_link = FALSE;
-	    input_pad_last = ags_channel_nth(input, audio->input_lines - (audio_channels - audio->audio_channels));
 	  }else{
 #ifdef AGS_DEBUG
 	    g_message("ags_audio_set_audio_channels - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined\0");
@@ -1480,21 +1955,27 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       set_sync_link = FALSE;
       set_async_link = FALSE;
       
-      if((AGS_AUDIO_INPUT_HAS_RECYCLING & audio->flags) != 0)
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & audio->flags) != 0){
 	alloc_recycling = TRUE;
-      else
+      }else{
 	alloc_recycling = FALSE;
-
-      if((AGS_AUDIO_ASYNC & audio->flags) != 0 && alloc_recycling)
+      }
+      
+      if((AGS_AUDIO_ASYNC & audio->flags) != 0 && alloc_recycling){
 	link_recycling = TRUE;
-      else
+      }else{
 	link_recycling = FALSE;
+      }
     }    
   }
+  
   void ags_audio_set_audio_channels_grow(GType type){
-    AgsChannel *start;
+    AgsChannel *channel, *start, *current;
+    AgsRecycling *first_recycling, *last_recycling;
+	  
+    guint pads;
     guint i, j;
-    
+
     if(type == AGS_TYPE_OUTPUT){
       /* AGS_TYPE_OUTPUT */
       pads = audio->output_pads;
@@ -1507,8 +1988,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       start = audio->input;
     }
 
+    /* grow */
     for(j = 0; j < pads; j++){
-      for(i = audio->audio_channels; i < audio_channels; i++){
+      for(i = audio_channels_old; i < audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio\0", (GObject *) audio,
 					      "soundcard\0", audio->soundcard,
@@ -1517,7 +1999,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	if(start == NULL){
 	  start = channel;
 
-	  if(type == AGS_TYPE_OUTPUT){
+	  if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
 	    audio->output = channel;
 	  }else{
 	    audio->input = channel;
@@ -1525,37 +2007,73 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	}
 	
 	if(j * audio_channels + i != 0){
+	  /* set prev */
 	  channel->prev = ags_channel_nth(start, j * audio_channels + i - 1);
+
+	  pthread_mutex_lock(application_mutex);
+	  
+	  prev_mutex = ags_mutex_manager_lookup(mutex_manager,
+						(GObject *) channel->prev);
+	  
+	  pthread_mutex_unlock(application_mutex);
+	  
+	  pthread_mutex_lock(prev_mutex);
+	  
 	  channel->prev->next = channel;
+
+	  pthread_mutex_unlock(prev_mutex);
 	}
 	
 	if(j != 0){
+	  /* set prev pad */
 	  channel->prev_pad = ags_channel_pad_nth(ags_channel_nth(start,
 								  i),
 						  j - 1);
+
+	  pthread_mutex_lock(application_mutex);
+	  
+	  prev_pad_mutex = ags_mutex_manager_lookup(mutex_manager,
+						    (GObject *) channel->prev_pad);
+	  
+	  pthread_mutex_unlock(application_mutex);
+
+	  pthread_mutex_lock(prev_pad_mutex);
+	  
 	  channel->prev_pad->next_pad = channel;
+
+	  pthread_mutex_unlock(prev_pad_mutex);
 	}
-	
+
+	/* set indices */
 	channel->pad = j;
-	channel->line = j;
+	channel->audio_channel = i;
+	channel->line = j * audio->audio_channels + i;
 
+	/* reset nested AgsRecycling tree */
 	if(alloc_recycling){
-	  channel->first_recycling =
-	    channel->last_recycling = ags_recycling_new(audio->soundcard);
-
-	  if(link_recycling){
-	    recycling->next = channel->first_recycling;
-	    recycling->next->prev = recycling;
-	    recycling = recycling->next;
-	  }
-
-	  channel->first_recycling->channel = (GObject *) channel;
+	  first_recycling =
+	    last_recycling = ags_recycling_new(audio->soundcard);
+	  
+	  first_recycling->channel = (GObject *) channel;
+	  
+	  ags_channel_set_recycling(channel,
+				    first_recycling, last_recycling,
+				    TRUE, TRUE);
 	}else if(set_sync_link){
+	  AgsChannel *input;
+
+	  input = ags_channel_nth(audio->input,
+				  channel->line);
+	  
 	  /* set sync link */
-	  channel->first_recycling = input->first_recycling;
-	  channel->last_recycling = input->last_recycling;
-	
-	  input = input->next;
+	  if(input != NULL){
+	    first_recycling = input->first_recycling;
+	    last_recycling = input->last_recycling;
+	    
+	    ags_channel_set_recycling(channel,
+				      first_recycling, last_recycling,
+				      TRUE, TRUE);
+	  }
 	}else if(set_async_link){
 	  AgsChannel *input, *input_pad_last;
 
@@ -1565,18 +2083,24 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  /* set async link */
 	  if(input != NULL){
 	    input_pad_last = ags_channel_pad_last(input);
+
+	    first_recycling = input->first_recycling;
+	    last_recycling = input_pad_last->last_recycling;
 	    
-	    channel->first_recycling = input->first_recycling;
-	    channel->last_recycling = input_pad_last->last_recycling;
+	    ags_channel_set_recycling(channel,
+				      first_recycling, last_recycling,
+				      TRUE, TRUE);
 	  }
 	}
       }
     }
   }
+  
   void ags_audio_set_audio_channels_shrink_zero(){
-    AgsChannel *start, *channel_next;
-    AgsRecycling *prev_recycling, *next_recycling;
+    AgsChannel *channel, *start, *channel_next;
+    
     gboolean first_run;
+    
     GError *error;
 
     start =
@@ -1616,10 +2140,15 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     audio->output = NULL;
     audio->input = NULL;
   }
+  
   void ags_audio_set_audio_channels_shrink(){
-    AgsChannel *channel0, *channel1, *start;
+    AgsChannel *channel, *start;
+    AgsChannel *channel0, *channel1;
     AgsRecycling *recycling;
+
+    guint pads, i, j;
     gboolean first_run;
+    
     GError *error;
 
     start =
@@ -1666,11 +2195,12 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
 	channel->next = channel1;
 
-	if(channel1 != NULL)
+	if(channel1 != NULL){
 	  channel1->prev = channel;
-	else
+	}else{
 	  break;
-
+	}
+	
 	channel = channel1;
       }
     }
@@ -1684,6 +2214,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       goto ags_audio_set_audio_channel_shrink0;
     }
   }
+  
   void ags_audio_set_audio_channels_grow_notation(){
     GList *list;
     guint i;
@@ -1712,6 +2243,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 					       i);
     } 
   }
+  
   void ags_audio_set_audio_channels_shrink_notation(){
     GList *list, *list_next;
 
@@ -1732,14 +2264,20 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       list = list_next;
     }
   }
-
+  
   /* entry point */
-  if(audio_channels > audio->audio_channels){
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* grow / shrink */
+  if(audio_channels > audio_channels_old){
     AgsPlaybackDomain *playback_domain;
     AgsChannel *current;
 
-    /* grow audio channels*/
-    if((AGS_AUDIO_HAS_NOTATION & audio->flags) != 0){
+    guint i;
+    
+    /* grow audio channels */
+    if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0){
       ags_audio_set_audio_channels_grow_notation();
     }
 
@@ -1757,7 +2295,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     audio->output_lines = audio_channels * audio->output_pads;
 
-    /* alloc playback domain */
+    /* grow playback domain */
     playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
     current = ags_channel_nth(audio->output,
 			      audio->audio_channels);
@@ -1766,14 +2304,19 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       for(i = 0; i < audio_channels - audio_channels_old; i++){
 	playback_domain->playback = g_list_append(playback_domain->playback,
 						  current->playback);
-
+	
 	current = current->next;
       }
     }
-  }else if(audio_channels < audio->audio_channels){
+  }else if(audio_channels < audio_channels_old){
     AgsPlaybackDomain *playback_domain;
+    AgsPlayback *playback;
     AgsChannel *current;
 
+    GList *list;
+    
+    guint i, j;
+    
     /* shrink audio channels */
     if((AGS_AUDIO_HAS_NOTATION & audio->flags) != 0){
       ags_audio_set_audio_channels_shrink_notation();
@@ -1788,18 +2331,23 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     audio->input_lines = audio_channels * audio->input_pads;
     audio->output_lines = audio_channels * audio->output_pads;
 
+    /* shrink playback domain */
     playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
-
-    for(i = 0; i < audio->audio_channels - audio_channels; i++){
-      AgsPlayback *playback;
-
-      playback = g_list_last(playback_domain->playback);
-      playback_domain->playback = g_list_remove(playback_domain->playback,
-						playback);
+    list = playback_domain->playback;
+    
+    for(j = 0; j < audio->output_pads; j++){
+      for(i = 0; i < audio->audio_channels - audio_channels; i++){
+	playback = g_list_nth_prev(g_list_last(list),
+				   (audio->output_pads - j - 1) * audio_channels)->data;
+	playback_domain->playback = g_list_remove(playback_domain->playback,
+						  playback);
+      }
     }
   }
 
+  /* apply new sizes */
   audio->audio_channels = audio_channels;
+  // input_lines must be set earlier because set_sync_link needs it
 }
 
 /**
@@ -1818,38 +2366,37 @@ ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels)
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(!AGS_IS_AUDIO(audio)){
-    return;
-  }
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   if(application_context != NULL){
     pthread_mutex_lock(application_context->mutex);
   
-    mutex_manager = ags_mutex_manager_get_instance();
+  pthread_mutex_unlock(application_mutex);
 
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     (GObject *) audio);
-  
-    pthread_mutex_unlock(application_context->mutex);
+  /* lock */
+  pthread_mutex_lock(mutex);
 
     pthread_mutex_lock(mutex);
   }else{
     mutex = NULL;
   }
-  
+
+  /* emit */
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[SET_AUDIO_CHANNELS], 0,
 		audio_channels, audio->audio_channels);
   g_object_unref((GObject *) audio);
 
-  if(mutex != NULL){
-    pthread_mutex_unlock(mutex);
-  }
+  /* unlock */
+  pthread_mutex_unlock(mutex);
 }
 
 /*
@@ -1861,206 +2408,177 @@ ags_audio_real_set_pads(AgsAudio *audio,
 			GType type,
 			guint pads, guint pads_old)
 {
-  AgsChannel *start, *channel, *prev_pad, *input, *input_pad_last;
-  AgsRecycling *recycling;
-  AgsRecycling *old_first_recycling, *first_recycling;
-  AgsRecyclingContext *recycling_context, *old_recycling_context;
-  GList *playback;
-  GList *recall_id;
-  GList *recycling_prev, *recycling_iter;
-  guint i, j;
-  gboolean alloc_recycling, link_recycling, set_sync_link, update_async_link, set_async_link;
+  AgsChannel *channel;
+  
+  AgsMutexManager *mutex_manager;
+  
+  gboolean alloc_recycling, link_recycling, set_sync_link, set_async_link;
 
-  void ags_audio_set_pads_grow_one(){
-    start =
-      channel = (AgsChannel *) g_object_new(type,
-					    "audio\0", (GObject *) audio,
-					    "soundcard\0", audio->soundcard,
-					    NULL);
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *prev_mutex, *prev_pad_mutex;
 
-    if(alloc_recycling){
-      channel->first_recycling =
-	channel->last_recycling = ags_recycling_new(audio->soundcard);
+  auto void ags_audio_set_pads_init_parameters();
+  auto void ags_audio_set_pads_grow();
+  auto void ags_audio_set_pads_unlink_all(AgsChannel *channel);
+  auto void ags_audio_set_pads_shrink_zero(AgsChannel *channel);
+  auto void ags_audio_set_pads_shrink(AgsChannel *channel);
+  auto void ags_audio_set_pads_alloc_notation();
+  auto void ags_audio_set_pads_free_notation();
+  auto void ags_audio_set_pads_add_notes();
+  auto void ags_audio_set_pads_remove_notes();
 
-      channel->first_recycling->channel = (GObject *) channel;
-    }else if(set_sync_link){
-      input = audio->input;
-      channel->first_recycling = input->first_recycling;
-      channel->last_recycling = input->last_recycling;
-      input = input->next;
-    }else if(set_async_link){
-      input = audio->input;
-      input_pad_last = ags_channel_nth(audio->input, audio->input_lines - audio->audio_channels);
-
-      channel->first_recycling = input->first_recycling;
-      channel->last_recycling = input_pad_last->last_recycling;
-
-      input = input->next;
-      input_pad_last = input_pad_last->next;
-    }
-
-    for(j = 1; j < audio->audio_channels; j++){
-      channel->next = (AgsChannel *) g_object_new(type,
-						  "audio\0", (GObject *) audio,
-						  "soundcard\0", audio->soundcard,
-						  NULL);
-      channel->next->prev = channel;
-      channel = channel->next;
-
-      channel->audio_channel = j;
-      channel->line = j;
-
-      if(alloc_recycling){
-	channel->first_recycling =
-	  channel->last_recycling = ags_recycling_new(audio->soundcard);
-
-	channel->first_recycling->channel = (GObject *) channel;
-      }else if(set_sync_link){
-	channel->first_recycling = input->first_recycling;
-	channel->last_recycling = input->last_recycling;
-
-	input = input->next;
-      }else if(set_async_link){
-	channel->first_recycling = input->first_recycling;
-	channel->last_recycling = input_pad_last->last_recycling;
-
-	input = input->next;
-	input_pad_last = input_pad_last->next;
-      }
-    }
-  }
-  void ags_audio_set_pads_grow(){
-    AgsChannel *start_pad, *end_pad;
-    AgsChannel *prev_pad, *prev_pad_start;
-    AgsRecycling *recycling, *last_recycling;
-    GList *recycling_next, *recycling_current;
-    GList *recall_id;
-
+  void ags_audio_set_pads_init_parameters(){
+    alloc_recycling = FALSE;
+    link_recycling = FALSE;
+    set_sync_link = FALSE;
+    set_async_link = FALSE;
+    
     if(type == AGS_TYPE_OUTPUT){
-      prev_pad = ags_channel_pad_last(audio->output);
+      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	alloc_recycling = TRUE;
+      }else{
+	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+	  if((AGS_AUDIO_SYNC & (audio->flags)) != 0 && (AGS_AUDIO_ASYNC & (audio->flags)) == 0){
+	    set_async_link = TRUE;
+	  }else if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+	    set_async_link = TRUE;
+	  }else{
+#ifdef AGS_DEBUG
+	    g_message("ags_audio_set_pads - warning: AGS_AUDIO_SYNC nor AGS_AUDIO_ASYNC weren't defined\0");
+#endif
+	  }
+	}
+      }
+    }else{      
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & audio->flags) != 0){
+	alloc_recycling = TRUE;
+      }
+      
+      if((AGS_AUDIO_ASYNC & audio->flags) != 0 && alloc_recycling){
+	link_recycling = TRUE;
+      }
+    }    
+  }
+
+  void ags_audio_set_pads_grow(){
+    AgsChannel *start, *channel;
+    AgsRecycling *first_recycling, *last_recycling;
+
+    guint i, j;
+    
+    if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
+      start = audio->output;
     }else{
-      prev_pad = ags_channel_pad_last(audio->input);
+      start = audio->input;
     }
 
-    prev_pad_start = prev_pad;
-    start_pad = prev_pad;
-
-    if(alloc_recycling){
-      if(link_recycling){
-	channel = prev_pad;
-	recycling_next = NULL;
-
-	while(channel != NULL){
-	  recycling_next = g_list_prepend(recycling_next,
-					  channel->last_recycling->next);
-
-	  channel = channel->next;
-	}
-
-	recycling_next = g_list_reverse(recycling_next);
-      }
-    }else if(set_sync_link){
-      if(pads_old != 0){
-	input = ags_channel_pad_nth(audio->input, pads_old);
-      }
-    }
-
-    channel = ags_channel_last(prev_pad);
-
-    for(i = pads_old; i < pads; i++){
-      prev_pad_start = prev_pad;
-
-      if(alloc_recycling){
-	if(link_recycling){
-	  recycling_current = NULL;
-
-	  while(prev_pad != NULL){
-	    recycling_current = g_list_prepend(recycling_current,
-					       prev_pad->first_recycling);
-
-	    prev_pad = prev_pad->next;
+    for(j = pads_old; j < pads; j++){
+      for(i = 0; i < audio->audio_channels; i++){
+	channel = (AgsChannel *) g_object_new(type,
+					      "audio\0", (GObject *) audio,
+					      "soundcard\0", audio->soundcard,
+					      NULL);
+	if(start == NULL){
+	  /* set first channel in AgsAudio */
+	  if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
+	    start = 
+	      audio->output = channel;
+	  }else{
+	    start = 
+	      audio->input = channel;
 	  }
-
-	  prev_pad = prev_pad_start;
-
-	  recycling_current = g_list_reverse(recycling_current);
-	  recycling_iter = recycling_current;
 	}
-      }else if(set_async_link){
-	input = audio->input;
-	input_pad_last = ags_channel_nth(audio->input, audio->input_lines - audio->audio_channels);
-      }
 
-      prev_pad = prev_pad_start;
+	if(j * audio->audio_channels + i != 0){
+	  /* set prev */
+	  channel->prev = ags_channel_nth(start, j * audio->audio_channels + i - 1);
 
-      for(j = 0; j < audio->audio_channels; j++){
-	channel->next = (AgsChannel *) g_object_new(type,
-						    "audio\0", (GObject *) audio,
-						    "soundcard\0", audio->soundcard,
-						    NULL);
-	channel->next->prev = channel;
-	channel = channel->next;
+	  pthread_mutex_lock(application_mutex);
+	  
+	  prev_mutex = ags_mutex_manager_lookup(mutex_manager,
+						(GObject *) channel->prev);
+	  
+	  pthread_mutex_unlock(application_mutex);
+	  
+	  pthread_mutex_lock(prev_mutex);
+	  
+	  channel->prev->next = channel;
 
-	channel->prev_pad = prev_pad;
-	prev_pad->next_pad = channel;
-	prev_pad = prev_pad->next;
+	  pthread_mutex_unlock(prev_mutex);
+	}
+	
+	if(j != 0){
+	  /* set prev pad */
+	  channel->prev_pad = ags_channel_pad_nth(ags_channel_nth(start,
+								  i),
+						  j - 1);
 
-	channel->pad = i;
-	channel->audio_channel = j;
-	channel->line = i * audio->audio_channels + j;
+	  pthread_mutex_lock(application_mutex);
+	  
+	  prev_pad_mutex = ags_mutex_manager_lookup(mutex_manager,
+						    (GObject *) channel->prev_pad);
+	  
+	  pthread_mutex_unlock(application_mutex);
 
+	  pthread_mutex_lock(prev_pad_mutex);
+	  
+	  channel->prev_pad->next_pad = channel;
+	  
+	  pthread_mutex_unlock(prev_pad_mutex);
+	}
+
+	/* set indices */
+	channel->pad = j;
+	channel->audio_channel = i;
+	channel->line = j * audio->audio_channels + i;
+
+	/* reset nested AgsRecycling tree */
 	if(alloc_recycling){
-	  channel->first_recycling =
-	    channel->last_recycling = ags_recycling_new(audio->soundcard);
-
-	  if(link_recycling){
-	    recycling = recycling_iter->data;
-	    recycling_iter = recycling_iter->next;
-
-	    recycling->next = channel->first_recycling;
-	    recycling->next->prev = recycling;
-	  }
-
-	  channel->first_recycling->channel = (GObject *) channel;
+	  first_recycling =
+	    last_recycling = ags_recycling_new(audio->soundcard);
+	  
+	  first_recycling->channel = (GObject *) channel;
+	  
+	  ags_channel_set_recycling(channel,
+				    first_recycling, last_recycling,
+				    TRUE, TRUE);
 	}else if(set_sync_link){
-	  channel->first_recycling = input->first_recycling;
-	  channel->last_recycling = input->last_recycling;
+	  AgsChannel *input;
 
-	  input = input->next;
-	}else if(set_async_link){
-	  channel->first_recycling = input->first_recycling;
-	  channel->last_recycling = input_pad_last->last_recycling;
-
-	  input = input->next;
-	  input_pad_last = input_pad_last->next;
-	}
-      }
-
-      if(alloc_recycling){
-	if(link_recycling){
-	  g_list_free(recycling_current);
-	}
-      }
-    }
-
-    if(alloc_recycling){
-      if(link_recycling){
-	channel = start_pad;
-	end_pad = ags_channel_pad_last(channel);
-
-	while(recycling_next != NULL){
-	  end_pad->last_recycling->next = recycling_next->data;
-
-	  if(end_pad->last_recycling->next != NULL){
-	    end_pad->last_recycling->next->prev = end_pad->last_recycling;
+	  input = ags_channel_nth(audio->input,
+				  channel->line);
+	  
+	  /* set sync link */
+	  if(input != NULL){
+	    first_recycling = input->first_recycling;
+	    last_recycling = input->last_recycling;
+	    
+	    ags_channel_set_recycling(channel,
+				      first_recycling, last_recycling,
+				      TRUE, TRUE);
 	  }
+	}else if(set_async_link){
+	  AgsChannel *input, *input_pad_last;
 
-	  end_pad = end_pad->next;
-	  recycling_next = recycling_next->next;
+	  input = ags_channel_nth(audio->input,
+				  i);
+
+	  /* set async link */
+	  if(input != NULL){
+	    input_pad_last = ags_channel_pad_last(input);
+
+	    first_recycling = input->first_recycling;
+	    last_recycling = input_pad_last->last_recycling;
+	    
+	    ags_channel_set_recycling(channel,
+				      first_recycling, last_recycling,
+				      TRUE, TRUE);
+	  }
 	}
       }
     }
   }
+
   void ags_audio_set_pads_unlink_all(AgsChannel *channel){
     GError *error;
 
@@ -2075,6 +2593,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       channel = channel->next;
     }
   }
+  
   void ags_audio_set_pads_shrink_zero(AgsChannel *channel){
     AgsChannel *channel_next;
 
@@ -2086,10 +2605,18 @@ ags_audio_real_set_pads(AgsAudio *audio,
       channel = channel_next;
     }
   }
+
   void ags_audio_set_pads_shrink(AgsChannel *channel){
     AgsChannel *current;
 
-    current = channel->prev_pad;
+    guint i;
+
+    if(channel != NULL){
+      channel = channel->prev_pad;
+    }
+    
+    current = ags_channel_pad_nth(channel,
+				  pads);
 
     ags_audio_set_pads_shrink_zero(channel);
 
@@ -2109,8 +2636,10 @@ ags_audio_real_set_pads(AgsAudio *audio,
       current->next = NULL;
     }
   }
+
   void ags_audio_set_pads_alloc_notation(){
     GList *list;
+    
     guint i;
 
 #ifdef AGS_DEBUG
@@ -2136,6 +2665,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 					       i);
     }
   }
+
   void ags_audio_set_pads_free_notation(){
     GList *list, *list_next;
 
@@ -2155,6 +2685,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       list = list_next;
     }
   }
+
   void ags_audio_set_pads_add_notes(){
     /* -- useless --
        GList *list;
@@ -2168,6 +2699,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
        }
     */
   }
+  
   void ags_audio_set_pads_remove_notes(){
     AgsNotation *notation;
     GList *notation_i, *note, *note_next;
@@ -2200,18 +2732,16 @@ ags_audio_real_set_pads(AgsAudio *audio,
       notation_i = notation_i->next;
     }
   }
-  
+
   /* entry point */
-  alloc_recycling = FALSE;
-  link_recycling = FALSE;
-  set_sync_link = FALSE;
-  update_async_link = FALSE;
-  set_async_link = FALSE;
+  ags_audio_set_pads_init_parameters();
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
     /* output */
     pads_old = audio->output_pads;
-    link_recycling = FALSE;
 
     if(pads_old == pads){
       return;
@@ -2222,58 +2752,21 @@ ags_audio_real_set_pads(AgsAudio *audio,
       return;
     }
 
-    /* init grow parameters */
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      alloc_recycling = TRUE;
-    }else if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
-	set_sync_link = TRUE;
-      }else if((AGS_AUDIO_ASYNC & audio->flags) == 0){
-	input = audio->input;
-      }
-    }
-
-    /* grow one */
-    if(pads_old == 0){
-      AgsPlaybackDomain *playback_domain;
-      AgsChannel *current;
-
-      /* alloc notation */
-      if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
-	 audio->notation == NULL &&
-	 (AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-	ags_audio_set_pads_alloc_notation();
-      }
-
-      /*  */
-      ags_audio_set_pads_grow_one();
-
-      /* populate playback domain */
-      playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
-
-      channel = start;
-      audio->output = start;
-
-      current = start;
-
-      for(i = 0; i < audio->audio_channels; i++){
-	playback_domain->playback = g_list_append(playback_domain->playback,
-						  current->playback);
-	
-	current = current->next;
-      }
-
-      pads_old =
-	audio->output_pads = 1;
-    }else{
-      channel = audio->output;
-    }
-
     /* grow or shrink */
     if(pads > audio->output_pads){
       AgsPlaybackDomain *playback_domain;
       AgsChannel *current;
 
+      guint i, j;
+
+      /* instantiate notation */
+      if(pads_old == 0){
+	if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) == 0){
+	  ags_audio_set_pads_alloc_notation();
+	}
+      }
+
+      /* grow channels */
       ags_audio_set_pads_grow();
 
       /* alloc playback domain */
@@ -2281,9 +2774,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
       current = audio->output;
 
       current = ags_channel_pad_nth(current,
-				    audio->output_pads);
+				    pads_old);
 
-      for(j = audio->output_pads; j < pads; j++){
+      for(j = pads_old; j < pads; j++){
 	for(i = 0; i < audio->audio_channels; i++){
 	  playback_domain->playback = g_list_append(playback_domain->playback,
 						    current->playback);
@@ -2291,12 +2784,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  current = current->next;
 	}
       }
-    }else if(pads == 0){
+    }else if(pads == 0){      
       if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
 	 audio->notation != NULL){
 	ags_audio_set_pads_free_notation();
       }
 
+      channel = audio->output;
+      
       /* unlink and remove */
       ags_audio_set_pads_unlink_all(channel);
       ags_audio_set_pads_shrink_zero(channel);
@@ -2310,6 +2805,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }else if(pads < audio->output_pads){
       AgsPlaybackDomain *playback_domain;
 
+      guint i;
+      
       ags_audio_set_pads_remove_notes();
 
       channel = ags_channel_pad_nth(channel,
@@ -2341,136 +2838,36 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
   }else if(g_type_is_a(type, AGS_TYPE_INPUT)){
     /* input */
-    pads_old = audio->input_pads;
-
-    if(pads_old == pads)
+    if(pads_old == pads){
       return;
+    }
 
     if(audio->audio_channels == 0){
       audio->input_pads = pads;
       return;
     }
 
-    /* init grow parameters */
-    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      alloc_recycling = TRUE;
-
-      if((AGS_AUDIO_ASYNC & audio->flags) != 0){
-	link_recycling = TRUE;
-
-	if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0)
-	  update_async_link = TRUE;
-      }
-    }
-    
-    /* grow one */
-    if(pads_old == 0){
-      AgsChannel *current;
-      AgsRecallID *current_recall_id, *default_recall_id;
-      
-      /* alloc notation */
-      if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
-	 audio->notation == NULL &&
-	 (AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) == 0){
-	ags_audio_set_pads_alloc_notation();
-      }
-
-      /* add first channel */
-      ags_audio_set_pads_grow_one();
-
-      /* add recall id */
-      current = start;
-	
-      while(current != start->next_pad){
-	recall_id = audio->recall_id;
-
-	while(recall_id != NULL){
-	  if(AGS_RECALL_ID(recall_id->data)->recycling != NULL &&
-	     AGS_IS_OUTPUT(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)){
-	    recall_id = recall_id->next;
-	    
-	    continue;
-	  }
-	  
-	  current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-					   "recycling\0", current->first_recycling,
-					   "recycling-context\0", AGS_RECALL_ID(recall_id->data)->recycling_context,
-					   NULL);
-	  
-	  ags_channel_add_recall_id(current,
-				    current_recall_id);
-	    
-	  recall_id = recall_id->next;
-	}
-	  
-	current = current->next;
-      }
-
-      /* apply current allocation */
-      channel = start;
-      audio->input = start;
-
-      pads_old =
-	audio->input_pads = 1;
-    }else{
-      channel = audio->input;
-    }
-
     /* grow or shrink */
-    if(pads >= 1){
-      if(pads > audio->input_pads){
-	AgsChannel *prev;
-	AgsChannel *current;
-	AgsRecallID *current_recall_id;
-
-	if(link_recycling){
-	  prev = ags_channel_pad_last(channel);
-	  recycling_prev = NULL;
-
-	  while(prev != NULL){
-	    recycling = prev->first_recycling;
-
-	    recycling_prev = g_list_append(recycling_prev,
-					   recycling);
-
-	    prev = prev->next;
-	  }
+    if(pads > pads_old){	 
+      /* instantiate notation */
+      if(pads_old == 0){
+	if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+	  ags_audio_set_pads_alloc_notation();
 	}
+      }
+
+      /* grow channels */
+      ags_audio_set_pads_grow();
+    }else if(pads < pads_old){
+      if(pads == 0){
+	channel = audio->input;
 	
-	recycling_iter = recycling_prev;
-
-	/* grow channels */
-	ags_audio_set_pads_grow();
-
-	/* add recall id */
-	current = ags_channel_pad_nth(audio->input,
-				      audio->input_pads);
+	/* shrink channels */
+	ags_audio_set_pads_unlink_all(channel);
+	ags_audio_set_pads_shrink_zero(channel);
 	
-	while(current != NULL){
-	  recall_id = audio->recall_id;
-
-	  while(recall_id != NULL){
-	    if(AGS_RECALL_ID(recall_id->data)->recycling != NULL &&
-	       AGS_IS_OUTPUT(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)){
-	      recall_id = recall_id->next;
-	    
-	      continue;
-	    }
-	    
-	    current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-					     "recycling\0", current->first_recycling,
-					     "recycling-context\0", AGS_RECALL_ID(recall_id->data)->recycling_context,
-					     NULL);
-	  
-	    ags_channel_add_recall_id(current,
-				      current_recall_id);
-	    
-	    recall_id = recall_id->next;
-	  }
-
-	  current = current->next;
-	}
-      }else if(pads < audio->input_pads){
+	audio->input = NULL;  
+      }else{
 	channel = ags_channel_pad_nth(channel,
 				      pads);
 	
@@ -2478,70 +2875,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	ags_audio_set_pads_unlink_all(channel);
 	ags_audio_set_pads_shrink(channel);
       }
-    }else if(pads == 0){
-      /* shrink channels */
-      ags_audio_set_pads_unlink_all(channel);
-      ags_audio_set_pads_shrink_zero(channel);
-      
-      audio->input = NULL;  
     }
 
     /* apply new allocation */
     audio->input_pads = pads;
     audio->input_lines = pads * audio->audio_channels;
-
-    /* update recycling context of default recall id */
-    recall_id = audio->recall_id;
-
-    while(recall_id != NULL){
-      if(AGS_RECALL_ID(recall_id->data)->recycling != NULL &&
-	 AGS_IS_INPUT(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)){
-	recall_id = recall_id->next;
-	
-	continue;
-      }
-  
-      if((AGS_AUDIO_ASYNC & (audio->flags)) == 0){
-	channel = ags_channel_nth(audio->input,
-				  AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)->line);
-      }else{
-	channel = ags_channel_nth(audio->input,
-				  AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL_ID(recall_id->data)->recycling)->channel)->audio_channel);
-      }
-
-      old_first_recycling =
-	first_recycling = channel->first_recycling;
-    
-      old_recycling_context = (AgsRecyclingContext *) AGS_RECALL_ID(recall_id->data)->recycling_context;
-
-      if((old_first_recycling != NULL &&
-	  ags_recycling_context_find(old_recycling_context,
-				     old_first_recycling) != -1) ||
-	 (first_recycling->parent == NULL ||
-	  ags_recycling_context_find_parent(old_recycling_context,
-					    first_recycling->parent) == -1)){
-	recall_id = recall_id->next;
-	
-	continue;
-      }
-  
-      recycling_context = ags_recycling_context_reset_recycling(old_recycling_context,
-								NULL, NULL,
-								channel->first_recycling, ags_channel_pad_last(channel)->last_recycling);
-
-      ags_audio_add_recycling_context(audio,
-				      recycling_context);
-
-      while(channel != NULL){
-	ags_channel_recursive_reset_recycling_context(channel,
-						      old_recycling_context,
-						      recycling_context);
-
-	channel = channel->next_pad;
-      }
-      
-      recall_id = recall_id->next;
-    }
   }else{
     g_warning("unknown channel type\0");
   }
@@ -2563,17 +2901,21 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
   AgsApplicationContext *application_context;
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
   guint pads_old;
 
-  /*  */
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   if(application_context != NULL){
     pthread_mutex_lock(application_context->mutex);
   
-    mutex_manager = ags_mutex_manager_get_instance();
+  pthread_mutex_unlock(application_mutex);
 
     mutex = ags_mutex_manager_lookup(mutex_manager,
 				     (GObject *) audio);
@@ -2594,6 +2936,7 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
     return;
   }
 
+  /* emit */
   g_object_ref((GObject *) audio);
   pads_old = ((g_type_is_a(type, AGS_TYPE_OUTPUT)) ? audio->output_pads: audio->input_pads);
   g_signal_emit(G_OBJECT(audio),
@@ -2604,149 +2947,6 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
   if(mutex != NULL){
     pthread_mutex_unlock(mutex);
   }
-}
-
-/**
- * ags_audio_init_run:
- * @audio: an #AgsAudio
- *
- * Is emitted as audio is initialized.
- *
- * Returns: the current #AgsRecallID
- *
- * Since: 0.4
- */
-AgsRecallID*
-ags_audio_init_run(AgsAudio *audio)
-{
-  AgsRecallID *recall_id;
-
-  AgsApplicationContext *application_context;
-  
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *mutex;
-
-  /*  */
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  /*  */
-  pthread_mutex_lock(mutex);
-
-  if(!AGS_IS_AUDIO(audio)){
-    pthread_mutex_unlock(mutex);
-    return;
-  }
-
-  g_object_ref((GObject *) audio);
-  g_signal_emit(G_OBJECT(audio),
-		audio_signals[INIT_RUN], 0,
-		&recall_id);
-  g_object_unref((GObject *) audio);
-  
-  pthread_mutex_unlock(mutex);
-
-  return(recall_id);
-}
-
-/**
- * ags_audio_tact:
- * @audio: an #AgsAudio
- * @recall_id: the current #AgsRecallID
- *
- * Is emitted as audio is played.
- *
- * Since: 0.4
- */
-void
-ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
-{
-  AgsApplicationContext *application_context;
-  
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *mutex;
-
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  /*  */
-  pthread_mutex_lock(mutex);
-
-  if(!AGS_IS_AUDIO(audio)){
-    pthread_mutex_unlock(mutex);
-    return;
-  }
-
-  g_object_ref((GObject *) audio);
-  g_signal_emit(G_OBJECT(audio),
-		audio_signals[TACT], 0,
-		recall_id);
-  g_object_unref((GObject *) audio);
-  
-  pthread_mutex_unlock(mutex);
-}
-
-/**
- * ags_audio_done:
- * @audio: an #AgsAudio
- * @recall_id: the current #AgsRecallID
- *
- * Is emitted as playing audio is done.
- *
- * Since: 0.4
- */
-void
-ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
-{
-  AgsApplicationContext *application_context;
-  
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *mutex;
-
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  pthread_mutex_lock(mutex);
-
-  if(!AGS_IS_AUDIO(audio)){
-    pthread_mutex_unlock(mutex);
-    return;
-  }
-  
-  g_object_ref((GObject *) audio);
-  g_signal_emit(G_OBJECT(audio),
-		audio_signals[DONE], 0,
-		recall_id);
-  g_object_unref((GObject *) audio);
-  
-  pthread_mutex_unlock(mutex);
 }
 
 /**
@@ -2767,38 +2967,36 @@ ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
 /**
  * ags_audio_add_notation:
  * @audio: an #AgsAudio
- * @notation: the #AgsNotation
+ * @notation: the #AgsRecallID
  *
- * Adds a notation.
+ * Adds a recall id.
  *
  * Since: 0.4
  */
 void
-ags_audio_add_notation(AgsAudio *audio,
-		       GObject *notation)
+ags_audio_add_notation(AgsAudio *audio, GObject *notation)
 {
-  AgsApplicationContext *application_context;
-
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* add recall id */
   pthread_mutex_lock(mutex);
 
   g_object_ref(notation);
-  audio->automation = g_list_prepend(audio->notation,
-				     notation);
+  audio->notation = g_list_prepend(audio->notation, notation);
   
   pthread_mutex_unlock(mutex);
 }
@@ -2806,38 +3004,38 @@ ags_audio_add_notation(AgsAudio *audio,
 /**
  * ags_audio_remove_notation:
  * @audio: an #AgsAudio
- * @notation: the #AgsNotation
+ * @notation: the #AgsRecallID
  *
- * Removes a notation.
+ * Removes a recall id.
  *
  * Since: 0.4
  */
 void
-ags_audio_remove_notation(AgsAudio *audio,
-			  GObject *notation)
+ags_audio_remove_notation(AgsAudio *audio, GObject *notation)
 {
   AgsApplicationContext *application_context;
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* remove recall id */
   pthread_mutex_lock(mutex);
 
+  audio->notation = g_list_remove(audio->notation, notation);
   g_object_unref(notation);
-  audio->automation = g_list_remove(audio->notation,
-				    notation);
   
   pthread_mutex_unlock(mutex);
 }
@@ -2845,38 +3043,38 @@ ags_audio_remove_notation(AgsAudio *audio,
 /**
  * ags_audio_add_automation:
  * @audio: an #AgsAudio
- * @automation: the #AgsAutomation
+ * @automation: the #AgsRecallID
  *
- * Adds an automation.
+ * Adds a recall id.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
-ags_audio_add_automation(AgsAudio *audio,
-			 GObject *automation)
+ags_audio_add_automation(AgsAudio *audio, GObject *automation)
 {
   AgsApplicationContext *application_context;
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* add recall id */
   pthread_mutex_lock(mutex);
 
   g_object_ref(automation);
-  audio->automation = g_list_prepend(audio->automation,
-				     automation);
+  audio->automation = g_list_prepend(audio->automation, automation);
   
   pthread_mutex_unlock(mutex);
 }
@@ -2884,38 +3082,36 @@ ags_audio_add_automation(AgsAudio *audio,
 /**
  * ags_audio_remove_automation:
  * @audio: an #AgsAudio
- * @automation: the #AgsAutomation
+ * @automation: the #AgsRecallID
  *
- * Removes an automation.
+ * Removes a recall id.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
-ags_audio_remove_automation(AgsAudio *audio,
-			    GObject *automation)
+ags_audio_remove_automation(AgsAudio *audio, GObject *automation)
 {
-  AgsApplicationContext *application_context;
-  
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* remove recall id */
   pthread_mutex_lock(mutex);
 
+  audio->automation = g_list_remove(audio->automation, automation);
   g_object_unref(automation);
-  audio->automation = g_list_remove(audio->automation,
-				    automation);
   
   pthread_mutex_unlock(mutex);
 }
@@ -2927,28 +3123,30 @@ ags_audio_remove_automation(AgsAudio *audio,
  *
  * Adds a recall id.
  *
- * Since: 0.4.0
+ * Since: 0.4
  */
 void
 ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
 {
   AgsApplicationContext *application_context;
-  
+
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* add recall id */
   pthread_mutex_lock(mutex);
 
   g_object_ref(recall_id);
@@ -2964,7 +3162,7 @@ ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
  *
  * Removes a recall id.
  *
- * Since: 0.4.0
+ * Since: 0.4
  */
 void
 ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
@@ -2973,23 +3171,103 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* remove recall id */
   pthread_mutex_lock(mutex);
 
   audio->recall_id = g_list_remove(audio->recall_id, recall_id);
   g_object_unref(recall_id);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_add_recycling_context:
+ * @audio: an #AgsAudio
+ * @recycling_context: the #AgsRecyclingContext
+ *
+ * Adds a recycling container.
+ *
+ * Since: 0.4.0
+ */
+void
+ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context)
+{
+  AgsApplicationContext *application_context;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* add recycling container */
+  pthread_mutex_lock(mutex);
+
+  g_object_ref(recycling_context);
+  audio->recycling_context = g_list_prepend(audio->recycling_context, recycling_context);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_remove_recycling_context:
+ * @audio: an #AgsAudio
+ * @recycling_context: the #AgsRecyclingContext
+ *
+ * Removes a recycling container.
+ *
+ * Since: 0.4.0
+ */
+void
+ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context)
+{
+  AgsApplicationContext *application_context;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* remove recycling container */
+  pthread_mutex_lock(mutex);
+
+  audio->recycling_context = g_list_remove(audio->recycling_context, recycling_context);
+  g_object_unref(recycling_context);
   
   pthread_mutex_unlock(mutex);
 }
@@ -3084,25 +3362,23 @@ ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* add recall container */
   pthread_mutex_lock(mutex);
   
-  /*
-   * TODO:JK: thread synchronisation
-   */
-
   g_object_ref(recall_container);
   audio->container = g_list_prepend(audio->container, recall_container);
   
@@ -3125,24 +3401,22 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* remove recall container */
   pthread_mutex_lock(mutex);
-  
-  /*
-   * TODO:JK: thread synchronisation
-   */
 
   audio->container = g_list_remove(audio->container, recall_container);
   g_object_unref(recall_container);
@@ -3167,25 +3441,23 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* add recall */
   pthread_mutex_lock(mutex);
   
-  /*
-   * TODO:JK: thread synchronisation
-   */
-
   g_object_ref(G_OBJECT(recall));
 
   if(play){
@@ -3214,24 +3486,22 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
   
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* remove recall */
   pthread_mutex_lock(mutex);
-
-  /*
-   * TODO:JK: thread synchronisation
-   */
 
   if(play){
     audio->play = g_list_remove(audio->play, recall);
@@ -3242,6 +3512,55 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
   g_object_unref(G_OBJECT(recall));
   
   pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_init_run:
+ * @audio: an #AgsAudio
+ *
+ * Is emitted as audio is initialized.
+ *
+ * Returns: the current #AgsRecallID
+ *
+ * Since: 0.4
+ */
+AgsRecallID*
+ags_audio_init_run(AgsAudio *audio)
+{
+  AgsRecallID *recall_id;
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  if(!AGS_IS_AUDIO(audio)){
+    pthread_mutex_unlock(mutex);
+    return;
+  }
+
+  /* emit */
+  g_object_ref((GObject *) audio);
+  g_signal_emit(G_OBJECT(audio),
+		audio_signals[INIT_RUN], 0,
+		&recall_id);
+  g_object_unref((GObject *) audio);
+  
+  pthread_mutex_unlock(mutex);
+
+  return(recall_id);
 }
 
 /**
@@ -3263,28 +3582,26 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   
   AgsMutexManager *mutex_manager;
 
-  GList *list_recall_start, *list_recall;
-
-  gboolean playback, sequencer, notation;
-
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
   if(audio == NULL ||
      recall_id == NULL){
     return;
   }
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* initial checks */
   pthread_mutex_lock(mutex);
   
 #ifdef AGS_DEBUG
@@ -3392,71 +3709,6 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 }
 
 /**
- * ags_audio_resolve_recall:
- * @audio: the #AgsAudio
- * @recall_id: the #AgsRecallID to use
- *
- * Performs resolving of recalls.
- *
- * Since: 0.4
- */
-void ags_audio_resolve_recall(AgsAudio *audio,
-			      AgsRecallID *recall_id)
-{
-  AgsRecall *recall;
-
-  AgsApplicationContext *application_context;
-  
-  AgsMutexManager *mutex_manager;
-
-  GList *list_recall;  
-
-  pthread_mutex_t *mutex;
-
-  if(audio == NULL ||
-     recall_id == NULL){
-    return;
-  }
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  pthread_mutex_lock(mutex);
-
-  /* return if already duplicated */
-  if((AGS_RECALL_ID_RESOLVE & (recall_id->flags)) != 0){
-    pthread_mutex_unlock(mutex);
-    return;
-  }
-  
-  /* get the appropriate lists */
-  if(recall_id->recycling_context->parent == NULL){
-    list_recall = audio->play;
-  }else{
-    list_recall = audio->recall;
-  }
-
-  /* resolve */  
-  while((list_recall = ags_recall_find_recycling_context(list_recall, recall_id->recycling_context)) != NULL){
-    recall = AGS_RECALL(list_recall->data);
-    
-    ags_recall_resolve_dependencies(recall);
-
-    list_recall = list_recall->next;
-  }
-
-  pthread_mutex_unlock(mutex);
-}
-
-/**
  * ags_audio_init_recall:
  * @audio: the #AgsAudio
  * @stage: stage benning at 0 up to 2, or just -1
@@ -3475,25 +3727,24 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
   
   AgsMutexManager *mutex_manager;
 
-  GList *list_recall;
-
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
   if(audio == NULL ||
      recall_id == NULL){
     return;
   }
-    
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
   
-  pthread_mutex_lock(application_context->mutex);
-  
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(mutex);
 
@@ -3562,6 +3813,68 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
 }
 
 /**
+ * ags_audio_resolve_recall:
+ * @audio: the #AgsAudio
+ * @recall_id: the #AgsRecallID to use
+ *
+ * Performs resolving of recalls.
+ *
+ * Since: 0.4
+ */
+void ags_audio_resolve_recall(AgsAudio *audio,
+			      AgsRecallID *recall_id)
+{
+  AgsRecall *recall;
+  GList *list_recall;  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  if(audio == NULL ||
+     recall_id == NULL){
+    return;
+  }
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  /* return if already duplicated */
+  if((AGS_RECALL_ID_RESOLVE & (recall_id->flags)) != 0){
+    pthread_mutex_unlock(mutex);
+    return;
+  }
+  
+  /* get the appropriate lists */
+  if(recall_id->recycling_context->parent == NULL){
+    list_recall = audio->play;
+  }else{
+    list_recall = audio->recall;
+  }
+
+  /* resolve */  
+  while((list_recall = ags_recall_find_recycling_context(list_recall, (GObject *) recall_id->recycling_context)) != NULL){
+    recall = AGS_RECALL(list_recall->data);
+    
+    ags_recall_resolve_dependencies(recall);
+
+    list_recall = list_recall->next;
+  }
+
+  pthread_mutex_unlock(mutex);
+}
+
+/**
  * ags_audio_is_playing:
  * @audio: the #AgsAudio
  *
@@ -3577,24 +3890,23 @@ ags_audio_is_playing(AgsAudio *audio)
   AgsChannel *output;
   AgsRecallID *recall_id;
   AgsPlayback *playback;
-  
-  AgsApplicationContext *application_context;
-  
   AgsMutexManager *mutex_manager;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* check if playing */
   pthread_mutex_lock(mutex);
   
   output = audio->output;
@@ -3640,25 +3952,24 @@ ags_audio_play(AgsAudio *audio,
   
   AgsMutexManager *mutex_manager;
 
-  GList *list, *list_next;
-  
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
   if(audio == NULL ||
      recall_id == NULL){
     return;
   }
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(mutex);
 
@@ -3752,91 +4063,166 @@ ags_audio_play(AgsAudio *audio,
 }
 
 /**
- * ags_audio_recursive_play_init:
- * @audio: the #AgsAudio object
- * @playback: if doing playback
- * @sequencer: if doing sequencer
- * @notation: if doing notation
+ * ags_audio_tact:
+ * @audio: an #AgsAudio
+ * @recall_id: the current #AgsRecallID
  *
- * Initializes #AgsAudio in order to do playback, sequencer or notation.
- *
- * Returns: a list containing all #AgsRecallID
+ * Is emitted as audio is played.
  *
  * Since: 0.4
  */
-GList*
-ags_audio_recursive_play_init(AgsAudio *audio,
-			      gboolean playback, gboolean sequencer, gboolean notation)
+void
+ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
 {
-  AgsChannel *channel;
-  AgsRecallID *recall_id;
-  AgsApplicationContext *application_context;
-  
   AgsMutexManager *mutex_manager;
 
-  GList *list, *list_start;
-  gint stage;
-  gboolean arrange_recall_id, duplicate_templates, resolve_dependencies;
-  
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
+
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
   pthread_mutex_lock(mutex);
 
-  list = NULL;
-  list_start = NULL;
+  if(!AGS_IS_AUDIO(audio)){
+    pthread_mutex_unlock(mutex);
+    return;
+  }
 
-  for(stage = 0; stage < 3; stage++){
-    channel = audio->output;
-    list = list_start;
+  /* emit */
+  g_object_ref((GObject *) audio);
+  g_signal_emit(G_OBJECT(audio),
+		audio_signals[TACT], 0,
+		recall_id);
+  g_object_unref((GObject *) audio);
+  
+  pthread_mutex_unlock(mutex);
+}
 
-    if(stage == 0){
-      arrange_recall_id = TRUE;
-      duplicate_templates = TRUE;
-      resolve_dependencies = TRUE;
-    }else{
-      arrange_recall_id = FALSE;
-      duplicate_templates = FALSE;
-      resolve_dependencies = FALSE;
+/**
+ * ags_audio_done:
+ * @audio: an #AgsAudio
+ * @recall_id: the current #AgsRecallID
+ *
+ * Is emitted as playing audio is done.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  if(!AGS_IS_AUDIO(audio)){
+    pthread_mutex_unlock(mutex);
+    return;
+  }
+
+  /* emit */
+  g_object_ref((GObject *) audio);
+  g_signal_emit(G_OBJECT(audio),
+		audio_signals[DONE], 0,
+		recall_id);
+  g_object_unref((GObject *) audio);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_cancel:
+ * @audio: the #AgsAudio
+ * @recall_id: the #AgsRecallID to apply to
+ *
+ * Cancel processing audio data.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_cancel(AgsAudio *audio,
+		 AgsRecallID *recall_id)
+{
+  AgsRecall *recall;
+  AgsApplicationContext *application_context;
+  
+  AgsMutexManager *mutex_manager;
+  
+  GList *list, *list_next;
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+    
+  if(audio == NULL || recall_id == NULL){
+    return;
+  }
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* cancel recalls */
+  pthread_mutex_lock(mutex);
+
+  if(recall_id->recycling_context->parent == NULL){
+    list = audio->play;
+  }else{
+    list = audio->recall;
+  }
+  
+  g_object_ref(recall_id);
+
+  while(list != NULL){
+    list_next = list->next;
+
+    recall = AGS_RECALL(list->data);
+
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
+       recall->recall_id == NULL ||
+       recall->recall_id->recycling_context != recall_id->recycling_context){
+      list = list_next;
+
+      continue;
     }
 
-    while(channel != NULL){
-      if(stage == 0){
-	recall_id = ags_channel_recursive_play_init(channel, stage,
-						    arrange_recall_id, duplicate_templates,
-						    playback, sequencer, notation,
-						    resolve_dependencies,
-						    NULL);
-	
-	list_start = g_list_append(list_start,
-				   recall_id);
-      }else{
-	ags_channel_recursive_play_init(channel, stage,
-					arrange_recall_id, duplicate_templates,
-					playback, sequencer, notation,
-					resolve_dependencies,
-					AGS_RECALL_ID(list->data));
-
-	list = list->next;
-      }
-
-      channel = channel->next;
-    }
+    g_object_ref(recall_id);
+    g_object_ref(recall);
+    ags_recall_cancel(recall);
+    
+    list = list_next;
   }
   
   pthread_mutex_unlock(mutex);
-
-  return(list_start);
 }
 
 /**
@@ -3853,30 +4239,29 @@ ags_audio_remove(AgsAudio *audio,
 		 AgsRecallID *recall_id)
 {
   AgsRecall *recall;
-  AgsApplicationContext *application_context;
-  
-  AgsMutexManager *mutex_manager;
-  
   GList *list, *list_next;
   gboolean play;
-  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
-  if(recall_id == NULL){
+  if(audio == NULL || recall_id == NULL){
     return;
   }
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-    
+  /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
-
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) audio);
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(application_mutex);
 
+  /* remove recalls */
   pthread_mutex_lock(mutex);
 
   if(recall_id->recycling_context->parent == NULL){
@@ -3916,113 +4301,36 @@ ags_audio_remove(AgsAudio *audio,
 }
 
 /**
- * ags_audio_cancel:
- * @audio: the #AgsAudio
- * @recall_id: the #AgsRecallID to apply to
+ * ags_audio_find_port:
+ * @audio: an #AgsAudio
  *
- * Cancel processing audio data.
+ * Retrieve all ports of #AgsAudio.
+ *
+ * Returns: a new #GList containing #AgsPort
  *
  * Since: 0.4
  */
-void
-ags_audio_cancel(AgsAudio *audio,
-		 AgsRecallID *recall_id)
+GList*
+ags_audio_find_port(AgsAudio *audio)
 {
-  AgsRecall *recall;
-  
-  AgsApplicationContext *application_context;
-  
+  GList *recall;
+  GList *list;
   AgsMutexManager *mutex_manager;
 
-  GList *list, *list_next;
-  
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-    
-  if(recall_id == NULL){
-    return;
-  }
-
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
   
   mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  pthread_mutex_lock(mutex);
-
-  if(recall_id->recycling_context->parent == NULL)
-    list = audio->play;
-  else
-    list = audio->recall;
-
-  g_object_ref(recall_id);
-
-  while(list != NULL){
-    list_next = list->next;
-
-    recall = AGS_RECALL(list->data);
-
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
-       recall->recall_id == NULL ||
-       recall->recall_id->recycling_context != recall_id->recycling_context){
-      list = list_next;
-
-      continue;
-    }
-
-    g_object_ref(recall_id);
-    g_object_ref(recall);
-    ags_recall_cancel(recall);
-    
-    list = list_next;
-  }
-  
-  pthread_mutex_unlock(mutex);
-}
-
-/**
- * ags_audio_set_soundcard:
- * @audio: the #AgsAudio
- * @soundcard: an #AgsSoundcard
- *
- * Sets a soundcard object on audio.
- *
- * Since: 0.4
- */
-void
-ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
-{
-  AgsChannel *channel;
-
-  AgsConfig *config;
-  AgsApplicationContext *application_context;
-  
-  AgsMutexManager *mutex_manager;
-
-  GList *list;
-
-  gchar *str0, *str1;
-
-  application_context = ags_soundcard_get_application_context(soundcard);
-
-  if(application_context != NULL){  
-    config = application_context->config;
-  
-    /* create mutex if necessary */
-    pthread_mutex_lock(application_context->mutex);
+  pthread_mutex_lock(application_mutex);
 
     mutex_manager = ags_mutex_manager_get_instance();
 
     if(ags_mutex_manager_lookup(mutex_manager,
 				(GObject *) audio) == NULL){
   
-      pthread_mutex_t *mutex;
-      pthread_mutexattr_t attr;
+  pthread_mutex_unlock(application_mutex);
 
       pthread_mutexattr_init(&attr);
       pthread_mutexattr_settype(&attr,
@@ -4064,265 +4372,6 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
 	  AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
 											      audio);
 	}
-
-	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] == NULL){
-	  AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
-											      audio);
-	}
-      
-	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] == NULL){
-	  AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
-											      audio);
-	}
-      }
-    }
-    
-    free(str0);
-    free(str1);
-  }else{
-    g_warning("ags_audio_set_soundcard() - no application context\0");
-  }
-  
-  /* audio */
-  if(audio->soundcard == soundcard)
-    return;
-
-  if(audio->soundcard != NULL)
-    g_object_unref(audio->soundcard);
-
-  if(soundcard != NULL)
-    g_object_ref(soundcard);
-
-  audio->soundcard = (GObject *) soundcard;
-
-  /* recall */
-  list = audio->play;
-  
-  while(list != NULL){
-    g_object_set(G_OBJECT(list->data),
-		 "soundcard\0", soundcard,
-		 NULL);
-    
-    list = list->next;
-  }
-  
-  list = audio->recall;
-  
-  while(list != NULL){
-    g_object_set(G_OBJECT(list->data),
-		 "soundcard\0", soundcard,
-		 NULL);
-    
-    list = list->next;
-  }
-  
-  /* input */
-  channel = audio->input;
-
-  while(channel != NULL){
-    g_object_set(G_OBJECT(channel),
-		 "soundcard\0", soundcard,
-		 NULL);
-    
-    channel = channel->next;
-  }
-
-  /* output */
-  channel = audio->output;
-
-  while(channel != NULL){
-    g_object_set(G_OBJECT(channel),
-		 "soundcard\0", soundcard,
-		 NULL);
-    
-    channel = channel->next;
-  }
-}
-
-/**
- * ags_audio_open_files:
- * @audio: the #AgsAudio
- * @filenames: the files to open
- * @overwrite_channels: if existing channels should be assigned
- * @create_channels: if new channels should be created as not fitting if combined with @overwrite_channels
- *
- * Open some files.
- *
- * Since: 0.4
- */
-void
-ags_audio_open_files(AgsAudio *audio,
-		     GSList *filenames,
-		     gboolean overwrite_channels,
-		     gboolean create_channels)
-{
-  AgsChannel *channel;
-  AgsAudioFile *audio_file;
-  AgsAudioSignal *audio_signal_source_old;
-  
-  AgsApplicationContext *application_context;
-  
-  AgsMutexManager *mutex_manager;
-  
-  GList *audio_signal_list;
-  guint i, j;
-  guint list_length;
-
-  GError *error;
-  pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  pthread_mutex_lock(mutex);
-
-  channel = audio->input;
-
-  /* overwriting existing channels */
-  if(overwrite_channels){
-    if(channel != NULL){
-      for(i = 0; i < audio->input_pads && filenames != NULL; i++){
-	audio_file = ags_audio_file_new((gchar *) filenames->data,
-					(GObject *) audio->soundcard,
-					0, audio->audio_channels);
-	if(!ags_audio_file_open(audio_file)){
-	  filenames = filenames->next;
-	  continue;
-	}
-
-	ags_audio_file_read_audio_signal(audio_file);
-	ags_audio_file_close(audio_file);
-	
-	audio_signal_list = audio_file->audio_signal;
-	
-	for(j = 0; j < audio->audio_channels && audio_signal_list != NULL; j++){
-	  /* create task */
-	  error = NULL;
-
-	  ags_channel_set_link(channel, NULL,
-			       &error);
-
-	  if(error != NULL){
-	    g_message(error->message);
-	  }
-
-	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
-	  audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
-	  // FIXME:JK: create a task
-	  channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
-								 (gpointer) audio_signal_source_old);
-	  channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
-								  audio_signal_list->data);
-
-	  g_object_unref(G_OBJECT(audio_signal_source_old));
-
-	  audio_signal_list = audio_signal_list->next;
-	  channel = channel->next;
-	}
-
-	if(audio_file->channels < audio->audio_channels)
-	  channel = ags_channel_nth(channel,
-				    audio->audio_channels - audio_file->channels);
-	
-	filenames = filenames->next;
-      }
-    }
-  }
-
-  /* appending to channels */
-  if(create_channels && filenames != NULL){
-    list_length = g_slist_length(filenames);
-    
-    ags_audio_set_pads((AgsAudio *) audio, AGS_TYPE_INPUT,
-		       list_length + AGS_AUDIO(audio)->input_pads);
-    channel = ags_channel_nth(AGS_AUDIO(audio)->input,
-			      (AGS_AUDIO(audio)->input_pads - list_length) * AGS_AUDIO(audio)->audio_channels);
-    
-    while(filenames != NULL){
-      audio_file = ags_audio_file_new((gchar *) filenames->data,
-				      (GObject *) audio->soundcard,
-				      0, audio->audio_channels);
-      if(!ags_audio_file_open(audio_file)){
-	filenames = filenames->next;
-	continue;
-      }
-      
-      ags_audio_file_read_audio_signal(audio_file);
-      ags_audio_file_close(audio_file);
-	
-      audio_signal_list = audio_file->audio_signal;
-      
-      for(j = 0; j < audio->audio_channels && audio_signal_list != NULL; j++){
-	AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
-	audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-	
-	channel->first_recycling->audio_signal = g_list_remove(channel->first_recycling->audio_signal,
-							       (gpointer) audio_signal_source_old);
-	channel->first_recycling->audio_signal = g_list_prepend(channel->first_recycling->audio_signal,
-								audio_signal_list->data);
-	
-	g_object_unref(G_OBJECT(audio_signal_source_old));
-	
-	audio_signal_list = audio_signal_list->next;
-	channel = channel->next;
-      }
-      
-      if(audio->audio_channels > audio_file->channels)
-	channel = ags_channel_nth(channel,
-				  audio->audio_channels - audio_file->channels);
-      
-      filenames = filenames->next;
-    }
-  }
-  
-  pthread_mutex_unlock(mutex);
-}
-
-/**
- * ags_audio_find_port:
- * @audio: an #AgsAudio
- *
- * Retrieve all ports of #AgsAudio.
- *
- * Returns: a new #GList containing #AgsPort
- *
- * Since: 0.4
- */
-GList*
-ags_audio_find_port(AgsAudio *audio)
-{
-  AgsApplicationContext *application_context;
-  
-  AgsMutexManager *mutex_manager;
-
-  GList *recall;
-  GList *list;
-  
-  pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->soundcard));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  pthread_mutex_lock(mutex);
 
   list = NULL;
  
@@ -4368,6 +4417,299 @@ ags_audio_find_port(AgsAudio *audio)
   pthread_mutex_unlock(mutex);
   
   return(list);
+}
+
+/**
+ * ags_audio_open_files:
+ * @audio: the #AgsAudio
+ * @filenames: the files to open
+ * @overwrite_channels: if existing channels should be assigned
+ * @create_channels: if new channels should be created as not fitting if combined with @overwrite_channels
+ *
+ * Open some files.
+ *
+ * Since: 0.4
+ */
+void
+ags_audio_open_files(AgsAudio *audio,
+		     GSList *filenames,
+		     gboolean overwrite_channels,
+		     gboolean create_channels)
+{
+  AgsChannel *channel;
+  AgsAudioFile *audio_file;
+  AgsAudioSignal *audio_signal_source_old;
+
+  AgsMutexManager *mutex_manager;
+
+  GList *audio_signal_list;
+
+  guint i, j;
+  guint list_length;
+
+  GError *error;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex, *channel_mutex, *recycling_mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  channel = audio->input;
+
+  /* overwriting existing channels */
+  if(overwrite_channels){
+    if(channel != NULL){
+      for(i = 0; i < audio->input_pads && filenames != NULL; i++){
+	audio_file = ags_audio_file_new((gchar *) filenames->data,
+					audio->soundcard,
+					0, audio->audio_channels);
+	if(!ags_audio_file_open(audio_file)){
+	  filenames = filenames->next;
+	  continue;
+	}
+
+	ags_audio_file_read_audio_signal(audio_file);
+	ags_audio_file_close(audio_file);
+	
+	audio_signal_list = audio_file->audio_signal;
+	
+	for(j = 0; j < audio->audio_channels && audio_signal_list != NULL; j++){
+	  /* create task */
+	  error = NULL;
+
+	  ags_channel_set_link(channel, NULL,
+			       &error);
+
+	  if(error != NULL){
+	    g_message(error->message);
+	  }
+
+	  /* lock channel and recycling */
+	  pthread_mutex_lock(application_mutex);
+  
+	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						   (GObject *) channel);
+
+	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						     (GObject *) channel->first_recycling);
+	  
+	  pthread_mutex_unlock(application_mutex);
+
+	  /* replace template audio signal */
+	  pthread_mutex_lock(channel_mutex);
+	  pthread_mutex_lock(recycling_mutex);
+	  
+	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
+	  audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+
+	  ags_recycling_remove_audio_signal(channel->first_recycling,
+					    (gpointer) audio_signal_source_old);
+	  ags_recycling_add_audio_signal(channel->first_recycling,
+					 audio_signal_list->data);
+
+	  g_object_unref(G_OBJECT(audio_signal_source_old));
+
+	  /* iterate */
+	  audio_signal_list = audio_signal_list->next;
+	  channel = channel->next;
+	  
+	  pthread_mutex_unlock(recycling_mutex);
+	  pthread_mutex_unlock(channel_mutex);
+	}
+
+	if(audio_file->channels < audio->audio_channels)
+	  channel = ags_channel_nth(channel,
+				    audio->audio_channels - audio_file->channels);
+	
+	filenames = filenames->next;
+      }
+    }
+  }
+
+  /* appending to channels */
+  if(create_channels && filenames != NULL){
+    list_length = g_slist_length(filenames);
+    
+    ags_audio_set_pads((AgsAudio *) audio, AGS_TYPE_INPUT,
+		       list_length + AGS_AUDIO(audio)->input_pads);
+    channel = ags_channel_nth(AGS_AUDIO(audio)->input,
+			      (AGS_AUDIO(audio)->input_pads - list_length) * AGS_AUDIO(audio)->audio_channels);
+    
+    while(filenames != NULL){
+      audio_file = ags_audio_file_new((gchar *) filenames->data,
+				      audio->soundcard,
+				      0, audio->audio_channels);
+      if(!ags_audio_file_open(audio_file)){
+	filenames = filenames->next;
+	continue;
+      }
+      
+      ags_audio_file_read_audio_signal(audio_file);
+      ags_audio_file_close(audio_file);
+	
+      audio_signal_list = audio_file->audio_signal;
+      
+      for(j = 0; j < audio->audio_channels && audio_signal_list != NULL; j++){
+	/* lock channel and recycling */
+	pthread_mutex_lock(application_mutex);
+  
+	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) channel);
+
+	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						   (GObject *) channel->first_recycling);
+	  
+	pthread_mutex_unlock(application_mutex);
+
+	/* replace template audio signal */
+	pthread_mutex_lock(channel_mutex);
+	pthread_mutex_lock(recycling_mutex);
+	  
+	AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
+	audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+	
+	ags_recycling_remove_audio_signal(channel->first_recycling,
+					  (gpointer) audio_signal_source_old);
+	ags_recycling_add_audio_signal(channel->first_recycling,
+				       audio_signal_list->data);
+	
+	g_object_unref(G_OBJECT(audio_signal_source_old));
+
+	/* iterate */
+	audio_signal_list = audio_signal_list->next;
+	channel = channel->next;
+
+	pthread_mutex_unlock(recycling_mutex);
+	pthread_mutex_unlock(channel_mutex);
+      }
+      
+      if(audio->audio_channels > audio_file->channels)
+	channel = ags_channel_nth(channel,
+				  audio->audio_channels - audio_file->channels);
+      
+      filenames = filenames->next;
+    }
+  }
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_recursive_play_init:
+ * @audio: the #AgsAudio object
+ * @playback: if doing playback
+ * @sequencer: if doing sequencer
+ * @notation: if doing notation
+ *
+ * Initializes #AgsAudio in order to do playback, sequencer or notation.
+ *
+ * Returns: a list containing all #AgsRecallID
+ *
+ * Since: 0.4
+ */
+GList*
+ags_audio_recursive_play_init(AgsAudio *audio,
+			      gboolean playback, gboolean sequencer, gboolean notation)
+{
+  AgsChannel *channel;
+  AgsRecallID *recall_id;
+
+  AgsMutexManager *mutex_manager;
+  
+  GList *list, *list_start;
+  gint stage;
+  gboolean arrange_recall_id, duplicate_templates, resolve_dependencies;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex, *channel_mutex;
+
+  if(audio == NULL){
+    return;
+  }
+  
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* recurisive init playback */
+  pthread_mutex_lock(mutex);
+
+  list = NULL;
+  list_start = NULL;
+
+  for(stage = 0; stage < 3; stage++){
+    channel = audio->output;
+    list = list_start;
+
+    if(stage == 0){
+      arrange_recall_id = TRUE;
+      duplicate_templates = TRUE;
+      resolve_dependencies = TRUE;
+    }else{
+      arrange_recall_id = FALSE;
+      duplicate_templates = FALSE;
+      resolve_dependencies = FALSE;
+    }
+
+    while(channel != NULL){
+      if(stage == 0){
+	recall_id = ags_channel_recursive_play_init(channel, stage,
+						    arrange_recall_id, duplicate_templates,
+						    playback, sequencer, notation,
+						    resolve_dependencies,
+						    NULL);
+	
+	list_start = g_list_append(list_start,
+				   recall_id);
+      }else{
+	ags_channel_recursive_play_init(channel, stage,
+					arrange_recall_id, duplicate_templates,
+					playback, sequencer, notation,
+					resolve_dependencies,
+					AGS_RECALL_ID(list->data));
+
+	list = list->next;
+      }
+
+      /* iterate */
+      pthread_mutex_lock(application_mutex);
+      
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel);
+  
+      pthread_mutex_unlock(application_mutex);
+      
+      pthread_mutex_lock(channel_mutex);
+
+      channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
+    }
+  }
+  
+  pthread_mutex_unlock(mutex);
+
+  return(list_start);
 }
 
 /**

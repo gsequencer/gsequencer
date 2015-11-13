@@ -23,6 +23,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
@@ -31,11 +32,7 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
@@ -47,6 +44,8 @@
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -62,9 +61,8 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 
-#include <ags/X/file/ags_gsequencer_file_xml.h>
+#include <ags/X/file/ags_gui_file_xml.h>
 
-#include <ags/X/machine/ags_synth_bridge.h>
 #include <ags/X/machine/ags_synth_input_pad.h>
 #include <ags/X/machine/ags_synth_input_line.h>
 #include <ags/X/machine/ags_oscillator.h>
@@ -470,7 +468,7 @@ ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -548,7 +546,7 @@ ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -594,49 +592,92 @@ ags_synth_update(AgsSynth *synth)
 {
   AgsWindow *window;
   AgsOscillator *oscillator;
-
+  
+  GObject *soundcard;
+  AgsAudio *audio;
   AgsChannel *channel;
+  
   AgsApplySynth *apply_synth;
 
-  AgsThread *main_loop, *current;
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
   
-  AgsSoundcard *soundcard;
-
   GList *input_pad, *input_pad_start;
   GList *input_line, *input_line_start;
+
+  guint output_lines;
   guint wave;
   guint attack, frame_count;
   guint frequency, phase, start;
   guint loop_start, loop_end;
   gdouble volume;
 
-  window = gtk_widget_get_toplevel(synth);
-  
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *application_mutex;
+    
+  window = (AgsWindow *) gtk_widget_get_toplevel(synth);
   application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  audio = AGS_MACHINE(synth)->audio;
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
   
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
-  soundcard = AGS_SOUNDCARD(AGS_MACHINE(synth)->audio->soundcard);
-
+  pthread_mutex_unlock(application_mutex);
+  
+  /*  */
   start = (guint) gtk_spin_button_get_value_as_int(synth->lower);
 
   loop_start = (guint) gtk_spin_button_get_value_as_int(synth->loop_start);
   loop_end = (guint) gtk_spin_button_get_value_as_int(synth->loop_end);
 
   /* write input */
-  channel = AGS_MACHINE(synth)->audio->input;
   input_pad_start = 
-    input_pad = gtk_container_get_children(synth->input_pad);
+    input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
+
+  /* get soundcard */
+  pthread_mutex_lock(audio_mutex);
+
+  soundcard = audio->soundcard;
+
+  channel = audio->input;
+  
+  pthread_mutex_unlock(audio_mutex);
 
   while(input_pad != NULL){
-    input_line = gtk_container_get_children(AGS_PAD(input_pad->data)->expander_set);
-    oscillator = AGS_OSCILLATOR(gtk_container_get_children(AGS_LINE(input_line->data)->expander->table)->data);
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
 
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* do it so */
+    input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
+    oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
+    
     wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
     frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
@@ -654,20 +695,33 @@ ags_synth_update(AgsSynth *synth)
     ags_task_thread_append_task(task_thread,
 				AGS_TASK(apply_synth));
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+
     input_pad = input_pad->next;
   }
   
   g_list_free(input_pad_start);
 
   /* write output */
-  channel = AGS_MACHINE(synth)->audio->output;
   input_pad_start = 
     input_pad = gtk_container_get_children(synth->input_pad);
 
+  pthread_mutex_lock(audio_mutex);
+
+  channel = audio->output;
+  output_lines = audio->output_lines;
+
+  pthread_mutex_unlock(audio_mutex);
+  
   while(input_pad != NULL){
-    input_line = gtk_container_get_children(AGS_PAD(input_pad->data)->expander_set);
-    oscillator = AGS_OSCILLATOR(gtk_container_get_children(AGS_LINE(input_line->data)->expander->table)->data);
+    /* do it so */
+    input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
+    oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
 
     wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
@@ -676,7 +730,7 @@ ags_synth_update(AgsSynth *synth)
     frequency = (guint) gtk_spin_button_get_value_as_int(oscillator->frequency);
     volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
 
-    apply_synth = ags_apply_synth_new(channel, AGS_MACHINE(synth)->audio->output_lines,
+    apply_synth = ags_apply_synth_new(channel, output_lines,
 				      wave,
 				      attack, frame_count,
 				      frequency, phase, start,
@@ -711,13 +765,9 @@ ags_synth_new(GObject *soundcard)
   synth = (AgsSynth *) g_object_new(AGS_TYPE_SYNTH,
 				    NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(synth)->audio),
-			  "soundcard\0", &value);
-    g_value_unset(&value);
-  }
+  g_object_set(G_OBJECT(AGS_MACHINE(synth)->audio),
+	       "soundcard\0", soundcard,
+	       NULL);
 
   return(synth);
 }

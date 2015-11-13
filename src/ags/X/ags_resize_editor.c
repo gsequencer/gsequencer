@@ -20,15 +20,16 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_applicable.h>
 
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/task/ags_resize_audio.h>
 
@@ -260,16 +261,20 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
   AgsResizeAudio *resize_audio;
-  
-  AgsThread *main_loop, *current;
+    
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
-
+  
   AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
   
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
-  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(resize_editor)->flags)) == 0)
+  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(resize_editor)->flags)) == 0){
     return;
+  }
   
   machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(resize_editor),
 							      AGS_TYPE_MACHINE_EDITOR));
@@ -284,6 +289,25 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 				     AGS_TYPE_TASK_THREAD);
 
   audio = machine_editor->machine->audio;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get window and application_context  */
+  window = (AgsWindow *) gtk_widget_get_toplevel(machine_editor->machine);
+  
+  application_context = window->application_context;
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   /* create task */
   resize_audio = ags_resize_audio_new(audio,
@@ -301,7 +325,13 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 {
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
+
   AgsAudio *audio;
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
@@ -309,6 +339,25 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 							      AGS_TYPE_MACHINE_EDITOR));
 
   audio = machine_editor->machine->audio;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) audio);
+    
+  pthread_mutex_unlock(application_mutex);
+
+  /* reset */
+  pthread_mutex_lock(audio_mutex);
+
+  if((AGS_MACHINE_MONO & (machine_editor->machine->mapping_flags)) != 0){
+    gtk_spin_button_set_range(resize_editor->audio_channels,
+			      0.0, 1.0);
+  }
 
   gtk_spin_button_set_value(resize_editor->audio_channels,
 			    audio->audio_channels);
@@ -318,6 +367,8 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 
   gtk_spin_button_set_value(resize_editor->output_pads,
 			    audio->output_pads);
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

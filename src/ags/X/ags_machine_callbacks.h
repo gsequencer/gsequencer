@@ -22,6 +22,10 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/thread/ags_task_completion.h>
+
+#include <ags/thread/ags_task.h>
+
 #include <ags/X/ags_machine.h>
 #include <ags/thread/ags_task.h>
 
@@ -38,6 +42,11 @@ int ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *mach
 void ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine);
 int ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machine);
 int ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine);
+
+int ags_machine_popup_copy_pattern_callback(GtkWidget *widget, AgsMachine *machine);
+int ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine);
+
+int ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine);
 
 void ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine);
 

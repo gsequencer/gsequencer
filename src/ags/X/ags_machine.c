@@ -20,17 +20,14 @@
 #include <ags/X/ags_machine_callbacks.h>
 
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_task_completion.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
@@ -39,6 +36,9 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_pattern.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -50,6 +50,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_machine_class_init(AgsMachineClass *machine);
 void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -253,7 +255,9 @@ ags_machine_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_machine_init(AgsMachine *machine)
 {
+  GtkVBox *vbox;
   GtkFrame *frame;
+  GtkMenuToolButton *menu_tool_button;
 
   machine->flags = 0;
   machine->file_input_flags = 0;
@@ -266,6 +270,11 @@ ags_machine_init(AgsMachine *machine)
   machine->output_pad_type = G_TYPE_NONE;
   machine->input_pad_type = G_TYPE_NONE;
 
+  machine->bank_0 = 0;
+  machine->bank_1 = 0;
+
+  vbox = gtk_vbox_new(FALSE, 0);
+  
   frame = (GtkFrame *) gtk_frame_new(NULL);
   gtk_container_add((GtkContainer *) machine, (GtkWidget *) frame);
 
@@ -283,16 +292,30 @@ ags_machine_init(AgsMachine *machine)
   machine->play = NULL;
 
   machine->output = NULL;
-  machine->input = NULL;
+  machine->selected_output_pad = NULL;
 
+  machine->input = NULL;
+  machine->selected_input_pad = NULL;
+  
   machine->bridge = NULL;
+
+  machine->port = NULL;
+  machine->automation_port = NULL;
 
   machine->automation_port = (gchar **) malloc(sizeof(gchar *));
   machine->automation_port[0] = NULL;
   
   machine->popup = ags_machine_popup_new(machine);
+
+  menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+				  "label\0", "machine\0",
+				  "menu\0", machine->popup,
+				  NULL);
+  gtk_frame_set_label_widget(frame,
+			     menu_tool_button);
   machine->properties = NULL;
   machine->rename = NULL;
+  machine->connection = NULL;
 }
 
 void
@@ -316,16 +339,20 @@ ags_machine_set_property(GObject *gobject,
       audio = (AgsAudio *) g_value_get_object(value);
       
       if(machine->audio != NULL){
+	AgsSoundcard *soundcard;
 	GList *pad;
 	GList *list;
 
-	list = ags_soundcard_get_audio(AGS_SOUNDCARD(window->soundcard));
+	/* remove from soundcard */
+	soundcard = AGS_SOUNDCARD(audio->soundcard);
+	
+	list = ags_soundcard_get_audio(soundcard);
 	list = g_list_remove(list,
-			     machine->audio);
-	ags_soundcard_set_audio(AGS_SOUNDCARD(window->soundcard),
+			     G_OBJECT(audio));
+	ags_soundcard_set_audio(soundcard,
 				list);
-				       
-	g_object_unref(G_OBJECT(machine->audio));
+	audio->soundcard = NULL;
+	
 	g_object_unref(G_OBJECT(machine->audio));
 
 	if(audio == NULL){
@@ -519,14 +546,18 @@ ags_machine_connect(AgsConnectable *connectable)
     ags_machine_find_port(machine);
   }
 
+  if(machine->bridge != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(machine->bridge));
+  }
+  
   if(machine->play != NULL){
     g_signal_connect(G_OBJECT(machine->play), "clicked\0",
 		     G_CALLBACK(ags_machine_play_callback), (gpointer) machine);
   }
 
   /* GtkWidget */
-  g_signal_connect(G_OBJECT (machine), "button_press_event\0",
-		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
+  //  g_signal_connect(G_OBJECT (machine), "button_press_event\0",
+  //		   G_CALLBACK(ags_machine_button_press_callback), (gpointer) machine);
 
   /* AgsPad - input */
   if(machine->input != NULL){
@@ -704,7 +735,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
       list = list->next;
     }
   }
-
+  
   return(model);
 }
 
@@ -786,16 +817,39 @@ ags_machine_set_run(AgsMachine *machine,
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+
   AgsApplicationContext *application_context;
   
-  window = (AgsWindow *) gtk_widget_get_toplevel(machine);
-
-  application_context = window->application_context;
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_loop_mutex;
   
-  main_loop = application_context->main_loop;
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get threads */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* lookup audio loop mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      (GObject *) audio_loop);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   if(run){
     AgsInitAudio *init_audio;
@@ -811,9 +865,20 @@ ags_machine_set_run(AgsMachine *machine,
     list = g_list_prepend(list, init_audio);
     
     /* create append task */
-    append_audio = ags_append_audio_new(application_context->main_loop,
+    append_audio = ags_append_audio_new(audio_loop,
 					(GObject *) machine->audio);
-      
+
+    list = g_list_prepend(list, append_audio);
+
+    /* create init task */
+    init_audio = ags_init_audio_new(machine->audio,
+				    FALSE, FALSE, notation);
+    list = g_list_prepend(list, init_audio);
+
+    /* create append task */
+    append_audio = ags_append_audio_new(audio_loop,
+					(GObject *) machine->audio);
+
     list = g_list_prepend(list, append_audio);
 
     /* create start task */
@@ -823,6 +888,24 @@ ags_machine_set_run(AgsMachine *machine,
 			     G_CALLBACK(ags_machine_start_failure_callback), machine);
       list = g_list_prepend(list, start_soundcard);
 
+      pthread_mutex_lock(audio_loop_mutex);
+      
+      gui_thread = (AgsGuiThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_GUI_THREAD);
+
+      pthread_mutex_unlock(audio_loop_mutex);
+
+      start_soundcard = ags_start_soundcard_new(window->soundcard);
+      list = g_list_prepend(list, start_soundcard);
+
+      task_completion = ags_task_completion_new((GObject *) start_soundcard,
+						NULL);
+      g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
+			     G_CALLBACK(ags_machine_start_complete_callback), machine);
+      gui_thread->task_completion = g_list_prepend(gui_thread->task_completion,
+						   task_completion);
+      ags_connectable_connect(AGS_CONNECTABLE(task_completion));
+      
       /* append AgsStartSoundcard */
       list = g_list_reverse(list);
 
@@ -848,25 +931,68 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 			       AgsMachine *machine)
 {
   AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list_output_pad, *list_output_pad_start;
   GList *list_input_pad, *list_input_pad_start;
   GList *list_output_pad_next, *list_output_pad_next_start;
   GList *list_input_pad_next, *list_input_pad_next_start;
+
   guint i, j;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
   if(audio_channels > audio_channels_old){
     /* grow lines */
     AgsPad *pad;
+
     GList *list, *list_start;
+
+    guint input_pads, output_pads;
+
+    pthread_mutex_lock(audio_mutex);
+
+    input_pads = audio->input_pads;
+    output_pads = audio->output_pads;
+    
+    pthread_mutex_unlock(audio_mutex);
 
     /* AgsInput */
     if(machine->input != NULL){
-      list_input_pad = gtk_container_get_children((GtkContainer *) machine->input);
+      list_input_pad_start = 
+	list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
+      /* get input */
+      pthread_mutex_lock(audio_mutex);
+
       channel = audio->input;
 
-      for(i = 0; i < audio->input_pads; i++){
+      pthread_mutex_unlock(audio_mutex);
+
+      for(i = 0; i < input_pads; i++){
+	/* lookup channel mutex */
+	pthread_mutex_lock(application_mutex);
+
+	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) channel);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* create AgsPad's if necessary or resize */
 	if(audio_channels_old == 0){
-	  /* create AgsPad's if necessary */
 	  pad = g_object_new(machine->input_pad_type,
 			     "channel\0", channel,
 			     NULL);
@@ -876,7 +1002,7 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 			     0);
 
 	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
-			       audio->audio_channels, 0);
+			       audio_channels, 0);
 	}else{
 	  pad = AGS_PAD(list_input_pad->data);
 
@@ -884,8 +1010,13 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 			       audio_channels, audio_channels_old);
 	}
 
+	/* iterate */
+	pthread_mutex_lock(channel_mutex);
+	
 	channel = channel->next_pad;
-
+	
+	pthread_mutex_unlock(channel_mutex);
+	
 	if(audio_channels_old != 0){
 	  list_input_pad = list_input_pad->next;
 	}
@@ -896,12 +1027,26 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 
     /* AgsOutput */
     if(machine->output != NULL){
-      list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
+      list_output_pad_start = 
+	list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
+      /* get output */
+      pthread_mutex_lock(audio_mutex);
+
       channel = audio->output;
 
-      for(i = 0; i < audio->output_pads; i++){
+      pthread_mutex_unlock(audio_mutex);
+
+      for(i = 0; i < output_pads; i++){
+	/* lookup channel mutex */
+	pthread_mutex_lock(application_mutex);
+
+	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) channel);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* create AgsPad's if necessary or resize */
 	if(audio_channels_old == 0){
-	  /* create AgsPad's if necessary */
 	  pad = g_object_new(machine->output_pad_type,
 			     "channel\0", channel,
 			     NULL);
@@ -910,7 +1055,7 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 			     FALSE, FALSE,
 			     0);
 	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
-			       AGS_AUDIO(channel->audio)->audio_channels, 0);
+			       audio_channels, 0);
 	}else{
 	  pad = AGS_PAD(list_output_pad->data);
 
@@ -918,7 +1063,12 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 			       audio_channels, audio_channels_old);
 	}
 
+	/* iterate */
+	pthread_mutex_lock(channel_mutex);
+	
 	channel = channel->next_pad;
+	
+	pthread_mutex_unlock(channel_mutex);
 
 	if(audio_channels_old != 0){
 	  list_output_pad = list_output_pad->next;
@@ -972,11 +1122,13 @@ ags_machine_set_audio_channels(AgsAudio *audio,
       }
     }
 
-    if(list_output_pad_start)
+    if(list_output_pad_start){
       g_list_free(list_output_pad_start);
-
-    if(list_input_pad_start)
+    }
+    
+    if(list_input_pad_start){
       g_list_free(list_input_pad_start);
+    }
   }  
 }
 
@@ -986,17 +1138,53 @@ ags_machine_set_pads(AgsAudio *audio, GType channel_type,
 		     AgsMachine *machine)
 {
   AgsPad *pad;
+
   AgsChannel *channel;
+  AgsChannel *input, *output;
+  
+  AgsMutexManager *mutex_manager;
+
   guint i, j;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
   if(pads_old < pads){
-    /* input  */
+    pthread_mutex_lock(audio_mutex);
+
+    input = audio->input;
+    output = audio->output;
+    
+    pthread_mutex_unlock(audio_mutex);
+
+    /* grow input */
     if(machine->input != NULL){
-      if(channel_type == AGS_TYPE_INPUT){
-	channel = ags_channel_nth(audio->input,
+      if(type == AGS_TYPE_INPUT){
+	channel = ags_channel_nth(input,
 				  pads_old * audio->audio_channels);
       
 	for(i = pads_old; i < pads; i++){
+	  /* lookup channel mutex */
+	  pthread_mutex_lock(application_mutex);
+
+	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						   (GObject *) channel);
+  
+	  pthread_mutex_unlock(application_mutex);
+
+	  /* instantiate pad */
 	  pad = g_object_new(machine->input_pad_type,
 			     "channel\0", channel,
 			     NULL);
@@ -1004,25 +1192,46 @@ ags_machine_set_pads(AgsAudio *audio, GType channel_type,
 			     (GtkWidget *) pad, FALSE, FALSE, 0);
 	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
 			       audio->audio_channels, 0);
+	  
+	  /* iterate */
+	  pthread_mutex_lock(channel_mutex);
+	
 	  channel = channel->next_pad;
+	
+	  pthread_mutex_unlock(channel_mutex);
 	}
       }
-    }  
-    /* output */
+    }
+    
+    /* grow output */
     if(machine->output != NULL){
-      if(channel_type == AGS_TYPE_OUTPUT){
-	channel = ags_channel_nth(audio->output,
+      if(type == AGS_TYPE_OUTPUT){
+	channel = ags_channel_nth(output,
 				  pads_old * audio->audio_channels);
     
 	for(i = pads_old; i < pads; i++){
+	  /* lookup channel mutex */
+	  pthread_mutex_lock(application_mutex);
+
+	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						   (GObject *) channel);
+  
+	  pthread_mutex_unlock(application_mutex);
+
+	  /* instantiate pad */
 	  pad = g_object_new(machine->output_pad_type,
 			     "channel\0", channel,
 			     NULL);
 	  gtk_box_pack_start((GtkBox *) machine->output, (GtkWidget *) pad, FALSE, FALSE, 0);
 	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
 			       audio->audio_channels, 0);
-      
+
+	  /* iterate */
+	  pthread_mutex_lock(channel_mutex);
+	
 	  channel = channel->next_pad;
+	
+	  pthread_mutex_unlock(channel_mutex);
 	}
       }
     }
@@ -1125,24 +1334,45 @@ ags_machine_open_files(AgsMachine *machine,
 		       gboolean create_channels)
 {
   AgsWindow *window;
-  
+
   AgsOpenFile *open_file;
 
-  AgsThread *main_loop, *current;
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
 
-  window = gtk_widget_get_ancestor(machine,
-				   AGS_TYPE_WINDOW);
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_loop_mutex;
+
+  window = (AgsWindow *) gtk_widget_get_toplevel(machine);
   
   application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-  main_loop = application_context->main_loop;
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  audio_loop = application_context->main_loop;
 
+  pthread_mutex_unlock(application_mutex);
+
+  /* lookup audio loop mutex */
+  pthread_mutex_lock(application_mutex);
+    
+  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      (GObject *) audio_loop);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  /* instantiate open file task */
   open_file = ags_open_file_new(machine->audio,
 				filenames,
 				overwrite_channels,
@@ -1151,6 +1381,150 @@ ags_machine_open_files(AgsMachine *machine,
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(open_file));
 
+}
+
+void
+ags_machine_copy_pattern(AgsMachine *machine)
+{
+  AgsAudio *audio;
+  AgsChannel *channel;
+  
+  AgsMutexManager *mutex_manager;
+
+  xmlDoc *clipboard;
+  xmlNode *audio_node, *notation_node;
+
+  xmlChar *buffer;
+  int size;
+  gint i;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *current_mutex;
+
+  auto xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current);
+
+  xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current){
+    AgsPattern *pattern;
+    xmlNode *notation_node, *current_note;
+    guint x_boundary, y_boundary;
+    guint bank_0, bank_1, k;
+    
+    /* create root node */
+    notation_node = xmlNewNode(NULL, BAD_CAST "notation\0");
+
+    xmlNewProp(notation_node, BAD_CAST "program\0", BAD_CAST "ags\0");
+    xmlNewProp(notation_node, BAD_CAST "type\0", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
+    xmlNewProp(notation_node, BAD_CAST "version\0", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
+    xmlNewProp(notation_node, BAD_CAST "format\0", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
+    xmlNewProp(notation_node, BAD_CAST "base_frequency\0", BAD_CAST g_strdup("0\0"));
+    xmlNewProp(notation_node, BAD_CAST "audio-channel\0", BAD_CAST g_strdup_printf("%u\0", current->audio_channel));
+
+    bank_0 = machine->bank_0;
+    bank_1 = machine->bank_1;
+    
+    x_boundary = G_MAXUINT;
+    y_boundary = G_MAXUINT;
+
+    while(current != NULL){
+      pattern = current->pattern->data;
+
+      for(k = 0; k < pattern->dim[2]; k++){
+	if(ags_pattern_get_bit(pattern, bank_0, bank_1, k)){
+	  current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note\0", NULL);
+	  
+	  xmlNewProp(current_note, BAD_CAST "x\0", BAD_CAST g_strdup_printf("%u\0", k));
+	  xmlNewProp(current_note, BAD_CAST "x1\0", BAD_CAST g_strdup_printf("%u\0", k + 1));
+
+	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
+	    xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", machine->audio->input_pads - current->pad - 1));
+	  }else{
+	    xmlNewProp(current_note, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", current->pad));
+	  }
+	  
+	  if(x_boundary > k){
+	    x_boundary = k;
+	  }
+      
+	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
+	    guint tmp;
+
+	    tmp = machine->audio->input_pads - current->pad - 1;
+	    
+	    if(y_boundary > tmp){
+	      y_boundary = tmp;
+	    }
+	  }else{
+	    if(y_boundary > current->pad){
+	      y_boundary = current->pad;
+	    }
+	  }
+	}
+      }
+      
+      current = current->next;
+    }
+
+    xmlNewProp(notation_node, BAD_CAST "x_boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
+    xmlNewProp(notation_node, BAD_CAST "y_boundary\0", BAD_CAST g_strdup_printf("%u\0", y_boundary));
+
+    return(notation_node);
+  }
+  
+  /* create document */
+  clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+  /* create root node */
+  audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+  xmlDocSetRootElement(clipboard, audio_node);
+
+  audio = machine->audio;
+
+  mutex_manager = ags_mutex_manager_get_instance();  
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* copy to clipboard */
+  pthread_mutex_lock(audio_mutex);
+
+  channel = audio->input;
+
+  pthread_mutex_unlock(audio_mutex);
+
+  for(i = 0; i < machine->audio->audio_channels; i++){
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* do it so */
+    pthread_mutex_lock(current_mutex);
+    
+    notation_node = ags_machine_copy_pattern_to_notation(channel);
+    xmlAddChild(audio_node, notation_node);
+
+    channel = channel->next;
+
+    pthread_mutex_unlock(current_mutex);
+  }
+  
+  /* write to clipboard */
+  xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+  gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+			 buffer, size);
+  gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+  
+  xmlFreeDoc(clipboard);
 }
 
 /**
@@ -1255,4 +1629,86 @@ ags_machine_popup_new(AgsMachine *machine)
   gtk_widget_show_all((GtkWidget*) popup);
 
   return(popup);
+}
+
+/**
+ * ags_machine_popup_add_edit_options:
+ * @machine: the assigned machine.
+ * @edit_options: the options to set
+ *
+ * Add options to edit submenu
+ *
+ * Since: 0.4.2
+ */
+void
+ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
+{
+  GtkMenu *edit;
+  GtkMenuItem *item;
+  
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("edit\0"));
+  gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
+  gtk_widget_show(item);
+
+  edit = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    edit);
+
+  gtk_widget_show(edit);
+
+  if((AGS_MACHINE_POPUP_COPY_PATTERN & edit_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("copy pattern\0"));
+    gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate\0",
+		     G_CALLBACK(ags_machine_popup_copy_pattern_callback), (gpointer) machine);
+
+    gtk_widget_show(item);
+  }
+  
+  if((AGS_MACHINE_POPUP_PASTE_PATTERN & edit_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("paste pattern\0"));
+    gtk_menu_shell_append((GtkMenuShell *) edit, (GtkWidget*) item);
+
+    g_signal_connect((GObject*) item, "activate\0",
+		     G_CALLBACK(ags_machine_popup_paste_pattern_callback), (gpointer) machine);
+
+    gtk_widget_show(item);
+  }
+}
+
+/**
+ * ags_machine_popup_add_connection_options:
+ * @machine: the assigned machine.
+ * @connection_options: the options to set
+ *
+ * Add options to connection submenu
+ *
+ * Since: 0.4.2
+ */
+void
+ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options)
+{
+  GtkMenu *connection;
+  GtkMenuItem *item;
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("connection\0"));
+  gtk_menu_shell_append((GtkMenuShell *) machine->popup, (GtkWidget*) item);
+  gtk_widget_show(item);
+
+  connection = (GtkMenu *) gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    connection);
+
+  gtk_widget_show(connection);
+
+  if((AGS_MACHINE_POPUP_MIDI_DIALOG & connection_options) != 0){
+    item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("MIDI dialog\0"));
+    gtk_menu_shell_append((GtkMenuShell *) connection, (GtkWidget*) item);
+    
+    g_signal_connect((GObject*) item, "activate\0",
+		     G_CALLBACK(ags_machine_popup_midi_dialog_callback), (gpointer) machine);
+
+    gtk_widget_show(item);
+  }
 }

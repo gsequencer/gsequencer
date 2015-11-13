@@ -25,6 +25,7 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_COPY_CHANNEL_RUN                (ags_copy_channel_run_get_type())

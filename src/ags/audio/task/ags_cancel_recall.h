@@ -25,8 +25,8 @@
 
 #include <ags/thread/ags_task.h>
 
-#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_playback.h>
 
 #define AGS_TYPE_CANCEL_RECALL                (ags_cancel_recall_get_type())
 #define AGS_CANCEL_RECALL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CANCEL_RECALL, AgsCancelRecall))

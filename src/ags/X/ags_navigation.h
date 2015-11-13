@@ -23,8 +23,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/object/ags_soundcard.h>
-
 #define AGS_TYPE_NAVIGATION                (ags_navigation_get_type())
 #define AGS_NAVIGATION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NAVIGATION, AgsNavigation))
 #define AGS_NAVIGATION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NAVIGATION, AgsNavigationClass))
@@ -51,7 +49,9 @@ struct _AgsNavigation
   guint flags;
 
   GObject *soundcard;
-
+  gdouble start_tact;
+  gdouble note_offset;
+  
   GtkToggleButton *expander;
 
   GtkSpinButton *bpm;
@@ -89,7 +89,18 @@ struct _AgsNavigationClass
 GType ags_navigation_get_type(void);
 
 gchar* ags_navigation_tact_to_time_string(gdouble tact,
-					  gdouble bpm);
+					  gdouble bpm,
+					  gdouble delay_factor);
+
+gchar* ags_navigation_relative_tact_to_time_string(gchar *timestr,
+						   gdouble delay,
+						   gdouble bpm,
+						   gdouble delay_factor);
+
+gchar* ags_navigation_absolute_tact_to_time_string(gdouble tact,
+						   gdouble bpm,
+						   gdouble delay_factor);
+
 void ags_navigation_update_time_string(double tact,
 				       gchar *time_string,
 				       gdouble bpm);

@@ -23,10 +23,10 @@
 
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_portlet.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_timestamp.h>
 
 #include <stdlib.h>
 #include <errno.h>
@@ -192,13 +192,13 @@ ags_notation_class_init(AgsNotationClass *notation)
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
-
+  
   /**
    * AgsNotation:port:
    *
    * The assigned #AgsPort
    * 
-   * Since: 0.4.0
+   * Since: 0.4.2
    */
   param_spec = g_param_spec_object("port\0",
 				   "port of notation\0",
@@ -224,7 +224,7 @@ ags_notation_class_init(AgsNotationClass *notation)
   g_object_class_install_property(gobject,
 				  PROP_NOTE,
 				  param_spec);
-
+  
   /**
    * AgsNotation:current-notes:
    *
@@ -417,7 +417,8 @@ ags_notation_set_property(GObject *gobject,
       pthread_mutex_lock(&(port->mutex));
 
       if(notation->current_notes != NULL){
-	ags_list_free_and_unref_link(notation->current_notes);
+	g_list_free_full(notation->current_notes,
+			 g_object_unref);
       }
 
       if(current_notes != NULL){
@@ -447,7 +448,8 @@ ags_notation_set_property(GObject *gobject,
       pthread_mutex_lock(&(port->mutex));
 
       if(notation->next_notes != NULL){
-	ags_list_free_and_unref_link(notation->next_notes);
+	g_list_free_full(notation->next_notes,
+			 g_object_unref);
       }
 
       if(next_notes != NULL){
@@ -492,7 +494,17 @@ ags_notation_get_property(GObject *gobject,
     g_value_set_object(value, notation->port);
     break;
   case PROP_NOTE:
-    g_value_set_pointer(value, g_list_copy(notation->port));
+    {
+      AgsPort *port;
+
+      port = AGS_PORT(notation->port);
+
+      pthread_mutex_lock(&(port->mutex));
+
+      g_value_set_pointer(value, g_list_copy(notation->notes));
+
+      pthread_mutex_unlock(&(port->mutex));
+    }
     break;
   case PROP_CURRENT_NOTES:
     {
@@ -554,10 +566,6 @@ ags_notation_finalize(GObject *gobject)
 
   notation = AGS_NOTATION(gobject);
 
-  if(notation->audio != NULL){
-    g_object_unref(notation->audio);
-  }
-  
   g_list_free_full(notation->notes,
 		   g_object_unref);
 
@@ -1619,7 +1627,7 @@ ags_notation_get_current(AgsNotation *notation)
 
 /**
  * ags_notation_new:
- * @audio: an #AgsAudio
+ * @audio: the assigned #AgsAudio
  * @audio_channel: the audio channel to be used
  *
  * Creates a #AgsNotation, assigned to @audio_channel.

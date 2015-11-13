@@ -46,6 +46,8 @@ struct _AgsMutexManagerClass
 
 GType ags_mutex_manager_get_type();
 
+pthread_mutex_t* ags_mutex_manager_get_application_mutex(AgsMutexManager *mutex_manager);
+
 gboolean ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
 				  GObject *lock_object, pthread_mutex_t *mutex);
 gboolean ags_mutex_manager_remove(AgsMutexManager *mutex_manager,

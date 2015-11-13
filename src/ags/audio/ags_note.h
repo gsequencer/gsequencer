@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <alsa/asoundlib.h>
+
+#include <ags/lib/ags_complex.h>
+
 #define AGS_TYPE_NOTE                (ags_note_get_type())
 #define AGS_NOTE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTE, AgsNote))
 #define AGS_NOTE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTE, AgsNoteClass))
@@ -51,6 +55,13 @@ struct _AgsNote
   guint x[2];
   guint y;
 
+  AgsComplex attack;
+  AgsComplex decay;
+  AgsComplex sustain;
+  AgsComplex release;
+  
+  AgsComplex ratio;
+  
   gchar *name;
   gdouble frequency;
 
@@ -68,6 +79,16 @@ GList* ags_note_find_prev(GList *note,
 			  guint x0, guint y);
 GList* ags_note_find_next(GList *note,
 			  guint x0, guint y);
+
+char* ags_note_to_raw_midi(AgsNote *note,
+			   guint *buffer_length);
+snd_seq_event_t* ags_note_to_seq_event(AgsNote *note,
+				       guint *n_events);
+
+GList* ags_note_from_raw_midi(char *raw_midi,
+			      guint length);
+GList* ags_note_from_seq_event(snd_seq_event_t *event,
+			       guint n_events);
 
 AgsNote* ags_note_duplicate(AgsNote *note);
 

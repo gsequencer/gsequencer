@@ -20,9 +20,6 @@
 #include <ags/X/machine/ags_ffplayer_bridge_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/object/ags_plugin.h>
 
 #include <ags/X/ags_effect_bulk.h>

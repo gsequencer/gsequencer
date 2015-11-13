@@ -1,26 +1,28 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/task/ags_change_tact.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_application_context.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 void ags_change_tact_class_init(AgsChangeTactClass *change_tact);
 void ags_change_tact_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -134,7 +136,7 @@ ags_change_tact_launch(AgsTask *task)
 {
   gdouble tact;
 
-  if(!gtk_toggle_button_get_active(AGS_CHANGE_TACT(task)->navigation->scroll)){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) AGS_CHANGE_TACT(task)->navigation->scroll)){
     return;
   }
 
@@ -142,7 +144,7 @@ ags_change_tact_launch(AgsTask *task)
 
   tact = gtk_spin_button_get_value(AGS_CHANGE_TACT(task)->navigation->position_tact);
 
-  if(!gtk_toggle_button_get_active(AGS_CHANGE_TACT(task)->navigation->loop) ||
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) AGS_CHANGE_TACT(task)->navigation->loop) ||
      tact + AGS_NAVIGATION_DEFAULT_TACT_STEP < gtk_spin_button_get_value(AGS_CHANGE_TACT(task)->navigation->loop_right_tact)){
     gtk_spin_button_set_value(AGS_CHANGE_TACT(task)->navigation->position_tact,
 			      tact +

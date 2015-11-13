@@ -1,7 +1,192 @@
+ags (0.6.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed volatile thread tree accessors
+	* refactored by removing AgsAudioLoop fields and replacing with ags_thread_find_type()
+	* work-around for resetting link and causing crash
+
+ags (0.6.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* enrolled built-in functions
+
+ags (0.6.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed refactored code of ags_channel.c because of bugs
+
+ags (0.6.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash while unlink channel and then do playback because recycling wasn't updated properly
+	* fixed dead-lock while muting pad
+	* enhaced AgsMachineEditor to be thread-safe
+	* modified ags_audio_loop.c and ags_gui_thread.c to process in parallel
+
+ags (0.6.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed NULL pointer in ags_line.c as accessing mutex manager
+	* fixed NULL pointer in ags_drum_output_line.c as accessing machine while setting channel
+
+ags (0.6.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added even more mutices to guarantee thread-safety
+
+ags (0.6.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added more mutices to guarantee thread-safety
+
+ags (0.6.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed race condition caused as stopping the engine ended in a dead-lock
+
+ags (0.6.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed startup dead-lock
+	* implemented ags_main_loop_get_tree_lock()
+
+ags (0.6.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing notation due to refactoring of 0.6.8
+
+ags (0.6.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed super-threaded scope audio and channel to be thread-safe
+	* refactored ags_audio_set_audio_channels() and ags_audio_set_pads()
+	* improved ags_channel_set_recycling() to instantiate AgsRecallID
+	* enhanced super-threaded scope recycling but is probably not yet ready
+	* enhanced ags_recycling.c to use mutices in view of super-threaded computing
+	* enhanced ags_audio.c and ags_channel.c the use of mutices
+
+ags (0.6.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash related to XML IO of AgsFileLink
+	* implemented ags-envelope recall but it's not tested, yet
+
+ags (0.6.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed modified default thread model in ags_config.c what caused certain crashes without ECC
+	* extended AgsFileLink with field audio_channel see next
+	* improved link editor file chooser to let you select audio channel
+
+ags (0.6.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_pad_play() to contain cancel code instead of playing again on toggle
+	* modified default thread model in ags_config.c what caused certain crashes without ECC
+	* implemented loading GTKRC from $(HOME)/.gsequencer/ags.rc
+
+ags (0.6.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audible feedback of note edit to play actual length of note
+	* fixed not connected line member
+	* fixed missing value_changed event in ags_dial.c
+	* removed built-in styles
+
+ags (0.6.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed to shrink of notes by keyboard to enable initial size
+	* improved user's manual docbook XML documentation
+	* implemented AtkAction interface in ags_dial.c and key-bindings
+
+ags (0.6.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed buffer attack in ags_buffer_audio_signal_run_inter()
+	* fixed NULL link within link editor to be shown correctly
+	* fixed playback of linked input
+	* implemented file link in link editor
+	* implemented audible feedback of AgsPatternBox, AgsCellPattern, AgsPatternEdit and AgsNoteEdit
+
+ags (0.6.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash while clicking AgsPatternBox pad
+	* fixed toggling all selected pads of AgsPatternBox pattern
+	* enhanced prelight of focused AgsPatternBox pad
+
+ags (0.6.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* Implemented basic accessibility thus refactored AgsDrum and AgsMatrix. Further enhanced AgsPatternEdit and AgsNoteEdit.
+
+ags (0.5.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_channel_set_link() and ags_channel_set_recycling()
+	* fixed unlink while ags_audio_set_pads() and ags_audio_set_audio_channels()
+
+ags (0.5.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed time calculation using absolute position for AgsExportWindow and AgsNavigation
+	* fixed fundamental timing issue which caused the engine to be delayed
+
+ags (0.5.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed grained control range
+	* fixed more precise time calculation
+	* fixed AgsDial wrong arithmetic expression
+	* fixed time calculation
+	* fixed crash while open unsupported files
+	* implemented AgsAsyncQueue interface in ags_task_thread.c to avoid race-conditions
+	* fixed AgsDrumInputPad playback
+
+ags (0.5.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed cliped LADSPA data
+
+ags (0.5.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed auto-scroll
+	* fixed time calculation
+	* fixed copy & paste
+	* fixed ruler
+	* fixed crash during extensive scrolling
+	* fixed export duration and difference to playback time
+
+ags (0.5.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash during unavailable audio file
+	* fixed buffer size preference for thread frequencies
+
+ags (0.5.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory leaks related to GValue in recalls
+	* fixed memory leaks in ags_display_tact_launch() as well for ags_toggle_led_launch() and in some GUI callbacks of them
+	* fixed memory leak AgsReturnableThread to clean disconnect handler
+	* fixed thread frequencies and delays
+	* implemented code alter macro AGS_USE_TIMER
+
+ags (0.5.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* enhanced thread-safety
+	* fixed ags.conf per file base
+	* reducing thread-cycles per second in order to target performance problems
+	* fixed allocation of ags-buffer
+
 ags (0.5.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO implement ags.conf per file base
+	* implemented ags.conf per file base
+	* cleaned-up recalls allocation
 
 ags (0.5.3)
 

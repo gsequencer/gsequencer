@@ -169,6 +169,13 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		  FALSE, TRUE);
 
   automation_editor->machine_selector = ags_machine_selector_new();
+  gtk_label_set_label(automation_editor->machine_selector->label,
+		      "automation\0");
+  
+  automation_editor->machine_selector->popup = ags_machine_selector_popup_new(automation_editor->machine_selector);
+  g_object_set(automation_editor->machine_selector->menu_button,
+	       "menu\0", automation_editor->machine_selector->popup,
+	       NULL);
   gtk_scrolled_window_add_with_viewport(scrolled_window,
 					(GtkWidget *) automation_editor->machine_selector);
 
@@ -234,6 +241,9 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) automation_editor->machine_selector, "changed\0",
 		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
 
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->output_notebook));
+  ags_connectable_connect(AGS_CONNECTABLE(automation_editor->input_notebook));
+  
   /* */
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->machine_selector));

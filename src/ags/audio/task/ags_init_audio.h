@@ -41,9 +41,9 @@ struct _AgsInitAudio
   AgsTask task;
 
   AgsAudio *audio;
-  gboolean playback;
-  gboolean sequencer;
-  gboolean notation;
+  gboolean do_playback;
+  gboolean do_sequencer;
+  gboolean do_notation;
 };
 
 struct _AgsInitAudioClass
@@ -54,6 +54,6 @@ struct _AgsInitAudioClass
 GType ags_init_audio_get_type();
 
 AgsInitAudio* ags_init_audio_new(AgsAudio *audio,
-				 gboolean playback, gboolean sequencer, gboolean notation);
+				 gboolean do_playback, gboolean do_sequencer, gboolean do_notation);
 
 #endif /*__AGS_INIT_AUDIO_H__*/

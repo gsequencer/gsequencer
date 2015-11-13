@@ -21,7 +21,6 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -43,7 +42,7 @@
 
 #include <ags/X/ags_window.h>
 
-#include <ags/X/file/ags_gsequencer_file_xml.h>
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_panel_input_pad.h>
 #include <ags/X/machine/ags_panel_input_line.h>
@@ -88,8 +87,6 @@ void ags_panel_set_pads(AgsAudio *audio, GType type,
 
 static gpointer ags_panel_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_parent_connectable_interface;
-
-extern const char *AGS_COPY_INPUT_TO_OUTPUT;
 
 GType
 ags_panel_get_type(void)
@@ -304,7 +301,7 @@ ags_panel_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -370,7 +367,7 @@ ags_panel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

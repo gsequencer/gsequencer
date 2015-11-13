@@ -37,6 +37,8 @@ struct _AgsMainLoopInterface
 {
   GTypeInterface interface;
 
+  pthread_mutex_t* (*get_tree_lock)(AgsMainLoop *main_loop);
+  
   void (*set_application_context)(AgsMainLoop *main_loop, AgsApplicationContext *application_context);
   AgsApplicationContext* (*get_application_context)(AgsMainLoop *main_loop);
 
@@ -51,6 +53,8 @@ struct _AgsMainLoopInterface
 };
 
 GType ags_main_loop_get_type();
+
+pthread_mutex_t* ags_main_loop_get_tree_lock(AgsMainLoop *main_loop);
 
 void ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context);
 AgsApplicationContext* ags_main_loop_get_application_context(AgsMainLoop *main_loop);

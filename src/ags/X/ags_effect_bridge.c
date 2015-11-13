@@ -19,9 +19,8 @@
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bridge_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>

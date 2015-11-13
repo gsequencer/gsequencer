@@ -20,9 +20,6 @@
 #include <ags/audio/recall/ags_play_channel.h>
 
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/main.h>
 
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
@@ -402,7 +399,7 @@ ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted)
 
 /**
  * ags_play_channel_new:
- * @soundcard: the #GObject implementing #AgsSoundcard outputting to
+ * @soundcard: the #GObject outputting to
  * @audio_channel: the audio channel to use
  *
  * Creates an #AgsPlayChannel

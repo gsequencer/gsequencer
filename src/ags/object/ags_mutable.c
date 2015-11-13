@@ -20,6 +20,17 @@
 
 void ags_mutable_base_init(AgsMutableInterface *interface);
 
+/**
+ * SECTION:ags_mutable
+ * @short_description: unique access to recalls
+ * @title: AgsMutable
+ * @section_id:
+ * @include: ags/object/ags_mutable.h
+ *
+ * The #AgsMutable interface gives you a unique access to recalls. Its
+ * purpose is to mute playback.
+ */
+
 GType
 ags_mutable_get_type()
 {
@@ -46,6 +57,15 @@ ags_mutable_base_init(AgsMutableInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_mutable_set_muted:
+ * @mutable: an #AgsMutable
+ * @muted: if %TRUE then muted, else playing
+ *
+ * Mute an #AgsRecall instance.
+ *
+ * Since: 0.4
+ */
 void
 ags_mutable_set_muted(AgsMutable *mutable, gboolean muted)
 {

@@ -1,25 +1,26 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/task/ags_start_soundcard.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
@@ -71,9 +72,9 @@ ags_start_soundcard_get_type()
     };
 
     ags_type_start_soundcard = g_type_register_static(AGS_TYPE_TASK,
-						      "AgsStartSoundcard\0",
-						      &ags_start_soundcard_info,
-						      0);
+						   "AgsStartSoundcard\0",
+						   &ags_start_soundcard_info,
+						   0);
 
     g_type_add_interface_static(ags_type_start_soundcard,
 				AGS_TYPE_CONNECTABLE,
@@ -144,66 +145,80 @@ ags_start_soundcard_finalize(GObject *gobject)
 void
 ags_start_soundcard_launch(AgsTask *task)
 {
-  AgsApplicationContext *application_context;
   AgsStartSoundcard *start_soundcard;
-  AgsSoundcard *soundcard;
+
   AgsAudioLoop *audio_loop;
   AgsSoundcardThread *soundcard_thread;
+
+  AgsApplicationContext *application_context;
+  AgsSoundcard *soundcard;
+  
   guint val;
+
   GError *error;
 
   start_soundcard = AGS_START_SOUNDCARD(task);
 
-  soundcard = start_soundcard->soundcard;
+  soundcard = AGS_SOUNDCARD(start_soundcard->soundcard);
 
-  /* abort if already playing */
-  if(ags_soundcard_is_playing(soundcard)){
+  application_context = ags_soundcard_get_application_context(soundcard);
+  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
+
+  if(ags_soundcard_is_starting(soundcard) ||
+     ags_soundcard_is_playing(soundcard)){
+    audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
+			  AGS_AUDIO_LOOP_PLAY_CHANNEL |
+			  AGS_AUDIO_LOOP_PLAY_RECALL);
     return;
   }
-  
-  application_context = ags_soundcard_get_application_context(soundcard);
-  
-  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
+
   soundcard_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
-  /* initialized audio loop */
+  /* append to AgsSoundcard */
   audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
 			AGS_AUDIO_LOOP_PLAY_CHANNEL |
 			AGS_AUDIO_LOOP_PLAY_RECALL);
   
-  error = soundcard_thread->error;
   soundcard_thread->error = NULL;
 
+  g_message("start soundcard\0");
+  
   ags_thread_start(AGS_THREAD(soundcard_thread));
-
-  /* wait thread to be started */
+  
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(soundcard_thread)->flags)) == 0){
-    if(soundcard_thread->error != NULL &&
-       error == NULL){
-      ags_task_failure(AGS_TASK(start_soundcard), soundcard_thread->error);
+    if(soundcard_thread->error != NULL){
+      error = soundcard_thread->error;
+
+      ags_task_failure(AGS_TASK(start_soundcard), error);
+      
+      g_message("starting soundcard failed\0");
     }else{
+      /* wait thread */
       pthread_mutex_lock(AGS_THREAD(soundcard_thread)->start_mutex);
 
-      val = g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->flags));
-
-      if((AGS_THREAD_INITIAL_RUN & val) != 0){
-	while((AGS_THREAD_INITIAL_RUN & val) != 0){
+      g_atomic_int_set(&(AGS_THREAD(soundcard_thread)->start_wait),
+		       TRUE);
+	
+      if(g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->start_wait)) == TRUE &&
+	 g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->start_done)) == FALSE){
+	while(g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->start_wait)) == TRUE &&
+	      g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->start_done)) == FALSE){
 	  pthread_cond_wait(AGS_THREAD(soundcard_thread)->start_cond,
 			    AGS_THREAD(soundcard_thread)->start_mutex);
-
-	  val = g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->flags));
 	}
       }
-    
+	
       pthread_mutex_unlock(AGS_THREAD(soundcard_thread)->start_mutex);
+      
+      g_message("started soundcard\0");
     }
   }
 }
 
 /**
  * ags_start_soundcard_new:
- * @soundcard: the #GObject implementing the #AgsSoundcard interface
+ * @soundcard: the #AgsSoundcard
  *
  * Creates an #AgsStartSoundcard.
  *

@@ -321,7 +321,7 @@ ags_ladspa_manager_load_default_directory()
  *
  * Since: 0.4
  */
-unsigned long
+long
 ags_ladspa_manager_effect_index(gchar *filename,
 				gchar *effect)
 {
@@ -331,8 +331,8 @@ ags_ladspa_manager_effect_index(gchar *filename,
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
 
-  unsigned long index;
-  unsigned long i;
+  long effect_index;
+  long i;
 
   if(filename == NULL ||
      effect == NULL){
@@ -343,9 +343,13 @@ ags_ladspa_manager_effect_index(gchar *filename,
   ags_ladspa_manager_load_file(filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
 
+  if(ladspa_plugin == NULL){
+    return(-1);
+  }
+  
   plugin_so = ladspa_plugin->plugin_so;
 
-  index = G_MAXULONG;
+  effect_index = -1;
 
   if(plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
@@ -356,14 +360,14 @@ ags_ladspa_manager_effect_index(gchar *filename,
 	if(!strncmp(plugin_descriptor->Name,
 		    effect,
 		    strlen(effect))){
-	  index = i;
+	  effect_index = i;
 	  break;
 	}
       }
     }
   }
   
-  return(index);
+  return(effect_index);
 }
 
 /**

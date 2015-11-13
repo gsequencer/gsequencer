@@ -22,7 +22,6 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_countable.h>
@@ -30,12 +29,12 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
@@ -694,7 +693,7 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 			       guint steps,
 			       gboolean move_forward)
 {
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsDelayAudio *delay_audio;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
@@ -705,9 +704,9 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   delay_audio_run = count_beats_audio_run->delay_audio_run;
   delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
 
-  soundcard = AGS_SOUNDCARD(AGS_RECALL(count_beats_audio_run)->soundcard);
+  soundcard = AGS_RECALL(count_beats_audio_run)->soundcard;
   
-  delay = ags_soundcard_get_delay(soundcard);
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
   seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
   
   if(move_forward){
@@ -947,27 +946,59 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 void
 ags_count_beats_audio_run_done(AgsRecall *recall)
 {
+  GObject *soundcard;
+
   AgsCountBeatsAudio *count_beats_audio;
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
   AgsCancelAudio *cancel_audio;
 
-  AgsThread *task_thread;
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsThread *async_queue;
 
   AgsApplicationContext *application_context;
-  AgsSoundcard *soundcard;
-
+  
   gboolean sequencer, notation;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
   
   AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done(recall);
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio);
-  
+
   soundcard = AGS_RECALL_AUDIO(count_beats_audio)->audio->soundcard;
-  application_context = ags_soundcard_get_application_context(soundcard);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  /* lookup soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /* get application_context */
+  pthread_mutex_lock(soundcard_mutex);
+  
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+
+  pthread_mutex_unlock(soundcard_mutex);
+  
+  /* get main loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get async queue */
+  async_queue = (AgsThread *) ags_thread_find_type(main_loop,
+						   AGS_TYPE_TASK_THREAD);
 
   ags_recall_done(count_beats_audio_run->delay_audio_run);
   ags_audio_done(AGS_RECALL_AUDIO(count_beats_audio)->audio,
@@ -988,7 +1019,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 				      FALSE, sequencer, notation);
   
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+  ags_task_thread_append_task((AgsTaskThread *) async_queue,
 			      (AgsTask *) cancel_audio);  
 }
 
@@ -1143,7 +1174,8 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
   ags_port_safe_read(count_beats_audio->notation_loop, &value);
 
   loop = g_value_get_boolean(&value);
-
+  g_value_unset(&value);
+  
   if(count_beats_audio_run->first_run){
     //    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
     ags_count_beats_audio_run_notation_start(count_beats_audio_run,
@@ -1189,7 +1221,8 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
   ags_port_safe_read(count_beats_audio->sequencer_loop_end, &value);
 
   loop_end = g_value_get_double(&value);
-
+  g_value_unset(&value);
+  
   if(count_beats_audio_run->first_run){
     //    g_message("ags_count_beats_audio_run_sequencer_alloc_output_callback: start\n\0");
     ags_count_beats_audio_run_sequencer_start(count_beats_audio_run,
@@ -1242,7 +1275,8 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   ags_port_safe_read(count_beats_audio->notation_loop_end, &loop_end_value);
 
   loop_end = g_value_get_double(&loop_end_value);
-
+  g_value_unset(&value);
+  
   if(loop){
     if(count_beats_audio_run->notation_counter >= (guint) loop_end - 1.0){
       count_beats_audio_run->notation_counter = 0;
@@ -1286,7 +1320,8 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_value);
 
   loop_end = g_value_get_double(&loop_end_value);
-
+  g_value_unset(&value);
+  
   //    g_message("sequencer: tic\0");
   if(count_beats_audio_run->first_run){
     count_beats_audio_run->first_run = FALSE;
@@ -1312,7 +1347,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
       ags_count_beats_audio_run_sequencer_stop(count_beats_audio_run,
 					       FALSE);
 
-      /* set done flag in playback */
+      /* set done flag in soundcard play */
       while(playback != NULL){
 	if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL &&
 	   AGS_PLAYBACK(playback->data)->recall_id[1]->recycling_context == AGS_RECALL(count_beats_audio_run)->recall_id->recycling_context){
@@ -1417,7 +1452,6 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
   AgsCountBeatsAudio *count_beats_audio;
   GValue loop_sequencer = {0,};
   GValue loop_end_sequencer = {0,};
-  GValue loop_notation = {0,};
 
   count_beats_audio = AGS_RECALL_AUDIO_RUN(count_beats_audio_run)->recall_audio;
 
@@ -1426,22 +1460,23 @@ ags_count_beats_audio_run_stream_audio_signal_done_callback(AgsRecall *recall,
 	       G_TYPE_BOOLEAN);
   ags_port_safe_read(count_beats_audio->sequencer_loop,
 		     &loop_sequencer);
-
-  g_value_init(&loop_notation,
-	       G_TYPE_BOOLEAN);
-  ags_port_safe_read(count_beats_audio->notation_loop,
-		     &loop_notation);
-
-  g_value_init(&loop_end_sequencer, G_TYPE_DOUBLE);
-  ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_sequencer);
-    
+  
   if((AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
     if(g_value_get_boolean(&loop_sequencer)){
+      g_value_unset(&loop_sequencer);
       return;
+    }else{
+      g_value_unset(&loop_sequencer);
     }
 
+    g_value_init(&loop_end_sequencer, G_TYPE_DOUBLE);
+    ags_port_safe_read(count_beats_audio->sequencer_loop_end, &loop_end_sequencer);
+  
     if(count_beats_audio_run->sequencer_counter < (guint) g_value_get_double(&loop_end_sequencer) - 1.0){
+      g_value_unset(&loop_end_sequencer);
       return;
+    }else{
+      g_value_unset(&loop_end_sequencer);
     }
   
     /* you're done */

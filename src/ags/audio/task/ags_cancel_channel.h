@@ -25,7 +25,7 @@
 
 #include <ags/thread/ags_task.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_CANCEL_CHANNEL                (ags_cancel_channel_get_type())

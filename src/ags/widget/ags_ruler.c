@@ -355,7 +355,7 @@ ags_ruler_draw(AgsRuler *ruler)
 
   offset = ruler->adjustment->value;
 
-  i = ((guint) round((double) offset * step)) % (guint) round(step);
+  i = ((guint) floor((double) offset * step)) % (guint) floor(step);
 
   if(i != 0){
     i = step - i;
@@ -391,7 +391,23 @@ ags_ruler_draw(AgsRuler *ruler)
     /* draw scale */
     cairo_move_to(cr,
 		  (double) (i),
-		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
+		  (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - 14));
+
+    if(ruler->scale_precision < 1.0){
+      guint val;
+      
+      str = g_strdup_printf("%.0f\0",
+			    floor(offset + z) * ruler->scale_precision + (((val = i % (guint) step) > 0 && val < 2) ? 1: 0));
+    }else{
+      str = g_strdup_printf("%.0f\0",
+			    floor(offset + z) * ruler->scale_precision + ((i % (guint) step != 0) ? 1 * ruler->scale_precision: 0));
+    }
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout, str, -1);
+    desc = pango_font_description_copy_static(NULL); //pango_font_description_from_string("Georgia Bold 11");
+    pango_layout_set_font_description(layout, desc);
+    pango_font_description_free(desc);
 
     str = g_strdup_printf("%.2f\0",
 			  (ceil(offset) + z) * ruler->scale_precision);

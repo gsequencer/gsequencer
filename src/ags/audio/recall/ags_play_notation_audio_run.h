@@ -22,8 +22,7 @@
 
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_notation.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -46,7 +45,7 @@ typedef enum{
 
 struct _AgsPlayNotationAudioRun
 {
-  AgsRecallAudioRun recall;
+  AgsRecallAudioRun recall_audio_run;
 
   guint flags;
 
@@ -60,7 +59,7 @@ struct _AgsPlayNotationAudioRun
 
 struct _AgsPlayNotationAudioRunClass
 {
-  AgsRecallAudioRunClass recall;
+  AgsRecallAudioRunClass recall_audio_run;
 };
 
 GType ags_play_notation_audio_run_get_type();

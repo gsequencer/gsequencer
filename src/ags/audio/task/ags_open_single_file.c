@@ -20,6 +20,7 @@
 #include <ags/audio/task/ags_open_single_file.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file_link.h>
 
@@ -164,7 +165,7 @@ ags_open_single_file_launch(AgsTask *task)
   channel = open_single_file->channel;
   audio_signal = audio_file->audio_signal;
 
-  for(i = 0; i < open_single_file->audio_channels; i++){
+  for(i = 0; i < open_single_file->audio_channels && audio_signal != NULL; i++){
     /* unset link */
     if(channel->link != NULL){
       error = NULL;
@@ -178,11 +179,12 @@ ags_open_single_file_launch(AgsTask *task)
 
     file_link = g_object_new(AGS_TYPE_FILE_LINK,
 			     "filename\0", open_single_file->filename,
+			     "audio-channel\0", i,
 			     NULL);
-    g_object_set(G_OBJECT(channel),
+    g_object_set(channel,
 		 "file-link\0", file_link,
 		 NULL);
-
+    
     /* mark as template */
     AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 

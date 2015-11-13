@@ -887,7 +887,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 						       NULL);
 	  dial = ags_bulk_member_get_widget(bulk_member);
 	  gtk_widget_set_size_request(dial,
-				      2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
+				      2 * dial->radius + 2 * dial->outline_strength + 2 * (dial->button_width + 4),
 				      2 * dial->radius + 2 * dial->outline_strength + 1);
 		
 	  /* add controls of ports and apply range  */
@@ -916,7 +916,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	  gtk_adjustment_set_value(adjustment,
 				   lower_bound);
 
-	  g_message("%f %f\0", lower_bound, upper_bound);
+#ifdef AGS_DEBUG
+	  g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
+#endif
 	  
 	  /* create task */
 	  add_bulk_member = ags_add_bulk_member_new(effect_bulk,

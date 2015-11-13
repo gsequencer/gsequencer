@@ -20,6 +20,7 @@
 #include <ags/audio/task/ags_export_output.h>
 
 #include <ags/object/ags_connectable.h>
+
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/file/ags_audio_file.h>
@@ -40,7 +41,7 @@ void ags_export_output_launch(AgsTask *task);
  * @section_id:
  * @include: ags/audio/task/ags_export_output.h
  *
- * The #AgsExportOutput task exports #AgsSoundcard to file.
+ * The #AgsExportOutput task exports #GObject to file.
  */
 
 static gpointer ags_export_output_parent_class = NULL;
@@ -150,15 +151,15 @@ ags_export_output_launch(AgsTask *task)
 {
   AgsExportOutput *export_output;
   AgsExportThread *export_thread;
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsAudioFile *audio_file;
   gchar *filename;
-  guint samplerate, dsp_channels;
+  guint dsp_channels;
+  guint samplerate;
   guint tic;
   guint val;
   
   export_output = AGS_EXPORT_OUTPUT(task);
-
   soundcard = export_output->soundcard;
   export_thread = export_output->export_thread;
 
@@ -172,6 +173,12 @@ ags_export_output_launch(AgsTask *task)
   
   tic = export_output->tic;
 
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),2
+			    &dsp_channels,
+			    &samplerate,
+			    NULL,
+			    NULL);
+  
   /* open read/write audio file */
   audio_file = ags_audio_file_new(filename,
 				  soundcard,
@@ -194,20 +201,22 @@ ags_export_output_launch(AgsTask *task)
   ags_thread_start(export_thread);
 
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(export_thread)->flags)) == 0){
-    pthread_mutex_lock(&(AGS_THREAD(export_thread)->start_mutex));
+    /* wait thread */
+    pthread_mutex_lock(AGS_THREAD(export_thread)->start_mutex);
 
-    val = g_atomic_int_get(&(AGS_THREAD(export_thread)->flags));
-
-    if((AGS_THREAD_INITIAL_RUN & val) != 0){
-      while((AGS_THREAD_INITIAL_RUN & val) != 0){
-	pthread_cond_wait(&(AGS_THREAD(export_thread)->start_cond),
-			  &(AGS_THREAD(export_thread)->start_mutex));
+    g_atomic_int_set(&(AGS_THREAD(export_thread)->start_wait),
+		     TRUE);
 	
-	val = g_atomic_int_get(&(AGS_THREAD(export_thread)->flags));
+    if(g_atomic_int_get(&(AGS_THREAD(export_thread)->start_wait)) == TRUE &&
+       g_atomic_int_get(&(AGS_THREAD(export_thread)->start_done)) == FALSE){
+      while(g_atomic_int_get(&(AGS_THREAD(export_thread)->start_wait)) == TRUE &&
+	    g_atomic_int_get(&(AGS_THREAD(export_thread)->start_done)) == FALSE){
+	pthread_cond_wait(AGS_THREAD(export_thread)->start_cond,
+			  AGS_THREAD(export_thread)->start_mutex);
       }
     }
-    
-    pthread_mutex_unlock(&(AGS_THREAD(export_thread)->start_mutex));
+	
+    pthread_mutex_unlock(AGS_THREAD(export_thread)->start_mutex);
   }else{
     g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
 		    AGS_THREAD_RUNNING);
@@ -217,7 +226,7 @@ ags_export_output_launch(AgsTask *task)
 /**
  * ags_export_output_new:
  * @export_thread: the #AgsExportThread to start
- * @soundcard: the #AgsSoundcard to export
+ * @soundcard: the #GObject to export
  * @filename: the filename to save
  * @tic: stream duration in tact
  * @live_performance: if %TRUE export is done during real-time

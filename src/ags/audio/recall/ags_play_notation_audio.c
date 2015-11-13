@@ -19,8 +19,6 @@
 
 #include <ags/audio/recall/ags_play_notation_audio.h>
 
-#include <ags/main.h>
-
 #include <ags/object/ags_plugin.h>
 
 void ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audio);

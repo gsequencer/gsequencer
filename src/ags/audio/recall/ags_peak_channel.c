@@ -20,7 +20,6 @@
 #include <ags/audio/recall/ags_peak_channel.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
@@ -315,12 +314,15 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   AgsRecall *recall;
   AgsChannel *source;
   AgsRecycling *recycling;
-  AgsSoundcard *soundcard;
+
+  AgsConfig *config;
+  
   GList *audio_signal;
   double *buffer;
   double current_value;
   guint buffer_size;
   static const double scale_precision = 10.0;
+  guint limit;
   guint i;
   GValue value = {0,};
 
@@ -329,8 +331,17 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   }
 
   recall = (AgsRecall *) peak_channel;
-  soundcard = AGS_SOUNDCARD(recall->soundcard);
+
+  config = ags_config_get_instance();
   
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+  free(str);
+
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;
 
@@ -342,7 +353,9 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   
   /* initialize buffer */
   buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
-  for(i = 0; i < buffer_size; i++) buffer[i] = 0;
+  memset(buffer,
+	 0,
+	 buffer_size * sizeof(signed short));
 
   while(recycling != source->last_recycling->next){
     audio_signal = recycling->audio_signal;
@@ -377,13 +390,48 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
   /* calculate average value */
   current_value = 0.0;
+  
+  limit = buffer_size - 7;
 
-  for(i = 0; i < buffer_size; i++){
-    if(buffer[i] == 0){
-      continue;
+  for(i = 0; i < limit; i += 8){
+    /* unrolled loop */
+    if(buffer[i] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
     }
 
-    current_value +=  (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
+    if(buffer[i + 1] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 1]));
+    }
+
+    if(buffer[i + 2] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 2]));
+    }
+
+    if(buffer[i + 3] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 3]));
+    }
+    
+    if(buffer[i + 4] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 4]));
+    }
+
+    if(buffer[i + 5] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 5]));
+    }
+    
+    if(buffer[i + 6] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 6]));
+    }
+
+    if(buffer[i + 7] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 7]));
+    }
+  }
+
+  for(; i < buffer_size; i++){
+    if(buffer[i] != 0){
+      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
+    }
   }
   
   /* break down to scale */

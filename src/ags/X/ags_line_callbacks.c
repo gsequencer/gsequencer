@@ -19,12 +19,9 @@
 #include <ags/X/ags_line_callbacks.h>
 
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_soundcard.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_playback.h>
@@ -35,6 +32,8 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recycling_context.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 #include <ags/audio/recall/ags_volume_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
@@ -42,6 +41,7 @@
 #include <ags/widget/ags_vindicator.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
@@ -141,6 +141,26 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 }
 
 void
+ags_line_add_effect_callback(AgsChannel *channel,
+			     gchar *filename,
+			     gchar *effect,
+			     AgsLine *line)
+{
+  ags_line_add_effect(line,
+		      filename,
+		      effect);
+}
+
+void
+ags_line_remove_effect_callback(AgsChannel *channel,
+				guint nth,
+				AgsLine *line)
+{
+  ags_line_remove_effect(line,
+			 nth);
+}
+
+void
 ags_line_volume_callback(GtkRange *range,
 			 AgsLine *line)
 {
@@ -178,17 +198,47 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
 {
   AgsWindow *window;
   AgsMachine *machine;
+  GtkWidget *child;
+
+  AgsPort *port;
+
   AgsChangeIndicator *change_indicator;
 
-  AgsThread *main_loop;
+  AgsMutexManager *mutex_manager;
+  AgsThread *audio_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
   
   GList *list, *list_start;
 
-  machine = (AgsMachine *) gtk_widget_get_ancestor(line,
+  gdouble peak;
+
+  GValue value = {0,};
+
+  pthread_mutex_t *application_mutex;
+  
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
+  
+  window = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						  AGS_TYPE_WINDOW);
+  
+  application_context = window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
 
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
@@ -206,26 +256,20 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel,
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data) &&
        AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
-      GtkWidget *child;
-      AgsPort *port;
-      gdouble peak;
-      GValue value = {0,};
 
-      child = gtk_bin_get_child(AGS_LINE_MEMBER(list->data));
-
-      if(AGS_RECYCLING_CONTEXT(peak_channel->recall_id->recycling_context)->parent == NULL){
-	port = AGS_LINE_MEMBER(list->data)->port;
-      }else{
-	port = AGS_LINE_MEMBER(list->data)->recall_port;
-      }
+      child = GTK_BIN(list->data)->child;
 
       g_value_init(&value, G_TYPE_DOUBLE);
       ags_port_safe_read(port,
 			 &value);
 
       peak = g_value_get_double(&value);
-
-      change_indicator = ags_change_indicator_new(child,
+      g_value_unset(&value);
+      
+      //      if(peak_channel_run->recall_id->recycling_context->parent == NULL)
+	//	g_message("%f\0", peak);
+      
+      change_indicator = ags_change_indicator_new((AgsIndicator *) child,
 						  peak);
 
       ags_task_thread_append_task(task_thread,

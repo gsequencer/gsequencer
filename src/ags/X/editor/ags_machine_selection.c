@@ -20,6 +20,14 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/X/editor/ags_machine_selector.h>
+#include <ags/X/editor/ags_machine_radio_button.h>
+
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+#include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_ffplayer.h>
+
 void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
 void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_selection_init(AgsMachineSelection *machine_selection);

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_complex.h>
+
 #include <pthread.h>
 
 #include <ladspa.h>
@@ -59,12 +61,15 @@ struct _AgsPort
     gint64 ags_port_int;
     guint64 ags_port_uint;
     gfloat ags_port_float;
+    LADSPA_Data ags_port_ladspa;
     gdouble ags_port_double;
+    AgsComplex ags_port_complex;
     gboolean *ags_port_boolean_ptr;
     gint64 *ags_port_int_ptr;
     guint64 *ags_port_uint_ptr;
     gfloat *ags_port_float_ptr;
     gdouble *ags_port_double_ptr;
+    AgsComplex *ags_port_complex_ptr;
     gpointer ags_port_pointer;
     GObject *ags_port_object;
   }port_value;

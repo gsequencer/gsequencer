@@ -25,10 +25,14 @@
 
 #include <libxml/tree.h>
 
+#include <ags/object/ags_soundcard.h>
+
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_link.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/thread/ags_task.h>
+#include <ags/thread/ags_timestamp.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -40,17 +44,15 @@
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
-#include <ags/thread/ags_task.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_timestamp.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 
-/* AgsDevout */
-void ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout);
-xmlNode* ags_file_write_devout(AgsFile *file, xmlNode *parent, AgsDevout *devout);
+/* AgsSoundcard */
+void ags_file_read_devout(AgsFile *file, xmlNode *node, GObject **devout);
+xmlNode* ags_file_write_devout(AgsFile *file, xmlNode *parent, GObject *devout);
 
 void ags_file_read_devout_list(AgsFile *file, xmlNode *node, GList **devout);
 xmlNode* ags_file_write_devout_list(AgsFile *file, xmlNode *parent, GList *devout);

@@ -285,7 +285,46 @@ ags_play_audio_file_finalize(GObject *gobject)
 void
 ags_play_audio_file_run_inter(AgsRecall *recall)
 {
-  /* DEPRECATED */
+  /* DEPRECATED
+  AgsPlayAudioFile *play_audio_file;
+  signed short *buffer;
+  guint i0, i1, j, stop;
+  gboolean play_done;
+
+  AGS_RECALL_CLASS(ags_play_audio_file_parent_class)->run_inter(recall);
+
+  play_audio_file = (AgsPlayAudioFile *) recall;
+
+  if((AGS_SOUNDCARD_BUFFER0 & play_audio_file->soundcard->flags) != 0){
+    buffer = play_audio_file->soundcard->buffer[1];
+  }else if((AGS_SOUNDCARD_BUFFER1 & play_audio_file->soundcard->flags) != 0){
+    buffer = play_audio_file->soundcard->buffer[2];
+  }else if((AGS_SOUNDCARD_BUFFER2 & play_audio_file->soundcard->flags) != 0){
+    buffer = play_audio_file->soundcard->buffer[3];
+  }else if((AGS_SOUNDCARD_BUFFER3 & play_audio_file->soundcard->flags) != 0){
+    buffer = play_audio_file->soundcard->buffer[0];
+  }
+
+  i0 = play_audio_file->current_frame;
+  stop = i0 + play_audio_file->soundcard->buffer_size;
+
+  if(stop < play_audio_file->audio_file->frames)
+    play_done = FALSE;
+  else{
+    stop = play_audio_file->audio_file->frames;
+    play_done = TRUE;
+  }
+
+  for(i1 = 0; i0 < stop; i0++, i1++){
+    for(j = 0; j < play_audio_file->audio_file->channels || j < play_audio_file->soundcard->dsp_channels; j++)
+      buffer[i1 * play_audio_file->soundcard->dsp_channels + j] = ((buffer[i1 * play_audio_file->soundcard->dsp_channels + j]) / 2) + ((play_audio_file->audio_file->buffer[i0 * play_audio_file->audio_file->channels + j]) / 2);
+  }
+
+  play_audio_file->current_frame = i0;
+
+  if(play_done)
+    ags_recall_done(recall);
+*/
 }
 
 void

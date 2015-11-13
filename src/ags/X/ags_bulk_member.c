@@ -19,6 +19,7 @@
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_bulk_member_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
 #ifdef AGS_USE_LINUX_THREADS
@@ -145,7 +146,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The widget type to instantiate and use as control.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_ulong("widget-type\0",
 				  "widget type of bulk member\0",
@@ -162,7 +163,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The widget's label to use.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_string("widget-label\0",
 				   "label to display\0",
@@ -178,7 +179,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin name of the recall to use.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_string("plugin-name\0",
 				   "plugin name to control\0",
@@ -194,7 +195,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin specifier of the recall to apply.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_string("specifier\0",
 				   "port specifier\0",
@@ -210,7 +211,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin filename of the recall to apply.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_string("filename\0",
 				   "the filename\0",
@@ -226,7 +227,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin effect of the recall to apply.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_string("effect\0",
 				   "the effect\0",
@@ -242,7 +243,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The control port of the recall.
    * 
-   * Since: 0.4
+   * Since: 0.4.3
    */
   param_spec = g_param_spec_string("control-port\0",
 				   "control port index\0",
@@ -730,7 +731,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
  *
  * Is emitted as port's value is modified.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_bulk_member_change_port(AgsBulkMember *bulk_member,
@@ -751,7 +752,7 @@ ags_bulk_member_change_port(AgsBulkMember *bulk_member,
  *
  * Lookup ports of assigned recall.
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 void
 ags_bulk_member_find_port(AgsBulkMember *bulk_member)
@@ -865,7 +866,7 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
  *
  * Returns: a new #AgsBulkMember
  *
- * Since: 0.4
+ * Since: 0.4.3
  */
 AgsBulkMember*
 ags_bulk_member_new()

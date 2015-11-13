@@ -20,6 +20,7 @@
 #include <ags/X/ags_line_callbacks.h>
 
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
@@ -32,6 +33,7 @@
 #else
 #include <ags/thread/ags_thread-posix.h>
 #endif 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
@@ -46,7 +48,8 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
 
-#include <ags/X/task/ags_add_line_member.h>
+#include <ladspa.h>
+#include <dlfcn.h>
 
 void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -79,6 +82,17 @@ GList* ags_line_real_add_effect(AgsLine *line,
 void ags_line_real_remove_effect(AgsLine *line,
 				 guint nth);
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
+GList* ags_line_add_ladspa_effect(AgsLine *line,
+				  gchar *filename,
+				  gchar *effect);
+GList* ags_line_add_lv2_effect(AgsLine *line,
+			       gchar *filename,
+			       gchar *effect);
+GList* ags_line_real_add_effect(AgsLine *line,
+				gchar *filename,
+				gchar *effect);
+void ags_line_real_remove_effect(AgsLine *line,
+				 guint nth);
 void ags_line_real_map_recall(AgsLine *line,
 			      guint output_pad_start);
 GList* ags_line_real_find_port(AgsLine *line);
@@ -100,6 +114,8 @@ enum{
   REMOVE_EFFECT,
   SET_CHANNEL,
   GROUP_CHANGED,
+  ADD_EFFECT,
+  REMOVE_EFFECT,
   MAP_RECALL,
   FIND_PORT,
   LAST_SIGNAL,
@@ -209,10 +225,11 @@ ags_line_class_init(AgsLineClass *line)
 
   /* AgsLineClass */
   line->set_channel = ags_line_real_set_channel;
-
+  line->group_changed = NULL;
+  
   line->add_effect = ags_line_real_add_effect;
   line->remove_effect = ags_line_real_remove_effect;
-  line->group_changed = NULL;
+  
   line->map_recall = ags_line_real_map_recall;
   line->find_port = ags_line_real_find_port;
   
@@ -286,6 +303,41 @@ ags_line_class_init(AgsLineClass *line)
 		 G_TYPE_NONE, 0);
 
   /**
+   * AgsLine::add-effect:
+   * @line: the #AgsLine to modify
+   * @effect: the effect's name
+   *
+   * The ::add-effect signal notifies about added effect.
+   */
+  line_signals[ADD_EFFECT] =
+    g_signal_new("add-effect\0",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, add_effect),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__STRING_STRING,
+		 G_TYPE_POINTER, 2,
+		 G_TYPE_STRING,
+		 G_TYPE_STRING);
+
+  /**
+   * AgsLine::remove-effect:
+   * @line: the #AgsLine to modify
+   * @nth: the nth effect
+   *
+   * The ::remove-effect signal notifies about removed effect.
+   */
+  line_signals[REMOVE_EFFECT] =
+    g_signal_new("remove-effect\0",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, remove_effect),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
+
+  /**
    * AgsLine::map-recall:
    * @line: the #AgsLine
    *
@@ -357,8 +409,11 @@ ags_line_init(AgsLine *line)
 
   line->channel = NULL;
 
-  line->pad = NULL;
+  //  gtk_widget_set_can_focus(line,
+  //			   TRUE);
 
+  line->pad = NULL;
+  
   line->label = (GtkLabel *) gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(line),
 		     GTK_WIDGET(line->label),
@@ -468,7 +523,9 @@ ags_line_connect(AgsConnectable *connectable)
   /* set connected flag */
   line->flags |= AGS_LINE_CONNECTED;
 
+#ifdef AGS_DEBUG
   g_message("line connect\0");
+#endif
   
   if((AGS_LINE_PREMAPPED_RECALL & (line->flags)) == 0){
     if((AGS_LINE_MAPPED_RECALL & (line->flags)) == 0){
@@ -537,16 +594,34 @@ ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
 void
 ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+  
   if(line->channel == channel){
     return;
   }
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   if(line->channel != NULL){
+    g_signal_handler_disconnect(line->channel,
+				line->add_effect_handler);
+    g_signal_handler_disconnect(line->channel,
+				line->remove_effect_handler);
+    
     g_object_unref(G_OBJECT(line->channel));
   }
 
   if(channel != NULL){
     g_object_ref(G_OBJECT(channel));
+
+    line->add_effect_handler = g_signal_connect_after(channel, "add-effect\0",
+						      G_CALLBACK(ags_line_add_effect_callback), line);
+    line->remove_effect_handler = g_signal_connect_after(channel, "remove-effect\0",
+							 G_CALLBACK(ags_line_remove_effect_callback), line);
   }
 
   if(line->channel != NULL){
@@ -554,9 +629,21 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
   }
   
   line->channel = channel;
+
+  /* lookup channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
   
+  pthread_mutex_unlock(application_mutex);
+
   /* set label */
-  gtk_label_set_label(line->label, g_strdup_printf("line %d\0", channel->audio_channel));
+  pthread_mutex_lock(channel_mutex);
+  
+  gtk_label_set_label(line->label, g_strdup_printf("channel %d\0", channel->audio_channel));
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 /**
@@ -605,7 +692,6 @@ ags_line_add_ladspa_effect(AgsLine *line,
 			   gchar *effect)
 {
   AgsLineMember *line_member;
-  AgsAddLineMember *add_line_member;
   GtkAdjustment *adjustment;
 
   AgsLadspaPlugin *ladspa_plugin;
@@ -622,17 +708,19 @@ ags_line_add_ladspa_effect(AgsLine *line,
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_Data lower_bound, upper_bound;
   unsigned long effect_index;
-  unsigned long i;
-
-  effect_index = ags_ladspa_manager_effect_index(filename,
-						 effect);
+  long i;
 
   /* load plugin */
   ags_ladspa_manager_load_file(filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
 
+  effect_index = ags_ladspa_manager_effect_index(filename,
+						 effect);
+
   plugin_so = ladspa_plugin->plugin_so;
 
+  g_message("effect_index: %d\0", effect_index);
+  
   /* retrieve position within table  */
   x = 0;
   y = 0;
@@ -668,8 +756,9 @@ ags_line_add_ladspa_effect(AgsLine *line,
   g_list_free(recall_start);
   
   /* load ports */
-  if(effect_index != -1 &&
-     plugin_so){
+  plugin_so = ladspa_plugin->plugin_so;
+
+  if(plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");
 
@@ -702,7 +791,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 						       NULL);
 	  dial = ags_line_member_get_widget(line_member);
 	  gtk_widget_set_size_request(dial,
-				      2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
+				      2 * dial->radius + 2 * dial->outline_strength + 2 * (dial->button_width + 4),
 				      2 * dial->radius + 2 * dial->outline_strength + 1);
 		
 	  /* add controls of ports and apply range  */
@@ -736,6 +825,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 			   x, y,
 			   1, 1);
 
+	  ags_line_member_find_port(line_member);
 	  ags_connectable_connect(AGS_CONNECTABLE(line_member));
 	  gtk_widget_show_all(line_member);
 
@@ -758,7 +848,6 @@ ags_line_add_lv2_effect(AgsLine *line,
 			gchar *effect)
 {
   AgsLineMember *line_member;
-  AgsAddLineMember *add_line_member;
   GtkAdjustment *adjustment;
 
   AgsLv2Plugin *lv2_plugin;
@@ -913,6 +1002,7 @@ ags_line_add_lv2_effect(AgsLine *line,
 		       x, y,
 		       1, 1);
 
+      ags_line_member_find_port(line_member);
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all(line_member);
 
@@ -963,6 +1053,15 @@ ags_line_real_add_effect(AgsLine *line,
   return(port);
 }
 
+/**
+ * ags_line_add_effect:
+ * @filename: the filename of the plugin
+ * @effect: the effect's name
+ *
+ * Add a line member.
+ *
+ * Since: 0.4.3 
+ */
 GList*
 ags_line_add_effect(AgsLine *line,
 		    gchar *filename,
@@ -1020,6 +1119,15 @@ ags_line_real_remove_effect(AgsLine *line,
 			    nth);
 }
 
+/**
+ * ags_line_remove_effect:
+ * @line: the #AgsLine
+ * @nth: nth effect to remove
+ *
+ * Remove a line member.
+ *
+ * Since: 0.4.3
+ */
 void
 ags_line_remove_effect(AgsLine *line,
 		       guint nth)
@@ -1072,8 +1180,14 @@ GList*
 ags_line_real_find_port(AgsLine *line)
 {
   AgsChannel *channel, *next_pad;
+
+  AgsMutexManager *mutex_manager;
+  
   GList *list, *tmp;
   GList *line_member, *line_member_start;
+
+  pthread_mutex_t *application_mutex;  
+  pthread_mutex_t *channel_mutex;
 
   if(line == NULL || line->expander == NULL){
     return(NULL);
@@ -1081,7 +1195,10 @@ ags_line_real_find_port(AgsLine *line)
 
   line_member_start = 
     line_member = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
-
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   while(line_member != NULL){
     if(AGS_IS_LINE_MEMBER(line_member->data)){
       ags_line_member_find_port(AGS_LINE_MEMBER(line_member->data));
@@ -1094,15 +1211,35 @@ ags_line_real_find_port(AgsLine *line)
     g_list_free(line_member_start);
   }
   
-  /*  */
   channel = line->channel;
-
+  list = NULL;
+  
   if(channel != NULL){
+    /* get mutex manager */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* find ports */
+    pthread_mutex_lock(channel_mutex);
+
     next_pad = channel->next_pad;
 
-    list = NULL;
-  
+    pthread_mutex_unlock(channel_mutex);
+
     while(channel != next_pad){
+      /* lookup channel mutex */
+      pthread_mutex_lock(application_mutex);
+      
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel);
+      
+      pthread_mutex_unlock(application_mutex);
+
+      /* do it so */
       if(list == NULL){
 	list = ags_channel_find_port(channel);
       }else{
@@ -1114,12 +1251,16 @@ ags_line_real_find_port(AgsLine *line)
 	}
       }
       
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
+
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
   }
   
   return(list);
-
 }
 
 /**

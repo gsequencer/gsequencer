@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
 void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);
@@ -167,7 +168,7 @@ ags_cancel_channel_launch(AgsTask *task)
     AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
 
     if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      ags_thread_stop(playback->channel_thread[0]);
+      //      ags_thread_stop(playback->channel_thread[0]);
     }
   }
 
@@ -182,7 +183,7 @@ ags_cancel_channel_launch(AgsTask *task)
     AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
 
     if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      ags_thread_stop(playback->channel_thread[1]);
+      //      ags_thread_stop(playback->channel_thread[1]);
     }
   }
 
@@ -197,7 +198,7 @@ ags_cancel_channel_launch(AgsTask *task)
     AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
 
     if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      ags_thread_stop(playback->channel_thread[2]);
+      //      ags_thread_stop(playback->channel_thread[2]);
     }
   }
 

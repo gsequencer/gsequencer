@@ -19,6 +19,7 @@
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_export_window_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
@@ -60,6 +61,7 @@ gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 enum{
   PROP_0,
   PROP_SOUNDCARD,
+  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_export_window_parent_class = NULL;
@@ -133,6 +135,23 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,
 				  param_spec);
+
+  /**
+   * AgsExportWindow:application-context:
+   *
+   * The assigned #AgsApplicationContext to give control of application.
+   * 
+   * Since: 0.4
+   */
+  param_spec = g_param_spec_object("application-context\0",
+				   "assigned application context\0",
+				   "The AgsApplicationContext it is assigned with\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
+
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) export_window;
@@ -293,10 +312,9 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  bpm = AGS_SOUNDCARD_DEFAULT_BPM; // AGS_NAVIGATION(AGS_WINDOW(AGS_APPLICATION_CONTEXT(export_window->application_context)->window)->navigation)->bpm->adjustment->value
-  str = ags_navigation_tact_to_time_string(0.0,
-					   bpm);
-  export_window->duration = gtk_label_new(str);
+  export_window->duration = (GtkLabel *) gtk_label_new(ags_navigation_tact_to_time_string(0.0,
+											  AGS_SOUNDCARD_DEFAULT_BPM,
+											  1.0));
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->duration),
 		     FALSE, FALSE,
@@ -354,7 +372,7 @@ ags_export_window_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      GObject *soundcard;
+      AgsSoundcard *soundcard;
 
       soundcard = g_value_get_object(value);
 
@@ -365,6 +383,26 @@ ags_export_window_set_property(GObject *gobject,
 	g_object_ref(soundcard);
 
       export_window->soundcard = soundcard;
+    }
+    break;
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      if((AgsApplicationContext *) export_window->application_context == application_context)
+	return;
+
+      if(export_window->application_context != NULL){
+	g_object_unref(export_window->application_context);
+      }
+
+      if(application_context != NULL){
+	g_object_ref(application_context);
+      }
+
+      export_window->application_context = (GObject *) application_context;
     }
     break;
   default:
@@ -386,6 +424,9 @@ ags_export_window_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOUNDCARD:
     g_value_set_object(value, export_window->soundcard);
+    break;
+  case PROP_APPLICATION_CONTEXT:
+    g_value_set_object(value, export_window->application_context);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

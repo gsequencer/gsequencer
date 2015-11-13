@@ -20,6 +20,7 @@
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
@@ -40,8 +41,8 @@ void ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_delay_audio_finalize(GObject *gobject);
 
 void ags_delay_audio_notify_soundcard_callback(GObject *gobject,
-					    GParamSpec *pspec,
-					    gpointer user_data);
+					       GParamSpec *pspec,
+					       gpointer user_data);
 
 void ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble bpm);
 void ags_delay_audio_change_tact(AgsTactable *tactable, gdouble tact);
@@ -583,27 +584,52 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 					  gpointer user_data)
 {
   AgsDelayAudio *delay_audio;
+
+  AgsConfig *config;
+  
   GList *port;
   guint buffer_size;
   guint samplerate;
 
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   gdouble bpm;
   gdouble delay;
 
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
-  soundcard = AGS_SOUNDCARD(AGS_RECALL(delay_audio)->soundcard);
+  soundcard = AGS_RECALL(delay_audio)->soundcard;
   port = NULL;
 
-  ags_soundcard_get_presets(soundcard,
-			    NULL,
-			    &samplerate,
-			    &buffer_size,
-			    NULL);
+  config = ags_config_get_instance();
   
-  bpm = ags_soundcard_get_bpm(soundcard);
-  delay = ags_soundcard_get_delay(soundcard);
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    free(str);
+  }else{
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+
+  if(str != NULL){  
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
+  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
 
   /* bpm */
   delay_audio->bpm = g_object_new(AGS_TYPE_PORT,
@@ -702,6 +728,7 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
 void
 ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm)
 {
+  GObject *soundcard;
   AgsDelayAudio *delay_audio;
   gdouble old_bpm;
   gdouble sequencer_delay, notation_delay;
@@ -709,6 +736,8 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm)
   GValue value = {0,};
 
   delay_audio = AGS_DELAY_AUDIO(tactable);
+
+  soundcard = AGS_RECALL(delay_audio)->soundcard;
 
   /* retrieve old bpm */
   g_value_init(&value, G_TYPE_DOUBLE);
@@ -780,6 +809,7 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm)
 void
 ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact)
 {
+  GObject *soundcard;
   AgsDelayAudio *delay_audio;
   gdouble old_tact;
   gdouble sequencer_delay, notation_delay;
@@ -788,6 +818,8 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact)
   GValue value = {0,};
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
+
+  soundcard = AGS_RECALL(delay_audio)->soundcard;
 
   /* retrieve old tact */
   g_value_init(&value, G_TYPE_DOUBLE);
@@ -862,23 +894,44 @@ void
 ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration)
 {
   AgsDelayAudio *delay_audio;
-  AgsSoundcard *soundcard;
+
+  AgsConfig *config;
+  
   guint buffer_size;
   guint samplerate;
   gdouble bpm;
   gdouble delay;
   GValue value = {0,};
-  
-  soundcard = AGS_SOUNDCARD(AGS_RECALL(delay_audio)->soundcard);
 
-  ags_soundcard_get_presets(soundcard,
-			    NULL,
-			    &samplerate,
-			    &buffer_size,
-			    NULL);
-  bpm = ags_soundcard_get_bpm(soundcard);
+  config = ags_config_get_instance();
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    free(str);
+  }else{
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
   
-  delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / bpm);
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+
+  if(str != NULL){
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
+  delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / AGS_SOUNDCARD_DEFAULT_BPM);
 
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
@@ -892,7 +945,9 @@ void
 ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration)
 {
   AgsDelayAudio *delay_audio;
-  AgsSoundcard *soundcard;
+
+  AgsConfig *config;
+  
   guint buffer_size;
   guint samplerate;
   gdouble bpm;
@@ -901,14 +956,37 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
 
-  soundcard = AGS_SOUNDCARD(AGS_RECALL(delay_audio)->soundcard);
+  config = ags_config_get_instance();
 
-  ags_soundcard_get_presets(soundcard,
-			    NULL,
-			    &samplerate,
-			    &buffer_size,
-			    NULL);
-  bpm = ags_soundcard_get_bpm(soundcard);
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    free(str);
+  }else{
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+
+  if(str != NULL){
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
+  delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / AGS_SOUNDCARD_DEFAULT_BPM);
+
+  //  g_message("%f\0", duration * delay * AGS_SOUNDCARD_DEFAULT_SCALE);
   
   delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / bpm);
 

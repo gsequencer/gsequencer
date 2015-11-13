@@ -20,12 +20,9 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
-
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
 
@@ -572,12 +569,12 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
       
     if(AGS_IS_DELAY_AUDIO_RUN(recall_dependency->dependency)){
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency,
-									   recall_id->recycling_context->parent->recall_id);
+									   (AgsRecallID *) recall_id->recycling_context->parent->recall_id);
 
       i++;
     }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall_dependency->dependency)){
       count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency,
-										      recall_id->recycling_context->parent->recall_id);
+										      (AgsRecallID *) recall_id->recycling_context->parent->recall_id);
 
       i++;
     }

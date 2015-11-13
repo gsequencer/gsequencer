@@ -23,6 +23,16 @@
 
 void ags_soundcard_class_init(AgsSoundcardInterface *interface);
 
+/**
+ * SECTION:ags_soundcard
+ * @short_description: unique access to soundcards
+ * @title: AgsSoundcard
+ * @section_id:
+ * @include: ags/object/ags_soundcard.h
+ *
+ * The #AgsSoundcard interface gives you a unique access to audio devices.
+ */
+
 GType
 ags_soundcard_get_type()
 {
@@ -126,11 +136,55 @@ ags_soundcard_get_application_context(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_set_application_mutex:
+ * @soundcard: an #AgsSoundcard
+ * @application_mutex: the application mutex to set
+ *
+ * Set application mutex.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_soundcard_set_application_mutex(AgsSoundcard *soundcard,
+				    pthread_mutex_t *application_mutex)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_application_mutex);
+  soundcard_interface->set_application_mutex(soundcard,
+					       application_mutex);
+}
+
+/**
+ * ags_soundcard_get_application_mutex:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get application mutex. 
+ *
+ * Returns: #AgsApplicationMutex
+ *
+ * Since: 0.7.0
+ */
+pthread_mutex_t*
+ags_soundcard_get_application_mutex(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_application_mutex, NULL);
+
+  return(soundcard_interface->get_application_mutex(soundcard));
+}
+
+/**
  * ags_soundcard_set_device:
  * @soundcard: an #AgsSoundcard
  * @device_id: the device to set
  *
- * Set application context.
+ * Set device.
  *
  * Since: 0.4.3
  */
@@ -151,7 +205,7 @@ ags_soundcard_set_device(AgsSoundcard *soundcard,
  * ags_soundcard_get_device:
  * @soundcard: an #AgsSoundcard
  *
- * Get application context. 
+ * Get device.
  *
  * Returns: the device's identifier
  *
@@ -327,6 +381,28 @@ ags_soundcard_is_playing(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_is_recording:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get recording.
+ *
+ * Returns: %TRUE if recording, else %FALSE
+ *
+ * Since: 0.7.0
+ */
+gboolean
+ags_soundcard_is_recording(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), FALSE);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->is_recording, FALSE);
+
+  return(soundcard_interface->is_recording(soundcard));
+}
+
+/**
  * ags_soundcard_play:
  * @soundcard: an #AgsSoundcard
  * @error: an error that may occure
@@ -368,6 +444,50 @@ ags_soundcard_play(AgsSoundcard *soundcard,
   g_return_if_fail(soundcard_interface->play);
   soundcard_interface->play(soundcard,
 			    error);
+}
+
+/**
+ * ags_soundcard_record:
+ * @soundcard: an #AgsSoundcard
+ * @error: an error that may occure
+ *
+ * Initializes the soundcard for recordback.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_soundcard_record_init(AgsSoundcard *soundcard,
+			  GError **error)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->record_init);
+  soundcard_interface->record_init(soundcard,
+				   error);
+}
+
+/**
+ * ags_soundcard_record:
+ * @soundcard: an #AgsSoundcard
+ * @error: an error that may occure
+ *
+ * Records the current buffer of soundcard.
+ *
+ * Since: 0.7.0
+ */
+void
+ags_soundcard_record(AgsSoundcard *soundcard,
+		     GError **error)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->record);
+  soundcard_interface->record(soundcard,
+			      error);
 }
 
 /**

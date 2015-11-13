@@ -19,10 +19,8 @@
 
 #include <ags/audio/ags_libao.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
-
-#include <ags/main.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <string.h>
 #include <math.h>
@@ -44,16 +42,6 @@ void ags_libao_get_property(GObject *gobject,
 void ags_libao_disconnect(AgsConnectable *connectable);
 void ags_libao_connect(AgsConnectable *connectable);
 void ags_libao_finalize(GObject *gobject);
-
-void ags_libao_real_change_bpm(AgsLibao *libao, double bpm);
-
-void ags_libao_switch_buffer_flag(AgsLibao *libao);
-
-void ags_libao_output_init(AgsLibao *libao,
-			  GError **error);
-void ags_libao_output_play(AgsLibao *libao,
-			  GError **error);
-void ags_libao_output_free(AgsLibao *libao);
 
 enum{
   PROP_0,
@@ -239,23 +227,7 @@ ags_libao_class_init(AgsLibaoClass *libao)
 				  PROP_ATTACK,
 				  param_spec);
 
-
   /* AgsLibaoClass */
-  libao->play_init = ags_libao_output_init;
-  libao->play = ags_libao_output_play;
-  libao->stop = ags_libao_output_free;
-
-  libao->tic = NULL;
-  libao->note_offset_changed = NULL;
-
-  libao_signals[TIC] =
-    g_signal_new("tic\0",
-		 G_TYPE_FROM_CLASS (libao),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsLibaoClass, tic),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
 }
 
 GQuark
@@ -287,8 +259,8 @@ ags_libao_init(AgsLibao *libao)
   libao->dsp_channels = 2;
   libao->pcm_channels = 2;
   libao->bits = 16;
-  libao->buffer_size = AGS_LIBAO_DEFAULT_BUFFER_SIZE;
-  libao->frequency = AGS_LIBAO_DEFAULT_SAMPLERATE;
+  libao->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  libao->frequency = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   //  libao->out.ao.device = NULL;
 
@@ -300,7 +272,7 @@ ags_libao_init(AgsLibao *libao)
   libao->buffer[3] = (signed short *) malloc(libao->dsp_channels * libao->buffer_size * sizeof(signed short));
 
   /* bpm */
-  libao->bpm = AGS_LIBAO_DEFAULT_BPM;
+  libao->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
 
   /* delay and attack */
   libao->delay = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
@@ -309,18 +281,18 @@ ags_libao_init(AgsLibao *libao)
   libao->attack = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
 				   sizeof(guint));
 
-  default_tact_frames = (guint) (AGS_LIBAO_DEFAULT_DELAY * AGS_LIBAO_DEFAULT_BUFFER_SIZE);
+  default_tact_frames = (guint) (AGS_SOUNDCARD_DEFAULT_DELAY * AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE);
   default_tic_frames = (guint) (default_tact_frames * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   memset(libao->delay, 0, (int) (ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
   memset(libao->delay, 0, (int) (ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) * sizeof(guint)));
 
   for(i = 0; i < (int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT); i++){
-    libao->attack[i] = (i * default_tic_frames) % AGS_LIBAO_DEFAULT_BUFFER_SIZE;
+    libao->attack[i] = (i * default_tic_frames) % AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   }
 
   for(i = 0; i < (int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT); i++){
-    //    libao->delay[i] = AGS_LIBAO_DEFAULT_BUFFER_SIZE / (default_tic_frames) / (AGS_LIBAO_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE);
+    //    libao->delay[i] = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE / (default_tic_frames) / (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / AGS_NOTATION_DEFAULT_JIFFIE);
   }
 
   /*  */
@@ -351,9 +323,9 @@ ags_libao_set_property(GObject *gobject,
     {
       AgsApplicationContext *application_context;
 
-      application_context = g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(libao->application_context == application_context){
+      if((AgsApplicationContext *) libao->application_context == application_context){
 	return;
       }
 
@@ -365,7 +337,7 @@ ags_libao_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(application_context));
       }
 
-      libao->application_context = application_context;
+      libao->application_context = (AgsApplicationContext *) application_context;
     }
     break;
   case PROP_DEVICE:
@@ -583,67 +555,6 @@ ags_libao_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
-AgsLibaoPlayDomain*
-ags_libao_play_domain_alloc()
-{
-  AgsLibaoPlayDomain *libao_play_domain;
-
-  libao_play_domain = (AgsLibaoPlayDomain *) malloc(sizeof(AgsLibaoPlayDomain));
-
-  libao_play_domain->domain = NULL;
-
-  libao_play_domain->playback = FALSE;
-  libao_play_domain->sequencer = FALSE;
-  libao_play_domain->notation = FALSE;
-
-  libao_play_domain->libao_play = NULL;
-
-  return(libao_play_domain);
-}
-
-void
-ags_libao_play_domain_free(AgsLibaoPlayDomain *libao_play_domain)
-{
-  g_list_free(libao_play_domain->libao_play);
-
-  free(libao_play_domain);
-}
-
-AgsLibaoPlay*
-ags_libao_play_alloc()
-{
-  AgsLibaoPlay *play;
-
-  play = (AgsLibaoPlay *) malloc(sizeof(AgsLibaoPlay));
-
-  play->flags = 0;
-
-  play->iterator_thread = (AgsIteratorThread **) malloc(3 * sizeof(AgsIteratorThread *));
-
-  play->iterator_thread[0] = ags_iterator_thread_new();
-  play->iterator_thread[1] = ags_iterator_thread_new();
-  play->iterator_thread[2] = ags_iterator_thread_new();
-
-  play->source = NULL;
-  play->audio_channel = 0;
-
-  play->recall_id[0] = NULL;
-  play->recall_id[1] = NULL;
-  play->recall_id[2] = NULL;
-
-  return(play);
-}
-
-void
-ags_libao_play_free(AgsLibaoPlay *play)
-{
-  g_object_unref(G_OBJECT(play->iterator_thread[0]));
-  g_object_unref(G_OBJECT(play->iterator_thread[1]));
-  g_object_unref(G_OBJECT(play->iterator_thread[2]));
-
-  free(play->iterator_thread);
-}
-
 void
 ags_libao_list_cards(GList **card_id, GList **card_name)
 {
@@ -773,7 +684,7 @@ ags_libao_output_play(AgsLibao *libao,
   */
 
   /* determine if attack should be switched */
-  libao->delay_counter += (AGS_LIBAO_DEFAULT_DELAY *
+  libao->delay_counter += (AGS_SOUNDCARD_DEFAULT_DELAY *
 			   AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   if(libao->delay_counter >= libao->delay[libao->tic_counter]){
@@ -805,9 +716,12 @@ ags_libao_new(GObject *application_context)
 {
   AgsLibao *libao;
 
-  libao = (AgsLibao *) g_object_new(AGS_TYPE_LIBAO,
-				    "application-context", application_context,
-				    NULL);  
+  libao = (AgsLibao *) g_object_new(AGS_TYPE_LIBAO, NULL);
+  
+  if(application_context != NULL){
+    g_object_ref(G_OBJECT(application_context));
+    libao->application_context = application_context;
+  }
 
   return(libao);
 }

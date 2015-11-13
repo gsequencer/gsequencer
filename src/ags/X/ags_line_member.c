@@ -21,22 +21,22 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
+
 #include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
+#include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
-#include <ags/X/ags_effect_line.h>
 
 void ags_line_member_class_init(AgsLineMemberClass *line_member);
 void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -703,6 +703,11 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 
     port = line_member->port;
 
+    if(port == NULL){
+      g_warning("ags_line_member_change_port() - no port available");
+      return;
+    }
+
     if(!port->port_value_is_pointer){
       if(port->port_value_type == G_TYPE_BOOLEAN){
 	g_value_init(&value,
@@ -723,10 +728,10 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 			   ((guint *) port_data)[0]);
       }else if(port->port_value_type == G_TYPE_FLOAT){
 	g_value_init(&value,
-		     G_TYPE_DOUBLE);
+		     G_TYPE_FLOAT);
 
-	g_value_set_double(&value,
-			   ((gdouble *) port_data)[0]);
+	g_value_set_float(&value,
+			  (gfloat) ((gdouble *) port_data)[0]);
       }else if(port->port_value_type == G_TYPE_DOUBLE){
 	g_value_init(&value,
 		     G_TYPE_DOUBLE);
@@ -769,25 +774,37 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
     AgsWindow *window;
     AgsLine *line;
-    
-    AgsThread *main_loop;
+
+    AgsMutexManager *mutex_manager;
+    AgsThread *audio_loop;
     AgsTaskThread *task_thread;
     AgsTask *task;
 
     AgsApplicationContext *application_context;
 
-    //TODO:JK: add support for effect_line
+    pthread_mutex_t *application_mutex;
+    
     line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
 					       AGS_TYPE_LINE);
 
-    window = gtk_widget_get_ancestor(line,
-				     AGS_TYPE_WINDOW);
-
+    window = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
+						    AGS_TYPE_WINDOW);
+  
     application_context = window->application_context;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
     
-    main_loop = application_context->main_loop;
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
+    /* get audio loop */
+    pthread_mutex_lock(application_mutex);
+
+    audio_loop = application_context->main_loop;
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* get task and soundcard thread */
+    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+							 AGS_TYPE_TASK_THREAD);
 
     task = (AgsTask *) g_object_new(line_member->task_type,
 				    line_member->control_port, port_data,

@@ -109,152 +109,42 @@
 </ARG>
 
 <ARG>
-<NAME>AgsAudio::audio-channels</NAME>
+<NAME>AgsAudioFileLink::audio-channel</NAME>
 <TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
+<RANGE><= 256</RANGE>
 <FLAGS>rw</FLAGS>
-<NICK>audio channels count</NICK>
-<BLURB>The count of audio channels of audio.</BLURB>
+<NICK>audio channel to read</NICK>
+<BLURB>The selected audio channel to read.</BLURB>
 <DEFAULT>0</DEFAULT>
 </ARG>
 
 <ARG>
-<NAME>AgsAudio::automation</NAME>
-<TYPE>AgsAutomation*</TYPE>
+<NAME>AgsAudioFileLink::timestamp</NAME>
+<TYPE>GObject*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
-<NICK>containing automation</NICK>
-<BLURB>The automation it contains.</BLURB>
+<NICK>timestamp</NICK>
+<BLURB>The timestamp.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
 <ARG>
-<NAME>AgsAudio::input</NAME>
-<TYPE>AgsInput*</TYPE>
+<NAME>AgsAudio::midi-file</NAME>
+<TYPE>GObject*</TYPE>
 <RANGE></RANGE>
-<FLAGS>r</FLAGS>
-<NICK>containing input</NICK>
-<BLURB>The input it contains.</BLURB>
+<FLAGS>rw</FLAGS>
+<NICK>assigned midi_file</NICK>
+<BLURB>The midi file it is assigned with.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
 <ARG>
-<NAME>AgsAudio::input-lines</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>r</FLAGS>
-<NICK>input lines count</NICK>
-<BLURB>The count of input lines of audio.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::input-pads</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>input pads count</NICK>
-<BLURB>The count of input pads of audio.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::notation</NAME>
-<TYPE>AgsNotation*</TYPE>
+<NAME>AgsAudio::sequencer</NAME>
+<TYPE>GObject*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
-<NICK>containing notation</NICK>
-<BLURB>The notation it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::output</NAME>
-<TYPE>AgsOutput*</TYPE>
-<RANGE></RANGE>
-<FLAGS>r</FLAGS>
-<NICK>containing output</NICK>
-<BLURB>The output it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::output-lines</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>r</FLAGS>
-<NICK>output lines count</NICK>
-<BLURB>The count of output lines of audio.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::output-pads</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>output pads count</NICK>
-<BLURB>The count of output pads of audio.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::play</NAME>
-<TYPE>AgsRecall*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>containing play</NICK>
-<BLURB>The play it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::playback-domain</NAME>
-<TYPE>AgsPlaybackDomain*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned playback domain</NICK>
-<BLURB>The assigned playback domain.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::recall</NAME>
-<TYPE>AgsRecall*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>containing recall</NICK>
-<BLURB>The recall it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::recall-container</NAME>
-<TYPE>AgsRecallContainer*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>containing recall container</NICK>
-<BLURB>The recall container it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::recall-id</NAME>
-<TYPE>AgsRecallID*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned recall id</NICK>
-<BLURB>The assigned recall id.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudio::recycling-context</NAME>
-<TYPE>AgsRecyclingContext*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned recycling context</NICK>
-<BLURB>The assigned recall id.</BLURB>
+<NICK>assigned sequencer</NICK>
+<BLURB>The sequencer it is assigned with.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -265,26 +155,6 @@
 <FLAGS>rw</FLAGS>
 <NICK>assigned soundcard</NICK>
 <BLURB>The soundcard it is assigned with.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioLoop::application-context</NAME>
-<TYPE>AgsApplicationContext*</TYPE>
-<RANGE></RANGE>
-<FLAGS>w</FLAGS>
-<NICK>task thread to run</NICK>
-<BLURB>The task thread to run.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioLoop::application-mutex</NAME>
-<TYPE>gpointer</TYPE>
-<RANGE></RANGE>
-<FLAGS>r</FLAGS>
-<NICK>task thread to run</NICK>
-<BLURB>The task thread to run.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -329,96 +199,6 @@
 </ARG>
 
 <ARG>
-<NAME>AgsAudioSignal::attack</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>using attack</NICK>
-<BLURB>The attack to be used.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::buffer-size</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>using buffer size</NICK>
-<BLURB>The buffer size to be used.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::delay</NAME>
-<TYPE>gdouble</TYPE>
-<RANGE>[0,65535]</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>using delay</NICK>
-<BLURB>The delay to be used.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::first-frame</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>stream's first frame</NICK>
-<BLURB>The first frame of the stream.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::format</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>using format</NICK>
-<BLURB>The format to be used.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::last-frame</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>stream's last frame</NICK>
-<BLURB>The last frame of the stream.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::length</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>stream length</NICK>
-<BLURB>The length of the stream.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::loop-end</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>stream's loop end</NICK>
-<BLURB>The loop end of the stream.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::loop-start</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>stream's loop start</NICK>
-<BLURB>The loop start of the stream.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
 <NAME>AgsAudioSignal::recall-id</NAME>
 <TYPE>AgsRecallID*</TYPE>
 <RANGE></RANGE>
@@ -439,16 +219,6 @@
 </ARG>
 
 <ARG>
-<NAME>AgsAudioSignal::samplerate</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>using samplerate</NICK>
-<BLURB>The samplerate to be used.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
 <NAME>AgsAudioSignal::soundcard</NAME>
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
@@ -459,43 +229,23 @@
 </ARG>
 
 <ARG>
-<NAME>AgsAudioSignal::stream</NAME>
-<TYPE>gpointer</TYPE>
+<NAME>AgsAudioThread::audio</NAME>
+<TYPE>AgsAudio*</TYPE>
 <RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>containing stream</NICK>
-<BLURB>The stream it contains.</BLURB>
+<FLAGS>w</FLAGS>
+<NICK>audio assigned to</NICK>
+<BLURB>The AgsAudio it is assigned to.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
 <ARG>
-<NAME>AgsAudioSignal::stream-current</NAME>
-<TYPE>gpointer</TYPE>
+<NAME>AgsAudioThread::soundcard</NAME>
+<TYPE>GObject*</TYPE>
 <RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>current stream</NICK>
-<BLURB>The current stream.</BLURB>
+<FLAGS>w</FLAGS>
+<NICK>soundcard assigned to</NICK>
+<BLURB>The AgsSoundcard it is assigned to.</BLURB>
 <DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::stream-end</NAME>
-<TYPE>gpointer</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>end of stream</NICK>
-<BLURB>The stream's end.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsAudioSignal::word-size</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>frame word size</NICK>
-<BLURB>The word size of a frame.</BLURB>
-<DEFAULT>0</DEFAULT>
 </ARG>
 
 <ARG>
@@ -519,6 +269,26 @@
 </ARG>
 
 <ARG>
+<NAME>AgsAutomation::channel-type</NAME>
+<TYPE>GType*</TYPE>
+<RANGE>void</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>channel type to apply</NICK>
+<BLURB>The channel type to apply.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAutomation::control-name</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>control name</NICK>
+<BLURB>The control name.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsAutomation::current-accelerations</NAME>
 <TYPE>gpointer</TYPE>
 <RANGE></RANGE>
@@ -529,13 +299,33 @@
 </ARG>
 
 <ARG>
+<NAME>AgsAutomation::default-value</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[-65535,65535]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>default value of effect</NICK>
+<BLURB>The default value of effect.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsAutomation::line</NAME>
-<TYPE>gulong</TYPE>
+<TYPE>guint</TYPE>
 <RANGE><= 65535</RANGE>
 <FLAGS>rw</FLAGS>
 <NICK>line of effect</NICK>
 <BLURB>The numerical line of effect.</BLURB>
-<DEFAULT></DEFAULT>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAutomation::lower</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[-65535,65535]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>lower of effect</NICK>
+<BLURB>The lower of effect.</BLURB>
+<DEFAULT>0</DEFAULT>
 </ARG>
 
 <ARG>
@@ -556,6 +346,26 @@
 <NICK>port of automation</NICK>
 <BLURB>The port of automation.</BLURB>
 <DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAutomation::steps</NAME>
+<TYPE>guint</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>steps of effect</NICK>
+<BLURB>The steps of effect.</BLURB>
+<DEFAULT>0</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsAutomation::upper</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[-65535,65535]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>upper of effect</NICK>
+<BLURB>The upper of effect.</BLURB>
+<DEFAULT>0</DEFAULT>
 </ARG>
 
 <ARG>
@@ -659,136 +469,6 @@
 </ARG>
 
 <ARG>
-<NAME>AgsChannel::audio-channel</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>r</FLAGS>
-<NICK>nth audio channel</NICK>
-<BLURB>The nth audio channel.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::first-recycling</NAME>
-<TYPE>AgsRecycling*</TYPE>
-<RANGE></RANGE>
-<FLAGS>r</FLAGS>
-<NICK>containing first recycling</NICK>
-<BLURB>The first recycling it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::last-recycling</NAME>
-<TYPE>AgsRecycling*</TYPE>
-<RANGE></RANGE>
-<FLAGS>r</FLAGS>
-<NICK>containing last recycling</NICK>
-<BLURB>The last recycling it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::line</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>r</FLAGS>
-<NICK>nth line</NICK>
-<BLURB>The nth line.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::link</NAME>
-<TYPE>AgsChannel*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned link</NICK>
-<BLURB>The link it is assigned with.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::note</NAME>
-<TYPE>gchar*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned note</NICK>
-<BLURB>The note it is assigned with.</BLURB>
-<DEFAULT>NULL</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::pad</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>r</FLAGS>
-<NICK>nth pad</NICK>
-<BLURB>The nth pad.</BLURB>
-<DEFAULT>0</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::pattern</NAME>
-<TYPE>AgsPattern*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>containing pattern</NICK>
-<BLURB>The pattern it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::play</NAME>
-<TYPE>AgsRecall*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>containing play</NICK>
-<BLURB>The play it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::playback</NAME>
-<TYPE>AgsPlayback*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned playback</NICK>
-<BLURB>The playback it is assigned with.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::recall</NAME>
-<TYPE>AgsRecall*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>containing recall</NICK>
-<BLURB>The recall it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::recall-container</NAME>
-<TYPE>AgsRecallContainer*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>containing recall-container</NICK>
-<BLURB>The recall container it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsChannel::recall-id</NAME>
-<TYPE>AgsRecallID*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned recall id</NICK>
-<BLURB>The recall id it is assigned with.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
 <NAME>AgsChannel::soundcard</NAME>
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
@@ -799,13 +479,23 @@
 </ARG>
 
 <ARG>
-<NAME>AgsCloneChannel::audio-channel</NAME>
-<TYPE>guint</TYPE>
-<RANGE><= 65536</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned audio Channel</NICK>
-<BLURB>The audio channel this recall does output to.</BLURB>
-<DEFAULT>0</DEFAULT>
+<NAME>AgsChannelThread::channel</NAME>
+<TYPE>AgsChannel*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>channel assigned to</NICK>
+<BLURB>The AgsChannel it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsChannelThread::soundcard</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>soundcard assigned to</NICK>
+<BLURB>The AgsSoundcard it is assigned to.</BLURB>
+<DEFAULT></DEFAULT>
 </ARG>
 
 <ARG>
@@ -899,36 +589,6 @@
 </ARG>
 
 <ARG>
-<NAME>AgsCopyPatternChannel::bank-index-0</NAME>
-<TYPE>AgsPort*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>current bank index 0</NICK>
-<BLURB>The current bank index 0 of the AgsPattern.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsCopyPatternChannel::bank-index-1</NAME>
-<TYPE>AgsPort*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>current bank index 1</NICK>
-<BLURB>The current bank index 1 of the AgsPattern.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsCopyPatternChannel::current-bit</NAME>
-<TYPE>AgsPort*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>current playing bit</NICK>
-<BLURB>The current playing bit is set.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
 <NAME>AgsCopyPatternChannel::pattern</NAME>
 <TYPE>AgsPort*</TYPE>
 <RANGE></RANGE>
@@ -939,12 +599,12 @@
 </ARG>
 
 <ARG>
-<NAME>AgsCountBeatsAudio::loop</NAME>
+<NAME>AgsCountBeatsAudio::notation-loop</NAME>
 <TYPE>AgsPort*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
-<NICK>loop playing</NICK>
-<BLURB>Play in a endless loop.</BLURB>
+<NICK>notation-loop playing</NICK>
+<BLURB>Play in a endless notation_loop.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -965,6 +625,16 @@
 <FLAGS>rw</FLAGS>
 <NICK>start beat of notation loop</NICK>
 <BLURB>The start beat of the notation loop.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsCountBeatsAudio::sequencer-loop</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>sequencer loop playing</NICK>
+<BLURB>Play sequencer in a endless loop.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -1089,6 +759,16 @@
 </ARG>
 
 <ARG>
+<NAME>AgsDevout::application-mutex</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application mutex object</NICK>
+<BLURB>The application mutex object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsDevout::attack</NAME>
 <TYPE>gpointer</TYPE>
 <RANGE></RANGE>
@@ -1126,6 +806,16 @@
 <NICK>frame count of a buffer</NICK>
 <BLURB>The count of frames a buffer contains.</BLURB>
 <DEFAULT>940</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsDevout::delay-factor</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[0,16]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>delay factor</NICK>
+<BLURB>The delay factor.</BLURB>
+<DEFAULT>1</DEFAULT>
 </ARG>
 
 <ARG>
@@ -1249,6 +939,56 @@
 </ARG>
 
 <ARG>
+<NAME>AgsEnvelopeChannel::attack</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>attack channel</NICK>
+<BLURB>Attack of the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsEnvelopeChannel::decay</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>decay channel</NICK>
+<BLURB>Decay of the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsEnvelopeChannel::ratio</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>envelope ratio</NICK>
+<BLURB>The ratio of the envelope.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsEnvelopeChannel::release</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>release channel</NICK>
+<BLURB>Release of the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsEnvelopeChannel::sustain</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>sustain channel</NICK>
+<BLURB>Sustain of the channel.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsExpander::child</NAME>
 <TYPE>GtkWidget*</TYPE>
 <RANGE></RANGE>
@@ -1299,6 +1039,16 @@
 </ARG>
 
 <ARG>
+<NAME>AgsExportWindow::application-context</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned application context</NICK>
+<BLURB>The AgsApplicationContext it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsExportWindow::soundcard</NAME>
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
@@ -1313,8 +1063,8 @@
 <TYPE>AgsApplicationContext*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
-<NICK>main object of file</NICK>
-<BLURB>The main object to write to file.</BLURB>
+<NICK>application context of file</NICK>
+<BLURB>The application context to write to file.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -1359,22 +1109,22 @@
 </ARG>
 
 <ARG>
+<NAME>AgsFileIdRef::application-context</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>application context access</NICK>
+<BLURB>The application-context object to access the tree.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsFileIdRef::file</NAME>
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
 <NICK>file assigned to</NICK>
 <BLURB>The entire file assigned to.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsFileIdRef::main</NAME>
-<TYPE>GObject*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>main access</NICK>
-<BLURB>The main object to access the tree.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -1409,22 +1159,22 @@
 </ARG>
 
 <ARG>
+<NAME>AgsFileLaunch::application-context</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>application context access</NICK>
+<BLURB>The application context to access the tree.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsFileLaunch::file</NAME>
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
 <NICK>file assigned to</NICK>
 <BLURB>The entire file assigned to.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsFileLaunch::main</NAME>
-<TYPE>GObject*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>main access</NICK>
-<BLURB>The main object to access the tree.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -1459,16 +1209,6 @@
 </ARG>
 
 <ARG>
-<NAME>AgsFileLink::timestamp</NAME>
-<TYPE>GObject*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>timestamp</NICK>
-<BLURB>The timestamp.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
 <NAME>AgsFileLookup::file</NAME>
 <TYPE>AgsFile*</TYPE>
 <RANGE></RANGE>
@@ -1495,6 +1235,16 @@
 <FLAGS>rw</FLAGS>
 <NICK>assigned reference</NICK>
 <BLURB>The reference it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsHistoryBrowser::application-context</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned application context</NICK>
+<BLURB>The AgsApplicationContext it is assigned with.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -1530,12 +1280,12 @@
 
 <ARG>
 <NAME>AgsIpatch::filename</NAME>
-<TYPE>gchar*</TYPE>
+<TYPE>gpointer</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
 <NICK>the filename</NICK>
 <BLURB>The filename to open.</BLURB>
-<DEFAULT>NULL</DEFAULT>
+<DEFAULT></DEFAULT>
 </ARG>
 
 <ARG>
@@ -1546,6 +1296,236 @@
 <NICK>the mode</NICK>
 <BLURB>The mode to open the file.</BLURB>
 <DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackClient::jack-server</NAME>
+<TYPE>AgsJackServer*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned JACK server</NICK>
+<BLURB>The assigned JACK server.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::application-context</NAME>
+<TYPE>AgsApplicationContext*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application context object</NICK>
+<BLURB>The application context object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::application-mutex</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application mutex object</NICK>
+<BLURB>The application mutex object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::attack</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>attack of buffer</NICK>
+<BLURB>The attack to use for the buffer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::bpm</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[1,240]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>beats per minute</NICK>
+<BLURB>Beats per minute to use.</BLURB>
+<DEFAULT>120</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::buffer</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>the buffer</NICK>
+<BLURB>The buffer to play.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::buffer-size</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,44100]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>frame count of a buffer</NICK>
+<BLURB>The count of frames a buffer contains.</BLURB>
+<DEFAULT>940</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::delay-factor</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[0,16]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>delay factor</NICK>
+<BLURB>The delay factor.</BLURB>
+<DEFAULT>1</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::device</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the device identifier</NICK>
+<BLURB>The device to perform output to.</BLURB>
+<DEFAULT>"hw:0"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::dsp-channels</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,64]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>count of DSP channels</NICK>
+<BLURB>The count of DSP channels to use.</BLURB>
+<DEFAULT>2</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::format</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,64]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>precision of buffer</NICK>
+<BLURB>The precision to use for a frame.</BLURB>
+<DEFAULT>16</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::pcm-channels</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[1,64]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>count of PCM channels</NICK>
+<BLURB>The count of PCM channels to use.</BLURB>
+<DEFAULT>2</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackDevout::samplerate</NAME>
+<TYPE>guint</TYPE>
+<RANGE>[8000,96000]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>frames per second</NICK>
+<BLURB>The frames count played during a second.</BLURB>
+<DEFAULT>44100</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::application-context</NAME>
+<TYPE>AgsApplicationContext*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application context object</NICK>
+<BLURB>The application context object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::application-mutex</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application mutex object</NICK>
+<BLURB>The application mutex object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::attack</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>attack of buffer</NICK>
+<BLURB>The attack to use for the buffer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::bpm</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[1,240]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>beats per minute</NICK>
+<BLURB>Beats per minute to use.</BLURB>
+<DEFAULT>120</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::buffer</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>the buffer</NICK>
+<BLURB>The buffer to play.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::delay-factor</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[0,16]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>delay factor</NICK>
+<BLURB>The delay factor.</BLURB>
+<DEFAULT>1</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackMidiin::device</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the device identifier</NICK>
+<BLURB>The device to perform output to.</BLURB>
+<DEFAULT>"hw:0"</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackPort::jack-client</NAME>
+<TYPE>AgsJackClient*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned JACK client</NICK>
+<BLURB>The assigned JACK client.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackServer::application-context</NAME>
+<TYPE>AgsApplicationContext*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application context object</NICK>
+<BLURB>The application context object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsJackServer::url</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the URL</NICK>
+<BLURB>The URL.</BLURB>
+<DEFAULT>NULL</DEFAULT>
 </ARG>
 
 <ARG>
@@ -1899,13 +1879,103 @@
 </ARG>
 
 <ARG>
-<NAME>AgsMidiParser::fd</NAME>
-<TYPE>gint</TYPE>
-<RANGE>>= -1</RANGE>
+<NAME>AgsMidiBuilder::file</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
 <FLAGS>rw</FLAGS>
-<NICK>the file descriptor fd</NICK>
-<BLURB>The file to parse as fd.</BLURB>
-<DEFAULT>-1</DEFAULT>
+<NICK>the file stream</NICK>
+<BLURB>The file stream to parse.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiDialog::machine</NAME>
+<TYPE>AgsMachine*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned machine</NICK>
+<BLURB>The machine which this machine editor is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiParser::file</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the file stream</NICK>
+<BLURB>The file stream to parse.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::application-context</NAME>
+<TYPE>AgsApplicationContext*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application context object</NICK>
+<BLURB>The application context object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::application-mutex</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the application mutex object</NICK>
+<BLURB>The application mutex object.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::attack</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>attack of buffer</NICK>
+<BLURB>The attack to use for the buffer.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::bpm</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[1,240]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>beats per minute</NICK>
+<BLURB>Beats per minute to use.</BLURB>
+<DEFAULT>120</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::buffer</NAME>
+<TYPE>gpointer</TYPE>
+<RANGE></RANGE>
+<FLAGS>r</FLAGS>
+<NICK>the buffer</NICK>
+<BLURB>The buffer to play.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::delay-factor</NAME>
+<TYPE>gdouble</TYPE>
+<RANGE>[0,16]</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>delay factor</NICK>
+<BLURB>The delay factor.</BLURB>
+<DEFAULT>1</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsMidiin::device</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the device identifier</NICK>
+<BLURB>The device to perform output to.</BLURB>
+<DEFAULT>"hw:0"</DEFAULT>
 </ARG>
 
 <ARG>
@@ -1939,26 +2009,6 @@
 </ARG>
 
 <ARG>
-<NAME>AgsNotation::audio</NAME>
-<TYPE>AgsAudio*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>audio of notation</NICK>
-<BLURB>The audio of notation.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsNotation::audio-channel</NAME>
-<TYPE>gulong</TYPE>
-<RANGE><= 65535</RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>audio-channel of effect</NICK>
-<BLURB>The numerical audio-channel of effect.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
 <NAME>AgsNotation::current-notes</NAME>
 <TYPE>gpointer</TYPE>
 <RANGE></RANGE>
@@ -1975,16 +2025,6 @@
 <FLAGS>rw</FLAGS>
 <NICK>next notes for offset</NICK>
 <BLURB>The next notes for offset.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsNotation::note</NAME>
-<TYPE>AgsNote*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>note of notation</NICK>
-<BLURB>The note of notation.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -2145,16 +2185,6 @@
 <FLAGS>w</FLAGS>
 <NICK>assigned AgsStreamChannelRun</NICK>
 <BLURB>an assigned AgsStreamChannelRun.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsPlayNotationAudio::notation</NAME>
-<TYPE>AgsPort*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned notation</NICK>
-<BLURB>The notation this recall does play.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -2449,6 +2479,36 @@
 </ARG>
 
 <ARG>
+<NAME>AgsRecallDssi::effect</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the effect</NICK>
+<BLURB>The effect's string representation.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallDssi::filename</NAME>
+<TYPE>gchar*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>the object file</NICK>
+<BLURB>The filename as string of object file.</BLURB>
+<DEFAULT>NULL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecallDssi::index</NAME>
+<TYPE>gulong</TYPE>
+<RANGE><= 65535</RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>index of effect</NICK>
+<BLURB>The numerical index of effect.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsRecall::child</NAME>
 <TYPE>AgsRecall*</TYPE>
 <RANGE></RANGE>
@@ -2479,22 +2539,12 @@
 </ARG>
 
 <ARG>
-<NAME>AgsRecall::port</NAME>
-<TYPE>AgsPort*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>port of recall</NICK>
-<BLURB>The port of recall.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
 <NAME>AgsRecall::recall-container</NAME>
 <TYPE>AgsRecallContainer*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
 <NICK>container of recall</NICK>
-<BLURB>The container what recall is packed into.</BLURB>
+<BLURB>The container which this recall is packed into.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -2533,8 +2583,8 @@
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
-<NICK>assigned recycling container</NICK>
-<BLURB>The recycling container it is assigned with.</BLURB>
+<NICK>assigned recycling context</NICK>
+<BLURB>The recycling context it is assigned with.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -2659,6 +2709,46 @@
 </ARG>
 
 <ARG>
+<NAME>AgsRecordMidiAudio::playback</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>if do playback</NICK>
+<BLURB>If playback should be performed.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecordMidiAudio::record</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>if do record</NICK>
+<BLURB>If record data for later use should be done.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecordMidiAudioRun::count-beats-audio-run</NAME>
+<TYPE>AgsCountBeatsAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>the AgsCountBeatsAudioRun which just counts.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRecordMidiAudioRun::delay-audio-run</NAME>
+<TYPE>AgsDelayAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsDelayAudioRun</NICK>
+<BLURB>the AgsDelayAudioRun which emits midi_alloc_input signal.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsRecordThread::registry</NAME>
 <TYPE>AgsRegistry*</TYPE>
 <RANGE></RANGE>
@@ -2699,52 +2789,12 @@
 </ARG>
 
 <ARG>
-<NAME>AgsRecycling::audio-signal</NAME>
-<TYPE>AgsAudioSignal*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>containing audio signal</NICK>
-<BLURB>The audio signal it contains.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
 <NAME>AgsRecycling::channel</NAME>
 <TYPE>AgsChannel*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
 <NICK>assigned channel</NICK>
 <BLURB>The channel it is assigned with.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsRecycling::next</NAME>
-<TYPE>AgsRecycling*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned next</NICK>
-<BLURB>The next it is assigned with.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsRecycling::parent</NAME>
-<TYPE>AgsRecycling*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned parent</NICK>
-<BLURB>The parent it is assigned with.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsRecycling::prev</NAME>
-<TYPE>AgsRecycling*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned prev</NICK>
-<BLURB>The prev it is assigned with.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -2759,6 +2809,16 @@
 </ARG>
 
 <ARG>
+<NAME>AgsRecyclingThread::first-recycling</NAME>
+<TYPE>AgsRecycling*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned first recycling</NICK>
+<BLURB>The first recycling to acquire lock.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsRecyclingThread::iterator-thread</NAME>
 <TYPE>AgsIteratorThread*</TYPE>
 <RANGE></RANGE>
@@ -2769,12 +2829,112 @@
 </ARG>
 
 <ARG>
+<NAME>AgsRecyclingThread::last-recycling</NAME>
+<TYPE>AgsRecycling*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned last recycling</NICK>
+<BLURB>The last recycling to acquire lock.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteDssiAudio::notation-input</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>route notation input</NICK>
+<BLURB>Route notation as input to the DSSI recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteDssiAudio::sequencer-input</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>route sequencer input</NICK>
+<BLURB>Route sequencer as input to the DSSI recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteDssiAudioRun::count-beats-audio-run</NAME>
+<TYPE>AgsCountBeatsAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>the AgsCountBeatsAudioRun which just counts.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteDssiAudioRun::delay-audio-run</NAME>
+<TYPE>AgsDelayAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsDelayAudioRun</NICK>
+<BLURB>the AgsDelayAudioRun which emits notation_alloc_input signal.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteLv2Audio::notation-input</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>route notation input</NICK>
+<BLURB>Route notation as input to the LV2 recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteLv2Audio::sequencer-input</NAME>
+<TYPE>AgsPort*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>route sequencer input</NICK>
+<BLURB>Route sequencer as input to the LV2 recall.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteLv2AudioRun::count-beats-audio-run</NAME>
+<TYPE>AgsCountBeatsAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsCountBeatsAudioRun</NICK>
+<BLURB>the AgsCountBeatsAudioRun which just counts.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsRouteLv2AudioRun::delay-audio-run</NAME>
+<TYPE>AgsDelayAudioRun*</TYPE>
+<RANGE></RANGE>
+<FLAGS>rw</FLAGS>
+<NICK>assigned AgsDelayAudioRun</NICK>
+<BLURB>the AgsDelayAudioRun which emits notation_alloc_input signal.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
 <NAME>AgsRuler::adjustment</NAME>
 <TYPE>GObject*</TYPE>
 <RANGE></RANGE>
 <FLAGS>rw</FLAGS>
 <NICK>assigned adjustment</NICK>
 <BLURB>The adjustment it is assigned with.</BLURB>
+<DEFAULT></DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>AgsSequencerThread::sequencer</NAME>
+<TYPE>GObject*</TYPE>
+<RANGE></RANGE>
+<FLAGS>w</FLAGS>
+<NICK>sequencer assigned to</NICK>
+<BLURB>The AgsSequencer it is assigned to.</BLURB>
 <DEFAULT></DEFAULT>
 </ARG>
 
@@ -2876,46 +3036,6 @@
 <NICK>maximum unused threads</NICK>
 <BLURB>The maximum of unused threads.</BLURB>
 <DEFAULT>24</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsTrackCollection::midi-document</NAME>
-<TYPE>gpointer</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>midi document of track collection</NICK>
-<BLURB>The midi document this track collection is assigned to.</BLURB>
-<DEFAULT></DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsTrackCollectionMapper::instrument</NAME>
-<TYPE>gchar*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned instrument</NICK>
-<BLURB>The instrument which this track mapper is assigned with.</BLURB>
-<DEFAULT>NULL</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsTrackCollectionMapper::sequence</NAME>
-<TYPE>gchar*</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned sequence</NICK>
-<BLURB>The sequence which this track mapper is assigned with.</BLURB>
-<DEFAULT>NULL</DEFAULT>
-</ARG>
-
-<ARG>
-<NAME>AgsTrackCollectionMapper::track</NAME>
-<TYPE>gpointer</TYPE>
-<RANGE></RANGE>
-<FLAGS>rw</FLAGS>
-<NICK>assigned track</NICK>
-<BLURB>The track which this track mapper is assigned with.</BLURB>
-<DEFAULT></DEFAULT>
 </ARG>
 
 <ARG>

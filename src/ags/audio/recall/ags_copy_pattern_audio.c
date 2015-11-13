@@ -22,9 +22,6 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/main.h>
-
-#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 void ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio);
@@ -401,7 +398,7 @@ ags_copy_pattern_audio_bank_index_1_safe_write_callback(AgsPort *pattern,
 
 /**
  * ags_copy_pattern_audio_new:
- * @soundcard: the #GObject implementing #AgsSoundcard defaulting to
+ * @soundcard: the #GObject defaulting to
  * @tact: the offset
  * @i: bank index 0
  * @j: bank index 1

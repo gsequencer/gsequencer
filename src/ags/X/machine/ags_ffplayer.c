@@ -37,6 +37,7 @@
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_playable.h>
 
 #include <ags/audio/file/ags_playable.h>
 #include <ags/audio/file/ags_audio_file.h>
@@ -58,7 +59,7 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
-#include <ags/X/file/ags_gsequencer_file_xml.h>
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_ffplayer_bridge.h>
 
@@ -203,16 +204,19 @@ ags_ffplayer_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_ffplayer_init(AgsFFPlayer *ffplayer)
 {
-  AgsAudio *audio;
+  GtkVBox *vbox;
+  GtkAlignment *alignment;
   GtkTable *table;
   GtkHScrollbar *hscrollbar;
-  GtkVBox *vbox, *piano_vbox;
   GtkHBox *hbox;
-  GtkAlignment *alignment;
+  GtkVBox *piano_vbox;
   GtkLabel *label;
+  
   PangoAttrList *attr_list;
   PangoAttribute *attr;
 
+  AgsAudio *audio;
+  
   g_signal_connect_after((GObject *) ffplayer, "parent_set\0",
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
@@ -233,6 +237,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_MACHINE(ffplayer)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(ffplayer)->output_line_type = G_TYPE_NONE;
 
+  ags_machine_popup_add_connection_options(ffplayer,
+					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
+  
   g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_ffplayer_set_audio_channels), NULL);
 
@@ -258,7 +265,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     FALSE, FALSE,
 		     0);
   
-  table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  table = (GtkTable *) gtk_table_new(3, 2, FALSE);
   gtk_container_add((GtkContainer *) alignment,
 		    (GtkWidget *) table);
   
@@ -309,11 +316,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     (GtkWidget *) ffplayer->open,
 		     FALSE, FALSE,
 		     0);
-
-  /* drawing area piano */
+  ffplayer->open_dialog = NULL;
+  
   piano_vbox = (GtkVBox *) gtk_vbox_new(FALSE, 2);
-  gtk_table_attach(table,
-		   (GtkWidget *) piano_vbox,
+  gtk_table_attach(table, (GtkWidget *) piano_vbox,
 		   1, 2,
 		   0, 3,
 		   GTK_FILL, GTK_FILL,
@@ -323,7 +329,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->control_height = 40;
 
   ffplayer->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area, 16 * ffplayer->control_width, ffplayer->control_width * 8 + ffplayer->control_height);
+  gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area,
+			      16 * ffplayer->control_width,
+			      ffplayer->control_width * 8 + ffplayer->control_height);
   gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area, ffplayer_style);
   gtk_widget_set_events ((GtkWidget *) ffplayer->drawing_area,
                          GDK_EXPOSURE_MASK
@@ -331,7 +339,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
                          | GDK_BUTTON_PRESS_MASK
                          | GDK_POINTER_MOTION_MASK
                          | GDK_POINTER_MOTION_HINT_MASK);
-  gtk_box_pack_start((GtkBox *) piano_vbox, (GtkWidget *) ffplayer->drawing_area, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) piano_vbox,
+		     (GtkWidget *) ffplayer->drawing_area,
+		     FALSE, FALSE,
+		     0);
 
   ffplayer->hadjustment = (GtkAdjustment *) gtk_adjustment_new(0.0,
 							       0.0,
@@ -352,10 +363,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
 		     FALSE, FALSE,
 		     0);
-
-  g_object_set(AGS_MACHINE(ffplayer)->bridge,
-	       "audio\0", AGS_MACHINE(ffplayer)->audio,
-	       NULL);
 }
 
 void
@@ -421,6 +428,9 @@ ags_ffplayer_map_recall(AgsMachine *machine)
     g_object_set(G_OBJECT(play_count_beats_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
+    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
+		      window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
+		      TRUE);
 
     g_value_init(&value, G_TYPE_BOOLEAN);
     g_value_set_boolean(&value, TRUE);
@@ -570,7 +580,7 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "application-context\0", file->application_context,
+				   "main\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -692,7 +702,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     GError *error;
 
     /* clear preset, instrument and sample*/
-    ags_combo_box_text_remove_all(ffplayer->instrument);
+    gtk_list_store_clear(GTK_LIST_STORE(ffplayer->instrument));
 
     /* Ipatch related */
     ffplayer->ipatch =
@@ -808,6 +818,52 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
   }
 }
 
+xmlNode*
+ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsFFPlayer *ffplayer;
+  xmlNode *node;
+  gchar *id;
+
+  ffplayer = AGS_FFPLAYER(plugin);
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-ffplayer\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", ffplayer,
+				   NULL));
+
+  if(ffplayer->ipatch != NULL && ffplayer->ipatch->filename != NULL){
+    xmlNewProp(node,
+	       "filename\0",
+	       g_strdup(ffplayer->ipatch->filename));
+
+    xmlNewProp(node,
+	       "preset\0",
+	       g_strdup(gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->preset)));
+
+    xmlNewProp(node,
+	       "instrument\0",
+	       g_strdup(gtk_combo_box_text_get_active_text((GtkComboBoxText *) ffplayer->instrument)));
+  }
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
+
 void
 ags_ffplayer_set_audio_channels(AgsAudio *audio,
 				guint audio_channels, guint audio_channels_old,
@@ -898,9 +954,7 @@ void
 ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *source, *current, *destination;
-  AgsBufferChannel *buffer_channel;
-  AgsBufferChannelRun *buffer_channel_run;
+  AgsChannel *source, *current;
 
   GList *list;
 
@@ -915,6 +969,43 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
   source = ags_channel_nth(audio->input,
 			   input_pad_start * audio->audio_channels);
 
+  /* map dependending on output */
+  current = source;
+
+  while(current != NULL){
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      0, audio->audio_channels, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
+
+  /*  */
+  current = source;
+
+  while(current != NULL){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-play\0",
+			      current->audio_channel, current->audio_channel + 1, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
+
+  /*  */
   current = source;
 
   while(current != NULL){
@@ -1011,13 +1102,20 @@ void
 ags_ffplayer_paint(AgsFFPlayer *ffplayer)
 {
   GtkWidget *widget;
+
+  GtkStyle *ffplayer_style;
+  
   cairo_t *cr;
+
   double semi_key_height;
   guint bitmap;
   guint x[2];
   guint i, i_stop, j, j0;
-
+  
+  static const gdouble white_gc = 65535.0;
+    
   widget = (GtkWidget *) ffplayer->drawing_area;
+  ffplayer_style = gtk_widget_get_style(widget);
 
   semi_key_height = 2.0 / 3.0 * (double) ffplayer->control_height;
   bitmap = 0x52a52a; // description of the keyboard
@@ -1036,23 +1134,28 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
 
   cr = gdk_cairo_create(widget->window);
 
-  cairo_set_source_rgb(cr, 0.015625, 0.03125, 0.21875);
+  /* clear with background color */
+  cairo_set_source_rgb(cr,
+		       ffplayer_style->bg[0].red / white_gc,
+		       ffplayer_style->bg[0].green / white_gc,
+		       ffplayer_style->bg[0].blue / white_gc);
   cairo_rectangle(cr, 0.0, 0.0, (double) widget->allocation.width, (double) widget->allocation.height);
   cairo_fill(cr);
 
+  /* draw piano */
   cairo_set_line_width(cr, 1.0);
-  cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
+
+  cairo_set_source_rgb(cr,
+		       ffplayer_style->fg[0].red / white_gc,
+		       ffplayer_style->fg[0].green / white_gc,
+		       ffplayer_style->fg[0].blue / white_gc);
 
   if(x[0] != 0){
     j0 = (j != 0) ? j -1: 11;
 
     if(((1 << j0) & bitmap) != 0){
-      cairo_set_source_rgb(cr, 0.5, 0.5, 1.0);
-
       cairo_rectangle(cr, 0.0, 0.0, x[0], (double) semi_key_height);
       cairo_fill(cr); 	
-
-      cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
 
       if(x[0] > ffplayer->control_width / 2){
 	cairo_move_to(cr, (double) (x[0] - ffplayer->control_width / 2),  semi_key_height);
@@ -1079,12 +1182,8 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
   for(i = 0; i < i_stop; i++){
     if(((1 << j) & bitmap) != 0){
       // draw semi tone key
-      cairo_set_source_rgb(cr, 0.5, 0.5, 1.0);
-
       cairo_rectangle(cr, (double) (i * ffplayer->control_width + x[0]), 0.0, (double) ffplayer->control_width, semi_key_height);
       cairo_fill(cr); 	
-
-      cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
 
       cairo_move_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width / 2), semi_key_height);
       cairo_line_to(cr, (double) (i * ffplayer->control_width + x[0] + ffplayer->control_width / 2), ffplayer->control_height);
@@ -1116,12 +1215,8 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
     j0 = j;
 
     if(((1 << j0) & bitmap) != 0){
-      cairo_set_source_rgb(cr, 0.5, 0.5, 1.0);
-
       cairo_rectangle(cr, (double) (widget->allocation.width - x[1]), 0.0, (double) x[1], semi_key_height);
       cairo_fill(cr); 	
-
-      cairo_set_source_rgb(cr, 0.75, 0.75, 0.75);
 
       if(x[1] > ffplayer->control_width / 2){
 	cairo_move_to(cr, (double) (widget->allocation.width - x[1] + ffplayer->control_width / 2), semi_key_height);
@@ -1162,7 +1257,7 @@ ags_ffplayer_new(GObject *soundcard)
   if(soundcard != NULL){
     g_value_init(&value, G_TYPE_OBJECT);
     g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(ffplayer)->audio),
+    g_object_set_property(G_OBJECT(ffplayer->machine.audio),
 			  "soundcard\0", &value);
     g_value_unset(&value);
   }

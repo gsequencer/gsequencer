@@ -19,7 +19,7 @@
 
 #include <ags/audio/recall/ags_stream.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_stream_class_init(AgsStream *stream);
 void ags_stream_init(AgsStream *stream);
@@ -62,7 +62,7 @@ ags_stream(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 {
   /* -- deprecated --
   AgsStream *stream;
-  AgsDevout *devout;
+  GObject *soundcard;
   AgsAudioSignal *audio_signal;
   GList *list;
   guint *buffer;
@@ -70,10 +70,10 @@ ags_stream(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 
   stream = (AgsStream *) recall;
   audio_signal = (AgsAudioSignal *) stream->audio_signal;
-  devout = (AgsDevout *) audio_signal->devout;
+  soundcard = (GObject *) audio_signal->soundcard;
 
   if(audio_signal->stream_current == NULL)
-    if(devout->offset < audio_signal->stream_end){
+    if(soundcard->offset < audio_signal->stream_end){
       //      AGS_RECALL_GET_CLASS(recall)->done(recall, recall_id);
       g_signal_emit_by_name((GObject *) recall, "done\0", recall_id);
     }else{
@@ -82,7 +82,7 @@ ags_stream(AgsRecall *recall, AgsRecallID *recall_id, gpointer data)
 
   buffer = audio_signal->stream_current->data;
 
-  for(i = 0; i < devout->buffer_size; i++){
+  for(i = 0; i < soundcard->buffer_size; i++){
     list = recall->recall;
 
     while(list != NULL){

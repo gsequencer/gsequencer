@@ -24,6 +24,8 @@
 
 #include <ags/object/ags_application_context.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_SOUNDCARD                    (ags_soundcard_get_type())
 #define AGS_SOUNDCARD(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SOUNDCARD, AgsSoundcard))
 #define AGS_SOUNDCARD_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_SOUNDCARD, AgsSoundcardInterface))
@@ -69,9 +71,19 @@ struct _AgsSoundcardInterface
 				  AgsApplicationContext *application_context);
   AgsApplicationContext* (*get_application_context)(AgsSoundcard *soundcard);
 
+  void (*set_application_mutex)(AgsSoundcard *soundcard,
+				pthread_mutex_t *application_mutex);
+  pthread_mutex_t* (*get_application_mutex)(AgsSoundcard *soundcard);
+
   void (*set_device)(AgsSoundcard *soundcard,
 		     gchar *card_id);
   gchar* (*get_device)(AgsSoundcard *soundcard);
+
+  void (*pcm_info)(AgsSoundcard *soundcard, gchar *card_id,
+		   guint *channels_min, guint *channels_max,
+		   guint *rate_min, guint *rate_max,
+		   guint *buffer_size_min, guint *buffer_size_max,
+		   GError **error);
   
   void (*set_presets)(AgsSoundcard *soundcard,
 		      guint channels,
@@ -86,19 +98,21 @@ struct _AgsSoundcardInterface
   
   void (*list_cards)(AgsSoundcard *soundcard,
 		     GList **card_id, GList **card_name);
-  void (*pcm_info)(AgsSoundcard *soundcard, gchar *card_id,
-		   guint *channels_min, guint *channels_max,
-		   guint *rate_min, guint *rate_max,
-		   guint *buffer_size_min, guint *buffer_size_max,
-		   GError **error);
-  
+
   gboolean (*is_starting)(AgsSoundcard *soundcard);
   gboolean (*is_playing)(AgsSoundcard *soundcard);
+  gboolean (*is_recording)(AgsSoundcard *soundcard);
   
   void (*play_init)(AgsSoundcard *soundcard,
 		    GError **error);
   void (*play)(AgsSoundcard *soundcard,
 	       GError **error);
+
+  void (*record_init)(AgsSoundcard *soundcard,
+		      GError **error);
+  void (*record)(AgsSoundcard *soundcard,
+		 GError **error);
+
   void (*stop)(AgsSoundcard *soundcard);
 
   void (*tic)(AgsSoundcard *soundcard);
@@ -134,6 +148,10 @@ void ags_soundcard_set_application_context(AgsSoundcard *soundcard,
 					   AgsApplicationContext *application_context);
 AgsApplicationContext* ags_soundcard_get_application_context(AgsSoundcard *soundcard);
 
+void ags_soundcard_set_application_mutex(AgsSoundcard *soundcard,
+					 pthread_mutex_t *application_mutex);
+pthread_mutex_t* ags_soundcard_get_application_mutex(AgsSoundcard *soundcard);
+
 void ags_soundcard_set_device(AgsSoundcard *soundcard,
 			      gchar *device_id);
 gchar* ags_soundcard_get_device(AgsSoundcard *soundcard);
@@ -159,19 +177,45 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 
 gboolean ags_soundcard_is_starting(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_playing(AgsSoundcard *soundcard);
+gboolean ags_soundcard_is_recording(AgsSoundcard *soundcard);
 
 void ags_soundcard_play_init(AgsSoundcard *soundcard,
 			     GError **error);
 void ags_soundcard_play(AgsSoundcard *soundcard,
 			GError **error);
+
+void ags_soundcard_record_init(AgsSoundcard *soundcard,
+			       GError **error);
+void ags_soundcard_record(AgsSoundcard *soundcard,
+			  GError **error);
+
 void ags_soundcard_stop(AgsSoundcard *soundcard);
 
 void ags_soundcard_tic(AgsSoundcard *soundcard);
 void ags_soundcard_offset_changed(AgsSoundcard *soundcard,
 				  guint note_offset);
 
-signed short* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
-signed short* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
+void* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
+void* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
+
+void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
+			   gdouble bpm);
+gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
+
+void ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
+				    gdouble delay_factor);
+gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
+
+gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);
+guint ags_soundcard_get_attack(AgsSoundcard *soundcard);
+
+void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
+				   guint note_offset);
+guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
+
+void ags_soundcard_set_audio(AgsSoundcard *soundcard,
+			     GList *audio);
+GList* ags_soundcard_get_audio(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
 			   gdouble bpm);

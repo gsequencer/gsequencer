@@ -25,7 +25,7 @@
 
 #include <ags/thread/ags_task.h>
 
-#include <ags/audio/ags_devout.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_SET_AUDIO_CHANNELS                (ags_set_audio_channels_get_type())
 #define AGS_SET_AUDIO_CHANNELS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_AUDIO_CHANNELS, AgsSetAudioChannels))
@@ -41,7 +41,7 @@ struct _AgsSetAudioChannels
 {
   AgsTask task;
 
-  AgsDevout *devout;
+  GObject *soundcard;
   guint audio_channels;
 };
 
@@ -52,6 +52,6 @@ struct _AgsSetAudioChannelsClass
 
 GType ags_set_audio_channels_get_type();
 
-AgsSetAudioChannels* ags_set_audio_channels_new(AgsDevout *devout, guint audio_channels);
+AgsSetAudioChannels* ags_set_audio_channels_new(GObject *soundcard, guint audio_channels);
 
 #endif /*__AGS_SET_AUDIO_CHANNELS_H__*/

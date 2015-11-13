@@ -20,7 +20,9 @@
 #include <ags/audio/task/ags_cancel_audio.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
@@ -117,9 +119,9 @@ ags_cancel_audio_init(AgsCancelAudio *cancel_audio)
 {
   cancel_audio->audio = NULL;
 
-  cancel_audio->playback = FALSE;
-  cancel_audio->sequencer = FALSE;
-  cancel_audio->notation = FALSE;
+  cancel_audio->do_playback = FALSE;
+  cancel_audio->do_sequencer = FALSE;
+  cancel_audio->do_notation = FALSE;
 }
 
 void
@@ -162,7 +164,7 @@ ags_cancel_audio_launch(AgsTask *task)
   playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
   
   /* cancel playback */
-  if(cancel_audio->playback){
+  if(cancel_audio->do_playback){
     g_atomic_int_and(&(playback_domain->flags),
 		     (~AGS_PLAYBACK_DOMAIN_PLAYBACK));
 
@@ -184,12 +186,12 @@ ags_cancel_audio_launch(AgsTask *task)
     }
 
     if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
-      ags_thread_stop(playback_domain->audio_thread[0]);
+      //      ags_thread_stop(playback_domain->audio_thread[0]);
     }
   }
 
   /* cancel sequencer */
-  if(cancel_audio->sequencer){
+  if(cancel_audio->do_sequencer){
     g_atomic_int_and(&(playback_domain->flags),
 		     (~AGS_PLAYBACK_DOMAIN_SEQUENCER));
 
@@ -211,12 +213,12 @@ ags_cancel_audio_launch(AgsTask *task)
     }
 
     if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
-      ags_thread_stop(playback_domain->audio_thread[1]);
+      //      ags_thread_stop(playback_domain->audio_thread[1]);
     }
   }
 
   /* cancel notation */
-  if(cancel_audio->notation){
+  if(cancel_audio->do_notation){
     g_atomic_int_and(&(playback_domain->flags),
 		     (~AGS_PLAYBACK_DOMAIN_NOTATION));
 
@@ -238,7 +240,7 @@ ags_cancel_audio_launch(AgsTask *task)
     }
 
     if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
-      ags_thread_stop(playback_domain->audio_thread[2]);
+      //      ags_thread_stop(playback_domain->audio_thread[2]);
     }
   }
 }
@@ -246,9 +248,9 @@ ags_cancel_audio_launch(AgsTask *task)
 /**
  * ags_cancel_audio_new:
  * @audio: the #AgsAudio to cancel
- * @playback: if %TRUE playback is canceld
- * @sequencer: if %TRUE sequencer is canceld
- * @notation: if %TRUE notation is canceld
+ * @do_playback: if %TRUE playback is canceld
+ * @do_sequencer: if %TRUE sequencer is canceld
+ * @do_notation: if %TRUE notation is canceld
  *
  * Creates an #AgsCancelAudio.
  *
@@ -258,7 +260,7 @@ ags_cancel_audio_launch(AgsTask *task)
  */
 AgsCancelAudio*
 ags_cancel_audio_new(AgsAudio *audio,
-		     gboolean playback, gboolean sequencer, gboolean notation)
+		     gboolean do_playback, gboolean do_sequencer, gboolean do_notation)
 {
   AgsCancelAudio *cancel_audio;
 
@@ -267,9 +269,9 @@ ags_cancel_audio_new(AgsAudio *audio,
 
   cancel_audio->audio = audio;
 
-  cancel_audio->playback = playback;
-  cancel_audio->sequencer = sequencer;
-  cancel_audio->notation = notation;
+  cancel_audio->do_playback = do_playback;
+  cancel_audio->do_sequencer = do_sequencer;
+  cancel_audio->do_notation = do_notation;
 
   return(cancel_audio);
 }

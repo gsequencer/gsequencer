@@ -2,51 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.5.3],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.7.1],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_SUBDIRS([po
-		   doc
-		   src/ags
-		   src/ags/X
-		   src/ags/X/editor
-		   src/ags/X/machine
-		   src/ags/audio
-		   src/ags/audio/file
-		   src/ags/audio/recall
-		   src/ags/audio/task
-		   src/ags/audio/task/recall
-		   src/ags/file
-		   src/ags/lib
-		   src/ags/object
-		   src/ags/plugin
-		   src/ags/server
-		   src/ags/thread
-		   src/ags/util
-		   src/ags/widget])
-AC_CONFIG_FILES([Makefile
-		 po/Makefile
-                 doc/Makefile
-                 src/ags/Makefile
-                 src/ags/X/Makefile
-                 src/ags/X/editor/Makefile
-                 src/ags/X/machine/Makefile
-                 src/ags/audio/Makefile
-                 src/ags/audio/file/Makefile
-                 src/ags/audio/recall/Makefile
-                 src/ags/audio/task/Makefile
-                 src/ags/audio/task/recall/Makefile
-                 src/ags/file/Makefile
-                 src/ags/lib/Makefile
-                 src/ags/object/Makefile
-                 src/ags/plugin/Makefile
-                 src/ags/server/Makefile
-                 src/ags/thread/Makefile
-                 src/ags/util/Makefile
-                 src/ags/widget/Makefile])
-
-AM_INIT_AUTOMAKE(gsequencer, 0.4.3)
+AC_CONFIG_MACRO_DIR(m4)
 
 # Checks for programs.
 AC_PROG_CXX
@@ -61,6 +21,19 @@ AM_PROG_CC_STDC
 AC_C_CONST
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
+
+# check for gtk-doc
+m4_ifdef([GTK_DOC_CHECK], [
+GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC], false)
+])
+
+# libtool
+LT_PREREQ([2.4.2])
+LT_INIT
+AC_SUBST([LIBTOOL_DEPS])
+AC_ENABLE_SHARED
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lgmp':
@@ -91,6 +64,10 @@ PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.25])
 AC_SUBST(LIBASOUND2_CFLAGS)
 AC_SUBST(LIBASOUND2_LIBS)
 
+PKG_CHECK_MODULES([JACK], [jack >= 0.124.2])
+AC_SUBST(JACK_CFLAGS)
+AC_SUBST(JACK_LIBS)
+
 PKG_CHECK_MODULES([LIBXML2], [libxml-2.0 >= 2.8.0])
 AC_SUBST(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_LIBS)
@@ -107,9 +84,9 @@ PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
 
-PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.44.1])
-AC_SUBST(GIO_CFLAGS)
-AC_SUBST(GIO_LIBS)
+PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.11.0])
+AC_SUBST(FONTCONFIG_CFLAGS)
+AC_SUBST(FONTCONFIG_LIBS)
 
 PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.26.1])
 AC_SUBST(GDKPIXBUF_CFLAGS)

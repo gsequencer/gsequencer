@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/object/ags_application_context.h>
@@ -47,6 +48,18 @@ void ags_application_context_finalize(GObject *gobject);
 void ags_application_context_real_load_config(AgsApplicationContext *application_context);
 void ags_application_context_real_register_types(AgsApplicationContext *application_context);
 
+/**
+ * SECTION:ags_application_context
+ * @short_description: The application context
+ * @title: AgsApplicationContext
+ * @section_id:
+ * @include: ags/object/ags_application_context.h
+ *
+ * #AgsApplicationContext is a context provider is your and libraries entry
+ * point to the application. You might subtype it to implement your own contices.
+ * Thus you should consider to create a provider interface for reusability.
+ */
+
 enum{
   LOAD_CONFIG,
   REGISTER_TYPES,
@@ -62,6 +75,8 @@ enum{
 
 static gpointer ags_application_context_parent_class = NULL;
 static guint application_context_signals[LAST_SIGNAL];
+
+AgsApplicationContext *ags_application_context = NULL;
 
 GType
 ags_application_context_get_type()
@@ -158,8 +173,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * AgsApplicationContext::load-config:
    * @application_context: the object to play
    *
-   * The ::load-config signal notifies about running
-   * stage 2.
+   * The ::load-config notifies to load configuration.
    */
   application_context_signals[LOAD_CONFIG] =
     g_signal_new("load-config\0",
@@ -174,8 +188,8 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * AgsApplicationContext::register-types:
    * @application_context: the object to play
    *
-   * The ::register-types signal notifies about running
-   * stage 2.
+   * The ::register-types signal should be implemented to load
+   * your types.
    */
   application_context_signals[REGISTER_TYPES] =
     g_signal_new("register-types\0",
@@ -223,7 +237,9 @@ ags_application_context_init(AgsApplicationContext *application_context)
   application_context->autosave_thread = NULL;
   
   application_context->file = NULL;
-
+  
+  application_context->history = NULL;
+  
   // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n\0");
 }
 
@@ -373,6 +389,14 @@ ags_application_context_real_load_config(AgsApplicationContext *application_cont
   //TODO:JK: implement me
 }
 
+/**
+ * ags_application_context_load_config:
+ * @application_context: the #AgsApplicationContext
+ *
+ * Signal to load and parse configuration.
+ *
+ * Since 0.7.0
+ */
 void
 ags_application_context_load_config(AgsApplicationContext *application_context)
 {
@@ -391,6 +415,14 @@ ags_application_context_real_register_types(AgsApplicationContext *application_c
   //TODO:JK: implement me
 }
 
+/**
+ * ags_application_context_register_types:
+ * @application_context: the #AgsApplicationContext
+ *
+ * Notification to register your types.
+ *
+ * Since 0.7.0
+ */
 void
 ags_application_context_register_types(AgsApplicationContext *application_context)
 {
@@ -443,6 +475,39 @@ ags_application_context_find_main_loop(GList *application_context)
   }
   
   return(application_context);
+}
+
+/**
+ * ags_application_context_quit:
+ * @application_context: the context to quit
+ *
+ * Calls exit()
+ *
+ * Since: 0.7.0
+ */
+gboolean
+ags_application_context_quit(AgsApplicationContext *application_context)
+{
+  //TODO:JK: enhance me
+  exit(0);
+}
+
+/**
+ * ags_application_context_get_instance:
+ * 
+ * Get your application context instance.
+ *
+ * Since: 0.7.0
+ */
+AgsApplicationContext*
+ags_application_context_get_instance()
+{
+  if(ags_application_context == NULL){
+    ags_application_context = ags_application_context_new(NULL,
+							  NULL);
+  }
+
+  return(ags_application_context);
 }
 
 AgsApplicationContext*

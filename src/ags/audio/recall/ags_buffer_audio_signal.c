@@ -25,12 +25,16 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
 
+#include <ags/object/ags_config.h>
+ 
 void ags_buffer_audio_signal_class_init(AgsBufferAudioSignalClass *buffer_audio_signal);
 void ags_buffer_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -210,29 +214,56 @@ ags_buffer_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connec
 void
 ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 {
+  GObject *soundcard;
   AgsRecycling *recycling;
   AgsAudioSignal *destination;
   AgsRecallID *parent_recall_id;
   AgsRecyclingContext *recycling_context;
+  
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
-  AgsSoundcard *soundcard;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsConfig *config;
+  
   GList *stream;
   guint buffer_size;
   guint samplerate;
   guint length;
-  gdouble delay;
-  guint attack;
+  gchar *str;
+  
+  pthread_mutex_t *application_mutex;
 
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
 
-  soundcard = AGS_SOUNDCARD(AGS_RECALL(buffer_audio_signal)->soundcard);
-  ags_soundcard_get_presets(soundcard,
-			    NULL,
-			    &samplerate,
-			    &buffer_size,
-			    NULL);
+  soundcard = AGS_RECALL(buffer_audio_signal)->soundcard;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  config = ags_config_get_instance();
+  
+  pthread_mutex_lock(application_mutex);
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  buffer_size = g_ascii_strtoull(str,
+				 NULL,
+				 10);
+  free(str);
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
+				NULL,
+				10);
+  free(str);
+
+  pthread_mutex_unlock(application_mutex);
   
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
@@ -252,7 +283,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   ags_recycling_create_audio_signal_with_defaults(recycling,
 						  destination,
 						  delay, attack);
-  length = 3; //(guint) (2.0 * devout->delay[devout->tic_counter]) + 1;
+  length = 3; //(guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
   ags_audio_signal_stream_resize(destination,
 				 length);
 
@@ -283,13 +314,18 @@ ags_buffer_audio_signal_run_pre(AgsRecall *recall)
 void
 ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 {
+  GObject *soundcard;
   AgsRecycling *recycling;
   AgsAudioSignal *source, *destination;
   AgsBufferChannel *buffer_channel;
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
+  
   GList *stream_source, *stream_destination;
+
   gboolean muted;
+  guint soundcard_buffer_size;
+  
   GValue value = {0,};
 
   /* call parent */
@@ -300,6 +336,13 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
   buffer_channel = AGS_BUFFER_CHANNEL(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(buffer_recycling)->parent)->recall_channel);
 
+  soundcard = AGS_RECALL(buffer_audio_signal)->soundcard;
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    NULL,
+			    &soundcard_buffer_size,
+			    NULL);
+  
   source = AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->source;
   stream_source = source->stream_current;
 
@@ -327,8 +370,28 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
   stream_destination = destination->stream_current;
 
-  if(stream_destination->next == NULL){
-    ags_audio_signal_add_stream(destination);
+  if(stream_destination != NULL){
+    if(stream_destination->next == NULL){
+      ags_audio_signal_add_stream(destination);
+    }
+  
+    //TODO:JK: in future release buffer size may differ
+    if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
+      AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
+      ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
+					     (signed short *) stream_source->data, 1,
+					     soundcard_buffer_size - source->attack);
+    }else{
+      if(source->attack != 0 && stream_source->prev != NULL){
+	ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
+					       &(((signed short *) stream_source->prev->data)[soundcard_buffer_size - source->attack]), 1,
+					       source->attack);
+      }
+
+      ags_audio_signal_copy_buffer_to_buffer(&(((signed short *) stream_destination->data)[source->attack]), 1,
+					     (signed short *) stream_source->data, 1,
+					     soundcard_buffer_size - source->attack);
+    }
   }
   
   //TODO:JK: in future release buffer size may differ

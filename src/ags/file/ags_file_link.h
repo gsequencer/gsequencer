@@ -22,14 +22,15 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_timestamp.h>
-
 #define AGS_TYPE_FILE_LINK                (ags_file_link_get_type())
 #define AGS_FILE_LINK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_LINK, AgsFileLink))
 #define AGS_FILE_LINK_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_FILE_LINK, AgsFileLink))
 #define AGS_IS_FILE_LINK(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FILE_LINK))
 #define AGS_IS_FILE_LINK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_LINK))
 #define AGS_FILE_LINK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_LINK, AgsFileLinkClass))
+
+#define AGS_FILE_LINK_DEFAULT_VERSION "0.7.0\0"
+#define AGS_FILE_LINK_DEFAULT_BUILD_ID "CEST 13-10-2015 15:53\0"
 
 typedef struct _AgsFileLink AgsFileLink;
 typedef struct _AgsFileLinkClass AgsFileLinkClass;
@@ -38,9 +39,16 @@ struct _AgsFileLink
 {
   GObject object;
 
+  gchar *version;
+  gchar *build_id;
+
+  gchar *name;
+  
+  gchar *xml_type;
+
   gchar *filename;
+  
   gchar *data;
-  AgsTimestamp *timestamp;
 };
 
 struct _AgsFileLinkClass

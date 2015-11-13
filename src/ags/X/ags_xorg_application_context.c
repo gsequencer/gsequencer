@@ -1,39 +1,45 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_xorg_application_context.h>
 
+#include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_main_loop.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
-
-#include <ags/log/ags_log.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_thread_pool.h>
 
 #include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_midiin.h>
 
-#include <ags/X/file/ags_gsequencer_file_xml.h>
+#include <ags/audio/jack/ags_jack_midiin.h>
+#include <ags/audio/jack/ags_jack_server.h>
+
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 
@@ -61,6 +67,8 @@ AgsThread* ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *co
 AgsThread* ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 GList* ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider);
+GList* ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider);
+GList* ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_finalize(GObject *gobject);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
@@ -77,7 +85,7 @@ enum{
   PROP_WINDOW,
 };
 
-extern AgsXorgApplicationContext *ags_xorg_application_context;
+AgsXorgApplicationContext *ags_xorg_application_context;
 
 GType
 ags_xorg_application_context_get_type()
@@ -197,6 +205,8 @@ void
 ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider)
 {
   sound_provider->get_soundcard = ags_xorg_application_context_get_soundcard;
+  sound_provider->get_sequencer = ags_xorg_application_context_get_sequencer;
+  sound_provider->get_distributed_manager = ags_xorg_application_context_get_distributed_manager;
 }
 
 void
@@ -208,19 +218,19 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   AgsAudioLoop *audio_loop;
   GObject *soundcard;
-
+  GObject *sequencer;
+  AgsJackServer *jack_server;
+  
   AgsConfig *config;
   
   struct passwd *pw;
   uid_t uid;
   gchar *wdir, *config_file;
 
-  AGS_APPLICATION_CONTEXT(xorg_application_context)->log = (AgsLog *) g_object_new(AGS_TYPE_LOG,
-										   "file\0", stderr,
-										   NULL);
+  AGS_APPLICATION_CONTEXT(xorg_application_context)->log = NULL;
 
   /**/
-  config = ags_config_new(NULL);
+  config = ags_config_get_instance();
   AGS_APPLICATION_CONTEXT(xorg_application_context)->config = config;
   g_object_set(config,
 	       "application-context\0", xorg_application_context,
@@ -244,11 +254,36 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_free(config_file);
   
   /* AgsSoundcard */
+  xorg_application_context->soundcard = NULL;
+
   soundcard = ags_devout_new(xorg_application_context);
   xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
 						       soundcard);
   g_object_ref(G_OBJECT(soundcard));
-    
+
+  /* distributed manager */
+  xorg_application_context->distributed_manager = NULL;
+
+  jack_server = ags_jack_server_new(xorg_application_context,
+				    NULL);
+  xorg_application_context->distributed_manager = g_list_prepend(xorg_application_context->distributed_manager,
+								 jack_server);
+  g_object_ref(G_OBJECT(jack_server));
+  
+  /* AgsSequencer */
+  xorg_application_context->sequencer = NULL;
+
+  sequencer = ags_midiin_new(xorg_application_context);
+  xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
+						       sequencer);
+  g_object_ref(G_OBJECT(sequencer));
+
+  sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
+							 FALSE);
+  xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
+						       sequencer);
+  g_object_ref(G_OBJECT(sequencer));
+
   /* AgsWindow */
   window = ags_window_new(xorg_application_context);
   g_object_set(window,
@@ -266,9 +301,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /* AgsServer */
   xorg_application_context->server = ags_server_new(xorg_application_context);
 
-  /* AgsMainLoop */
-  audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
-						xorg_application_context);
+  /* AgsAudioLoop */
+  AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop = 
+    audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
+						  xorg_application_context);
   g_object_set(xorg_application_context,
 	       "main-loop\0", audio_loop,
 	       NULL);
@@ -278,27 +314,40 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* AgsTaskThread */
   AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
-  ags_thread_add_child(AGS_THREAD(audio_loop), AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
+  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+		       g_list_append(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)),
+				     AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread));
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
+				TRUE, TRUE);
 
-  g_object_set(audio_loop,
-	       "async-queue\0", AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
-	       NULL);
+  ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
+				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
   
   /* AgsSoundcardThread */
   xorg_application_context->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);
-  ags_thread_add_child(AGS_THREAD(audio_loop), xorg_application_context->soundcard_thread);
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				xorg_application_context->soundcard_thread,
+				TRUE, TRUE);
 
   /* AgsExportThread */
   xorg_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,
 										NULL);
-  ags_thread_add_child(AGS_THREAD(audio_loop), xorg_application_context->export_thread);
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				xorg_application_context->export_thread,
+				TRUE, TRUE);
 
   /* AgsGuiThread */
   xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
-  ags_thread_add_child(AGS_THREAD(audio_loop), xorg_application_context->gui_thread);
+  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+		       g_list_append(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)),
+				     xorg_application_context->gui_thread));
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				xorg_application_context->gui_thread,
+				TRUE, TRUE);
 
   /* AgsThreadPool */
-  AGS_XORG_APPLICATION_CONTEXT(xorg_application_context)->thread_pool = ags_thread_pool_new(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
+  AGS_XORG_APPLICATION_CONTEXT(xorg_application_context)->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
 }
 
 void
@@ -412,6 +461,18 @@ GList*
 ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider)
 {
   return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard);
+}
+
+GList*
+ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider)
+{
+  return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer);
+}
+
+GList*
+ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *sound_provider)
+{
+  return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->distributed_manager);
 }
 
 void

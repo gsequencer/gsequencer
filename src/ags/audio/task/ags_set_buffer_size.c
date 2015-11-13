@@ -20,8 +20,8 @@
 #include <ags/audio/task/ags_set_buffer_size.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -40,7 +40,7 @@ void ags_set_buffer_size_audio_signal(AgsSetBufferSize *set_buffer_size, AgsAudi
 void ags_set_buffer_size_recycling(AgsSetBufferSize *set_buffer_size, AgsRecycling *recycling);
 void ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *channel);
 void ags_set_buffer_size_audio(AgsSetBufferSize *set_buffer_size, AgsAudio *audio);
-void ags_set_buffer_size_devout(AgsSetBufferSize *set_buffer_size, AgsDevout *devout);
+void ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundcard);
 
 /**
  * SECTION:ags_set_buffer_size
@@ -49,7 +49,7 @@ void ags_set_buffer_size_devout(AgsSetBufferSize *set_buffer_size, AgsDevout *de
  * @section_id:
  * @include: ags/audio/task/ags_set_buffer_size.h
  *
- * The #AgsSetAudioChannels task resizes buffer size of #AgsDevout.
+ * The #AgsSetAudioChannels task resizes buffer size of #AgsSoundcard.
  */
 
 static gpointer ags_set_buffer_size_parent_class = NULL;
@@ -161,8 +161,8 @@ ags_set_buffer_size_launch(AgsTask *task)
 
   gobject = set_buffer_size->gobject;
 
-  if(AGS_IS_DEVOUT(gobject)){
-    ags_set_buffer_size_devout(set_buffer_size, AGS_DEVOUT(gobject));
+  if(AGS_IS_SOUNDCARD(gobject)){
+    ags_set_buffer_size_soundcard(set_buffer_size, AGS_SOUNDCARD(gobject));
   }else if(AGS_IS_AUDIO(gobject)){
     ags_set_buffer_size_audio(set_buffer_size, AGS_AUDIO(gobject));
   }else if(AGS_IS_CHANNEL(gobject)){
@@ -234,17 +234,30 @@ ags_set_buffer_size_audio(AgsSetBufferSize *set_buffer_size, AgsAudio *audio)
 }
 
 void
-ags_set_buffer_size_devout(AgsSetBufferSize *set_buffer_size, AgsDevout *devout)
+ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundcard)
 {
   GList *list;
 
+  guint channels;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+  
   /*  */
-  g_object_set(G_OBJECT(devout),
-	       "buffer_size\0", set_buffer_size->buffer_size,
-	       NULL);
+  ags_soundcard_get_presets(soundcard,
+			    &channels,
+			    &samplerate,
+			    &buffer_size,
+			    &format);
+
+  ags_soundcard_set_presets(soundcard,
+			    channels,
+			    samplerate,
+			    set_buffer_size->buffer_size,
+			    format);
 
   /* AgsAudio */
-  list = devout->audio;
+  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
 
   while(list != NULL){
     ags_set_buffer_size_audio(set_buffer_size, AGS_AUDIO(list->data));
@@ -255,7 +268,7 @@ ags_set_buffer_size_devout(AgsSetBufferSize *set_buffer_size, AgsDevout *devout)
 
 /**
  * ags_set_buffer_size_new:
- * @devout: the #AgsDevout reset
+ * @soundcard: the #AgsSoundcard reset
  * @buffer_size: the new count of buffer size
  *
  * Creates an #AgsSetAudioChannels.

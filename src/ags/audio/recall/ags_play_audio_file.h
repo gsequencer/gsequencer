@@ -26,6 +26,7 @@
 #include <ags/audio/ags_recall.h>
 
 #include <ags/audio/file/ags_audio_file.h>
+#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_PLAY_AUDIO_FILE                (ags_play_audio_file_get_type())
 #define AGS_PLAY_AUDIO_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_AUDIO_FILE, AgsPlayAudioFile))

@@ -155,14 +155,16 @@ ags_cancel_recall_launch(AgsTask *task)
   ags_recall_cancel(recall);
 
   /* set remove flag */
-  if(cancel_recall->playback != NULL)
-    cancel_recall->playback->flags |= AGS_PLAYBACK_REMOVE;
+  if(cancel_recall->playback != NULL){
+    g_atomic_int_or(&(cancel_recall->playback->flags),
+		    AGS_PLAYBACK_REMOVE);
+  }
 }
 
 /**
  * ags_cancel_recall_new:
  * @recall: the #AgsRecall to cancel
- * @playback: the #AgsPlayback
+ * @play: the #AgsPlayback
  *
  * Creates an #AgsCancelRecall.
  *

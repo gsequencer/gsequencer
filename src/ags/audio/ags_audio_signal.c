@@ -24,11 +24,12 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recall_id.h>
 
 #include <stdint.h>
-#include <emmintrin.h>
+//TODO:JK: do vector optimization
+//#include <emmintrin.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -199,7 +200,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The samplerate to be used.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("samplerate\0",
 				 "using samplerate\0",
@@ -217,7 +218,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The buffer size to be used.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("buffer-size\0",
 				 "using buffer size\0",
@@ -235,7 +236,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The format to be used.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("format\0",
 				 "using format\0",
@@ -253,7 +254,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The word size of frame.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("word-size\0",
 				 "frame word size\0",
@@ -271,7 +272,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The length of the stream.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("length\0",
 				 "stream length\0",
@@ -289,7 +290,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The first frame of stream.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("first-frame\0",
 				 "stream's first frame\0",
@@ -301,13 +302,13 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
   g_object_class_install_property(gobject,
 				  PROP_FIRST_FRAME,
 				  param_spec);
-  
+
   /**
    * AgsAudioSignal:last-frame:
    *
    * The last frame of stream.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("last-frame\0",
 				 "stream's last frame\0",
@@ -325,7 +326,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The loop start of stream.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("loop-start\0",
 				 "stream's loop start\0",
@@ -343,7 +344,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The loop end of stream.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("loop-end\0",
 				 "stream's loop end\0",
@@ -355,14 +356,14 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
   g_object_class_install_property(gobject,
 				  PROP_LOOP_END,
 				  param_spec);
-    
+
 
   /**
    * AgsAudioSignal:delay:
    *
    * The delay to be used.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_double("delay\0",
 				   "using delay\0",
@@ -370,7 +371,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				   0.0,
 				   65535.0,
 				   0.0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DELAY,
 				  param_spec);
@@ -380,7 +381,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The attack to be used.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_uint("attack\0",
 				 "using attack\0",
@@ -399,7 +400,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The stream it contains.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("stream\0",
 				    "containing stream\0",
@@ -414,7 +415,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The end of stream.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("stream-end\0",
 				    "end of stream\0",
@@ -423,13 +424,13 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
   g_object_class_install_property(gobject,
 				  PROP_STREAM_END,
 				  param_spec);
-  
+
   /**
    * AgsAudioSignal:stream-current:
    *
    * The current stream.
    * 
-   * Since: 0.4.3
+   * Since: 0.7.2
    */
   param_spec = g_param_spec_pointer("stream-current\0",
 				    "current stream\0",
@@ -437,8 +438,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_CURRENT,
-				  param_spec);  
-
+				  param_spec);
+  
   /* AgsAudioSignalClass */
   audio_signal->realloc_buffer_size = ags_audio_signal_real_realloc_buffer_size;
   audio_signal->morph_samplerate = ags_audio_signal_real_morph_samplerate;
@@ -491,6 +492,10 @@ ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_audio_signal_init(AgsAudioSignal *audio_signal)
 {
+  AgsConfig *config;
+  
+  gchar *str;
+  
   audio_signal->flags = 0;
 
   audio_signal->soundcard = NULL;
@@ -498,8 +503,33 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->recycling = NULL;
   audio_signal->recall_id = NULL;
 
-  audio_signal->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  audio_signal->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  config = ags_config_get_instance();
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+  
+  if(str != NULL){
+    audio_signal->samplerate = g_ascii_strtoull(str,
+						NULL,
+						10);
+    free(str);
+  }else{
+    audio_signal->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  if(str != NULL){
+    audio_signal->buffer_size = g_ascii_strtoull(str,
+						 NULL,
+						 10);
+    free(str);
+  }else{
+    audio_signal->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  }
+  
   audio_signal->format = AGS_SOUNDCARD_RESOLUTION_16_BIT;
 
   
@@ -541,22 +571,9 @@ ags_audio_signal_set_property(GObject *gobject,
       if(audio_signal->soundcard != NULL)
 	g_object_unref(audio_signal->soundcard);
 
-      if(soundcard != NULL){
-	guint samplerate, buffer_size, bits;
-	
+      if(soundcard != NULL)
 	g_object_ref(soundcard);
 
-	ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-				  NULL,
-				  &samplerate,
-				  &buffer_size,
-				  &bits);
-
-	audio_signal->samplerate = samplerate;
-	audio_signal->buffer_size = buffer_size;
-	audio_signal->format = bits;
-      }
-      
       audio_signal->soundcard = soundcard;
     }
     break;
@@ -618,7 +635,7 @@ ags_audio_signal_set_property(GObject *gobject,
       guint format;
 
       format = g_value_get_uint(value);
-      
+
       audio_signal->format = format;
     }
     break;
@@ -733,9 +750,7 @@ ags_audio_signal_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOUNDCARD:
-    {
-      g_value_set_object(value, audio_signal->soundcard);
-    }
+    g_value_set_object(value, audio_signal->soundcard);
     break;
   case PROP_RECYCLING:
     {
@@ -745,6 +760,75 @@ ags_audio_signal_get_property(GObject *gobject,
   case PROP_RECALL_ID:
     {
       g_value_set_object(value, audio_signal->recall_id);
+    }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value, audio_signal->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, audio_signal->buffer_size);
+    }
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, audio_signal->format);
+    }
+    break;
+  case PROP_WORD_SIZE:
+    {
+      //TODO:JK: implement me
+    }
+    break;
+  case PROP_LENGTH:
+    {
+      g_value_set_uint(value, audio_signal->length);
+    }
+    break;
+  case PROP_FIRST_FRAME:
+    {
+      g_value_set_uint(value, audio_signal->first_frame);
+    }
+    break;
+  case PROP_LAST_FRAME:
+    {
+      g_value_set_uint(value, audio_signal->last_frame);
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      g_value_set_uint(value, audio_signal->loop_start);
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      g_value_set_uint(value, audio_signal->loop_end);
+    }
+    break;
+  case PROP_DELAY:
+    {
+      g_value_set_double(value, audio_signal->delay);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      g_value_set_uint(value, audio_signal->attack);
+    }
+    break;
+  case PROP_STREAM:
+    {
+      g_value_set_pointer(value, g_list_copy(audio_signal->stream_beginning));
+    }
+    break;
+  case PROP_STREAM_END:
+    {
+      g_value_set_pointer(value, audio_signal->stream_end);
+    }
+    break;
+  case PROP_STREAM_CURRENT:
+    {
+      g_value_set_pointer(value, audio_signal->stream_current);
     }
     break;
   case PROP_SAMPLERATE:
@@ -1244,8 +1328,28 @@ ags_audio_signal_morph_samplerate(AgsAudioSignal *audio_signal, guint samplerate
 void
 ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannels, signed short *source, guint schannels, guint size)
 {
-  for(; 0<size; --size){
-    *destination += *source;
+  guint limit;
+  guint i;
+
+  /* unrolled function */
+  limit = size - 7;
+  
+  for(i = 0; i < limit; i += 8){
+    *destination = 0xffff & ((signed long) ((*destination) + (*source)));
+    destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + source[1 * schannels]));
+    destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + source[2 * schannels]));
+    destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + source[3 * schannels]));
+    destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + source[4 * schannels]));
+    destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + source[5 * schannels]));
+    destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + source[6 * schannels]));
+    destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + source[7 * schannels]));
+
+    destination += (8 * dchannels);
+    source += (8 * schannels);
+  }
+
+  for(; i < size; i++){
+    *destination = 0xffff & ((signed long) ((*destination) + (*source)));
 
     destination += dchannels;
     source += schannels;
@@ -1329,6 +1433,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
     ags_audio_signal_stream_resize(audio_signal,
 				   0);
   }else{
+    //    AgsSoundcard *soundcard;
     GList *template_stream, *stream;
 
     audio_signal->buffer_size = template->buffer_size;
@@ -1466,7 +1571,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 		      AgsAudioSignal *template,
 		      guint frame_count)
 {
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   GList *template_stream, *audio_signal_stream, *audio_signal_stream_end;
   signed short *template_buffer, *audio_signal_buffer;
   guint template_size;
@@ -1475,7 +1580,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   guint k, k_end;
   gboolean alloc_buffer;
   
-  soundcard = AGS_SOUNDCARD(audio_signal->soundcard);
+  soundcard = audio_signal->soundcard;
 
   audio_signal_stream = NULL;
   template_stream = template->stream_beginning;
@@ -1592,7 +1697,8 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   audio_signal_stream = g_list_reverse(audio_signal_stream);
 
   if(audio_signal->stream_beginning != NULL){
-    ags_list_free_and_free_link(audio_signal->stream_beginning);
+    g_list_free_full(audio_signal->stream_beginning,
+		     g_free);
   }
 
   audio_signal->stream_beginning = audio_signal_stream;
@@ -2038,7 +2144,6 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
   }
 
   scale_factor = 1.0 / template->length * length;
-  //FIXME:JK: use enumeration
   morph_factor = 1.0 / template->format * audio_signal->format;
 
   /* prepare destination */
@@ -2197,6 +2302,79 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 
     if(template_k == template->buffer_size){
       source = source->next;
+    }
+  }
+}
+
+/**
+ * ags_audio_signal_envelope:
+ * @audio_signal:
+ * @attack:
+ * @decay:
+ * @sustain:
+ * @release:
+ * @ratio:
+ *
+ * Envelope audio signal.
+ *
+ * Since: 0.6.7
+ */
+void
+ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
+			  gdouble attack,
+			  gdouble decay,
+			  gdouble sustain,
+			  gdouble release,
+			  gdouble ratio)
+{
+  GList *stream;
+  
+  signed short *buffer;
+  gdouble volume;
+  guint frame_count, current_frame_count;
+  guint i, j, k;
+  
+  if(ratio == 0.0){
+    return;
+  }
+
+  stream = audio_signal->stream_beginning;
+  buffer = stream->data;
+  
+  frame_count = audio_signal->buffer_size * audio_signal->length - (audio_signal->buffer_size - audio_signal->last_frame);
+
+  for(j = 0, k = 0; j < 4; j++){
+    for(i = 0; ratio * (k + i) < (1.0 / ratio) * (frame_count / 4.0); i++, k++){
+      if(k != 0 && k % audio_signal->buffer_size == 0){
+	stream = stream->next;
+	buffer = stream->data;
+      }
+
+      switch(j){
+      case 0:
+	{
+	  volume = (1.0 / (k - i)) / (attack / (k - i));
+	}
+	break;
+      case 1:
+	{
+	  volume = (1.0 / (k - i)) / (decay / (k - i));
+	}
+	break;
+      case 2:
+	{
+	  volume = (1.0 / (k - i)) / (sustain / (k - i));
+	}
+	break;
+      case 3:
+	{
+	  volume = (1.0 / (k - i)) / (release / (k - i));
+	}
+	break;
+      }
+
+      *buffer = (signed short) (volume * buffer[0]);
+      buffer++;
     }
   }
 }

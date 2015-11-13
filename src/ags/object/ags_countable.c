@@ -22,6 +22,18 @@
 
 void ags_countable_base_init(AgsCountableInterface *interface);
 
+/**
+ * SECTION:ags_countable
+ * @short_description: a counter interface
+ * @title: AgsCountable
+ * @section_id:
+ * @include: ags/object/ags_countable.h
+ *
+ * The #AgsCountable interface gives you a unique access to counters. Generally we
+ * distinguish between notation and sequencer counters. Those may have their own
+ * relative positions, especially the sequencers may loop.
+ */
+
 GType
 ags_countable_get_type()
 {

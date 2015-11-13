@@ -1,26 +1,25 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/audio/midi/ags_midi_parser.h>
-#include <ags/object/ags_marshal.h>
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <ags/object/ags_marshal.h>
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -60,14 +59,12 @@ xmlNode* ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint st
 xmlNode* ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status);
 xmlNode* ags_midi_parser_real_sequence_number(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_end_of_track(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_real_smpte(AgsMidiParser *midi_parser, guint meta_type);
+xmlNode* ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta_type);
 xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type);
-
-#define AGS_MIDI_PARSER_MAX_TEXT_LENGTH (4096)
 
 #define AGS_MIDI_EVENT "event\0"
 
@@ -83,7 +80,7 @@ xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_
 
 enum{
   PROP_0,
-  PROP_FD,
+  PROP_FILE,
 };
 
 enum{
@@ -105,7 +102,7 @@ enum{
   META_EVENT,
   SEQUENCE_NUMBER,
   END_OF_TRACK,
-  SMPTE,
+  SMTPE,
   TEMPO,
   TIME_SIGNATURE,
   KEY_SIGNATURE,
@@ -160,27 +157,26 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
   gobject->finalize = ags_midi_parser_finalize;
 
   /**
-   * AgsMidiParser:dsp-channels:
+   * AgsMidiParser:file:
    *
-   * The dsp channel count
+   * The file to parse data from.
    * 
    * Since: 0.4.2
    */
-  param_spec = g_param_spec_int("fd\0",
-				"the file descriptor fd\0",
-				"The file to parse as fd\0",
-				-1,
-				G_MAXINT,
-				-1,
-				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("file\0",
+				    "the file stream\0",
+				    "The file stream to parse\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_FD,
+				  PROP_FILE,
 				  param_spec);
 
   /* AgsMidiParser */
   midi_parser->midi_getc = ags_midi_parser_real_midi_getc;
   midi_parser->on_error = ags_midi_parser_real_on_error;
 
+  midi_parser->parse_full = ags_midi_parser_real_parse_full;
+  
   midi_parser->parse_header = ags_midi_parser_real_parse_header;
   midi_parser->parse_track = ags_midi_parser_real_parse_track;
 
@@ -199,23 +195,23 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
   midi_parser->meta_event = ags_midi_parser_real_meta_event;
   midi_parser->sequence_number = ags_midi_parser_real_sequence_number;
   midi_parser->end_of_track = ags_midi_parser_real_end_of_track;
-  midi_parser->smpte = ags_midi_parser_real_smpte;
+  midi_parser->smtpe = ags_midi_parser_real_smtpe;
   midi_parser->tempo = ags_midi_parser_real_tempo;
   midi_parser->time_signature = ags_midi_parser_real_time_signature;
   midi_parser->key_signature = ags_midi_parser_real_key_signature;
   midi_parser->sequencer_meta_event = ags_midi_parser_real_sequencer_meta_event;
   midi_parser->text_event = ags_midi_parser_real_text_event;
 
-  midi_parser->parse_full = ags_midi_parser_real_parse_full;
-  
   /* signals */
   /**
    * AgsMidiParser::midi-getc:
    * @midi_parser: the parser
    *
-   * Returns: The XML node representing the event
-   *
    * The ::midi-getc signal is emited during parsing of event.
+   *
+   * Returns: The character read
+   *
+   * Since: 0.5.0
    */
   midi_parser_signals[MIDI_GETC] =
     g_signal_new("midi-getc\0",
@@ -230,9 +226,9 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::on-error:
    * @midi_parser: the parser
    *
-   * Returns: The XML node representing the event
+   * The ::on-error signal is emited as error occurs.
    *
-   * The ::on-error signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[ON_ERROR] =
     g_signal_new("on-error\0",
@@ -240,17 +236,39 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, on_error),
 		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
+
+
+  /**
+   * AgsMidiParser::parse-full:
+   * @midi_parser: the parser
+   *
+   * The ::parse-full signal is emited during parsing of midi file.
+   *
+   * Returns: The XML node representing the event
+   *
+   * Since: 0.5.0
+   */
+  midi_parser_signals[PARSE_FULL] =
+    g_signal_new("parse-full\0",
+		 G_TYPE_FROM_CLASS(midi_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_full),
+		 NULL, NULL,
 		 g_cclosure_user_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
-
 
   /**
    * AgsMidiParser::parse-header:
    * @midi_parser: the parser
    *
+   * The ::parse-header signal is emited during parsing of header.
+   *
    * Returns: The XML node representing the header
    *
-   * The ::parse-header signal is emited during parsing of header.
+   * Since: 0.5.0
    */
   midi_parser_signals[PARSE_HEADER] =
     g_signal_new("parse-header\0",
@@ -265,9 +283,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::parse-track:
    * @midi_parser: the parser
    *
+   * The ::parse-track signal is emited during parsing of track.
+   *
    * Returns: The XML node representing the track
    *
-   * The ::parse-track signal is emited during parsing of track.
+   * Since: 0.5.0
    */
   midi_parser_signals[PARSE_TRACK] =
     g_signal_new("parse-track\0",
@@ -282,9 +302,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::key-on:
    * @midi_parser: the parser
    *
+   * The ::key-on signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::key-on signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[KEY_ON] =
     g_signal_new("key-on\0",
@@ -300,9 +322,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::key-off:
    * @midi_parser: the parser
    *
+   * The ::key-off signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::key-off signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[KEY_OFF] =
     g_signal_new("key-off\0",
@@ -318,9 +342,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::key-pressure:
    * @midi_parser: the parser
    *
+   * The ::key-pressure signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::key-pressure signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[KEY_PRESSURE] =
     g_signal_new("key-pressure\0",
@@ -336,9 +362,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::change-parameter:
    * @midi_parser: the parser
    *
+   * The ::change-parameter signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::change-parameter signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[CHANGE_PARAMETER] =
     g_signal_new("change-parameter\0",
@@ -354,9 +382,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::change-pitch-bend:
    * @midi_parser: the parser
    *
+   * The ::change-pitch-bend signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::change-pitch-bend signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[CHANGE_PITCH_BEND] =
     g_signal_new("change-pitch-bend\0",
@@ -372,9 +402,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::change-program:
    * @midi_parser: the parser
    *
+   * The ::change-program signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::change-program signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program\0",
@@ -390,9 +422,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::change-channel-pressure:
    * @midi_parser: the parser
    *
+   * The ::change-channel-pressure signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::change-channel-pressure signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[CHANGE_CHANNEL_PRESSURE] =
     g_signal_new("change-channel-pressure\0",
@@ -408,9 +442,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::not-defined:
    * @midi_parser: the parser
    *
+   * The ::not-defined signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::not-defined signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[NOT_DEFINED] =
     g_signal_new("not-defined\0",
@@ -426,9 +462,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::sysex:
    * @midi_parser: the parser
    *
+   * The ::sysex signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::sysex signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[SYSEX] =
     g_signal_new("sysex\0",
@@ -444,9 +482,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::system-common:
    * @midi_parser: the parser
    *
+   * The ::system-common signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::system-common signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[SYSTEM_COMMON] =
     g_signal_new("system-common\0",
@@ -462,9 +502,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::meta-event:
    * @midi_parser: the parser
    *
+   * The ::meta-event signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::meta-event signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[META_EVENT] =
     g_signal_new("meta-event\0",
@@ -480,9 +522,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::sequence-number:
    * @midi_parser: the parser
    *
+   * The ::sequence-number signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::sequence-number signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[SEQUENCE_NUMBER] =
     g_signal_new("sequence-number\0",
@@ -498,9 +542,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::end-of-track:
    * @midi_parser: the parser
    *
+   * The ::end-of-track signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::end-of-track signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[END_OF_TRACK] =
     g_signal_new("end-of-track\0",
@@ -513,18 +559,20 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiParser::smpte:
+   * AgsMidiParser::smtpe:
    * @midi_parser: the parser
+   *
+   * The ::smtpe signal is emited during parsing of event.
    *
    * Returns: The XML node representing the event
    *
-   * The ::smpte signal is emited during parsing of event.
+   * Since: 0.5.0
    */
-  midi_parser_signals[SMPTE] =
-    g_signal_new("smpte\0",
+  midi_parser_signals[SMTPE] =
+    g_signal_new("smtpe\0",
 		 G_TYPE_FROM_CLASS(midi_parser),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiParserClass, smpte),
+		 G_STRUCT_OFFSET(AgsMidiParserClass, smtpe),
 		 NULL, NULL,
 		 g_cclosure_user_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
@@ -534,9 +582,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::tempo:
    * @midi_parser: the parser
    *
+   * The ::tempo signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::tempo signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[TEMPO] =
     g_signal_new("tempo\0",
@@ -552,9 +602,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::time-signature:
    * @midi_parser: the parser
    *
+   * The ::time-signature signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::time-signature signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[TIME_SIGNATURE] =
     g_signal_new("time-signature\0",
@@ -570,9 +622,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::key-signature:
    * @midi_parser: the parser
    *
+   * The ::key-signature signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::key-signature signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[KEY_SIGNATURE] =
     g_signal_new("key-signature\0",
@@ -588,9 +642,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::sequencer-meta-event:
    * @midi_parser: the parser
    *
+   * The ::sequencer-meta-event signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::sequencer-meta-event signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[SEQUENCER_META_EVENT] =
     g_signal_new("sequencer-meta-event\0",
@@ -606,9 +662,11 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    * AgsMidiParser::text-event:
    * @midi_parser: the parser
    *
+   * The ::text-event signal is emited during parsing of event.
+   *
    * Returns: The XML node representing the event
    *
-   * The ::text-event signal is emited during parsing of event.
+   * Since: 0.5.0
    */
   midi_parser_signals[TEXT_EVENT] =
     g_signal_new("text-event\0",
@@ -619,23 +677,6 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 g_cclosure_user_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
-
-  /**
-   * AgsMidiParser::parse-full:
-   * @midi_parser: the parser
-   *
-   * Returns: The XML node representing the event
-   *
-   * The ::parse-full signal is emited during parsing of midi file.
-   */
-  midi_parser_signals[PARSE_FULL] =
-    g_signal_new("parse-full\0",
-		 G_TYPE_FROM_CLASS(midi_parser),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_full),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
-		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -650,6 +691,8 @@ ags_midi_parser_init(AgsMidiParser *midi_parser)
   midi_parser->offset = 0;
 
   midi_parser->current_time = 0;
+
+  midi_parser->doc = NULL;
 }
 
 void
@@ -663,6 +706,11 @@ ags_midi_parser_set_property(GObject *gobject,
   midi_parser = AGS_MIDI_PARSER(gobject);
   
   switch(prop_id){
+  case PROP_FILE:
+    {
+      midi_parser->file = g_value_get_pointer(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -680,6 +728,11 @@ ags_midi_parser_get_property(GObject *gobject,
   midi_parser = AGS_MIDI_PARSER(gobject);
   
   switch(prop_id){
+  case PROP_FILE:
+    {
+      g_value_set_pointer(value,
+			  midi_parser->file);
+    }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -763,7 +816,7 @@ ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
       i++;
     }while(c & 0x80);
   }
-
+  
   return(value);
 }
 
@@ -771,7 +824,7 @@ gchar*
 ags_midi_parser_read_text(AgsMidiParser *midi_parser,
 			  gint length)
 {
-  gchar text[AGS_MIDI_PARSER_MAX_TEXT_LENGTH];
+  gchar text[AGS_MIDI_PARSER_MAX_TEXT_LENGTH + 1];
   gchar c;
   guint i;
 
@@ -779,7 +832,7 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
   i = 0;
   
   while((length <= 0 ||
-	 i < length) && (c = (char) 0xff & ags_midi_parser_midi_getc(midi_parser)) != EOF){
+	 i < length) && (c = (char) 0xff & (ags_midi_parser_midi_getc(midi_parser))) != EOF){
     if(c == '\0' || !(g_ascii_isalnum(c) ||
 		      g_ascii_ispunct(c) ||
 		      c == ' ')){
@@ -806,13 +859,13 @@ ags_midi_parser_ticks_to_sec(AgsMidiParser *midi_parser,
 	      (gdouble) (division * 1000000.0);
     return(retval);
   }else{
-    gdouble smpte_format, smpte_resolution;
+    gdouble smtpe_format, smtpe_resolution;
 
-    smpte_format = (gdouble) ((0xff00 & division) >> 8);
-    smpte_resolution = (gdouble) (0xff & division);
+    smtpe_format = (gdouble) ((0xff00 & division) >> 8);
+    smtpe_resolution = (gdouble) (0xff & division);
 
     retval = (((gdouble) ticks) /
-	      (gdouble) (smpte_format * smpte_resolution * 1000000.0));
+	      (gdouble) (smtpe_format * smtpe_resolution * 1000000.0));
     
     return(retval);
   }
@@ -866,6 +919,7 @@ void
 ags_midi_parser_real_on_error(AgsMidiParser *midi_parser,
 			      GError **error)
 {
+  //TODO:JK: implement me
 }
 
 xmlDoc*  
@@ -891,22 +945,26 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   xmlNode *root_node;
   xmlNode *tracks_node;
   xmlNode *current;
-  
-  GError *error;
-  
-  doc = xmlNewDoc("1.0\0");
+
+  /* create xmlDoc and set root node */
+  midi_parser->doc = 
+    doc = xmlNewDoc("1.0\0");
   root_node = xmlNewNode(NULL, "midi\0");
   xmlDocSetRootElement(doc, root_node);
 
+  /* create tracks node */
   tracks_node = xmlNewNode(NULL, "midi-tracks\0");
 
-  error = NULL;
-
+  /* parse header */
   current = ags_midi_parser_parse_header(midi_parser);
   xmlAddChild(root_node,
 	      current);
-  g_message("parsed header\0");
 
+#ifdef AGS_DEBUG
+  g_message("parsed header\0");
+#endif
+
+  /* parse tracks */
   xmlAddChild(root_node,
 	      tracks_node);
   
@@ -916,12 +974,13 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
     if(current != NULL){
       xmlAddChild(tracks_node,
 		  current);
+#ifdef AGS_DEBUG
       g_message("parsed track\0");
+#endif
     }else{
       g_warning("skipped input\0");
     }
   }
-
 
   return(doc);
 }
@@ -948,15 +1007,16 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   xmlNode *node;
 
   static gchar header[] = "MThd";
+  guint offset;
   guint format;
   guint count;
   guint division;
-  guint offset;
   guint times;
   guint beat, clicks;
   guint n;
   gchar c;
-  
+
+  /* read header */
   n = 0;
   
   while(n < 4 &&
@@ -973,6 +1033,7 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   node = xmlNewNode(NULL,
 		    "midi-header\0");
 
+  /* get some values */
   offset = (guint) ags_midi_parser_read_gint32(midi_parser);
   format = (guint) ags_midi_parser_read_gint16(midi_parser);
   count = (guint) ags_midi_parser_read_gint16(midi_parser);
@@ -983,7 +1044,7 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
 	     g_strdup_printf("%d\0", format));
 
   if(division & 0x8000){
-    /* SMPTE */
+    /* SMTPE */
     times = 0; /* Can't do beats */
 
     xmlNewProp(node,
@@ -996,8 +1057,9 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
   }
   
   if(format > 2){
-    fprintf(stderr, "Can't deal with format %d files\n", format);
-    exit(-1);
+    g_warning("Can't deal with format %d files\n", format);
+
+    return(NULL);
   }
   
   beat =
@@ -1061,7 +1123,11 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
   node = xmlNewNode(NULL, "midi-track\0");
 
   offset = ags_midi_parser_read_gint32(midi_parser);
+
+#ifdef DEBUG
   g_message("n = %d\noffset = %d\0", n, offset);
+#endif
+  
   start_offset = ftell(midi_parser->file);
 
   if(offset < 0){
@@ -1089,10 +1155,14 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 		    current);
       }
       
+#ifdef DEBUG
       g_message("channel message");
+#endif
     }else{
+#ifdef DEBUG
       g_message("status message");
-
+#endif
+      
       switch(status){
       case 0xf0:
 	{
@@ -1115,7 +1185,9 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
       case 0xf7:
 	{
 	  /* sysex continuation or arbitrary stuff */
+#ifdef DEBUG
 	  g_message("sysex end\0");
+#endif
 	}
 	break;
       case 0xff:
@@ -1642,7 +1714,9 @@ ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status)
   while((c = ags_midi_parser_midi_getc(midi_parser)) != 0xf7 &&
 	c != EOF);
 
+#ifdef DEBUG
   g_message("discarded sysex\0");
+#endif
 }
 
 xmlNode*
@@ -1695,17 +1769,23 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
     break;
   case 0xf4:
     {
+#ifdef DEBUG
       g_message("undefined\0");
+#endif
     }
     break;
   case 0xf5:
     {
+#ifdef DEBUG
       g_message("undefined\0");
+#endif
     }
     break;
   case 0xf6:
     {
+#ifdef DEBUG
       g_message("tune request\0");
+#endif
     }
     break;
   }
@@ -1805,7 +1885,7 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
       c = ags_midi_parser_midi_getc(midi_parser);
 
       if(c == 0x05){
-	node = ags_midi_parser_smpte(midi_parser, meta_type);
+	node = ags_midi_parser_smtpe(midi_parser, meta_type);
       }
     }
     break;
@@ -1846,7 +1926,9 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
     }
   }
 	
+#ifdef DEBUG
   g_message("meta type 0x%x\0", meta_type);
+#endif
   
   return(node);
 }
@@ -1940,7 +2022,7 @@ ags_midi_parser_end_of_track(AgsMidiParser *midi_parser, guint meta_type)
 }
 
 xmlNode*  
-ags_midi_parser_real_smpte(AgsMidiParser *midi_parser, guint meta_type)
+ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
   int hr, mn, se, fr, ff;
@@ -1956,7 +2038,7 @@ ags_midi_parser_real_smpte(AgsMidiParser *midi_parser, guint meta_type)
   
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
-	     "smpte\0");
+	     "smtpe\0");
   
   xmlNewProp(node,
 	     "timestamp\0",
@@ -1966,7 +2048,7 @@ ags_midi_parser_real_smpte(AgsMidiParser *midi_parser, guint meta_type)
 }
 
 xmlNode*  
-ags_midi_parser_smpte(AgsMidiParser *midi_parser, guint meta_type)
+ags_midi_parser_smtpe(AgsMidiParser *midi_parser, guint meta_type)
 {
   xmlNode *node;
   
@@ -1974,7 +2056,7 @@ ags_midi_parser_smpte(AgsMidiParser *midi_parser, guint meta_type)
   
   g_object_ref((GObject *) midi_parser);
   g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[SMPTE], 0,
+		midi_parser_signals[SMTPE], 0,
 		meta_type,
 		&node);
   g_object_unref((GObject *) midi_parser);
@@ -2234,9 +2316,9 @@ ags_midi_parser_new(FILE *file)
   struct stat sb;
   
   midi_parser = (AgsMidiParser *) g_object_new(AGS_TYPE_MIDI_PARSER,
+					       "file\0", file,
 					       NULL);
 
-  midi_parser->file = file;
   
   return(midi_parser);
 }

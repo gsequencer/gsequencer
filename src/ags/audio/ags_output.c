@@ -143,7 +143,7 @@ ags_output_disconnect(AgsConnectable *connectable)
 GList*
 ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
 {
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
   AgsAudioSignal *audio_signal;
   GList *list_destination;
 
@@ -153,7 +153,7 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
   }else
     return(NULL);
 
-  soundcard = AGS_SOUNDCARD(AGS_AUDIO(AGS_CHANNEL(output)->audio)->soundcard);
+  soundcard = AGS_CHANNEL(output)->soundcard;
   
   while(output != NULL){
     list_destination->next = g_list_alloc();
