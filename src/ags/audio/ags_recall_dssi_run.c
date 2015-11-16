@@ -45,6 +45,7 @@ void ags_recall_dssi_run_finalize(GObject *gobject);
 void ags_recall_dssi_run_run_init_pre(AgsRecall *recall);
 void ags_recall_dssi_run_run_pre(AgsRecall *recall);
 void ags_recall_dssi_run_run_inter(AgsRecall *recall);
+void ags_recall_dssi_run_run_post(AgsRecall *recall);
 
 void ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run);
 
@@ -126,6 +127,7 @@ ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run)
   recall->run_init_pre = ags_recall_dssi_run_run_init_pre;
   recall->run_pre = ags_recall_dssi_run_run_pre;
   recall->run_inter = ags_recall_dssi_run_run_inter;
+  recall->run_post = ags_recall_dssi_run_run_post;
 }
 
 
@@ -147,8 +149,15 @@ ags_recall_dssi_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_dssi_run_init(AgsRecallDssiRun *recall_dssi_run)
 {
+  recall_dssi_run->ladspa_handle = NULL;
+
   recall_dssi_run->input = NULL;
   recall_dssi_run->output = NULL;
+
+  recall_dssi_run->delta_time = 0;
+  
+  recall_dssi_run->event_buffer = NULL;
+  recall_dssi_run->event_count = NULL;
 }
 
 void
@@ -264,6 +273,10 @@ ags_recall_dssi_run_run_inter(AgsRecall *recall)
   AgsRecallDssi *recall_dssi;
   AgsRecallDssiRun *recall_dssi_run;
   AgsAudioSignal *audio_signal;
+
+  snd_midi_event_t **event_buffer;
+  unsigned long *event_count;
+  
   unsigned long buffer_size;
   unsigned long i;
 
@@ -301,8 +314,25 @@ ags_recall_dssi_run_run_inter(AgsRecall *recall)
 
   /* process data */
   for(i = 0; i < recall_dssi->input_lines; i++){
-    recall_dssi->plugin_descriptor->LADSPA_Plugin->run(recall_dssi_run->ladspa_handle[i],
-						       buffer_size);
+    if(recall_dssi->plugin_descriptor->run_synth != NULL){
+      if(recall_dssi_run->event_buffer != NULL){
+	event_buffer = recall_dssi_run->event_buffer;
+	event_count = recall_dssi_run->event_count;
+      
+	while(*event_buffer != NULL){
+	  recall_dssi->plugin_descriptor->run_synth(recall_dssi_run->ladspa_handle[i],
+						    buffer_size,
+						    *(event_count),
+						    *(event_buffer));
+
+	  event_buffer++;
+	  event_count++;
+	}
+      }
+    }else if(recall_dssi->plugin_descriptor->LADSPA_Plugin->run != NULL){
+      recall_dssi->plugin_descriptor->LADSPA_Plugin->run(recall_dssi_run->ladspa_handle[i],
+							 buffer_size);
+    }
   }
 
   /* copy data */
@@ -312,6 +342,38 @@ ags_recall_dssi_run_run_inter(AgsRecall *recall)
   ags_recall_dssi_float_to_short(recall_dssi_run->output,
 				 audio_signal->stream_current->data,
 				 (guint) audio_signal->buffer_size, (guint) recall_dssi->output_lines);
+}
+
+void
+ags_recall_dssi_run_run_post(AgsRecall *recall)
+{
+  AgsRecallDssiRun *recall_dssi_run;
+
+  recall_dssi_run = AGS_RECALL_DSSI_RUN(recall);
+
+  if(recall_dssi_run->event_buffer != NULL){
+    snd_seq_event_t **event_buffer;
+
+    /* free events */
+    event_buffer = recall_dssi_run->event_buffer;
+
+    while(*event_buffer != NULL){
+      snd_midi_event_free(*event_buffer);
+      
+      event_buffer++;
+    }
+    
+    /* free array */
+    free(recall_dssi_run->event_buffer);
+    
+    recall_dssi_run->event_buffer = NULL;
+  }
+
+  if(recall_dssi_run->event_count != NULL){
+    free(recall_dssi_run->event_count);
+    
+    recall_dssi_run->event_count = NULL;
+  }
 }
 
 /**

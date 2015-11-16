@@ -1,0 +1,15 @@
+
+long ags_midi_util_envelope_to_velocity(AgsComplex *attack,
+					AgsComplex *decay,
+					AgsComplex *sustain,
+					AgsComplex *release,
+					AgsComplex *ratio,
+					guint samplerate,
+					guint start_frame, guint end_frame);
+long ags_midi_util_envelope_to_pressure(AgsComplex *attack,
+					AgsComplex *decay,
+					AgsComplex *sustain,
+					AgsComplex *release,
+					AgsComplex *ratio,
+					guint samplerate,
+					guint start_frame, guint end_frame);

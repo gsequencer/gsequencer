@@ -46,6 +46,11 @@ struct _AgsRecallDssiRun
 
   LADSPA_Data *input;
   LADSPA_Data *output;
+
+  long delta_time;
+  
+  snd_seq_event_t **event_buffer;
+  unsigned long *event_count;
 };
 
 struct _AgsRecallDssiRunClass

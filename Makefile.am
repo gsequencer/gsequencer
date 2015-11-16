@@ -507,6 +507,8 @@ deprecated_libags_audio_midi_h_sources =
 
 libags_audio_midi_h_sources = \
 	$(deprecated_libags_audio_midi_h_sources) \
+	src/ags/audio/midi/ags_midi_buffer_util.h \
+	src/ags/audio/midi/ags_midi_util.h \
 	src/ags/audio/midi/ags_midi_builder.h \
 	src/ags/audio/midi/ags_midi_file.h \
 	src/ags/audio/midi/ags_midi_parser.h \
@@ -517,6 +519,8 @@ deprecated_libags_audio_midi_c_sources =
 
 libags_audio_midi_c_sources = \
 	$(deprecated_libags_audio_midi_c_sources) \
+	src/ags/audio/midi/ags_midi_buffer_util.c \
+	src/ags/audio/midi/ags_midi_util.c \
 	src/ags/audio/midi/ags_midi_builder.c \
 	src/ags/audio/midi/ags_midi_file.c \
 	src/ags/audio/midi/ags_midi_parser.c \
