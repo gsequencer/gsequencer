@@ -223,6 +223,8 @@ ags_note_find_next(GList *note,
 /**
  * ags_note_to_seq_event:
  * @note: the #AgsNote
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
  * @buffer_length: the length of the returned buffer
  * 
  * Convert @note to raw MIDI and set the buffer length of returned bytes
@@ -232,22 +234,159 @@ ags_note_find_next(GList *note,
  *
  * Since: 0.7.1
  */
-char*
+unsigned char*
 ags_note_to_raw_midi(AgsNote *note,
+		     gdouble bpm, gdouble delay_factor,
 		     guint *buffer_length)
 {
-  char *raw_midi;
+  unsigned char *raw_midi;
+  guint length;
+  guint current_length;
+  long delta_time;
+  guint delta_time_length;
+  unsigned char status;
+  int channel;
+  int key;
+  int velocity;
+  int pressure;
+  gdouble ticks_per_beat;
+  guint i, i_stop;
+  guint j;
+  guint k;
+  
+  if(note == NULL){
+    if(buffer_length != NULL){
+      *buffer_length = 0;
+    }
+    
+    return(NULL);
+  }
 
-  raw_midi = NULL;
+  length = 0;
 
-  //TODO:JK: implement me
+  /* key-on */
+  k = 0;
+  
+  /* delta-time */
+  delta_time = note->x[0] / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
+  delta_time_length = 
+    current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
 
+  /* status and channel */
+  channel = 0;
+  status = (0x90 | (0x7f & channel));
+  current_length++;
+
+  /* note / key */
+  key = (0x7f & (note->y));
+  current_length++;
+
+  /* velocity */
+  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(note->attack))));
+  current_length++;
+
+  /* prepare buffer */
+  raw_midi = (unsigned char *) malloc(current_length * sizeof(unsigned char));
+  length += current_length;
+
+  ags_midi_buffer_util_put_varlength(raw_midi,
+				     delta_time);
+  k += delta_time_length;
+  
+  raw_midi[k] = status;
+  raw_midi[k + 1] = key;
+  raw_midi[k + 2] = velocity;
+
+  k += 3;
+
+  /* key-pressure */
+  ticks_per_beat = AGS_NOTE_DEFAULT_TICKS_PER_QUARTER_NOTE / 4.0 / delay_factor;
+
+  if(ticks_per_beat > 2.0){
+    i_stop = (note->x[1] - note->x[0]) * (ticks_per_beat - 2.0);
+
+    for(i = 1; i <= i_stop; i++){
+      /* delta-time */
+      delta_time = (note->x[0] + i + 1)  / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
+      delta_time_length = 
+	current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
+
+      /* status and channel */
+      channel = 0;
+      status = (0x90 | (0x7f & channel));
+      current_length++;
+
+      /* note / key */
+      key = (0x7f & (note->y));
+      current_length++;
+
+      /* pressure */
+      //TODO:JK: verify
+      pressure = (0x7f & (unsigned char) (128 * (((ags_complex_get(note->decay) / i) - (i * ags_complex_get(note->sustain))))));
+      current_length++;
+
+      /* prepare buffer */
+      raw_midi = (unsigned char *) realloc(raw_midi,
+					   current_length * sizeof(unsigned char));
+      length += current_length;
+
+      ags_midi_buffer_util_put_varlength(raw_midi,
+					 delta_time);
+      k += delta_time_length;
+  
+      raw_midi[k] = status;
+      raw_midi[k + 1] = key;
+      raw_midi[k + 2] = pressure;
+
+      k += 3;
+    }
+  }
+
+  /* key-off */
+  /* delta-time */
+  delta_time = note->x[1] / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
+  delta_time_length = 
+    current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
+
+  /* status and channel */
+  channel = 0;
+  status = (0x90 | (0x7f & channel));
+  current_length++;
+
+  /* note / key */
+  key = (0x7f & (note->y));
+  current_length++;
+
+  /* velocity */
+  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(note->attack))));
+  current_length++;
+
+  /* prepare buffer */
+  raw_midi = (unsigned char *) realloc(raw_midi,
+				       current_length * sizeof(unsigned char));
+  length += current_length;
+
+  ags_midi_buffer_util_put_varlength(raw_midi,
+				     delta_time);
+  k += delta_time_length;
+  
+  raw_midi[k] = status;
+  raw_midi[k + 1] = key;
+  raw_midi[k + 2] = velocity;
+
+  /* return value */
+  if(buffer_length != NULL){
+    *buffer_length = length;
+  }
+  
   return(raw_midi);
 }
 
 /**
  * ags_note_to_seq_event:
  * @note: the #AgsNote
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
  * @n_events: the count of events
  * 
  * Convert @note to ALSA sequencer events and set the number of events
@@ -259,10 +398,13 @@ ags_note_to_raw_midi(AgsNote *note,
  */
 snd_seq_event_t*
 ags_note_to_seq_event(AgsNote *note,
+		      gdouble bpm, gdouble delay_factor,
 		      guint *n_events)
 {
   snd_seq_event_t *event;
 
+
+  
   event = NULL;
   
   //TODO:JK: implement me
@@ -273,6 +415,8 @@ ags_note_to_seq_event(AgsNote *note,
 /**
  * ags_note_from_raw_midi:
  * @raw_midi: the data array
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
  * @length: the length of the array
  *
  * Parse @raw_midi data and convert to #AgsNote.
@@ -282,7 +426,8 @@ ags_note_to_seq_event(AgsNote *note,
  * Since: 0.7.1
  */
 GList*
-ags_note_from_raw_midi(char *raw_midi,
+ags_note_from_raw_midi(unsigned char *raw_midi,
+		       gdouble bpm, gdouble delay_factor,
 		       guint length)
 {
   GList *list;
@@ -297,6 +442,8 @@ ags_note_from_raw_midi(char *raw_midi,
 /**
  * ags_note_from_seq_event:
  * @event: ALSA sequencer events as array
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
  * @n_events: the arrays length
  *
  * Convert ALSA sequencer data @event to #AgsNote.
@@ -307,6 +454,7 @@ ags_note_from_raw_midi(char *raw_midi,
  */
 GList*
 ags_note_from_seq_event(snd_seq_event_t *event,
+			gdouble bpm, gdouble delay_factor,
 			guint n_events)
 {
   GList *list;
