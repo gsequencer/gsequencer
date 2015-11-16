@@ -24,6 +24,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
@@ -649,7 +650,7 @@ void
 ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
-  AgsChannel *channel, *current;
+  AgsChannel *channel, *selected_channel;
   AgsNote *note;
   AgsRecallDssiRun *recall_dssi_run;
 
@@ -757,11 +758,14 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
   while(list_note != NULL){
     note = AGS_NOTE(list_note->data);
 
-    current = ags_channel_pad_nth(channel,
-				  note->y);
+    if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+      selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
+    }else{
+      selected_channel = ags_channel_pad_nth(channel, note->y);
+    }
 
-    if(current != NULL){
-      list_recall = current->recall;
+    if(selected_channel != NULL){
+      list_recall = selected_channel->recall;
 
       while((list_recall = ags_recall_find_type_with_recycling_context(list_recall,
 								       AGS_TYPE_RECALL_DSSI_RUN,
@@ -795,7 +799,7 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 	  seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
 
 	  seq_length = ags_midi_buffer_util_get_varlength_size(route_dssi_audio_run->delta_time);
-	  start_frame = (count_beats_audio_run->notation_counter * notation_delay * buffer_length) + delay_audio_run->notation_counter * buffer_length;
+	  start_frame = ((((count_beats_audio_run->notation_counter - note->x[0]) * notation_delay) + delay_audio_run->notation_counter) * buffer_length);
 	  end_frame = start_frame + buffer_length;
 	  
 	  velocity = ags_midi_util_envelope_to_velocity(note->attack,
@@ -813,12 +817,16 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 	  seq_length += 3;
 	  
 	  snd_midi_event_encode(parser, &buffer, seq_length, seq_event);
+
+	  /* remove note */
+	  route_dssi_audio_run->feed_midi = g_list_remove(route_dssi_audio_run->feed_midi,
+							  note);
 	}else{
 	  /* key pressure */
 	  seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
 
 	  seq_length = ags_midi_buffer_util_get_varlength_size(route_dssi_audio_run->delta_time);
-	  start_frame = (count_beats_audio_run->notation_counter * notation_delay * buffer_length) + delay_audio_run->notation_counter * buffer_length;
+	  start_frame = ((((count_beats_audio_run->notation_counter - note->x[0]) * notation_delay) + delay_audio_run->notation_counter) * buffer_length);
 	  end_frame = start_frame + buffer_length;
 	  
 	  pressure = ags_midi_util_envelope_to_pressure(note->attack,
@@ -852,13 +860,149 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 					      gdouble delay, guint attack,
 					      AgsRouteDssiAudioRun *route_dssi_audio_run)
 {
-  //TODO:JK: implement me
+  GObject *soundcard;
+  AgsAudio *audio;
+  AgsChannel *selected_channel, *channel, *next_pad;
+  AgsNotation *notation;
+  AgsNote *note;
+
+  AgsRouteDssiAudio *route_dssi_audio;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+  
+  GList *current_position;
+  GList *list;
+
+  guint audio_channel;
+  guint i;
+  gchar *str;
+  
+  GValue value = {0,};
+
+  pthread_mutex_t *application_mutex;
+  
+  route_dssi_audio = AGS_ROUTE_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(route_dssi_audio_run)->recall_audio);
+
+  audio = AGS_RECALL_AUDIO(route_dssi_audio)->audio;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  //FIXME:JK: nth_run isn't best joice
+  audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
+  
+  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+    channel = ags_channel_nth(audio->input,
+			      audio_channel);
+  }else{
+    channel = ags_channel_nth(audio->output,
+			      audio_channel);
+  }
+  
+  /*  */  
+  //TODO:JK: make it advanced
+  notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
+    //						   timestamp_thread->timestamp)->data);
+
+  current_position = notation->notes; // start_loop
+  
+  while(current_position != NULL){
+    if(current_position != NULL){
+      note = AGS_NOTE(current_position->data);
+    
+      if(note->x[0] == route_dssi_audio_run->count_beats_audio_run->notation_counter){
+	/* prepend note */
+	route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
+							 note);
+      }else if(note->x[0] > route_dssi_audio_run->count_beats_audio_run->notation_counter){
+	break;
+      }
+    }
+    
+    current_position = current_position->next;
+  }
 }
 
 void
 ags_route_dssi_audio_run_run_post(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  AgsDelayAudio *delay_audio;
+  AgsDelayAudioRun *delay_audio_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  AgsRouteDssiAudioRun *route_dssi_audio_run;
+
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+  AgsSoundcard *soundcard;
+  
+  AgsMutexManager *mutex_manager;
+ 
+  gchar *str;
+  guint samplerate;
+  guint buffer_length;
+  gdouble bpm;
+  gdouble notation_delay;
+  gdouble x;
+  
+  pthread_mutex_t *application_mutex;
+
+  GValue value = {0,};
+  
+  route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(recall);
+  
+  delay_audio_run = route_dssi_audio_run->delay_audio_run;
+  delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio);
+  
+  count_beats_audio_run = route_dssi_audio_run->count_beats_audio_run;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio;
+  
+  soundcard = (GObject *) audio->soundcard;
+
+  /* read config */
+  config = ags_config_get_instance();
+
+  pthread_mutex_lock(application_mutex);
+
+  bpm = ags_soundcard_get_bpm(soundcard);
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  buffer_length = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+  free(str);
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+  samplerate = g_ascii_strtoull(str,
+				NULL,
+				10);
+  free(str);
+
+  pthread_mutex_unlock(application_mutex);
+  
+  /* get notation delay */
+  g_value_init(&value, G_TYPE_DOUBLE);
+
+  ags_port_safe_read(delay_audio->notation_delay, &value);
+
+  notation_delay = g_value_get_double(&value);
+
+  /*  */
+  x = (((count_beats_audio_run->notation_counter * notation_delay) + delay_audio_run->notation_counter) * buffer_length);
+  
+  route_dssi_audio_run->delta_time = x / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
 }
 
 void
