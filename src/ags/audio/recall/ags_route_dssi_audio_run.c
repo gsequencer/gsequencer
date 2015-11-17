@@ -238,10 +238,10 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
 void
 ags_route_dssi_audio_run_init(AgsRouteDssiAudioRun *route_dssi_audio_run)
 {
-  AGS_RECALL(route_dssi_audio_run)->name = "ags-play-notation\0";
+  AGS_RECALL(route_dssi_audio_run)->name = "ags-route-dssi\0";
   AGS_RECALL(route_dssi_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(route_dssi_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(route_dssi_audio_run)->xml_type = "ags-play-notation-audio-run\0";
+  AGS_RECALL(route_dssi_audio_run)->xml_type = "ags-route-dssi-audio-run\0";
   AGS_RECALL(route_dssi_audio_run)->port = NULL;
 
   route_dssi_audio_run->delay_audio_run = NULL;

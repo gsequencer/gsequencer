@@ -228,10 +228,10 @@ ags_route_lv2_audio_run_class_init(AgsRouteLv2AudioRunClass *route_lv2_audio_run
 void
 ags_route_lv2_audio_run_init(AgsRouteLv2AudioRun *route_lv2_audio_run)
 {
-  AGS_RECALL(route_lv2_audio_run)->name = "ags-play-notation\0";
+  AGS_RECALL(route_lv2_audio_run)->name = "ags-route-lv2\0";
   AGS_RECALL(route_lv2_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(route_lv2_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
-  AGS_RECALL(route_lv2_audio_run)->xml_type = "ags-play-notation-audio-run\0";
+  AGS_RECALL(route_lv2_audio_run)->xml_type = "ags-route-lv2-audio-run\0";
   AGS_RECALL(route_lv2_audio_run)->port = NULL;
 
   route_lv2_audio_run->delay_audio_run = NULL;
