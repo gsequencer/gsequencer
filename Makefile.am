@@ -587,6 +587,8 @@ libags_audio_recall_h_sources = \
 	src/ags/audio/recall/ags_peak_channel.h \
 	src/ags/audio/recall/ags_peak_channel_run.h \
 	src/ags/audio/recall/ags_peak_recycling.h \
+	src/ags/audio/recall/ags_perform_automation_audio.h \
+	src/ags/audio/recall/ags_perform_automation_audio_run.h \
 	src/ags/audio/recall/ags_play_audio_file.h \
 	src/ags/audio/recall/ags_play_audio.h \
 	src/ags/audio/recall/ags_play_audio_signal.h \
@@ -651,6 +653,8 @@ libags_audio_recall_c_sources = \
 	src/ags/audio/recall/ags_peak_channel.c \
 	src/ags/audio/recall/ags_peak_channel_run.c \
 	src/ags/audio/recall/ags_peak_recycling.c \
+	src/ags/audio/recall/ags_perform_automation_audio.c \
+	src/ags/audio/recall/ags_perform_automation_audio_run.c \
 	src/ags/audio/recall/ags_play_audio.c \
 	src/ags/audio/recall/ags_play_audio_file.c \
 	src/ags/audio/recall/ags_play_audio_signal.c \
