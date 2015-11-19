@@ -325,6 +325,14 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     FALSE, FALSE,
 		     0);
 
+  /* insensitive for alsa */
+  gtk_widget_set_sensitive(midi_dialog->connection_name,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->add,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->remove,
+			   FALSE);
+
   /* GtkButton's in GtkDialog->action_area  */
   midi_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
@@ -509,6 +517,8 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 				str,
 				4)){
     find_type = AGS_TYPE_JACK_MIDIIN;
+  }else{
+    find_type = G_TYPE_NONE;
   }
 
   while(list != NULL){
@@ -520,7 +530,7 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
     }else if(g_type_is_a(G_OBJECT_TYPE(list->data),
 			 find_type)){
       sequencer = list->data;
-      
+	
       break;
     }
     

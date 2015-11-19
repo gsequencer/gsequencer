@@ -280,10 +280,13 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
 							 FALSE);
-  xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
-						       sequencer);
-  g_object_ref(G_OBJECT(sequencer));
 
+  if(sequencer != NULL){
+    xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
+							 sequencer);
+    g_object_ref(G_OBJECT(sequencer));
+  }
+  
   /* AgsWindow */
   window = ags_window_new(xorg_application_context);
   g_object_set(window,

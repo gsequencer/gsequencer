@@ -669,7 +669,7 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  GList *list_note;
+  GList *list_note, *list_note_start;
   GList *list_recall;
 
   snd_midi_event_t *parser;
@@ -749,8 +749,10 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
   }
 
   /* feed MIDI to AgsRecallDssiRun */
-  list_note = route_dssi_audio_run->feed_midi;
-
+  list_note_start = 
+    list_note = route_dssi_audio_run->feed_midi;
+  route_dssi_audio_run->feed_midi = NULL;
+  
   snd_midi_event_new(32,
 		     &parser);
   snd_midi_event_init(parser);
@@ -852,6 +854,9 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
     
     list_note = list_note->next;
   }
+
+  /* free note feed */
+  g_list_free(list_note_start);
 }
 
 void

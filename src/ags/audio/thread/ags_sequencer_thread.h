@@ -56,9 +56,13 @@ struct _AgsSequencerThread
 struct _AgsSequencerThreadClass
 {
   AgsThreadClass thread;
+
+  void (*interval_timeout)(AgsSequencerThread *sequencer_thread);
 };
 
 GType ags_sequencer_thread_get_type();
+
+void ags_sequencer_thread_interval_timeout(AgsSequencerThread *sequencer_thread);
 
 AgsSequencerThread* ags_sequencer_thread_new(GObject *sequencer);
 
