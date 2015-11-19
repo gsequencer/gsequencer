@@ -60,13 +60,20 @@ void ags_sequencer_stopped_all_callback(AgsAudioLoop *audio_loop,
  * The #AgsSequencerThread acts as midi input thread.
  */
 
-static gpointer ags_sequencer_thread_parent_class = NULL;
-static AgsConnectableInterface *ags_sequencer_thread_parent_connectable_interface;
+enum{
+  INTERVAL_TIMEOUT,
+  LAST_SIGNAL,
+};
 
 enum{
   PROP_0,
   PROP_SEQUENCER,
 };
+
+static gpointer ags_sequencer_thread_parent_class = NULL;
+static AgsConnectableInterface *ags_sequencer_thread_parent_connectable_interface;
+
+static guint sequencer_thread_signals[LAST_SIGNAL];
 
 GType
 ags_sequencer_thread_get_type()
@@ -144,6 +151,19 @@ ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread)
   thread->start = ags_sequencer_thread_start;
   thread->run = ags_sequencer_thread_run;
   thread->stop = ags_sequencer_thread_stop;
+
+  /* AgsSequencerThread */
+  sequencer_thread->interval_timeout = NULL;
+
+  /* signals */
+  sequencer_thread_signals[INTERVAL_TIMEOUT] = 
+    g_signal_new("interval-timeout\0",
+		 G_TYPE_FROM_CLASS(sequencer_thread),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsSequencerThreadClass, interval_timeout),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -311,9 +331,12 @@ ags_sequencer_thread_run(AgsThread *thread)
 			 &error);
     
     if(error != NULL){
-      //TODO:JK: implement me
+      g_warning("ags_sequencer_thread - %s\0", error->message);
     }
   }
+
+  /* notify about time exceeded */
+  ags_sequencer_thread_interval_timeout(sequencer_thread);
 }
 
 void
@@ -341,6 +364,17 @@ ags_sequencer_stopped_all_callback(AgsAudioLoop *audio_loop,
   if(ags_sequencer_is_recording(sequencer)){
     ags_thread_stop((AgsThread *) sequencer_thread);
   }
+}
+
+void
+ags_sequencer_thread_interval_timeout(AgsSequencerThread *sequencer_thread)
+{
+  g_return_if_fail(AGS_IS_SEQUENCER_THREAD(sequencer_thread));
+
+  g_object_ref((GObject *) sequencer_thread);
+  g_signal_emit(G_OBJECT(sequencer_thread),
+		sequencer_thread_signals[INTERVAL_TIMEOUT], 0);
+  g_object_unref((GObject *) sequencer_thread);
 }
 
 /**

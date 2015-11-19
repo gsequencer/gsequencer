@@ -84,7 +84,7 @@ void ags_midiin_list_cards(AgsSequencer *sequencer,
 			   GList **card_id, GList **card_name);
 
 gboolean ags_midiin_is_starting(AgsSequencer *sequencer);
-gboolean ags_midiin_is_playing(AgsSequencer *sequencer);
+gboolean ags_midiin_is_recording(AgsSequencer *sequencer);
 
 void ags_midiin_alsa_init(AgsSequencer *sequencer,
 			  GError **error);
@@ -344,8 +344,8 @@ ags_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->list_cards = ags_midiin_list_cards;
 
   sequencer->is_starting =  ags_midiin_is_starting;
-  sequencer->is_playing = ags_midiin_is_playing;
-  sequencer->is_recording = NULL;
+  sequencer->is_playing = NULL;
+  sequencer->is_recording = ags_midiin_is_recording;
 
   sequencer->play_init = NULL;
   sequencer->play = NULL;
@@ -833,7 +833,7 @@ ags_midiin_is_starting(AgsSequencer *sequencer)
 }
 
 gboolean
-ags_midiin_is_playing(AgsSequencer *sequencer)
+ags_midiin_is_recording(AgsSequencer *sequencer)
 {
   AgsMidiin *midiin;
 
@@ -942,7 +942,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   
   pthread_mutex_unlock(application_context->mutex);
 
-  /* do playback */
+  /* do recording */
   pthread_mutex_lock(mutex);
 
   midiin->flags &= (~AGS_MIDIIN_START_RECORD);
@@ -956,14 +956,17 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   /* get timing */
   delay = midiin->delay;
   time_exceed = (NSEC_PER_SEC / delay) - midiin->latency;
+
+  pthread_mutex_unlock(mutex);
   
   running = TRUE;
-
   
   /* check buffer flag */
   while(running){
+    pthread_mutex_lock(mutex);
+    
     status = 0;
-    status = snd_rawmidi_read(midiin, &c, 1);
+    status = snd_rawmidi_read(midiin->in.alsa.handle, &c, 1);
 
     if((status < 0) && (status != -EBUSY) && (status != -EAGAIN)){
       g_warning("Problem reading MIDI input: %s", snd_strerror(status));
@@ -1018,7 +1021,9 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 	midiin->buffer_size[3]++;
       }
     }
-  
+    
+    pthread_mutex_unlock(mutex);
+      
     clock_gettime(CLOCK_MONOTONIC, &time_now);
 
     if(time_now.tv_sec > time_start.tv_sec){
@@ -1031,6 +1036,8 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
       running = FALSE;
     }
   }
+
+  pthread_mutex_unlock(mutex);  
 
   /* tic */
   ags_sequencer_tic(sequencer);

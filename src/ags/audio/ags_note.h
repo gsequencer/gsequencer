@@ -59,6 +59,9 @@ struct _AgsNote
   guint x[2];
   guint y;
 
+  gdouble stream_delay;
+  gdouble stream_attack;
+  
   AgsComplex attack;
   AgsComplex decay;
   AgsComplex sustain;
@@ -99,5 +102,8 @@ GList* ags_note_from_seq_event(snd_seq_event_t *event,
 AgsNote* ags_note_duplicate(AgsNote *note);
 
 AgsNote* ags_note_new();
+AgsNote* ags_note_new_with_offset(guint x0, guint x1,
+				  guint y,
+				  gdouble stream_delay, gdouble stream_attack);
 
 #endif /*__AGS_NOTE_H__*/
