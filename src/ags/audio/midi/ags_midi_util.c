@@ -89,3 +89,28 @@ ags_midi_util_envelope_to_pressure(AgsComplex *attack,
   return(pressure);
 }
 
+/**
+ * ags_midi_util_delta_time_to_offset:
+ * @delta_time:
+ * @bpm:
+ * @delay_factor:
+ * @delay:
+ * @attack:
+ *
+ *
+ *
+ * Since: 0.7.2
+ */
+guint
+ags_midi_util_delta_time_to_offset(long delta_time,
+				   gdouble bpm, gdouble delay_factor,
+				   gdouble *delay, guint *attack)
+{
+  guint offset;
+  
+  offset = 0;
+
+  //TODO:JK: implement me
+
+  return(offset);
+}

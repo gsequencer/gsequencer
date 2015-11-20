@@ -299,7 +299,8 @@ ags_sequencer_thread_start(AgsThread *thread)
   /* check if already initialized */
   sequencer_thread->error = NULL;
 
-  if(ags_sequencer_get_buffer(sequencer) == NULL){
+  if(ags_sequencer_get_buffer(sequencer,
+			      NULL) == NULL){
     ags_sequencer_record_init(sequencer,
 			    &(sequencer_thread->error));
       

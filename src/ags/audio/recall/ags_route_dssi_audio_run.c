@@ -896,7 +896,6 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  //FIXME:JK: nth_run isn't best joice
   audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
   
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
@@ -915,16 +914,15 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   current_position = notation->notes; // start_loop
   
   while(current_position != NULL){
-    if(current_position != NULL){
-      note = AGS_NOTE(current_position->data);
+    note = AGS_NOTE(current_position->data);
     
-      if(note->x[0] == route_dssi_audio_run->count_beats_audio_run->notation_counter){
-	/* prepend note */
-	route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
-							 note);
-      }else if(note->x[0] > route_dssi_audio_run->count_beats_audio_run->notation_counter){
-	break;
-      }
+    if(note->x[0] == route_dssi_audio_run->count_beats_audio_run->notation_counter &&
+       (guint) floor(note->stream_delay) == (guint) floor(delay)){
+      /* prepend note */
+      route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
+						       note);
+    }else if(note->x[0] > route_dssi_audio_run->count_beats_audio_run->notation_counter){
+      break;
     }
     
     current_position = current_position->next;

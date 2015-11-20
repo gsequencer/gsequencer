@@ -489,6 +489,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   if(delay_audio_run->notation_counter == 0){
     GObject *soundcard;
+    
     guint run_order;
     gdouble delay;
     guint attack;
@@ -511,6 +512,26 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     //	      delay_audio_run,
     //	      run_order);
       
+    /* notation speed */
+    ags_delay_audio_run_notation_alloc_output(delay_audio_run,
+					      run_order,
+					      delay, attack);
+    ags_delay_audio_run_notation_alloc_input(delay_audio_run,
+					     run_order,
+					     delay, attack);
+    ags_delay_audio_run_notation_count(delay_audio_run,
+				       run_order,
+				       delay, attack);
+  }else{
+    guint run_order;
+    gdouble delay;
+    guint attack;
+
+    run_order = 0;
+    
+    delay = (gdouble) delay_audio_run->notation_counter;
+    attack = 0;
+
     /* notation speed */
     ags_delay_audio_run_notation_alloc_output(delay_audio_run,
 					      run_order,
@@ -545,6 +566,27 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     //    g_message("ags_delay_audio_run_run_pre@%llu: alloc sequencer[%u]\0",
     //	      delay_audio_run,
     //	      run_order);
+
+    /* sequencer speed */
+    ags_delay_audio_run_sequencer_alloc_output(delay_audio_run,
+					       run_order,
+					       delay, attack);
+
+    ags_delay_audio_run_sequencer_alloc_input(delay_audio_run,
+					      run_order,
+					      delay, attack);
+    ags_delay_audio_run_sequencer_count(delay_audio_run,
+					run_order,
+					delay, attack);
+  }else{
+    guint run_order;
+    gdouble delay;
+    guint attack;
+
+    run_order = 0;
+    
+    delay = (gdouble) delay_audio_run->sequencer_counter;
+    attack = 0;
 
     /* sequencer speed */
     ags_delay_audio_run_sequencer_alloc_output(delay_audio_run,

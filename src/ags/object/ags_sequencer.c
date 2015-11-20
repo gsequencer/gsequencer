@@ -462,6 +462,7 @@ ags_sequencer_offset_changed(AgsSequencer *sequencer,
 /**
  * ags_sequencer_get_buffer:
  * @sequencer: an #AgsSequencer
+ * @buffer_length: the buffer's length
  *
  * Get current playback buffer. 
  *
@@ -470,7 +471,8 @@ ags_sequencer_offset_changed(AgsSequencer *sequencer,
  * Since: 0.7.0
  */
 void*
-ags_sequencer_get_buffer(AgsSequencer *sequencer)
+ags_sequencer_get_buffer(AgsSequencer *sequencer,
+			 guint *buffer_length)
 {
   AgsSequencerInterface *sequencer_interface;
 
@@ -478,12 +480,14 @@ ags_sequencer_get_buffer(AgsSequencer *sequencer)
   sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
   g_return_val_if_fail(sequencer_interface->get_buffer, NULL);
 
-  return(sequencer_interface->get_buffer(sequencer));
+  return(sequencer_interface->get_buffer(sequencer,
+					 buffer_length));
 }
 
 /**
  * ags_sequencer_get_next_buffer:
  * @sequencer: an #AgsSequencer
+ * @buffer_length: the buffer's length
  *
  * Get future playback buffer.
  *
@@ -492,7 +496,8 @@ ags_sequencer_get_buffer(AgsSequencer *sequencer)
  * Since: 0.7.0
  */
 void*
-ags_sequencer_get_next_buffer(AgsSequencer *sequencer)
+ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
+			      guint *buffer_length)
 {
   AgsSequencerInterface *sequencer_interface;
 
@@ -500,7 +505,8 @@ ags_sequencer_get_next_buffer(AgsSequencer *sequencer)
   sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
   g_return_val_if_fail(sequencer_interface->get_next_buffer, NULL);
 
-  return(sequencer_interface->get_next_buffer(sequencer));
+  return(sequencer_interface->get_next_buffer(sequencer,
+					      buffer_length));
 }
 
 /**
