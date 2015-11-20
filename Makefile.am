@@ -1265,7 +1265,7 @@ gsequencer_c_sources = \
 midi2xml_CFLAGS= $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
-midi2xml_SOURCES = src/ags/midi2xml_main.c src/ags/audio/midi/ags_midi_parser.c src/ags/audio/midi/ags_midi_parser.h src/midi2ags/object/ags_marshal.c src/midi2ags/object/ags_marshal.h
+midi2xml_SOURCES = src/ags/midi2xml_main.c src/ags/audio/midi/ags_midi_parser.c src/ags/audio/midi/ags_midi_parser.h src/ags/object/ags_marshal.c src/ags/object/ags_marshal.h
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool

@@ -2121,7 +2121,7 @@ gsequencer_c_sources = \
 
 midi2xml_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 midi2xml_LDFLAGS = -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-midi2xml_SOURCES = src/ags/midi2xml_main.c src/ags/audio/midi/ags_midi_parser.c src/ags/audio/midi/ags_midi_parser.h src/midi2ags/object/ags_marshal.c src/midi2ags/object/ags_marshal.h
+midi2xml_SOURCES = src/ags/midi2xml_main.c src/ags/audio/midi/ags_midi_parser.c src/ags/audio/midi/ags_midi_parser.h src/ags/object/ags_marshal.c src/ags/object/ags_marshal.h
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -5771,19 +5771,19 @@ midi2xml-ags_midi_parser.obj: src/ags/audio/midi/ags_midi_parser.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-ags_midi_parser.obj `if test -f 'src/ags/audio/midi/ags_midi_parser.c'; then $(CYGPATH_W) 'src/ags/audio/midi/ags_midi_parser.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/midi/ags_midi_parser.c'; fi`
 
-midi2xml-ags_marshal.o: src/midi2ags/object/ags_marshal.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-ags_marshal.o -MD -MP -MF $(DEPDIR)/midi2xml-ags_marshal.Tpo -c -o midi2xml-ags_marshal.o `test -f 'src/midi2ags/object/ags_marshal.c' || echo '$(srcdir)/'`src/midi2ags/object/ags_marshal.c
+midi2xml-ags_marshal.o: src/ags/object/ags_marshal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-ags_marshal.o -MD -MP -MF $(DEPDIR)/midi2xml-ags_marshal.Tpo -c -o midi2xml-ags_marshal.o `test -f 'src/ags/object/ags_marshal.c' || echo '$(srcdir)/'`src/ags/object/ags_marshal.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/midi2xml-ags_marshal.Tpo $(DEPDIR)/midi2xml-ags_marshal.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/midi2ags/object/ags_marshal.c' object='midi2xml-ags_marshal.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/object/ags_marshal.c' object='midi2xml-ags_marshal.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-ags_marshal.o `test -f 'src/midi2ags/object/ags_marshal.c' || echo '$(srcdir)/'`src/midi2ags/object/ags_marshal.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-ags_marshal.o `test -f 'src/ags/object/ags_marshal.c' || echo '$(srcdir)/'`src/ags/object/ags_marshal.c
 
-midi2xml-ags_marshal.obj: src/midi2ags/object/ags_marshal.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-ags_marshal.obj -MD -MP -MF $(DEPDIR)/midi2xml-ags_marshal.Tpo -c -o midi2xml-ags_marshal.obj `if test -f 'src/midi2ags/object/ags_marshal.c'; then $(CYGPATH_W) 'src/midi2ags/object/ags_marshal.c'; else $(CYGPATH_W) '$(srcdir)/src/midi2ags/object/ags_marshal.c'; fi`
+midi2xml-ags_marshal.obj: src/ags/object/ags_marshal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT midi2xml-ags_marshal.obj -MD -MP -MF $(DEPDIR)/midi2xml-ags_marshal.Tpo -c -o midi2xml-ags_marshal.obj `if test -f 'src/ags/object/ags_marshal.c'; then $(CYGPATH_W) 'src/ags/object/ags_marshal.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_marshal.c'; fi`
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/midi2xml-ags_marshal.Tpo $(DEPDIR)/midi2xml-ags_marshal.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/midi2ags/object/ags_marshal.c' object='midi2xml-ags_marshal.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/object/ags_marshal.c' object='midi2xml-ags_marshal.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-ags_marshal.obj `if test -f 'src/midi2ags/object/ags_marshal.c'; then $(CYGPATH_W) 'src/midi2ags/object/ags_marshal.c'; else $(CYGPATH_W) '$(srcdir)/src/midi2ags/object/ags_marshal.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o midi2xml-ags_marshal.obj `if test -f 'src/ags/object/ags_marshal.c'; then $(CYGPATH_W) 'src/ags/object/ags_marshal.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/object/ags_marshal.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

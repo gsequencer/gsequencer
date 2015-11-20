@@ -40,4 +40,8 @@ long ags_midi_util_envelope_to_pressure(AgsComplex *attack,
 					guint samplerate,
 					guint start_frame, guint end_frame);
 
+guint ags_midi_util_delta_time_to_offset(long delta_time,
+					 gdouble bpm, gdouble delay_factor,
+					 gdouble *delay, guint *attack);
+
 #endif /*__AGS_MIDI_UTIL_H__*/

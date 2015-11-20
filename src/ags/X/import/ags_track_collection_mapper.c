@@ -603,12 +603,13 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 			    velocity);
 
 	    ags_notation_add_note(notation->data,
-				  note,
+				  ags_note_duplicate(note),
 				  FALSE);
 	    
 	    notation = notation->next;
 	  }
-	  
+
+	  g_object_unref(note);
 	  n_key_on++;
 	}else if(!xmlStrncmp(xmlGetProp(child,
 					"event\0"),

@@ -102,8 +102,10 @@ void ags_jack_midiin_set_delay_factor(AgsSequencer *sequencer,
 				      gdouble delay_factor);
 gdouble ags_jack_midiin_get_delay_factor(AgsSequencer *sequencer);
 
-void* ags_jack_midiin_get_buffer(AgsSequencer *sequencer);
-void* ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer);
+void* ags_jack_midiin_get_buffer(AgsSequencer *sequencer,
+				 guint *buffer_length);
+void* ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer,
+				      guint *buffer_length);
 
 void ags_jack_midiin_set_note_offset(AgsSequencer *sequencer,
 				     guint note_offset);
@@ -1079,13 +1081,28 @@ ags_jack_midiin_get_delay_factor(AgsSequencer *sequencer)
 }
 
 void*
-ags_jack_midiin_get_buffer(AgsSequencer *sequencer)
+ags_jack_midiin_get_buffer(AgsSequencer *sequencer,
+			   guint *buffer_length)
 {
   AgsJackMidiin *jack_midiin;
   signed short *buffer;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
+  /* get buffer */
+  if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
+    buffer = jack_midiin->buffer[0];
+  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+    buffer = jack_midiin->buffer[1];
+  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+    buffer = jack_midiin->buffer[2];
+  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
+    buffer = jack_midiin->buffer[3];
+  }else{
+    buffer = NULL;
+  }
+  
+  /* return the buffer's length */
   if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
     buffer = jack_midiin->buffer[0];
   }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
@@ -1102,13 +1119,15 @@ ags_jack_midiin_get_buffer(AgsSequencer *sequencer)
 }
 
 void*
-ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer)
+ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer,
+				guint *buffer_length)
 {
   AgsJackMidiin *jack_midiin;
   signed short *buffer;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
+  /* get buffer */
   if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
     buffer = jack_midiin->buffer[1];
   }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
@@ -1120,6 +1139,21 @@ ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer)
   }else{
     buffer = NULL;
   }
+
+  /* return the buffer's length */
+  if(buffer_length != NULL){
+    if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
+      *buffer_length = jack_midiin->buffer_size[1];
+    }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+      *buffer_length = jack_midiin->buffer_size[2];
+    }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+      *buffer_length = jack_midiin->buffer_size[3];
+    }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
+      *buffer_length = jack_midiin->buffer_size[0];
+    }else{
+      *buffer_length = 0;
+    }
+  }  
 
   return(buffer);
 }

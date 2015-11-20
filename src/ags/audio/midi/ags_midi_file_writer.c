@@ -133,6 +133,34 @@ ags_midi_file_writer_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_midi_file_writer_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_midi_file_writer_write_bytes:
+ * @midi_file_writer:
+ * @buffer:
+ * @buffer_length:
+ *
+ * Write @buffer_length count bytes from @buffer to MIDI file.
+ *
+ * Since: 0.7.2
+ */
+void
+ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
+				 unsigned char buffer,
+				 guint buffer_length)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_midi_file_writer_write_channel_message:
+ * @midi_file_writer:
+ * @track_name:
+ * @status:
+ * 
+ * 
+ * 
+ * Since: 0.7.1
+ */
 void
 ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
 					   gchar *track_name,
@@ -141,6 +169,16 @@ ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_file_writer_write_status_message:
+ * @midi_file_writer:
+ * @track_name:
+ * @status:
+ * 
+ * 
+ * 
+ * Since: 0.7.1
+ */
 void
 ags_midi_file_writer_write_status_message(AgsMidiFileWriter *midi_file_writer,
 					  gchar *track_name,
@@ -149,19 +187,24 @@ ags_midi_file_writer_write_status_message(AgsMidiFileWriter *midi_file_writer,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_file_writer_new:
+ * @filename: the filename, may be %NULL
+ * 
+ * Instantiate a new #AgsMidiFileWriter assigned to @filename.
+ * 
+ * Since: 0.7.1
+ */
 AgsMidiFileWriter*
 ags_midi_file_writer_new(gchar *filename)
 {
   AgsMidiFileWriter *midi_file_writer;
 
   midi_file_writer = (AgsMidiFileWriter *) g_object_new(AGS_TYPE_MIDI_FILE_WRITER,
-						  NULL);
-  
-  if(filename != NULL){
-    midi_file_writer->midi_file = g_object_new(AGS_TYPE_MIDI_FILE,
-					       "filename\0", filename,
-					       NULL);
-  }
+							"midi-file\0", g_object_new(AGS_TYPE_MIDI_FILE,
+										    "filename\0", filename,
+										    NULL),
+							NULL);
   
   return(midi_file_writer);
 }

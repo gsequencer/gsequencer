@@ -42,6 +42,9 @@
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
+#include <ags/audio/midi/ags_midi_parser.h>
+#include <ags/audio/midi/ags_midi_file_writer.h>
+
 void ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_audio_run);
 void ags_record_midi_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_record_midi_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -633,7 +636,19 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
     return;
   }
 
-  //TODO:JK: implement me
+  /* midi parser */
+  if(record_midi_audio_run->midi_parser != NULL){
+    g_object_unref(record_midi_audio_run->midi_parser);
+  }
+
+  record_midi_audio_run->midi_parser = ags_midi_parser_new(NULL);
+  
+  /* midi file writer */
+  if(record_midi_audio_run->midi_file_writer != NULL){
+    g_object_unref(record_midi_audio_run->midi_file_writer);
+  }
+  
+  record_midi_audio_run->midi_file_writer = ags_midi_file_writer_new(NULL);
   
   AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_init_pre(recall);
 }
@@ -642,19 +657,138 @@ void
 ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
+  
   AgsRecordMidiAudio *record_midi_audio;
   AgsRecordMidiAudioRun *record_midi_audio_run;
-  
+  AgsDelayAudioRun *delay_audio_run;
+  AgsDelayAudioRun *count_beats_audio_run;
+
   AgsSequencer *sequencer;
 
-  char *midi_buffer;
+  GList *feed_midi;
+  
+  unsigned char *midi_buffer;
   gboolean playback, record;
-
+  guint audio_channel;
+  guint buffer_length;
+  
   GValue value = {0,};
+
+  auto GList* ags_record_midi_audio_run_parse_node(xmlNode *node);
+
+  GList* ags_record_midi_audio_run_parse_node(xmlNode *node){
+    AgsNote *note;
+    
+    xmlNode *child;
+    
+    GList *list, *child_list;
+    
+    guint x, y;
+    guint velocity, pressure;
+    
+    list = NULL;
+    child_list = NULL;
+
+    if(!xmlStrncmp(xmlGetProp(child,
+			      "event\0"),
+		   "note-on\0",
+		   8)){
+      x = count_beats_audio_run->notation_counter;
+      y = (guint) g_ascii_strtoull(xmlGetProp(child,
+					      "note\0"),
+				   NULL,
+				   10);
+      velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
+						     "velocity\0"),
+					  NULL,
+					  10);
+	  
+      note = ags_note_new();
+      note->x[0] = x;
+      note->x[1] = x + 64;
+      note->y = y;
+      //TODO:JK: enhance me
+      ags_complex_set(note->attack,
+		      velocity);
+
+      list = g_list_prepend(list,
+			    note);
+    }else if(!xmlStrncmp(xmlGetProp(child,
+				    "event\0"),
+			 "note-off\0",
+			 9)){	  
+      x = count_beats_audio_run->notation_counter;
+      y = (guint) g_ascii_strtoull(xmlGetProp(child,
+					      "note\0"),
+				   NULL,
+				   10);
+      velocity = (guint) g_ascii_strtoull(xmlGetProp(child,
+						     "velocity\0"),
+					  NULL,
+					  10);
+	  
+
+      note = ags_note_find_prev(list,
+				x, y);
+	    
+      note->x[1] = x;
+      note->y = y;
+      //TODO:JK: enhance me
+      ags_complex_set(note->release,
+		      velocity);
+    }else if(!xmlStrncmp(xmlGetProp(child,
+				    "event\0"),
+			 "polyphonic\0",
+			 9)){	  
+      x = count_beats_audio_run->notation_counter;
+      y = (guint) g_ascii_strtoull(xmlGetProp(child,
+					      "note\0"),
+				   NULL,
+				   10);
+      pressure = (guint) g_ascii_strtoull(xmlGetProp(child,
+						     "pressure\0"),
+					  NULL,
+					  10);
+      
+      note = ags_note_find_prev(list,
+				x, y);
+	    
+      note->x[1] = x + 64;
+      note->y = y;
+      //TODO:JK: enhance me
+      ags_complex_set(note->sustain,
+		      pressure);
+    }
+
+    /* parse children */
+    child = node->children;
+
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	child_list = ags_record_midi_audio_run_parse_node(child);
+
+	if(child_list != NULL){
+	  if(list != NULL){
+	    list = g_list_concat(list,
+				 child_list);
+	  }else{
+	    list = child_list;
+	  }
+	}
+      }
+
+      child = child->next;
+    }
+
+    return(list);
+  }
   
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
   record_midi_audio = AGS_RECORD_MIDI_AUDIO(recall);
 
+  delay_audio_run = record_midi_audio_run->delay_audio_run;
+  count_beats_audio_run = record_midi_audio_run->count_beats_audio_run;
+  
   audio = AGS_RECALL_AUDIO(record_midi_audio)->audio;
   sequencer = audio->sequencer;
 
@@ -662,8 +796,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     return;
   }
   
-  midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(sequencer));
-
+  audio_channel = AGS_CHANNEL(AGS_RECYCLING(recall->recall_id->recycling)->channel)->audio_channel;
+  
   /* get mode */
   g_value_init(&value,
 	       G_TYPE_BOOLEAN);
@@ -678,14 +812,55 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   record = g_value_get_boolean(&value);
 
+  /* retrieve buffer */
+  midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(sequencer),
+					 &buffer_length);
+  
   /* playback */
-  if(playback){
-    //TODO:JK: implement me
-  }
+  if(midi_buffer != NULL){
+    if(playback){
+      xmlNode *node;
 
-  /* record */
-  if(record){
-    //TODO:JK: implement me
+      GList *notation;
+      GList *note;
+      
+      gdouble delay;
+      gdouble attack;
+
+      /* parse sequencer data */
+      node = ags_midi_parser_parse_bytes(record_midi_audio_run->midi_parser,
+					 midi_buffer,
+					 buffer_length);
+      
+      xmlFreeNode(node);
+
+      /* feed midi */
+      delay = (gdouble) delay_audio_run->notation_counter;
+      attack = 0;
+
+      note = ags_record_midi_audio_run_parse_node(node);
+
+      while(note != NULL){
+	notation = audio->notation;
+
+	while(notation != NULL){
+	  ags_notation_add_note(notation->data,
+				ags_note_duplicate(note->data),
+				FALSE);
+
+	  notation = notation->next;
+	}
+	
+	note = note->next;
+      }
+    }
+
+    /* record */
+    if(record){
+      ags_midi_file_writer_write_bytes(record_midi_audio_run->midi_file_writer,
+				       midi_buffer,
+				       buffer_length);
+    }
   }
 
   AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_pre(recall);

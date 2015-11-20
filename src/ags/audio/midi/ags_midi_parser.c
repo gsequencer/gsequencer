@@ -87,6 +87,7 @@ enum{
   MIDI_GETC,
   ON_ERROR,
   PARSE_FULL,
+  PARSE_BYTES,
   PARSE_HEADER,
   PARSE_TRACK,
   KEY_ON,
@@ -259,6 +260,29 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 NULL, NULL,
 		 g_cclosure_user_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsMidiParser::parse-bytes:
+   * @midi_parser: the parser
+   * @buffer: the MIDI data
+   * @buffer_length: the buffer's length
+   *
+   * The ::parse-bytes signal is emited during parsing of bytes.
+   *
+   * Returns: The XML node representing the event
+   *
+   * Since: 0.7.2
+   */
+  midi_parser_signals[PARSE_BYTES] =
+    g_signal_new("parse-bytes\0",
+		 G_TYPE_FROM_CLASS(midi_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_bytes),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__POINTER_UINT,
+		 G_TYPE_POINTER, 2,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 
   /**
    * AgsMidiParser::parse-header:
@@ -983,6 +1007,20 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   }
 
   return(doc);
+}
+
+xmlNode*
+ags_midi_parser_parse_bytes(AgsMidiParser *midi_parser,
+			    unsigned char *midi_buffer,
+			    guint buffer_length)
+{
+  xmlNode *node;
+
+  node = NULL;
+  
+  //TODO:JK: implement me
+
+  return(node);
 }
 
 xmlNode*  
