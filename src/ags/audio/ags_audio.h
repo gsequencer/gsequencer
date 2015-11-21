@@ -60,9 +60,11 @@ struct _AgsAudio
   GObject *sequencer;
   GObject *midi_file;
   
+  guint samplerate;
+  guint buffer_size;
   guint sequence_length;
+
   guint audio_channels;
-  guint frequence;
 
   guint output_pads;
   guint output_lines;
@@ -70,6 +72,9 @@ struct _AgsAudio
   guint input_pads;
   guint input_lines;
 
+  guint audio_mapping;
+  guint midi_mapping;
+  
   AgsChannel *output;
   AgsChannel *input;
 
