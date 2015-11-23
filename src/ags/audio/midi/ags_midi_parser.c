@@ -1162,7 +1162,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 
   offset = ags_midi_parser_read_gint32(midi_parser);
 
-#ifdef DEBUG
+#ifdef AGS_DEBUG
   g_message("n = %d\noffset = %d\0", n, offset);
 #endif
   
@@ -1193,11 +1193,11 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 		    current);
       }
       
-#ifdef DEBUG
+#ifdef AGS_DEBUG
       g_message("channel message");
 #endif
     }else{
-#ifdef DEBUG
+#ifdef AGS_DEBUG
       g_message("status message");
 #endif
       
@@ -1223,7 +1223,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
       case 0xf7:
 	{
 	  /* sysex continuation or arbitrary stuff */
-#ifdef DEBUG
+#ifdef AGS_DEBUG
 	  g_message("sysex end\0");
 #endif
 	}
@@ -1964,7 +1964,7 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
     }
   }
 	
-#ifdef DEBUG
+#ifdef AGS_DEBUG
   g_message("meta type 0x%x\0", meta_type);
 #endif
   
