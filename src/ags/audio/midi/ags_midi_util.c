@@ -55,6 +55,37 @@ ags_midi_util_envelope_to_velocity(AgsComplex *attack,
 }
 
 /**
+ * ags_midi_util_velocity_to_envelope:
+ * @delta_time:
+ * @is_release:
+ * @attack:
+ * @decay:
+ * @sustain:
+ * @release:
+ * @ratio:
+ * @samplerate
+ * @start_frame:
+ * @end_frame:
+ *
+ *
+ *
+ * Since: 0.7.2
+ */
+void
+ags_midi_util_velocity_to_envelope(long delta_time,
+				   gboolean is_release,
+				   AgsComplex **attack,
+				   AgsComplex **decay,
+				   AgsComplex **sustain,
+				   AgsComplex **release,
+				   AgsComplex **ratio,
+				   guint *samplerate,
+				   guint *start_frame, guint *end_frame)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_midi_util_envelope_to_pressure:
  * @attack:
  * @decay:
@@ -90,6 +121,37 @@ ags_midi_util_envelope_to_pressure(AgsComplex *attack,
 }
 
 /**
+ * ags_midi_util_pressure_to_envelope:
+ * @delta_time:
+ * @is_sustain:
+ * @attack:
+ * @decay:
+ * @sustain:
+ * @release:
+ * @ratio:
+ * @samplerate:
+ * @start_frame:
+ * @end_frame:
+ *
+ *
+ *
+ * Since: 0.7.2
+ */
+void
+ags_midi_util_pressure_to_envelope(long delta_time,
+				   gboolean is_sustain,
+				   AgsComplex **attack,
+				   AgsComplex **decay,
+				   AgsComplex **sustain,
+				   AgsComplex **release,
+				   AgsComplex **ratio,
+				   guint *samplerate,
+				   guint *start_frame, guint *end_frame)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_midi_util_delta_time_to_offset:
  * @delta_time:
  * @bpm:
@@ -113,4 +175,21 @@ ags_midi_util_delta_time_to_offset(long delta_time,
   //TODO:JK: implement me
 
   return(offset);
+}
+
+/**
+ * ags_midi_util_offset_to_delta_time:
+ * @x:
+ * @bpm:
+ * @delay_factor:
+ *
+ *
+ *
+ * Since: 0.7.2
+ */
+long
+ags_midi_util_offset_to_delta_time(guint x,
+				   gdouble bpm, gdouble delay_factor)
+{
+  //TODO:JK: implement me
 }

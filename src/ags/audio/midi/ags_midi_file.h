@@ -86,10 +86,10 @@ struct _AgsMidiFile
   FILE *file;
   gchar *filename;
   
-  char *buffer;
+  unsigned char *buffer;
   guint buffer_length;
 
-  char *iter;
+  unsigned char *iter;
   
   guint offset;
   guint format;
@@ -114,21 +114,21 @@ struct _AgsMidiFileTrack
   GObject *sequencer;
 
   gchar *track_name;
-  char *buffer;
+  unsigned char *buffer;
 };
 
 GType ags_midi_file_get_type(void);
 
 gboolean ags_midi_file_open(AgsMidiFile *midi_file);
 gboolean ags_midi_file_open_from_data(AgsMidiFile *midi_file,
-				      char *data, guint buffer_length);
+				      unsigned char *data, guint buffer_length);
 gboolean ags_midi_file_rw_open(AgsMidiFile *midi_file);
 
 void ags_midi_file_close(AgsMidiFile *midi_file);
 
 gchar* ags_midi_file_read(AgsMidiFile *midi_file);
 void ags_midi_file_write(AgsMidiFile *midi_file,
-			 char *data, guint buffer_length);
+			 unsigned char *data, guint buffer_length);
 void ags_midi_file_seek(AgsMidiFile *midi_file, guint position, gint whence);
 void ags_midi_file_flush(AgsMidiFile *midi_file);
 
@@ -146,17 +146,15 @@ void ags_midi_file_write_varlength(AgsMidiFile *midi_file, long val);
 void ags_midi_file_write_text(AgsMidiFile *midi_file,
 			      gchar *text, guint length);
 
-char* ags_midi_file_read_header(AgsMidiFile *midi_file,
-				guint *buffer_length);
+unsigned char* ags_midi_file_read_header(AgsMidiFile *midi_file,
+					 guint *buffer_length);
 void ags_midi_file_write_header(AgsMidiFile *midi_file,
-				char *data, guint buffer_length);
+				unsigned char *buffer, guint buffer_length);
 
-gchar* ags_midi_file_read_track_data(AgsMidiFile *midi_file,
-				     char **buffer,
-				     guint *buffer_length);
+unsigned char* ags_midi_file_read_track_data(AgsMidiFile *midi_file,
+					     guint *buffer_length);
 void ags_midi_file_write_track_data(AgsMidiFile *midi_file,
-				    gchar *track_name,
-				    char *data, guint buffer_length);
+				    unsigned char *buffer, guint buffer_length);
 
 AgsMidiFile* ags_midi_file_new(gchar *filename);
 
