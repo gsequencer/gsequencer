@@ -816,9 +816,20 @@ void
 ags_midi_builder_real_on_error(AgsMidiBuilder *midi_builder,
 			       GError **error)
 {
-  //TODO:JK: implement me
+  if(error != NULL){
+    g_warning("%s\0", error);
+  }
 }
 
+/**
+ * ags_midi_builder_on_error:
+ * @midi_builder: the #AgsMidiBuilder
+ * @error: the error
+ *
+ * Triggered as an error occurs.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,
 			  GError **error)
@@ -842,6 +853,21 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_header:
+ * @midi_builder: the #AgsMidiBuilder
+ * @offset: start delta-time
+ * @format: either 0, 1 or 2.
+ * @track_count: the number of tracks
+ * @division: timing division
+ * @times: pulse per quarter note
+ * @bpm: beats per minute
+ * @clicks: timing clicks
+ *
+ * Appends MIDI header to @midi_builder.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_header(AgsMidiBuilder *midi_builder,
 			       guint offset, guint format,
@@ -868,6 +894,15 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_track:
+ * @midi_builder: the #AgsMidiBuilder
+ * @track_name: the track name
+ *
+ * Append a track called @track_name to @midi_builder.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_track(AgsMidiBuilder *midi_builder,
 			      gchar *track_name)
@@ -891,6 +926,18 @@ ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_key_on:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: delta-time
+ * @audio_channel: the audio channel
+ * @note: the note to play from 0 to 128
+ * @velocity: key dynamics
+ *
+ * Append key-on for @note to @midi_builder with key dynamics @velocity, at @delta_time.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_key_on(AgsMidiBuilder *midi_builder,
 			       guint delta_time,
@@ -920,6 +967,18 @@ ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_key_off:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: delta-time
+ * @audio_channel: the audio channel
+ * @note: the note to play from 0 to 128
+ * @velocity: key dynamics
+ *
+ * Append key-off for @note to @midi_builder with key dynamics @velocity, at @delta_time.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_key_off(AgsMidiBuilder *midi_builder,
 				guint delta_time,
@@ -949,6 +1008,19 @@ ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+
+/**
+ * ags_midi_builder_append_key_pressure:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: delta-time
+ * @audio_channel: the audio channel
+ * @note: the note to play from 0 to 128
+ * @velocity: key dynamics
+ *
+ * Append key-pressure for @note to @midi_builder with key dynamics @pressure, at @delta_time.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_key_pressure(AgsMidiBuilder *midi_builder,
 				     guint delta_time,
@@ -978,6 +1050,18 @@ ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_change_parameter:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @channel:
+ * @control:
+ * @value:
+ *
+ *
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_change_parameter(AgsMidiBuilder *midi_builder,
 					 guint delta_time,
@@ -1007,6 +1091,14 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_change_pitch_bend:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @channel:
+ *
+ *
+ */
 void
 ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 					  guint delta_time,
@@ -1035,6 +1127,17 @@ ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_change_program:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @channel:
+ * @program:
+ *
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
 				       guint delta_time,
@@ -1061,6 +1164,17 @@ ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_change_pressure:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @channel:
+ * @pressure:
+ *
+ *
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
 					guint delta_time,
@@ -1086,6 +1200,17 @@ ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_sysex:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @sysex_data:
+ * @length:
+ *
+ *
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_sysex(AgsMidiBuilder *midi_builder,
 			      guint delta_time,
@@ -1110,6 +1235,17 @@ ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_quarter_frame:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @message_type:
+ * @values:
+ *
+ *
+ * 
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_quarter_frame(AgsMidiBuilder *midi_builder,
 				      guint delta_time,
@@ -1134,6 +1270,16 @@ ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_song_position:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @song_position:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_song_position(AgsMidiBuilder *midi_builder,
 				      guint delta_time,
@@ -1157,6 +1303,16 @@ ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_song_select:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @song_select:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_song_select(AgsMidiBuilder *midi_builder,
 				    guint delta_time,
@@ -1179,6 +1335,15 @@ ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_tune_request:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_tune_request(AgsMidiBuilder *midi_builder,
 				     guint delta_time)
@@ -1200,6 +1365,16 @@ ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_sequence_number:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @sequence:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_sequence_number(AgsMidiBuilder *midi_builder,
 					guint delta_time,
@@ -1223,6 +1398,20 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_smtpe:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @hr:
+ * @mn:
+ * @se:
+ * @fr:
+ * @ff:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
 			      guint delta_time,
@@ -1246,6 +1435,17 @@ ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+
+/**
+ * ags_midi_builder_append_tempo:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @tempo:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
 			      guint delta_time,
@@ -1269,6 +1469,20 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_time_signature:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @nn:
+ * @denom:
+ * @dd:
+ * @cc:
+ * @bb:
+ *
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
 				       guint delta_time,
