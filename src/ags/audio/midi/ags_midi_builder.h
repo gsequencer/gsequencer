@@ -71,23 +71,28 @@ struct _AgsMidiBuilderClass
 		       gchar *track_name);
 
   void (*append_key_on)(AgsMidiBuilder *midi_builder,
+			guint delta_time,
 			guint audio_channel,
 			guint note,
 			guint velocity);
   void (*append_key_off)(AgsMidiBuilder *midi_builder,
+			 guint delta_time,
 			 guint audio_channel,
 			 guint note,
 			 guint velocity);
   void (*append_key_pressure)(AgsMidiBuilder *midi_builder,
+			      guint delta_time,
 			      guint audio_channel,
 			      guint note,
 			      guint pressure);
 
   void (*append_change_parameter)(AgsMidiBuilder *midi_builder,
+				  guint delta_time,
 				  guint channel,
 				  guint control,
 				  guint value);
   void (*append_change_pitch_bend)(AgsMidiBuilder *midi_builder,
+				   guint delta_time,
 				   guint channel,
 				   guint pitch,
 				   guint transmitter);
@@ -95,35 +100,47 @@ struct _AgsMidiBuilderClass
 				guint channel,
 				guint program);
   void (*append_change_pressure)(AgsMidiBuilder *midi_builder,
+				 guint delta_time,
 				 guint channel,
 				 guint pressure);
 
   /* sysex and system common */
   void (*append_sysex)(AgsMidiBuilder *midi_builder,
+		       guint delta_time,
 		       unsigned char *sysex_data, guint length);
 
   void (*append_quarter_frame)(AgsMidiBuilder *midi_builder,
-			       guint quarter_frame);
+			       guint delta_time,
+			       guint message_type,
+			       guint values);
   void (*append_song_position)(AgsMidiBuilder *midi_builder,
+			       guint delta_time,
 			       guint song_position);
   void (*append_song_select)(AgsMidiBuilder *midi_builder,
+			     guint delta_time,
 			     guint song_select);
-  void (*append_tune_request)(AgsMidiBuilder *midi_builder);
+  void (*append_tune_request)(AgsMidiBuilder *midi_builder,
+				 guint delta_time);
   
   /* meta events */
   void (*append_sequence_number)(AgsMidiBuilder *midi_builder,
+				 guint delta_time,
 				 guint sequence);
   void (*append_smtpe)(AgsMidiBuilder *midi_builder,
+		       guint delta_time,
 		       guint hr, guint mn, guint se, guint fr, guint ff);
   void (*append_tempo)(AgsMidiBuilder *midi_builder,
 		       guint tempo);  
   void (*append_time_signature)(AgsMidiBuilder *midi_builder,
+				guint delta_time,
 				guint nn, guint denom, guint dd, guint cc, guint bb);
   void (*append_key_signature)(AgsMidiBuilder *midi_builder,
 			       guint sf, guint mi);
   void (*append_sequencer_meta_event)(AgsMidiBuilder *midi_builder,
+				      guint delta_time,
 				      guint len, guint id, guint data);
   void (*append_text_event)(AgsMidiBuilder *midi_builder,
+			    guint delta_time,
 			    gchar *text, guint length);
 };
 
@@ -163,59 +180,79 @@ void ags_midi_builder_append_track(AgsMidiBuilder *midi_builder,
 				   gchar *track_name);
 
 void ags_midi_builder_append_key_on(AgsMidiBuilder *midi_builder,
+				    guint delta_time,
 				    guint audio_channel,
 				    guint note,
 				    guint velocity);
 void ags_midi_builder_append_key_off(AgsMidiBuilder *midi_builder,
+				     guint delta_time,
 				     guint audio_channel,
 				     guint note,
 				     guint velocity);
 void ags_midi_builder_append_key_pressure(AgsMidiBuilder *midi_builder,
+					  guint delta_time,
 					  guint audio_channel,
 					  guint note,
 					  guint pressure);
 
 void ags_midi_builder_append_change_parameter(AgsMidiBuilder *midi_builder,
+					      guint delta_time,
 					      guint channel,
 					      guint control,
 					      guint value);
 void ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
+					       guint delta_time,
 					       guint channel,
 					       guint pitch,
 					       guint transmitter);
 void ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
+					    guint delta_time,
 					    guint channel,
 					    guint program);
 void ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
+					     guint delta_time,
 					     guint channel,
 					     guint pressure);
 
 /* sysex and system common */
 void ags_midi_builder_append_sysex(AgsMidiBuilder *midi_builder,
+				   guint delta_time,
 				   unsigned char *sysex_data, guint length);
 
 void ags_midi_builder_append_quarter_frame(AgsMidiBuilder *midi_builder,
-					   guint quarter_frame);
+					   guint delta_time,
+					   guint message_type,
+					   guint values);
 void ags_midi_builder_append_song_position(AgsMidiBuilder *midi_builder,
+					   guint delta_time,
 					   guint song_position);
 void ags_midi_builder_append_song_select(AgsMidiBuilder *midi_builder,
+					 guint delta_time,
 					 guint song_select);
-void ags_midi_builder_append_tune_request(AgsMidiBuilder *midi_builder);
+void ags_midi_builder_append_tune_request(AgsMidiBuilder *midi_builder,
+					  guint delta_time);
   
 /* meta events */
 void ags_midi_builder_append_sequence_number(AgsMidiBuilder *midi_builder,
+					     guint delta_time,
 					     guint sequence);
 void ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
+				   guint delta_time,
 				   guint hr, guint mn, guint se, guint fr, guint ff);
 void ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
+				   guint delta_time,
 				   guint tempo);  
 void ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
+					    guint delta_time,
 					    guint nn, guint denom, guint dd, guint cc, guint bb);
 void ags_midi_builder_append_key_signature(AgsMidiBuilder *midi_builder,
+					   guint delta_time,
 					   guint sf, guint mi);
 void ags_midi_builder_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
+						  guint delta_time,
 						  guint len, guint id, guint data);
 void ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
+					guint delta_time,
 					gchar *text, guint length);
 
 /*  */
