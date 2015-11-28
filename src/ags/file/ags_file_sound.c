@@ -1712,7 +1712,8 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 
   if(!recall_type_is_registered){
     ags_main_register_recall_type();
-
+    ags_ladspa_manager_load_default_directory();
+    
     recall_type_is_registered = TRUE;
   }
   
@@ -1872,7 +1873,7 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 
 	ags_plugin_set_ports(AGS_PLUGIN(gobject),
 			     list);
-	gobject->port = list;
+	//	gobject->port = list;
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){

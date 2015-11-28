@@ -419,8 +419,8 @@ ags_line_member_editor_ladspa_browser_response_callback(GtkDialog *dialog,
 		    
 		    dial = (AgsDial *) child_widget;
 		    gtk_widget_set_size_request((GtkWidget *) dial,
-						2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
-						2 * dial->radius + 2 * dial->outline_strength + 1);
+						2 * dial->radius + 2 * (dial->outline_strength + dial->button_width + 4),
+						2 * dial->radius + 2 * (dial->outline_strength + 1));
 		    g_object_set(dial,
 				 "adjustment", adjustment,
 				 NULL);

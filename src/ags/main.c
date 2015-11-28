@@ -463,6 +463,7 @@ void
 ags_main_register_widget_type()
 {
   ags_dial_get_type();
+  gtk_button_get_type();
 }
 
 void

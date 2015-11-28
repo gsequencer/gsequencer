@@ -372,6 +372,12 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
 
+  if(recall_ladspa->filename == NULL || port == NULL){
+    return;
+  }
+
+  AGS_RECALL(recall_ladspa)->port = port;
+    
   ags_ladspa_manager_load_file(recall_ladspa->filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename);
   
@@ -400,10 +406,12 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	    plugin_name = g_strdup_printf("ladspa-%lu\0", plugin_descriptor->UniqueID);
 	    specifier = g_strdup(plugin_descriptor->PortNames[i]);
 
-	    list = port;
+	    list = AGS_RECALL(recall_ladspa)->port;
 	    current = NULL;
 
 	    while(list != NULL){
+	      g_message("%s %s\0", specifier,
+			AGS_PORT(list->data)->specifier);
 	      if(!g_strcmp0(specifier,
 			    AGS_PORT(list->data)->specifier)){
 		current = list->data;
@@ -412,10 +420,12 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 
 	      list = list->next;
 	    }
-	    
-	    current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
 
-	    g_message("connecting port: %d/%d\0", i, port_count);
+	    if(current != NULL){
+	      current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
+	      
+	      g_message("connecting port: %d/%d\0", i, port_count);
+	    }
 	  }
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
@@ -443,8 +453,6 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	  }
 	}
       }
-
-      AGS_RECALL(recall_ladspa)->port = g_list_reverse(port);
     }
   }
 }
@@ -558,6 +566,10 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
 
+  if(recall_ladspa->filename == NULL){
+    return;
+  }
+  
   /*  */
   ags_ladspa_manager_load_file(recall_ladspa->filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename);
@@ -601,6 +613,10 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_PortRangeHintDescriptor hint_descriptor;
 
+  if(recall_ladspa->filename == NULL){
+    return;
+  }
+  
   ags_ladspa_manager_load_file(recall_ladspa->filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename);
   port = NULL;

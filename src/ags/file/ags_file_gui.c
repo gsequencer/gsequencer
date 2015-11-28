@@ -1503,8 +1503,8 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 						NULL,
 						10);
 
-	      gtk_widget_set_size_request(GTK_WIDGET(list->data),
-					  control_width, control_height);
+	      //	      gtk_widget_set_size_request(GTK_WIDGET(list->data),
+	      //			  control_width, control_height);
 	      
 	      /* iterate */
 	      list = list->next;
@@ -1931,8 +1931,8 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
 		 "adjustment\0", adjustment,
 		 NULL);
     gtk_widget_set_size_request((GtkWidget *) dial,
-				2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
-				2 * dial->radius + 2 * dial->outline_strength + 1);
+				2 * dial->radius + 2 * (dial->outline_strength + dial->button_width + 4),
+				2 * dial->radius + 2 * (dial->outline_strength + 1));
   }else if(GTK_IS_SPIN_BUTTON(child_widget)){
     gtk_spin_button_set_digits(GTK_SPIN_BUTTON(child_widget),
 			       3);
@@ -2131,12 +2131,21 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 	     g_strdup_printf("%s\0", g_type_name(line_member->widget_type)));
 
   child_widget = gtk_bin_get_child(GTK_BIN(line_member));
-  
-  label = NULL;
-  g_object_get(G_OBJECT(child_widget),
-	       "label\0", &label,
-	       NULL);
 
+  //TODO:JK: do magic recovery because read of frame didn't exist
+  label = NULL;
+
+  if(g_type_is_a(G_OBJECT_TYPE(child_widget),
+		 GTK_TYPE_BUTTON)){
+    g_object_get(G_OBJECT(child_widget),
+		 "label\0", &label,
+		 NULL);
+  }else{
+    g_object_get(G_OBJECT(line_member),
+		 "label\0", &label,
+		 NULL); 
+  }
+  
   if(label != NULL){
     xmlNewProp(node,
 	       "label\0",
@@ -2185,10 +2194,12 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 					AGS_FILE_TRUE:
 					AGS_FILE_FALSE)));
   }else if(AGS_IS_DIAL(child_widget)){
-    adjustment = AGS_DIAL(child_widget)->adjustment;
+    AgsDial *dial;
+
+    dial = AGS_DIAL(child_widget);
+    adjustment = dial->adjustment;
 
     //TODO:JK: improve dial widget work-around
-    
   }else if(GTK_IS_SPIN_BUTTON(child_widget)){
     adjustment = GTK_SPIN_BUTTON(child_widget)->adjustment;
   }else if(GTK_IS_RANGE(child_widget)){
