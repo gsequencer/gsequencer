@@ -265,12 +265,12 @@ ags_preferences_apply(AgsApplicable *applicable)
 				  "main\0", AGS_MAIN(AGS_WINDOW(preferences->window)->ags_main),
 				  "filename\0", filename,
 				  NULL);
-  ags_file_write_concurrent(file);
+  ags_file_write(file);
   g_object_unref(file);
   
   error = NULL;
 
-  g_spawn_command_line_async(g_strdup_printf("./ags --filename %s\0",
+  g_spawn_command_line_async(g_strdup_printf("gsequencer --filename %s\0",
 					     filename),
 			     &error);
 
