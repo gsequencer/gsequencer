@@ -45,7 +45,7 @@ typedef struct _AgsAutomation AgsAutomation;
 typedef struct _AgsAutomationClass AgsAutomationClass;
 
 typedef enum{
-  AGS_AUTOMATION_BYPASS   = 1,
+  AGS_AUTOMATION_BYPASS               = 1,
 }AgsAutomationFlags;
 
 struct _AgsAutomation
@@ -65,6 +65,8 @@ struct _AgsAutomation
   gdouble upper;
   gdouble lower;
   gdouble default_value;
+
+  AgsFunction *source_function;
   
   GList *acceleration;
 
