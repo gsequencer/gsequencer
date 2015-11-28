@@ -104,7 +104,7 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   GtkImageMenuItem *item;
 
   /* File */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_FILE, NULL);
+  item = (GtkImageMenuItem *) gtk_menu_item_new_with_mnemonic("_File\0");
   gtk_menu_shell_append((GtkMenuShell*) menu_bar, (GtkWidget*) item);
 
   menu_bar->file = (GtkMenu *) gtk_menu_new();

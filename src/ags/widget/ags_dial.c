@@ -643,6 +643,7 @@ ags_dial_realize(GtkWidget *widget)
                             GDK_BUTTON_RELEASE_MASK |
 			    GDK_KEY_PRESS_MASK | 
 			    GDK_KEY_RELEASE_MASK |
+			    GDK_CONTROL_MASK | 
                             GDK_BUTTON1_MOTION_MASK |
                             GDK_BUTTON3_MOTION_MASK |
                             GDK_POINTER_MOTION_HINT_MASK |
@@ -855,7 +856,14 @@ gboolean
 ags_dial_key_press(GtkWidget *widget,
 		   GdkEventKey *event)
 {
-  if(event->keyval == GDK_KEY_Tab){
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
     return(GTK_WIDGET_CLASS(ags_dial_parent_class)->key_press_event(widget, event));
   }
   
@@ -868,7 +876,14 @@ ags_dial_key_release(GtkWidget *widget,
 {
   AgsDial *dial;
   
-  if(event->keyval == GDK_KEY_Tab){
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R){
     return(GTK_WIDGET_CLASS(ags_dial_parent_class)->key_release_event(widget, event));
   }
 
