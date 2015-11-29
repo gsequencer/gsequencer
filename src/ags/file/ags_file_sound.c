@@ -120,9 +120,11 @@ ags_file_read_devout(AgsFile *file, xmlNode *node, AgsDevout **devout)
   gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
 					    NULL,
 					    16);
-  gobject->flags &= (~(AGS_DEVOUT_BUFFER1 |
+  gobject->flags &= (~(AGS_DEVOUT_BUFFER0 |
+		       AGS_DEVOUT_BUFFER1 |
 		       AGS_DEVOUT_BUFFER2 |
 		       AGS_DEVOUT_BUFFER3 |
+		       AGS_DEVOUT_INITIALIZED |
 		       AGS_DEVOUT_PLAY));
 
   str = xmlGetProp(node, "dsp-channels\0");

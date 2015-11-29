@@ -490,6 +490,19 @@ ags_audio_loop_start(AgsThread *thread)
   audio_loop = AGS_AUDIO_LOOP(thread);
 
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+    /*  */
+    AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
+  }
+}
+
+void
+ags_audio_loop_run(AgsThread *thread)
+{
+  AgsAudioLoop *audio_loop;
+
+  guint val;
+
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     AgsMutexManager *mutex_manager;
     
     AgsThread *async_queue;
@@ -517,22 +530,45 @@ ags_audio_loop_start(AgsThread *thread)
     gui_thread = ags_thread_find_type(thread,
 				      AGS_TYPE_GUI_THREAD);
     
-    /*  */
+    /*  */    
+    g_atomic_int_set(&(async_queue->start_wait),
+		     TRUE);
+
+    g_atomic_int_set(&(gui_thread->start_wait),
+		     TRUE);
+
     ags_thread_start(async_queue);
     ags_thread_start(gui_thread);
 
-    /*  */
-    AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
+    /* wait thread */
+    pthread_mutex_lock(async_queue->start_mutex);
+	
+    if(g_atomic_int_get(&(async_queue->start_wait)) == TRUE &&
+       g_atomic_int_get(&(async_queue->start_done)) == FALSE){
+      while(g_atomic_int_get(&(async_queue->start_wait)) == TRUE &&
+	    g_atomic_int_get(&(async_queue->start_done)) == FALSE){
+	pthread_cond_wait(async_queue->start_cond,
+			  async_queue->start_mutex);
+      }
+    }
+	
+    pthread_mutex_unlock(async_queue->start_mutex);
+
+    /* wait thread */
+    pthread_mutex_lock(gui_thread->start_mutex);
+	
+    if(g_atomic_int_get(&(gui_thread->start_wait)) == TRUE &&
+       g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+      while(g_atomic_int_get(&(gui_thread->start_wait)) == TRUE &&
+	    g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+	pthread_cond_wait(gui_thread->start_cond,
+			  gui_thread->start_mutex);
+      }
+    }
+	
+    pthread_mutex_unlock(gui_thread->start_mutex);
   }
-}
-
-void
-ags_audio_loop_run(AgsThread *thread)
-{
-  AgsAudioLoop *audio_loop;
-
-  guint val;
-
+  
   if(!thread->rt_setup){
     struct sched_param param;
     

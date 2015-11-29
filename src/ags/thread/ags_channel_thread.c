@@ -407,7 +407,7 @@ ags_channel_thread_run(AgsThread *thread)
   
     pthread_mutex_unlock(channel_thread->wakeup_mutex);
   }
-    
+
   /* do channel processing */
   for(stage = 0; stage < 3; stage++){
     /* playback */

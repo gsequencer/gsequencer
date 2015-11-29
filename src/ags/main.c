@@ -740,6 +740,7 @@ main(int argc, char **argv)
 
   if(filename != NULL){
     AgsFile *file;
+    AgsThread *thread;
 
     file = g_object_new(AGS_TYPE_FILE,
 			"filename\0", filename,
@@ -750,26 +751,27 @@ main(int argc, char **argv)
     ags_main = AGS_MAIN(file->ags_main);
     ags_file_close(file);
 
-    ags_thread_start(ags_main->main_loop);
+    thread = ags_main->main_loop;
+    g_atomic_int_and(&(thread->flags),
+		     (~AGS_THREAD_RUNNING));
+    ags_thread_start(thread);
 
-    if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(ags_main->main_loop)->flags)) == 0){
-      /* wait thread */
-      pthread_mutex_lock(AGS_THREAD(ags_main->main_loop)->start_mutex);
+    /* wait thread */
+    pthread_mutex_lock(AGS_THREAD(ags_main->main_loop)->start_mutex);
 
-      g_atomic_int_set(&(AGS_THREAD(ags_main->main_loop)->start_wait),
-		       TRUE);
+    g_atomic_int_set(&(AGS_THREAD(ags_main->main_loop)->start_wait),
+		     TRUE);
 	
-      if(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
-	 g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
-	while(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
-	      g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
-	  pthread_cond_wait(AGS_THREAD(ags_main->main_loop)->start_cond,
-			    AGS_THREAD(ags_main->main_loop)->start_mutex);
-	}
+    if(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
+       g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
+      while(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
+	    g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
+	pthread_cond_wait(AGS_THREAD(ags_main->main_loop)->start_cond,
+			  AGS_THREAD(ags_main->main_loop)->start_mutex);
       }
-	
-      pthread_mutex_unlock(AGS_THREAD(ags_main->main_loop)->start_mutex);      
     }
+	
+    pthread_mutex_unlock(AGS_THREAD(ags_main->main_loop)->start_mutex);
 
     /* complete thread pool */
     ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);

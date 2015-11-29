@@ -1582,7 +1582,7 @@ ags_devout_alsa_play(AgsDevout *devout,
     
     return;
   }
-  
+
   /*  */
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     memset(devout->buffer[3], 0, (size_t) devout->dsp_channels * devout->buffer_size * sizeof(signed short));

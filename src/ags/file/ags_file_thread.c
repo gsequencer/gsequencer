@@ -33,6 +33,8 @@
 #include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
 #include <ags/thread/ags_devout_thread.h>
+#include <ags/thread/ags_audio_thread.h>
+#include <ags/thread/ags_channel_thread.h>
 
 void ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread);
 
@@ -72,7 +74,12 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 
     type = g_type_from_name(type_name);
 
-    if(type == AGS_TYPE_RETURNABLE_THREAD){
+    if(g_type_is_a(type,
+		   AGS_TYPE_RETURNABLE_THREAD) ||
+       g_type_is_a(type,
+		   AGS_TYPE_AUDIO_THREAD) ||
+       g_type_is_a(type,
+		   AGS_TYPE_CHANNEL_THREAD)){
       return;
     }
 
@@ -274,7 +281,6 @@ ags_file_read_thread_resolve_devout(AgsFileLookup *file_lookup,
 void
 ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread)
 {
-  thread->flags &= (~AGS_THREAD_RUNNING);
   ags_thread_start(thread);
 
   /* wait thread */
