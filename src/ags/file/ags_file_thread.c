@@ -106,11 +106,11 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(gobject->flags)))) != 0){
     //FIXME:JK: workaround file setting AGS_THREAD_RUNNING is just ignored
     if(AGS_IS_AUDIO_LOOP(gobject)){
-      file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
-						   NULL);
-      ags_file_add_launch(file, (GObject *) file_launch);
-      g_signal_connect(G_OBJECT(file_launch), "start\0",
-		       G_CALLBACK(ags_file_read_thread_start), gobject);
+      //      file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+      //					   NULL);
+      //      ags_file_add_launch(file, (GObject *) file_launch);
+      //      g_signal_connect(G_OBJECT(file_launch), "start\0",
+      //	       G_CALLBACK(ags_file_read_thread_start), gobject);
     }
   }
 
@@ -159,8 +159,9 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(async_queue));
 	  AGS_AUDIO_LOOP(gobject)->async_queue = async_queue;
-	  ags_thread_add_child(gobject,
-			       async_queue);
+	  ags_thread_add_child_extended(gobject,
+					async_queue,
+					TRUE, TRUE);
 
 	  /* devout thread */
 	  devout_thread = NULL;
@@ -173,8 +174,9 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_file_read_thread(file,
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(devout_thread));
-	  ags_thread_add_child(gobject,
-			       devout_thread);
+	  ags_thread_add_child_extended(gobject,
+					devout_thread,
+					TRUE, TRUE);
 
 	  /* timestamp thread */
 	  timestamp_thread = NULL;
@@ -187,8 +189,9 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_file_read_thread(file,
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(timestamp_thread));
-	  ags_thread_add_child(devout_thread,
-			       timestamp_thread);
+	  ags_thread_add_child_extended(devout_thread,
+					timestamp_thread,
+					TRUE, TRUE);
 
 	  /* gui thread */
 	  gui_thread = NULL;
@@ -201,8 +204,9 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_file_read_thread(file,
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(gui_thread));
-	  ags_thread_add_child(gobject,
-			       gui_thread);
+	  ags_thread_add_child_extended(gobject,
+					gui_thread,
+					TRUE, TRUE);
 
 	  /* export thread */
 	  export_thread = NULL;
@@ -215,8 +219,9 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 	  ags_file_read_thread(file,
 			       xpath_object->nodesetval->nodeTab[0],
 			       &(export_thread));
-	  ags_thread_add_child(gobject,
-			       export_thread);
+	  ags_thread_add_child_extended(gobject,
+					export_thread,
+					TRUE, TRUE);
 	}else{
 	  GList *list;
 

@@ -1873,7 +1873,7 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 
 	ags_plugin_set_ports(AGS_PLUGIN(gobject),
 			     list);
-	//	gobject->port = list;
+	gobject->port = list; //TODO:JK: ugly, implement ags_recall_set_port
       }else if(!xmlStrncmp(child->name,
 			   "ags-parameter\0",
 			   13)){
