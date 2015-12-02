@@ -1116,6 +1116,8 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
   gint i;
   gboolean do_feedback;
+      
+  pthread_mutex_t *audio_mutex;
   
   auto void ags_pattern_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel);
 
@@ -1237,6 +1239,16 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
   do_feedback = FALSE;
   
+  /* lookup audio mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
+    
+  mutex_manager = ags_mutex_manager_get_instance();
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) machine->audio);
+    
+  pthread_mutex_unlock(&(ags_application_mutex));
+ 
   if(machine != NULL){
     switch(event->keyval){
     case GDK_KEY_Control_L:
@@ -1352,9 +1364,13 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
+	  pthread_mutex_lock(audio_mutex);
+	  
 	  list_notation = g_list_nth(machine->audio->notation,
 				     i);
 
+	  pthread_mutex_unlock(audio_mutex);
+	  
 	  if(list_notation == NULL){
 	    i++;
 	
@@ -1365,8 +1381,12 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	  note->x[0] = pattern_edit->selected_x;
 	  note->x[1] = pattern_edit->selected_x + 1;
 	  note->y = pattern_edit->selected_y;
-	
+
+	  pthread_mutex_lock(audio_mutex);
+
 	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note, FALSE);
+
+	  pthread_mutex_unlock(audio_mutex);
 
 	  i++;
 	}
@@ -1384,8 +1404,12 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
+	  pthread_mutex_lock(audio_mutex);
+	  
 	  list_notation = g_list_nth(machine->audio->notation,
 				     i);
+
+	  pthread_mutex_unlock(audio_mutex);
 
 	  if(list_notation == NULL){
 	    i++;
@@ -1393,8 +1417,12 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	    continue;
 	  }
 
+	  pthread_mutex_lock(audio_mutex);
+
 	  ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
 					       pattern_edit->selected_x, pattern_edit->selected_y);
+
+	  pthread_mutex_unlock(audio_mutex);
 
 	  i++;
 	}
@@ -1411,21 +1439,9 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     guint flags;
     gboolean has_note;
-    
-    pthread_mutex_t *audio_mutex;
 
     audio = machine->audio;
 
-    /* lookup audio mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
-    
-    pthread_mutex_unlock(&(ags_application_mutex));
- 
     /* audible feedback */
     i = 0;
 

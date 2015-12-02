@@ -1,3 +1,11 @@
+ags (0.6.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed NULL pointer during key editing in editor
+	* fixed race conditions in pattern and note edit
+	* fixed missing reset link in ags_notation_add_note()
+	* fixed access to invalidated pointer in ags_notation_remove_note_at_position()
+
 ags (0.6.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

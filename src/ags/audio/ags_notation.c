@@ -638,6 +638,12 @@ ags_notation_add_note(AgsNotation *notation,
     list_new = g_list_alloc();
     list_new->data = (gpointer) note;
     list_new->prev = list;
+    list_new->next = list->next;
+    
+    if(list->next != NULL){
+      list->next->prev = list_new;
+    }
+    
     list->next = list_new;
   }
 }
@@ -659,7 +665,8 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 				     guint x, guint y)
 {
   AgsNote *note;
-  GList *notes, *notes_end_region, *reverse_start;
+  GList *notes, *notes_next, *notes_prev;
+  GList *notes_end_region, *reverse_start;
   guint x_start, i;
 
   notes = notation->notes;
@@ -677,15 +684,20 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   /* search in y region for appropriate note */
   if(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x){
     do{
+      notes_next = notes->next;
+      
       if(note->y == y){
-	g_message("remove");
+#ifdef AGS_DEBUG
+	g_message("remove\0");
+#endif
+	
 	notation->notes = g_list_delete_link(notation->notes, notes);
 	g_object_unref(note);
 
 	return(TRUE);
       } 
 
-      notes = notes->next;
+      notes = notes_next;
     }while(notes != NULL &&
 	   (note = AGS_NOTE(notes->data))->x[0] == x &&
 	   note->y <= y);
@@ -710,15 +722,20 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
     while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] >= x_start){
       if(note->y == y){
 	do{
+	  notes_prev = notes->prev;
+	  
 	  if(note->x[0] < x && note->x[1] == x + i){
-	    g_message("remove");
+#ifdef AGS_DEBUG
+	    g_message("remove\0");
+#endif
+
 	    notation->notes = g_list_delete_link(notation->notes, notes);
 	    g_object_unref(note);
 	
 	    return(TRUE);
 	  }
 
-	  notes = notes->prev;
+	  notes = notes_prev;
 	}while(notes != NULL &&
 	       (note = AGS_NOTE(notes->data))->x[0] >= x_start &&
 	       note->y == y);
@@ -1334,56 +1351,77 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
       }
     }
     
-    for(; node != NULL; node = node->next){
+    for(; node != NULL; ){
       if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("note\0", node->name, 5)){
 	/* retrieve x0 offset */
 	x0 = xmlGetProp(node, "x\0");
 
-	if(x0 == NULL)
+	if(x0 == NULL){
+	  node = node->next;
+	  
 	  continue;
+	}
 
 	errno = 0;
 	x0_val = strtoul(x0, &endptr, 10);
 
 	if(errno == ERANGE){
+	  node = node->next;
+	  
 	  continue;
 	} 
 
 	if(x0 == endptr){
+	  node = node->next;
+	  
 	  continue;
 	}
 
 	/* retrieve x1 offset */
 	x1 = xmlGetProp(node, "x1\0");
 
-	if(x1 == NULL)
+	if(x1 == NULL){
+	  node = node->next;
+	  
 	  continue;
+	}
 
 	errno = 0;
 	x1_val = strtoul(x1, &endptr, 10);
 
 	if(errno == ERANGE){
+	  node = node->next;
+	  
 	  continue;
 	} 
 
 	if(x1 == endptr){
+	  node = node->next;
+	  
 	  continue;
 	}
 
 	/* retrieve y offset */
 	y = xmlGetProp(node, "y\0");
 
-	if(y == NULL)
+	if(y == NULL){
+	  node = node->next;
+	  
 	  continue;
+	}
 
 	errno = 0;
 	y_val = strtoul(y, &endptr, 10);
 
 	if(errno == ERANGE){
+	  node = node->next;
+	  
 	  continue;
 	} 
 
 	if(y == endptr){
+	  node = node->next;
+	  
 	  continue;
 	}
 
@@ -1403,16 +1441,22 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	  if(subtract_x){
 	    x0_val -= base_x_difference;
 
-	    if(errno != 0)
+	    if(errno != 0){
+	      node = node->next;
+	      
 	      continue;
+	    }
 
 	    x1_val -= base_x_difference;
 	  }else{
 	    x0_val += base_x_difference;
 	    x1_val += base_x_difference;
 
-	    if(errno != 0)
+	    if(errno != 0){
+	      node = node->next;
+	      
 	      continue;
+	    }
 	  }
 	}
 
@@ -1425,13 +1469,19 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	    y_val += base_y_difference;
 	  }
 
-	  if(errno != 0)
+	  if(errno != 0){
+	    node = node->next;
+	    
 	    continue;
+	  }
 	}
 
 	/* check if max length wasn't exceeded */
-	if(x1_val - x0_val > notation->maximum_note_length)
+	if(x1_val - x0_val > notation->maximum_note_length){
+	  node = node->next;
+	  
 	  continue;
+	}
 
 	/* add note */
 	note = ags_note_new();
@@ -1447,8 +1497,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 			      note,
 			      FALSE);
       }
-    }
 
+      node = node->next;
+    }
   }
 
   if(!xmlStrncmp("0.3.12\0", version, 7)){
