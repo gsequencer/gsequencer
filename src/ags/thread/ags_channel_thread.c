@@ -318,10 +318,10 @@ ags_channel_thread_run(AgsThread *thread)
 {
   AgsChannel *channel;
   AgsDevoutPlay *devout_play;
-
+  AgsRecallID *current_recall_id;
+  
   AgsMutexManager *mutex_manager;
   AgsChannelThread *channel_thread;
-  AgsRecallID *current_recall_id;
   AgsThread *current_thread;
   
   gint stage;

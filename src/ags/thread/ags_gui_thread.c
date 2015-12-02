@@ -226,8 +226,6 @@ ags_gui_thread_run(AgsThread *thread)
     }
 
     /*  */
-    gdk_threads_enter();
-    gdk_threads_leave();
 
     g_main_context_iteration(main_context, FALSE);
 
@@ -273,8 +271,26 @@ ags_gui_thread_run(AgsThread *thread)
   /*  */
   main_context = g_main_context_default();
 
-  ags_gui_thread_do_gtk_iteration();
+  //  ags_gui_thread_do_gtk_iteration();
 
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+    g_main_context_release(main_context);
+  }
+  
+  gdk_threads_enter();
+  gtk_main_iteration_do(FALSE);
+  gdk_threads_leave();
+
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
+    }
+  }
+  
   ags_gui_thread_complete_task();  
 
   pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());

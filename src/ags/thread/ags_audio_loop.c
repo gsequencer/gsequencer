@@ -499,26 +499,31 @@ void
 ags_audio_loop_run(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
-
+  AgsMutexManager *mutex_manager;
+  
   guint val;
+  guint audio_loop_flags;
+  guint play_recall_ref;
+  guint play_channel_ref;
+  guint play_audio_ref;
+  guint play_notation_ref;
+  
+  pthread_mutex_t *mutex;
 
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-    AgsMutexManager *mutex_manager;
+  /* lookup thread mutex */
+  pthread_mutex_lock(&(ags_application_mutex));
     
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   thread);
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  /* start other threads */
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     AgsThread *async_queue;
     AgsThread *gui_thread;
-
-    pthread_mutex_t *mutex;
-
-    /* lookup thread mutex */
-    pthread_mutex_lock(&(ags_application_mutex));
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     thread);
-
-    pthread_mutex_unlock(&(ags_application_mutex));
 
     /* get async queue and gui thread */
     pthread_mutex_lock(mutex);
@@ -586,42 +591,69 @@ ags_audio_loop_run(AgsThread *thread)
   //  thread->freq = AGS_DEVOUT(thread->devout)->delay[AGS_DEVOUT(thread->devout)->tic_counter] / AGS_DEVOUT(thread->devout)->delay_factor;
   audio_loop = AGS_AUDIO_LOOP(thread);
 
+  pthread_mutex_lock(mutex);
+
+  audio_loop_flags = audio_loop->flags;
+  
+  pthread_mutex_unlock(mutex);
+  
   pthread_mutex_lock(audio_loop->recall_mutex);
 
   /* play recall */
-  if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop->flags)) != 0){
+  if((AGS_AUDIO_LOOP_PLAY_RECALL & (audio_loop_flags)) != 0){
     ags_audio_loop_play_recall(audio_loop);
 
+    pthread_mutex_lock(mutex);
+    
     if(audio_loop->play_recall_ref == 0){
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_RECALL);
     }
+
+    pthread_mutex_unlock(mutex);
   }
 
   /* play channel */
-  if((AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop->flags)) != 0){
+  if((AGS_AUDIO_LOOP_PLAY_CHANNEL & (audio_loop_flags)) != 0){
     ags_audio_loop_play_channel(audio_loop);
+
+    pthread_mutex_lock(mutex);
 
     if(audio_loop->play_channel_ref == 0){
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_CHANNEL);
     }
+
+    pthread_mutex_unlock(mutex);
   }
 
   /* play audio */
-  if((AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop->flags)) != 0){
+  if((AGS_AUDIO_LOOP_PLAY_AUDIO & (audio_loop_flags)) != 0){
     ags_audio_loop_play_audio(audio_loop);
+
+    pthread_mutex_lock(mutex);
 
     if(audio_loop->play_audio_ref == 0){
       audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_AUDIO);
     }
+
+    pthread_mutex_unlock(mutex);
   }
   
   pthread_mutex_unlock(audio_loop->recall_mutex);
 
   /* decide if we stop */
-  if(audio_loop->play_recall_ref == 0 &&
-     audio_loop->play_channel_ref == 0 &&
-     audio_loop->play_audio_ref == 0 &&
-     audio_loop->play_notation_ref == 0){
+  pthread_mutex_lock(mutex);
+
+  play_recall_ref = audio_loop->play_recall_ref;
+  play_channel_ref = audio_loop->play_channel_ref;
+  play_audio_ref = audio_loop->play_audio_ref;
+  play_notation_ref = audio_loop->play_notation_ref;
+  
+  pthread_mutex_unlock(mutex);
+  
+  if(play_recall_ref == 0 &&
+     play_channel_ref == 0 &&
+     play_audio_ref == 0 &&
+     play_notation_ref == 0){
     AgsThread *devout_thread;
     AgsThread *export_thread;
 
@@ -639,41 +671,6 @@ ags_audio_loop_run(AgsThread *thread)
       ags_thread_stop(export_thread);
     }
   }
-
-  /* wait for task thread * /
-  pthread_mutex_lock(AGS_THREAD(audio_loop->task_thread)->start_mutex);
-
-  g_atomic_int_set(&(AGS_THREAD(audio_loop->task_thread)->start_wait),
-		   TRUE);
-	
-  if(g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->start_wait)) == TRUE &&
-     g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->start_done)) == FALSE){
-    while(g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->start_wait)) == TRUE &&
-	  g_atomic_int_get(&(AGS_THREAD(audio_loop->task_thread)->start_done)) == FALSE){
-      pthread_cond_wait(AGS_THREAD(audio_loop->task_thread)->start_cond,
-			AGS_THREAD(audio_loop->task_thread)->start_mutex);
-    }
-  }
-	
-  pthread_mutex_unlock(AGS_THREAD(audio_loop->task_thread)->start_mutex);
-
-  /* wait for gui thread * /
-  pthread_mutex_lock(AGS_THREAD(audio_loop->gui_thread)->start_mutex);
-
-  g_atomic_int_set(&(AGS_THREAD(audio_loop->gui_thread)->start_wait),
-		   TRUE);
-	
-  if(g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->start_wait)) == TRUE &&
-     g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->start_done)) == FALSE){
-    while(g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->start_wait)) == TRUE &&
-	  g_atomic_int_get(&(AGS_THREAD(audio_loop->gui_thread)->start_done)) == FALSE){
-      pthread_cond_wait(AGS_THREAD(audio_loop->gui_thread)->start_cond,
-			AGS_THREAD(audio_loop->gui_thread)->start_mutex);
-    }
-  }
-	
-  pthread_mutex_unlock(AGS_THREAD(audio_loop->gui_thread)->start_mutex);
-  */
   
   pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   pango_cairo_font_map_set_default(NULL);
@@ -702,9 +699,21 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
   GList *list, *list_next;
   guint stage;
 
+  pthread_mutex_t *mutex;
   pthread_mutex_t *devout_mutex, *audio_mutex;
 
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio_loop);
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
   /*  */
+  pthread_mutex_lock(mutex);
+
   audio_loop->flags |= AGS_AUDIO_LOOP_PLAYING_RECALL;
   stage = 0;
 
@@ -721,13 +730,10 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
     }
   }
 
+  //FIXME:JK: probably missing else
   audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING);
-
-  pthread_mutex_lock(&(ags_application_mutex));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  pthread_mutex_unlock(&(ags_application_mutex));
+  
+  pthread_mutex_unlock(mutex);
 
   while(list != NULL){
     AgsAudio *audio;
@@ -756,50 +762,63 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
       audio = (AgsAudio *) source->audio;
     }
     
-    /*  */
-    pthread_mutex_lock(&(ags_application_mutex));
+    /*  */    
+    if(audio != NULL){
+      pthread_mutex_lock(&(ags_application_mutex));
 
-    devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+      devout_mutex = ags_mutex_manager_lookup(mutex_manager,
 					    (GObject *) recall->devout);
-    
-    if(audio != NULL){      
+      
       audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     (GObject *) audio);
-    }
 
-    //    pthread_mutex_lock(devout_mutex);
-
-    if(audio != NULL){      
-      //      pthread_mutex_lock(audio_mutex);
-    }
+      pthread_mutex_unlock(&(ags_application_mutex));
+      
+      pthread_mutex_lock(devout_mutex);
+      pthread_mutex_lock(audio_mutex);
     
-    pthread_mutex_unlock(&(ags_application_mutex));
-    
-    //    recall_id = devout_play->recall_id;
-    list_next = list->next;
+      //    recall_id = devout_play->recall_id;
+      list_next = list->next;
 
-    if((AGS_RECALL_REMOVE & (recall->flags)) == 0){
-      if((AGS_RECALL_HIDE & (recall->flags)) == 0){
-	if(stage == 0){
-	  ags_recall_run_pre(recall);
-	}else if(stage == 1){
-	  ags_recall_run_inter(recall);
-	}else{
-	  ags_recall_run_post(recall);
+      if((AGS_RECALL_REMOVE & (recall->flags)) == 0){
+	if((AGS_RECALL_HIDE & (recall->flags)) == 0){
+	  if(stage == 0){
+	    ags_recall_run_pre(recall);
+	  }else if(stage == 1){
+	    ags_recall_run_inter(recall);
+	  }else{
+	    ags_recall_run_post(recall);
+	  }
 	}
+      }else{
+	ags_audio_loop_remove_recall(audio_loop, devout_play);
+	g_object_unref(recall);
+	free(devout_play);
       }
+      
+      pthread_mutex_unlock(audio_mutex);
+      pthread_mutex_unlock(devout_mutex);
     }else{
-      ags_audio_loop_remove_recall(audio_loop, devout_play);
-      g_object_unref(recall);
-      free(devout_play);
-    }
-    
-    if(audio != NULL){
-      //      pthread_mutex_unlock(audio_mutex);
-    }
-    
-    //    pthread_mutex_unlock(devout_mutex);
+      /* lock free */
+      list_next = list->next;
 
+      if((AGS_RECALL_REMOVE & (recall->flags)) == 0){
+	if((AGS_RECALL_HIDE & (recall->flags)) == 0){
+	  if(stage == 0){
+	    ags_recall_run_pre(recall);
+	  }else if(stage == 1){
+	    ags_recall_run_inter(recall);
+	  }else{
+	    ags_recall_run_post(recall);
+	  }
+	}
+      }else{
+	ags_audio_loop_remove_recall(audio_loop, devout_play);
+	g_object_unref(recall);
+	free(devout_play);
+      }
+    }
+      
     list = list_next;
   }
 
@@ -1147,11 +1166,15 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	  gboolean remove_domain;
 
 	  /* not super threaded */
-	  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-						  (GObject *) audio->devout);
-	  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) audio);
+	  pthread_mutex_lock(&(ags_application_mutex));
 	  
+	  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+	  					  (GObject *) audio->devout);
+	  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+	  					 (GObject *) audio);
+
+	  pthread_mutex_unlock(&(ags_application_mutex));
+
 	  //	  pthread_mutex_lock(audio_mutex);
 	  //	  pthread_mutex_lock(devout_mutex);    
 

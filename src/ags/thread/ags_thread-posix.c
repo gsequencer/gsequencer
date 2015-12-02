@@ -2965,12 +2965,32 @@ AgsThread*
 ags_thread_find_type(AgsThread *thread, GType type)
 {
   AgsThread *current, *retval;
+  AgsMutexManager *mutex_manager;
+    
+  GType current_type;
 
+  pthread_mutex_t *current_mutex;
+  
   if(thread == NULL || type == G_TYPE_NONE){
     return(NULL);
   }
 
-  if(g_type_is_a(G_OBJECT_TYPE(thread), type)){
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) thread);
+  
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  pthread_mutex_lock(current_mutex);
+  
+  current_type = G_OBJECT_TYPE(thread);
+
+  pthread_mutex_unlock(current_mutex);
+  
+  if(g_type_is_a(current_type, type)){
     return(thread);
   }
   

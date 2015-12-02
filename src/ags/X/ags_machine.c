@@ -932,12 +932,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
       AgsGuiThread *gui_thread;
       AgsTaskCompletion *task_completion;
 
-      pthread_mutex_lock(audio_loop_mutex);
-      
       gui_thread = (AgsGuiThread *) ags_thread_find_type(audio_loop,
 							 AGS_TYPE_GUI_THREAD);
-
-      pthread_mutex_unlock(audio_loop_mutex);
 
       start_devout = ags_start_devout_new(window->devout);
       list = g_list_prepend(list, start_devout);
@@ -946,9 +942,10 @@ ags_machine_set_run_extended(AgsMachine *machine,
 						NULL);
       g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
 			     G_CALLBACK(ags_machine_start_complete_callback), machine);
+      ags_connectable_connect(AGS_CONNECTABLE(task_completion));
+      
       gui_thread->task_completion = g_list_prepend(gui_thread->task_completion,
 						   task_completion);
-      ags_connectable_connect(AGS_CONNECTABLE(task_completion));
       
       /* append AgsStartDevout */
       list = g_list_reverse(list);

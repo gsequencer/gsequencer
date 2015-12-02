@@ -1,3 +1,9 @@
+ags (0.6.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_thread_find_type() and ::run of all thread implementations to be safer
+	* fixed dead-lock while pasting notes that caused application to crash
+
 ags (0.6.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -325,6 +325,7 @@ ags_audio_thread_run(AgsThread *thread)
   AgsChannel *output;
   AgsDevoutPlayDomain *devout_play_domain;
   AgsDevoutPlay *devout_play;
+  AgsRecallID *recall_id[3];
   
   AgsMutexManager *mutex_manager;
   AgsAudioThread *audio_thread;
@@ -428,7 +429,11 @@ ags_audio_thread_run(AgsThread *thread)
     pthread_mutex_lock(output_mutex);
     
     devout_play = output->devout_play;
-      
+
+    recall_id[0] = devout_play->recall_id[0];
+    recall_id[1] = devout_play->recall_id[1];
+    recall_id[2] = devout_play->recall_id[2];
+    
     pthread_mutex_unlock(output_mutex);
 
     if((AGS_DEVOUT_PLAY_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(devout_play->flags)))) != 0){
@@ -436,15 +441,15 @@ ags_audio_thread_run(AgsThread *thread)
     }else{
       for(stage = 0; stage < 3; stage++){
 	if(audio_thread == devout_play_domain->audio_thread[0]){
-	  ags_channel_recursive_play(output, devout_play->recall_id[0], stage);
+	  ags_channel_recursive_play(output, recall_id[0], stage);
 	}
 
 	if(audio_thread == devout_play_domain->audio_thread[1]){
-	  ags_channel_recursive_play(output, devout_play->recall_id[1], stage);
+	  ags_channel_recursive_play(output, recall_id[1], stage);
 	}
 
 	if(audio_thread == devout_play_domain->audio_thread[2]){
-	  ags_channel_recursive_play(output, devout_play->recall_id[2], stage);
+	  ags_channel_recursive_play(output, recall_id[2], stage);
 	}
       }
     }

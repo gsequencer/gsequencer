@@ -536,13 +536,22 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
 {
   AgsWindow *window;
   GtkMessageDialog *dialog;
-  
+
+  AgsThread *main_loop;
   AgsDevoutThread *devout_thread;
   AgsTask *task;
 
   task = (AgsTask *) task_completion->task;
-  window = AGS_MAIN(AGS_START_DEVOUT(task)->devout->ags_main)->window;
-  devout_thread = (AgsDevoutThread *) ags_thread_find_type(AGS_MAIN(window->ags_main)->main_loop,
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  pthread_mutex_lock(&(ags_application_mutex));
+
+  main_loop = AGS_MAIN(window->ags_main)->main_loop;
+
+  pthread_mutex_unlock(&(ags_application_mutex));
+
+  devout_thread = (AgsDevoutThread *) ags_thread_find_type(main_loop,
 							   AGS_TYPE_DEVOUT_THREAD);
 
   if(devout_thread->error != NULL){
