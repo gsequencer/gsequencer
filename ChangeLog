@@ -1,3 +1,10 @@
+ags (0.6.28)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed non-atomic access to atomic flags of AgsThread in ags_start_devout.c
+	* reverted ags_gui_thread_run() functionality
+	* fixed initial value of LADSPA plugin as reading from file
+
 ags (0.6.27)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -182,7 +182,7 @@ ags_start_devout_launch(AgsTask *task)
   
   ags_thread_start(AGS_THREAD(devout_thread));
   
-  if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(devout_thread)->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(AGS_THREAD(devout_thread)->flags)))) == 0){
     if(devout_thread->error != NULL){
       error = devout_thread->error;
       devout->flags &= (~AGS_DEVOUT_START_PLAY);

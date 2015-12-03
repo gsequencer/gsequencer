@@ -415,9 +415,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	      list = list->next;
 	    }
 
-	    if(current != NULL){
-	      current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
-	      
+	    if(current != NULL){	      
 	      g_message("connecting port: %d/%d\0", i, port_count);
 	    }
 	  }
