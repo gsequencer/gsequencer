@@ -1,3 +1,8 @@
+ags (0.6.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* work-around in ags_notation_remove_note_at_position() to fix memory corruption
+
 ags (0.6.26)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
