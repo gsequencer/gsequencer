@@ -778,7 +778,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	while(recycling != selected_channel->last_recycling->next){
 	  /* lookup recycling mutex */
-	  pthread_mutex_unlock(&(ags_application_mutex));
+	  pthread_mutex_lock(&(ags_application_mutex));
 
 	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 						     (GObject *) recycling);
