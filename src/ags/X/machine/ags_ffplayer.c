@@ -221,9 +221,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_TAKES_FILE |
 		   AGS_AUDIO_SYNC |
-		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_HAS_NOTATION | 
-		   AGS_AUDIO_NOTATION_DEFAULT);
+		   AGS_AUDIO_ASYNC | 
+		   AGS_AUDIO_NOTATION_DEFAULT |
+		   AGS_AUDIO_HAS_NOTATION);
   
   AGS_MACHINE(ffplayer)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				   AGS_MACHINE_REVERSE_NOTATION);
@@ -837,26 +837,25 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
     return;
   }
 
-  if(pads_old == pads)
-    return;
-  if(pads_old < pads)
+  if(pads_old < pads){
     grow = TRUE;
-  else
+  }else{
     grow = FALSE;
-
+  }
+  
   if(type == AGS_TYPE_INPUT){
     if(grow){
       /* depending on destination */
       ags_ffplayer_input_map_recall(ffplayer, pads_old);
     }else{
-      ffplayer->mapped_input_pad = audio->input_pads;
+      ffplayer->mapped_input_pad = pads;
     }
   }else{
     if(grow){
       /* depending on destination */
       ags_ffplayer_output_map_recall(ffplayer, pads_old);
     }else{
-      ffplayer->mapped_output_pad = audio->output_pads;
+      ffplayer->mapped_output_pad = pads;
     }
   }
 }
@@ -902,11 +901,11 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
   current = source;
 
   while(current != NULL){
-    /* ags-stream */
+    /* ags-play */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-play\0",
-			      current->audio_channel, current->audio_channel + 1, 
+			      0, audio->audio_channels, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
@@ -976,7 +975,7 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-stream\0",
-			    source->audio_channel, source->audio_channel + 1,
+			    0, audio->audio_channels,
 			    output_pad_start, audio->output_pads,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_PLAY |

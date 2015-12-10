@@ -47,6 +47,7 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recycling_container.h>
 
 #include <ags/audio/file/ags_audio_file.h>
 
@@ -4118,7 +4119,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       while(input != NULL){
 	/* input recall id */
 	input_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-				       "recycling_container\0", default_recall_id->recycling_container,
+				       "recycling-container\0", default_recall_id->recycling_container,
 				       "recycling\0", input->first_recycling,
 				       NULL);
 	recall_id[input->pad] = input_recall_id;
@@ -4156,7 +4157,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
       /* input recall id */
       recall_id[0] = 
 	input_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-				       "recycling_container\0", default_recall_id->recycling_container,
+				       "recycling-container\0", default_recall_id->recycling_container,
 				       "recycling\0", input->first_recycling,
 				       NULL);
       ags_channel_add_recall_id(input,

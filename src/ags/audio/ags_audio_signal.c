@@ -798,22 +798,26 @@ ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannel
   guint i;
 
   /* unrolled function */
-  limit = size - 8;
+  if(size > 8){
+    limit = size - 8;
   
-  for(i = 0; i < limit; i += 8){
-    *destination = 0xffff & ((signed long) ((*destination) + (*source)));
-    destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + source[1 * schannels]));
-    destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + source[2 * schannels]));
-    destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + source[3 * schannels]));
-    destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + source[4 * schannels]));
-    destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + source[5 * schannels]));
-    destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + source[6 * schannels]));
-    destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + source[7 * schannels]));
+    for(i = 0; i < limit; i += 8){
+      *destination = 0xffff & ((signed long) ((*destination) + (*source)));
+      destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + source[1 * schannels]));
+      destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + source[2 * schannels]));
+      destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + source[3 * schannels]));
+      destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + source[4 * schannels]));
+      destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + source[5 * schannels]));
+      destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + source[6 * schannels]));
+      destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + source[7 * schannels]));
 
-    destination += (8 * dchannels);
-    source += (8 * schannels);
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }else{
+    i = 0;
   }
-
+  
   for(; i < size; i++){
     *destination = 0xffff & ((signed long) ((*destination) + (*source)));
 

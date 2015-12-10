@@ -32,6 +32,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_config.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
 
 #include <ags/audio/task/ags_start_devout.h>
@@ -659,7 +660,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 					   x1, y1,
 					   TRUE);
 
-      pthread_mutex_lock(audio_mutex);
+      pthread_mutex_unlock(audio_mutex);
 
       /* iterate */
       i++;
@@ -1200,6 +1201,14 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
     pthread_mutex_unlock(audio_mutex);
 
+    /* lookup devout mutex */
+    pthread_mutex_lock(&(ags_application_mutex));
+
+    devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) devout);
+
+    pthread_mutex_unlock(&(ags_application_mutex));
+
     /* get ags_main */
     pthread_mutex_lock(devout_mutex);
 
@@ -1571,9 +1580,9 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
       pthread_mutex_lock(audio_mutex);
       
-      has_note = ((ags_notation_find_point(list_notation->data,
-					   note_edit->selected_x, note_edit->selected_y,
-					   FALSE) != NULL) ?
+      has_note = (((current_note = ags_notation_find_point(list_notation->data,
+							   note_edit->selected_x, note_edit->selected_y,
+							   FALSE)) != NULL) ?
 		  TRUE:
 		  FALSE);
 
@@ -1589,8 +1598,10 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	  channel = ags_channel_pad_nth(channel, note_edit->selected_y);
 	}
 
-	ags_note_edit_drawing_area_key_release_event_play_channel(channel,
-								  current_note);
+	if(current_note != NULL){
+	  ags_note_edit_drawing_area_key_release_event_play_channel(channel,
+								    current_note);
+	}
       }
 	  
       i++;
@@ -1613,10 +1624,14 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
   AgsTaskThread *task_thread;
 
   GList *recall, *tmp;
-
+  GList *delay_audio;
+  
   guint samplerate;
   guint buffer_size;
+  gdouble notation_delay;
   gchar *str;
+
+  GValue value = {0,};
 
   channel = AGS_INIT_CHANNEL(task)->channel;
 
@@ -1659,9 +1674,25 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
   tmp = recall;
   recall = ags_recall_find_type(recall,
 				AGS_TYPE_PLAY_CHANNEL_RUN);
+
+  /*  */
+  delay_audio = channel->recall;
+  delay_audio = ags_recall_find_type(delay_audio,
+				     AGS_TYPE_DELAY_AUDIO);
+  
+  if(delay_audio != NULL){
+    g_value_init(&value,
+		 G_TYPE_DOUBLE);
+    ags_port_safe_read(AGS_DELAY_AUDIO(delay_audio->data)->notation_delay,
+		       &value);
+    notation_delay = g_value_get_double(&value);
+  }else{
+    notation_delay = 1.0;
+  }
+  
   //TODO:JK: fix me
   //    g_list_free(tmp);
-
+  
   if(recall != NULL){
     AgsAudioSignal *audio_signal;
       
@@ -1675,7 +1706,7 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
       /* add audio signal */
       ags_recycling_create_audio_signal_with_frame_count(recycling,
 							 audio_signal,
-							 samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
+							((double) samplerate / (double) notation_delay) * (note->x[1] - note->x[0]),
 							 0.0, 0);
       audio_signal->stream_current = audio_signal->stream_beginning;
       ags_audio_signal_connect(audio_signal);

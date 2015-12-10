@@ -43,6 +43,9 @@
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_config.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+
 void ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notation_audio_run);
 void ags_play_notation_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_notation_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
@@ -653,6 +656,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsNotation *notation;
   AgsNote *note;
 
+  AgsDelayAudio *delay_audio;
   AgsPlayNotationAudio *play_notation_audio;
 
   AgsThread *main_loop;
@@ -677,6 +681,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
 
+  delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
+  
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
 
   /* read config and audio mutex */
@@ -741,7 +747,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     //						   timestamp_thread->timestamp)->data);
 
   current_position = notation->notes; // start_loop
-  
+
   while(current_position != NULL){
     if(current_position != NULL){
       note = AGS_NOTE(current_position->data);
@@ -758,7 +764,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	}
 
 	/* lookup channel mutex */
-	pthread_mutex_unlock(&(ags_application_mutex));
+	pthread_mutex_lock(&(ags_application_mutex));
 
 	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						 (GObject *) channel);
@@ -795,9 +801,20 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 							    audio_signal,
 							    delay, attack);
 	  }else{
+	    gdouble notation_delay;
+
+	    GValue value = {0,};
+
+	    g_value_init(&value,
+			 G_TYPE_DOUBLE);
+	    ags_port_safe_read(delay_audio->notation_delay,
+			       &value);
+
+	    notation_delay = g_value_get_double(&value);
+	    
 	    ags_recycling_create_audio_signal_with_frame_count(recycling,
 							       audio_signal,
-							       samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
+							       ((double) samplerate / notation_delay) * (note->x[1] - note->x[0]),
 							       delay, attack);
 	  }
 	  

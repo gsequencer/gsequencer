@@ -754,8 +754,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   /* resize */
   ags_audio_signal_stream_resize(audio_signal,
-				 (guint) ceil(((double) delay +
-					       (double) attack +
+				 (guint) ceil(((double) attack +
 					       (double) frame_count) /
 					      (double) audio_signal->buffer_size));
   
@@ -766,7 +765,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     return;
   }
 
-  audio_signal->last_frame = ((guint) (delay * audio_signal->buffer_size) + frame_count + attack) % audio_signal->buffer_size;
+  audio_signal->last_frame = ((guint) frame_count + attack) % audio_signal->buffer_size;
 
   /* generic copying */
   stream = audio_signal->stream_beginning;
@@ -779,7 +778,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   initial_loop = TRUE;
 
   /* loop related copying */
-  if(frame_count >= template->loop_start){
+  if(frame_count >= template->loop_start &&
+     template->loop_start < template->loop_end){
     template_loop = g_list_nth(template->stream_beginning,
 			       (guint) floor((double)loop_start / audio_signal->buffer_size));
 
@@ -789,14 +789,17 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     enter_loop = FALSE;
   }
 
+  g_message("frame-count: %d\0", frame_count);
+
   /* the copy loops */
   while(stream != NULL && template_stream != NULL && frames_copied < frame_count){
-    if(frames_copied + audio_signal->buffer_size < loop_start &&
+    if((frames_copied + audio_signal->buffer_size < loop_start ||
+	template->loop_start == template->loop_end) &&
        frames_copied < frame_count){
       ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[attack]), 1,
 					     (short *) template_stream->data, 1,
 					     audio_signal->buffer_size - attack);
-
+	
       if(stream->next != NULL && attack != 0){
 	ags_audio_signal_copy_buffer_to_buffer((short *) stream->next->data, 1,
 					       &(((short *) template_stream->data)[audio_signal->buffer_size - attack]), 1,
@@ -821,19 +824,23 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       initial_loop = FALSE;
 
       ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack]), 1,
-					     &(((short *) template_stream->data)[audio_signal->buffer_size - loop_attack]), 1,
+					     (short *) template_stream->data, 1,
 					     audio_signal->buffer_size - loop_attack);
       
       if(loop_attack != 0 && stream->next != NULL){
-	ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->next->data)[loop_attack]), 1,
+	ags_audio_signal_copy_buffer_to_buffer((short *) stream->next->data, 1,
 					       &(((short *) template_stream->data)[audio_signal->buffer_size - loop_attack]), 1,
 					       loop_attack);
       }
     }
-
+    
     stream = stream->next;
     template_stream = template_stream->next;
     frames_copied += audio_signal->buffer_size;
+
+    if(template_stream == NULL){
+      template_stream = template_loop;
+    }
   }
 
   /* release lock */

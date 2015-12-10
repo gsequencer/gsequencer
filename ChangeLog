@@ -1,3 +1,11 @@
+ags (0.6.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dead-lock while selecting notes within note edit
+	* fixed integer-overflow in ags_delay_audio_run_notation_alloc_output(), ags_delay_audio_run_notation_alloc_input() and ags_delay_audio_run_notation_count()
+	* fixed wrong-lock order in ags_play_notation_audio_run.c
+	* fixed buffer-overflow in ags_audio_signal_create_audio_signal_with_frame_count()
+
 ags (0.6.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
