@@ -486,9 +486,9 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 
   length = (guint) ceil((double)(frames) / (double)(buffer_size));
 
-#ifdef AGS_DEBUG
+  //#ifdef AGS_DEBUG
   g_message("ags_playable_read_audio_signal:\n  frames = %u\n  buffer_size = %u\n  length = %u\n\0", frames, buffer_size, length);
-#endif
+  //#endif
   
   list = NULL;
   i = start_channel;

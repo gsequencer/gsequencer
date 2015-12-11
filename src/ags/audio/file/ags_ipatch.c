@@ -771,12 +771,12 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
   guint loop_start, loop_end;
   guint i;
   GError *this_error;
+  
+  ipatch = AGS_IPATCH(playable);
 
   if(ipatch == NULL){
     return(NULL);
   }
-  
-  ipatch = AGS_IPATCH(playable);
 
   this_error = NULL;
   ags_playable_info(playable,
@@ -785,13 +785,17 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 		    &this_error);
 
   if(this_error != NULL){
-    g_error("%s\0", this_error->message);
+    g_warning("%s\0", this_error->message);
   }
 
   buffer = (signed short *) malloc(channels * frames * sizeof(signed short));
   
   if(ipatch->nth_level == 3){
-    sample = IPATCH_SAMPLE(ipatch->iter->data);
+    if(ipatch->iter != NULL){
+      sample = IPATCH_SAMPLE(ipatch->iter->data);
+    }else{
+      sample = NULL;
+    }
   }else{
     sample = NULL;
 

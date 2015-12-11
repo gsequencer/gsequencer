@@ -748,9 +748,29 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   audio_signal->devout = template->devout;
 
-  devout = AGS_DEVOUT(audio_signal->devout);
-
   audio_signal->recycling = (GObject *) recycling;
+
+  audio_signal->samplerate = template->samplerate;
+  audio_signal->buffer_size = template->buffer_size;
+  audio_signal->resolution = template->resolution;
+
+  audio_signal->last_frame = (((guint)(delay *
+				       template->buffer_size) +
+			       attack +
+			       template->last_frame) %
+			      template->buffer_size);
+  audio_signal->loop_start = (((guint) (delay *
+					template->buffer_size) +
+			       attack +
+			       template->loop_start) %
+			      template->buffer_size);
+  audio_signal->loop_end = (((guint)(delay *
+				     template->buffer_size) +
+			     attack +
+			     template->loop_end) %
+			    template->buffer_size);
+
+  devout = AGS_DEVOUT(audio_signal->devout);
 
   /* resize */
   ags_audio_signal_stream_resize(audio_signal,
@@ -789,17 +809,15 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     enter_loop = FALSE;
   }
 
-  g_message("frame-count: %d\0", frame_count);
-
   /* the copy loops */
   while(stream != NULL && template_stream != NULL && frames_copied < frame_count){
-    if((frames_copied + audio_signal->buffer_size < loop_start ||
-	template->loop_start == template->loop_end) &&
+    if(!(enter_loop &&
+	 frames_copied + audio_signal->buffer_size > loop_start) &&
        frames_copied < frame_count){
       ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[attack]), 1,
 					     (short *) template_stream->data, 1,
 					     audio_signal->buffer_size - attack);
-	
+
       if(stream->next != NULL && attack != 0){
 	ags_audio_signal_copy_buffer_to_buffer((short *) stream->next->data, 1,
 					       &(((short *) template_stream->data)[audio_signal->buffer_size - attack]), 1,

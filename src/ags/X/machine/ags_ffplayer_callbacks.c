@@ -276,6 +276,10 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   instrument_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instrument));
 
+  if(instrument_name == NULL){
+    return;
+  }
+  
   /* select instrument */
   error = NULL;
 

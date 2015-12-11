@@ -1,3 +1,8 @@
+ags (0.6.30)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsFFPlayer loading Soundfont2
+
 ags (0.6.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
