@@ -4975,6 +4975,8 @@ ags_file_write_note(AgsFile *file, xmlNode *parent, AgsNote *note)
 
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void

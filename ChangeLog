@@ -1,3 +1,11 @@
+ags (0.6.31)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed loop audio data with lower frame count than buffer size
+	* fixed memory corruption with freed list in ags_notation_cut_selection()
+	* fixed toggling toolbar editing tool after restoring from XML file
+	* work-around deleting GList notes of AgsNotation
+
 ags (0.6.30)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

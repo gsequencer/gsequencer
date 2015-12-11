@@ -951,7 +951,7 @@ ags_editor_copy(AgsEditor *editor)
 			   buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
-    xmlFreeDoc(clipboard);
+    //    xmlFreeDoc(clipboard);
   }
 }
 
@@ -1054,7 +1054,7 @@ ags_editor_cut(AgsEditor *editor)
 			   buffer, size);
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
 
-    xmlFreeDoc(clipboard);
+    //    xmlFreeDoc(clipboard);
   }
 }
 

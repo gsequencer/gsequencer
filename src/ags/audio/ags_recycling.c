@@ -716,7 +716,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   GList *stream, *template_stream, *template_loop;
 
   guint frames_copied;
-  guint loop_start, loop_attack;
+  guint loop_start, loop_end, loop_attack;
+  guint i;
   gboolean enter_loop, initial_loop;
 
   /* lookup mutex */
@@ -794,7 +795,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   frames_copied = 0;
 
   loop_start = template->loop_start;
-
+  loop_end = template->loop_end;
+  
   initial_loop = TRUE;
 
   /* loop related copying */
@@ -832,33 +834,31 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	template_stream = template_loop;
       }
 
-      if(initial_loop &&
-	 (loop_start % audio_signal->buffer_size) == 0){
-	loop_attack = 0;
-      }else{
-	loop_attack = loop_start % audio_signal->buffer_size;
-      }
-
-      initial_loop = FALSE;
-
-      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack]), 1,
-					     (short *) template_stream->data, 1,
-					     audio_signal->buffer_size - loop_attack);
+      for(i = 0; i < (guint) ceil(audio_signal->buffer_size / (loop_end - loop_start)); i++){
+	if(initial_loop &&
+	   (loop_start % audio_signal->buffer_size) == 0){
+	  loop_attack = 0;
+	}else{
+	  loop_attack = loop_start % audio_signal->buffer_size;
+	}
+	
+	initial_loop = FALSE;
+	
+	ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack]), 1,
+					       (short *) template_stream->data, 1,
+					       audio_signal->buffer_size - loop_attack);
       
-      if(loop_attack != 0 && stream->next != NULL){
-	ags_audio_signal_copy_buffer_to_buffer((short *) stream->next->data, 1,
-					       &(((short *) template_stream->data)[audio_signal->buffer_size - loop_attack]), 1,
-					       loop_attack);
+	if(loop_attack != 0 && stream->next != NULL){
+	  ags_audio_signal_copy_buffer_to_buffer((short *) stream->next->data, 1,
+						 &(((short *) template_stream->data)[audio_signal->buffer_size - loop_attack]), 1,
+						 loop_attack);
+	}
       }
     }
     
     stream = stream->next;
     template_stream = template_stream->next;
     frames_copied += audio_signal->buffer_size;
-
-    if(template_stream == NULL){
-      template_stream = template_loop;
-    }
   }
 
   /* release lock */

@@ -676,8 +676,9 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   }
 
   /* get entry point */
-  while(notes->next != NULL && (note = AGS_NOTE(notes->data))->x[0] < x)
+  while(notes->next != NULL && (note = AGS_NOTE(notes->data))->x[0] < x){
     notes = notes->next;
+  }
 
   notes_end_region = notes;
 
@@ -690,8 +691,25 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 #ifdef AGS_DEBUG
 	g_message("remove\0");
 #endif
+	//TODO:JK: work-around
+	//	notation->notes = g_list_delete_link(notation->notes, notes);
+
+	if(notes->prev != NULL){
+	  notes->prev->next = notes->next;
+	}
+
+	if(notes->next != NULL){
+	  notes->next->prev = notes->prev;
+	}
+
+	if(notation->notes == notes){
+	  notation->notes = notes->next;
+	}
 	
-	notation->notes = g_list_delete_link(notation->notes, notes);
+	notes->prev = NULL;
+	notes->next = NULL;
+	g_list_free1(notes);
+	
 	g_object_unref(note);
 
 	return(TRUE);
@@ -715,7 +733,25 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 	g_message("remove\0");
 #endif
 
-	notation->notes = g_list_delete_link(notation->notes, notes);
+	//TODO:JK: work-around
+	//	notation->notes = g_list_delete_link(notation->notes, notes);
+
+	if(notes->prev != NULL){
+	  notes->prev->next = notes->next;
+	}
+
+	if(notes->next != NULL){
+	  notes->next->prev = notes->prev;
+	}
+
+	if(notation->notes == notes){
+	  notation->notes = notes->next;
+	}
+	
+	notes->prev = NULL;
+	notes->next = NULL;
+	g_list_free1(notes);
+
 	g_object_unref(note);
 	
 	return(TRUE);
@@ -1200,7 +1236,7 @@ xmlNodePtr
 ags_notation_cut_selection(AgsNotation *notation)
 {
   xmlNodePtr notation_node;
-  GList *selection, *notes;
+  GList *selection, *selection_next, *notes;
   
   notation_node = ags_notation_copy_selection(notation);
 
@@ -1209,7 +1245,8 @@ ags_notation_cut_selection(AgsNotation *notation)
 
   while(selection != NULL){
     notes = g_list_find(notes, selection->data);
-
+    selection_next = selection->next;
+    
     if(notes->prev == NULL){
       notation->notes = g_list_remove_link(notes, notes);
       notes = notation->notes;
@@ -1230,7 +1267,7 @@ ags_notation_cut_selection(AgsNotation *notation)
     AGS_NOTE(selection->data)->flags &= (~AGS_NOTE_IS_SELECTED);
     g_object_unref(selection->data);
 
-    selection = selection->next;
+    selection = selection_next;
   }
 
   ags_notation_free_selection(notation);

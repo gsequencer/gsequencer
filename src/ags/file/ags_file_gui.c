@@ -84,6 +84,9 @@ void ags_file_read_editor_resolve_parameter(AgsFileLookup *file_lookup,
 void ags_file_read_editor_launch(AgsFileLaunch *file_launch,
 				 AgsEditor *editor);
 
+void ags_file_read_toolbar_launch(AgsFileLaunch *file_launch,
+				  AgsToolbar *toolbar);
+
 void ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
 						      AgsMachineSelector *machine_selector);
 
@@ -2727,6 +2730,7 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
   AgsToolbar *gobject;
   GtkTreeIter iter;
   GtkTreeModel *model;
+  AgsFileLaunch *file_launch;
   xmlNode *child;
   gchar *value;
   gchar *str;
@@ -2747,23 +2751,6 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
-
-  str = xmlGetProp(node,
-		   "edit-mode\0");
-
-  if(!g_strcmp0("position\0",
-		str)){
-    gtk_button_clicked((GtkButton *) gobject->position);
-  }else if(!g_strcmp0("edit\0",
-		      str)){
-    gtk_button_clicked((GtkButton *) gobject->edit);
-  }else if(!g_strcmp0("clear\0",
-		      str)){
-    gtk_button_clicked((GtkButton *) gobject->clear);
-  }else if(!g_strcmp0("select\0",
-		      str)){
-    gtk_button_clicked((GtkButton *) gobject->select);
-  }
 
   /* zoom */
   str = xmlGetProp(node,
@@ -2811,6 +2798,39 @@ ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar)
 
     gtk_combo_box_set_active_iter((GtkComboBox *) gobject->mode,
 				  &iter);
+  }
+
+  /*  */
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_file_read_toolbar_launch), gobject);
+  ags_file_add_launch(file,
+		      (GObject *) file_launch);
+}
+
+void
+ags_file_read_toolbar_launch(AgsFileLaunch *file_launch,
+			     AgsToolbar *toolbar)
+{
+  gchar *str;
+
+  str = xmlGetProp(file_launch->node,
+		   "edit-mode\0");
+
+  if(!g_strcmp0("position\0",
+		str)){
+    gtk_button_clicked((GtkButton *) toolbar->position);
+  }else if(!g_strcmp0("edit\0",
+		      str)){
+    gtk_button_clicked((GtkButton *) toolbar->edit);
+  }else if(!g_strcmp0("clear\0",
+		      str)){
+    gtk_button_clicked((GtkButton *) toolbar->clear);
+  }else if(!g_strcmp0("select\0",
+		      str)){
+    gtk_button_clicked((GtkButton *) toolbar->select);
   }
 }
 
