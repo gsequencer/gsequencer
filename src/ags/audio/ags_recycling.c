@@ -844,11 +844,12 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	
 	initial_loop = FALSE;
 	
-	ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack]), 1,
+	ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack + i * (loop_end - loop_start)]), 1,
 					       (short *) template_stream->data, 1,
 					       audio_signal->buffer_size - loop_attack);
       
-	if(loop_attack != 0 && stream->next != NULL){
+	if(loop_attack != 0 && stream->next != NULL &&
+	   (loop_end - loop_start) > audio_signal->buffer_size){
 	  ags_audio_signal_copy_buffer_to_buffer((short *) stream->next->data, 1,
 						 &(((short *) template_stream->data)[audio_signal->buffer_size - loop_attack]), 1,
 						 loop_attack);

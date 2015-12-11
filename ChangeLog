@@ -1,3 +1,8 @@
+ags (0.6.32)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing offset of loop audio data with lower frame count
+
 ags (0.6.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
