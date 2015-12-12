@@ -25,24 +25,34 @@
 #include <ags/object/ags_playable.h>
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
+#include <ags/file/ags_file_gui.h>
+
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+
+#include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_ipatch.h>
+#include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 #include <ags/audio/task/ags_link_channel.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_editor.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-
-#include <ags/audio/file/ags_audio_file.h>
-#include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 #include <math.h>
 

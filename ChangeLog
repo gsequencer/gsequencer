@@ -1,3 +1,10 @@
+ags (0.6.33)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed restore of AgsFFPlayer
+	* implemented AgsStartReadFile task
+	* modified startup of thread and file launch as reading from files
+
 ags (0.6.32)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -249,6 +249,7 @@ am_gsequencer_OBJECTS = $(am__objects_1) \
 	gsequencer-ags_set_output_device.$(OBJEXT) \
 	gsequencer-ags_set_samplerate.$(OBJEXT) \
 	gsequencer-ags_start_devout.$(OBJEXT) \
+	gsequencer-ags_start_read_file.$(OBJEXT) \
 	gsequencer-ags_toggle_led.$(OBJEXT) \
 	gsequencer-ags_toggle_pattern_bit.$(OBJEXT) \
 	gsequencer-ags_unref_audio_signal.$(OBJEXT) \
@@ -882,6 +883,7 @@ gsequencerheaders = \
 	src/ags/audio/task/ags_set_output_device.h \
 	src/ags/audio/task/ags_set_samplerate.h \
 	src/ags/audio/task/ags_start_devout.h \
+	src/ags/audio/task/ags_start_read_file.h \
 	src/ags/audio/task/ags_toggle_led.h \
 	src/ags/audio/task/ags_toggle_pattern_bit.h \
 	src/ags/audio/task/ags_unref_audio_signal.h \
@@ -1225,6 +1227,7 @@ gsequencer_SOURCES = \
 	src/ags/audio/task/ags_set_output_device.c \
 	src/ags/audio/task/ags_set_samplerate.c \
 	src/ags/audio/task/ags_start_devout.c \
+	src/ags/audio/task/ags_start_read_file.c \
 	src/ags/audio/task/ags_toggle_led.c \
 	src/ags/audio/task/ags_toggle_pattern_bit.c \
 	src/ags/audio/task/ags_unref_audio_signal.c \
@@ -1831,6 +1834,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_soundcard.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_stackable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_start_devout.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_start_read_file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_stream.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_stream_audio_signal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gsequencer-ags_stream_channel.Po@am__quote@
@@ -3914,6 +3918,20 @@ gsequencer-ags_start_devout.obj: src/ags/audio/task/ags_start_devout.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/task/ags_start_devout.c' object='gsequencer-ags_start_devout.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_start_devout.obj `if test -f 'src/ags/audio/task/ags_start_devout.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_start_devout.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_start_devout.c'; fi`
+
+gsequencer-ags_start_read_file.o: src/ags/audio/task/ags_start_read_file.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_start_read_file.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_start_read_file.Tpo -c -o gsequencer-ags_start_read_file.o `test -f 'src/ags/audio/task/ags_start_read_file.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_start_read_file.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_start_read_file.Tpo $(DEPDIR)/gsequencer-ags_start_read_file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/task/ags_start_read_file.c' object='gsequencer-ags_start_read_file.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_start_read_file.o `test -f 'src/ags/audio/task/ags_start_read_file.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_start_read_file.c
+
+gsequencer-ags_start_read_file.obj: src/ags/audio/task/ags_start_read_file.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_start_read_file.obj -MD -MP -MF $(DEPDIR)/gsequencer-ags_start_read_file.Tpo -c -o gsequencer-ags_start_read_file.obj `if test -f 'src/ags/audio/task/ags_start_read_file.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_start_read_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_start_read_file.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gsequencer-ags_start_read_file.Tpo $(DEPDIR)/gsequencer-ags_start_read_file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/audio/task/ags_start_read_file.c' object='gsequencer-ags_start_read_file.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o gsequencer-ags_start_read_file.obj `if test -f 'src/ags/audio/task/ags_start_read_file.c'; then $(CYGPATH_W) 'src/ags/audio/task/ags_start_read_file.c'; else $(CYGPATH_W) '$(srcdir)/src/ags/audio/task/ags_start_read_file.c'; fi`
 
 gsequencer-ags_toggle_led.o: src/ags/audio/task/ags_toggle_led.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -MT gsequencer-ags_toggle_led.o -MD -MP -MF $(DEPDIR)/gsequencer-ags_toggle_led.Tpo -c -o gsequencer-ags_toggle_led.o `test -f 'src/ags/audio/task/ags_toggle_led.c' || echo '$(srcdir)/'`src/ags/audio/task/ags_toggle_led.c

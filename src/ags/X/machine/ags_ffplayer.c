@@ -45,6 +45,7 @@
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -63,6 +64,7 @@
 #include <ags/X/ags_editor.h>
 
 #include <math.h>
+#include <string.h>
 
 void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
 void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -631,12 +633,8 @@ void
 ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 {
   AgsWindow *window;
-  AgsFFPlayer *gobject;
-  GtkTreeModel *list_store;
-  GtkTreeIter iter;
   xmlNode *node;
   gchar *filename;
-  gchar *preset, *instrument;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(ffplayer)));
   node = file_launch->node;
@@ -646,12 +644,16 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 
   if(g_str_has_suffix(filename, ".sf2\0")){
     AgsIpatch *ipatch;
+    GtkTreeModel *list_store;
+    GtkTreeIter iter;
     AgsPlayable *playable;
-    gchar **preset, **instrument, *selected;
+    gchar **preset, **instrument;
+    xmlChar *selected;
     GError *error;
 
     /* clear preset, instrument and sample*/
-    ags_combo_box_text_remove_all(ffplayer->instrument);
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->preset)));
+    gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->instrument)));
 
     /* Ipatch related */
     ffplayer->ipatch =
@@ -663,7 +665,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     ags_ipatch_open(ipatch, filename);
 
     playable = AGS_PLAYABLE(ipatch);
-      
+
     ags_playable_open(playable, filename);
 
     error = NULL;
@@ -675,7 +677,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     if(error != NULL){
       g_warning("%s\0", error->message);
     }
-    
+
     /* select first preset */
     ipatch->nth_level = 1;
     preset = ags_playable_sublevel_names(playable);
@@ -688,7 +690,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     if(error != NULL){
       g_warning("%s\0", error->message);
     }
-    
+
     /* fill ffplayer->preset */
     while(*preset != NULL){
       gtk_combo_box_text_append_text(ffplayer->preset,
@@ -704,22 +706,29 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     list_store = gtk_combo_box_get_model((GtkComboBox *) ffplayer->preset);
 
     if(gtk_tree_model_get_iter_first(list_store, &iter)){
+      guint i;
+
+      i = 0;
+      
       do{
 	gchar *str;
-	
+
 	gtk_tree_model_get(list_store, &iter,
 			   0, &str,
 			   -1);
+	g_message("%s :: %s \0", str, selected);
 	if(!g_strcmp0(selected,
 		      str)){
 	  break;
 	}
+
+	i++;
       }while(gtk_tree_model_iter_next(list_store, &iter));
-      
-      gtk_combo_box_set_active_iter(GTK_COMBO_BOX(ffplayer->preset),
-				    &iter);
+
+      gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
+			       i);
     }
-  
+
     /* select first instrument */
     ipatch->nth_level = 2;
     instrument = ags_playable_sublevel_names(playable);
@@ -732,7 +741,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     if(error != NULL){
       g_warning("%s\0", error->message);
     }
-    
+
     /* fill ffplayer->instrument */
     while(*instrument != NULL){
       gtk_combo_box_text_append_text(ffplayer->instrument,
@@ -748,6 +757,10 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     list_store = gtk_combo_box_get_model((GtkComboBox *) ffplayer->instrument);
 
     if(gtk_tree_model_get_iter_first(list_store, &iter)){
+      guint i;
+
+      i = 0;
+      
       do{
 	gchar *str;
 
@@ -759,10 +772,12 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 		      str)){
 	  break;
 	}
+
+	i++;
       }while(gtk_tree_model_iter_next(list_store, &iter));
 
-      gtk_combo_box_set_active_iter(GTK_COMBO_BOX(ffplayer->instrument),
-				    &iter);
+      gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
+			       i);
     }
   }
 }

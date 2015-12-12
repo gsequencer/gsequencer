@@ -29,6 +29,7 @@
 
 #include <fontconfig/fontconfig.h>
 #include <math.h>
+#include <string.h>
 
 void ags_gui_thread_class_init(AgsGuiThreadClass *gui_thread);
 void ags_gui_thread_connectable_interface_init(AgsConnectableInterface *connectable);

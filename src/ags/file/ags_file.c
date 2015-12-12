@@ -48,8 +48,11 @@
 #endif 
 
 #include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_config.h>
+
+#include <ags/audio/task/ags_start_read_file.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -1058,6 +1061,7 @@ void
 ags_file_real_read(AgsFile *file)
 {
   AgsMain *ags_main;
+  AgsThread *thread, *async_queue;
   xmlNode *root_node, *child;
   pid_t pid_num;
 
@@ -1129,17 +1133,40 @@ ags_file_real_read(AgsFile *file)
 
   g_message("XML file connected\0");
 
-  /* start */
-  ags_file_read_start(file);
+  thread = ags_main->main_loop;
+  g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_RUNNING));
+  ags_thread_start(thread);
 
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->flags)))) != 0){
-    /* start thread tree */
-    ags_thread_start(ags_main->main_loop);
+  /* wait thread */
+  pthread_mutex_lock(AGS_THREAD(ags_main->main_loop)->start_mutex);
 
-    /* complete thread pool */
-    ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
-    ags_thread_pool_start(ags_main->thread_pool);
+  g_atomic_int_set(&(AGS_THREAD(ags_main->main_loop)->start_wait),
+		   TRUE);
+	
+  if(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
+     g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
+    while(g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_wait)) == TRUE &&
+	  g_atomic_int_get(&(AGS_THREAD(ags_main->main_loop)->start_done)) == FALSE){
+      pthread_cond_wait(AGS_THREAD(ags_main->main_loop)->start_cond,
+			AGS_THREAD(ags_main->main_loop)->start_mutex);
+    }
   }
+	
+  pthread_mutex_unlock(AGS_THREAD(ags_main->main_loop)->start_mutex);
+
+  /* complete thread pool */
+  ags_main->thread_pool->parent = AGS_THREAD(ags_main->main_loop);
+  ags_thread_pool_start(ags_main->thread_pool);
+
+  /* start */
+  async_queue = ags_thread_find_type(ags_main->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  g_object_ref(file);
+  ags_task_thread_append_task((AgsTaskThread *) async_queue,
+			      ags_start_read_file_new(file));
+  //  ags_file_read_start(file);
 }
 
 void
@@ -1337,8 +1364,9 @@ ags_file_read_main(AgsFile *file, xmlNode *node, GObject **ags_main)
     list = g_atomic_pointer_get(&(AGS_THREAD_POOL(gobject->thread_pool)->returnable_thread));
     
     while(list != NULL){
-      ags_thread_add_child((AgsThread *) async_queue,
-			   AGS_THREAD(list->data));
+      ags_thread_add_child_extended((AgsThread *) async_queue,
+				    AGS_THREAD(list->data),
+				    TRUE, TRUE);
       
       list = list->next;
     }

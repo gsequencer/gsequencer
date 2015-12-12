@@ -218,6 +218,7 @@ gsequencerheaders = \
 	src/ags/audio/task/ags_set_output_device.h \
 	src/ags/audio/task/ags_set_samplerate.h \
 	src/ags/audio/task/ags_start_devout.h \
+	src/ags/audio/task/ags_start_read_file.h \
 	src/ags/audio/task/ags_toggle_led.h \
 	src/ags/audio/task/ags_toggle_pattern_bit.h \
 	src/ags/audio/task/ags_unref_audio_signal.h \
@@ -561,6 +562,7 @@ gsequencer_SOURCES = \
 	src/ags/audio/task/ags_set_output_device.c \
 	src/ags/audio/task/ags_set_samplerate.c \
 	src/ags/audio/task/ags_start_devout.c \
+	src/ags/audio/task/ags_start_read_file.c \
 	src/ags/audio/task/ags_toggle_led.c \
 	src/ags/audio/task/ags_toggle_pattern_bit.c \
 	src/ags/audio/task/ags_unref_audio_signal.c \
