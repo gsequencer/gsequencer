@@ -54,8 +54,6 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_loop_channel.h>
-#include <ags/audio/recall/ags_loop_channel_run.h>
 #include <ags/audio/recall/ags_stream_channel.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
@@ -846,8 +844,6 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-  AgsLoopChannel *recall_loop_channel;
-  AgsLoopChannelRun *recall_loop_channel_run;
 
   GList *list;
 

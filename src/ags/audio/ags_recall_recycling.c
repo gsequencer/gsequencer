@@ -702,15 +702,15 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 	    return;
 	  }
 	}else{
-	  AgsRecyclingContainer *parent_container;
+	  //	  AgsRecyclingContainer *parent_container;
 
-	  parent_container = ags_recall_id_find_parent_recycling_container(AGS_AUDIO(channel->audio)->recall_id,
-									   recall->recall_id->recycling_container);
+	  //	  parent_container = ags_recall_id_find_parent_recycling_container(AGS_AUDIO(channel->audio)->recall_id,
+	  //								   recall->recall_id->recycling_container);
 
-	  if(recall_id->recycling_container->parent != parent_container){
+	  //	  if(recall_id->recycling_container->parent != parent_container){
 	    pthread_mutex_unlock(mutex);
 	    return;
-	  }
+	    //	  }
 	}
       }else{
 	pthread_mutex_unlock(mutex);

@@ -1,3 +1,8 @@
+ags (0.6.34)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong acquisition of AgsAudioSignal in ags_recall_recycling.c
+
 ags (0.6.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
