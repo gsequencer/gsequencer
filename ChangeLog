@@ -1,3 +1,8 @@
+ags (0.6.35)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGINT while accessing recycling_container being NULL in ags_channel_init_recall()
+
 ags (0.6.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

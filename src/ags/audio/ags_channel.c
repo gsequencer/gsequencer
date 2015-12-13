@@ -1962,13 +1962,16 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
     recall = AGS_RECALL(list_recall->data);
     
     if(recall->recall_id == NULL ||
+       recall->recall_id->recycling_container == NULL ||
        AGS_IS_RECALL_CHANNEL(recall)){
       list_recall = list_recall->next;
       continue;
     }
 
     if(recall->recall_id->recycling_container != recall_id->recycling_container){
-      if(AGS_IS_INPUT(channel) && recall->recall_id->recycling_container->parent == NULL){
+      if(AGS_IS_INPUT(channel) &&
+	 
+	 recall->recall_id->recycling_container->parent == NULL){
 	AgsRecyclingContainer *parent_container;
 
 	parent_container = ags_recall_id_find_parent_recycling_container(AGS_AUDIO(channel->audio)->recall_id,
