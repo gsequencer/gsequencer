@@ -19,23 +19,29 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <libinstpatch/libinstpatch.h>
+
+#include <string.h>
+
+#include <CUnit/CUnit.h>
+#include <CUnit/Basic.h>
 
 #include <pthread.h>
 
-int ags_audio_test_init_suite();
-int ags_audio_test_clean_suite();
+int ags_libinstpatch_test_init_suite();
+int ags_libinstpatch_test_clean_suite();
 
 void ags_libinstpatch_test_concurrent_read();
-void ags_libinstpatch_test_concurrent_read_thread0(void *ptr);
-void ags_libinstpatch_test_concurrent_read_thread1(void *ptr);
+void* ags_libinstpatch_test_concurrent_read_thread0(void *ptr);
+void* ags_libinstpatch_test_concurrent_read_thread1(void *ptr);
 
-IpatchFile *concurrent_read_file;
-IpatchFileHandle *concurrent_read_handle;
-IpatchBase *concurrent_read_base;
-IpatchSF2 *concurrent_read_sf2;
+static IpatchFile *concurrent_read_file;
+static IpatchFileHandle *concurrent_read_handle;
+static IpatchBase *concurrent_read_base;
+static IpatchSF2 *concurrent_read_sf2;
 
-#define AGS_LIBINSTPATCH_TEST_CONCURRENT_READ_SOUNDFONT2_FILENAME "/usr/share/sounds/sf2/FluidR3_GM.sf2\0"
+static const gchar *concurrent_read_filename =  "/usr/share/sounds/sf2/FluidR3_GM.sf2\0";
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -79,7 +85,7 @@ ags_libinstpatch_test_concurrent_read_thread0(void *ptr)
   GError *error;
   
   error = NULL;
-  concurrent_read_handle = ipatch_file_identify_open(AGS_LIBINSTPATCH_TEST_CONCURRENT_READ_SOUNDFONT2_FILENAME,
+  concurrent_read_handle = ipatch_file_identify_open(concurrent_read_filename,
 						     &error);
 
   if(error != NULL){
@@ -91,11 +97,11 @@ ags_libinstpatch_test_concurrent_read_thread0(void *ptr)
   reader = ipatch_sf2_reader_new(concurrent_read_handle);
 
   error = NULL;
-  concurrent_read_base = (IpatchBase *) ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
+  concurrent_read_base = (IpatchBase *) ipatch_sf2_reader_load(reader,
 							       &error);
   
   error = NULL;
-  concurrent_read_sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) handle->file,
+  concurrent_read_sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) concurrent_read_handle->file,
 								    IPATCH_TYPE_SF2,
 								    &error);
 
@@ -113,19 +119,14 @@ ags_libinstpatch_test_concurrent_read_thread0(void *ptr)
   list = ipatch_list->items;
 	
   while(list != NULL){
-    if(!g_strcmp0(ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(list->data)), sublevel_name)){
-      /* some extra code for bank and program */
-      //	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
-      //				      &(ipatch_sf2_reader->bank),
-      //				      &(ipatch_sf2_reader->program));
+    /* some extra code for bank and program */
+    //	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
+    //				      &(ipatch_sf2_reader->bank),
+    //				      &(ipatch_sf2_reader->program));
 
-      //	    g_message("bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
+    //	    g_message("bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
 
-      this_error = NULL;
-      preset = (IpatchContainer *) IPATCH_SF2_PRESET(list->data);
-
-      break;
-    }
+    preset = (IpatchContainer *) IPATCH_SF2_PRESET(list->data);
 
     list = list->next;
   }
@@ -140,14 +141,10 @@ ags_libinstpatch_test_concurrent_read_thread0(void *ptr)
   while(tmp != NULL){
     list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
 
-    if(!g_strcmp0(IPATCH_SF2_INST(list->data)->name, sublevel_name)){
-      instrument = (IpatchContainer *) IPATCH_SF2_INST(list->data);
-    }
+    instrument = (IpatchContainer *) IPATCH_SF2_INST(list->data);
 
     tmp = tmp->next;
   }
-
-  ipatch->iter = g_list_reverse(list);
 
   /* sample */
   ipatch_list = ipatch_sf2_preset_get_zones(instrument);
@@ -157,9 +154,7 @@ ags_libinstpatch_test_concurrent_read_thread0(void *ptr)
   while(tmp != NULL){
     list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
 
-    if(!strncmp(IPATCH_SF2_SAMPLE(list->data)->name, sublevel_name, 20)){
-      sample = (IpatchContainer *) IPATCH_SF2_SAMPLE(list->data);
-    }
+    sample = (IpatchContainer *) IPATCH_SF2_SAMPLE(list->data);
 
     tmp = tmp->next;
   }
@@ -190,19 +185,14 @@ ags_libinstpatch_test_concurrent_read_thread1(void *ptr)
   list = ipatch_list->items;
 	
   while(list != NULL){
-    if(!g_strcmp0(ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(list->data)), sublevel_name)){
-      /* some extra code for bank and program */
-      //	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
-      //				      &(ipatch_sf2_reader->bank),
-      //				      &(ipatch_sf2_reader->program));
+    /* some extra code for bank and program */
+    //	    ipatch_sf2_preset_get_midi_locale(IPATCH_SF2_PRESET(list->data),
+    //				      &(ipatch_sf2_reader->bank),
+    //				      &(ipatch_sf2_reader->program));
 
-      //	    g_message("bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
+    //	    g_message("bank %d program %d\n\0", ipatch_sf2_reader->bank, ipatch_sf2_reader->program);
 
-      this_error = NULL;
-      preset = (IpatchContainer *) IPATCH_SF2_PRESET(list->data);
-
-      break;
-    }
+    preset = (IpatchContainer *) IPATCH_SF2_PRESET(list->data);
 
     list = list->next;
   }
@@ -217,14 +207,10 @@ ags_libinstpatch_test_concurrent_read_thread1(void *ptr)
   while(tmp != NULL){
     list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
 
-    if(!g_strcmp0(IPATCH_SF2_INST(list->data)->name, sublevel_name)){
-      instrument = (IpatchContainer *) IPATCH_SF2_INST(list->data);
-    }
+    instrument = (IpatchContainer *) IPATCH_SF2_INST(list->data);
 
     tmp = tmp->next;
   }
-
-  ipatch->iter = g_list_reverse(list);
 
   /* sample */
   ipatch_list = ipatch_sf2_preset_get_zones(instrument);
@@ -234,9 +220,7 @@ ags_libinstpatch_test_concurrent_read_thread1(void *ptr)
   while(tmp != NULL){
     list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
 
-    if(!strncmp(IPATCH_SF2_SAMPLE(list->data)->name, sublevel_name, 20)){
-      sample = (IpatchContainer *) IPATCH_SF2_SAMPLE(list->data);
-    }
+    sample = (IpatchContainer *) IPATCH_SF2_SAMPLE(list->data);
 
     tmp = tmp->next;
   }
@@ -250,12 +234,14 @@ ags_libinstpatch_test_concurrent_read()
   pthread_t thread0, thread1;
 
   pthread_create(&thread0, NULL,
-		 &ags_libinstpatch_test_concurrent_read_thread0, NULL);
-  pthread_join(thread0);
+		 ags_libinstpatch_test_concurrent_read_thread0, NULL);
+  pthread_join(thread0,
+	       NULL);
   
   pthread_create(&thread1, NULL,
-		 &ags_libinstpatch_test_concurrent_read_thread1, NULL);
-  pthread_join(thread1);
+		 ags_libinstpatch_test_concurrent_read_thread1, NULL);
+  pthread_join(thread1,
+	       NULL);
 }
 
 int
@@ -278,7 +264,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsLibinstpatch concurrent read\0", ags_libinstpatch_test_set_pads) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsLibinstpatch concurrent read\0", ags_libinstpatch_test_concurrent_read) == NULL)){
     CU_cleanup_registry();
 
     return CU_get_error();
