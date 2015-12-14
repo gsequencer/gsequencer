@@ -36,10 +36,10 @@ void ags_libinstpatch_test_concurrent_read();
 void* ags_libinstpatch_test_concurrent_read_thread0(void *ptr);
 void* ags_libinstpatch_test_concurrent_read_thread1(void *ptr);
 
-static IpatchFile *concurrent_read_file;
-static IpatchFileHandle *concurrent_read_handle;
-static IpatchBase *concurrent_read_base;
-static IpatchSF2 *concurrent_read_sf2;
+IpatchFile *concurrent_read_file;
+IpatchFileHandle *concurrent_read_handle;
+IpatchBase *concurrent_read_base;
+IpatchSF2 *concurrent_read_sf2;
 
 static const gchar *concurrent_read_filename =  "/usr/share/sounds/sf2/FluidR3_GM.sf2\0";
 
@@ -50,8 +50,8 @@ static const gchar *concurrent_read_filename =  "/usr/share/sounds/sf2/FluidR3_G
 int
 ags_libinstpatch_test_init_suite()
 {
-  concurrent_read_file = NULL;
-  concurrent_read_handle = NULL;
+  //  concurrent_read_file = NULL;
+  //  concurrent_read_handle = NULL;
   
   return(0);
 }
@@ -93,7 +93,6 @@ ags_libinstpatch_test_concurrent_read_thread0(void *ptr)
   }
 
   /*  */
-
   reader = ipatch_sf2_reader_new(concurrent_read_handle);
 
   error = NULL;
@@ -270,6 +269,8 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
+  ipatch_init();
+  
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
