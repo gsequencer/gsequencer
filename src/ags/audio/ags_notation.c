@@ -705,10 +705,10 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 	if(notation->notes == notes){
 	  notation->notes = notes->next;
 	}
-	
+
 	notes->prev = NULL;
 	notes->next = NULL;
-	g_list_free1(notes);
+	g_list_free_1(notes);
 	
 	g_object_unref(note);
 
@@ -750,7 +750,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 	
 	notes->prev = NULL;
 	notes->next = NULL;
-	g_list_free1(notes);
+	g_list_free_1(notes);
 
 	g_object_unref(note);
 	
@@ -1259,7 +1259,7 @@ ags_notation_cut_selection(AgsNotation *notation)
       if(next_note != NULL)
 	next_note->prev = notes->prev;
 
-      g_list_free1(notes);
+      g_list_free_1(notes);
 
       notes = next_note;
     }

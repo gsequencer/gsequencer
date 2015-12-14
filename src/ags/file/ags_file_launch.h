@@ -43,6 +43,7 @@ struct _AgsFileLaunch
 
   xmlNode *node;
   GObject *file;
+  gpointer reference;
 };
 
 struct _AgsFileLaunchClass

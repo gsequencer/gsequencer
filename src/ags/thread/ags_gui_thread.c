@@ -195,7 +195,7 @@ ags_gui_thread_run(AgsThread *thread)
   auto void ags_gui_thread_complete_task();
   
   void ags_gui_thread_do_gtk_iteration(){
-
+  
     if(!g_main_context_acquire(main_context)){
       gboolean got_ownership = FALSE;
 
@@ -251,6 +251,16 @@ ags_gui_thread_run(AgsThread *thread)
   {
     GList *list, *list_next;
 
+    if(!g_main_context_acquire(main_context)){
+      gboolean got_ownership = FALSE;
+
+      while(!got_ownership){
+	got_ownership = g_main_context_wait(main_context,
+					    &(gui_thread->cond),
+					    &(gui_thread->mutex));
+      }
+    }
+
     list = gui_thread->task_completion;
 
     while(list != NULL){
@@ -265,6 +275,8 @@ ags_gui_thread_run(AgsThread *thread)
 
       list = list_next;
     }
+
+    g_main_context_release(main_context);
   }
   
   gui_thread = AGS_GUI_THREAD(thread);

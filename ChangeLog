@@ -1,3 +1,20 @@
+ags (0.6.38)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* work-around dead-lock as doing ipatch_file_identify_open() from different threads
+
+ags (0.6.37)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing GMainContext acquire in ags_gui_thread.c
+	* fixed NULL pointer accessing by moving code
+	* fixed buffer-overflow because of swapped indices in ags_recycling.c
+
+ags (0.6.36)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed introduced bug in ags_ffplayer.c because of missing mapping recalls
+
 ags (0.6.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

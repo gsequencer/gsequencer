@@ -22,6 +22,8 @@
 #include <ags-lib/object/ags_connectable.h>
 #include <ags/object/ags_playable.h>
 
+#include <ags/audio/ags_audio_signal.h>
+
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 void ags_ipatch_class_init(AgsIpatchClass *ipatch);
@@ -57,9 +59,6 @@ void ags_ipatch_info(AgsPlayable *playable,
 signed short* ags_ipatch_read(AgsPlayable *playable, guint channel,
 			      GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
-GList* ags_ipatch_read_audio_signal(AgsPlayable *playable,
-				    AgsDevout *devout,
-				    guint start_channel, guint channels);
 
 /**
  * SECTION:ags_ipatch
@@ -234,7 +233,7 @@ ags_ipatch_set_property(GObject *gobject,
 
       filename = (gchar *) g_value_get_pointer(value);
 
-      ags_playable_open(AGS_PLAYABLE(ipatch), filename);
+      ags_playable_open(AGS_PLAYABLE(ipatch), g_strdup(filename));
     }
     break;
   case PROP_MODE:
@@ -847,32 +846,6 @@ ags_ipatch_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_ipatch_parent_class)->finalize(gobject);
 
   /* empty */
-}
-
-/**
- * ags_ipatch_read_audio_signal:
- * @ipatch: an AgsIpatch
- *
- * Reads an AgsAudioSignal from current sample and iterates to the next sample. Prior,
- * you should have called #ags_playable_iter_start.
- *
- * Returns:
- */
-GList*
-ags_ipatch_read_audio_signal(AgsPlayable *playable,
-			     AgsDevout *devout,
-			     guint start_channel, guint channels)
-{
-  AgsIpatch *ipatch;
-  GList *list;
-
-  ipatch = AGS_IPATCH(playable);
-
-  list = ags_playable_read_audio_signal(AGS_PLAYABLE(ipatch->reader),
-					ipatch->devout,
-					0, 2);
-
-  ipatch->audio_signal = list;
 }
 
 /**

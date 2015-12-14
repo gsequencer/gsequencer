@@ -40,6 +40,9 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_audio_loop.h>
+#include <ags/thread/ags_gui_thread.h>
+#include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_task_completion.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -99,6 +102,8 @@ void ags_ffplayer_set_pads(AgsAudio *audio, GType type,
 void ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start);
 void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start);
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
+void ags_ffplayer_file_launch_complete_callback(AgsTaskCompletion *task_completion,
+						AgsFileLaunch *file_launch);
 
 /**
  * SECTION:ags_ffplayer
@@ -604,7 +609,10 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   /* launch */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "main\0", file->ags_main,
 					       "node\0", node,
+					       "file\0", file,
+					       "reference\0", gobject,
 					       NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_ffplayer_launch_task), gobject);
@@ -649,10 +657,44 @@ ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
 void
 ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 {
+  AgsGuiThread *gui_thread;
+  AgsTaskCompletion *task_completion;
+
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(AGS_MAIN(file_launch->ags_main)->main_loop,
+						     AGS_TYPE_GUI_THREAD);
+
+  task_completion = ags_task_completion_new(NULL,
+					    NULL);
+  g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
+			 G_CALLBACK(ags_ffplayer_file_launch_complete_callback), file_launch);
+  ags_connectable_connect(AGS_CONNECTABLE(task_completion));
+      
+  gui_thread->task_completion = g_list_prepend(gui_thread->task_completion,
+					       task_completion);
+
+  g_atomic_int_and(&(task_completion->flags),
+		   (~(AGS_TASK_COMPLETION_QUEUED | AGS_TASK_COMPLETION_BUSY)));
+
+  g_atomic_int_or(&(task_completion->flags),
+		  AGS_TASK_COMPLETION_READY);
+
+  g_object_ref(file_launch);
+  file_launch->node = xmlCopyNode(file_launch->node,
+				  TRUE);
+}
+
+void
+ags_ffplayer_file_launch_complete_callback(AgsTaskCompletion *task_completion,
+					   AgsFileLaunch *file_launch)
+{
+  AgsFFPlayer *ffplayer;
   AgsWindow *window;
   xmlNode *node;
   gchar *filename;
 
+  //FIXME:JK: this is a work-around this code should generally go to ags_ffplayer_launch_task()
+  
+  ffplayer = file_launch->reference;
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(ffplayer)));
   node = file_launch->node;
 
@@ -679,14 +721,10 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			    "filename\0", filename,
 			    NULL);
     ipatch->devout = window->devout;
-    ags_ipatch_open(ipatch, filename);
 
     playable = AGS_PLAYABLE(ipatch);
 
-    ags_playable_open(playable, filename);
-
     error = NULL;
-    ipatch->nth_level = 0;
     ags_playable_level_select(playable,
 			      0, filename,
 			      &error);
@@ -707,7 +745,7 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     if(error != NULL){
       g_warning("%s\0", error->message);
     }
-
+    
     /* fill ffplayer->preset */
     while(*preset != NULL){
       gtk_combo_box_text_append_text(ffplayer->preset,
@@ -745,27 +783,6 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			       i);
     }
 
-    /* select first instrument */
-    ipatch->nth_level = 2;
-    instrument = ags_playable_sublevel_names(playable);
-
-    error = NULL;
-    ags_playable_level_select(playable,
-			      2, *instrument,
-			      &error);
-
-    if(error != NULL){
-      g_warning("%s\0", error->message);
-    }
-
-    /* fill ffplayer->instrument */
-    while(*instrument != NULL){
-      gtk_combo_box_text_append_text(ffplayer->instrument,
-				     *instrument);
-
-      instrument++;
-    }
-
     /* Get the first iter in the list */
     selected = xmlGetProp(node,
 			  "instrument\0");
@@ -796,6 +813,8 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 			       i);
     }
   }
+
+  xmlFreeNode(file_launch->node);
 }
 
 xmlNode*
@@ -940,7 +959,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-play\0",
-			      current->audio_channel, current->audio_channel + 1, 
+			      0, audio->audio_channels, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
@@ -958,7 +977,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream\0",
-			      current->audio_channel, current->audio_channel + 1, 
+			      0, audio->audio_channels,
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
@@ -1018,14 +1037,14 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream\0",
-			      current->audio_channel, current->audio_channel + 1,
+			      0, audio->audio_channels,
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_OUTPUT |
 			       AGS_RECALL_FACTORY_PLAY |
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 
-    current = current->next;
+    current = current->next_pad;
   }
 
   ffplayer->mapped_output_pad = audio->output_pads;

@@ -147,8 +147,10 @@ ags_task_completion_connect(AgsConnectable *connectable)
   g_atomic_int_or(&(task_completion->flags),
 		  AGS_TASK_COMPLETION_QUEUED);
 
-  g_signal_connect_after(task_completion->task, "launch\0",
-			 G_CALLBACK(ags_task_completion_launch_callback), task_completion);
+  if(task_completion->task != NULL){
+    g_signal_connect_after(task_completion->task, "launch\0",
+			   G_CALLBACK(ags_task_completion_launch_callback), task_completion);
+  }
 }
 
 void

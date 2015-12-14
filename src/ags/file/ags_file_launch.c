@@ -51,6 +51,7 @@ enum{
   PROP_NODE,
   PROP_FILE,
   PROP_MAIN,
+  PROP_REFERENCE,
 };
 
 static gpointer ags_file_launch_parent_class = NULL;
@@ -126,6 +127,14 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 				  PROP_MAIN,
 				  param_spec);
 
+  param_spec = g_param_spec_pointer("reference\0",
+				    "the reference\0",
+				    "The reference to find the element\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REFERENCE,
+				  param_spec);
+
   /* AgsFileLaunchClass */
   file_launch->start = NULL;
 
@@ -145,6 +154,7 @@ ags_file_launch_init(AgsFileLaunch *file_launch)
   file_launch->ags_main = NULL;
   file_launch->node = NULL;
   file_launch->file = NULL;
+  file_launch->reference = NULL;
 }
 
 void
@@ -197,6 +207,15 @@ ags_file_launch_set_property(GObject *gobject,
       file_launch->ags_main = ags_main;
     }
     break;
+  case PROP_REFERENCE:
+    {
+      gpointer reference;
+
+      reference = g_value_get_pointer(value);
+
+      file_launch->reference = reference;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -227,6 +246,11 @@ ags_file_launch_get_property(GObject *gobject,
   case PROP_MAIN:
     {
       g_value_set_object(value, file_launch->ags_main);
+    }
+    break;
+  case PROP_REFERENCE:
+    {
+      g_value_set_pointer(value, file_launch->reference);
     }
     break;
   default:
