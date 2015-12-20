@@ -19,21 +19,21 @@ int do_local_memory_test();
 int do_automatic_memory_test();
 
 /* declare global static */
-#ifdef AGS_GCC_TEST_EXCLUSION_MACRO_GLOBAL_STATIC_SWITCH
-static char *ags_gcc_test_exclusion_macros_global_static_my_str = "default not reachable\0";
-static void (*ags_gcc_test_exclusion_macros_global_static_my_func_ptr) = &my_static_dummy_function0;
+#ifdef MACRO_EXCLUSION_TEST_GLOBAL_STATIC_SWITCH
+static char *macro_exclusion_test_global_static_my_str0 = "default not reachable\0";
+static void (*macro_exclusion_test_global_static_my_func_ptr0) = &my_static_dummy_function0;
 #else
-static char *ags_gcc_test_exclusion_macros_global_static_my_str = "default reachable\0";
-static void (*ags_gcc_test_exclusion_macros_global_static_my_func_ptr) = &my_static_dummy_function1;
+static char *macro_exclusion_test_global_static_my_str = "default reachable\0";
+static void (*macro_exclusion_test_global_static_my_func_ptr) = &my_static_dummy_function1;
 #endif
 
 /* declare global */
-#ifndef AGS_GCC_TEST_EXCLUSION_MACRO_GLOBAL_SWITCH
-char *ags_gcc_test_exclusion_macros_global_static_my_str = "default not reachable\0";
-void (*ags_gcc_test_exclusion_macros_global_static_my_func_ptr) = &my_static_dummy_function0;
+#ifndef MACRO_EXCLUSION_TEST_GLOBAL_SWITCH
+char *macro_exclusion_test_global_my_str0 = "default not reachable\0";
+void (*macro_exclusion_test_global_my_func_ptr0) = &my_static_dummy_function0;
 #else
-char *ags_gcc_test_exclusion_macros_global_static_my_str = "default reachable\0";
-void (*ags_gcc_test_exclusion_macros_global_static_my_func_ptr) = &my_static_dummy_function1;
+char *macro_exclusion_test_global_my_str1 = "default reachable\0";
+void (*macro_exclusion_test_global_my_func_ptr1) = &my_static_dummy_function1;
 #endif
 
 /* just for checking address */
@@ -64,7 +64,7 @@ my_static_dummy_function1()
 int
 do_global_static_memory_test()
 {
-#ifdef AGS_GCC_TEST_EXCLUSION_MACRO_GLOBAL_STATIC_SWITCH
+#ifdef MACRO_EXCLUSION_TEST_GLOBAL_STATIC_SWITCH
   //TODO:JK: implement me
 #else
   //TODO:JK: implement me
@@ -77,7 +77,7 @@ do_global_static_memory_test()
 int
 do_global_memory_test()
 {
-#ifdef AGS_GCC_TEST_EXCLUSION_MACRO_GLOBAL_SWITCH
+#ifdef MACRO_EXCLUSION_TEST_GLOBAL_SWITCH
   //TODO:JK: implement me
 #else
   //TODO:JK: implement me
@@ -90,7 +90,7 @@ do_global_memory_test()
 int
 do_static_memory_test()
 {
-#ifdef AGS_GCC_TEST_EXCLUSION_MACRO_STATIC_SWITCH
+#ifdef MACRO_EXCLUSION_TEST_STATIC_SWITCH
   //TODO:JK: implement me
 #else
   //TODO:JK: implement me
@@ -103,7 +103,7 @@ do_static_memory_test()
 int
 do_local_memory_test()
 {
-#ifdef AGS_GCC_TEST_EXCLUSION_MACRO_LOCAL_SWITCH
+#ifdef MACRO_EXCLUSION_TEST_LOCAL_SWITCH
   //TODO:JK: implement me
 #else
   //TODO:JK: implement me
@@ -116,7 +116,7 @@ do_local_memory_test()
 int
 do_automatic_memory_test()
 {
-#ifdef AGS_GCC_TEST_EXCLUSION_MACRO_AUTOMATIC_SWITCH
+#ifdef MACRO_EXCLUSION_TEST_AUTOMATIC_SWITCH
   //TODO:JK: implement me
 #else
   //TODO:JK: implement me
