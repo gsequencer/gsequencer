@@ -260,9 +260,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   str0 = ags_config_get(config,
 			AGS_CONFIG_DEVOUT,
 			"samplerate\0");
-  str0 = ags_config_get(config,
+  str1 = ags_config_get(config,
 			AGS_CONFIG_DEVOUT,
-			"buffer_size\0");
+			"buffer-size\0");
 
   pthread_mutex_unlock(&(ags_application_mutex));
 
@@ -275,7 +275,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
     samplerate = g_ascii_strtoull(str0,
 				  NULL,
 				  10);
-    buffer_size = g_ascii_strtoull(str0,
+    buffer_size = g_ascii_strtoull(str1,
 				   NULL,
 				   10);
 

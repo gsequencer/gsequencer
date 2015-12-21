@@ -112,6 +112,8 @@ my_data_function_v3f(int length)
 void
 my_dummy_init(struct _MyDummy *my_dummy)
 {
+  my_dummy->val0 = MY_DUMMY_VAL0;
+  my_dummy->val1 = MY_DUMMY_VAL1;
 }
 
 /* just for checking address */
@@ -236,26 +238,54 @@ do_static_memory_test()
 int
 do_local_memory_test()
 {
+  struct _MyDummy my_dummy_a, my_dummy_b;
+
+#ifndef MACRO_EXCLUSION_TEST_LOCAL_SWITCH
+  if(my_complex_i[MY_DATA_LENGTH - 1][1] > 1.0){ /* y is definitely bigger if not MY_DATA_LENGTH < 2 */
+    my_dummy_init(&my_dummy_a);
+  }
+#endif
+  
+  if(my_complex_i[MY_DATA_LENGTH - 1][1] > 1.0){ /* y is definitely bigger if not MY_DATA_LENGTH < 2 */
 #ifdef MACRO_EXCLUSION_TEST_LOCAL_SWITCH
     printf("don't define MACRO_EXCLUSION_TEST_LOCAL_SWITCH\n\0");
 
     return(-1);
 #else
-    struct _MyDummy my_dummy;
+    long val0;
+    static const long val1 = 1.0 / 1000.0;
+    
+    my_dummy_init(&my_dummy_b);
 
-    my_dummy_init(&my_dummy);
-
-    if(my_dummy.val0 != MY_DUMMY_VAL0){
+    if(my_dummy_a.val0 != MY_DUMMY_VAL0){
       printf("ERROR\n\0");
       return(-1);
     }
 
-    if(my_dummy.val1 != MY_DUMMY_VAL1){
+    if(my_dummy_a.val1 != MY_DUMMY_VAL1){
+      printf("ERROR\n\0");
+      return(-1);
+    }
+
+    if(my_dummy_b.val0 != MY_DUMMY_VAL0){
+      printf("ERROR\n\0");
+      return(-1);
+    }
+
+    if(my_dummy_b.val1 != MY_DUMMY_VAL1){
+      printf("ERROR\n\0");
+      return(-1);
+    }
+
+    val0 = my_dummy_a.val0 - my_dummy_b.val0;
+
+    if(val0 != 0){
       printf("ERROR\n\0");
       return(-1);
     }
 #endif
-
+  }
+  
   return(0);
 }
 

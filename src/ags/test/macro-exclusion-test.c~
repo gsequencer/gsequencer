@@ -1,0 +1,21 @@
+static void my_static_dummy_function0();
+static void my_static_dummy_function1();
+
+/* tests if global static memory is reachable within an exclusion macro */
+int do_global_static_memory_test();
+
+/* tests if global memory is reachable within an exclusion macro */
+int do_global_memory_test();
+
+/* tests if static memory is reachable within an exclusion macro */
+int do_static_memory_test();
+
+/* tests if local memory is reachable within an exclusion macro */
+int do_local_memory_test();
+
+/* tests if automatic memory is reachable within an exclusion macro */
+int do_automatic_memory_test();
+
+/* the test's entry function */
+int do_test(int argc, char **argv);
+

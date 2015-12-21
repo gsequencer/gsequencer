@@ -155,9 +155,9 @@ ags_export_thread_init(AgsExportThread *export_thread)
   str0 = ags_config_get(config,
 			AGS_CONFIG_DEVOUT,
 			"samplerate\0");
-  str0 = ags_config_get(config,
+  str1 = ags_config_get(config,
 			AGS_CONFIG_DEVOUT,
-			"buffer_size\0");
+			"buffer-size\0");
 
   if(str0 == NULL || str1 == NULL){
     thread->freq = AGS_EXPORT_THREAD_DEFAULT_JIFFIE;
@@ -168,7 +168,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
     samplerate = g_ascii_strtoull(str0,
 				  NULL,
 				  10);
-    buffer_size = g_ascii_strtoull(str0,
+    buffer_size = g_ascii_strtoull(str1,
 				   NULL,
 				   10);
 
