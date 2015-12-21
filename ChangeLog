@@ -1,3 +1,13 @@
+ags (0.6.40)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory leak in ags_generic_preferences.c but wasn't that bad
+
+ags (0.6.39)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed stack-corruption caused by integer overflow while doing variable typo
+
 ags (0.6.38)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
