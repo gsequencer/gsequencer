@@ -35,6 +35,9 @@
 #include <ags/audio/ags_config.h>
 
 #include <fontconfig/fontconfig.h>
+
+#include <unistd.h>
+#include <string.h>
 #include <math.h>
 
 void ags_task_thread_class_init(AgsTaskThreadClass *task_thread);

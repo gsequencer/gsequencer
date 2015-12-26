@@ -51,6 +51,7 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <pthread.h>
 #include <stdio.h>
 
 /**

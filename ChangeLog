@@ -2,6 +2,7 @@ ags (0.6.40)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed memory leak in ags_generic_preferences.c but wasn't that bad
+	* fixed using prefered gtk_main_iteration_do() what gives you better program stability
 
 ags (0.6.39)
 

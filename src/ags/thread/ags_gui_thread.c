@@ -284,9 +284,7 @@ ags_gui_thread_run(AgsThread *thread)
   /*  */
   main_context = g_main_context_default();
 
-  ags_gui_thread_do_gtk_iteration();
-
-  /*
+  //  ags_gui_thread_do_gtk_iteration();
   
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
     g_main_context_release(main_context);
@@ -305,7 +303,6 @@ ags_gui_thread_run(AgsThread *thread)
 					  &(gui_thread->mutex));
     }
   }
-  */
   
   ags_gui_thread_complete_task();  
 

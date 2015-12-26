@@ -49,6 +49,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
 
 /**
  * SECTION:ags_audio
