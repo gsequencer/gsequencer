@@ -446,5 +446,12 @@ ags_drum_input_pad_edit_callback(GtkWidget *toggle_button, AgsDrumInputPad *drum
       /* reset */
       drum->selected_edit_button = toggle;
     }
+  }else{
+    drum->selected_edit_button = toggle_button;
+    drum->selected_pad = (AgsDrumInputPad *) gtk_widget_get_ancestor((GtkWidget *) toggle_button, AGS_TYPE_DRUM_INPUT_PAD);
+
+    AGS_MACHINE(drum)->selected_input_pad = drum->selected_pad;
+      
+    ags_pattern_box_set_pattern(drum->pattern_box);
   }
 }

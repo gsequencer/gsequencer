@@ -1951,6 +1951,12 @@ ags_file_read_line_member(AgsFile *file, xmlNode *node, AgsLineMember **line_mem
       gtk_range_set_inverted(GTK_RANGE(child_widget),
 			     TRUE);
     }
+
+    if(g_type_is_a(G_OBJECT_TYPE(child_widget),
+		   GTK_TYPE_SCALE)){
+      gtk_scale_set_digits(GTK_SCALE(child_widget),
+			   3);
+    }
   }else if(AGS_IS_VINDICATOR(child_widget)){
     adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
     g_object_set(child_widget,

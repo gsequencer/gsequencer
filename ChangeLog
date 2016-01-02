@@ -1,3 +1,9 @@
+ags (0.6.41)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed proper restore of GtkVScale digits
+	* fixed proper restore of edit button of AgsDrum
+
 ags (0.6.40)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
