@@ -23,6 +23,8 @@
 #include <glib-object.h>
 #include <libxml/tree.h>
 
+#include <ags/lib/ags_function.h>
+
 #include <ags/audio/ags_acceleration.h>
 
 #define AGS_TYPE_AUTOMATION                (ags_automation_get_type())
