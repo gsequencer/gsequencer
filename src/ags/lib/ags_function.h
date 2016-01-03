@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_complex.h>
+
 #define AGS_TYPE_FUNCTION                (ags_function_get_type())
 #define AGS_FUNCTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FUNCTION, AgsFunction))
 #define AGS_FUNCTION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FUNCTION, AgsFunctionClass))
@@ -29,19 +31,8 @@
 #define AGS_IS_FUNCTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FUNCTION))
 #define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
 
-#define AGS_LINEAR_LIMIT "\0"
-#define AGS_EXPONENTIAL_LIMIT "\0"
-#define AGS_LOGARITHMIC_LIMIT "\0"
 #define AGS_INFINIT "∞\0"
 #define AGS_COMPLEX_UNIT "𝑖\0"
-
-#define AGS_BAND_LOWER (0.0)
-#define AGS_BAND_UPPER (22100.0)
-#define AGS_BAND_HARMONIC_PRESSURE (440.0)
-
-#define AGS_FUNCTION_LOWER (-4.0)
-#define AGS_FUNCTION_UPPER (4.0)
-#define AGS_FUNCTION_CENTER (-1.0)
 
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
@@ -54,7 +45,7 @@ typedef enum{
   AGS_FUNCTION_SOLVE_PIVOT_TABLE    = 1 <<  4,
   AGS_FUNCTION_SOLVE_MAXIMUM_COLON  = 1 <<  5,
   AGS_FUNCTION_SOLVE_GAUSS          = 1 <<  6,
-}AgsAutomationFlags;
+}AgsFunctionFlags;
 
 struct _AgsFunction
 {
@@ -63,11 +54,17 @@ struct _AgsFunction
   guint flags;
   
   gboolean is_pushing;
+  gchar **equation;
+  guint equation_count;
+  
   gchar *source_function;
-  guint length;
 
-  guint n_dimensions;
-  AgsComplex** pivot_table;
+  guint n_rows;
+  guint n_cols;
+  AgsComplex*** pivot_table;
+  
+  gchar **symbol;
+  guint symbol_count;
   
   gchar *normalized_function;
 };
@@ -81,17 +78,22 @@ struct _AgsFunctionClass
 
 GType ags_function_get_type(void);
 
+gchar** ags_function_find_literals(AgsFunction *function,
+				   guint *n_symbols);
 void ags_function_literal_solve(AgsFunction *function);
 
 gboolean ags_function_push_equation(AgsFunction *function,
-				    gchar *equation,
-				    guint length);
-void ags_function_pop_equation(AgsFunction *function);
+				    gchar *equation);
+void ags_function_pop_equation(AgsFunction *function,
+			       GError **error);
 
 gchar* ags_function_get_merged(AgsFunction *function,
-			       gchar **symbols);
+			       gchar **symbols,
+			       guint count);
 gchar* ags_funciton_get_normalized(AgsFunction *function);
 
+gboolean ags_function_substitute_values(AgsFunction *function,
+					gchar *symbol, ...);
 AgsComplex* ags_function_translate_value(AgsFunction *function,
 					 AgsComplex *value);
 AgsComplex** ags_function_symbolic_translate_value(AgsFunction *function,
