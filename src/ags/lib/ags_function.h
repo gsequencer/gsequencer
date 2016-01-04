@@ -62,6 +62,9 @@ struct _AgsFunction
   guint n_rows;
   guint n_cols;
   AgsComplex*** pivot_table;
+
+  guint solver_level;
+  AgsComplex*** solver_table;
   
   gchar **symbol;
   guint symbol_count;
@@ -87,18 +90,22 @@ gboolean ags_function_push_equation(AgsFunction *function,
 void ags_function_pop_equation(AgsFunction *function,
 			       GError **error);
 
-gchar* ags_function_get_merged(AgsFunction *function,
-			       gchar **symbols,
-			       guint count);
+gchar* ags_function_get_expanded(AgsFunction *function,
+				 gchar **symbols,
+				 guint n_symbols);
 gchar* ags_funciton_get_normalized(AgsFunction *function);
+
+AgsComplex* ags_function_compute_term(gchar *term,
+				      gchar *substitute_symbol, AgsComplex *subsitute_value);
+
+AgsComplex** ags_function_symbolic_translate_value(AgsFunction *function,
+						   gchar *symbol,
+						   AgsComplex *value);
 
 gboolean ags_function_substitute_values(AgsFunction *function,
 					gchar *symbol, ...);
 AgsComplex* ags_function_translate_value(AgsFunction *function,
 					 AgsComplex *value);
-AgsComplex** ags_function_symbolic_translate_value(AgsFunction *function,
-						   gchar *symbol,
-						   AgsComplex *value);
 
 AgsFunction* ags_function_new();
 
