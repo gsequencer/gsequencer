@@ -46,6 +46,9 @@ void ags_function_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_PIVOT_TABLE,
+  PROP_SOLVER_LEVEL,
+  PROP_SOLVER_TABLE,
   PROP_SOURCE_FUNCTION,
 };
 
@@ -96,6 +99,51 @@ ags_function_class_init(AgsFunctionClass *function)
 
   /* properties */
   /**
+   * AgsFunction:pivot-table:
+   *
+   * The pivot table.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_pointer("pivot-table\0",
+				    "function as string\0",
+				    "The function to use to translate values\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PIVOT_TABLE,
+				  param_spec);
+
+  /**
+   * AgsFunction:solver-level:
+   *
+   * The solver level.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_pointer("solver-level\0",
+				    "function as string\0",
+				    "The function to use to translate values\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOLVER_LEVEL,
+				  param_spec);
+
+  /**
+   * AgsFunction:solver-table:
+   *
+   * The solver table.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_pointer("solver-table\0",
+				    "function as string\0",
+				    "The function to use to translate values\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOLVER_TABLE,
+				  param_spec);
+
+  /**
    * AgsFunction:source-function:
    *
    * The source function.
@@ -126,6 +174,9 @@ ags_function_init(AgsFunction *function)
   function->n_cols = 0;
   function->n_rows = 0;
   function->pivot_table = NULL;
+
+  function->solver_level = 0;
+  function->solver_table = NULL;
 
   function->symbol = NULL;
   function->symbol_count = 0;
@@ -232,26 +283,84 @@ ags_function_finalize(GObject *gobject)
   }
 }
 
+/**
+ * ags_function_find_literals:
+ * @function: The #AgsFunction
+ * @n_symbols: return location of symbols count
+ *
+ * Find literal symbols i.e. variable names.
+ *
+ * Returns: The string vector containing symbols
+ *
+ * Since: 0.7.2
+ */
 gchar**
 ags_function_find_literals(AgsFunction *function,
 			   guint *n_symbols)
-{
+{ 
+  regmatch_t match_arr[1];
+
+  gchar **literals;
+  gchar *str;
+  
+  guint n_literals;
+  
   static gboolean regex_compiled = FALSE;
 
   static regex_t literal_regex;
 
-  static const char *literal_pattern = "^([a-xA-X][0-9]*)\0";
+  static const char *literal_pattern = "^((?!floor|ceil|round|sin|cos|tan|log|exp)([a-xA-X][0-9]*))\0";
 
+  static const size_t max_matches = 1;
+
+  literals = NULL;
+  n_literals = 0;
+  
   /* compile regex */
   if(!regex_compiled){
-    regcomp(&literal_regex, literal_pattern, REG_EXTENDED);
-    
     regex_compiled = TRUE;
+
+    regcomp(&literal_regex, literal_pattern, REG_EXTENDED);
   }
+
+  /* find literals */
+  str = function->source_function;
   
-  //TODO:JK: implement me
+  while(str != NULL && *str != '\0'){
+    if(regexec(&literal_regex, str, max_matches, match_arr, 0) == 0){
+      literals = (gchar **) malloc((n_literals + 1) * sizeof(gchar *));
+
+      literals[n_literals] = g_strndup(match_arr[0].rm_so,
+				       match_arr[0].rm_eo - match_arr[0].rm_so);
+      n_literals++;
+
+      if(match_arr[0].rm_eo != '\0'){
+	str = match_arr[0].rm_eo + 1;
+      }else{
+	break;
+      }
+    }else{
+      break;
+    }
+  }
+
+  /* return symbols and its count*/
+  if(n_symbols != NULL){
+    *n_symbols = n_literals;
+  }
+
+  return(literals);
 }
 
+/**
+ * ags_function_literal_solve:
+ * @function: the #AgsFunction
+ * 
+ * Solves :source-function literally, allocates the pivot table and
+ * creates the normalized function.
+ * 
+ * Since: 0.7.2
+ */
 void
 ags_function_literal_solve(AgsFunction *function)
 {
@@ -312,6 +421,8 @@ ags_function_pop_equation(AgsFunction *function,
     return;
   }
 
+  //TODO:JK: compute merged
+  
   function->symbol = ags_function_find_literals(function,
 						&(function->symbol_count));
   ags_function_literal_solve(function);
@@ -319,14 +430,38 @@ ags_function_pop_equation(AgsFunction *function,
   function->is_pushing = FALSE;
 }
 
+/**
+ * ags_function_get_expanded:
+ * @function: the #AgsFunction
+ * @symbols: the symbols to compute
+ * @n_symbols: the count of symbols
+ * 
+ * Expands @symbols to normalized form.
+ *
+ * Returns: the normalized form as string
+ *
+ * Since: 0.7.2
+ */
 gchar*
-ags_function_get_merged(AgsFunction *function,
-			gchar **symbols,
-			guint count)
+ags_function_get_expanded(AgsFunction *function,
+			  gchar **symbols,
+			  guint count)
 {
   //TODO:JK: implement me
+  
+  return(NULL);
 }
 
+/**
+ * ags_funciton_get_normalized:
+ * @function: the #AgsFunction
+ *
+ * Get internal normalized string.
+ *
+ * Returns: the normalized string
+ *
+ * Since: 0.7.2
+ */
 gchar*
 ags_funciton_get_normalized(AgsFunction *function)
 {
@@ -337,6 +472,63 @@ ags_funciton_get_normalized(AgsFunction *function)
   return(function->normalized_function);
 }
 
+/**
+ * ags_function_compute_term:
+ * @term: the term as string to compute
+ * @substitute_symbol: a variable to substitute
+ * @substitue_value: the #AgsComplex value representing @substitute_symbol
+ * 
+ * Compute term by substituting @substitute_symbol with @substitue_value and do basic
+ * solving.
+ * 
+ * Returns: the #AgsComplex value resulted by substitution
+ * 
+ * Since: 0.7.2
+ */
+AgsComplex*
+ags_function_compute_term(gchar *term,
+			  gchar *substitute_symbol, AgsComplex *subsitute_value)
+{
+  AgsComplex *complex_value;
+
+  complex_value = ags_complex_alloc();
+  
+  //TODO:JK: implement me
+  
+  return(complex_value);
+}
+
+/**
+ * ags_function_symbolic_translate_value:
+ * @symbol:
+ * @value
+ * 
+ * Symbolic translate to @value for @symbol and compute resulting
+ * vector.
+ * 
+ * Returns: the new #AgsComplex vector
+ * 
+ * Since: 0.7.2
+ */
+AgsComplex**
+ags_function_symbolic_translate_value(AgsFunction *function,
+				      gchar *symbol,
+				      AgsComplex *value)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+/**
+ * @function: the #AgsFunction
+ * @symbol: the first symbol as string, or %NULL if no more symbol and value pair.
+ * @...: %NULL terminated symbol and value pairs of list.
+ *
+ * Verify :source-function to be %TRUE or %FALSE by substiution.
+ *
+ * Since: 0.7.2
+ */
 gboolean
 ags_function_substitute_values(AgsFunction *function,
 			       gchar *symbol, ...)
@@ -346,19 +538,28 @@ ags_function_substitute_values(AgsFunction *function,
   return(TRUE);
 }
 
+/**
+ * ags_function_translate_value:
+ * @function: the #AgsFunction
+ * @value: the #AgsComplex value to translate
+ * 
+ * 
+ * 
+ * Returns: the solution as #AgsComplex boxed-type.
+ * 
+ * Since: 0.7.2
+ */
 AgsComplex*
 ags_function_translate_value(AgsFunction *function,
 			     AgsComplex *value)
 {
-  //TODO:JK: implement me
-}
+  AgsComplex *retval;
 
-AgsComplex**
-ags_function_symbolic_translate_value(AgsFunction *function,
-				      gchar *symbol,
-				      AgsComplex *value)
-{
+  retval = NULL;
+  
   //TODO:JK: implement me
+
+  return(retval);
 }
 
 /**
