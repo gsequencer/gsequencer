@@ -31,7 +31,8 @@
 #define AGS_IS_FUNCTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FUNCTION))
 #define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
 
-#define AGS_INFINIT "∞\0"
+#define AGS_SYMBOLIC_PI "𝜋\0"
+#define AGS_SYMBOLIC_INFINIT "∞\0"
 #define AGS_COMPLEX_UNIT "𝑖\0"
 
 typedef struct _AgsFunction AgsFunction;
@@ -59,17 +60,19 @@ struct _AgsFunction
   
   gchar *source_function;
 
+  gchar *normalized_function;
+
+  gchar **symbol;
+  guint symbol_count;
+
   guint n_rows;
   guint n_cols;
   AgsComplex*** pivot_table;
-
+  gchar ****function_vector_table;
+  
   guint solver_level;
-  AgsComplex*** solver_table;
-  
-  gchar **symbol;
-  guint symbol_count;
-  
-  gchar *normalized_function;
+  AgsComplex **solver_vector;
+  gchar ***solver_function_vector;
 };
 
 struct _AgsFunctionClass

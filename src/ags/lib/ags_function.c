@@ -46,10 +46,11 @@ void ags_function_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_PIVOT_TABLE,
-  PROP_SOLVER_LEVEL,
-  PROP_SOLVER_TABLE,
   PROP_SOURCE_FUNCTION,
+  PROP_NORMALIZED_FUNCTION,
+  PROP_PIVOT_TABLE,
+  PROP_FUNCTION_VECTOR_TABLE,
+  PROP_SOLVER_LEVEL,
 };
 
 static gpointer ags_function_parent_class = NULL;
@@ -99,51 +100,6 @@ ags_function_class_init(AgsFunctionClass *function)
 
   /* properties */
   /**
-   * AgsFunction:pivot-table:
-   *
-   * The pivot table.
-   * 
-   * Since: 0.7.2
-   */
-  param_spec = g_param_spec_pointer("pivot-table\0",
-				    "function as string\0",
-				    "The function to use to translate values\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PIVOT_TABLE,
-				  param_spec);
-
-  /**
-   * AgsFunction:solver-level:
-   *
-   * The solver level.
-   * 
-   * Since: 0.7.2
-   */
-  param_spec = g_param_spec_pointer("solver-level\0",
-				    "function as string\0",
-				    "The function to use to translate values\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOLVER_LEVEL,
-				  param_spec);
-
-  /**
-   * AgsFunction:solver-table:
-   *
-   * The solver table.
-   * 
-   * Since: 0.7.2
-   */
-  param_spec = g_param_spec_pointer("solver-table\0",
-				    "function as string\0",
-				    "The function to use to translate values\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOLVER_TABLE,
-				  param_spec);
-
-  /**
    * AgsFunction:source-function:
    *
    * The source function.
@@ -158,6 +114,52 @@ ags_function_class_init(AgsFunctionClass *function)
   g_object_class_install_property(gobject,
 				  PROP_SOURCE_FUNCTION,
 				  param_spec);
+  
+  /**
+   * AgsFunction:normalized-function:
+   *
+   * The normalized function.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_string("normalized-function\0",
+				   "normalized form of function as string\0",
+				   "The normalized form of function to use to translate values\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NORMALIZED_FUNCTION,
+				  param_spec);
+
+  /**
+   * AgsFunction:pivot-table:
+   *
+   * The pivot table.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_pointer("pivot-table\0",
+				    "pivot table representation\0",
+				    "The original pivot table representation\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PIVOT_TABLE,
+				  param_spec);
+
+  /**
+   * AgsFunction:function-vector-table:
+   *
+   * The function vector table.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_pointer("function-vector-table\0",
+				    "functions stored in a vector to apply\0",
+				    "The functions stored in a vector to successively apply\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FUNCTION_VECTOR,
+				  param_spec);
 }
 
 void
@@ -171,17 +173,18 @@ ags_function_init(AgsFunction *function)
 
   function->source_function = NULL;
 
-  function->n_cols = 0;
-  function->n_rows = 0;
-  function->pivot_table = NULL;
-
-  function->solver_level = 0;
-  function->solver_table = NULL;
+  function->normalized_function = NULL;
 
   function->symbol = NULL;
   function->symbol_count = 0;
 
-  function->normalized_function = NULL;
+  function->n_cols = 0;
+  function->n_rows = 0;
+  function->pivot_table = NULL;
+  function->function_vector_table = NULL;
+
+  function->solver_level = 0;
+  function->solver_table = NULL;
 }
 
 void
@@ -212,6 +215,49 @@ ags_function_set_property(GObject *gobject,
       function->source_function = g_strdup(source_function);
     }
     break;
+  case PROP_NORMALIZED_FUNCTION:
+    {
+      gchar *normalized_function;
+
+      normalized_function = (gchar *) g_value_get_string(value);
+
+      if(function->normalized_function == normalized_function){
+	return;
+      }
+      
+      if(function->normalized_function != NULL){
+	g_free(function->normalized_function);
+      }
+
+      function->normalized_function = g_strdup(normalized_function);
+    }
+    break;
+  case PROP_PIVOT_TABLE:
+    {
+      AgsComplex ***pivot_table;
+
+      pivot_table = (AgsComplex ***) g_value_get_pointer(value);
+
+      if(pivot_table == function->pivot_table){
+	return;
+      }
+
+      function->pivot_table = pivot_table;
+    }
+    break;
+  case PROP_FUNCTION_VECTOR_TABLE:
+    {
+      gchar ****function_vector_table;
+
+      function_vector_table = (gchar ****) g_value_get_pointer(value);
+
+      if(function_vector_table == function->function_vector_table){
+	return;
+      }
+
+      function->function_vector_table = function_vector_table;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -231,6 +277,15 @@ ags_function_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_SOURCE_FUNCTION:
     g_value_set_string(value, function->source_function);
+    break;
+  case PROP_NORMALIZED_FUNCTION:
+    g_value_set_string(value, function->normalized_function);
+    break;
+  case PROP_PIVOT_TABLE:
+    g_value_set_pointer(value, function->pivot_table);
+    break;
+  case PROP_FUNCTION_VECTOR_TABLE:
+    g_value_set_pointer(value, function->function_vector_table);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -258,16 +313,8 @@ ags_function_finalize(GObject *gobject)
     free(function->source_function);
   }
 
-  if(function->pivot_table != NULL){
-    for(i = 0; i < function->n_rows; i++){
-      for(j = 0; j < function->n_cols; j++){
-	ags_complex_free(function->pivot_table[i][j]);
-      }
-
-      free(function->pivot_table[i]);
-    }
-
-    free(function->pivot_table);
+  if(function->normalized_function != NULL){
+    free(function->normalized_function);
   }
 
   if(function->symbol != NULL){
@@ -278,8 +325,16 @@ ags_function_finalize(GObject *gobject)
     free(function->symbol);
   }
 
-  if(function->normalized_function != NULL){
-    free(function->normalized_function);
+  if(function->pivot_table != NULL){
+    for(i = 0; i < function->n_rows; i++){
+      for(j = 0; j < function->n_cols; j++){
+	ags_complex_free(function->pivot_table[i][j]);
+      }
+
+      free(function->pivot_table[i]);
+    }
+
+    free(function->pivot_table);
   }
 }
 
@@ -309,7 +364,7 @@ ags_function_find_literals(AgsFunction *function,
 
   static regex_t literal_regex;
 
-  static const char *literal_pattern = "^((?!floor|ceil|round|sin|cos|tan|log|exp)([a-xA-X][0-9]*))\0";
+  static const char *literal_pattern = "^((?!log|exp|floor|ceil|round|sin|cos|tan|asin|acos|atan)([a-xA-X][0-9]*))\0";
 
   static const size_t max_matches = 1;
 
@@ -364,7 +419,49 @@ ags_function_find_literals(AgsFunction *function,
 void
 ags_function_literal_solve(AgsFunction *function)
 {
+  gchar *normalized_function;
+  
+  guint max_exponent, available_exponent;
+  guint i, j;
+  
+  auto guint ags_function_literal_solve_find_max_exponent(gchar *source_function);
+
+  guint ags_function_literal_solve_find_max_exponent(gchar *source_function){
+    max_exponent = 0;
+
+
+    return(max_exponent);
+  }
+
+  /* compute dimensions */
+  max_exponent = function->symbol_count;
+  available_exponent = ags_function_literal_solve_find_max_exponent(function->source_function);
+
+  if(max_exponent < available_exponent){
+    max_exponent = available_exponent;
+  }
+  
+  /* allocate pivot table and function vector table */
+  function->n_rows = function->symbol_count * max_exponent;
+  function->n_cols = function->n_rows + 1;
+
+  function->pivot_table = (AgsComplex ***) malloc(function->n_rows * sizeof(AgsComplex **));
+  function->function_vector_table = (gchar ****) malloc(function->n_rows * sizeof(gchar ***));
+
+  for(i = 0; i < function->n_rows; i++){
+    function->pivot_table[i]  = (AgsComplex **) malloc(function->n_cols * sizeof(AgsComplex *));
+    function->function_vector_table[i]  = (AgsComplex **) malloc(function->n_cols * sizeof(gchar **));
+    
+    for(j = 0; j < function->n_cols; j++){
+      function->pivot_table[i][j] = ags_complex_alloc();
+      function->function_vector_table[i][j] = NULL;
+    }
+  }
+  
+  /* parse and merge terms */
   //TODO:JK: implement me
+  
+  function->normalized_function = normalized_function;
 }
 
 /**
