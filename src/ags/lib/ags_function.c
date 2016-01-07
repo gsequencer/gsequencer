@@ -44,7 +44,7 @@ void ags_function_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_function_finalize(GObject *gobject);
 
-#define ags_function_print_sin(str, term) (sprintf(str, "1 / 2 * %s * exp(- %s * %s * log(%s)) - 1 / 2 * %s * exp(%s * %s * log(%s))\0", \
+#define ags_function_print_sin(str, term) (sprintf(str, "1 / 2 * %s * exp(- %s * (%s) * log(%s)) - 1 / 2 * %s * exp(%s * (%s) * log(%s))\0", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
@@ -53,7 +53,7 @@ void ags_function_finalize(GObject *gobject);
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
 						   AGS_SYMBOLIC_EULER))
-#define ags_function_print_cos(str, term) (sprintf(str, "(%s * exp(- %s * %s * log(%s))) / 2 + (%s * exp(%s * %s * log(%s))) / 2\0", \
+#define ags_function_print_cos(str, term) (sprintf(str, "(%s * exp(- %s * (%s) * log(%s))) / 2 + (%s * exp(%s * (%s) * log(%s))) / 2\0", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
@@ -62,7 +62,7 @@ void ags_function_finalize(GObject *gobject);
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
 						   AGS_SYMBOLIC_EULER))
-#define ags_function_print_tan(str, term) (sprintf(str, "(%s * (exp(- %s * %s * log(%s)) - exp(%s * %s *  log(%s)))) / (exp(- %s * %s *  log(%s)) + exp(%s * %s *  log(%s)))\0", \
+#define ags_function_print_tan(str, term) (sprintf(str, "(%s * (exp(- %s * (%s) * log(%s)) - exp(%s * (%s) *  log(%s)))) / (exp(- %s * (%s) *  log(%s)) + exp(%s * (%s) *  log(%s)))\0", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
