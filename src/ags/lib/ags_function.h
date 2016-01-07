@@ -31,9 +31,10 @@
 #define AGS_IS_FUNCTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FUNCTION))
 #define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
 
+#define AGS_SYMBOLIC_EULER "ℯ\0"
 #define AGS_SYMBOLIC_PI "𝜋\0"
 #define AGS_SYMBOLIC_INFINIT "∞\0"
-#define AGS_COMPLEX_UNIT "𝑖\0"
+#define AGS_SYMBOLIC_COMPLEX_UNIT "𝑖\0"
 
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
