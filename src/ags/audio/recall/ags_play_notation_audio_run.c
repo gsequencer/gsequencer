@@ -660,7 +660,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   GList *list;
   guint audio_channel;
   guint samplerate;
-  guint buffer_size;
+  guint buffer_length;
   guint i;
 
   pthread_mutex_t *application_mutex;
@@ -682,16 +682,16 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   pthread_mutex_lock(application_mutex);
   
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0");
-  buffer_size = g_ascii_strtoull(str,
-				 NULL,
-				 10);
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  buffer_length = g_ascii_strtoull(str,
+				   NULL,
+				   10);
   free(str);
 
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0");
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
   samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);
@@ -810,7 +810,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  }else{
 	    ags_recycling_create_audio_signal_with_frame_count(recycling,
 							       audio_signal,
-							       samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
+							       samplerate /  ((double) samplerate / (double) buffer_length) * (note->x[1] - note->x[0]),
 							       delay, attack);
 	  }
 	  

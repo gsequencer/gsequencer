@@ -51,6 +51,9 @@ struct _AgsRouteDssiAudioRun
 
   AgsNotation *notation;
   GObject *sequencer;
+
+  GList *feed_midi;
+  long delta_time;
 };
 
 struct _AgsRouteDssiAudioRunClass

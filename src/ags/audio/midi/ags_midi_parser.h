@@ -79,12 +79,15 @@ struct _AgsMidiParserClass
   int (*midi_getc)(AgsMidiParser *midi_parser);
   void (*on_error)(AgsMidiParser *midi_parser,
 		   GError **error);
-  
+
   xmlDoc* (*parse_full)(AgsMidiParser *midi_parser);
+  xmlNode* (*parse_bytes)(AgsMidiParser *midi_parser,
+			  unsigned char *midi_buffer,
+			  guint buffer_length);
   
   xmlNode* (*parse_header)(AgsMidiParser *midi_parser);
   xmlNode* (*parse_track)(AgsMidiParser *midi_parser);
-
+  
   xmlNode* (*key_on)(AgsMidiParser *midi_parser, guint status);
   xmlNode* (*key_off)(AgsMidiParser *midi_parser, guint status);
   xmlNode* (*key_pressure)(AgsMidiParser *midi_parser, guint status);
@@ -127,6 +130,9 @@ void ags_midi_parser_on_error(AgsMidiParser *midi_parser,
 			      GError **error);
 
 xmlDoc* ags_midi_parser_parse_full(AgsMidiParser *midi_parser);
+xmlNode* ags_midi_parser_parse_bytes(AgsMidiParser *midi_parser,
+				     unsigned char *midi_buffer,
+				     guint buffer_length);
 
 xmlNode* ags_midi_parser_parse_header(AgsMidiParser *midi_parser);
 xmlNode* ags_midi_parser_parse_track(AgsMidiParser *midi_parser);

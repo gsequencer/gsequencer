@@ -51,59 +51,79 @@ void ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
 					gchar *track_name);
 
 void ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
+					 guint delta_time,
 					 guint audio_channel,
 					 guint note,
 					 guint velocity);
 void ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
+					  guint delta_time,
 					  guint audio_channel,
 					  guint note,
 					  guint velocity);
 void ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
+					       guint delta_time,
 					       guint audio_channel,
 					       guint note,
 					       guint pressure);
 
 void ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
+						   guint delta_time,
 						   guint channel,
 						   guint control,
 						   guint value);
 void ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
+						    guint delta_time,
 						    guint channel,
 						    guint pitch,
 						    guint transmitter);
 void ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
+						 guint delta_time,
 						 guint channel,
 						 guint program);
 void ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
+						  guint delta_time,
 						  guint channel,
 						  guint pressure);
 
 /* sysex and system common */
 void ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
+					guint delta_time,
 					unsigned char *sysex_data, guint length);
 
 void ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
-						guint quarter_frame);
+						guint delta_time,
+						guint message_type,
+						guint values);
 void ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
+						guint delta_time,
 						guint song_position);
 void ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
+					      guint delta_time,
 					      guint song_select);
-void ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder);
+void ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
+					       guint delta_time);
   
 /* meta events */
 void ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
+						  guint delta_time,
 						  guint sequence);
 void ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
+					guint delta_time,
 					guint hr, guint mn, guint se, guint fr, guint ff);
 void ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
+					guint delta_time,
 					guint tempo);  
 void ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
+						 guint delta_time,
 						 guint nn, guint denom, guint dd, guint cc, guint bb);
 void ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
+						guint delta_time,
 						guint sf, guint mi);
 void ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
+						       guint delta_time,
 						       guint len, guint id, guint data);
 void ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
+					     guint delta_time,
 					     gchar *text, guint length);
 enum{
   PROP_0,
@@ -245,13 +265,13 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::append-header:
    * @midi_builder: the builder
-   * @offset:
-   * @format:
-   * @track_count:
-   * @division:
-   * @times:
-   * @bpm:
-   * @clicks:
+   * @offset: start delta-time
+   * @format: format 0, 1 or 2
+   * @track_count: the number of tracks
+   * @division: timing division
+   * @times: pulses per quarter note
+   * @bpm: beats per minute
+   * @clicks: timing clicks
    *
    * The ::append-header signal is emited during building of header.
    *
@@ -273,7 +293,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::append-track:
    * @midi_builder: the builder
-   * @track_name:
+   * @track_name: the trach name
    *
    * Returns: The XML node representing the track
    *
@@ -294,9 +314,10 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::key-on:
    * @midi_builder: the builder
-   * @audio_channel:
-   * @note:
-   * @velocity:
+   * @delta_time: delta-time
+   * @audio_channel: the audio channel
+   * @note: the note to play from 0 to 128
+   * @velocity: key dynamics
    *
    * The ::key-on signal is emited during building of event.
    *
@@ -308,18 +329,20 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_key_on),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
-		 G_TYPE_NONE, 3,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT,
+		 G_TYPE_NONE, 4,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
   /**
    * AgsMidiBuilder::key-off:
-   * @midi_builder: the builder
-   * @audio_channel:
-   * @note:
-   * @velocity:
+   * @midi_builder: the builders
+   * @delta_time: delta-time
+   * @audio_channel: the audio channel
+   * @note: the note to stop play from 0 to 128
+   * @velocity: key dynamics
    *
    * The ::key-off signal is emited during building of event.
    *
@@ -331,8 +354,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_key_off),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
-		 G_TYPE_NONE, 3,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT,
+		 G_TYPE_NONE, 4,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
@@ -340,9 +364,10 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::key-pressure:
    * @midi_builder: the builder
-   * @audio_channel:
-   * @note:
-   * @pressure:
+   * @delta_time: delta-time
+   * @audio_channel: the audio channel
+   * @note: the note to press from 0 to 128
+   * @pressure: the amount of the pressure
    *
    * The ::key-pressure signal is emited during building of event.
    *
@@ -354,8 +379,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_key_pressure),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
-		 G_TYPE_NONE, 3,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT,
+		 G_TYPE_NONE, 4,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
@@ -363,9 +389,10 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::change-parameter:
    * @midi_builder: the builder
-   * @channel:
-   * @control:
-   * @value:
+   * @delta_time: delta-time
+   * @channel: the audio channel
+   * @control: the control
+   * @value: and its value
    *
    * The ::change-parameter signal is emited during building of event.
    *
@@ -377,8 +404,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_change_parameter),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
-		 G_TYPE_NONE, 3,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT,
+		 G_TYPE_NONE, 4,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
@@ -386,9 +414,10 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::change-pitch-bend:
    * @midi_builder: the builder
-   * @channel:
-   * @pitch:
-   * @transmitter:
+   * @delta_time: delta-time
+   * @channel: the audio channel
+   * @pitch: amount of pitch as 14 bit quantifier, 0, 0x2000 to 0x3fff
+   * @transmitter: sensitivy of the wheel
    *
    * The ::change-pitch-bend signal is emited during building of event.
    *
@@ -400,8 +429,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_change_pitch_bend),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
-		 G_TYPE_NONE, 3,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT,
+		 G_TYPE_NONE, 4,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
@@ -409,8 +439,8 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::change-program:
    * @midi_builder: the builder
-   * @channel:
-   * @program:
+   * @channel: the audio channel
+   * @program: the new programm
    *
    * The ::change-program signal is emited during building of event.
    *
@@ -430,8 +460,8 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::change-channel-pressure:
    * @midi_builder: the builder
-   * @channel:
-   * @pressure:
+   * @channel: the audio channel
+   * @pressure: the new pressure, aftertouch
    *
    * The ::change-channel-pressure signal is emited during building of event.
    *
@@ -451,8 +481,8 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::sysex:
    * @midi_builder: the builder
-   * @sysex_data:
-   * @length:
+   * @sysex_data: the data array
+   * @length: the length of the array
    *
    * The ::sysex signal is emited during building of event.
    *
@@ -472,7 +502,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::quarter-frame:
    * @midi_builder: the builder
-   * @quarter_frame:
+   * @delta_time: 
+   * @message_type: 
+   * @values:
    *
    * The ::quarter-frame signal is emited during building of event.
    *
@@ -484,14 +516,16 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_quarter_frame),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
     /**
    * AgsMidiBuilder::song-position:
    * @midi_builder: the builder
-   * @song_position:
+   * @song_position: the current position from 0x0 to 0x3fff
    *
    * The ::song-position signal is emited during building of event.
    *
@@ -510,7 +544,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     /**
    * AgsMidiBuilder::song-select:
    * @midi_builder: the builder
-   * @song_select:
+   * @song_select: the song or sequence
    *
    * The ::song-select signal is emited during building of event.
    *
@@ -529,7 +563,6 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
     /**
    * AgsMidiBuilder::tune-request:
    * @midi_builder: the builder
-   * @tune_request:
    *
    * The ::tune-request signal is emited during building of event.
    *
@@ -548,7 +581,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::sequence-number:
    * @midi_builder: the builder
-   * @sequence:
+   * @sequence: the nth sequence
    *
    * The ::sequence-number signal is emited during building of event.
    *
@@ -567,11 +600,11 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::smtpe:
    * @midi_builder: the builder
-   * @hr:
-   * @mn:
-   * @se:
-   * @fr:
-   * @ff:
+   * @hr: hours
+   * @mn: minutes
+   * @se: seconds
+   * @fr: frame number
+   * @ff: frequency
    *
    * The ::smtpe signal is emited during building of event.
    *
@@ -594,7 +627,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::tempo:
    * @midi_builder: the builder
-   * @tempo:
+   * @tempo: the tempo number as 24-bit quantifier
    *
    * The ::tempo signal is emited during building of event.
    *
@@ -613,11 +646,11 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::time-signature:
    * @midi_builder: the builder
-   * @nn:
-   * @denom:
-   * @dd:
-   * @cc:
-   * @bb:
+   * @nn: nominator
+   * @denom: denominitor
+   * @dd: delta-time
+   * @cc: ticks
+   * @bb: segmentation
    *
    * The ::time-signature signal is emited during building of event.
    *
@@ -640,8 +673,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::key-signature:
    * @midi_builder: the builder
-   * @sf:
-   * @mi:
+   * @delta_time: delta-time
+   * @sf: signature frame
+   * @mi: if %TRUE minor else major
    * 
    * The ::key-signature signal is emited during building of event.
    *
@@ -653,17 +687,18 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiBuilderClass, append_key_signature),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT,
-		 G_TYPE_NONE, 2,
+		 g_cclosure_user_marshal_VOID__UINT_UINT_BOOLEAN,
+		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
-		 G_TYPE_UINT);
+		 G_TYPE_UINT,
+		 G_TYPE_BOOLEAN);
 
   /**
    * AgsMidiBuilder::sequencer-meta-event:
    * @midi_builder: the builder
-   * @len:
-   * @id:
-   * @data:
+   * @len: length
+   * @id: identifier
+   * @data: buffer
    *
    * The ::sequencer-meta-event signal is emited during building of event.
    *
@@ -684,8 +719,8 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::text-event:
    * @midi_builder: the builder
-   * @text:
-   * @length:
+   * @text: the text
+   * @length: length
    *
    * The ::text-event signal is emited during building of event.
    *
@@ -781,9 +816,20 @@ void
 ags_midi_builder_real_on_error(AgsMidiBuilder *midi_builder,
 			       GError **error)
 {
-  //TODO:JK: implement me
+  if(error != NULL){
+    g_warning("%s\0", error);
+  }
 }
 
+/**
+ * ags_midi_builder_on_error:
+ * @midi_builder: the #AgsMidiBuilder
+ * @error: the error
+ *
+ * Triggered as an error occurs.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,
 			  GError **error)
@@ -807,6 +853,21 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_header:
+ * @midi_builder: the #AgsMidiBuilder
+ * @offset: start delta-time
+ * @format: either 0, 1 or 2.
+ * @track_count: the number of tracks
+ * @division: timing division
+ * @times: pulse per quarter note
+ * @bpm: beats per minute
+ * @clicks: timing clicks
+ *
+ * Appends MIDI header to @midi_builder.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_header(AgsMidiBuilder *midi_builder,
 			       guint offset, guint format,
@@ -833,6 +894,15 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_track:
+ * @midi_builder: the #AgsMidiBuilder
+ * @track_name: the track name
+ *
+ * Append a track called @track_name to @midi_builder.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_track(AgsMidiBuilder *midi_builder,
 			      gchar *track_name)
@@ -848,6 +918,7 @@ ags_midi_builder_append_track(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
+				    guint delta_time,
 				    guint audio_channel,
 				    guint note,
 				    guint velocity)
@@ -855,8 +926,21 @@ ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_key_on:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: delta-time
+ * @audio_channel: the audio channel
+ * @note: the note to play from 0 to 128
+ * @velocity: key dynamics
+ *
+ * Append key-on for @note to @midi_builder with key dynamics @velocity, at @delta_time.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_key_on(AgsMidiBuilder *midi_builder,
+			       guint delta_time,
 			       guint audio_channel,
 			       guint note,
 			       guint velocity)
@@ -866,6 +950,7 @@ ags_midi_builder_append_key_on(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[KEY_ON], 0,
+		delta_time,
 		audio_channel,
 		note,
 		velocity);
@@ -874,6 +959,7 @@ ags_midi_builder_append_key_on(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
+				     guint delta_time,
 				     guint audio_channel,
 				     guint note,
 				     guint velocity)
@@ -881,8 +967,21 @@ ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_key_off:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: delta-time
+ * @audio_channel: the audio channel
+ * @note: the note to play from 0 to 128
+ * @velocity: key dynamics
+ *
+ * Append key-off for @note to @midi_builder with key dynamics @velocity, at @delta_time.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_key_off(AgsMidiBuilder *midi_builder,
+				guint delta_time,
 				guint audio_channel,
 				guint note,
 				guint velocity)
@@ -892,6 +991,7 @@ ags_midi_builder_append_key_off(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[KEY_OFF], 0,
+		delta_time,
 		audio_channel,
 		note,
 		velocity);
@@ -900,6 +1000,7 @@ ags_midi_builder_append_key_off(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
+					  guint delta_time,
 					  guint audio_channel,
 					  guint note,
 					  guint pressure)
@@ -907,8 +1008,22 @@ ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+
+/**
+ * ags_midi_builder_append_key_pressure:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: delta-time
+ * @audio_channel: the audio channel
+ * @note: the note to play from 0 to 128
+ * @velocity: key dynamics
+ *
+ * Append key-pressure for @note to @midi_builder with key dynamics @pressure, at @delta_time.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_key_pressure(AgsMidiBuilder *midi_builder,
+				     guint delta_time,
 				     guint audio_channel,
 				     guint note,
 				     guint pressure)
@@ -918,6 +1033,7 @@ ags_midi_builder_append_key_pressure(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[KEY_PRESSURE], 0,
+		delta_time,
 		audio_channel,
 		note,
 		pressure);
@@ -926,6 +1042,7 @@ ags_midi_builder_append_key_pressure(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
+					      guint delta_time,
 					      guint channel,
 					      guint control,
 					      guint value)
@@ -933,8 +1050,21 @@ ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_change_parameter:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @channel:
+ * @control:
+ * @value:
+ *
+ *
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_change_parameter(AgsMidiBuilder *midi_builder,
+					 guint delta_time,
 					 guint channel,
 					 guint control,
 					 guint value)
@@ -944,6 +1074,7 @@ ags_midi_builder_append_change_parameter(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[CHANGE_PARAMETER], 0,
+		delta_time,
 		channel,
 		control,
 		value);
@@ -952,6 +1083,7 @@ ags_midi_builder_append_change_parameter(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
+					       guint delta_time,
 					       guint channel,
 					       guint pitch,
 					       guint transmitter)
@@ -959,8 +1091,17 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_change_pitch_bend:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @channel:
+ *
+ *
+ */
 void
 ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
+					  guint delta_time,
 					  guint channel,
 					  guint pitch,
 					  guint transmitter)
@@ -970,6 +1111,7 @@ ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[CHANGE_PITCH_BEND], 0,
+		delta_time,
 		channel,
 		pitch,
 		transmitter);
@@ -978,14 +1120,27 @@ ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
+					    guint delta_time,
 					    guint channel,
 					    guint program)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_change_program:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @channel:
+ * @program:
+ *
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
+				       guint delta_time,
 				       guint channel,
 				       guint program)
 {
@@ -994,6 +1149,7 @@ ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[CHANGE_PROGRAM], 0,
+		delta_time,
 		channel,
 		program);
   g_object_unref((GObject *) midi_builder);
@@ -1001,14 +1157,27 @@ ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
+					     guint delta_time,
 					     guint channel,
 					     guint pressure)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_change_pressure:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @channel:
+ * @pressure:
+ *
+ *
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
+					guint delta_time,
 					guint channel,
 					guint pressure)
 {
@@ -1017,6 +1186,7 @@ ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[CHANGE_PRESSURE], 0,
+		delta_time,
 		channel,
 		pressure);
   g_object_unref((GObject *) midi_builder);
@@ -1024,13 +1194,26 @@ ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
+				   guint delta_time,
 				   unsigned char *sysex_data, guint length)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_sysex:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @sysex_data:
+ * @length:
+ *
+ *
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_sysex(AgsMidiBuilder *midi_builder,
+			      guint delta_time,
 			      unsigned char *sysex_data, guint length)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1038,39 +1221,68 @@ ags_midi_builder_append_sysex(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[SYSEX], 0,
+		delta_time,
 		sysex_data, length);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
-					   guint quarter_frame)
+					   guint delta_time,
+					   guint message_type,
+					   guint values)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_quarter_frame:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @message_type:
+ * @values:
+ *
+ *
+ * 
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_quarter_frame(AgsMidiBuilder *midi_builder,
-				      guint quarter_frame)
+				      guint delta_time,
+				      guint message_type,
+				      guint values)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[QUARTER_FRAME], 0,
-		quarter_frame);
+		delta_time,
+		message_type, values);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
+					   guint delta_time,
 					   guint song_position)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_song_position:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @song_position:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_song_position(AgsMidiBuilder *midi_builder,
+				      guint delta_time,
 				      guint song_position)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1078,19 +1290,32 @@ ags_midi_builder_append_song_position(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[SONG_POSITION], 0,
+		delta_time,
 		song_position);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
+					 guint delta_time,
 					 guint song_select)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_song_select:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @song_select:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_song_select(AgsMidiBuilder *midi_builder,
+				    guint delta_time,
 				    guint song_select)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1098,36 +1323,61 @@ ags_midi_builder_append_song_select(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[SONG_SELECT], 0,
+		delta_time,
 		song_select);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
-ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder)
+ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
+					  guint delta_time)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_tune_request:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
-ags_midi_builder_append_tune_request(AgsMidiBuilder *midi_builder)
+ags_midi_builder_append_tune_request(AgsMidiBuilder *midi_builder,
+				     guint delta_time)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
   
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
-		midi_builder_signals[TUNE_REQUEST], 0);
+		midi_builder_signals[TUNE_REQUEST], 0,
+		delta_time);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
+					     guint delta_time,
 					     guint sequence)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_sequence_number:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @sequence:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_sequence_number(AgsMidiBuilder *midi_builder,
+					guint delta_time,
 					guint sequence)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1135,19 +1385,36 @@ ags_midi_builder_append_sequence_number(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[SEQUENCE_NUMBER], 0,
+		delta_time,
 		sequence);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
+				   guint delta_time,
 				   guint hr, guint mn, guint se, guint fr, guint ff)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_smtpe:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @hr:
+ * @mn:
+ * @se:
+ * @fr:
+ * @ff:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
+			      guint delta_time,
 			      guint hr, guint mn, guint se, guint fr, guint ff)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1155,19 +1422,33 @@ ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[SMTPE], 0,
+		delta_time,
 		hr, mn, se, fr, ff);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
+				   guint delta_time,
 				   guint tempo)
 {
   //TODO:JK: implement me
 }
 
+
+/**
+ * ags_midi_builder_append_tempo:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @tempo:
+ * 
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
+			      guint delta_time,
 			      guint tempo)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1175,19 +1456,36 @@ ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[TEMPO], 0,
+		delta_time,
 		tempo);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
+					    guint delta_time,
 					    guint nn, guint denom, guint dd, guint cc, guint bb)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_time_signature:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time:
+ * @nn:
+ * @denom:
+ * @dd:
+ * @cc:
+ * @bb:
+ *
+ * 
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
+				       guint delta_time,
 				       guint nn, guint denom, guint dd, guint cc, guint bb)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1195,12 +1493,14 @@ ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[TIME_SIGNATURE], 0,
+		delta_time,
 		nn, denom, dd, cc, bb);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
+					   guint delta_time,
 					   guint sf, guint mi)
 {
   //TODO:JK: implement me
@@ -1208,6 +1508,7 @@ ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_append_key_signature(AgsMidiBuilder *midi_builder,
+				      guint delta_time,
 				      guint sf, guint mi)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1215,12 +1516,14 @@ ags_midi_builder_append_key_signature(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[KEY_SIGNATURE], 0,
+		delta_time,
 		sf, mi);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
+						  guint delta_time,
 						  guint len, guint id, guint data)
 {
   //TODO:JK: implement me
@@ -1228,6 +1531,7 @@ ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
+					     guint delta_time,
 					     guint len, guint id, guint data)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1235,12 +1539,14 @@ ags_midi_builder_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[SEQUENCER_META_EVENT], 0,
+		delta_time,
 		len, id, data);
   g_object_unref((GObject *) midi_builder);
 }
 
 void
 ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
+					guint delta_time,
 					gchar *text, guint length)
 {
   //TODO:JK: implement me
@@ -1248,6 +1554,7 @@ ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
 
 void
 ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
+				   guint delta_time,
 				   gchar *text, guint length)
 {
   g_return_if_fail(AGS_IS_MIDI_BUILDER(midi_builder));
@@ -1255,6 +1562,7 @@ ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
   g_object_ref((GObject *) midi_builder);
   g_signal_emit(G_OBJECT(midi_builder),
 		midi_builder_signals[TEXT_EVENT], 0,
+		delta_time,
 		text, length);
   g_object_unref((GObject *) midi_builder);
 }

@@ -93,8 +93,10 @@ struct _AgsSequencerInterface
   void (*offset_changed)(AgsSequencer *sequencer,
 			 guint note_offset);
 
-  void* (*get_buffer)(AgsSequencer *sequencer);
-  void* (*get_next_buffer)(AgsSequencer *sequencer);  
+  void* (*get_buffer)(AgsSequencer *sequencer,
+		      guint *buffer_length);
+  void* (*get_next_buffer)(AgsSequencer *sequencer,
+			   guint *buffer_length);
 
   void (*set_bpm)(AgsSequencer *sequencer,
 		  gdouble bpm);
@@ -150,8 +152,10 @@ void ags_sequencer_tic(AgsSequencer *sequencer);
 void ags_sequencer_offset_changed(AgsSequencer *sequencer,
 				  guint note_offset);
 
-void* ags_sequencer_get_buffer(AgsSequencer *sequencer);
-void* ags_sequencer_get_next_buffer(AgsSequencer *sequencer);
+void* ags_sequencer_get_buffer(AgsSequencer *sequencer,
+			       guint *buffer_length);
+void* ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
+				    guint *buffer_length);
 
 void ags_sequencer_set_bpm(AgsSequencer *sequencer,
 			   gdouble bpm);

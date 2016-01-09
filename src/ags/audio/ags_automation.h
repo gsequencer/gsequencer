@@ -23,6 +23,8 @@
 #include <glib-object.h>
 #include <libxml/tree.h>
 
+#include <ags/lib/ags_function.h>
+
 #include <ags/audio/ags_acceleration.h>
 
 #define AGS_TYPE_AUTOMATION                (ags_automation_get_type())
@@ -45,7 +47,7 @@ typedef struct _AgsAutomation AgsAutomation;
 typedef struct _AgsAutomationClass AgsAutomationClass;
 
 typedef enum{
-  AGS_AUTOMATION_BYPASS   = 1,
+  AGS_AUTOMATION_BYPASS               = 1,
 }AgsAutomationFlags;
 
 struct _AgsAutomation
@@ -65,6 +67,8 @@ struct _AgsAutomation
   gdouble upper;
   gdouble lower;
   gdouble default_value;
+
+  AgsFunction *source_function;
   
   GList *acceleration;
 

@@ -87,6 +87,7 @@ enum{
   MIDI_GETC,
   ON_ERROR,
   PARSE_FULL,
+  PARSE_BYTES,
   PARSE_HEADER,
   PARSE_TRACK,
   KEY_ON,
@@ -259,6 +260,29 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 NULL, NULL,
 		 g_cclosure_user_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsMidiParser::parse-bytes:
+   * @midi_parser: the parser
+   * @buffer: the MIDI data
+   * @buffer_length: the buffer's length
+   *
+   * The ::parse-bytes signal is emited during parsing of bytes.
+   *
+   * Returns: The XML node representing the event
+   *
+   * Since: 0.7.2
+   */
+  midi_parser_signals[PARSE_BYTES] =
+    g_signal_new("parse-bytes\0",
+		 G_TYPE_FROM_CLASS(midi_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_bytes),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__POINTER_UINT,
+		 G_TYPE_POINTER, 2,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 
   /**
    * AgsMidiParser::parse-header:
@@ -985,6 +1009,20 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
   return(doc);
 }
 
+xmlNode*
+ags_midi_parser_parse_bytes(AgsMidiParser *midi_parser,
+			    unsigned char *midi_buffer,
+			    guint buffer_length)
+{
+  xmlNode *node;
+
+  node = NULL;
+  
+  //TODO:JK: implement me
+
+  return(node);
+}
+
 xmlNode*  
 ags_midi_parser_parse_header(AgsMidiParser *midi_parser)
 {
@@ -1124,7 +1162,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 
   offset = ags_midi_parser_read_gint32(midi_parser);
 
-#ifdef DEBUG
+#ifdef AGS_DEBUG
   g_message("n = %d\noffset = %d\0", n, offset);
 #endif
   
@@ -1155,11 +1193,11 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
 		    current);
       }
       
-#ifdef DEBUG
+#ifdef AGS_DEBUG
       g_message("channel message");
 #endif
     }else{
-#ifdef DEBUG
+#ifdef AGS_DEBUG
       g_message("status message");
 #endif
       
@@ -1185,7 +1223,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
       case 0xf7:
 	{
 	  /* sysex continuation or arbitrary stuff */
-#ifdef DEBUG
+#ifdef AGS_DEBUG
 	  g_message("sysex end\0");
 #endif
 	}
@@ -1926,7 +1964,7 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
     }
   }
 	
-#ifdef DEBUG
+#ifdef AGS_DEBUG
   g_message("meta type 0x%x\0", meta_type);
 #endif
   

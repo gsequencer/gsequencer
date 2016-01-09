@@ -109,11 +109,16 @@ enum{
   PROP_SOUNDCARD,
   PROP_SEQUENCER,
   PROP_MIDI_FILE,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_SEQUENCE_LENGTH,
   PROP_AUDIO_CHANNELS,
   PROP_INPUT_PADS,
   PROP_INPUT_LINES,
   PROP_OUTPUT_PADS,
   PROP_OUTPUT_LINES,
+  PROP_AUDIO_MAPPING,
+  PROP_MIDI_MAPPING,
   PROP_OUTPUT,
   PROP_INPUT,
   PROP_PLAYBACK_DOMAIN,
@@ -229,6 +234,62 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  PROP_MIDI_FILE,
 				  param_spec);
 
+  
+  /**
+   * AgsAudio:samplerate:
+   *
+   * The samplerate.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("samplerate\0",
+				  "samplerate\0",
+				  "The samplerate\0",
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsAudio:buffer-size:
+   *
+   * The buffer size.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("buffer-size\0",
+				  "buffer size\0",
+				  "The buffer size\0",
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+
+  /**
+   * AgsAudio:sequence-length:
+   *
+   * The sequence length.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("sequence-length\0",
+				  "sequence-length\0",
+				  "The sequence length\0",
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEQUENCE_LENGTH,
+				  param_spec);
+
   /**
    * AgsAudio:audio-channels:
    *
@@ -320,6 +381,41 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  PROP_OUTPUT_LINES,
 				  param_spec);
 
+  /**
+   * AgsAudio:audio-mapping:
+   *
+   * The audio mapping.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("audio-mapping\0",
+				  "audio mapping\0",
+				  "The audio mapping\0",
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_MAPPING,
+				  param_spec);
+
+  /**
+   * AgsAudio:midi-mapping:
+   *
+   * The midi mapping.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec =  g_param_spec_uint("midi-mapping\0",
+				  "midi mapping\0",
+				  "The midi mapping\0",
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI_MAPPING,
+				  param_spec);
 
   /**
    * AgsAudio:output:
@@ -638,19 +734,24 @@ ags_audio_init(AgsAudio *audio)
   audio->flags = 0;
 
   audio->soundcard = NULL;
-  
+
   audio->sequencer = NULL;
   audio->midi_file = NULL;
   
+  audio->samplerate = 0;
+  audio->buffer_size = 0;
   audio->sequence_length = 0;
+
   audio->audio_channels = 0;
-  audio->frequence = 0;
 
   audio->output_pads = 0;
   audio->output_lines = 0;
   audio->input_pads = 0;
   audio->input_lines = 0;
 
+  audio->audio_mapping = 0;
+  audio->midi_mapping = 0;
+  
   audio->output = NULL;
   audio->input = NULL;
 

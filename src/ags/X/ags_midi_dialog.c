@@ -20,9 +20,12 @@
 #include <ags/X/ags_midi_dialog.h>
 #include <ags/X/ags_midi_dialog_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
 #include <ags/object/ags_sequencer.h>
+
+#include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_output.h>
@@ -325,6 +328,14 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     FALSE, FALSE,
 		     0);
 
+  /* insensitive for alsa */
+  gtk_widget_set_sensitive(midi_dialog->connection_name,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->add,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->remove,
+			   FALSE);
+
   /* GtkButton's in GtkDialog->action_area  */
   midi_dialog->apply = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_APPLY);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(midi_dialog)->action_area,
@@ -457,21 +468,175 @@ ags_midi_dialog_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_midi_dialog_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsMidiDialog *midi_dialog;
+  AgsMachine *machine;
 
+  AgsAudio *audio;
+  GObject *sequencer;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  GType sequencer_type;
+  GList *list;
+
+  gchar *midi_device;
+  gchar *backend;
+
+  pthread_mutex_t *application_mutex;
+  
   midi_dialog = AGS_MIDI_DIALOG(applicable);
 
-  //TODO:JK: implement me
+  machine = midi_dialog->machine;
+
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  /* application context and mutex manager */
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* audio and sequencer */
+  audio = machine->audio;
+
+  sequencer = NULL;
+  backend = gtk_combo_box_text_get_active_text(midi_dialog->backend);
+  midi_device = gtk_combo_box_text_get_active_text(midi_dialog->midi_device);
+  
+  /* find device */
+  pthread_mutex_lock(application_mutex);
+  
+  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+
+  if(!g_ascii_strncasecmp("alsa\0",
+			  backend,
+			  4)){
+    sequencer_type = AGS_TYPE_MIDIIN;    
+  }else if(!g_ascii_strncasecmp("jack\0",
+				backend,
+				4)){
+    sequencer_type = AGS_TYPE_JACK_MIDIIN;
+  }
+
+  while(list != NULL){
+    if(g_type_is_a(G_OBJECT_TYPE(list->data),
+		   sequencer_type) &&
+       !g_ascii_strcasecmp(ags_sequencer_get_device(AGS_SEQUENCER(list->data)),
+			   midi_device)){
+      sequencer = list->data;
+
+      break;
+    }    
+    
+    list = list->next;
+  }
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* set properties */
+  g_object_set(audio,
+	       "audio-mapping\0", gtk_spin_button_get_value(midi_dialog->audio_start),
+	       "midi-mapping\0", gtk_spin_button_get_value(midi_dialog->midi_start),
+	       "sequencer\0", sequencer,
+	       NULL);
 }
 
 void
 ags_midi_dialog_reset(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsMidiDialog *midi_dialog;
+  AgsMachine *machine;
 
-  midi_dialog = AGS_MIDI_DIALOG(applicable);
+  AgsAudio *audio;
+  GObject *sequencer;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  gchar *backend;
+  gchar *midi_device;
+  gchar *str;
+  guint audio_start;
+  guint midi_start;
+  guint i;
+  gboolean found_device;
   
-  //TODO:JK: implement me
+  pthread_mutex_t *application_mutex;
+  
+  midi_dialog = AGS_MIDI_DIALOG(applicable);
+
+  machine = midi_dialog->machine;
+
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  /* application context and mutex manager */
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* audio and sequencer */
+  audio = machine->audio;
+
+  sequencer = NULL;
+  backend = gtk_combo_box_text_get_active_text(midi_dialog->backend);
+  midi_device = gtk_combo_box_text_get_active_text(midi_dialog->midi_device);
+
+  /*  */
+  g_object_get(audio,
+	       "audio-start\0", &audio_start,
+	       "midi-start\0", &midi_start,
+	       "sequencer\0", &sequencer,
+	       NULL);
+  
+  /* find device */
+  gtk_spin_button_set_value(midi_dialog->audio_start,
+			    (gdouble) audio_start);
+  gtk_spin_button_set_value(midi_dialog->midi_start,
+			    (gdouble) midi_start);
+  
+  midi_device = ags_sequencer_get_device(AGS_SEQUENCER(list->data));
+  found_device = FALSE;
+  
+  if(midi_device != NULL){
+    model = gtk_combo_box_get_model(midi_dialog->midi_device);
+    i = 0;
+
+    do{
+      gtk_tree_model_get(model,
+			 &iter,
+			 0, &str,
+			 -1);
+      
+      if(!g_ascii_strcasecmp(midi_device,
+			     str)){
+	found_device = TRUE;
+	break;
+      }
+      
+      i++;
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+  }
+
+  if(found_device){
+    gtk_combo_box_set_active(midi_dialog->midi_device,
+			     i);
+  }else{
+    gtk_combo_box_set_active(midi_dialog->midi_device,
+			     0);
+  }
 }
 
 void
@@ -483,57 +648,86 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
   GtkListStore *model;
   AgsAudio *audio;
 
-  GType find_type;
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  GType sequencer_type;
   
   GtkTreeIter iter;
   GList *card_id, *card_name;
   GList *list;
-  gchar *str;
+  gchar *backend;
 
+  pthread_mutex_t *application_mutex;
+  
   window = gtk_widget_get_ancestor(midi_dialog->machine,
 				   AGS_TYPE_WINDOW);
-  
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(midi_dialog->midi_device)));
+
+  /* application context and mutex manager */
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* clear model */
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(midi_dialog->midi_device))));
+
+  /* backend */
+  sequencer = NULL;
+
+  backend = gtk_combo_box_text_get_active_text(midi_dialog->backend);
 
   /* find sequencer */
-  sequencer = NULL;
-  
+  pthread_mutex_lock(application_mutex);
+
   list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(window->application_context));
-  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
 
   if(!g_ascii_strncasecmp("alsa\0",
-			  str,
+			  backend,
 			  4)){
-    find_type = AGS_TYPE_MIDIIN;
+    sequencer_type = AGS_TYPE_MIDIIN;
   }else if(!g_ascii_strncasecmp("jack\0",
-				str,
+				backend,
 				4)){
-    find_type = AGS_TYPE_JACK_MIDIIN;
+    sequencer_type = AGS_TYPE_JACK_MIDIIN;
+  }else{
+    sequencer_type = G_TYPE_NONE;
   }
 
   while(list != NULL){
     if(g_type_is_a(G_OBJECT_TYPE(list->data),
-		   find_type)){
+		   sequencer_type)){
       sequencer = list->data;
       
       break;
     }else if(g_type_is_a(G_OBJECT_TYPE(list->data),
-			 find_type)){
+			 sequencer_type)){
       sequencer = list->data;
-      
+	
       break;
     }
     
     list = list->next;
   }
+    
+  pthread_mutex_unlock(application_mutex);
+
+  /* tree model */
+  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
   
+  /* null device */
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, "(null)\0",
+		     1, "NULL\0",
+		     -1);
+
   /* load sequencer */
   if(sequencer != NULL){
     ags_sequencer_list_cards(AGS_SEQUENCER(sequencer),
 			     &card_id, &card_name);
 
-    model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-  
     while(card_id != NULL){
       gtk_list_store_append(model, &iter);
       gtk_list_store_set(model, &iter,

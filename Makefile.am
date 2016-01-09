@@ -139,6 +139,7 @@ deprecated_libags_h_sources =
 libags_h_sources = \
 	$(deprecated_libags_h_sources) \
 	src/ags/lib/ags_complex.h \
+	src/ags/lib/ags_function.h \
 	src/ags/lib/ags_parameter.h \
 	src/ags/lib/ags_turtle.h
 
@@ -147,6 +148,7 @@ deprecated_libags_c_sources =
 libags_c_sources = \
 	$(deprecated_libags_c_sources) \
 	src/ags/lib/ags_complex.c \
+	src/ags/lib/ags_function.c \
 	src/ags/lib/ags_parameter.c \
 	src/ags/lib/ags_turtle.c
 
@@ -507,6 +509,8 @@ deprecated_libags_audio_midi_h_sources =
 
 libags_audio_midi_h_sources = \
 	$(deprecated_libags_audio_midi_h_sources) \
+	src/ags/audio/midi/ags_midi_buffer_util.h \
+	src/ags/audio/midi/ags_midi_util.h \
 	src/ags/audio/midi/ags_midi_builder.h \
 	src/ags/audio/midi/ags_midi_file.h \
 	src/ags/audio/midi/ags_midi_parser.h \
@@ -517,6 +521,8 @@ deprecated_libags_audio_midi_c_sources =
 
 libags_audio_midi_c_sources = \
 	$(deprecated_libags_audio_midi_c_sources) \
+	src/ags/audio/midi/ags_midi_buffer_util.c \
+	src/ags/audio/midi/ags_midi_util.c \
 	src/ags/audio/midi/ags_midi_builder.c \
 	src/ags/audio/midi/ags_midi_file.c \
 	src/ags/audio/midi/ags_midi_parser.c \
@@ -583,6 +589,8 @@ libags_audio_recall_h_sources = \
 	src/ags/audio/recall/ags_peak_channel.h \
 	src/ags/audio/recall/ags_peak_channel_run.h \
 	src/ags/audio/recall/ags_peak_recycling.h \
+	src/ags/audio/recall/ags_perform_automation_audio.h \
+	src/ags/audio/recall/ags_perform_automation_audio_run.h \
 	src/ags/audio/recall/ags_play_audio_file.h \
 	src/ags/audio/recall/ags_play_audio.h \
 	src/ags/audio/recall/ags_play_audio_signal.h \
@@ -647,6 +655,8 @@ libags_audio_recall_c_sources = \
 	src/ags/audio/recall/ags_peak_channel.c \
 	src/ags/audio/recall/ags_peak_channel_run.c \
 	src/ags/audio/recall/ags_peak_recycling.c \
+	src/ags/audio/recall/ags_perform_automation_audio.c \
+	src/ags/audio/recall/ags_perform_automation_audio_run.c \
 	src/ags/audio/recall/ags_play_audio.c \
 	src/ags/audio/recall/ags_play_audio_file.c \
 	src/ags/audio/recall/ags_play_audio_signal.c \
@@ -1257,7 +1267,7 @@ gsequencer_c_sources = \
 midi2xml_CFLAGS= $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
-midi2xml_SOURCES = src/ags/midi2xml_main.c src/ags/audio/midi/ags_midi_parser.c src/ags/audio/midi/ags_midi_parser.h src/midi2ags/object/ags_marshal.c src/midi2ags/object/ags_marshal.h
+midi2xml_SOURCES = src/ags/midi2xml_main.c src/ags/audio/midi/ags_midi_parser.c src/ags/audio/midi/ags_midi_parser.h src/ags/object/ags_marshal.c src/ags/object/ags_marshal.h
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool

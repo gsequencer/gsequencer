@@ -19,6 +19,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/object/ags_marshal.h>
+
 #include <ags/audio/midi/ags_midi_parser.h>
 
 #include <stdio.h>

@@ -26,6 +26,14 @@
 void ags_note_class_init(AgsNoteClass *note);
 void ags_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_note_init(AgsNote *note);
+void ags_note_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec);
+void ags_note_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec);
 void ags_note_connect(AgsConnectable *connectable);
 void ags_note_disconnect(AgsConnectable *connectable);
 void ags_note_finalize(GObject *object);
@@ -41,6 +49,19 @@ void ags_note_finalize(GObject *object);
  */
 
 static gpointer ags_note_parent_class = NULL;
+
+enum{
+  PROP_0,
+  PROP_X0,
+  PROP_X1,
+  PROP_Y,
+  PROP_STREAM_DELAY,
+  PROP_STREAM_ATTACK,
+  PROP_ATTACK,
+  PROP_DECAY,
+  PROP_SUSTAIN,
+  PROP_RELEASE,
+};
 
 GType
 ags_note_get_type()
@@ -83,12 +104,170 @@ void
 ags_note_class_init(AgsNoteClass *note)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_note_parent_class = g_type_class_peek_parent(note);
 
   gobject = (GObjectClass *) note;
 
+  gobject->set_property = ags_note_set_property;
+  gobject->get_property = ags_note_get_property;
+
   gobject->finalize = ags_note_finalize;
+
+  /**
+   * AgsNote:x0:
+   *
+   * Note offset x0.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("x0\0",
+				 "offset x0\0",
+				 "The first x offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X0,
+				  param_spec);
+
+  /**
+   * AgsNote:x1:
+   *
+   * Note offset x1.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("x1\0",
+				 "offset x1\0",
+				 "The first x offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X1,
+				  param_spec);
+
+  /**
+   * AgsNote:y:
+   *
+   * Note offset y.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("y\0",
+				 "offset y\0",
+				 "The first x offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_Y,
+				  param_spec);
+
+  /**
+   * AgsNote:stream-delay:
+   *
+   * The stream's delay.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_double("stream-delay\0",
+				   "delay of stream\0",
+				   "The delay of the stream\0",
+				   0.0,
+				   65535.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STREAM_DELAY,
+				  param_spec);
+
+  /**
+   * AgsNote:stream-attack:
+   *
+   * The stream's attack.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_uint("stream-attack\0",
+				 "offset stream-attack\0",
+				 "The first x offset\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STREAM_ATTACK,
+				  param_spec);
+
+  /**
+   * AgsNote:attack:
+   *
+   * Envelope attack.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_boxed("attack\0",
+				  "envelope's attack\0",
+				  "The envelope's attack\0",
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
+
+  /**
+   * AgsNote:decay:
+   *
+   * Envelope decay.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_boxed("decay\0",
+				  "envelope's decay\0",
+				  "The envelope's decay\0",
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DECAY,
+				  param_spec);
+
+  /**
+   * AgsNote:sustain:
+   *
+   * Envelope sustain.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_boxed("sustain\0",
+				  "envelope's sustain\0",
+				  "The envelope's sustain\0",
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SUSTAIN,
+				  param_spec);
+
+  /**
+   * AgsNote:release:
+   *
+   * Envelope release.
+   * 
+   * Since: 0.7.2
+   */
+  param_spec = g_param_spec_boxed("release\0",
+				  "envelope's release\0",
+				  "The envelope's release\0",
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RELEASE,
+				  param_spec);
 }
 
 void
@@ -107,6 +286,9 @@ ags_note_init(AgsNote *note)
   note->x[1] = 0;
   note->y = 0;
 
+  note->stream_delay = 0.0;
+  note->stream_attack = 0;
+  
   ags_complex_set(&(note->attack),
 		  1.0);
   ags_complex_set(&(note->decay),
@@ -133,6 +315,22 @@ void
 ags_note_disconnect(AgsConnectable *connectable)
 {
   /* empty */
+}
+
+void
+ags_note_set_property(GObject *gobject,
+		      guint prop_id,
+		      const GValue *value,
+		      GParamSpec *param_spec)
+{
+}
+
+void
+ags_note_get_property(GObject *gobject,
+		      guint prop_id,
+		      GValue *value,
+		      GParamSpec *param_spec)
+{
 }
 
 void
@@ -223,6 +421,8 @@ ags_note_find_next(GList *note,
 /**
  * ags_note_to_seq_event:
  * @note: the #AgsNote
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
  * @buffer_length: the length of the returned buffer
  * 
  * Convert @note to raw MIDI and set the buffer length of returned bytes
@@ -232,22 +432,159 @@ ags_note_find_next(GList *note,
  *
  * Since: 0.7.1
  */
-char*
+unsigned char*
 ags_note_to_raw_midi(AgsNote *note,
+		     gdouble bpm, gdouble delay_factor,
 		     guint *buffer_length)
 {
-  char *raw_midi;
+  unsigned char *raw_midi;
+  guint length;
+  guint current_length;
+  long delta_time;
+  guint delta_time_length;
+  unsigned char status;
+  int channel;
+  int key;
+  int velocity;
+  int pressure;
+  gdouble ticks_per_beat;
+  guint i, i_stop;
+  guint j;
+  guint k;
+  
+  if(note == NULL){
+    if(buffer_length != NULL){
+      *buffer_length = 0;
+    }
+    
+    return(NULL);
+  }
 
-  raw_midi = NULL;
+  length = 0;
 
-  //TODO:JK: implement me
+  /* key-on */
+  k = 0;
+  
+  /* delta-time */
+  delta_time = note->x[0] / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
+  delta_time_length = 
+    current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
 
+  /* status and channel */
+  channel = 0;
+  status = (0x90 | (0x7f & channel));
+  current_length++;
+
+  /* note / key */
+  key = (0x7f & (note->y));
+  current_length++;
+
+  /* velocity */
+  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(note->attack))));
+  current_length++;
+
+  /* prepare buffer */
+  raw_midi = (unsigned char *) malloc(current_length * sizeof(unsigned char));
+  length += current_length;
+
+  ags_midi_buffer_util_put_varlength(raw_midi,
+				     delta_time);
+  k += delta_time_length;
+  
+  raw_midi[k] = status;
+  raw_midi[k + 1] = key;
+  raw_midi[k + 2] = velocity;
+
+  k += 3;
+
+  /* key-pressure */
+  ticks_per_beat = AGS_NOTE_DEFAULT_TICKS_PER_QUARTER_NOTE / 4.0 / delay_factor;
+
+  if(ticks_per_beat > 2.0){
+    i_stop = (note->x[1] - note->x[0]) * (ticks_per_beat - 2.0);
+
+    for(i = 1; i <= i_stop; i++){
+      /* delta-time */
+      delta_time = (note->x[0] + i + 1)  / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
+      delta_time_length = 
+	current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
+
+      /* status and channel */
+      channel = 0;
+      status = (0x90 | (0x7f & channel));
+      current_length++;
+
+      /* note / key */
+      key = (0x7f & (note->y));
+      current_length++;
+
+      /* pressure */
+      //TODO:JK: verify
+      pressure = (0x7f & (unsigned char) (128 * (((ags_complex_get(note->decay) / i) - (i * ags_complex_get(note->sustain))))));
+      current_length++;
+
+      /* prepare buffer */
+      raw_midi = (unsigned char *) realloc(raw_midi,
+					   current_length * sizeof(unsigned char));
+      length += current_length;
+
+      ags_midi_buffer_util_put_varlength(raw_midi,
+					 delta_time);
+      k += delta_time_length;
+  
+      raw_midi[k] = status;
+      raw_midi[k + 1] = key;
+      raw_midi[k + 2] = pressure;
+
+      k += 3;
+    }
+  }
+
+  /* key-off */
+  /* delta-time */
+  delta_time = note->x[1] / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
+  delta_time_length = 
+    current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
+
+  /* status and channel */
+  channel = 0;
+  status = (0x90 | (0x7f & channel));
+  current_length++;
+
+  /* note / key */
+  key = (0x7f & (note->y));
+  current_length++;
+
+  /* velocity */
+  velocity = (0x7f & (unsigned char) (128 * (ags_complex_get(note->attack))));
+  current_length++;
+
+  /* prepare buffer */
+  raw_midi = (unsigned char *) realloc(raw_midi,
+				       current_length * sizeof(unsigned char));
+  length += current_length;
+
+  ags_midi_buffer_util_put_varlength(raw_midi,
+				     delta_time);
+  k += delta_time_length;
+  
+  raw_midi[k] = status;
+  raw_midi[k + 1] = key;
+  raw_midi[k + 2] = velocity;
+
+  /* return value */
+  if(buffer_length != NULL){
+    *buffer_length = length;
+  }
+  
   return(raw_midi);
 }
 
 /**
  * ags_note_to_seq_event:
  * @note: the #AgsNote
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
  * @n_events: the count of events
  * 
  * Convert @note to ALSA sequencer events and set the number of events
@@ -259,10 +596,13 @@ ags_note_to_raw_midi(AgsNote *note,
  */
 snd_seq_event_t*
 ags_note_to_seq_event(AgsNote *note,
+		      gdouble bpm, gdouble delay_factor,
 		      guint *n_events)
 {
   snd_seq_event_t *event;
 
+
+  
   event = NULL;
   
   //TODO:JK: implement me
@@ -273,6 +613,8 @@ ags_note_to_seq_event(AgsNote *note,
 /**
  * ags_note_from_raw_midi:
  * @raw_midi: the data array
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
  * @length: the length of the array
  *
  * Parse @raw_midi data and convert to #AgsNote.
@@ -282,7 +624,8 @@ ags_note_to_seq_event(AgsNote *note,
  * Since: 0.7.1
  */
 GList*
-ags_note_from_raw_midi(char *raw_midi,
+ags_note_from_raw_midi(unsigned char *raw_midi,
+		       gdouble bpm, gdouble delay_factor,
 		       guint length)
 {
   GList *list;
@@ -297,6 +640,8 @@ ags_note_from_raw_midi(char *raw_midi,
 /**
  * ags_note_from_seq_event:
  * @event: ALSA sequencer events as array
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
  * @n_events: the arrays length
  *
  * Convert ALSA sequencer data @event to #AgsNote.
@@ -307,6 +652,7 @@ ags_note_from_raw_midi(char *raw_midi,
  */
 GList*
 ags_note_from_seq_event(snd_seq_event_t *event,
+			gdouble bpm, gdouble delay_factor,
 			guint n_events)
 {
   GList *list;
@@ -341,6 +687,9 @@ ags_note_duplicate(AgsNote *note)
   copy->x[1] = note->x[1];
   copy->y = note->y;
 
+  copy->stream_delay = note->stream_delay;
+  copy->stream_attack = note->stream_attack;
+  
   copy->attack[0] = note->attack[0];
   copy->attack[1] = note->attack[1];
 
@@ -454,3 +803,31 @@ ags_note_new()
 
   return(note);
 }
+
+/**
+ * ags_note_new:
+ *
+ * Creates an #AgsNote
+ *
+ * Returns: a new #AgsNote
+ *
+ * Since: 0.7.2
+ */
+AgsNote*
+ags_note_new_with_offset(guint x0, guint x1,
+			 guint y,
+			 gdouble stream_delay, gdouble stream_attack)
+{
+  AgsNote *note;
+
+  note = (AgsNote *) g_object_new(AGS_TYPE_NOTE,
+				  "x0\0", x0,
+				  "x1\0", x1,
+				  "y\0", y,
+				  "stream-delay\0", stream_delay,
+				  "stream-attack\0", stream_attack,
+				  NULL);
+
+  return(note);
+}
+
