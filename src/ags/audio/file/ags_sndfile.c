@@ -348,8 +348,9 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
   source = (signed short *) malloc((size_t) sndfile->info->channels *
 				   sndfile->info->frames *
 				   sizeof(signed short));
-  
-  sf_seek(sndfile->file, 0, SEEK_SET);
+
+  //FIXME:JK: work-around sf_seek() seems to be broken
+  //  sf_seek(sndfile->file, 0, SEEK_SET);
   sf_read_short(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
 
   buffer = (signed short *) malloc((size_t) sndfile->info->frames *
