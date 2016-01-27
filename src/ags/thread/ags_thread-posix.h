@@ -39,10 +39,14 @@
 
 #define MSEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
+
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
-#define AGS_THREAD_DEFAULT_JIFFIE (250)
-#define AGS_THREAD_MAX_PRECISION (250)
+
+#define AGS_THREAD_HERTZ_JIFFIE (1000.0)
+#define AGS_THREAD_DEFAULT_JIFFIE (250.0)
+#define AGS_THREAD_MAX_PRECISION (250.0)
+
 #define AGS_THREAD_DEFAULT_ATTACK (1.0)
 
 typedef struct _AgsThread AgsThread;
@@ -106,7 +110,8 @@ struct _AgsThread
   pthread_attr_t thread_attr;
 
   gdouble freq;
-
+  gdouble current_tic;
+  
   pthread_mutex_t *mutex;
   pthread_mutexattr_t mutexattr;
   pthread_cond_t *cond;
@@ -154,6 +159,8 @@ struct _AgsThreadClass
 {
   GObjectClass object;
 
+  guint (*clock)(AgsThread *thread);
+  
   void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
   void (*suspend)(AgsThread *thread);
@@ -220,6 +227,8 @@ void ags_thread_wait_children(AgsThread *thread);
 void ags_thread_signal_parent(AgsThread *thread, AgsThread *parent, gboolean broadcast);
 void ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast);
 void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
+
+guint ags_thread_clock(AgsThread *thread);
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
