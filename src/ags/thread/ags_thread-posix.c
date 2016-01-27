@@ -330,17 +330,18 @@ ags_thread_init(AgsThread *thread)
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
   /* insert audio loop mutex */
   //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  attr = (pthread_mutex_t *) malloc(sizeof(pthread_attr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
   mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
-		     &attr);
+		     attr);
 
   pthread_mutex_lock(&(ags_application_mutex));
 
@@ -1986,7 +1987,6 @@ ags_thread_real_clock(AgsThread *thread)
   gdouble main_loop_delay;
   gdouble delay;
   guint steps;
-  gboolean is_main_loop_tic;
 
   pthread_mutex_t *mutex, *main_loop_mutex;
   pthread_cond_t *run_cond;
@@ -2090,7 +2090,7 @@ ags_thread_real_clock(AgsThread *thread)
   steps = 0;
 
   /* async-queue */
-  async_queue = ags_main_loop_get_async_queue(main_loop);
+  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
 
   run_mutex = ags_async_queue_get_run_mutex(AGS_ASYNC_QUEUE(async_queue));
   run_cond = ags_async_queue_get_run_cond(AGS_ASYNC_QUEUE(async_queue));
@@ -2100,26 +2100,26 @@ ags_thread_real_clock(AgsThread *thread)
 
   mutex_manager = ags_mutex_manager_get_instance();
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   thread);
   main_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
 					     main_loop);
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   thread);
   
   pthread_mutex_unlock(&ags_application_mutex);
 
   /* calculate main loop delay */
-  pthread_mutex_lock(&main_loop_mutex);
+  pthread_mutex_lock(main_loop_mutex);
   
   main_loop_delay = AGS_THREAD_MAX_PRECISION / main_loop->freq / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
   
-  pthread_mutex_unlock(&main_loop_mutex);
+  pthread_mutex_unlock(main_loop_mutex);
   
   /* calculate thread delay */
-  pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(mutex);
 
   delay = AGS_THREAD_MAX_PRECISION / thread->freq / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
 
-  pthread_mutex_unlock(&mutex);
+  pthread_mutex_unlock(mutex);
   
   /* idle */
   if(g_atomic_pointer_get(&(thread->parent)) == NULL){
@@ -2183,26 +2183,9 @@ ags_thread_real_clock(AgsThread *thread)
 #endif
   }
 
-  /* notify start */
+  /* initial run per cycle */
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-    /* unset initial run */
-    /* signal AgsAudioLoop */
-    pthread_mutex_lock(thread->start_mutex);
-    
-    g_atomic_int_and(&(thread->flags),
-		     (~AGS_THREAD_INITIAL_RUN));
-    
-    g_atomic_int_set(&(thread->start_done),
-		     TRUE);
-    
-    if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
-      pthread_cond_broadcast(thread->start_cond);
-    }
-    
-    pthread_mutex_unlock(thread->start_mutex);
-    
-    /* initial run per cycle */
-    if(main_loop->freq >= AGS_THREAD_MAX_PRECISION){
+    if(thread->freq >= AGS_THREAD_MAX_PRECISION){
       steps = 1.0 / delay;
     }else{
       steps = 1;
@@ -2215,13 +2198,13 @@ ags_thread_real_clock(AgsThread *thread)
     pthread_mutex_lock(thread->mutex);
     
     ags_thread_clock_sync(thread);
-      
+    
     pthread_mutex_unlock(thread->mutex);
 
     ags_thread_clock_wait_async();
-
+  
     /* increment delay counter and set run per cycle */
-    if(main_loop->freq >= AGS_THREAD_MAX_PRECISION){
+    if(thread->freq >= AGS_THREAD_MAX_PRECISION){
       ags_thread_tic_delay = 0;
 
       steps = 1.0 / delay;
@@ -2236,6 +2219,22 @@ ags_thread_real_clock(AgsThread *thread)
 	steps = 1;
       }
     }
+  }
+
+  /* notify start */
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    /* unset initial run */
+    /* signal AgsAudioLoop */
+    pthread_mutex_lock(thread->start_mutex);
+    
+    g_atomic_int_set(&(thread->start_done),
+		     TRUE);
+    
+    if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
+      pthread_cond_broadcast(thread->start_cond);
+    }
+    
+    pthread_mutex_unlock(thread->start_mutex);
   }
 
   /* nth cycle */
@@ -2269,7 +2268,7 @@ guint
 ags_thread_clock(AgsThread *thread)
 {
   guint steps;
-  
+
   g_return_if_fail(AGS_IS_THREAD(thread));
 
   g_object_ref(G_OBJECT(thread));
@@ -2342,7 +2341,7 @@ ags_thread_loop(void *ptr)
   AgsThread *thread, *main_loop;
   GObject *async_queue;
 
-  guint tic, next_tic;
+  guint next_tic;
   guint val, running, locked_greedy;
   guint i, i_stop;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
@@ -2547,6 +2546,12 @@ ags_thread_loop(void *ptr)
       //    g_printf("%s\n\0", G_OBJECT_TYPE_NAME(thread));
 
       /*  */
+      if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+	g_atomic_int_and(&(thread->flags),
+			 (~AGS_THREAD_INITIAL_RUN));
+      }
+
+      /*  */
       running = g_atomic_int_get(&(thread->flags));
 
       /* check for greedy to release */
@@ -2620,20 +2625,13 @@ ags_thread_loop(void *ptr)
     pthread_yield();
   }
 
+  /* sync */
   if(ags_thread_current_tic = 2){
     next_tic = 0;
   }else if(ags_thread_current_tic = 0){
     next_tic = 1;
   }else if(ags_thread_current_tic = 1){
     next_tic = 2;
-  }
-
-  if(next_tic = 2){
-    tic = 0;
-  }else if(next_tic = 0){
-    tic = 1;
-  }else if(next_tic = 1){
-    tic = 2;
   }
 
   pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));

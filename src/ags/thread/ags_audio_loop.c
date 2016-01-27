@@ -526,11 +526,11 @@ ags_audio_loop_run(AgsThread *thread)
     AgsThread *gui_thread;
 
     /* get async queue and gui thread */
-    pthread_mutex_lock(mutex);
+    //    pthread_mutex_lock(mutex);
     
     async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(thread));
 
-    pthread_mutex_unlock(mutex);
+    //    pthread_mutex_unlock(mutex);
 
     gui_thread = ags_thread_find_type(thread,
 				      AGS_TYPE_GUI_THREAD);
@@ -559,6 +559,8 @@ ags_audio_loop_run(AgsThread *thread)
 	
     pthread_mutex_unlock(async_queue->start_mutex);
 
+    g_message("async queue\0");
+    
     /* wait thread */
     pthread_mutex_lock(gui_thread->start_mutex);
 	
@@ -572,8 +574,11 @@ ags_audio_loop_run(AgsThread *thread)
     }
 	
     pthread_mutex_unlock(gui_thread->start_mutex);
+
+    g_message("gui");
+    
   }
-  
+
   if(!thread->rt_setup){
     struct sched_param param;
     
