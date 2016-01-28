@@ -6039,7 +6039,7 @@ ags_channel_recursive_play(AgsChannel *channel,
     }
     
     /* lock context */
-    //    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
 
     /* go to toplevel AgsChannel */
     while(current != NULL){
@@ -6146,7 +6146,7 @@ ags_channel_recursive_play(AgsChannel *channel,
       pthread_mutex_unlock(current_mutex);
     }
 
-    //    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
+    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
   }
   
   void ags_channel_recursive_play_down_input(AgsChannel *output,
@@ -6233,7 +6233,7 @@ ags_channel_recursive_play(AgsChannel *channel,
 	pthread_mutex_unlock(input_mutex);
 	
 	/* lock context */
-	//	ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+	ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
 	
 	/* find input recall id */
 	pthread_mutex_lock(input_mutex);
@@ -6249,7 +6249,7 @@ ags_channel_recursive_play(AgsChannel *channel,
 			 stage);
 
 	/* unlock context */
-	//	ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
+	ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
 
 	/* iterate */
 	pthread_mutex_lock(input_mutex);
@@ -6333,7 +6333,7 @@ ags_channel_recursive_play(AgsChannel *channel,
       pthread_mutex_unlock(input_mutex);
 
       /* lock context */
-      //      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
       
       /* play recalls on input */
       ags_channel_play(input,
@@ -6341,7 +6341,7 @@ ags_channel_recursive_play(AgsChannel *channel,
 		       stage);
 
       /* unlock context */
-      //      ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
+      ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
       
       /* traverse the tree */
       if(link != NULL){
@@ -6396,7 +6396,7 @@ ags_channel_recursive_play(AgsChannel *channel,
     pthread_mutex_unlock(&(ags_application_mutex));
 
     /* lock context */
-    //    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
 
     /* retrieve recall id */
     pthread_mutex_lock(mutex);
@@ -6462,7 +6462,7 @@ ags_channel_recursive_play(AgsChannel *channel,
 		     stage);
 
     /* unlock context */
-    //    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
+    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
     
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (flags)) != 0){
       /* call function which play input */
@@ -6470,7 +6470,7 @@ ags_channel_recursive_play(AgsChannel *channel,
 					    default_recall_id);
 
       /* lock context */
-      //      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
     
       /* play audio */
       ags_audio_play(audio,
@@ -6480,22 +6480,25 @@ ags_channel_recursive_play(AgsChannel *channel,
       ags_audio_play(audio,
 		     default_recall_id,
 		     stage);
+
+      /* unlock context */
+      ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
     }else{
       /* call function which play input */
       ags_channel_recursive_play_down_input(output,
 					    default_recall_id);
 
       /* lock context */
-      //      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
 
       /* play audio */
       ags_audio_play(audio,
 		     audio_recall_id,
 		     stage);
-    }
 
-    /* unlock context */
-    //    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));    
+      /* unlock context */
+      ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));    
+    }
   }
 
   /* entry point */

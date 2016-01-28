@@ -1,3 +1,8 @@
+ags (0.6.44)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed call to nanosleep() to use correct tact information
+
 ags (0.6.43)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
