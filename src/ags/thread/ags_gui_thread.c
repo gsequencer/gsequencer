@@ -199,11 +199,15 @@ ags_gui_thread_run(AgsThread *thread)
     if(!g_main_context_acquire(main_context)){
       gboolean got_ownership = FALSE;
 
+      g_mutex_lock(&(gui_thread->mutex));
+      
       while(!got_ownership){
 	got_ownership = g_main_context_wait(main_context,
 					    &(gui_thread->cond),
 					    &(gui_thread->mutex));
       }
+
+      g_mutex_unlock(&(gui_thread->mutex));
     }
 
     list = gui_thread->task_completion;
@@ -233,24 +237,26 @@ ags_gui_thread_run(AgsThread *thread)
   /*  */
   main_context = g_main_context_default();
   
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
-    g_main_context_release(main_context);
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    g_mutex_lock(&(gui_thread->mutex));
+    
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
+    }
+
+    g_mutex_unlock(&(gui_thread->mutex));
   }
   
   gdk_threads_enter();
   gtk_main_iteration_do(FALSE);
   gdk_threads_leave();
 
-  if(!g_main_context_acquire(main_context)){
-    gboolean got_ownership = FALSE;
+  g_main_context_release(main_context);
 
-    while(!got_ownership){
-      got_ownership = g_main_context_wait(main_context,
-					  &(gui_thread->cond),
-					  &(gui_thread->mutex));
-    }
-  }
-  
   ags_gui_thread_complete_task();  
 
   pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());

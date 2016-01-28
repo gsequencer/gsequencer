@@ -367,12 +367,35 @@ ags_task_thread_run(AgsThread *thread)
   /* launch tasks */
   if(list != NULL){
     AgsTask *task;
+
+    GMainContext *main_context;
+
     int i;
+
+    main_context = g_main_context_default();
 
     pthread_mutex_lock(task_thread->launch_mutex);
     //    pthread_mutex_lock(AGS_AUDIO_LOOP(thread->parent)->recall_mutex);
     //    gdk_threads_enter();
+
+    if(!g_main_context_acquire(main_context)){
+      static GCond cond;
+      static GMutex mutex;
+      gboolean got_ownership = FALSE;
+
+      g_mutex_lock(&mutex);
   
+      while(!got_ownership){
+	got_ownership = g_main_context_wait(main_context,
+					    &cond,
+					    &mutex);
+      }
+
+      g_mutex_unlock(&mutex);
+    }
+
+    gdk_threads_enter();
+
     for(i = 0; i < g_atomic_int_get(&(task_thread->pending)); i++){
       task = AGS_TASK(list->data);
 
@@ -384,6 +407,10 @@ ags_task_thread_run(AgsThread *thread)
       
       list = list->next;
     }
+
+    gdk_threads_leave();
+    
+    g_main_context_release(main_context);
 
     //    gdk_threads_leave();
     //    pthread_mutex_unlock(AGS_AUDIO_LOOP(thread->parent)->recall_mutex);
