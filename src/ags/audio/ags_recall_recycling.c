@@ -692,25 +692,23 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   }
 
   recall_id = audio_signal->recall_id;
+
+  if(recall_id->recycling_container == NULL){
+    pthread_mutex_unlock(mutex);
+    return;
+  }
   
   if(recall_id->recycling_container != recall->recall_id->recycling_container){
     if(AGS_IS_INPUT(channel)){
       if(channel->link != NULL){
-	if(recall->recall_id->recycling_container->parent != NULL){
+	if(recall_id->recycling_container->parent != NULL){
 	  if(recall_id->recycling_container->parent != recall->recall_id->recycling_container){
   	    pthread_mutex_unlock(mutex);
 	    return;
 	  }
 	}else{
-	  //	  AgsRecyclingContainer *parent_container;
-
-	  //	  parent_container = ags_recall_id_find_parent_recycling_container(AGS_AUDIO(channel->audio)->recall_id,
-	  //								   recall->recall_id->recycling_container);
-
-	  //	  if(recall_id->recycling_container->parent != parent_container){
-	    pthread_mutex_unlock(mutex);
-	    return;
-	    //	  }
+	  pthread_mutex_unlock(mutex);
+	  return;
 	}
       }else{
 	pthread_mutex_unlock(mutex);

@@ -373,8 +373,8 @@ ags_channel_thread_run(AgsThread *thread)
   mutex_manager = ags_mutex_manager_get_instance();
 
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) channel);
-      
+					   (GObject *) channel);
+  
   pthread_mutex_unlock(&(ags_application_mutex));
 
   /* get devout play */

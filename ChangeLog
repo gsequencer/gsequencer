@@ -1,3 +1,19 @@
+ags (0.6.47)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* definitely-fixed wrong parameter to nanosleep() in ags_thread_real_clock()
+	* fixed data-race in ::tact callback of AgsDrum and AgsMatrix and possible NULL pointer access
+
+ags (0.6.46)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong parameter to nanosleep() in ags_thread_real_clock()
+
+ags (0.6.45)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed recently introduced bug that caused AgsMixer to be muted
+
 ags (0.6.44)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
