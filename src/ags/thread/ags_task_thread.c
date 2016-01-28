@@ -371,7 +371,8 @@ ags_task_thread_run(AgsThread *thread)
 
     pthread_mutex_lock(task_thread->launch_mutex);
     //    pthread_mutex_lock(AGS_AUDIO_LOOP(thread->parent)->recall_mutex);
-
+    //    gdk_threads_enter();
+  
     for(i = 0; i < g_atomic_int_get(&(task_thread->pending)); i++){
       task = AGS_TASK(list->data);
 
@@ -384,6 +385,7 @@ ags_task_thread_run(AgsThread *thread)
       list = list->next;
     }
 
+    //    gdk_threads_leave();
     //    pthread_mutex_unlock(AGS_AUDIO_LOOP(thread->parent)->recall_mutex);
     pthread_mutex_unlock(task_thread->launch_mutex);
   }

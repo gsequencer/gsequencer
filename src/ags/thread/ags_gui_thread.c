@@ -208,6 +208,8 @@ ags_gui_thread_run(AgsThread *thread)
 
     list = gui_thread->task_completion;
 
+    gdk_threads_enter();
+    
     while(list != NULL){
       list_next = list->next;
       
@@ -221,6 +223,8 @@ ags_gui_thread_run(AgsThread *thread)
       list = list_next;
     }
 
+    gdk_threads_leave();
+    
     g_main_context_release(main_context);
   }
   
@@ -234,9 +238,7 @@ ags_gui_thread_run(AgsThread *thread)
   }
   
   gdk_threads_enter();
-  
   gtk_main_iteration_do(FALSE);
-  
   gdk_threads_leave();
 
   if(!g_main_context_acquire(main_context)){

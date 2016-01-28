@@ -520,11 +520,15 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     buffer = ags_playable_read(playable,
 			       i,
 			       &error);
-
+    
     if(error != NULL){
       g_error("%s\0", error->message);
     }
 
+    ags_playable_seek(playable,
+		      0,
+		      SEEK_SET);
+    
     if(buffer != NULL){
       stream = audio_signal->stream_beginning;
     

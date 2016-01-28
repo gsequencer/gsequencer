@@ -1,3 +1,9 @@
+ags (0.6.43)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed seeking playable after read in order to work with libsndfile
+	* fixed usage of gdk_threads_enter() and gdk_threads_leave() because some were missing
+
 ags (0.6.42)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

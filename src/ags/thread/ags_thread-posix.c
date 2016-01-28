@@ -2063,8 +2063,8 @@ ags_thread_real_clock(AgsThread *thread)
   void ags_thread_clock_wait_async(){
       /* async-queue */
     if(!AGS_IS_ASYNC_QUEUE(thread)){
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) != 0 &&
-	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(async_queue)->flags)))) == 0 &&
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(async_queue->flags)))) != 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(async_queue->flags)))) == 0 &&
 	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
 	pthread_mutex_lock(run_mutex);
 	
@@ -2595,31 +2595,6 @@ ags_thread_loop(void *ptr)
       if(wait_for_children){
 	ags_thread_unlock_children(thread);
       }
-
-      if(thread->freq >= 1.0){
-	/* unset initial run */
-	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-	  g_atomic_int_and(&(thread->flags),
-			   (~AGS_THREAD_INITIAL_RUN));
-	  g_atomic_int_and(&(thread->flags),
-			   (~AGS_THREAD_WAIT_0));
-
-	  /* signal AgsAudioLoop */
-	  pthread_mutex_lock(thread->start_mutex);
-
-	  g_atomic_int_and(&(thread->flags),
-			   (~AGS_THREAD_INITIAL_RUN));
-	  
-	  g_atomic_int_set(&(thread->start_done),
-			   TRUE);
-
-	  if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
-	    pthread_cond_broadcast(thread->start_cond);
-	  }
-	  
-	  pthread_mutex_unlock(thread->start_mutex);
-	}
-      }
     }
 
     pthread_yield();
@@ -2643,8 +2618,7 @@ ags_thread_loop(void *ptr)
   }
 
   if(ags_thread_is_tree_ready(main_loop,
-			      ags_thread_current_tic) &&
-     ags_thread_current_tic == ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop))){
+			      ags_thread_current_tic)){
 
     ags_thread_set_sync_all(main_loop, ags_thread_current_tic);
 
