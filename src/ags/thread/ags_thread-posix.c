@@ -2143,8 +2143,9 @@ ags_thread_real_clock(AgsThread *thread)
 	
     pthread_mutex_unlock(thread->timer_mutex);
 #else
-    long time_spent;
-
+    long time_spent, time_limit, time_left;
+    long time_cycle, cycle_unit;
+    
     static const long time_unit = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
 
     clock_gettime(CLOCK_MONOTONIC, &time_now);
@@ -2159,13 +2160,24 @@ ags_thread_real_clock(AgsThread *thread)
       }
 
       /* time spent per unit and multiple cycles */
-      if((ags_thread_tic_delay + 1) * time_unit > time_spent){
+      time_limit = (ags_thread_tic_delay + 1) * time_unit;
+
+      if(time_limit > time_spent){
 	struct timespec timed_sleep = {
 	  0,
 	  0,
 	};
 
-	timed_sleep.tv_nsec = time_unit - (time_spent % time_unit);
+	time_cycle = NSEC_PER_SEC / (thread->freq * (AGS_THREAD_MAX_PRECISION / AGS_THREAD_HERTZ_JIFFIE));
+	time_left = time_cycle - time_limit;
+	cycle_unit = (time_left / (AGS_THREAD_MAX_PRECISION - ags_thread_cycle_iteration));
+	
+	if(time_limit - time_spent < cycle_unit){
+	  timed_sleep.tv_nsec = time_limit - time_spent;
+	}else{
+	  timed_sleep.tv_nsec = time_unit;
+	}
+	  
 	nanosleep(&timed_sleep, NULL);
       }
     }
