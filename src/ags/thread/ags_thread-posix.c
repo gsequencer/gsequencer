@@ -2159,26 +2159,34 @@ ags_thread_real_clock(AgsThread *thread)
 	time_spent = time_now.tv_nsec - ags_thread_computing_time.tv_nsec;
       }
 
-      /* time spent per unit and multiple cycles */
-      time_limit = (ags_thread_tic_delay + 1) * time_unit;
+      if(ags_thread_tic_delay > 0 &&
+	 ags_thread_tic_delay < delay){
+	/* time spent per unit and multiple cycles */
+	time_cycle = delay * time_unit;
+	time_limit = (ags_thread_tic_delay + 1) * time_unit;
 
-      if(time_limit > time_spent){
-	struct timespec timed_sleep = {
-	  0,
-	  0,
-	};
+	if(time_limit > time_spent){
+	  struct timespec timed_sleep = {
+	    0,
+	    0,
+	  };
 
-	time_cycle = NSEC_PER_SEC / (thread->freq * (AGS_THREAD_MAX_PRECISION / AGS_THREAD_HERTZ_JIFFIE));
-	time_left = time_cycle - time_limit;
-	cycle_unit = (time_left / (AGS_THREAD_MAX_PRECISION - ags_thread_cycle_iteration));
-	
-	if(time_limit - time_spent < cycle_unit){
-	  timed_sleep.tv_nsec = time_limit - time_spent;
-	}else{
-	  timed_sleep.tv_nsec = time_unit;
+	  if(ags_thread_tic_delay != 0){
+	    time_left = (time_cycle / ags_thread_tic_delay) - time_spent;
+	    cycle_unit = time_left / (delay - ags_thread_tic_delay);
+
+	    if(time_limit - time_spent < cycle_unit){
+	      timed_sleep.tv_nsec = time_limit - time_spent;
+	    }else{
+	      timed_sleep.tv_nsec = cycle_unit;
+	    }
+	    
+	  }else{
+	    timed_sleep.tv_nsec = time_unit;
+	  }
+
+	  nanosleep(&timed_sleep, NULL);
 	}
-	  
-	nanosleep(&timed_sleep, NULL);
       }
     }
 #endif
