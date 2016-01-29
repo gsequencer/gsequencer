@@ -2159,18 +2159,13 @@ ags_thread_real_clock(AgsThread *thread)
       }
 
       /* time spent per unit and multiple cycles */
-      if(((ags_thread_tic_delay * AGS_THREAD_MAX_PRECISION / NSEC_PER_SEC)) * time_unit > time_spent){
+      if((ags_thread_tic_delay + 1) * time_unit > time_spent){
 	struct timespec timed_sleep = {
 	  0,
 	  0,
 	};
 
-	if(((ags_thread_tic_delay * AGS_THREAD_MAX_PRECISION / NSEC_PER_SEC)) * time_unit < time_spent + time_unit){
-	  timed_sleep.tv_nsec = ((ags_thread_tic_delay * AGS_THREAD_MAX_PRECISION / NSEC_PER_SEC)) * time_unit - time_spent;
-	}else{
-	  timed_sleep.tv_nsec = time_unit;
-	}
-	
+	timed_sleep.tv_nsec = time_unit - (time_spent % time_unit);
 	nanosleep(&timed_sleep, NULL);
       }
     }
