@@ -312,6 +312,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   buffer_size = source->buffer_size;
 
+  //g_message("play 0x%x\0", source);
+  
   if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
     AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
     ags_audio_signal_copy_buffer_to_buffer(&(buffer0[audio_channel]), devout->pcm_channels,

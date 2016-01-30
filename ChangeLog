@@ -1,3 +1,19 @@
+ags (0.6.50)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* grained timing in ags_thread_clock()
+	* fixed dead-lock during initial thread run of AgsAsyncQueue see ags_task_thread.c and ags_thread-posix.c
+
+ags (0.6.49)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed find child recall in ags_play_notation_audio_run.c
+
+ags (0.6.48)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong parameter to nanosleep() in ags_thread_real_clock()
+
 ags (0.6.47)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -623,6 +623,8 @@ ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
 {
   AgsPlayChannelRunMaster *play_channel_run_master;
 
+  g_message("streamer done\0");
+  
   play_channel_run_master = streamer->play_channel_run_master;
 
   play_channel_run_master->streamer = g_list_remove(play_channel_run_master->streamer,

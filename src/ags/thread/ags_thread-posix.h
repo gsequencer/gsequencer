@@ -158,8 +158,6 @@ struct _AgsThread
 struct _AgsThreadClass
 {
   GObjectClass object;
-
-  guint (*clock)(AgsThread *thread);
   
   void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
@@ -228,7 +226,7 @@ void ags_thread_signal_parent(AgsThread *thread, AgsThread *parent, gboolean bro
 void ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast);
 void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
 
-guint ags_thread_clock(AgsThread *thread);
+static inline guint ags_thread_clock(AgsThread *thread) __attribute__((always_inline));
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);

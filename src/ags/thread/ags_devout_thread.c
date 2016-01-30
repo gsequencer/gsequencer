@@ -289,6 +289,7 @@ ags_devout_thread_run(AgsThread *thread)
   }
 
   if(error != NULL){
+    g_message("%s\0", error->message);
     //TODO:JK: implement me
   }
 }

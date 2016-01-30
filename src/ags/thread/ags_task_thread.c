@@ -292,6 +292,9 @@ ags_task_thread_start(AgsThread *thread)
 
   task_thread = AGS_TASK_THREAD(thread);
 
+  ags_async_queue_set_run(AGS_ASYNC_QUEUE(task_thread),
+			  TRUE);
+
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
     ags_thread_pool_start(task_thread->thread_pool);
 

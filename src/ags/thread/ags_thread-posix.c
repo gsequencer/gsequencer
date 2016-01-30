@@ -57,8 +57,6 @@ void ags_thread_finalize(GObject *gobject);
 void ags_thread_resume_handler(int sig);
 void ags_thread_suspend_handler(int sig);
 
-guint ags_thread_real_clock(AgsThread *thread);
-
 void ags_thread_real_start(AgsThread *thread);
 void* ags_thread_timer(void *ptr);
 void* ags_thread_loop(void *ptr);
@@ -84,7 +82,6 @@ enum{
 };
 
 enum{
-  CLOCK,
   START,
   RUN,
   SUSPEND,
@@ -195,8 +192,6 @@ ags_thread_class_init(AgsThreadClass *thread)
 				  param_spec);
 
   /* AgsThread */
-  thread->clock = ags_thread_real_clock;
-
   thread->start = ags_thread_real_start;
   thread->run = NULL;
   thread->suspend = NULL;
@@ -205,21 +200,6 @@ ags_thread_class_init(AgsThreadClass *thread)
   thread->stop = ags_thread_real_stop;
 
   /* signals */
-  /**
-   * AgsThread::clock:
-   * @thread: the object playing.
-   *
-   * The ::clock signal is invoked as thread clocked.
-   */
-  thread_signals[CLOCK] =
-    g_signal_new("clock\0",
-		 G_TYPE_FROM_CLASS (thread),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsThreadClass, clock),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_UINT__VOID,
-		 G_TYPE_UINT, 0);
-
   /**
    * AgsThread::start:
    * @thread: the object playing.
@@ -1976,8 +1956,18 @@ ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
   ags_thread_signal_children(g_atomic_pointer_get(&(thread->children)), broadcast);
 }
 
+/**
+ * ags_thread_clock:
+ * @thread: the #AgsThread instance
+ *
+ * Clock the thread.
+ *
+ * Returns: the cycles to be performed
+ * 
+ * Since: 0.6.42
+ */
 guint
-ags_thread_real_clock(AgsThread *thread)
+ags_thread_clock(AgsThread *thread)
 {
   AgsThread *main_loop, *async_queue;
   AgsMutexManager *mutex_manager;
@@ -1985,7 +1975,7 @@ ags_thread_real_clock(AgsThread *thread)
   struct timespec time_now;
 
   gdouble main_loop_delay;
-  gdouble delay;
+  gdouble delay, delay_per_hertz;
   guint steps;
 
   pthread_mutex_t *mutex, *main_loop_mutex;
@@ -2048,9 +2038,11 @@ ags_thread_real_clock(AgsThread *thread)
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
     }else{
       /* async-queue */
-      ags_async_queue_set_run(AGS_ASYNC_QUEUE(async_queue),
-			      FALSE);
-
+      if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(async_queue->flags)))) == 0){
+	ags_async_queue_set_run(AGS_ASYNC_QUEUE(async_queue),
+				FALSE);
+      }
+      
       /* thread tree */
       ags_thread_set_sync_all(main_loop, ags_thread_current_tic);
       pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
@@ -2064,8 +2056,7 @@ ags_thread_real_clock(AgsThread *thread)
       /* async-queue */
     if(!AGS_IS_ASYNC_QUEUE(thread)){
       if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(async_queue->flags)))) != 0 &&
-	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(async_queue->flags)))) == 0 &&
-	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(async_queue->flags)))) == 0){
 	pthread_mutex_lock(run_mutex);
 	
 	//	g_message("blocked\0");
@@ -2117,8 +2108,9 @@ ags_thread_real_clock(AgsThread *thread)
   /* calculate thread delay */
   pthread_mutex_lock(mutex);
 
-  delay = AGS_THREAD_MAX_PRECISION / thread->freq / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
-
+  delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
+  delay_per_hertz = AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION;
+  
   pthread_mutex_unlock(mutex);
   
   /* idle */
@@ -2146,12 +2138,17 @@ ags_thread_real_clock(AgsThread *thread)
     long time_spent, time_limit, time_left;
     long time_cycle, cycle_unit;
     
-    static const long time_unit = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
+    static const long time_unit = NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE;
 
     clock_gettime(CLOCK_MONOTONIC, &time_now);
 
     /* ignore big delays and prevent integer overflow */
     if(time_now.tv_sec - 1 > ags_thread_computing_time.tv_sec){
+      struct timespec timed_sleep = {
+	0,
+	0,
+      };
+
       /* calculate time spent */
       if(time_now.tv_sec > ags_thread_computing_time.tv_sec){
 	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - ags_thread_computing_time.tv_nsec);
@@ -2159,35 +2156,29 @@ ags_thread_real_clock(AgsThread *thread)
 	time_spent = time_now.tv_nsec - ags_thread_computing_time.tv_nsec;
       }
 
-      if(ags_thread_tic_delay > 0 &&
-	 ags_thread_tic_delay < delay){
-	/* time spent per unit and multiple cycles */
-	time_cycle = delay * time_unit;
-	time_limit = (ags_thread_tic_delay + 1) * time_unit;
+      /* time spent per unit and multiple cycles */
+      time_cycle = delay * delay_per_hertz * time_unit;
+      time_limit = (ags_thread_tic_delay + 1) * delay_per_hertz * time_unit;
 
-	if(time_limit > time_spent){
-	  struct timespec timed_sleep = {
-	    0,
-	    0,
-	  };
+      time_left = time_cycle - time_spent;
 
-	  if(ags_thread_tic_delay != 0){
-	    time_left = (time_cycle / ags_thread_tic_delay) - time_spent;
-	    cycle_unit = time_left / (delay - ags_thread_tic_delay);
-
-	    if(time_limit - time_spent < cycle_unit){
-	      timed_sleep.tv_nsec = time_limit - time_spent;
-	    }else{
-	      timed_sleep.tv_nsec = cycle_unit;
-	    }
-	    
+      if(ags_thread_tic_delay < delay){
+	cycle_unit = time_left / (delay - ags_thread_tic_delay);
+	  
+	if(time_limit - time_spent < cycle_unit){
+	  timed_sleep.tv_nsec = time_limit - time_spent;
+	}else{
+	  if(cycle_unit < delay_per_hertz * time_unit){
+	    timed_sleep.tv_nsec = cycle_unit;
 	  }else{
-	    timed_sleep.tv_nsec = time_unit;
+	    timed_sleep.tv_nsec = delay_per_hertz * time_unit;
 	  }
-
-	  nanosleep(&timed_sleep, NULL);
 	}
+      }else{
+	timed_sleep.tv_nsec = delay_per_hertz * time_unit - time_spent;
       }
+
+      nanosleep(&timed_sleep, NULL);
     }
 #endif
   }
@@ -2199,6 +2190,22 @@ ags_thread_real_clock(AgsThread *thread)
     }else{
       steps = 1;
     }
+  }
+
+  /* notify start */
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    /* unset initial run */
+    /* signal AgsAudioLoop */
+    pthread_mutex_lock(thread->start_mutex);
+    
+    g_atomic_int_set(&(thread->start_done),
+		     TRUE);
+    
+    if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
+      pthread_cond_broadcast(thread->start_cond);
+    }
+    
+    pthread_mutex_unlock(thread->start_mutex);
   }
   
   /* sync */  
@@ -2230,22 +2237,6 @@ ags_thread_real_clock(AgsThread *thread)
     }
   }
 
-  /* notify start */
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-    /* unset initial run */
-    /* signal AgsAudioLoop */
-    pthread_mutex_lock(thread->start_mutex);
-    
-    g_atomic_int_set(&(thread->start_done),
-		     TRUE);
-    
-    if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
-      pthread_cond_broadcast(thread->start_cond);
-    }
-    
-    pthread_mutex_unlock(thread->start_mutex);
-  }
-
   /* nth cycle */
   if(ags_thread_cycle_iteration != AGS_THREAD_MAX_PRECISION){
     ags_thread_cycle_iteration++;
@@ -2253,39 +2244,15 @@ ags_thread_real_clock(AgsThread *thread)
     ags_thread_cycle_iteration = 0;
   }
 
+  if(g_atomic_pointer_get(&(thread->parent)) == NULL){
 #ifndef AGS_USE_TIMER
-  /* new computing time */
-  if(steps > 0){
-    clock_gettime(CLOCK_MONOTONIC, &ags_thread_computing_time);
-  }
+    /* new computing time */
+    if(steps > 0){
+      clock_gettime(CLOCK_MONOTONIC, &ags_thread_computing_time);
+    }
 #endif
+  }
   
-  return(steps);
-}
-
-/**
- * ags_thread_clock:
- * @thread: the #AgsThread instance
- *
- * Clock the thread.
- *
- * Returns: the cycles to be performed
- * 
- * Since: 0.6.42
- */
-guint
-ags_thread_clock(AgsThread *thread)
-{
-  guint steps;
-
-  g_return_if_fail(AGS_IS_THREAD(thread));
-
-  g_object_ref(G_OBJECT(thread));
-  g_signal_emit(G_OBJECT(thread),
-		thread_signals[CLOCK], 0,
-		&steps);
-  g_object_unref(G_OBJECT(thread));
-
   return(steps);
 }
 
@@ -2371,11 +2338,12 @@ ags_thread_loop(void *ptr)
   running = g_atomic_int_get(&(thread->flags));
 
   /* get start computing time */
-#ifndef AGS_USE_TIMER
   if(g_atomic_pointer_get(&(thread->parent)) == NULL){
+#ifndef AGS_USE_TIMER
+    ags_thread_tic_delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
     clock_gettime(CLOCK_MONOTONIC, &ags_thread_computing_time);
-  }
 #endif
+  }
   
   while((AGS_THREAD_RUNNING & running) != 0){
     /* barrier */
@@ -2605,8 +2573,6 @@ ags_thread_loop(void *ptr)
 	ags_thread_unlock_children(thread);
       }
     }
-
-    pthread_yield();
   }
 
   /* sync */

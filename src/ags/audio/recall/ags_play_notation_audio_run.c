@@ -749,6 +749,9 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   current_position = notation->notes; // start_loop
 
   while(current_position != NULL){
+    AgsRecallID *child_recall_id;
+    GList *list;
+    
     if(current_position != NULL){
       note = AGS_NOTE(current_position->data);
     
@@ -761,6 +764,38 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	if(selected_channel == NULL){
 	  continue;
+	}
+
+	if(selected_channel->link == NULL){
+	  list = selected_channel->recall_id;
+
+	  while(list != NULL){
+	    if(AGS_RECALL_ID(list->data)->recycling_container->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_container){
+	      child_recall_id = (AgsRecallID *) list->data;
+	      break;
+	    }
+	  
+	    list = list->next;
+	  }
+
+	  if(list == NULL){
+	    child_recall_id = NULL;
+	  }
+	}else{
+	  list = selected_channel->link->recall_id;
+
+	  while(list != NULL){
+	    if(AGS_RECALL_ID(list->data)->recycling_container->parent->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_container){
+	      child_recall_id = (AgsRecallID *) list->data;
+	      break;
+	    }
+	  
+	    list = list->next;
+	  }
+
+	  if(list == NULL){
+	    child_recall_id = NULL;
+	  }
 	}
 
 	/* lookup channel mutex */
@@ -794,7 +829,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  /* create audio signal */
 	  audio_signal = ags_audio_signal_new((GObject *) devout,
 					      (GObject *) recycling,
-					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
+					      (GObject *) child_recall_id);
 
 	  if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
 	    ags_recycling_create_audio_signal_with_defaults(recycling,
