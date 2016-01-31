@@ -2038,9 +2038,11 @@ ags_thread_clock(AgsThread *thread)
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
     }else{
       /* async-queue */
-      if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(async_queue->flags)))) == 0){
-	ags_async_queue_set_run(AGS_ASYNC_QUEUE(async_queue),
-				FALSE);
+      if(async_queue != NULL){
+	if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(async_queue->flags)))) == 0){
+	  ags_async_queue_set_run(AGS_ASYNC_QUEUE(async_queue),
+				  FALSE);
+	}
       }
       
       /* thread tree */
@@ -2573,6 +2575,8 @@ ags_thread_loop(void *ptr)
 	ags_thread_unlock_children(thread);
       }
     }
+
+    pthread_yield();
   }
 
   /* sync */

@@ -1,3 +1,14 @@
+ags (0.6.52)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing call to gdk_threads_enter() and gdk_threads_leave() in main.c
+
+ags (0.6.51)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed NULL pointer access during main() by waiting gui thread to be started
+	* fixed two race-conditions by editing ags_thread_pool.c
+
 ags (0.6.50)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

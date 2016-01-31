@@ -358,8 +358,9 @@ ags_thread_pool_creation_thread(void *ptr)
 	tmplist = g_atomic_pointer_get(&(thread_pool->returnable_thread));
 	g_atomic_pointer_set(&(thread_pool->returnable_thread),
 			     g_list_prepend(tmplist, thread));      
-	ags_thread_add_child(AGS_THREAD(thread_pool->parent),
-			     thread);
+	ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),
+				      thread,
+				      FALSE, FALSE);
 	ags_connectable_connect(AGS_CONNECTABLE(thread));
 	g_atomic_int_inc(&(thread_pool->n_threads));
 
@@ -488,8 +489,9 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   list = g_atomic_pointer_get(&(thread_pool->returnable_thread));
 
   while(list != NULL){
-    ags_thread_add_child(AGS_THREAD(thread_pool->parent),
-			 AGS_THREAD(list->data));
+    ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),
+				  AGS_THREAD(list->data),
+				  FALSE, FALSE);
     //    ags_thread_start(AGS_THREAD(list->data));
 
     list = list->next;

@@ -683,6 +683,7 @@ main(int argc, char **argv)
   LIBXML_TEST_VERSION;
 
   g_thread_init(NULL);
+  gdk_threads_enter();
   gtk_init(&argc, &argv);
   ipatch_init();
 
@@ -944,6 +945,24 @@ main(int argc, char **argv)
     gui_thread = ags_thread_find_type(ags_main->main_loop,
 				      AGS_TYPE_GUI_THREAD);
 
+    /* wait thread */
+    pthread_mutex_lock(AGS_THREAD(gui_thread)->start_mutex);
+
+    g_atomic_int_set(&(AGS_THREAD(gui_thread)->start_wait),
+		     TRUE);
+	
+    if(g_atomic_int_get(&(AGS_THREAD(gui_thread)->start_wait)) == TRUE &&
+       g_atomic_int_get(&(AGS_THREAD(gui_thread)->start_done)) == FALSE){
+      while(g_atomic_int_get(&(AGS_THREAD(gui_thread)->start_wait)) == TRUE &&
+	    g_atomic_int_get(&(AGS_THREAD(gui_thread)->start_done)) == FALSE){
+	pthread_cond_wait(AGS_THREAD(gui_thread)->start_cond,
+			  AGS_THREAD(gui_thread)->start_mutex);
+      }
+    }
+	
+    pthread_mutex_unlock(AGS_THREAD(gui_thread)->start_mutex);
+
+
     if(!single_thread){
       /* join gui thread */
 #ifdef _USE_PTH
@@ -956,6 +975,8 @@ main(int argc, char **argv)
     }
   }
 
+  gdk_threads_leave();
+  
   /* free managers */
   if(ags_ladspa_manager != NULL){
     g_object_unref(ags_ladspa_manager_get_instance());
