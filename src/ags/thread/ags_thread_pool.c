@@ -360,7 +360,7 @@ ags_thread_pool_creation_thread(void *ptr)
 			     g_list_prepend(tmplist, thread));      
 	ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),
 				      thread,
-				      FALSE, FALSE);
+				      FALSE, TRUE);
 	ags_connectable_connect(AGS_CONNECTABLE(thread));
 	g_atomic_int_inc(&(thread_pool->n_threads));
 

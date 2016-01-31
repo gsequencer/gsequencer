@@ -1,3 +1,8 @@
+ags (0.6.54)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed optimal through-put strategy to achieve better performance, by skipping very first cycle's nanosleep() call
+
 ags (0.6.53)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

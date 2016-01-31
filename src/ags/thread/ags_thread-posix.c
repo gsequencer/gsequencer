@@ -2151,33 +2151,35 @@ ags_thread_clock(AgsThread *thread)
 	0,
       };
 
-      /* calculate time spent */
-      if(time_now.tv_sec > ags_thread_computing_time.tv_sec){
-	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - ags_thread_computing_time.tv_nsec);
-      }else{
-	time_spent = time_now.tv_nsec - ags_thread_computing_time.tv_nsec;
-      }
-
-      /* time spent per unit and multiple cycles */
-      time_cycle = delay * delay_per_hertz * time_unit;
-      time_limit = (ags_thread_tic_delay + 1) * delay_per_hertz * time_unit;
-
-      time_left = time_cycle - time_spent;
-
-      if(ags_thread_tic_delay < delay){
-	cycle_unit = time_left / (delay - ags_thread_tic_delay);
-	  
-	if(time_limit - time_spent < cycle_unit){
-	  timed_sleep.tv_nsec = time_limit - time_spent;
+      if(ags_thread_tic_delay != 0){
+	/* calculate time spent */
+	if(time_now.tv_sec > ags_thread_computing_time.tv_sec){
+	  time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - ags_thread_computing_time.tv_nsec);
 	}else{
-	  if(cycle_unit < delay_per_hertz * time_unit){
-	    timed_sleep.tv_nsec = cycle_unit;
-	  }else{
-	    timed_sleep.tv_nsec = delay_per_hertz * time_unit;
-	  }
+	  time_spent = time_now.tv_nsec - ags_thread_computing_time.tv_nsec;
 	}
-      }else{
-	timed_sleep.tv_nsec = delay_per_hertz * time_unit - time_spent;
+	
+	/* time spent per unit and multiple cycles */
+	time_cycle = delay * delay_per_hertz * time_unit;
+	time_limit = (ags_thread_tic_delay) * delay_per_hertz * time_unit;
+
+	time_left = time_cycle - time_spent;
+
+	if(ags_thread_tic_delay < delay){
+	  cycle_unit = time_left / (delay - ags_thread_tic_delay);
+	  
+	  if(time_limit - time_spent < cycle_unit){
+	    timed_sleep.tv_nsec = time_limit - time_spent;
+	  }else{
+	    if(cycle_unit < delay_per_hertz * time_unit){
+	      timed_sleep.tv_nsec = cycle_unit;
+	    }else{
+	      timed_sleep.tv_nsec = delay_per_hertz * time_unit;
+	    }
+	  }
+	}else{
+	  timed_sleep.tv_nsec = delay_per_hertz * time_unit - time_spent;
+	}
       }
 
       nanosleep(&timed_sleep, NULL);

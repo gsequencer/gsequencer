@@ -252,7 +252,8 @@ ags_gui_thread_run(AgsThread *thread)
   }
   
   gdk_threads_enter();
-  gtk_main_iteration_do(FALSE);
+  g_main_context_iteration(main_context,
+			   FALSE);
   gdk_threads_leave();
 
   g_main_context_release(main_context);
