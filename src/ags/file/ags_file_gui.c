@@ -1579,7 +1579,11 @@ ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
 
   for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != pad_node && i < xpath_object->nodesetval->nodeMax; i++){
     if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
-      j++;
+      if(!g_strncasecmp(xpath_object->nodesetval->nodeTab[i]->name,
+			"ags-pad\0",
+			8)){
+	j++;
+      }
     }
   }
   pad = j;
@@ -1595,14 +1599,18 @@ ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
 
   for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != node && i < xpath_object->nodesetval->nodeMax; i++){
     if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
-      j++;
+      if(!g_strncasecmp(xpath_object->nodesetval->nodeTab[i]->name,
+			"ags-line\0",
+			9)){
+	j++;
+      }
     }
   }
 
   audio_channel = j;
 
   /*  */
-  position = pad * machine->audio->audio_channels + (machine->audio->audio_channels - audio_channel - 1);
+  position = pad * machine->audio->audio_channels + audio_channel;
 
   /*  */
   id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, machine->audio);
@@ -1628,7 +1636,16 @@ ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
 
     for(i = 0, j = 0; j < position && i < xpath_object->nodesetval->nodeMax; i++){
       if(xpath_object->nodesetval->nodeTab[i] != NULL && xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
-	j++;
+	if((is_output &&
+	    !g_strncasecmp(xpath_object->nodesetval->nodeTab[i]->name,
+			   "ags-output\0",
+			   11)) ||
+	   (!is_output &&
+	    !g_strncasecmp(xpath_object->nodesetval->nodeTab[i]->name,
+			   "ags-input\0",
+			   10))){
+	  j++;
+	}
       }
     }
 
