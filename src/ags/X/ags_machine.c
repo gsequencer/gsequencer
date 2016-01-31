@@ -906,27 +906,31 @@ ags_machine_set_run_extended(AgsMachine *machine,
     list = NULL;
 
     /* create init task */
-    init_audio = ags_init_audio_new(machine->audio,
-				    FALSE, sequencer, FALSE);
-    list = g_list_prepend(list, init_audio);
+    if(sequencer){
+      init_audio = ags_init_audio_new(machine->audio,
+				      FALSE, TRUE, FALSE);
+      list = g_list_prepend(list, init_audio);
+      
+      /* create append task */
+      append_audio = ags_append_audio_new(audio_loop,
+					  (GObject *) machine->audio);
+      
+      list = g_list_prepend(list, append_audio);
+    }
     
-    /* create append task */
-    append_audio = ags_append_audio_new(audio_loop,
-					(GObject *) machine->audio);
-
-    list = g_list_prepend(list, append_audio);
-
     /* create init task */
-    init_audio = ags_init_audio_new(machine->audio,
-				    FALSE, FALSE, notation);
-    list = g_list_prepend(list, init_audio);
+    if(notation){
+      init_audio = ags_init_audio_new(machine->audio,
+				      FALSE, FALSE, TRUE);
+      list = g_list_prepend(list, init_audio);
 
-    /* create append task */
-    append_audio = ags_append_audio_new(audio_loop,
-					(GObject *) machine->audio);
-
-    list = g_list_prepend(list, append_audio);
-
+      /* create append task */
+      append_audio = ags_append_audio_new(audio_loop,
+					  (GObject *) machine->audio);
+      
+      list = g_list_prepend(list, append_audio);
+    }
+    
     /* create start task */
     if(list != NULL){
       AgsGuiThread *gui_thread;

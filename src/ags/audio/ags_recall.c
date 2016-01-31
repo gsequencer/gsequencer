@@ -1438,12 +1438,14 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
+      list = list_next;
       continue;
     }
 
-    ags_recall_run_inter(AGS_RECALL(list->data));
-
+    if(AGS_IS_RECALL(list->data)){
+      ags_recall_run_inter(AGS_RECALL(list->data));
+    }
+    
     list = list_next;
   }
 }

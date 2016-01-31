@@ -763,6 +763,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	}
 
 	if(selected_channel == NULL){
+	  current_position = current_position->next;
 	  continue;
 	}
 
