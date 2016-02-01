@@ -404,6 +404,18 @@ ags_main_add_devout(AgsMain *ags_main,
 }
 
 void
+ags_main_register_all_types()
+{
+  ags_main_register_thread_type();
+
+  ags_main_register_recall_type();
+  ags_main_register_task_type();
+
+  ags_main_register_widget_type();
+  ags_main_register_machine_type();
+}
+
+void
 ags_main_register_recall_type()
 {
   ags_play_audio_get_type();

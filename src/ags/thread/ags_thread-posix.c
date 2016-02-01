@@ -97,6 +97,7 @@ static guint thread_signals[LAST_SIGNAL];
 extern pthread_mutex_t ags_application_mutex;
 
 __thread AgsThread *ags_thread_self = NULL;
+__thread guint ags_thread_delay;
 __thread guint ags_thread_tic_delay;
 __thread guint ags_thread_current_tic;
 __thread guint ags_thread_cycle_iteration;
@@ -1975,7 +1976,7 @@ ags_thread_clock(AgsThread *thread)
   struct timespec time_now;
 
   gdouble main_loop_delay;
-  gdouble delay, delay_per_hertz;
+  gdouble delay_per_hertz;
   guint steps;
 
   pthread_mutex_t *mutex, *main_loop_mutex;
@@ -1987,7 +1988,7 @@ ags_thread_clock(AgsThread *thread)
     
   void ags_thread_clock_sync(AgsThread *thread){
     guint next_tic;
-    
+
     /* sync */
     if(ags_thread_current_tic = 2){
       next_tic = 0;
@@ -2110,7 +2111,7 @@ ags_thread_clock(AgsThread *thread)
   /* calculate thread delay */
   pthread_mutex_lock(mutex);
 
-  delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
+  ags_thread_delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
   delay_per_hertz = AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION;
   
   pthread_mutex_unlock(mutex);
@@ -2151,7 +2152,7 @@ ags_thread_clock(AgsThread *thread)
 	0,
       };
 
-      if(ags_thread_tic_delay != 0){
+      if(ags_thread_tic_delay != ags_thread_delay){
 	/* calculate time spent */
 	if(time_now.tv_sec > ags_thread_computing_time.tv_sec){
 	  time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - ags_thread_computing_time.tv_nsec);
@@ -2160,13 +2161,13 @@ ags_thread_clock(AgsThread *thread)
 	}
 	
 	/* time spent per unit and multiple cycles */
-	time_cycle = delay * delay_per_hertz * time_unit;
+	time_cycle = ags_thread_delay * delay_per_hertz * time_unit;
 	time_limit = (ags_thread_tic_delay) * delay_per_hertz * time_unit;
 
 	time_left = time_cycle - time_spent;
 
-	if(ags_thread_tic_delay < delay){
-	  cycle_unit = time_left / (delay - ags_thread_tic_delay);
+	//	if(ags_thread_tic_delay != 0){
+	  cycle_unit = time_left / (ags_thread_delay - ags_thread_tic_delay);
 	  
 	  if(time_limit - time_spent < cycle_unit){
 	    timed_sleep.tv_nsec = time_limit - time_spent;
@@ -2177,9 +2178,9 @@ ags_thread_clock(AgsThread *thread)
 	      timed_sleep.tv_nsec = delay_per_hertz * time_unit;
 	    }
 	  }
-	}else{
-	  timed_sleep.tv_nsec = delay_per_hertz * time_unit - time_spent;
-	}
+	  //	}else{
+	  //	  timed_sleep.tv_nsec = delay_per_hertz * time_unit - time_spent;
+	  //	}
       }
 
       nanosleep(&timed_sleep, NULL);
@@ -2190,7 +2191,7 @@ ags_thread_clock(AgsThread *thread)
   /* initial run per cycle */
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     if(thread->freq >= AGS_THREAD_MAX_PRECISION){
-      steps = 1.0 / delay;
+      steps = 1.0 / ags_thread_delay;
     }else{
       steps = 1;
     }
@@ -2229,7 +2230,7 @@ ags_thread_clock(AgsThread *thread)
 
       steps = 1.0 / delay;
     }else{
-      if(ags_thread_tic_delay < delay){
+      if(ags_thread_tic_delay < ags_thread_delay){
 	ags_thread_tic_delay++;
 
 	steps = 0;
@@ -2344,7 +2345,8 @@ ags_thread_loop(void *ptr)
   /* get start computing time */
   if(g_atomic_pointer_get(&(thread->parent)) == NULL){
 #ifndef AGS_USE_TIMER
-    ags_thread_tic_delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
+    ags_thread_delay = 
+      ags_thread_tic_delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
     clock_gettime(CLOCK_MONOTONIC, &ags_thread_computing_time);
 #endif
   }
@@ -2578,7 +2580,9 @@ ags_thread_loop(void *ptr)
       }
     }
 
-    pthread_yield();
+    if(ags_thread_tic_delay != ags_thread_delay){
+      pthread_yield();
+    }
   }
 
   /* sync */

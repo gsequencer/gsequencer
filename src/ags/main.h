@@ -115,6 +115,8 @@ void ags_main_load_config(AgsMain *ags_main);
 void ags_main_add_devout(AgsMain *ags_main,
 			 AgsDevout *devout);
 
+void ags_main_register_all_types();
+
 void ags_main_register_thread_type();
 
 void ags_main_register_recall_type();

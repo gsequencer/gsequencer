@@ -1,7 +1,7 @@
 ags (0.6.55)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed don't do pthread_yield() at the end of last tic per cycle
+	* fixed don't do pthread_yield() at the end of last tic per cycleo
 	* implemented per-thread variable ags_thread_delay calculated every tic and don't use macros to do so
 
 ags (0.6.54)
