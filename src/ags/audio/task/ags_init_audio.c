@@ -22,6 +22,7 @@
 #include <ags-lib/object/ags_connectable.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_recall_id.h>
 
 void ags_init_audio_class_init(AgsInitAudioClass *init_audio);
 void ags_init_audio_connectable_interface_init(AgsConnectableInterface *connectable);

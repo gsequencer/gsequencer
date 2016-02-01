@@ -20,7 +20,9 @@
 #ifndef __AGS_TOGGLE_LED_H__
 #define __AGS_TOGGLE_LED_H__
 
+#include <glib.h>
 #include <glib-object.h>
+#include <gtk/gtk.h>
 
 #include <ags/audio/ags_task.h>
 

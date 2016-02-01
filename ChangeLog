@@ -2,7 +2,8 @@ ags (0.6.55)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed don't do pthread_yield() at the end of last tic per cycle
-	* implemented per-thread variable ags_thread_delay calculated every tic and don't use macros to do so
+	* fixed removed struct in struct of AgsThread
+	* fixed ags_config_get() non-static mutex with static initializer
 
 ags (0.6.54)
 

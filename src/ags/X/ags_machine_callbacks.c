@@ -25,11 +25,20 @@
 
 #include <ags/object/ags_applicable.h>
 
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif 
+#include <ags/thread/ags_thread_pool.h>
+
 #include <ags/thread/ags_audio_loop.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_devout_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_task.h>
 
 #include <ags/audio/task/ags_start_devout.h>
 #include <ags/audio/task/ags_remove_audio.h>
@@ -41,7 +50,9 @@
 #include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_file_selection.h>
 
-#define AGS_RENAME_ENTRY "AgsRenameEntry"
+#include <pthread.h>
+
+#define AGS_RENAME_ENTRY "AgsRenameEntry\0"
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);

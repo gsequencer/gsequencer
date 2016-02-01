@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gtk/gtk.h>
 
 #include <ags/audio/ags_task.h>
 #include <ags/audio/ags_devout.h>

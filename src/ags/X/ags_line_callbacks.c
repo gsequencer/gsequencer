@@ -186,6 +186,8 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   GValue value = {0,};
 
+  gdk_threads_enter();
+  
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
   
@@ -239,6 +241,8 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   }
 
   g_list_free(list_start);
+
+  gdk_threads_leave();
 }
 
 void

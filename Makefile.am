@@ -70,6 +70,7 @@ gsequencer_LDFLAGS= -ldl $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS
 gsequencer_LDADD = 
 
 gsequencerheaders = \
+	src/ags/ags.h \
 	src/ags/audio/ags_audio.h \
 	src/ags/audio/ags_audio_signal.h \
 	src/ags/audio/ags_channel.h \

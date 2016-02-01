@@ -34,6 +34,8 @@
 
 #include <ags/audio/ags_config.h>
 
+#include <gtk/gtk.h>
+
 #include <fontconfig/fontconfig.h>
 
 #include <unistd.h>
@@ -379,7 +381,6 @@ ags_task_thread_run(AgsThread *thread)
 
     pthread_mutex_lock(task_thread->launch_mutex);
     //    pthread_mutex_lock(AGS_AUDIO_LOOP(thread->parent)->recall_mutex);
-    //    gdk_threads_enter();
 
     if(!g_main_context_acquire(main_context)){
       static GCond cond;
@@ -415,7 +416,6 @@ ags_task_thread_run(AgsThread *thread)
     
     g_main_context_release(main_context);
 
-    //    gdk_threads_leave();
     //    pthread_mutex_unlock(AGS_AUDIO_LOOP(thread->parent)->recall_mutex);
     pthread_mutex_unlock(task_thread->launch_mutex);
   }

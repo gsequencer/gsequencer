@@ -2152,7 +2152,7 @@ ags_thread_clock(AgsThread *thread)
 	0,
       };
 
-      if(ags_thread_tic_delay != ags_thread_delay){
+      if(ags_thread_tic_delay < ags_thread_delay){
 	/* calculate time spent */
 	if(time_now.tv_sec > ags_thread_computing_time.tv_sec){
 	  time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - ags_thread_computing_time.tv_nsec);
@@ -2228,7 +2228,7 @@ ags_thread_clock(AgsThread *thread)
     if(thread->freq >= AGS_THREAD_MAX_PRECISION){
       ags_thread_tic_delay = 0;
 
-      steps = 1.0 / delay;
+      steps = 1.0 / ags_thread_delay;
     }else{
       if(ags_thread_tic_delay < ags_thread_delay){
 	ags_thread_tic_delay++;

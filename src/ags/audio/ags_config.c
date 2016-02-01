@@ -58,8 +58,10 @@ void ags_config_set_build_id(AgsConfig *config, gchar *build_id);
  * #AgsConfig provides configuration to Advanced Gtk+ Sequencer.
  */
 
-AgsConfig *config;
 static gpointer ags_config_parent_class = NULL;
+
+AgsConfig *config;
+extern pthread_mutex_t ags_application_mutex;
 
 static const gchar *ags_config_generic = AGS_CONFIG_GENERIC;
 static const gchar *ags_config_thread = AGS_CONFIG_THREAD;
@@ -656,15 +658,15 @@ ags_config_get(AgsConfig *config, gchar *group, gchar *key)
   gchar *str;
   GError *error;
   
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-  pthread_mutex_lock(&mutex);
+  pthread_mutex_lock(&ags_application_mutex);
   
   error = NULL;
 
   str = g_key_file_get_value(config->key_file, group, key, &error);
 
-  pthread_mutex_unlock(&mutex);
+  pthread_mutex_unlock(&ags_application_mutex);
 
   return(str);
 }
