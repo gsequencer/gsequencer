@@ -1607,7 +1607,11 @@ ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
     }
   }
 
-  audio_channel = j;
+  if(machine->audio->audio_channels > 0){
+    audio_channel = machine->audio->audio_channels - j - 1;
+  }else{
+    audio_channel = j;
+  }
 
   /*  */
   position = pad * machine->audio->audio_channels + audio_channel;

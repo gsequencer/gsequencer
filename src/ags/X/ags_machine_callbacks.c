@@ -164,6 +164,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
+  g_object_ref(machine->audio);
   remove_audio = ags_remove_audio_new(window->devout,
 				      machine->audio);
   ags_task_thread_append_task(task_thread,

@@ -170,6 +170,8 @@ ags_remove_audio_launch(AgsTask *task)
   /* remove audio */
   ags_devout_remove_audio(remove_audio->devout,
 			  G_OBJECT(remove_audio->audio));
+
+  g_object_unref(remove_audio->audio);
 }
 
 /**
