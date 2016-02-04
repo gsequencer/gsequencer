@@ -51,18 +51,19 @@ void ags_jack_server_set_url(AgsDistributedManager *distributed_manager,
 			     gchar *url);
 gchar* ags_jack_server_get_url(AgsDistributedManager *distributed_manager);
 void ags_jack_server_set_ports(AgsDistributedManager *distributed_manager,
-			       gchar **ports);
-gchar** ags_jack_server_get_ports(AgsDistributedManager *distributed_manager);
+			       guint *ports, guint port_count);
+guint* ags_jack_server_get_ports(AgsDistributedManager *distributed_manager,
+				 guint *port_count);
 void ags_jack_server_set_soundcard(AgsDistributedManager *distributed_manager,
-				   gchar *uri,
+				   gchar *port_uuid,
 				   GObject *soundcard);
 GObject* ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
-				       gchar *uri);
+				     gchar *port_uuid);
 void ags_jack_server_set_sequencer(AgsDistributedManager *distributed_manager,
-				   gchar *uri,
+				   gchar *port_uuid,
 				   GObject *sequencer);
 GObject* ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
-				       gchar *uri);
+				     gchar *port_uuid);
 GObject* ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 					    gboolean is_output);
 void ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
@@ -217,8 +218,14 @@ ags_jack_server_init(AgsJackServer *jack_server)
   jack_server->flags = 0;
 
   jack_server->application_context = NULL;
-  jack_server->url = NULL;
 
+  jack_server->url = g_strdup_printf("%s://%s:%d",
+				     AGS_JACK_SERVER_DEFAULT_PROTOCOL,
+				     AGS_JACK_SERVER_DEFAULT_HOST,
+				     AGS_JACK_SERVER_DEFAULT_PORT);
+  jack_server->port = NULL;
+  jack_server->port_count = 0;
+  
   jack_server->n_soundcards = 0;
   jack_server->n_sequencers = 0;
   
@@ -344,45 +351,95 @@ ags_jack_server_get_url(AgsDistributedManager *distributed_manager)
 
 void
 ags_jack_server_set_ports(AgsDistributedManager *distributed_manager,
-			  gchar **ports)
+			  guint *port, guint port_count)
 {
-  //TODO:JK: implement me
+  AGS_JACK_SERVER(distributed_manager)->port = port;
+  AGS_JACK_SERVER(distributed_manager)->port_count = port_count;
 }
 
-gchar**
-ags_jack_server_get_ports(AgsDistributedManager *distributed_manager)
+guint*
+ags_jack_server_get_ports(AgsDistributedManager *distributed_manager,
+			  guint *port_count)
 {
-  //TODO:JK: implement me
+  if(port_count != NULL){
+    *port_count = AGS_JACK_SERVER(distributed_manager)->port_count;
+  }
+  
+  return(AGS_JACK_SERVER(distributed_manager)->port);
 }
 
 void
 ags_jack_server_set_soundcard(AgsDistributedManager *distributed_manager,
-			      gchar *uri,
+			      gchar *port_uuid,
 			      GObject *soundcard)
 {
-  //TODO:JK: implement me
+  AgsJackServer *jack_server;
+  AgsJackPort *jack_port;
+
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+
+  jack_port = ags_jack_server_find_port(jack_server,
+					port_uuid);
+
+  if(jack_port != NULL){
+    jack_port->device = soundcard;
+  }
 }
 
 GObject*
 ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
-			      gchar *uri)
+			      gchar *port_uuid)
 {
-  //TODO:JK: implement me
+  AgsJackServer *jack_server;
+  AgsJackPort *jack_port;
+  
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+
+  jack_port = ags_jack_server_find_port(jack_server,
+					port_uuid);
+  
+  if(jack_port != NULL){
+    return(jack_port->device);
+  }else{
+    return(NULL);
+  }
 }
 
 void
 ags_jack_server_set_sequencer(AgsDistributedManager *distributed_manager,
-			      gchar *uri,
+			      gchar *port_uuid,
 			      GObject *sequencer)
 {
-  //TODO:JK: implement me
+  AgsJackServer *jack_server;
+  AgsJackPort *jack_port;
+
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+
+  jack_port = ags_jack_server_find_port(jack_server,
+					    port_uuid);
+  
+  if(jack_port != NULL){
+    jack_port->device = sequencer;
+  }
 }
 
 GObject*
 ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
-			      gchar *uri)
+			      gchar *port_uuid)
 {
-  //TODO:JK: implement me
+  AgsJackServer *jack_server;
+  AgsJackPort *jack_port;
+  
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+
+  jack_port = ags_jack_server_find_port(jack_server,
+					port_uuid);
+  
+  if(jack_port != NULL){
+    return(jack_port->device);
+  }else{
+    return(NULL);
+  }
 }
 
 GObject*
@@ -494,7 +551,7 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   
   /* register sequencer */
   str = g_strdup_printf("ags-sequencer-%04d\0",
-			jack_server->n_soundcards);
+			jack_server->n_sequencers);
   g_message("%s\0", str);
 
   sequencer = ags_jack_port_new(default_client);
@@ -565,6 +622,74 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   jack_server->n_soundcards += 1;
   
   return(default_soundcard->device);
+}
+
+/**
+ * ags_jack_server_find_client:
+ * @jack_server: the #AgsJackServer
+ * @client_uuid: the uuid to find
+ *
+ * Find #AgsJackClient by uuid.
+ *
+ * Returns: the #AgsJackClient found or %NULL
+ *
+ * Since: 0.7.3
+ */
+GObject*
+ags_jack_server_find_client(AgsJackServer *jack_server,
+			    gchar *client_uuid)
+{
+  GList *list;
+
+  list = jack_server->client;
+  
+  while(list != NULL){
+    if(!g_ascii_strcasecmp(AGS_JACK_CLIENT(list->data)->uuid,
+			   client_uuid)){
+      return(list->data);
+    }
+
+    list = list->next;
+  }
+  
+  return(NULL);
+}
+
+/**
+ * ags_jack_server_find_port:
+ * @jack_server: the #AgsJackServer
+ * @port_uuid: the uuid to find
+ *
+ * Find #AgsJackPort by uuid.
+ *
+ * Returns: the #AgsJackPort found or %NULL
+ *
+ * Since: 0.7.3
+ */
+GObject*
+ags_jack_server_find_port(AgsJackServer *jack_server,
+			  gchar *port_uuid)
+{
+  GList *client, *port;
+
+  client = jack_server->client;
+  
+  while(client != NULL){
+    port = AGS_JACK_CLIENT(client->data);
+
+    while(port != NULL){
+      if(!g_ascii_strcasecmp(AGS_JACK_CLIENT(port->data)->uuid,
+			     port_uuid)){
+	return(port->data);
+      }
+
+      port = port->next;
+    }
+    
+    client = client->next;
+  }
+  
+  return(NULL);
 }
 
 /**
