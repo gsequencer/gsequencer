@@ -59,6 +59,7 @@ struct _AgsMidiDialog
   
   GtkSpinButton *audio_start;
   GtkSpinButton *midi_start;
+  GtkSpinButton *midi_end;
 
   GtkComboBox *backend;
   

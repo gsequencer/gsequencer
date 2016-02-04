@@ -69,11 +69,9 @@ struct _AgsFunction
   guint n_rows;
   guint n_cols;
   AgsComplex*** pivot_table;
-  gchar ****function_vector_table;
   
   guint solver_level;
   AgsComplex **solver_vector;
-  gchar ***solver_function_vector;
 };
 
 struct _AgsFunctionClass
