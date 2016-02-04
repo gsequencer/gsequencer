@@ -32,20 +32,56 @@ ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_
   if(!g_ascii_strncasecmp("alsa\0",
 			  str,
 			  4)){
-    gtk_widget_set_sensitive(midi_dialog->connection_name,
+    gtk_widget_set_sensitive(midi_dialog->jack_server,
 			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->add,
+    gtk_widget_set_sensitive(midi_dialog->server_name,
 			     FALSE);
-    gtk_widget_set_sensitive(midi_dialog->remove,
+    gtk_widget_set_sensitive(midi_dialog->add_server,
+			     FALSE);
+    gtk_widget_set_sensitive(midi_dialog->remove_server,
+			     FALSE);
+
+    gtk_widget_set_sensitive(midi_dialog->jack_client,
+			     FALSE);
+    gtk_widget_set_sensitive(midi_dialog->client_name,
+			     FALSE);
+    gtk_widget_set_sensitive(midi_dialog->add_client,
+			     FALSE);
+    gtk_widget_set_sensitive(midi_dialog->remove_client,
+			     FALSE);
+
+    gtk_widget_set_sensitive(midi_dialog->port_name,
+			     FALSE);
+    gtk_widget_set_sensitive(midi_dialog->add_port,
+			     FALSE);
+    gtk_widget_set_sensitive(midi_dialog->remove_port,
 			     FALSE);
   }else if(!g_ascii_strncasecmp("jack\0",
 				str,
 				4)){
-    gtk_widget_set_sensitive(midi_dialog->connection_name,
+    gtk_widget_set_sensitive(midi_dialog->jack_server,
 			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->add,
+    gtk_widget_set_sensitive(midi_dialog->server_name,
 			     TRUE);
-    gtk_widget_set_sensitive(midi_dialog->remove,
+    gtk_widget_set_sensitive(midi_dialog->add_server,
+			     TRUE);
+    gtk_widget_set_sensitive(midi_dialog->remove_server,
+			     TRUE);
+
+    gtk_widget_set_sensitive(midi_dialog->jack_client,
+			     TRUE);
+    gtk_widget_set_sensitive(midi_dialog->client_name,
+			     TRUE);
+    gtk_widget_set_sensitive(midi_dialog->add_client,
+			     TRUE);
+    gtk_widget_set_sensitive(midi_dialog->remove_client,
+			     TRUE);
+
+    gtk_widget_set_sensitive(midi_dialog->port_name,
+			     TRUE);
+    gtk_widget_set_sensitive(midi_dialog->add_port,
+			     TRUE);
+    gtk_widget_set_sensitive(midi_dialog->remove_port,
 			     TRUE);
   }
 
@@ -55,7 +91,39 @@ ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_
 }
 
 int
-ags_midi_dialog_add_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
+ags_midi_dialog_add_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
+{
+  //TODO:JK: implement me
+  
+  return(0);
+}
+
+int
+ags_midi_dialog_remove_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
+{
+  //TODO:JK: implement me
+  
+  return(0);
+}
+
+int
+ags_midi_dialog_add_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
+{
+  //TODO:JK: implement me
+  
+  return(0);
+}
+
+int
+ags_midi_dialog_remove_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
+{
+  //TODO:JK: implement me
+  
+  return(0);
+}
+
+int
+ags_midi_dialog_add_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
   gchar *str;
 
@@ -70,19 +138,19 @@ ags_midi_dialog_add_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
 			  4)){
-    gchar *connection;
+    gchar *port;
 
-    connection = gtk_entry_get_text(midi_dialog->connection_name);
+    port = gtk_entry_get_text(midi_dialog->port_name);
 
     gtk_combo_box_text_append_text(midi_dialog->midi_device,
-				   connection);
+				   port);
   }
   
   return(0);
 }
 
 int
-ags_midi_dialog_remove_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
+ags_midi_dialog_remove_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
   gchar *str;
 

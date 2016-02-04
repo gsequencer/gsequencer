@@ -58,19 +58,27 @@ struct _AgsMidiDialog
   GtkCheckButton *record;
   
   GtkSpinButton *audio_start;
+  GtkSpinButton *audio_end;
+  
   GtkSpinButton *midi_start;
   GtkSpinButton *midi_end;
 
-  GtkComboBox *backend;
-  
-  GtkComboBox *server_instance;
-  GtkComboBox *jack_client;
-  
+  GtkComboBoxText *backend;  
   GtkComboBoxText *midi_device;
-
-  GtkEntry *connection_name;
-  GtkButton *add;
-  GtkButton *remove;
+  
+  GtkComboBoxText *jack_server;
+  GtkEntry *server_name;
+  GtkButton *add_server;
+  GtkButton *remove_server;
+  
+  GtkComboBoxText *jack_client;
+  GtkEntry *client_name;
+  GtkButton *add_client;
+  GtkButton *remove_client;
+  
+  GtkEntry *port_name;
+  GtkButton *add_port;
+  GtkButton *remove_port;
   
   GtkButton *apply;
   GtkButton *ok;
