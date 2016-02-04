@@ -61,7 +61,7 @@ struct _AgsAudio
   GObject *midi_file;
   
   guint samplerate;
-  guint buffer_size;
+  guint buffer_length;
   guint sequence_length;
 
   guint audio_channels;
@@ -73,7 +73,8 @@ struct _AgsAudio
   guint input_lines;
 
   guint audio_mapping;
-  guint midi_mapping;
+  guint midi_start_mapping;
+  guint midi_end_mapping;
   
   AgsChannel *output;
   AgsChannel *input;
@@ -121,6 +122,8 @@ void ags_audio_unset_flags(AgsAudio *audio, guint flags);
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
 void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
 
+void ags_audio_set_samplerate(AgsAudio *audio, guint samplerate);
+void ags_audio_set_buffer_length(AgsAudio *audio, guint buffer_length);
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
 void ags_audio_add_notation(AgsAudio *audio,

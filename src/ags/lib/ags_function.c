@@ -181,21 +181,6 @@ ags_function_class_init(AgsFunctionClass *function)
   g_object_class_install_property(gobject,
 				  PROP_PIVOT_TABLE,
 				  param_spec);
-
-  /**
-   * AgsFunction:function-vector-table:
-   *
-   * The function vector table.
-   * 
-   * Since: 0.7.2
-   */
-  param_spec = g_param_spec_pointer("function-vector-table\0",
-				    "functions stored in a vector to apply\0",
-				    "The functions stored in a vector to successively apply\0",
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_FUNCTION_VECTOR,
-				  param_spec);
 }
 
 void
@@ -217,10 +202,9 @@ ags_function_init(AgsFunction *function)
   function->n_cols = 0;
   function->n_rows = 0;
   function->pivot_table = NULL;
-  function->function_vector_table = NULL;
 
   function->solver_level = 0;
-  function->solver_table = NULL;
+  function->solver_vector = NULL;
 }
 
 void
@@ -281,19 +265,6 @@ ags_function_set_property(GObject *gobject,
       function->pivot_table = pivot_table;
     }
     break;
-  case PROP_FUNCTION_VECTOR_TABLE:
-    {
-      gchar ****function_vector_table;
-
-      function_vector_table = (gchar ****) g_value_get_pointer(value);
-
-      if(function_vector_table == function->function_vector_table){
-	return;
-      }
-
-      function->function_vector_table = function_vector_table;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -319,9 +290,6 @@ ags_function_get_property(GObject *gobject,
     break;
   case PROP_PIVOT_TABLE:
     g_value_set_pointer(value, function->pivot_table);
-    break;
-  case PROP_FUNCTION_VECTOR_TABLE:
-    g_value_set_pointer(value, function->function_vector_table);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -482,15 +450,12 @@ ags_function_literal_solve(AgsFunction *function)
   function->n_cols = function->n_rows + 1;
 
   function->pivot_table = (AgsComplex ***) malloc(function->n_rows * sizeof(AgsComplex **));
-  function->function_vector_table = (gchar ****) malloc(function->n_rows * sizeof(gchar ***));
 
   for(i = 0; i < function->n_rows; i++){
     function->pivot_table[i]  = (AgsComplex **) malloc(function->n_cols * sizeof(AgsComplex *));
-    function->function_vector_table[i]  = (AgsComplex **) malloc(function->n_cols * sizeof(gchar **));
     
     for(j = 0; j < function->n_cols; j++){
       function->pivot_table[i][j] = ags_complex_alloc();
-      function->function_vector_table[i][j] = NULL;
     }
   }
   

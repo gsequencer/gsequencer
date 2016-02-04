@@ -111,7 +111,7 @@ enum{
   PROP_SEQUENCER,
   PROP_MIDI_FILE,
   PROP_SAMPLERATE,
-  PROP_BUFFER_SIZE,
+  PROP_BUFFER_LENGTH,
   PROP_SEQUENCE_LENGTH,
   PROP_AUDIO_CHANNELS,
   PROP_INPUT_PADS,
@@ -119,7 +119,8 @@ enum{
   PROP_OUTPUT_PADS,
   PROP_OUTPUT_LINES,
   PROP_AUDIO_MAPPING,
-  PROP_MIDI_MAPPING,
+  PROP_MIDI_START_MAPPING,
+  PROP_MIDI_END_MAPPING,
   PROP_OUTPUT,
   PROP_INPUT,
   PROP_PLAYBACK_DOMAIN,
@@ -256,21 +257,21 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:buffer-size:
+   * AgsAudio:buffer-length:
    *
-   * The buffer size.
+   * The buffer length.
    * 
    * Since: 0.7.2
    */
-  param_spec =  g_param_spec_uint("buffer-size\0",
-				  "buffer size\0",
-				  "The buffer size\0",
+  param_spec =  g_param_spec_uint("buffer-length\0",
+				  "buffer length\0",
+				  "The buffer length\0",
 				  0,
 				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_BUFFER_SIZE,
+				  PROP_BUFFER_LENGTH,
 				  param_spec);
 
 
@@ -406,17 +407,35 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The midi mapping.
    * 
-   * Since: 0.7.2
+   * Since: 0.7.3
    */
-  param_spec =  g_param_spec_uint("midi-mapping\0",
-				  "midi mapping\0",
-				  "The midi mapping\0",
+  param_spec =  g_param_spec_uint("midi-start-mapping\0",
+				  "midi start mapping range\0",
+				  "The midi mapping range's start\0",
 				  0,
 				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MIDI_MAPPING,
+				  PROP_MIDI_START_MAPPING,
+				  param_spec);
+
+  /**
+   * AgsAudio:midi-mapping:
+   *
+   * The midi mapping.
+   * 
+   * Since: 0.7.3
+   */
+  param_spec =  g_param_spec_uint("midi-end-mapping\0",
+				  "midi end mapping range\0",
+				  "The midi mapping range's start\0",
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIDI_END_MAPPING,
 				  param_spec);
 
   /**
@@ -741,7 +760,7 @@ ags_audio_init(AgsAudio *audio)
   audio->midi_file = NULL;
   
   audio->samplerate = 0;
-  audio->buffer_size = 0;
+  audio->buffer_length = 0;
   audio->sequence_length = 0;
 
   audio->audio_channels = 0;
@@ -752,7 +771,8 @@ ags_audio_init(AgsAudio *audio)
   audio->input_lines = 0;
 
   audio->audio_mapping = 0;
-  audio->midi_mapping = 0;
+  audio->midi_start_mapping = 0;
+  audio->midi_end_mapping = 0;
   
   audio->output = NULL;
   audio->input = NULL;
@@ -764,11 +784,11 @@ ags_audio_init(AgsAudio *audio)
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
-			AGS_CONFIG_THREAD,
-			"model\0");
+			      AGS_CONFIG_THREAD,
+			      "model\0");
   str1 = ags_config_get_value(config,
-			AGS_CONFIG_THREAD,
-			"super-threaded-scope\0");
+			      AGS_CONFIG_THREAD,
+			      "super-threaded-scope\0");
   
   if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",
@@ -777,13 +797,13 @@ ags_audio_init(AgsAudio *audio)
 			    "audio\0",
 			    6) ||
        !g_ascii_strncasecmp(ags_config_get_value(config,
-					   AGS_CONFIG_THREAD,
-					   "super-threaded-scope\0"),
+						 AGS_CONFIG_THREAD,
+						 "super-threaded-scope\0"),
 			    "channel\0",
 			    8) ||
        !g_ascii_strncasecmp(ags_config_get_value(config,
-					   AGS_CONFIG_THREAD,
-					   "super-threaded-scope\0"),
+						 AGS_CONFIG_THREAD,
+						 "super-threaded-scope\0"),
 			    "recycling\0",
 			    10)){
       g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
@@ -878,6 +898,36 @@ ags_audio_set_property(GObject *gobject,
 
       audio->midi_file = midi_file;
     }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      guint samplerate;
+
+      samplerate = g_value_get_uint(value);
+
+      ags_audio_set_samplerate(audio,
+			       samplerate);
+    }
+    break;
+  case PROP_BUFFER_LENGTH:
+    {
+      guint buffer_length;
+
+      buffer_length = g_value_get_uint(value);
+
+      ags_audio_set_buffer_length(audio,
+				  buffer_length);
+    }
+    break;
+  case PROP_SEQUENCE_LENGTH:
+    {
+      guint sequence_length;
+
+      sequence_length = g_value_get_uint(value);
+
+      ags_audio_set_sequence_length(audio,
+				    sequence_length);
+    }
   case PROP_AUDIO_CHANNELS:
     {
       guint audio_channels;
@@ -906,6 +956,33 @@ ags_audio_set_property(GObject *gobject,
 
       ags_audio_set_pads(audio, AGS_TYPE_OUTPUT,
 			 output_pads);
+    }
+    break;
+  case PROP_AUDIO_MAPPING:
+    {
+      guint audio_mapping;
+
+      audio_mapping = g_value_get_uint(value);
+
+      audio->audio_mapping = audio_mapping;
+    }
+    break;
+  case PROP_MIDI_START_MAPPING:
+    {
+      guint midi_start_mapping;
+
+      midi_start_mapping = g_value_get_uint(value);
+
+      audio->midi_start_mapping = midi_start_mapping;
+    }
+    break;
+  case PROP_MIDI_END_MAPPING:
+    {
+      guint midi_end_mapping;
+
+      midi_end_mapping = g_value_get_uint(value);
+
+      audio->midi_end_mapping = midi_end_mapping;
     }
     break;
   case PROP_PLAYBACK_DOMAIN:
@@ -1054,13 +1131,19 @@ ags_audio_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOUNDCARD:
-    g_value_set_object(value, audio->soundcard);
+    {
+      g_value_set_object(value, audio->soundcard);
+    }
     break;
   case PROP_SEQUENCER:
-    g_value_set_object(value, audio->sequencer);
+    {
+      g_value_set_object(value, audio->sequencer);
+    }
     break;
   case PROP_MIDI_FILE:
-    g_value_set_object(value, audio->midi_file);
+    {
+      g_value_set_object(value, audio->midi_file);
+    }
     break;
   case PROP_AUDIO_CHANNELS:
     {
@@ -1087,14 +1170,29 @@ ags_audio_get_property(GObject *gobject,
       g_value_set_uint(value, audio->output_lines);
     }
     break;
-  case PROP_INPUT:
+  case PROP_AUDIO_MAPPING:
     {
-      g_value_set_object(value, audio->input);
+      g_value_set_uint(value, audio->audio_mapping);
+    }
+    break;
+  case PROP_MIDI_START_MAPPING:
+    {
+      g_value_set_uint(value, audio->midi_start_mapping);
+    }
+    break;
+  case PROP_MIDI_END_MAPPING:
+    {
+      g_value_set_uint(value, audio->midi_end_mapping);
     }
     break;
   case PROP_OUTPUT:
     {
       g_value_set_object(value, audio->output);
+    }
+    break;
+  case PROP_INPUT:
+    {
+      g_value_set_object(value, audio->input);
     }
     break;
   case PROP_PLAYBACK_DOMAIN:
@@ -2703,6 +2801,36 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
   g_object_unref((GObject *) audio);
   
   pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_set_samplerate:
+ * @audio: an #AgsAudio
+ * @samplerate: the samplerate
+ *
+ * Sets samplerate.
+ *
+ * Since: 0.7.3
+ */
+void
+ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
+{
+  audio->samplerate = samplerate;
+}
+
+/**
+ * ags_audio_set_buffer_length:
+ * @audio: an #AgsAudio
+ * @buffer_length: the buffer length
+ *
+ * Sets buffer length.
+ *
+ * Since: 0.7.3
+ */
+void
+ags_audio_set_buffer_length(AgsAudio *audio, guint buffer_length)
+{
+  audio->buffer_length = buffer_length;
 }
 
 /**
