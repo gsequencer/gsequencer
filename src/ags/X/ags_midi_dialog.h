@@ -63,6 +63,9 @@ struct _AgsMidiDialog
 
   GtkComboBox *backend;
   
+  GtkComboBox *server_instance;
+  GtkComboBox *jack_client;
+  
   GtkComboBoxText *midi_device;
 
   GtkEntry *connection_name;

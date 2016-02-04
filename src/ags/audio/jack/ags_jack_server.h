@@ -32,6 +32,10 @@
 #define AGS_IS_JACK_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_JACK_SERVER))
 #define AGS_JACK_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_SERVER, AgsJackServerClass))
 
+#define AGS_JACK_SERVER_DEFAULT_PROTOCOL "udp"
+#define AGS_JACK_SERVER_DEFAULT_HOST "localhost"
+#define AGS_JACK_SERVER_DEFAULT_PORT (3000)
+
 typedef struct _AgsJackServer AgsJackServer;
 typedef struct _AgsJackServerClass AgsJackServerClass;
 
@@ -46,8 +50,12 @@ struct _AgsJackServer
   guint flags;
 
   GObject *application_context;
-  gchar *url;
 
+  gchar *url;
+  
+  guint *port;
+  guint port_count;
+  
   guint n_soundcards;
   guint n_sequencers;
   
@@ -63,6 +71,12 @@ struct _AgsJackServerClass
 };
 
 GType ags_jack_server_get_type();
+
+GObject* ags_jack_server_find_client(AgsJackServer *jack_server,
+				     gchar *client_uuid);
+
+GObject* ags_jack_server_find_port(AgsJackServer *jack_server,
+				   gchar *port_uuid);
 
 AgsJackServer* ags_jack_server_new(GObject *application_context,
 				   gchar *url);

@@ -252,6 +252,30 @@ ags_jack_client_open(AgsJackClient *jack_client,
 					 NULL);
 }
 
+void
+ags_jack_client_add_port(AgsJackClient *jack_client,
+			 GObject *port)
+{
+  if(!AGS_IS_JACK_CLIENT(jack_client)){
+    return;
+  }
+  
+  jack_client->port = g_list_prepend(jack_client->port,
+				     port);
+}
+
+void
+ags_jack_client_remove_port(AgsJackClient *jack_client,
+			    GObject *port)
+{
+  if(!AGS_IS_JACK_CLIENT(jack_client)){
+    return;
+  }
+  
+  jack_client->port = g_list_remove(jack_client->port,
+				    port);
+}
+
 /**
  * ags_jack_client_new:
  * @jack_server: the assigned #AgsJackServer
