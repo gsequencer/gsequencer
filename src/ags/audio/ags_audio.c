@@ -118,7 +118,8 @@ enum{
   PROP_INPUT_LINES,
   PROP_OUTPUT_PADS,
   PROP_OUTPUT_LINES,
-  PROP_AUDIO_MAPPING,
+  PROP_AUDIO_START_MAPPING,
+  PROP_AUDIO_END_MAPPING,
   PROP_MIDI_START_MAPPING,
   PROP_MIDI_END_MAPPING,
   PROP_OUTPUT,
@@ -245,13 +246,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    * 
    * Since: 0.7.2
    */
-  param_spec =  g_param_spec_uint("samplerate\0",
-				  "samplerate\0",
-				  "The samplerate\0",
-				  0,
-				  G_MAXUINT32,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("samplerate\0",
+				 "samplerate\0",
+				 "The samplerate\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SAMPLERATE,
 				  param_spec);
@@ -263,13 +264,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    * 
    * Since: 0.7.2
    */
-  param_spec =  g_param_spec_uint("buffer-length\0",
-				  "buffer length\0",
-				  "The buffer length\0",
-				  0,
-				  G_MAXUINT32,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("buffer-length\0",
+				 "buffer length\0",
+				 "The buffer length\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_LENGTH,
 				  param_spec);
@@ -282,13 +283,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    * 
    * Since: 0.7.2
    */
-  param_spec =  g_param_spec_uint("sequence-length\0",
-				  "sequence-length\0",
-				  "The sequence length\0",
-				  0,
-				  G_MAXUINT32,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("sequence-length\0",
+				 "sequence-length\0",
+				 "The sequence length\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SEQUENCE_LENGTH,
 				  param_spec);
@@ -300,13 +301,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    * 
    * Since: 0.7.2
    */
-  param_spec =  g_param_spec_uint("audio-channels\0",
-				  "audio channels count\0",
-				  "The count of audio channels of audio\0",
-				  0,
-				  65535,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("audio-channels\0",
+				 "audio channels count\0",
+				 "The count of audio channels of audio\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNELS,
 				  param_spec);
@@ -319,13 +320,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    * 
    * Since: 0.7.2
    */
-  param_spec =  g_param_spec_uint("input-pads\0",
-				  "input pads count\0",
-				  "The count of input pads of audio\0",
-				  0,
-				  65535,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("input-pads\0",
+				 "input pads count\0",
+				 "The count of input pads of audio\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_INPUT_PADS,
 				  param_spec);
@@ -337,13 +338,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    * 
    * Since: 0.7.2
    */
-  param_spec =  g_param_spec_uint("input-lines\0",
-				  "input lines count\0",
-				  "The count of input lines of audio\0",
-				  0,
-				  65535,
-				  0,
-				  G_PARAM_READABLE);
+  param_spec = g_param_spec_uint("input-lines\0",
+				 "input lines count\0",
+				 "The count of input lines of audio\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_INPUT_LINES,
 				  param_spec);
@@ -355,13 +356,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    * 
    * Since: 0.7.2
    */
-  param_spec =  g_param_spec_uint("output-pads\0",
-				  "output pads count\0",
-				  "The count of output pads of audio\0",
-				  0,
-				  65535,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("output-pads\0",
+				 "output pads count\0",
+				 "The count of output pads of audio\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT_PADS,
 				  param_spec);
@@ -373,39 +374,57 @@ ags_audio_class_init(AgsAudioClass *audio)
    * 
    * Since: 0.7.2
    */
-  param_spec =  g_param_spec_uint("output-lines\0",
-				  "output lines count\0",
-				  "The count of output lines of audio\0",
-				  0,
-				  65535,
-				  0,
-				  G_PARAM_READABLE);
+  param_spec = g_param_spec_uint("output-lines\0",
+				 "output lines count\0",
+				 "The count of output lines of audio\0",
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT_LINES,
 				  param_spec);
 
   /**
-   * AgsAudio:audio-mapping:
+   * AgsAudio:audio-start-mapping:
    *
-   * The audio mapping.
+   * The audio start mapping.
    * 
-   * Since: 0.7.2
+   * Since: 0.7.3
    */
-  param_spec =  g_param_spec_uint("audio-mapping\0",
-				  "audio mapping\0",
-				  "The audio mapping\0",
-				  0,
-				  G_MAXUINT32,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("audio-start-mapping\0",
+				 "audio start mapping\0",
+				 "The audio start mapping\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_MAPPING,
+				  PROP_AUDIO_START_MAPPING,
 				  param_spec);
 
   /**
-   * AgsAudio:midi-mapping:
+   * AgsAudio:audio-end-mapping:
    *
-   * The midi mapping.
+   * The audio end mapping.
+   * 
+   * Since: 0.7.3
+   */
+  param_spec = g_param_spec_uint("audio-end-mapping\0",
+				 "audio end mapping\0",
+				 "The audio end mapping\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_END_MAPPING,
+				  param_spec);
+
+  /**
+   * AgsAudio:midi-start-mapping:
+   *
+   * The midi start mapping.
    * 
    * Since: 0.7.3
    */
@@ -421,19 +440,19 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:midi-mapping:
+   * AgsAudio:midi-end-mapping:
    *
-   * The midi mapping.
+   * The midi end mapping.
    * 
    * Since: 0.7.3
    */
-  param_spec =  g_param_spec_uint("midi-end-mapping\0",
-				  "midi end mapping range\0",
-				  "The midi mapping range's start\0",
-				  0,
-				  G_MAXUINT32,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("midi-end-mapping\0",
+				 "midi end mapping range\0",
+				 "The midi mapping range's start\0",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MIDI_END_MAPPING,
 				  param_spec);
@@ -770,7 +789,9 @@ ags_audio_init(AgsAudio *audio)
   audio->input_pads = 0;
   audio->input_lines = 0;
 
-  audio->audio_mapping = 0;
+  audio->audio_start_mapping = 0;
+  audio->audio_end_mapping = 0;
+
   audio->midi_start_mapping = 0;
   audio->midi_end_mapping = 0;
   
@@ -958,13 +979,22 @@ ags_audio_set_property(GObject *gobject,
 			 output_pads);
     }
     break;
-  case PROP_AUDIO_MAPPING:
+  case PROP_AUDIO_START_MAPPING:
     {
-      guint audio_mapping;
+      guint audio_start_mapping;
 
-      audio_mapping = g_value_get_uint(value);
+      audio_start_mapping = g_value_get_uint(value);
 
-      audio->audio_mapping = audio_mapping;
+      audio->audio_start_mapping = audio_start_mapping;
+    }
+    break;
+  case PROP_AUDIO_END_MAPPING:
+    {
+      guint audio_end_mapping;
+
+      audio_end_mapping = g_value_get_uint(value);
+
+      audio->audio_end_mapping = audio_end_mapping;
     }
     break;
   case PROP_MIDI_START_MAPPING:
@@ -1170,9 +1200,14 @@ ags_audio_get_property(GObject *gobject,
       g_value_set_uint(value, audio->output_lines);
     }
     break;
-  case PROP_AUDIO_MAPPING:
+  case PROP_AUDIO_START_MAPPING:
     {
-      g_value_set_uint(value, audio->audio_mapping);
+      g_value_set_uint(value, audio->audio_start_mapping);
+    }
+    break;
+  case PROP_AUDIO_END_MAPPING:
+    {
+      g_value_set_uint(value, audio->audio_end_mapping);
     }
     break;
   case PROP_MIDI_START_MAPPING:

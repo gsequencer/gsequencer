@@ -72,7 +72,9 @@ struct _AgsAudio
   guint input_pads;
   guint input_lines;
 
-  guint audio_mapping;
+  guint audio_start_mapping;
+  guint audio_end_mapping;
+
   guint midi_start_mapping;
   guint midi_end_mapping;
   
