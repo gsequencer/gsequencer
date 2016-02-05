@@ -483,6 +483,9 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   g_message("%s\0", str);
   
   soundcard = ags_jack_port_new(default_client);
+  ags_jack_client_add_port(default_client,
+			   soundcard);
+  
   ags_jack_port_register(soundcard,
 			 str,
 			 TRUE, FALSE,
@@ -508,8 +511,7 @@ ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
     return;
   }
   
-  jack_port_unregister(default_client->client,
-		       AGS_JACK_DEVOUT(soundcard)->out_port);
+  ags_jack_port_unregister(AGS_JACK_DEVOUT(soundcard)->jack_port);
 }
 
 GObject*
@@ -553,6 +555,10 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   g_message("%s\0", str);
 
   sequencer = ags_jack_port_new(default_client);
+  ags_jack_client_add_port(default_client,
+			   sequencer);
+  
+
   ags_jack_port_register(sequencer,
 			 str,
 			 FALSE, TRUE,
@@ -578,8 +584,7 @@ ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
     return;
   }
   
-  jack_port_unregister(default_client->client,
-		       AGS_JACK_MIDIIN(sequencer)->in_port);
+  ags_jack_port_unregister(AGS_JACK_MIDIIN(sequencer)->jack_port);
 }
 
 GObject*
@@ -608,6 +613,9 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 
   jack_server->default_soundcard = 
     default_soundcard = ags_jack_port_new(default_client);
+  ags_jack_client_add_port(default_client,
+			   default_soundcard);
+  
   ags_jack_port_register(default_soundcard,
 			 str,
 			 TRUE, FALSE,

@@ -342,6 +342,17 @@ ags_jack_port_register(AgsJackPort *jack_port,
   jack_port->name = port_name;
 }
 
+void
+ags_jack_port_unregister(AgsJackPort *jack_port)
+{
+  if(!AGS_IS_JACK_PORT(jack_port)){
+    return;
+  }
+
+  jack_port_unregister(AGS_JACK_CLIENT(jack_port->jack_client)->client,
+		       jack_port->port);
+}
+
 /**
  * ags_jack_port_new:
  * @jack_client: the #AgsJackClient assigned to
