@@ -972,7 +972,9 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 
     if((status < 0) && (status != -EBUSY) && (status != -EAGAIN)){
       g_warning("Problem reading MIDI input: %s", snd_strerror(status));
-    }if(status >= 0){
+    }
+
+    if(status >= 0){
       if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
 	if(midiin->buffer_size[0] % 256 == 0){
 	  if(midiin->buffer[0] == NULL){
