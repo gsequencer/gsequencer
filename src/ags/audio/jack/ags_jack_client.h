@@ -61,6 +61,9 @@ struct _AgsJackClientClass
 
 GType ags_jack_client_get_type();
 
+GList* ags_jack_client_find(GList *jack_client,
+			    gchar *client_name);
+
 void ags_jack_client_open(AgsJackClient *jack_client,
 			  gchar *client_name);
 

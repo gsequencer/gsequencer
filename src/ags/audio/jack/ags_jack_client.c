@@ -238,6 +238,20 @@ ags_jack_client_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }
 
+GList*
+ags_jack_client_find(GList *jack_client,
+		     gchar *client_name)
+{ 
+  while(jack_client != NULL){
+    if(!g_ascii_strcasecmp(jack_get_client_name(AGS_JACK_CLIENT(jack_client->data)->client),
+			   client_name)){
+      return(jack_client);
+    }
+  }
+
+  return(NULL);
+}
+
 /**
  * ags_jack_client_open:
  * @jack_client: the #AgsJackClient
