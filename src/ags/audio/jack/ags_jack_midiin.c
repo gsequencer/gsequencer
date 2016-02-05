@@ -1285,7 +1285,7 @@ ags_jack_midiin_process_thread(jack_client_t *client, jack_nframes_t nframes, vo
 
     if(in_event.size > 0){
       if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
-	if(jack_midiin->buffer_size[0] % 256 == 0){
+	if(ceil((jack_midiin->buffer_size[0] + in_event.size) / 256.0) > ceil(jack_midiin->buffer_size[0] / 256.0)){
 	  if(jack_midiin->buffer[0] == NULL){
 	    jack_midiin->buffer[0] = malloc(256 * sizeof(char));
 	  }else{
@@ -1299,7 +1299,7 @@ ags_jack_midiin_process_thread(jack_client_t *client, jack_nframes_t nframes, vo
 	       in_event.size);
 	jack_midiin->buffer_size[0] += in_event.size;
       }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
-	if(jack_midiin->buffer_size[1] % 256 == 0){
+	if(ceil((jack_midiin->buffer_size[1] + in_event.size) / 256.0) > ceil(jack_midiin->buffer_size[1] / 256.0)){
 	  if(jack_midiin->buffer[1] == NULL){
 	    jack_midiin->buffer[1] = malloc(256 * sizeof(char));
 	  }else{
@@ -1313,7 +1313,7 @@ ags_jack_midiin_process_thread(jack_client_t *client, jack_nframes_t nframes, vo
 	       in_event.size);
 	jack_midiin->buffer_size[1] += in_event.size;
       }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
-	if(jack_midiin->buffer_size[2] % 256 == 0){
+	if(ceil((jack_midiin->buffer_size[2] + in_event.size) / 256.0) > ceil(jack_midiin->buffer_size[2] / 256.0)){
 	  if(jack_midiin->buffer[2] == NULL){
 	    jack_midiin->buffer[2] = malloc(256 * sizeof(char));
 	  }else{
@@ -1327,7 +1327,7 @@ ags_jack_midiin_process_thread(jack_client_t *client, jack_nframes_t nframes, vo
 	       in_event.size);
 	jack_midiin->buffer_size[2] += in_event.size;
       }else if((AGS_JACK_MIDIIN_BUFFER3 & jack_midiin->flags) != 0){
-	if(jack_midiin->buffer_size[3] % 256 == 0){
+	if(ceil((jack_midiin->buffer_size[3] + in_event.size) / 256.0) > ceil(jack_midiin->buffer_size[3] / 256.0)){
 	  if(jack_midiin->buffer[3] == NULL){
 	    jack_midiin->buffer[3] = malloc(256 * sizeof(char));
 	  }else{
