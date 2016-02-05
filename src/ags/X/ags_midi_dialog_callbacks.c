@@ -19,8 +19,19 @@
 
 #include <ags/X/ags_midi_dialog_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_client.h>
+#include <ags/audio/jack/ags_jack_port.h>
+#include <ags/audio/jack/ags_jack_midiin.h>
+
+#include <ags/X/ags_window.h>
 
 int
 ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
@@ -93,7 +104,66 @@ ags_midi_dialog_backend_changed_callback(GtkWidget *widget, AgsMidiDialog *midi_
 int
 ags_midi_dialog_add_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
-  //TODO:JK: implement me
+  gchar *str;
+
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+
+  if(str == NULL ||
+     g_utf8_strlen(str,
+		   -1) == 0){
+    return(0);
+  }
+  
+  if(!g_ascii_strncasecmp("jack\0",
+			  str,
+			  4)){
+    AgsWindow *window;
+    AgsMachine *machine;
+
+    AgsJackServer *jack_server;
+    
+    AgsMutexManager *mutex_manager;
+
+    AgsApplicationContext *application_context;
+
+    GList *list;
+    
+    gchar *server;
+
+    pthread_mutex_t *application_mutex;
+    
+    machine = midi_dialog->machine;
+
+    window = gtk_widget_get_ancestor(machine,
+				     AGS_TYPE_WINDOW);
+
+    /* application context and mutex manager */
+    application_context = (AgsApplicationContext *) window->application_context;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* add server */
+    jack_server = ags_jack_server_new(application_context,
+				      server);
+    
+    pthread_mutex_lock(application_mutex);
+
+    list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+
+    list = g_list_prepend(list,
+			  jack_server);
+    ags_sound_provider_set_distributed_manager(AGS_SOUND_PROVIDER(application_context),
+					       list);
+    
+    pthread_mutex_unlock(application_mutex);
+    
+    /* fill combo box */    
+    server = gtk_entry_get_text(midi_dialog->server_name);
+
+    gtk_combo_box_text_append_text(midi_dialog->jack_server,
+				   server);
+  }
   
   return(0);
 }
@@ -101,7 +171,16 @@ ags_midi_dialog_add_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
 int
 ags_midi_dialog_remove_server_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
-  //TODO:JK: implement me
+  gchar *str;
+
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+
+  if(!g_ascii_strncasecmp("jack\0",
+			  str,
+			  4)){
+    gtk_combo_box_text_remove(midi_dialog->jack_server,
+			      gtk_combo_box_get_active(midi_dialog->jack_server));
+  }
   
   return(0);
 }
@@ -109,7 +188,72 @@ ags_midi_dialog_remove_server_callback(GtkWidget *widget, AgsMidiDialog *midi_di
 int
 ags_midi_dialog_add_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
-  //TODO:JK: implement me
+  gchar *str;
+
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+
+  if(str == NULL ||
+     g_utf8_strlen(str,
+		   -1) == 0){
+    return(0);
+  }
+  
+  if(!g_ascii_strncasecmp("jack\0",
+			  str,
+			  4)){
+    AgsWindow *window;
+    AgsMachine *machine;
+
+    AgsJackServer *jack_server;
+    AgsJackClient *jack_client;
+    
+    AgsMutexManager *mutex_manager;
+
+    AgsApplicationContext *application_context;
+
+    GList *list;
+
+    gchar *server;
+    gchar *client;
+
+    pthread_mutex_t *application_mutex;
+    
+    machine = midi_dialog->machine;
+
+    window = gtk_widget_get_ancestor(machine,
+				     AGS_TYPE_WINDOW);
+
+    /* application context and mutex manager */
+    application_context = (AgsApplicationContext *) window->application_context;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* find server */
+    server = gtk_entry_get_text(midi_dialog->server_name);
+    
+    pthread_mutex_lock(application_mutex);
+
+    list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+    list = ags_jack_server_find_url(list,
+				    server);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* add client */
+    jack_client = ags_jack_client_new(jack_server);
+    ags_jack_server_add_client(jack_server,
+			       jack_client);
+    
+    /* fill combo box and open client */
+    client = gtk_entry_get_text(midi_dialog->client_name);
+
+    gtk_combo_box_text_append_text(midi_dialog->jack_client,
+				   client);
+    
+    ags_jack_client_open(jack_client,
+			 client);
+  }
   
   return(0);
 }
@@ -117,7 +261,16 @@ ags_midi_dialog_add_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
 int
 ags_midi_dialog_remove_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
 {
-  //TODO:JK: implement me
+  gchar *str;
+
+  str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(midi_dialog->backend));
+
+  if(!g_ascii_strncasecmp("jack\0",
+			  str,
+			  4)){
+    gtk_combo_box_text_remove(midi_dialog->jack_client,
+			      gtk_combo_box_get_active(midi_dialog->jack_client));
+  }
   
   return(0);
 }
@@ -138,8 +291,26 @@ ags_midi_dialog_add_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
 			  4)){
+    AgsWindow *window;
+    AgsMachine *machine;
+
+    GObject *sequencer;
+    
+    AgsJackServer *jack_server;
+    AgsJackClient *jack_client;
+    AgsJackPort *jack_port;
+    
+    AgsMutexManager *mutex_manager;
+
+    AgsApplicationContext *application_context;
+
+    GList *list;
+    
+    gchar *server;
+    gchar *client;
     gchar *port;
 
+    /* fill combo box */
     port = gtk_entry_get_text(midi_dialog->port_name);
 
     gtk_combo_box_text_append_text(midi_dialog->midi_device,

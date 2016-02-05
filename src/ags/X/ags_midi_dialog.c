@@ -187,7 +187,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   midi_dialog->machine = NULL;
 
   /* connection */
-  table = (GtkTable *) gtk_table_new(13, 2,
+  table = (GtkTable *) gtk_table_new(14, 2,
 				     FALSE);
   gtk_box_pack_start(GTK_DIALOG(midi_dialog)->vbox,
 		     GTK_WIDGET(table),
@@ -439,12 +439,23 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     0);
 
   /* port */  
+  label = (GtkLabel *) gtk_label_new("jack port\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   12, 13,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);
   gtk_table_attach(table,
 		   GTK_WIDGET(hbox),
 		   0, 2,
-		   12, 13,
+		   13, 14,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -679,8 +690,6 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
   
   /* find device */
   pthread_mutex_lock(application_mutex);
-  
-  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
   if(!g_ascii_strncasecmp("alsa\0",
 			  backend,
@@ -691,6 +700,8 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
 				4)){
     sequencer_type = AGS_TYPE_JACK_MIDIIN;
   }
+    
+  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
     if(g_type_is_a(G_OBJECT_TYPE(list->data),
