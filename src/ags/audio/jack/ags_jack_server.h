@@ -72,11 +72,19 @@ struct _AgsJackServerClass
 
 GType ags_jack_server_get_type();
 
+GList* ags_jack_server_find_url(GList *jack_server,
+				gchar *url);
+
 GObject* ags_jack_server_find_client(AgsJackServer *jack_server,
 				     gchar *client_uuid);
 
 GObject* ags_jack_server_find_port(AgsJackServer *jack_server,
 				   gchar *port_uuid);
+
+void ags_jack_server_add_client(AgsJackServer *jack_server,
+				GObject *jack_client);
+void ags_jack_server_remove_client(AgsJackServer *jack_server,
+				   GObject *jack_client);
 
 AgsJackServer* ags_jack_server_new(GObject *application_context,
 				   gchar *url);

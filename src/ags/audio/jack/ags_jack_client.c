@@ -238,6 +238,15 @@ ags_jack_client_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_jack_client_open:
+ * @jack_client: the #AgsJackClient
+ * @client_name: the client's name
+ *
+ * Open the JACK client's connection and read uuid.
+ *
+ * Since: 0.7.2
+ */
 void
 ags_jack_client_open(AgsJackClient *jack_client,
 		     gchar *client_name)
@@ -250,30 +259,53 @@ ags_jack_client_open(AgsJackClient *jack_client,
   jack_client->client = jack_client_open(client_name,
 					 0,
 					 NULL);
+  jack_client->uuid = jack_get_uuid_for_client_name(jack_client->client,
+						    client_name);
 }
 
+/**
+ * ags_jack_client_add_port:
+ * @jack_client: the #AgsJackClient
+ * @jack_port: an #AgsJackPort
+ *
+ * Add @jack_port to @jack_client.
+ *
+ * Since: 0.7.2
+ */
 void
 ags_jack_client_add_port(AgsJackClient *jack_client,
-			 GObject *port)
+			 GObject *jack_port)
 {
-  if(!AGS_IS_JACK_CLIENT(jack_client)){
+  if(!AGS_IS_JACK_CLIENT(jack_client) ||
+     !AGS_IS_JACK_PORT(jack_port)){
     return;
   }
-  
+
+  g_object_ref(jack_port);
   jack_client->port = g_list_prepend(jack_client->port,
-				     port);
+				     jack_port);
 }
 
+/**
+ * ags_jack_client_remove_port:
+ * @jack_client: the #AgsJackClient
+ * @jack_port: an #AgsJackPort
+ *
+ * Remove @jack_port from @jack_client.
+ *
+ * Since: 0.7.2
+ */
 void
 ags_jack_client_remove_port(AgsJackClient *jack_client,
-			    GObject *port)
+			    GObject *jack_port)
 {
   if(!AGS_IS_JACK_CLIENT(jack_client)){
     return;
   }
   
   jack_client->port = g_list_remove(jack_client->port,
-				    port);
+				    jack_port);
+  g_object_unref(jack_port);
 }
 
 /**

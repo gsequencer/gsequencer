@@ -487,8 +487,6 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 			 str,
 			 TRUE, FALSE,
 			 TRUE);
-  soundcard->device = ags_jack_devout_new(jack_server->application_context);
-  AGS_JACK_DEVOUT(soundcard->device)->out_port = soundcard->port;
 
   jack_server->n_soundcards += 1;
   
@@ -559,8 +557,6 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 			 str,
 			 FALSE, TRUE,
 			 FALSE);
-  sequencer->device = ags_jack_midiin_new(jack_server->application_context);
-  AGS_JACK_MIDIIN(sequencer->device)->in_port = sequencer->port;
 
   jack_server->n_sequencers += 1;
   
@@ -616,12 +612,37 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 			 str,
 			 TRUE, FALSE,
 			 TRUE);
-  default_soundcard->device = ags_jack_devout_new(jack_server->application_context);
-  AGS_JACK_DEVOUT(default_soundcard->device)->out_port = default_soundcard->port;
 
   jack_server->n_soundcards += 1;
   
   return(default_soundcard->device);
+}
+
+/**
+ * ags_jack_server_find_url:
+ * @jack_server: the #AgsJackServer
+ * @url: the url to find
+ *
+ * Find #AgsJackServer by url.
+ *
+ * Returns: the #GList containing a #AgsJackServer matching @url or %NULL
+ *
+ * Since: 0.7.3
+ */
+GList*
+ags_jack_server_find_url(GList *jack_server,
+			 gchar *url)
+{
+  while(jack_server != NULL){
+    if(!g_ascii_strcasecmp(AGS_JACK_SERVER(jack_server->data)->url,
+			    url)){
+      return(jack_server);
+    }
+
+    jack_server = jack_server->next;
+  }
+
+  return(NULL);
 }
 
 /**
@@ -690,6 +711,52 @@ ags_jack_server_find_port(AgsJackServer *jack_server,
   }
   
   return(NULL);
+}
+
+/**
+ * ags_jack_server_add_client:
+ * @jack_server: the #AgsJackServer
+ * @jack_client: the #AgsJackClient to add
+ *
+ * Add @jack_client to @jack_server
+ *
+ * Since: 0.7.3
+ */
+void
+ags_jack_server_add_client(AgsJackServer *jack_server,
+			   GObject *jack_client)
+{
+  if(!AGS_IS_JACK_SERVER(jack_server) ||
+     !AGS_IS_JACK_CLIENT(jack_client)){
+    return;
+  }
+
+  g_object_ref(jack_client);
+  jack_server->client = g_list_prepend(jack_server->client,
+				       jack_client);
+}
+
+/**
+ * ags_jack_server_remove_client:
+ * @jack_server: the #AgsJackServer
+ * @jack_client: the #AgsJackClient to remove
+ *
+ * Remove @jack_client to @jack_server
+ *
+ * Since: 0.7.3
+ */
+void
+ags_jack_server_remove_client(AgsJackServer *jack_server,
+			      GObject *jack_client)
+{
+  if(!AGS_IS_JACK_SERVER(jack_server) ||
+     !AGS_IS_JACK_CLIENT(jack_client)){
+    return;
+  }
+
+  jack_server->client = g_list_remove(jack_server->client,
+				      jack_client);
+  g_object_unref(jack_client);
 }
 
 /**

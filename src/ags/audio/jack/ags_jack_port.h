@@ -49,7 +49,6 @@ struct _AgsJackPort
   
   gchar *uuid;
   gchar *name;
-  gchar *uri;
   
   jack_port_t *port;
   
