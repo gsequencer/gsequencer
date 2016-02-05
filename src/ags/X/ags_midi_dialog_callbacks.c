@@ -230,14 +230,20 @@ ags_midi_dialog_add_client_callback(GtkWidget *widget, AgsMidiDialog *midi_dialo
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
     /* find server */
-    server = gtk_entry_get_text(midi_dialog->server_name);
+    server = gtk_combo_box_text_get_active_text(midi_dialog->jack_server);
     
     pthread_mutex_lock(application_mutex);
-
+    
     list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
     list = ags_jack_server_find_url(list,
 				    server);
 
+    if(list != NULL){
+      jack_server = list->data;
+    }else{
+      jack_server = NULL;
+    }
+    
     pthread_mutex_unlock(application_mutex);
 
     /* add client */
@@ -310,11 +316,66 @@ ags_midi_dialog_add_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dialog)
     gchar *client;
     gchar *port;
 
-    /* fill combo box */
+    pthread_mutex_t *application_mutex;
+    
+    machine = midi_dialog->machine;
+
+    window = gtk_widget_get_ancestor(machine,
+				     AGS_TYPE_WINDOW);
+
+    /* application context and mutex manager */
+    application_context = (AgsApplicationContext *) window->application_context;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* find server */
+    server = gtk_combo_box_text_get_active_text(midi_dialog->jack_server);
+    
+    pthread_mutex_lock(application_mutex);
+    
+    list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+    list = ags_jack_server_find_url(list,
+				    server);
+
+    if(list != NULL){
+      jack_server = list->data;
+    }else{
+      jack_server = NULL;
+    }
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* find client */
+    if(jack_server != NULL){
+      client = gtk_combo_box_text_get_active_text(midi_dialog->jack_client);
+
+      list = jack_server->client;
+      list = ags_jack_client_find(list,
+				  client);
+
+      if(list != NULL){
+	jack_client = list->data;
+      }else{
+	jack_client = NULL;
+      }
+    }
+    
+    /* add port */
+    jack_port = ags_jack_port_new(jack_client);
+    ags_jack_client_add_port(jack_client,
+			     jack_port);
+
+    /* fill combo box and register port */
     port = gtk_entry_get_text(midi_dialog->port_name);
 
     gtk_combo_box_text_append_text(midi_dialog->midi_device,
 				   port);
+
+    ags_jack_port_register(jack_port,
+			   port,
+			   FALSE, TRUE,
+			   FALSE);
   }
   
   return(0);
