@@ -25,6 +25,7 @@
 #include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_lv2_browser.h>
+#include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_ladspa_browser.h>
 
 void ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser);

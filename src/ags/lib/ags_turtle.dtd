@@ -7,7 +7,7 @@
 	  >
 
 <!-- triple -->
-<!ELEMENT rdf-triple (rdf-predicate-object-list+, rdf-blank-node-property-list?)>
+<!ELEMENT rdf-triple (rdf-subject, (rdf-predicate-object-list | rdf-blank-node-property-list), rdf-predicate-object-list?)>
 
 <!-- predicate object list and blank node property list -->
 <!ELEMENT rdf-predicate-object-list (rdf-verb | rdf-object-list)>
