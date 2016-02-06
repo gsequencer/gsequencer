@@ -436,6 +436,8 @@ am__objects_18 = $(am__objects_1) \
 	libgsequencer_la-ags_audio_preferences_callbacks.lo \
 	libgsequencer_la-ags_bulk_member.lo \
 	libgsequencer_la-ags_bulk_member_callbacks.lo \
+	libgsequencer_la-ags_dssi_browser_callbacks.lo \
+	libgsequencer_la-ags_dssi_browser.lo \
 	libgsequencer_la-ags_editor.lo \
 	libgsequencer_la-ags_editor_callbacks.lo \
 	libgsequencer_la-ags_effect_bridge.lo \
@@ -1712,6 +1714,8 @@ libgsequencer_h_sources = \
 	src/ags/X/ags_audio_preferences.h \
 	src/ags/X/ags_bulk_member_callbacks.h \
 	src/ags/X/ags_bulk_member.h \
+	src/ags/X/ags_dssi_browser_callbacks.h \
+	src/ags/X/ags_dssi_browser.h \
 	src/ags/X/ags_editor_callbacks.h \
 	src/ags/X/ags_editor.h \
 	src/ags/X/ags_effect_bridge_callbacks.h \
@@ -1791,6 +1795,8 @@ libgsequencer_c_sources = \
 	src/ags/X/ags_audio_preferences_callbacks.c \
 	src/ags/X/ags_bulk_member.c \
 	src/ags/X/ags_bulk_member_callbacks.c \
+	src/ags/X/ags_dssi_browser_callbacks.c \
+	src/ags/X/ags_dssi_browser.c \
 	src/ags/X/ags_editor.c \
 	src/ags/X/ags_editor_callbacks.c \
 	src/ags/X/ags_effect_bridge.c \
@@ -2588,6 +2594,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_drum_output_line_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_drum_output_pad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_drum_output_pad_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_dssi_browser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_dssi_browser_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_editor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_editor_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgsequencer_la-ags_effect_bridge.Plo@am__quote@
@@ -4591,6 +4599,20 @@ libgsequencer_la-ags_bulk_member_callbacks.lo: src/ags/X/ags_bulk_member_callbac
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_bulk_member_callbacks.c' object='libgsequencer_la-ags_bulk_member_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_bulk_member_callbacks.lo `test -f 'src/ags/X/ags_bulk_member_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_bulk_member_callbacks.c
+
+libgsequencer_la-ags_dssi_browser_callbacks.lo: src/ags/X/ags_dssi_browser_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_dssi_browser_callbacks.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_dssi_browser_callbacks.Tpo -c -o libgsequencer_la-ags_dssi_browser_callbacks.lo `test -f 'src/ags/X/ags_dssi_browser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_dssi_browser_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_dssi_browser_callbacks.Tpo $(DEPDIR)/libgsequencer_la-ags_dssi_browser_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_dssi_browser_callbacks.c' object='libgsequencer_la-ags_dssi_browser_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_dssi_browser_callbacks.lo `test -f 'src/ags/X/ags_dssi_browser_callbacks.c' || echo '$(srcdir)/'`src/ags/X/ags_dssi_browser_callbacks.c
+
+libgsequencer_la-ags_dssi_browser.lo: src/ags/X/ags_dssi_browser.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_dssi_browser.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_dssi_browser.Tpo -c -o libgsequencer_la-ags_dssi_browser.lo `test -f 'src/ags/X/ags_dssi_browser.c' || echo '$(srcdir)/'`src/ags/X/ags_dssi_browser.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libgsequencer_la-ags_dssi_browser.Tpo $(DEPDIR)/libgsequencer_la-ags_dssi_browser.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/ags/X/ags_dssi_browser.c' object='libgsequencer_la-ags_dssi_browser.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o libgsequencer_la-ags_dssi_browser.lo `test -f 'src/ags/X/ags_dssi_browser.c' || echo '$(srcdir)/'`src/ags/X/ags_dssi_browser.c
 
 libgsequencer_la-ags_editor.lo: src/ags/X/ags_editor.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT libgsequencer_la-ags_editor.lo -MD -MP -MF $(DEPDIR)/libgsequencer_la-ags_editor.Tpo -c -o libgsequencer_la-ags_editor.lo `test -f 'src/ags/X/ags_editor.c' || echo '$(srcdir)/'`src/ags/X/ags_editor.c

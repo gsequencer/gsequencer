@@ -17,18 +17,18 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_LADSPA_BROWSER_CALLBACKS_H__
-#define __AGS_LADSPA_BROWSER_CALLBACKS_H__
+#ifndef __AGS_DSSI_BROWSER_CALLBACKS_H__
+#define __AGS_DSSI_BROWSER_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_ladspa_browser.h>
+#include <ags/X/ags_dssi_browser.h>
 
-void ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
-						 AgsLadspaBrowser *ladspa_browser);
-void ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
-					       AgsLadspaBrowser *ladspa_browser);
+void ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
+						 AgsDssiBrowser *dssi_browser);
+void ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
+					       AgsDssiBrowser *dssi_browser);
 
-#endif /*__AGS_LADSPA_BROWSER_CALLBACKS_H__*/
+#endif /*__AGS_DSSI_BROWSER_CALLBACKS_H__*/

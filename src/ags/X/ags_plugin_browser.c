@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_plugin_browser.h>
@@ -162,6 +163,8 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "Lv2\0");
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
+				 "DSSI\0");
+  gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "LADSPA\0");
 
   plugin_browser->active_browser = NULL;
@@ -171,12 +174,20 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		     plugin_browser->lv2_browser,
 		     FALSE, FALSE,
 		     0);
-  
+
+  plugin_browser->dssi_browser = ags_dssi_browser_new();
+  gtk_box_pack_start(vbox,
+		     plugin_browser->dssi_browser,
+		     FALSE, FALSE,
+		     0);
+
   plugin_browser->ladspa_browser = ags_ladspa_browser_new();
   gtk_box_pack_start(vbox,
 		     plugin_browser->ladspa_browser,
 		     FALSE, FALSE,
 		     0);
+
+  plugin_browser->vst_browser = NULL;
 
   /* action area */
   gtk_dialog_add_buttons(plugin_browser,
@@ -215,6 +226,7 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback), plugin_browser);
   
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
+  ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->dssi_browser));
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
 
   /* AgsPluginBrowser buttons */
@@ -278,6 +290,8 @@ ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
 {
   if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
     return(ags_lv2_browser_get_plugin_filename(plugin_browser->lv2_browser));
+  }else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
+    return(ags_dssi_browser_get_plugin_filename(plugin_browser->dssi_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
     return(ags_ladspa_browser_get_plugin_filename(plugin_browser->ladspa_browser));
   }else{
@@ -299,6 +313,8 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
 {
   if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
     return(ags_lv2_browser_get_plugin_effect(plugin_browser->lv2_browser));
+  }else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
+    return(ags_dssi_browser_get_plugin_effect(plugin_browser->dssi_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
     return(ags_ladspa_browser_get_plugin_effect(plugin_browser->ladspa_browser));
   }else{
