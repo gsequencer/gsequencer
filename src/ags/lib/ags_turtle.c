@@ -240,11 +240,30 @@ gchar*
 ags_turtle_read_iriref(gchar *offset,
 		       gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+    
   gchar *str;
 
+  static regex_t iriref_regex;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static const gchar *iriref_pattern = "(\<[^\x00-\x20]\<\>\"\{\}\|\^`\\].*?<=\>)";
+
+  static const size_t max_matches = 1;
+  
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+    
+    regcomp(&iriref_regex, iriref_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&iriref_regex, offset, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
@@ -253,11 +272,24 @@ gchar*
 ags_turtle_read_pname_ns(gchar *offset,
 			 gchar *end_ptr)
 {
+  gchar *pn_prefix;
   gchar *str;
 
-  str = NULL;
+  pn_prefix = ags_turtle_read_pn_prefix(offset,
+					end_ptr);
 
-  //TODO:JK: implement me
+  if(pn_prefix != NULL &&
+     offset[strlen(pn_prefix)] < end_ptr &&
+     offset[strlen(pn_prefix)] == ':'){
+    str = g_strdup_printf("%s:\0",
+			  pn_prefix);
+  }else{
+    str = NULL;
+  }
+
+  if(pn_prefix != NULL){
+    free(pn_prefix);
+  }
   
   return(str);
 }
@@ -266,11 +298,35 @@ gchar*
 ags_turtle_read_pname_ln(gchar *offset,
 			 gchar *end_ptr)
 {
+  gchar *pname_ns, *pn_local;
   gchar *str;
 
   str = NULL;
 
-  //TODO:JK: implement me
+  pname_ns = ags_turtle_read_pname_ns(offset,
+				      end_ptr);
+  pn_local = NULL;
+  
+  if(pname_ns != NULL){
+    offset += strlen(pname_ns);
+    
+    pn_local = ags_turtle_read_pn_local(offset,
+					end_ptr);
+
+    if(pn_local != NULL){
+      str = g_strdup_printf("%s%s\0",
+			    pname_ns,
+			    pn_local);
+    }
+  }
+
+  if(pname_ns != NULL){
+    free(pname_ns);
+  }
+
+  if(pname_local != NULL){
+    free(pn_local);
+  }
   
   return(str);
 }
@@ -280,10 +336,82 @@ ags_turtle_read_blank_node_label(gchar *offset,
 				 gchar *end_ptr)
 {
   gchar *str;
-
+  gchar *tmp, *tmp_str;
+  
+  gboolean initial_find, found_str;
+  gboolean last_is_point;
+  
+  if(offset + 2 >= end_ptr){
+    return(NULL);
+  }
+  
   str = NULL;
 
-  //TODO:JK: implement me
+  tmp_str = NULL;
+
+  if(g_str_has_prefix(offset,
+		      "_:\0") &&
+     ((tmp = ags_turtle_read_pn_chars_u(offset + 2,
+					end_ptr) != NULL) ||
+      g_ascii_isdigit(offset[2]))){
+    if(tmp == NULL){
+      str = g_strdup_printf("_:%c\0", offset[2]);
+      offset += 3;
+    }else{
+      str = g_strdup_printf("_:%s\0", tmp);
+      offset += (2 + strlen(tmp));
+
+      free(tmp);
+    }
+  }
+  
+  initial_find = TRUE;
+  found_str = FALSE;
+  
+  last_is_point = FALSE;
+    
+  while(initial_find ||
+	found_str){
+    initial_find = FALSE;
+    found_str = FALSE;
+    
+    last_is_point = FALSE;
+
+    tmp = ags_turtle_read_pn_chars(offset,
+				   end_ptr);
+
+    if(tmp == NULL){
+      if(*offset == '.'){
+	tmp_str = g_strdup_printf("%s.\0",
+				  str);
+
+	free(str);
+
+	str = tmp_str;
+
+	offset++;
+	
+	found_str = TRUE;
+	
+	last_is_point = TRUE;
+      }
+    }else{
+      tmp_str = g_strdup_printf("%s%s\0",
+				str, tmp);
+      offset += strlen(tmp);
+      
+      free(str);
+      free(tmp);
+
+      str = tmp_str;
+      
+      found_str = TRUE;
+    }
+  }
+
+  if(last_is_point){
+    g_warning("ags_turtle.c - syntax error\0");
+  }
   
   return(str);
 }
@@ -294,6 +422,8 @@ ags_turtle_read_langtag(gchar *offset,
 {
   gchar *str;
 
+  static const char *langtag_pattern = "(@[a-zA-Z]+(-[a-zA-Z0-9]+))*";
+  
   str = NULL;
 
   //TODO:JK: implement me
