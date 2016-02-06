@@ -687,21 +687,13 @@ ags_turtle_load(AgsTurtle *turtle,
   xmlNode* ags_turtle_load_read_collection(gchar **iter)
   {
     xmlNode *node;
-    xmlNode *iri_node;
-    xmlNode *pname_node;
-    xmlNode *blank_node;
     xmlNode *object_node;
-    xmlNode *literal_node;
     
     gchar *look_ahead, *current;
 
     node = xmlNewNode(NULL,
 		      "rdf-collection\0");
-    iri_node = NULL;
-    pname_node = NULL;
-    blank_node = NULL;
     object_node = NULL;
-    literal_node = NULL;
     
     look_ahead = *iter;
 
@@ -714,79 +706,30 @@ ags_turtle_load(AgsTurtle *turtle,
     if(look_ahead == '('){
       look_ahead++;
       
-      while((look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead)) != '\0'){
+      while((look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead)) != '\0' &&
+	    *look_ahead != ')'){
 	current = look_ahead;
-	
-	/* iri - IRIREF */
-	iri_node = ags_turtle_load_read_iri(&look_ahead);
-	  
-	if(iri_node != NULL){
-	  xmlAddChild(node,
-		      iri_node);
-	    
-	  break;
-	}
-
-	/* read pname ln or ns */
-	pname_node = ags_turtle_load_read_pname(&look_ahead);
-	  
-	if(pname_node != NULL){
-	  xmlAddChild(node,
-		      pname_node);
-	    
-	  break;
-	}
-
-	/* read blank node */
-	blank_node = ags_turtle_load_read_blank_node(&look_ahead);
-
-	if(blank_node != NULL){
-	  xmlAddChild(node,
-		      blank_node);
-	    
-	  break;
-	}
-
-	/* collection */
-	if(*look_ahead == '('){
-	  object_node = ags_turtle_load_read_collection(&look_ahead);
-	  xmlAddChild(node,
-		      object_node);
-	    
-	  look_ahead = iter + 1;
-
-	  break;
-	}
-	  
-	/* blank node - property list*/
-	if(*look_ahead == '['){
-	  blank_node = ags_turtle_load_read_blank_node_property_list(&look_ahead);
-	  xmlAddChild(node,
-		      blank_node);
-
-	  look_ahead = iter + 1;
-
-	  break;
-	}
-	  
 
 	/* literal */
-	literal_node = ags_turtle_load_read_literal(&look_ahead);
+	object_node = ags_turtle_load_read_object(&look_ahead);
 	  
-	if(literal_node != NULL){
+	if(object_node != NULL){
 	  xmlAddChild(node,
-		      literal_node);
-	  break;
+		      object_node);
 	}else{
+	  if(*look_ahead == ')'){
+	    break;
+	  }
+	  
 	  iter = look_ahead++;
 	  
 	  g_warning("ags_turtle_load.c - unrecognized token");
 	}
       }
+      
+      *iter = look_ahead + 1;
     }
-    
-    *iter = look_ahead;
-    
+
     return(node);
   }
 
