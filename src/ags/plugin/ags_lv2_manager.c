@@ -417,11 +417,11 @@ ags_lv2_manager_load_default_directory()
   
       /* instantiate and load turtle */
       ttl_list = ags_turtle_find_xpath(manifest,
-				       "//rdf-triple/rdf-verb[@do=\"rdfs:seeAlso\"]/rdf-list/rdf-value\0");
+				       "//rdf-triple//rdf-iri[substring(@iriref, string-length(@iriref) - string-length('.ttl') + 1) = '.ttl']\0");
 
       /* read binary from turtle */
       binary_list = ags_turtle_find_xpath(manifest,
-					  "//rdf-triple/rdf-verb[@do=\"lv2:binary\"]/rdf-list/rdf-value\0");
+					  "//rdf-triple//rdf-iri[substring(@iriref, string-length(@iriref) - string-length('.so') + 1) = '.so']\0");
 
       /* load */
       if(ttl_list == NULL ||
@@ -432,10 +432,9 @@ ags_lv2_manager_load_default_directory()
       while(ttl_list != NULL &&
 	    binary_list != NULL){
 	turtle_path = xmlGetProp((xmlNode *) ttl_list->data,
-				 "value\0");
+				 "iriref\0");
 
-	turtle_path = g_strndup(&(turtle_path[1]),
-				strlen(turtle_path) - 2);
+	turtle_path = g_strdup(turtle_path);
 	
 	if(!g_ascii_strncasecmp(turtle_path,
 				"http://\0",
@@ -453,9 +452,8 @@ ags_lv2_manager_load_default_directory()
 	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
 
 	str = xmlGetProp(binary_list->data,
-			 "value\0");
-	str = g_strndup(&(str[1]),
-			strlen(str) - 2);
+			 "iriref\0");
+	str = g_strdup(str);
 	filename = g_strdup_printf("%s/%s\0",
 				   plugin_path,
 				   str);
