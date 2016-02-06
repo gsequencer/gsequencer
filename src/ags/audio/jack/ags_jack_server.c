@@ -461,6 +461,9 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   /* the default client */
   if(jack_server->default_client == NULL){
     jack_server->default_client = ags_jack_client_new(jack_server);
+    ags_jack_server_add_client(jack_server,
+			       jack_server->default_client);
+    
     ags_jack_client_open(jack_server->default_client,
 			 g_strdup("ags-default-client\0"));
 
@@ -469,10 +472,6 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
       
       return;
     }
-
-    jack_server->client = g_list_prepend(jack_server->client,
-					 default_client);
-    g_object_ref(default_client);
   }
 
   default_client = jack_server->default_client;
@@ -533,6 +532,9 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   /* the default client */
   if(jack_server->default_client == NULL){
     jack_server->default_client = ags_jack_client_new(jack_server);
+    ags_jack_server_add_client(jack_server,
+			       jack_server->default_client);
+    
     ags_jack_client_open(jack_server->default_client,
 			 g_strdup("ags-default-client\0"));
 
@@ -541,10 +543,6 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
       
       return;
     }
-
-    jack_server->client = g_list_prepend(jack_server->client,
-					 default_client);
-    g_object_ref(default_client);
   }
 
   default_client = jack_server->default_client;
@@ -600,12 +598,11 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   if(default_client == NULL){
     jack_server->default_client = 
       default_client = ags_jack_client_new(jack_server);
-
+    ags_jack_server_add_client(jack_server,
+			       default_client);
+    
     ags_jack_client_open(jack_server->default_client,
 			 g_strdup("ags-default-client\0"));
-    
-    jack_server->client = g_list_prepend(jack_server->client,
-					 default_client);
   }
 
   str = g_strdup_printf("ags-soundcard-%04d\0",

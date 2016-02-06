@@ -178,6 +178,57 @@ ags_midi_dialog_remove_server_callback(GtkWidget *widget, AgsMidiDialog *midi_di
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
 			  4)){
+
+    AgsWindow *window;
+    AgsMachine *machine;
+
+    GObject *gobject;
+    
+    AgsMutexManager *mutex_manager;
+
+    AgsApplicationContext *application_context;
+
+    GList *jack_server;
+    GList *list;
+    
+    gchar *server;
+
+    pthread_mutex_t *application_mutex;
+    
+    machine = midi_dialog->machine;
+
+    window = gtk_widget_get_ancestor(machine,
+				     AGS_TYPE_WINDOW);
+
+    /* application context and mutex manager */
+    application_context = (AgsApplicationContext *) window->application_context;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* remove server */
+    server = gtk_combo_box_text_get_active_text(midi_dialog->jack_server);
+    
+    pthread_mutex_lock(application_mutex);
+
+    list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+    jack_server = ags_jack_server_find_url(list,
+					   server);
+    
+    if(jack_server != NULL){
+      gobject = jack_server->data;
+      
+      list = g_list_remove(list,
+			   gobject);
+      ags_sound_provider_set_distributed_manager(AGS_SOUND_PROVIDER(application_context),
+						 list);
+
+      g_object_unref(gobject);
+    }
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* update GUI */
     gtk_combo_box_text_remove(midi_dialog->jack_server,
 			      gtk_combo_box_get_active(midi_dialog->jack_server));
   }
@@ -274,6 +325,68 @@ ags_midi_dialog_remove_client_callback(GtkWidget *widget, AgsMidiDialog *midi_di
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
 			  4)){
+    AgsWindow *window;
+    AgsMachine *machine;
+
+    AgsJackServer *jack_server;
+    GObject *gobject;
+    
+    AgsMutexManager *mutex_manager;
+
+    AgsApplicationContext *application_context;
+
+    GList *jack_client;
+    GList *list;
+
+    gchar *server;
+    gchar *client;
+
+    pthread_mutex_t *application_mutex;
+    
+    machine = midi_dialog->machine;
+
+    window = gtk_widget_get_ancestor(machine,
+				     AGS_TYPE_WINDOW);
+
+    /* application context and mutex manager */
+    application_context = (AgsApplicationContext *) window->application_context;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* find server */
+    server = gtk_combo_box_text_get_active_text(midi_dialog->jack_server);
+    
+    pthread_mutex_lock(application_mutex);
+    
+    list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+    list = ags_jack_server_find_url(list,
+				    server);
+
+    if(list != NULL){
+      jack_server = list->data;
+    }else{
+      jack_server = NULL;
+    }
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* remove client */
+    client = gtk_combo_box_text_get_active_text(midi_dialog->jack_client);
+
+    if(jack_server != NULL){
+      list = jack_server->client;
+
+      jack_client = ags_jack_client_find(list,
+					 client);
+
+      if(jack_client != NULL){
+	ags_jack_server_remove_client(jack_server,
+				      jack_client->data);
+      }
+    }
+    
+    /* update GUI */
     gtk_combo_box_text_remove(midi_dialog->jack_client,
 			      gtk_combo_box_get_active(midi_dialog->jack_client));
   }
@@ -391,6 +504,84 @@ ags_midi_dialog_remove_port_callback(GtkWidget *widget, AgsMidiDialog *midi_dial
   if(!g_ascii_strncasecmp("jack\0",
 			  str,
 			  4)){
+    AgsWindow *window;
+    AgsMachine *machine;
+
+    GObject *sequencer;
+    
+    AgsJackServer *jack_server;
+    AgsJackClient *jack_client;
+    
+    AgsMutexManager *mutex_manager;
+
+    AgsApplicationContext *application_context;
+
+    GList *jack_port;
+    GList *list;
+    
+    gchar *server;
+    gchar *client;
+    gchar *port;
+
+    pthread_mutex_t *application_mutex;
+    
+    machine = midi_dialog->machine;
+
+    window = gtk_widget_get_ancestor(machine,
+				     AGS_TYPE_WINDOW);
+
+    /* application context and mutex manager */
+    application_context = (AgsApplicationContext *) window->application_context;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* find server */
+    server = gtk_combo_box_text_get_active_text(midi_dialog->jack_server);
+    
+    pthread_mutex_lock(application_mutex);
+    
+    list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+    list = ags_jack_server_find_url(list,
+				    server);
+
+    if(list != NULL){
+      jack_server = list->data;
+    }else{
+      jack_server = NULL;
+    }
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* find client */
+    if(jack_server != NULL){
+      client = gtk_combo_box_text_get_active_text(midi_dialog->jack_client);
+
+      list = jack_server->client;
+      list = ags_jack_client_find(list,
+				  client);
+
+      if(list != NULL){
+	jack_client = list->data;
+      }else{
+	jack_client = NULL;
+      }
+    }
+    
+    /* remove port */
+    if(jack_client != NULL){
+      port = gtk_combo_box_text_get_active_text(midi_dialog->midi_device);
+      
+      jack_port = ags_jack_port_find(jack_client->port,
+				     port);
+      
+      if(jack_port != NULL){
+	ags_jack_client_remove_port(jack_client,
+				    jack_port->data);
+      }
+    }
+    
+    /* update GUI */
     gtk_combo_box_text_remove(midi_dialog->midi_device,
 			      gtk_combo_box_get_active(midi_dialog->midi_device));
   }

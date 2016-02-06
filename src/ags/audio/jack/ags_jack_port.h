@@ -62,6 +62,9 @@ struct _AgsJackPortClass
 
 GType ags_jack_port_get_type();
 
+GList* ags_jack_port_find(GList *jack_port,
+			  gchar *port_name);
+
 void ags_jack_port_register(AgsJackPort *jack_port,
 			    gchar *name,
 			    gboolean is_audio, gboolean is_midi,

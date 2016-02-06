@@ -1,0 +1,49 @@
+<!ENTITY ags-turtle-default-version "0.7.0">
+
+<!-- root node -->
+<!ELEMENT rdf-turtle (rdf-triple*)>
+<!ATTLIST rdf-turtle
+	  version          CDATA      &ags-turtle-default-version;
+	  >
+
+<!-- triple -->
+<!ELEMENT rdf-triple (rdf-predicate-object-list+, rdf-blank-node-property-list?)>
+
+<!-- predicate object list and blank node property list -->
+<!ELEMENT rdf-predicate-object-list (rdf-verb | rdf-object-list)>
+
+<!ELEMENT rdf-blank-node-property-list (rdf-predicate-object-list)>
+
+<!-- verb, object list, collection and object -->
+<!ELEMENT rdf-verb (rdf-iri?)>
+<!ATTLIST rdf-verb
+	  verb          CDATA      #IMPLIED
+	  >
+
+<!ELEMENT rdf-object-list (rdf-object*)>
+
+<!ELEMENT rdf-collection (rdf-object*)>
+
+<!ELEMENT rdf-object (rdf-iri | rdf-pname | rdf-blank-node | rdf-collection | rdf-blank-node-property-list | rdf-literal)>
+
+<!-- iri, pname blank node and literal -->
+<!ELEMENT rdf-iri (rdf-pname)>
+<!ATTLIST rdf-iri
+	  iriref        CDATA      #IMPLIED
+	  >
+
+<!ELEMENT rdf-pname EMPTY>
+<!ATTLIST rdf-pname
+	  pname-ns        CDATA    #REQUIRED
+	  >
+
+<!ELEMENT rdf-blank-node EMPTY>
+<!ATTLIST rdf-blank-node
+	  label          CDATA    #IMPLIED
+	  anon           CDATA    #IMPLIED
+	  >
+
+<!ELEMENT rdf-literal (CDATA)>
+<!ATTLIST rdf-literal
+	  type          CDATA     #IMPLIED
+	  >

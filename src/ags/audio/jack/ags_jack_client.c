@@ -238,6 +238,17 @@ ags_jack_client_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_jack_client_find:
+ * @jack_client: a #GList
+ * @client_name: the client name to find
+ *
+ * Finds next match of @client_name in @jack_client.
+ *
+ * Returns: a #GList or %NULL
+ * 
+ * Since: 0.7.3
+ */
 GList*
 ags_jack_client_find(GList *jack_client,
 		     gchar *client_name)
@@ -273,8 +284,11 @@ ags_jack_client_open(AgsJackClient *jack_client,
   jack_client->client = jack_client_open(client_name,
 					 0,
 					 NULL);
-  jack_client->uuid = jack_get_uuid_for_client_name(jack_client->client,
-						    client_name);
+
+  if(jack_client->client != NULL){
+    jack_client->uuid = jack_get_uuid_for_client_name(jack_client->client,
+						      client_name);
+  }
 }
 
 /**

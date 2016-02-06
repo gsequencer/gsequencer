@@ -243,6 +243,31 @@ ags_jack_port_finalize(GObject *gobject)
 }
 
 /**
+ * ags_jack_port_find:
+ * @jack_port: a #GList
+ * @port_name: the port name to find
+ *
+ * Finds next match of @port_name in @jack_port.
+ *
+ * Returns: a #GList or %NULL
+ * 
+ * Since: 0.7.3
+ */
+GList*
+ags_jack_port_find(GList *jack_port,
+		   gchar *port_name)
+{
+  while(jack_port != NULL){
+    if(!g_ascii_strcasecmp(jack_port_name(AGS_JACK_PORT(jack_port->data)->port),
+			   port_name)){
+      return(jack_port);
+    }
+  }
+
+  return(NULL);
+}
+
+/**
  * ags_jack_port_register:
  * @port_name: the name as string
  * @is_audio: if %TRUE interpreted as audio port

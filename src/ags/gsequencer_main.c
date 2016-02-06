@@ -42,6 +42,9 @@
 #include <ags/server/ags_server.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2ui_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
 
@@ -86,7 +89,6 @@ struct sigevent ags_sev_timer;
 struct itimerspec its;
 
 AgsApplicationContext *application_context;
-AgsLadspaManager *ladspa_manager;
 
 void
 ags_signal_handler(int signr)
@@ -131,9 +133,14 @@ ags_signal_cleanup()
 int
 main(int argc, char **argv)
 {
+  AgsLadspaManager *ladspa_manager;
+  AgsDssiManager *dssi_manager;
+  AgsLv2Manager *lv2_manager;;
+  AgsLv2uiManager *lv2ui_manager;
+  
   AgsThread *audio_loop, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
-  AgsApplicationContext *application_context;
+
   GFile *autosave_file;
     
   gchar *filename, *autosave_filename;
@@ -216,17 +223,6 @@ main(int argc, char **argv)
   /* parse gtkrc */
   uid = getuid();
   pw = getpwuid(uid);
-
-  /* init gsequencer */
-  gtk_init(&argc, &argv);
-
-  application_context = ags_xorg_application_context_new();
-  application_context->argc = argc;
-  application_context->argv = argv;
-  
-  gtk_rc_parse(g_strdup_printf("%s/%s/ags.rc",
-			       pw->pw_dir,
-			       AGS_DEFAULT_DIRECTORY));
   
   /**/
   LIBXML_TEST_VERSION;
@@ -236,7 +232,29 @@ main(int argc, char **argv)
 
   gtk_init(&argc, &argv);
   ipatch_init();
-    
+
+  /* load managers */
+  ladspa_manager = ags_ladspa_manager_get_instance();
+  ags_ladspa_manager_load_default_directory();
+  
+  dssi_manager = ags_dssi_manager_get_instance();
+  ags_dssi_manager_load_default_directory();
+  
+  lv2_manager = ags_lv2_manager_get_instance();
+  ags_lv2_manager_load_default_directory();
+  
+  lv2ui_manager = ags_lv2ui_manager_get_instance();
+  ags_lv2ui_manager_load_default_directory();
+  
+  /* init gsequencer */
+  application_context = ags_xorg_application_context_new();
+  application_context->argc = argc;
+  application_context->argv = argv;
+  
+  gtk_rc_parse(g_strdup_printf("%s/%s/ags.rc",
+			       pw->pw_dir,
+			       AGS_DEFAULT_DIRECTORY));
+  
   audio_loop = application_context->main_loop;
   task_thread = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
@@ -372,9 +390,8 @@ main(int argc, char **argv)
   }
     
   /* free managers */
-  if(ladspa_manager != NULL){
-    g_object_unref(ags_ladspa_manager_get_instance());
-  }
+  ladspa_manager = ags_ladspa_manager_get_instance();
+  g_object_unref(ladspa_manager);
   
   /* delete autosave file */  
   autosave_filename = g_strdup_printf("%s/%s/%d-%s\0",
