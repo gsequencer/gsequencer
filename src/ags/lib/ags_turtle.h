@@ -90,6 +90,8 @@ gchar* ags_turtle_read_langtag(gchar *offset,
 			       gchar *end_ptr);
 
 /* numbers */
+gchar* ags_turtle_read_boolean(gchar *offset,
+			       gchar *end_ptr);
 gchar* ags_turtle_read_integer(gchar *offset,
 			       gchar *end_ptr);
 gchar* ags_turtle_read_decimal(gchar *offset,
@@ -122,6 +124,8 @@ gchar* ags_turtle_read_pn_chars_base(gchar *offset,
 				     gchar *end_ptr);
 gchar* ags_turtle_read_pn_chars_u(gchar *offset,
 				  gchar *end_ptr);
+gchar* ags_turtle_read_pn_chars(gchar *offset,
+				gchar *end_ptr);
 gchar* ags_turtle_read_pn_prefix(gchar *offset,
 				 gchar *end_ptr);
 gchar* ags_turtle_read_pn_local(gchar *offset,

@@ -55,167 +55,6 @@ void ags_turtle_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_turtle_finalize(GObject *gobject);
 
-
-#define rdf_is_iriref(str, endptr) (rdf_is_uchar(str, endptr) && \
-				    !(*str >= '\x00' && *str <= '\x20') && \
-				    *str != '<' && \
-				    *str != '>' && \
-				    *str != '"' && \
-				    *str != '{' && \
-				    *str != '}' && \
-				    *str != '^' && \
-				    *str != '`' && \
-				    *str != '\\')
-#define rdf_is_iriref_extended_valid_start(str, endptr) (*str == '<')
-#define rdf_is_iriref_extended_valid_end(str, endptr) (*str == '>')
-#define rdf_is_pname_ns(str, endptr) (rdf_is_pn_prefix(str, endptr) || \
-				      *str == ':')
-#define rdf_is_pname_ln(str, endptr) (rdf_is_pname_ns(str, endptr) || \
-				      rdf_is_pn_local(str, endptr))
-#define rdf_is_blank_node_label(str, endptr) (rdf_is_pn_chars(str, endptr) || \
-					      *str == '.')
-#define rdf_is_blank_node_label_valid_start(str, endptr) ((&(str[2]) < endptr) && \
-							  str[0] == '_' && \
-							  str[1] == ':' && \
-							  (rdf_is_pn_chars_u(&(str[2]), endptr) || \
-							   g_ascii_isdigit(str[2])))
-#define rdf_is_blank_node_label_valid_end(str, endptr) (rdf_is_pn_chars(str, endptr))
-#define rdf_is_langtag(str, endptr) (g_ascii_isalnum(str[1]))
-#define rdf_is_langtag_valid_start(str, endptr) ((&(str[1]) < endptr) && \
-						 str[0] == '@' && \
-						 g_ascii_isalpha(str[1]))
-#define rdf_is_integer(str, endptr) (((*str == '+' ||			\
-				       *str == '-') &&			\
-				      g_ascii_isdigit(str[1])) ||	\
-				     g_ascii_isdigit(str))
-#define rdf_is_decimal(str, endptr, ip_index) (str)
-#define rdf_is_double(str, endptr, ip_index) (((*str == '+' || \
-						*str == '-') && \
-					      g_ascii_isdigit(str[1]) || \
-					      g_ascii_isdigit(*str))
-#define rdf_is_double_extended_valid_start(str, endptr, ip_index) ((((*str == '+' || \
-								      *str == '-') && \
-								     g_ascii_isdigit(str[1])) || \
-								    g_ascii_isdigit(str)) || \
-								   *str == '.')
-#define rdf_is_double_extended_valid_end(str, endptr) (g_ascii_isdigit(str) || \
-						       rdf_is_exponent_valid_start(str, endptr))
-
-#define rdf_is_exponent(str, endptr) (g_ascii_isdigit(*str))
-#define rdf_is_exponent_extended_valid_start(str, endptr) ((&(str[1]) < endptr) && \
-							   (*str == 'e' || \
-							    *str == 'E') && \
-							   (g_ascii_isdigit(str[1]) || \
-							    ((str[1] == '+' || \
-							      str[1] == '-') && \
-							     (&(str[2]) < endptr) && \
-							     g_ascii_isdigit(str[2]))))
-#define rdf_is_string_literal_quote_delimiter(str, endptr) (*str == '"' &&	\
-							    (&(str[1]) < endptr) && \
-							    str[1] != '"')
-#define rdf_is_string_literal_single_quote_delimiter(str, endptr) (*str == '\'' && \
-								   (&(str[1]) < endptr) && \
-								   str[1] != '\'')
-#define rdf_is_string_literal_long_quote_delimiter(str, endptr) ((&(str[2]) < endptr) && \
-								 str[0] == '"' && \
-								 str[1] == '"' && \
-								 str[2] == '"')
-#define rdf_is_string_literal_long_single_quote_delimiter(str, endptr) ((&(str[2]) < endptr) && \
-									str[0] == '\'' && \
-									str[1] == '\'' && \
-									str[2] == '\'')
-#define rdf_is_uchar(str, endptr) (*str == '\\' &&			\
-				   ((&(str[5]) < &(buffer[sb->st_size])) && str[1] == 'u' && \
-				    (g_ascii_isxdigit(str[2] && g_ascii_isxdigit(str[3]) && g_ascii_isxdigit(str[4]) && g_ascii_isxdigit(str[5])))) || \
-				   ((&(str[9]) < &(buffer[sb->st_size])) && str[1] == 'U' && \
-				    (g_ascii_isxdigit(str[2] && g_ascii_isxdigit(str[3]) && g_ascii_isxdigit(str[4]) && g_ascii_isxdigit(str[5]) && g_ascii_isxdigit(str[6] && g_ascii_isxdigit(str[7]) && g_ascii_isxdigit(str[8]) && g_ascii_isxdigit(str[9]))))))
-#define rdf_is_echar(str, endptr) (*str == '\\' &&		\
-				   (&(str[1]) < endptr) &&	\
-				   (*str == 't' ||		\
-				    *str == 'b' ||		\
-				    *str == 'n' ||		\
-				    *str == 'r' ||		\
-				    *str == 'f' ||		\
-				    *str == '"' ||		\
-				    *str == '\'' ||		\
-				    *str == '\\'))
-#define rdf_is_ws(str, endptr) (*str == '\x20' ||	\
-				*str == '\x09' ||	\
-				*str == '\x0D' ||	\
-				*str == '\x0A')
-#define rdf_is_anon(str, endptr) (rdf_is_ws(str, endptr))
-#define rdf_is_anon_extended_valid_start(str, endptr) (*str == '[')
-#define rdf_is_anon_extended_valid_end(str, endptr) (*str == ']')
-#define rdf_is_pn_chars_base(str, endptr) (g_ascii_isalnum(*str) ||	\
-					   (*str >= '\xC0' && *str < '\xD6') || \
-					   (*str >= '\xD8' && *str < '\xF6') || \
-					   (UTF8_2_BYTE_RANGE(str, endptr, "\x00\xF8", "\x02\xFF")) || \
-					   (UTF8_2_BYTE_RANGE(str, endptr, "\x03\x70", "\x03\x7D")) || \
-					   (UTF8_2_BYTE_RANGE(str, endptr, "\x03\x7F", "\x1F\xFF")) || \
-					   (UTF8_2_BYTE_RANGE(str, endptr, "\x20\x0C", "\x20\x0D")) || \
-					   (UTF8_2_BYTE_RANGE(str, endptr, "\x20\x70", "\x21\x8F")) || \
-					   (UTF8_2_BYTE_RANGE(str, endptr, "\x2C\x00", "\x2F\xEF")) || \
-					   (UTF8_2_BYTE_RANGE(str, endptr, "\x30\x01", "\xD7\xFF")) || \
-					   (UTF8_2_BYTE_RANGE(str, endptr, "\xF9\x00", "\xFD\xCF")) || \
-					   (UTF8_2_BYTE_RANGE(str, endptr, "\xFD\xF0", "\xFF\xFD")) || \
-					   (UTF8_3_BYTE_RANGE(str, endptr, "\x01\x00\x00", "\x0E\xFF\xFF")))
-#define rdf_is_pn_chars_u(str, endptr) (rdf_is_pn_chars_base(str, endptr) || \
-					*str == '_')
-#define rdf_is_pn_chars(str, endptr) (g_ascii_isdigit(*str) ||		\
-				      *str == '-' ||			\
-				      *str == '\xB7' ||		\
-				      (UTF8_2_BYTE_RANGE(str, endptr, "\x03\x00", "\x03\x6F")) || \
-				      (UTF8_2_BYTE_RANGE(str, endptr, "\x20\x3F", "\x20\x40")))
-#define rdf_is_pn_prefix(str, endptr) (rdf_is_pn_chars_base(str, endptr))
-#define rdf_is_pn_prefix_extended(str, endptr) (rdf_is_pn_prefix(str, endptr) || \
-						rdf_is_pn_chars(str, endptr) || \
-						*str == '.')
-#define rdf_is_pn_prefix_extended_valid_end(str, endptr) (rdf_is_pn_prefix(str, endptr) || \
-							  rdf_is_pn_chars(str, endptr))
-#define rdf_is_pn_local(str, endptr) (rdf_is_pn_chars_u(str, endptr) ||	\
-				      *str == ':' ||			\
-				      g_ascii_isdigit(*str) ||		\
-				      rdf_is_plx(str, endptr))
-#define rdf_is_pn_local_extended(str, endptr) (rdf_is_pn_local(str, endptr) || \
-					       rdf_is_pn_chars(str, endptr) || \
-					       *str == '.' ||		\
-					       *str == ':' ||		\
-					       rdf_is_plx(str, endptr))
-#define rdf_is_pn_local_extended_valid_end(str, endptr) (rdf_is_pn_local(str, endptr) || \
-							 rdf_is_pn_chars(str, endptr) || \
-							 *str == ':' ||	\
-							 rdf_is_plx(str, endptr))
-#define rdf_is_plx(str, endptr) (rdf_is_percent(str, endptr) || \
-				 rdf_is_hex(str, endptr))
-#define rdf_is_percent(str, endptr) (str == '%' &&			\
-				     str[2] < endptr &&			\
-				     rdf_is_hex(&(str[1]), endptr) &&	\
-				     rdf_is_hex(&(str[2]), endptr))
-#define rdf_is_hex(str, endptr) ((*str >= '0' && *str <= '9') ||  \
-				 (*str >= 'a' && *str <= 'f') ||  \
-				 (*str >= 'A' && *str <= 'F'))
-#define rdf_is_pn_local_esc(str, endptr) (*str == '\\' &&		\
-					  (&(str[1]) < endptr &&	\
-					   (*str == '_' ||		\
-					    *str == '~' ||		\
-					    *str == '.' ||		\
-					    *str == '-' ||		\
-					    *str == '!' ||		\
-					    *str == '$' ||		\
-					    *str == '&' ||		\
-					    *str == '\'' ||		\
-					    *str == '(' ||		\
-					    *str == ')' ||		\
-					    *str == '*' ||		\
-					    *str == '+' ||		\
-					    *str == ',' ||		\
-					    *str == ';' ||		\
-					    *str == '=' ||		\
-					    *str == '?' ||		\
-					    *str == '#' ||		\
-					    *str == '@' ||		\
-					    *str == '%')))
-
 enum{
   PROP_0,
   PROP_FILENAME,
@@ -463,14 +302,65 @@ ags_turtle_read_langtag(gchar *offset,
 }
 
 gchar*
-ags_turtle_read_integer(gchar *offset,
+ags_turtle_read_boolean(gchar *offset,
 			gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+  
   gchar *str;
+  
+  static regex_t boolean_literal_regex;
+
+  static gboolean regex_compiled = FALSE;
+    
+  static const char *boolean_literal_pattern = "^(true|false)\0";
+
+  static const size_t max_matches = 1;
   
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    regcomp(&boolean_literal_regex, boolean_literal_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&boolean_literal_regex, literal, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
+  
+  return(str);
+}
+
+gchar*
+ags_turtle_read_integer(gchar *offset,
+			gchar *end_ptr)
+{
+  regmatch_t match_arr[1];
+  
+  gchar *str;
+  
+  static regex_t integer_literal_regex;
+
+  static gboolean regex_compiled = FALSE;
+    
+  static const char *integer_literal_pattern = "^([+-]?[0-9]+)\0";
+
+  static const size_t max_matches = 1;
+  
+  str = NULL;
+
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    regcomp(&integer_literal_regex, integer_literal_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&integer_literal_regex, literal, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
@@ -479,11 +369,30 @@ gchar*
 ags_turtle_read_decimal(gchar *offset,
 			gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+  
   gchar *str;
 
+  static regex_t decimal_literal_regex;
+
+  static gboolean regex_compiled = FALSE;
+
+  static const char *decimal_literal_pattern = "^([+-]?[0-9]*.[0-9]+)\0";
+
+  static const size_t max_matches = 1;
+    
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    regcomp(&decimal_literal_regex, decimal_literal_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&decimal_literal_regex, literal, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
@@ -492,11 +401,30 @@ gchar*
 ags_turtle_read_double(gchar *offset,
 		       gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+  
   gchar *str;
 
+  static regex_t double_literal_regex;
+  
+  static gboolean regex_compiled = FALSE;
+  
+  static const char *double_literal_pattern = "^([+-]?([0-9]+.[0-9]*[eE] [+-]?[0-9]+)|(.[0-9]+[eE][+-]?[0-9]+)|([0-9]+[eE][+-]?[0-9]+))\0";
+
+  static const size_t max_matches = 1;
+    
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    regcomp(&double_literal_regex, double_literal_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&double_literal_regex, literal, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
@@ -505,24 +433,63 @@ gchar*
 ags_turtle_read_exponent(gchar *offset,
 			 gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+  
   gchar *str;
 
+  static regex_t exponent_literal_regex;
+
+  static gboolean regex_compiled = FALSE;
+  
+  static const char *exponent_literal_pattern = "^([eE][+-]?[0-9]+)\0";
+
+  static const size_t max_matches = 1;
+    
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+
+    regcomp(&exponent_literal_regex, exponent_literal_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&exponent_literal_regex, literal, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
 
-/* literals */
-gchar* ags_turtle_read_string_literal_quote(gchar *offset,
-					    gchar *end_ptr)
+
+gchar*
+ags_turtle_read_string_literal_quote(gchar *offset,
+				     gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+  
   gchar *str;
 
-  str = NULL;
+  static regex_t string_literal_double_quote_regex;
 
-  //TODO:JK: implement me
+  static gboolean regex_compiled = FALSE;
+  
+  static const char *string_literal_double_quote_pattern = "^(\"([^\"\|\n\r]|.*)(?<=\"))\0";
+
+  static const size_t max_matches = 1;
+    
+  str = NULL;
+  
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    regcomp(&string_literal_single_quote_regex, string_literal_single_quote_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&string_literal_double_quote_regex, literal, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
@@ -531,11 +498,30 @@ gchar*
 ags_turtle_read_string_literal_single_quote(gchar *offset,
 					    gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+  
   gchar *str;
 
+  static regex_t string_literal_single_quote_regex;
+
+  static gboolean regex_compiled = FALSE;
+  
+  static const char *string_literal_single_quote_pattern = "^('([^'\|\n\r]|.*)(?<='))\0";
+
+  static const size_t max_matches = 1;
+    
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    regcomp(&string_literal_single_quote_regex, string_literal_single_quote_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&string_literal_single_quote_regex, literal, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
@@ -544,11 +530,30 @@ gchar*
 ags_turtle_read_string_literal_long_quote(gchar *offset,
 					  gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+  
   gchar *str;
 
+  static regex_t string_literal_long_double_quote_regex;
+  
+  static gboolean regex_compiled = FALSE;
+  
+  static const char *string_literal_long_double_quote_pattern = "^(\"\"\"(((\")|(\"\"))?([^\"\\]|.*))(?<=\"\"\"))\0";
+
+  static const size_t max_matches = 1;
+    
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    regcomp(&string_literal_long_double_quote_regex, string_literal_long_double_quote_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&string_literal_long_double_quote_regex, literal, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
@@ -557,11 +562,30 @@ gchar*
 ags_turtle_read_string_literal_long_single_quote(gchar *offset,
 						 gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+  
   gchar *str;
 
+  static regex_t string_literal_long_single_quote_regex;
+  
+  static gboolean regex_compiled = FALSE;
+
+  static const char *string_literal_long_single_quote_pattern = "^('''(((')|(''))?([^'\\]|.*))(?<='''))\0";
+
+  static const size_t max_matches = 1;
+    
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    regcomp(&string_literal_long_single_quote_regex, string_literal_long_single_quote_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&string_literal_long_single_quote_regex, literal, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
@@ -572,9 +596,42 @@ ags_turtle_read_uchar(gchar *offset,
 {
   gchar *str;
 
+  guint hex_digit_count;
+  guint i;
+  gboolean success;
+
+  if(offset + 1 >= end_ptr){
+    return(NULL);
+  }
+  
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!g_ascii_strncasecmp(offset,
+			  "\\u\0",
+			  2)){
+    hex_digit_count = 4;
+  }else if(!g_ascii_strncasecmp(offset,
+				"\\U\0",
+				2)){
+    hex_digit_count = 8;
+  }else{
+    return(NULL);
+  }
+
+  success = TRUE;
+  
+  for(i = 0; i < hex_digit_count; i++){
+    if(!g_ascii_isxdigit(offset[i + 2])){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  if(success){
+    str = g_strndup(offset,
+		    hex_digit_count + 2);
+  }
   
   return(str);
 }
@@ -585,10 +642,22 @@ ags_turtle_read_echar(gchar *offset,
 {
   gchar *str;
 
+  static const gchar *echar = "tbnrf\"\0";
+  
+  if(offset + 1 >= end_ptr){
+    return(NULL);
+  }
+  
   str = NULL;
 
-  //TODO:JK: implement me
-  
+  if(offset == '\\'){
+    if(index(echar,
+	     offset[1]) != NULL){
+      str = g_strndup(offset,
+		      2);
+    }
+  }
+
   return(str);
 }
 
@@ -598,9 +667,15 @@ ags_turtle_read_ws(gchar *offset,
 {
   gchar *str;
 
+  static const gchar *ws = "\x20\x09\x0D\x0A\0";
+
   str = NULL;
 
-  //TODO:JK: implement me
+  if(offset < end_ptr &&
+     index(ws, *offset) != NULL){
+    str = g_strndup(offset,
+		    1);
+  }
   
   return(str);
 }
@@ -610,10 +685,42 @@ ags_turtle_read_anon(gchar *offset,
 		     gchar *end_ptr)
 {
   gchar *str;
+  gchar *tmp, *tmp_str;
 
+  gboolean success;
+  
+  static const gchar *ws = "\x20\x09\x0D\x0A\0";
+
+  if(offset >= end_ptr){
+    return(NULL);
+  }
+  
   str = NULL;
 
-  //TODO:JK: implement me
+  success = FALSE;
+  
+  if(*offset == '['){
+    tmp = index(offset + 1,
+		']');
+
+    if(tmp != NULL){
+      success = TRUE;
+      
+      for(tmp_str = offset + 1; tmp_str < tmp; tmp_str++){
+	if(index(ws,
+		 *tmp_str) == NULL){
+	  success = FALSE;
+	  
+	  break;
+	}
+      }
+    }
+  }
+
+  if(success){
+    str = g_strndup(offset,
+		    tmp - offset);
+  }
   
   return(str);
 }
@@ -623,15 +730,16 @@ ags_turtle_read_pn_chars_base(gchar *offset,
 			      gchar *end_ptr)
 {
   regmatch_t match_arr[1];
+    
+  gchar *str;
   
   static regex_t chars_base_regex;
     
   static gboolean regex_compiled = FALSE;
 
   static const char *chars_base_pattern = "^([A-Xa-x]|\x00[\xC0-\xD6]|\x00[\xD8-\xF6]|\x00[\xF8-\xFF]|\x01[\x00-\xFF]|\x02[\x00-\xFF]|\x03[\x70-\x7D]|\x20[\x0C-\x0D]|\x20[\x70-\xFF]|\x21[\x00-\x8F]|[\x2C-\x2E][\x00-\xFF]|\x2F[\x00-\xEF]|\x30[\x01-\xFF]|[\x31-\xD7][\x00-\xFF]|[\xF9-\xFC][\x00-\xFF]|[\xFD[\x00-\xCF]|\xFD[\xF0-\xFF]|\x0FE[\x00-\xFF]|\xFF[\x00-\xFD]|[\x01-0x0E][\x00-\xFF][\x00-\xFF])\0";
+
   static const size_t max_matches = 1;
-    
-  gchar *str;
 
   str = NULL;
 
@@ -641,7 +749,7 @@ ags_turtle_read_pn_chars_base(gchar *offset,
     regcomp(&chars_base_regex, chars_base_pattern, REG_EXTENDED);
   }
 
-  if(regexec(&prefix_id_regex, look_ahead, max_matches, match_arr, 0) == 0){
+  if(regexec(&chars_base_regex, offset, max_matches, match_arr, 0) == 0){
     str = g_strndup(offset,
 		    match_arr[0].rm_eo - match_arr[0].rm_so);
   }
@@ -655,9 +763,56 @@ ags_turtle_read_pn_chars_u(gchar *offset,
 {
   gchar *str;
 
-  str = NULL;
+  str = ags_turtle_read_pn_chars_base(offset,
+				      end_ptr);
 
-  //TODO:JK: implement me
+  if(str == NULL &&
+     offset < end_ptr &&
+     *offset == '_'){
+    str = g_strdup("_\0");
+  }
+  
+  return(str);
+}
+
+gchar*
+ags_turtle_read_pn_chars(gchar *offset,
+			 gchar *end_ptr)
+{
+  regmatch_t match_arr[1];
+    
+  gchar *str;
+  
+  static regex_t chars_regex;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static const char *chars_pattern = "^([0-9]|\x00\0xB7|#x03[\x00-\x6F]|\x20[\x3F-\x40])\0";
+
+  static const size_t max_matches = 1;
+
+  str = ags_turtle_read_pn_chars_u(offset,
+				   end_ptr);
+
+  if(str == NULL &&
+     offset < end_ptr &&
+     *offset == '-'){
+    str = g_strdup("-\0");
+  }
+
+  if(str == NULL &&
+     offset < end_ptr){
+    if(!regex_compiled){
+      regex_compiled = TRUE;
+    
+      regcomp(&chars_regex, chars_pattern, REG_EXTENDED);
+    }
+
+    if(regexec(&chars_regex, offset, max_matches, match_arr, 0) == 0){
+      str = g_strndup(offset,
+		      match_arr[0].rm_eo - match_arr[0].rm_so);
+    }
+  }
   
   return(str);
 }
@@ -667,10 +822,47 @@ ags_turtle_read_pn_prefix(gchar *offset,
 			  gchar *end_ptr)
 {
   gchar *str;
+  gchar *tmp, *str_tmp;
 
-  str = NULL;
+  gboolean last_is_point;
+  
+  str = ags_turtle_read_pn_chars_base(offset,
+				      end_ptr);
+  
+  if(str != NULL){
+    offset += strlen(str);
+    last_is_point = FALSE;
+    
+    while((tmp = ags_turtle_read_pn_chars(offset,
+					  end_ptr)) != NULL ||
+	  *offset == '.'){
+      if(tmp == NULL){
+	tmp = g_strdup(".\0");
+	
+	last_is_point = TRUE;
+      }else{
+	last_is_point = FALSE;
+      }
 
-  //TODO:JK: implement me
+      if(str != NULL){
+	str_tmp = g_strdup_printf("%s%s\0",
+				  str, tmp);
+	offset += strlen(tmp);
+
+	free(str);
+	free(tmp);
+
+	str = str_tmp;
+      }else{
+	str = tmp;
+	offset += strlen(tmp);
+      }
+    }
+
+    if(last_is_point){
+      g_warning("ags_turtle.c - syntax error\0");
+    }
+  }
   
   return(str);
 }
@@ -680,10 +872,97 @@ ags_turtle_read_pn_local(gchar *offset,
 			 gchar *end_ptr)
 {
   gchar *str;
+  gchar *tmp_str, *tmp;
 
-  str = NULL;
+  gboolean initial_find, found_str;
+  gboolean last_is_point;
 
-  //TODO:JK: implement me
+  if(offset >= end_ptr){
+    return(NULL);
+  }
+  
+  tmp_str = NULL;
+
+  found_str = FALSE;
+  
+  tmp = ags_turtle_read_pn_chars_u(offset,
+				   end_ptr);
+        
+  if(tmp == NULL &&
+     *offset == ':'){
+    tmp = g_strdup(":\0");
+  }
+
+  if(tmp == NULL &&
+     g_ascii_is_digit(*offset)){
+    tmp = g_strndup(offset,
+		    1);
+  }
+
+  if(tmp == NULL){
+    tmp = ags_turtle_read_plx(offset, end_ptr);
+  }
+
+  str = tmp;
+  
+  if(str != NULL){
+    offset += strlen(str);
+
+    initial_find = TRUE;
+    last_is_point = FALSE;
+    
+    while(initial_find ||
+	  found_str){
+      found_str = FALSE;
+      initial_find = FALSE;
+    
+      last_is_point = FALSE;
+
+      tmp = ags_turtle_read_pn_chars(offset,
+				     end_ptr);
+      
+      if(tmp == NULL &&
+	 *offset == '.'){
+	tmp = g_strdup(".\0");
+	
+	last_is_point = TRUE;
+      }
+
+      if(tmp == NULL &&
+	 *offset == ':'){
+	tmp = g_strdup(":\0");	
+      }
+
+      if(tmp == NULL){
+	tmp = ag_turtle_read_plx(offset,
+				 end_ptr);
+      }
+    
+      /* concat new strings */
+      if(tmp != NULL){
+	found_str = TRUE;
+
+	if(str != NULL){
+	  tmp_str = g_strdup_printf("%s%s\0",
+				    str,
+				    tmp);
+	  offset += strlen(tmp);
+	
+	  free(str);
+	  free(tmp);
+	
+	  str = tmp_str;
+	}else{
+	  str = tmp;
+	  offset += strlen(tmp);
+	}
+      }
+    }
+
+    if(last_is_point){
+      g_warning("ags_turtle.c - syntax error\0");
+    }
+  }
   
   return(str);
 }
@@ -693,8 +972,6 @@ ags_turtle_read_plx(gchar *offset,
 		    gchar *end_ptr)
 {
   gchar *str;
-
-  str = NULL;
 
   str = ags_turtle_read_percent(offset,
 				end_ptr);
@@ -1466,27 +1743,7 @@ ags_turtle_load(AgsTurtle *turtle,
     xmlNode *node;
     
     gchar *literal, *str;
-    regmatch_t match_arr[1];
     gboolean found_boolean_true;
-    
-    static gboolean regex_compiled = FALSE;
-    
-    static regex_t integer_literal_regex;
-    static regex_t decimal_literal_regex;
-    static regex_t double_literal_regex;
-    static regex_t string_literal_double_quot_regex;
-    static regex_t string_literal_single_quot_regex;
-    static regex_t string_literal_long_double_quot_regex;
-    static regex_t string_literal_long_single_quot_regex;
-    
-    static const char *integer_literal_pattern = "^([+-]?[0-9]+)\0";
-    static const char *decimal_literal_pattern = "^([+-]?[0-9]*.[0-9]+)\0";
-    static const char *double_literal_pattern = "^([+-]?([0-9]+.[0-9]*[eE] [+-]?[0-9]+)|(.[0-9]+[eE][+-]?[0-9]+)|([0-9]+[eE][+-]?[0-9]+))\0";
-    static const char *string_literal_double_quot_pattern = "^(\"([^\"\|\n\r]|.*)\")\0";
-    static const char *string_literal_single_quot_pattern = "^('([^'\|\n\r]|.*)')\0";
-    static const char *string_literal_long_double_quot_pattern = "^(\"\"\"(((\")|(\"\"))?([^\"\\]|.*))\"\"\")\0";
-    static const char *string_literal_long_single_quot_pattern = "^('''(((')|(''))?([^'\\]|.*))''')\0";
-    static const size_t max_matches = 1;
     
     node = NULL;
 
@@ -1497,18 +1754,6 @@ ags_turtle_load(AgsTurtle *turtle,
 
     if(*literal == '\0'){
       return(NULL);
-    }
-
-    if(!regex_compiled){
-      regex_compiled = TRUE;
-      
-      regcomp(&integer_literal_regex, integer_literal_pattern, REG_EXTENDED);
-      regcomp(&decimal_literal_regex, decimal_literal_pattern, REG_EXTENDED);
-      regcomp(&double_literal_regex, double_literal_pattern, REG_EXTENDED);
-      regcomp(&string_literal_double_quot_regex, string_literal_double_quot_pattern, REG_EXTENDED);
-      regcomp(&string_literal_single_quot_regex, string_literal_single_quot_pattern, REG_EXTENDED);
-      regcomp(&string_literal_long_double_quot_regex, string_literal_long_double_quot_pattern, REG_EXTENDED);
-      regcomp(&string_literal_long_single_quot_regex, string_literal_long_single_quot_pattern, REG_EXTENDED);
     }
     
     /* literal - boolean */
@@ -1593,10 +1838,10 @@ ags_turtle_load(AgsTurtle *turtle,
     }
 
     /* literal - double */
-    if(regexec(&string_literal_double_quot_regex, literal, max_matches, match_arr, 0) == 0 ||
-       regexec(&string_literal_single_quot_regex, literal, max_matches, match_arr, 0) == 0 ||
-       regexec(&string_literal_long_double_quot_regex, literal, max_matches, match_arr, 0) == 0 ||
-       regexec(&string_literal_long_single_quot_regex, literal, max_matches, match_arr, 0) == 0){
+    if(regexec(&string_literal_double_quote_regex, literal, max_matches, match_arr, 0) == 0 ||
+       regexec(&string_literal_single_quote_regex, literal, max_matches, match_arr, 0) == 0 ||
+       regexec(&string_literal_long_double_quote_regex, literal, max_matches, match_arr, 0) == 0 ||
+       regexec(&string_literal_long_single_quote_regex, literal, max_matches, match_arr, 0) == 0){
       node = xmlNewNode(NULL,
 			"rdf-literal\0");
       xmlNewProp(node,
