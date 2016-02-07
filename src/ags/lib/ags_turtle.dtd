@@ -55,7 +55,7 @@
 <!-- statement, verb, predicate and object -->
 <!ELEMENT rdf-statement (rdf-directive | rdf-triple)>
 
-<!ELEMENT rdf-verb (rdf-iri?)>
+<!ELEMENT rdf-verb (rdf-predicate?)>
 <!ATTLIST rdf-verb
 	  verb          CDATA      #IMPLIED
 	  >
