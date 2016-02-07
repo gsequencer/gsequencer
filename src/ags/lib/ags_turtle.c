@@ -2307,54 +2307,46 @@ ags_turtle_load(AgsTurtle *turtle,
     gchar *look_ahead;
     
     node = NULL;
-    current_verb_node = NULL;
-    current_object_list_node = NULL;
-    
     look_ahead = *iter;
 
-    while((look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead)) != '\0'){
-      current_verb_node = ags_turtle_load_read_verb(&look_ahead);
+    current_verb_node = ags_turtle_load_read_verb(&look_ahead);
 
-      if(current_verb_node != NULL){
-	g_message("read rdf-predicate-object-list\0");
-	
+    if(current_verb_node != NULL){
+      current_object_list_node = ags_turtle_load_read_object_list(&look_ahead);
+
+      if(current_object_list_node != NULL){
 	node = xmlNewNode(NULL,
 			  "rdf-predicate-object-list\0");
+
 	xmlAddChild(node,
 		    current_verb_node);
+	xmlAddChild(node,
+		    current_object_list_node);
+
+	/* iterate */
+	look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
 	
-	/* object list */
-	current_object_list_node = NULL;
-	current_object_list_node = ags_turtle_load_read_object_list(&look_ahead);
+	while(*look_ahead == ';'){
+	  current_verb_node = ags_turtle_load_read_verb(&look_ahead);
 
-	if(current_object_list_node != NULL){
-	  xmlAddChild(node,
-		      current_object_list_node);
-
-	  *iter == look_ahead;
+	  if(current_verb_node != NULL){
+	    current_object_list_node = ags_turtle_load_read_object_list(&look_ahead);
+      
+	    if(current_object_list_node != NULL){
+	      xmlAddChild(node,
+			  current_verb_node);
+	      xmlAddChild(node,
+			  current_object_list_node);
+	      
+	      look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
+	    }
+	  }
 	}
-      }else{
-	break;
-      }
-
-      /* iterate */
-      look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
-    
-      if(*look_ahead == ';'){
-	look_ahead++;
-      }else{	
-	break;
+	
+	*iter == look_ahead;
       }
     }
-
-    if(node != NULL){
-      *iter = look_ahead;
     
-      if(*look_ahead == '.'){
-	*iter = look_ahead + 1;
-      }
-    }
-
     return(node);
   }
   
@@ -2366,17 +2358,16 @@ ags_turtle_load(AgsTurtle *turtle,
     gchar *look_ahead;
     
     node = NULL;
-    predicate_object_list_node = NULL;
-    
     look_ahead = *iter;
+
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
 
-    if(*look_ahead == '\0'){
-      return(NULL);
-    }
-
     if(*look_ahead == '['){
+      start_ptr = look_ahead;
       look_ahead++;
+      
+      end_ptr = index(look_ahead,
+		      ']');
 
       predicate_object_list_node = ags_turtle_load_read_predicate_object_list(&look_ahead);
 
@@ -2389,7 +2380,7 @@ ags_turtle_load(AgsTurtle *turtle,
 	xmlAddChild(node,
 		    predicate_object_list_node);
 	
-	*iter = look_ahead;
+	*iter = end_ptr + 1;
       }
     }
     
