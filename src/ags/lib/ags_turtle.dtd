@@ -15,22 +15,19 @@
 
 <!ELEMENT rdf-pname-nl #CDATA>
 
-<!ELEMENT rdf-pname-ns #CDATA
+<!ELEMENT rdf-pname-ns #CDATA>
 
-<!-- iri, pname blank node and literal -->
-<!ELEMENT rdf-iri (rdf-pname)>
-<!ATTLIST rdf-iri
-	  iriref        CDATA      #IMPLIED
-	  >
+<!ELEMENT rdf-string #CDATA>
 
-<!ELEMENT rdf-pname EMPTY>
-<!ATTLIST rdf-pname
-	  pname-ns        CDATA    #REQUIRED
-	  >
+<!ELEMENT rdf-langtag #CDATA>
+
+<!-- string-->
+<!ELEMENT rdf-literal (rdf-string, rdf-langtag | rdf-iri)>
+
+<!-- iri -->
+<!ELEMENT rdf-iri (rdf-iriref | rdf-prefixed-pname)>
 
 <!-- basic types -->
-<!ELEMENT rdf-iri (rdf-iriref|rdf-prefixed-name)>
-
 <!ELEMENT rdf-prefix-id (rdf-pname-ns,rdf-iriref)>
 <!ATTLIST rdf-prefix-id
 	  prefix          CDATA      EMPTY
@@ -55,20 +52,17 @@
 
 <!ELEMENT ref-blank-node (rdf-blank-node-label|rdf-anon)>
 
-<!-- string, literal and langtag-->
-<!ELEMENT rdf-string #CDATA>
-
-<!ELEMENT rdf-langtag #CDATA>
-
-<!ELEMENT rdf-literal (rdf-string, rdf-langtag | rdf-iri)>
-
-<!-- verb -->
+<!-- statement, verb, predicate and object -->
 <!ELEMENT rdf-statement (rdf-directive | rdf-triple)>
 
 <!ELEMENT rdf-verb (rdf-iri?)>
 <!ATTLIST rdf-verb
 	  verb          CDATA      #IMPLIED
 	  >
+
+<!ELEMENT rdf-predicate (rdf-iri)>
+
+<!ELEMENT rdf-object (rdf-iri | rdf-blank-node | rdf-collection | rdf-blank-node-property-list | rdf-literal)>
 
 <!-- directive -->
 <!ELEMENT rdf-directive (rdf-prefix-id | rdf-base | rdf-sparql-prefix | rdf-sparql-base)>
@@ -78,14 +72,12 @@
 
 <!ELEMENT rdf-subject (rdf-iri|ref-blank-node|rdf-collection)>
 
-<!-- object list, collection and object-->
+<!-- object list and collection -->
 <!ELEMENT rdf-object-list (rdf-object*)>
 
 <!ELEMENT rdf-collection (rdf-object*)>
 
-<!ELEMENT rdf-object (rdf-iri | rdf-blank-node | rdf-collection | rdf-blank-node-property-list | rdf-literal)>
-
 <!-- predicate object list and blank node property list -->
-<!ELEMENT rdf-predicate-object-list (rdf-verb | rdf-object-list)>
+<!ELEMENT rdf-predicate-object-list ((rdf-verb, rdf-object-list)+)>
 
 <!ELEMENT rdf-blank-node-property-list (rdf-predicate-object-list)>
