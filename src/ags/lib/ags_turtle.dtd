@@ -1,30 +1,21 @@
 <!ENTITY ags-turtle-default-version "0.7.0">
 
 <!-- root node -->
-<!ELEMENT rdf-turtle (rdf-triple*)>
-<!ATTLIST rdf-turtle
+<!ELEMENT rdf-turtle-doc (rdf-statement*)>
+<!ATTLIST rdf-doc
 	  version          CDATA      &ags-turtle-default-version;
 	  >
 
-<!-- triple -->
-<!ELEMENT rdf-triple (rdf-subject, (rdf-predicate-object-list | rdf-blank-node-property-list), rdf-predicate-object-list?)>
+<!-- CDATA -->
+<!ELEMENT rdf-blank-node-label #CDATA>
 
-<!-- predicate object list and blank node property list -->
-<!ELEMENT rdf-predicate-object-list (rdf-verb | rdf-object-list)>
+<!ELEMENT rdf-iriref #CDATA>
 
-<!ELEMENT rdf-blank-node-property-list (rdf-predicate-object-list)>
+<!ELEMENT rdf-anon #CDATA>
 
-<!-- verb, object list, collection and object -->
-<!ELEMENT rdf-verb (rdf-iri?)>
-<!ATTLIST rdf-verb
-	  verb          CDATA      #IMPLIED
-	  >
+<!ELEMENT rdf-pname-nl #CDATA>
 
-<!ELEMENT rdf-object-list (rdf-object*)>
-
-<!ELEMENT rdf-collection (rdf-object*)>
-
-<!ELEMENT rdf-object (rdf-iri | rdf-pname | rdf-blank-node | rdf-collection | rdf-blank-node-property-list | rdf-literal)>
+<!ELEMENT rdf-pname-ns #CDATA
 
 <!-- iri, pname blank node and literal -->
 <!ELEMENT rdf-iri (rdf-pname)>
@@ -37,13 +28,64 @@
 	  pname-ns        CDATA    #REQUIRED
 	  >
 
-<!ELEMENT rdf-blank-node EMPTY>
-<!ATTLIST rdf-blank-node
-	  label          CDATA    #IMPLIED
-	  anon           CDATA    #IMPLIED
+<!-- basic types -->
+<!ELEMENT rdf-iri (rdf-iriref|rdf-prefixed-name)>
+
+<!ELEMENT rdf-prefix-id (rdf-pname-ns,rdf-iriref)>
+<!ATTLIST rdf-prefix-id
+	  prefix          CDATA      EMPTY
 	  >
 
-<!ELEMENT rdf-literal (CDATA)>
-<!ATTLIST rdf-literal
-	  type          CDATA     #IMPLIED
+<!ELEMENT rdf-base (iriref)>
+<!ATTLIST rdf-base
+	  base            CDATA      EMPTY
 	  >
+
+<!ELEMENT rdf-sparql-prefix (rdf-pname-ns, iriref)>
+<!ATTLIST rdf-sparql-prefix
+	  PREFIX          CDATA      EMPTY
+	  >
+
+<!ELEMENT rdf-sparql-base (rdf-iriref)>
+<!ATTLIST rdf-sparql-base
+	  BASE            CDATA      EMPTY
+	  >
+
+<!ELEMENT rdf-prefixed-name (rdf-pname-nl | rdf-pname-ns)>
+
+<!ELEMENT ref-blank-node (rdf-blank-node-label|rdf-anon)>
+
+<!-- string, literal and langtag-->
+<!ELEMENT rdf-string #CDATA>
+
+<!ELEMENT rdf-langtag #CDATA>
+
+<!ELEMENT rdf-literal (rdf-string, rdf-langtag | rdf-iri)>
+
+<!-- verb -->
+<!ELEMENT rdf-statement (rdf-directive | rdf-triple)>
+
+<!ELEMENT rdf-verb (rdf-iri?)>
+<!ATTLIST rdf-verb
+	  verb          CDATA      #IMPLIED
+	  >
+
+<!-- directive -->
+<!ELEMENT rdf-directive (rdf-prefix-id | rdf-base | rdf-sparql-prefix | rdf-sparql-base)>
+
+<!-- triple -->
+<!ELEMENT rdf-triple (rdf-subject, (rdf-predicate-object-list | rdf-blank-node-property-list), rdf-predicate-object-list?)>
+
+<!ELEMENT rdf-subject (rdf-iri|ref-blank-node|rdf-collection)>
+
+<!-- object list, collection and object-->
+<!ELEMENT rdf-object-list (rdf-object*)>
+
+<!ELEMENT rdf-collection (rdf-object*)>
+
+<!ELEMENT rdf-object (rdf-iri | rdf-blank-node | rdf-collection | rdf-blank-node-property-list | rdf-literal)>
+
+<!-- predicate object list and blank node property list -->
+<!ELEMENT rdf-predicate-object-list (rdf-verb | rdf-object-list)>
+
+<!ELEMENT rdf-blank-node-property-list (rdf-predicate-object-list)>
