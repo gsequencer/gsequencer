@@ -248,7 +248,7 @@ ags_turtle_read_iriref(gchar *offset,
     
   static gboolean regex_compiled = FALSE;
 
-  static const gchar *iriref_pattern = "(\<[^\x00-\x20]\<\>\"\{\}\|\^`\\].*?<=\>)";
+  static const gchar *iriref_pattern = "(\<[^[&#0;]-[&#32;]]\\<\\>\"\\{\\}\\|\\^`\\].*?<=\\>)";
 
   static const size_t max_matches = 1;
   
@@ -640,7 +640,7 @@ ags_turtle_read_string_literal_quote(gchar *offset,
 
   static gboolean regex_compiled = FALSE;
   
-  static const char *string_literal_double_quote_pattern = "^(\"([^\"\\|\n\r]|.*)(?<=\"))\0";
+  static const char *string_literal_double_quote_pattern = "^(\"([^\"\\|\n\r]|.*)\")\0";
 
   static const size_t max_matches = 1;
     
@@ -672,7 +672,7 @@ ags_turtle_read_string_literal_single_quote(gchar *offset,
 
   static gboolean regex_compiled = FALSE;
   
-  static const char *string_literal_single_quote_pattern = "^('([^'\\|\n\r]|.*)(?<='))\0";
+  static const char *string_literal_single_quote_pattern = "^('([^'\\|\n\r]|.*)')\0";
 
   static const size_t max_matches = 1;
     
@@ -704,7 +704,7 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
   
   static gboolean regex_compiled = FALSE;
   
-  static const char *string_literal_long_double_quote_pattern = "^(\"\"\"(((\")|(\"\"))?([^\"\\]|.*))(?<=\"\"\"))\0";
+  static const char *string_literal_long_double_quote_pattern = "^(\"\"\"(((\")|(\"\"))?([^\"\\]|.*))\"\"\")\0";
 
   static const size_t max_matches = 1;
     
@@ -736,7 +736,7 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
   
   static gboolean regex_compiled = FALSE;
 
-  static const char *string_literal_long_single_quote_pattern = "^('''(((')|(''))?([^'\\]|.*))(?<='''))\0";
+  static const char *string_literal_long_single_quote_pattern = "^('''(((')|(''))?([^'\\]|.*))''')\0";
 
   static const size_t max_matches = 1;
     
@@ -903,7 +903,9 @@ ags_turtle_read_pn_chars_base(gchar *offset,
     
   static gboolean regex_compiled = FALSE;
 
-  static const gchar *chars_base_pattern = "^(([A-Xa-x])|(\x00[\xC0-\xD6])|(\x00[\xD8-\xF6])|(\x00[\xF8-\xFF])|(\x01[\x00-\xFF])|(\x02[\x00-\xFF])|(\x03[\x70-\x7D])|(\x20[\x0C-\x0D])|(\x20[\x70-\xFF])|(\x21[\x00-\x8F])|([\x2C-\x2E][\x00-\xFF])|(\x2F[\x00-\xEF])|(\x30[\x01-\xFF])|([\x31-\xD7][\x00-\xFF])|([\xF9-\xFC][\x00-\xFF])|([\xFD[\x00-\xCF])|(\xFD[\xF0-\xFF])|(\x0FE[\x00-\xFF])|(\xFF[\x00-\xFD])|([\x01-\x0E][\x00-\xFF][\x00-\xFF]))\0";
+  static const gchar *chars_base_pattern = "^(([A-Xa-x])|(\xC3[\x80-\x96])|(0xC3[\x98-\xB6])|((\xC3[\xB8-\xBF])|([\xC3-\xCA][\x80-\xBF])|(\xCB[\x80-\xBF]))|(\xCD[\xB0-\xBD])|((\xCD[\xBF-\xDF])|([\xCE-\xDF][\x80-\xBF])|([\xE0-\xE1][\x80\xBF][\x80-\xBF]))|(\xE2\x80[\x8C-\x8D])|((\xE2\x81[\xB0-\xBF])|(\xE2[\x81-\x85][\x80-\xBF])|(\xE2\x86[\x80-\x8F]))|((\xE2[\xB0-\xBE][\x80-\xBF])(\xE2\xBF[\x80-\xAF]))|((\xE3[\x80-\xBF][\x81-\xBF])|([\xE4-\xEC][\x80-\x9F][\x80-\xBF]))|((\xEF[\xA4-\xB6][\x80-\xBF])|(\xEF\xB7[\x80-\x8F]))|((\xEF\xB7[\xB0-\xBF])|(\xEF[\xB8-\xBE][\x80-\xBF])|(\xEF\xBF[\x80-\xBD]))|(([\xF0-\xF3][\x90-\xAF][\x80-\xBF][\x80-\xBF])))";
+  // "^([A-Xa-x]|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u02FF]|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\U00010000-\U000EFFFF]";
+  // "^([A-Xa-x]|[&#192;-&#214;]|[&#216;-&#246;]|[&#248;-&#767;]|[&#880;-&#893;]|[&#895;-&#8191;]|[&#8204;-&#8205;]|[&#8304;-&#8591;]|[&#12289;-&#55295;]|[&#63744;-&#64975;]|[&#65008;-&#65533;]|[&#65536;-&#983039;])\0";
 
   static const size_t max_matches = 1;
 
@@ -956,8 +958,8 @@ ags_turtle_read_pn_chars(gchar *offset,
   static regex_t chars_regex;
     
   static gboolean regex_compiled = FALSE;
-
-  static const char *chars_pattern = "^(([0-9])|(\x00\xB7|\x03[\x00-\x6F])|(\x20[\x3F-\x40]))\0";
+  
+  static const char *chars_pattern = "^([0-9]|[&#183;]|[[&#768;]-[&#879;]]|[[&#8255;]-[&#8256;]])\0";
 
   static const size_t max_matches = 1;
 
@@ -1206,8 +1208,8 @@ ags_turtle_read_pn_local_esc(gchar *offset,
   if(offset != NULL &&
      offset + 1 < end_ptr &&
      *offset == '\\' &&
-     index(escapes,
-	   offset[1]) != NULL){
+     (index(escapes,
+	    offset[1])) != NULL){
     str = g_strndup(offset,
 		    2);
   }
@@ -2136,6 +2138,9 @@ ags_turtle_load(AgsTurtle *turtle,
 	blank_node_object_list_node = ags_turtle_load_read_blank_node_property_list(&look_ahead);
 
 	if(blank_node_object_list_node != NULL){
+	  node = xmlNewNode(NULL,
+			    "rdf-triple\0");
+	  
 	  xmlAddChild(node,
 		      blank_node_object_list_node);
 	  
@@ -2166,7 +2171,11 @@ ags_turtle_load(AgsTurtle *turtle,
     gchar *look_ahead;
     
     node = NULL;
-     
+
+    iri_node =  NULL;
+    blank_node = NULL;
+    collection_node = NULL;
+    
     look_ahead = *iter;
 
     /* iri - IRIREF */
@@ -2429,7 +2438,11 @@ ags_turtle_load(AgsTurtle *turtle,
       xmlAddChild(root_node,
 		  node);
     }
-  }while(node != NULL && iter < &(buffer[sb->st_size]));
+
+    if(node == NULL){
+      iter++;
+    }
+  }while(iter < &(buffer[sb->st_size]));
   
   free(sb);
   free(buffer);
