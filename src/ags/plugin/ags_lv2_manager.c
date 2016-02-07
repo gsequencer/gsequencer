@@ -405,6 +405,13 @@ ags_lv2_manager_load_default_directory()
     if(g_file_test(plugin_path,
 		   G_FILE_TEST_IS_DIR)){
       AgsTurtle *manifest, *turtle;
+
+      xmlDoc *doc;
+
+      FILE *out;
+
+      xmlChar *buffer;
+      int size;
       
       GList *ttl_list, *binary_list;
 
@@ -412,9 +419,16 @@ ags_lv2_manager_load_default_directory()
       
       manifest = ags_turtle_new(g_strdup_printf("%s/manifest.ttl\0",
 						plugin_path));
-      ags_turtle_load(manifest,
-		      NULL);
-  
+      doc = ags_turtle_load(manifest,
+			    NULL);
+
+      xmlDocDumpFormatMemoryEnc(doc, &buffer, &size, "UTF-8\0", TRUE);
+
+      out = fopen(g_strdup_printf("%s/manifest.xml\0", plugin_path), "w+\0");
+
+      fwrite(buffer, size, sizeof(xmlChar), out);
+      fflush(out);
+      
       /* instantiate and load turtle */
       ttl_list = ags_turtle_find_xpath(manifest,
 				       "//rdf-triple//rdf-iri[substring(@iriref, string-length(@iriref) - string-length('.ttl') + 1) = '.ttl']\0");
