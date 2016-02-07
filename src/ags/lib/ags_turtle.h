@@ -34,17 +34,7 @@
 
 #define AGS_TURTLE_DEFAULT_ENCODING "UTF-8\0"
 
-#define AGS_TURTLE_STRING_LITERAL_QUOTE "\"\0"
-#define AGS_TURTLE_STRING_LITERAL_SINGLE_QUOTE "'\0"
-#define AGS_TURTLE_STRING_LITERAL_LONG_QUOTE "\"\"\"\0"
-#define AGS_TURTLE_STRING_LITERAL_LONG_SINGLE_QUOTE "'''\0"
-
-#define UTF8_2_BYTE_RANGE(str, endptr, lower, upper) (str + 1 < endptr && \
-						      (((int) ((char *) str)[0] << 8) | ((int) ((char *) str)[1])) >= (int) ((lower[0] << 8) | (lower[1])) && \
-						      (((int) ((char *) str)[0] << 8) | ((int) ((char *) str)[1])) < (int) ((upper[0] << 8) | (upper[1])))
-#define UTF8_3_BYTE_RANGE(str, endptr, lower, upper) (str + 2 < endptr && \
-						      (((int) ((char *) str)[0] << 16) | ((int) ((char *) str)[1] << 8) | ((int) ((char *) str)[2])) >= (int) ((lower[0] << 16) | (lower[1] << 8) | (lower[2])) && \
-						      (((int) ((char *) str)[0] << 16) | ((int) ((char *) str)[1] << 8) | ((int) ((char *) str)[2])) < (int) ((upper[0] << 16) | (upper[1] << 8) | (upper[2])))
+#define AGS_TURTLE_DEFAULT_VERSION "0.7.3\0"
 
 typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
@@ -102,6 +92,9 @@ gchar* ags_turtle_read_exponent(gchar *offset,
 				gchar *end_ptr);
 
 /* literals */
+gchar* ags_turtle_read_string(gchar *offset,
+			      gchar *end_ptr);
+
 gchar* ags_turtle_read_string_literal_quote(gchar *offset,
 					    gchar *end_ptr);
 gchar* ags_turtle_read_string_literal_single_quote(gchar *offset,
