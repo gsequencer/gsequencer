@@ -1,4 +1,4 @@
-<!ENTITY ags-turtle-default-version "0.7.0">
+<!ENTITY ags-turtle-default-version "0.7.3">
 
 <!-- root node -->
 <!ELEMENT rdf-turtle-doc (rdf-statement*)>
@@ -22,7 +22,7 @@
 <!ELEMENT rdf-langtag #CDATA>
 
 <!-- string-->
-<!ELEMENT rdf-literal (rdf-string, rdf-langtag | rdf-iri)>
+<!ELEMENT rdf-literal (rdf-string, (rdf-langtag | rdf-iri)?)>
 
 <!-- iri -->
 <!ELEMENT rdf-iri (rdf-iriref | rdf-prefixed-pname)>
