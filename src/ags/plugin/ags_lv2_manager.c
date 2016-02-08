@@ -236,7 +236,11 @@ ags_lv2_plugin_free(AgsLv2Plugin *lv2_plugin)
   }
 
   free(lv2_plugin->filename);
-  g_object_unref(lv2_plugin->turtle);
+
+  if(lv2_plugin->turtle != NULL){
+    g_object_unref(lv2_plugin->turtle);
+  }
+  
   free(lv2_plugin);
 }
 
@@ -329,7 +333,8 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-  if(filename == NULL){
+  if(turtle == NULL ||
+     filename == NULL){
     return;
   }
 
@@ -368,7 +373,6 @@ void
 ags_lv2_manager_load_default_directory()
 {
   AgsLv2Manager *lv2_manager;
-  AgsLv2Plugin *lv2_plugin;
 
   GDir *dir;
 
@@ -419,62 +423,86 @@ ags_lv2_manager_load_default_directory()
       
       manifest = ags_turtle_new(g_strdup_printf("%s/manifest.ttl\0",
 						plugin_path));
-      doc = ags_turtle_load(manifest,
-			    NULL);
+      ags_turtle_load(manifest,
+		      NULL);
 
-      xmlDocDumpFormatMemoryEnc(doc, &buffer, &size, "UTF-8\0", TRUE);
+      /* read binary from turtle */
+      binary_list = ags_turtle_find_xpath(manifest,
+					  "//rdf-triple//rdf-predicate-object-list[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0");
+
+      
+      /* read turtle from manifest */
+      ttl_list = ags_turtle_find_xpath(manifest,
+				       "//rdf-triple//rdf-predicate-object-list[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0");
+
+      /* persist XML */
+      xmlDocDumpFormatMemoryEnc(manifest->doc, &buffer, &size, "UTF-8\0", TRUE);
 
       out = fopen(g_strdup_printf("%s/manifest.xml\0", plugin_path), "w+\0");
 
       fwrite(buffer, size, sizeof(xmlChar), out);
       fflush(out);
-      
-      /* instantiate and load turtle */
-      ttl_list = ags_turtle_find_xpath(manifest,
-				       "//rdf-triple//rdf-iri[substring(@iriref, string-length(@iriref) - string-length('.ttl') + 1) = '.ttl']\0");
-
-      /* read binary from turtle */
-      binary_list = ags_turtle_find_xpath(manifest,
-					  "//rdf-triple//rdf-iri[substring(@iriref, string-length(@iriref) - string-length('.so') + 1) = '.so']\0");
 
       /* load */
-      if(ttl_list == NULL ||
-	 binary_list == NULL){
-	continue;
-      }
-      
       while(ttl_list != NULL &&
 	    binary_list != NULL){
-	turtle_path = xmlGetProp((xmlNode *) ttl_list->data,
-				 "iriref\0");
+	/* read filename */
+	turtle_path = xmlNodeGetContent((xmlNode *) ttl_list->data);
 
-	turtle_path = g_strdup(turtle_path);
+	if(turtle_path == NULL){
+	  ttl_list = ttl_list->next;
+	  binary_list = binary_list->next;
+	  continue;
+	}
+	
+	turtle_path = g_strndup(&(turtle_path[1]),
+				strlen(turtle_path) - 2);
 	
 	if(!g_ascii_strncasecmp(turtle_path,
 				"http://\0",
 				7)){
 	  ttl_list = ttl_list->next;
+	  binary_list = binary_list->next;
 	  continue;
 	}
-	
+
+	/* load turtle doc */
 	g_message(turtle_path);
+
 	turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
 						plugin_path,
 						turtle_path));
 	ags_turtle_load(turtle,
 			NULL);
-	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
 
-	str = xmlGetProp(binary_list->data,
-			 "iriref\0");
-	str = g_strdup(str);
+	/* read filename of binary */
+	str = xmlNodeGetContent((xmlNode *) binary_list->data);
+
+	if(str == NULL){
+	  ttl_list = ttl_list->next;
+	  binary_list = binary_list->next;
+	  continue;
+	}
+	
+	str = g_strndup(&(str[1]),
+			strlen(str) - 2);
 	filename = g_strdup_printf("%s/%s\0",
 				   plugin_path,
 				   str);
 	free(str);
 	
+	/* load specified plugin */
 	ags_lv2_manager_load_file(turtle,
 				  filename);
+
+	/* persist XML */
+	xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
+
+	out = fopen(g_strdup_printf("%s/%s.xml\0", plugin_path, turtle_path), "w+\0");
+	
+	fwrite(buffer, size, sizeof(xmlChar), out);
+	fflush(out);
+	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
 
 	ttl_list = ttl_list->next;
 	binary_list = binary_list->next;
