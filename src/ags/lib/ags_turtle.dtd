@@ -17,12 +17,14 @@
 
 <!ELEMENT rdf-pname-ns #CDATA>
 
+<!ELEMENT rdf-numeric #CDATA>
+
 <!ELEMENT rdf-string #CDATA>
 
 <!ELEMENT rdf-langtag #CDATA>
 
 <!-- string-->
-<!ELEMENT rdf-literal (rdf-string, (rdf-langtag | rdf-iri)?)>
+<!ELEMENT rdf-literal ((rdf-string, (rdf-langtag | rdf-iri)?) | rdf-numeric)>
 
 <!-- iri -->
 <!ELEMENT rdf-iri (rdf-iriref | rdf-prefixed-pname)>
