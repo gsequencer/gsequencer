@@ -1,3 +1,36 @@
+ags (0.7.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsMidiDialog
+	* implemented many properties get and set functionality
+	* implemented JACK support
+	* refactored ags_turtle.c
+	* added AgsFunction prototype
+
+ags (0.7.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_midi_file.c
+	* implemented ags-route-dssi recall to route MIDI events to DSSI
+	* implemented ags_midi_dialog{,_callbacks}.[ch] to select MIDI input device
+	* fixed some of the API Documentation
+
+ags (0.7.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added AgsComplex boxed type
+	* added skelletons to interface with JACK
+	* implemented DSSI support
+	* added AgsMidiBuilder prototype
+	* improved AgsMachineSelector
+
+ags (0.7.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored renaming AgsRecyclingContainer to AgsRecyclingContext
+	* refactored implenting AgsApplicationContext to superseed AgsMain
+	* implemented providing library support
+
 ags (0.6.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
