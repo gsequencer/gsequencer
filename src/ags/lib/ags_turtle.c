@@ -58,6 +58,7 @@ void ags_turtle_finalize(GObject *gobject);
 enum{
   PROP_0,
   PROP_FILENAME,
+  PROP_XML_DOC,
 };
 
 static gpointer ags_turtle_parent_class = NULL;
@@ -121,6 +122,21 @@ ags_turtle_class_init(AgsTurtleClass *turtle)
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
 				  param_spec);
+
+  /**
+   * AgsTurtle:xml-doc:
+   *
+   * The assigned xml-doc.
+   * 
+   * Since: 0.7.3
+   */
+  param_spec = g_param_spec_pointer("xml-doc\0",
+				    "xml document of turtle\0",
+				    "The xml document turtle was converted to\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_XML_DOC,
+				  param_spec);
 }
 
 void
@@ -159,6 +175,15 @@ ags_turtle_set_property(GObject *gobject,
       turtle->filename = g_strdup(filename);
     }
     break;
+  case PROP_XML_DOC:
+    {
+      xmlDoc *doc;
+
+      doc = (xmlDoc *) g_value_get_pointer(value);
+      
+      turtle->doc = doc;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -178,6 +203,9 @@ ags_turtle_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     g_value_set_string(value, turtle->filename);
+    break;
+  case PROP_XML_DOC:
+    g_value_set_pointer(value, turtle->doc);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

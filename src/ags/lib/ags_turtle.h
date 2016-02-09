@@ -84,8 +84,6 @@ struct _AgsTurtle
   guint flags;
   
   gchar *filename;
-
-  GList *parser_context;
   
   xmlDoc *doc;
 };

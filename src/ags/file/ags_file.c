@@ -89,6 +89,7 @@ enum{
   PROP_ENCODING,
   PROP_AUDIO_FORMAT,
   PROP_AUDIO_ENCODING,
+  PROP_XML_DOC,
   PROP_APPLICATION_CONTEXT,
 };
 
@@ -217,7 +218,22 @@ ags_file_class_init(AgsFileClass *file)
 				  param_spec);
 
   /**
-   * AgsFile:encoding:
+   * AgsFile:xml-doc:
+   *
+   * The assigned xml-doc.
+   * 
+   * Since: 0.7.3
+   */
+  param_spec = g_param_spec_pointer("xml-doc\0",
+				    "xml document of file\0",
+				    "The xml document assigned with file\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_XML_DOC,
+				  param_spec);
+
+  /**
+   * AgsFile:application-context:
    *
    * The application context assigned with.
    *
@@ -481,6 +497,15 @@ ags_file_set_property(GObject *gobject,
       file->audio_encoding = audio_encoding;
     }
     break;
+  case PROP_XML_DOC:
+    {
+      xmlDoc *doc;
+
+      doc = (xmlDoc *) g_value_get_pointer(value);
+      
+      file->doc = doc;
+    }
+    break;
   case PROP_APPLICATION_CONTEXT:
     {
       GObject *application_context;
@@ -537,6 +562,11 @@ ags_file_get_property(GObject *gobject,
   case PROP_AUDIO_ENCODING:
     {
       g_value_set_string(value, file->audio_encoding);
+    }
+    break;
+  case PROP_XML_DOC:
+    {
+      g_value_set_pointer(value, file->doc);
     }
     break;
   case PROP_APPLICATION_CONTEXT:
