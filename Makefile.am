@@ -36,6 +36,9 @@ appdata_DATA = gsequencer.desktop
 EXTRA_DIST += gsequencer.desktop.in
 CLEANFILES += $(appdata_DATA)
 
+otherincludedir = $(includedir)/ags
+nobase_include_HEADERS = $(libags_la_HEADERS) $(libags_thread_la_HEADERS) $(libags_server_la_HEADERS) $(libags_audio_la_HEADERS) $(libags_gui_la_HEADERS)
+
 docdir = $(datadir)/docs/gsequencer
 doc_DATA = README
 
