@@ -52,7 +52,7 @@ void ags_jack_client_finalize(GObject *gobject);
  * @short_description: JACK connection
  * @title: AgsJackClient
  * @section_id:
- * @include: ags/jack_client/ags_jack_client.h
+ * @include: ags/audio/jack/ags_jack_client.h
  *
  * The #AgsJackClient communicates with a JACK instance.
  */

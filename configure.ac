@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],[0.7.3],[jkraehemann-guest@users.alioth.debian.org])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR(m4)
@@ -12,13 +12,6 @@ AC_CONFIG_MACRO_DIR(m4)
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
-
-# check for gtk-doc
-m4_ifdef([GTK_DOC_CHECK], [
-GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
-],[
-AM_CONDITIONAL([ENABLE_GTK_DOC], false)
-])
 
 # libtool
 LT_PREREQ([2.4.2])
@@ -123,5 +116,14 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor getcwd localeconv mblen mbrlen memchr mempcpy memset munmap nl_langinfo setlocale socket sqrt stpcpy strcasecmp strchr strcspn strdup strstr strtol strtoul])
 
-AC_CONFIG_FILES([Makefile])
+# check for gtk-doc
+m4_ifdef([GTK_DOC_CHECK], [
+GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC], false)
+])
+
+AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
+AC_CONFIG_FILES([Makefile docs/reference/ags/Makefile])
+
 AC_OUTPUT

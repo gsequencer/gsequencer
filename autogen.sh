@@ -48,4 +48,6 @@ autoconf || exit 1
 
 echo ready to configure
 
+gtkdocize || exit 1
+
 exit 0

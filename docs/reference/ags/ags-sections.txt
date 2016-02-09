@@ -515,6 +515,8 @@ ags_audio_set_flags
 ags_audio_unset_flags
 ags_audio_set_audio_channels
 ags_audio_set_pads
+ags_audio_set_samplerate
+ags_audio_set_buffer_length
 ags_audio_set_sequence_length
 ags_audio_add_notation
 ags_audio_remove_notation
@@ -1309,6 +1311,8 @@ ags_channel_add_recall_container
 ags_channel_remove_recall_container
 ags_channel_remove_recall
 ags_channel_add_recall
+ags_channel_remove_pattern
+ags_channel_add_pattern
 ags_channel_add_effect
 ags_channel_remove_effect
 ags_channel_safe_resize_audio_signal
@@ -1384,11 +1388,6 @@ AGS_TYPE_CHANNEL_THREAD
 AgsChannelThread
 AgsChannelThreadClass
 ags_channel_thread_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_combo_box_text</FILE>
-ags_combo_box_text_remove_all
 </SECTION>
 
 <SECTION>
@@ -1956,6 +1955,32 @@ ags_drum_output_pad_get_type
 <FILE>ags_drum_output_pad_callbacks</FILE>
 ags_drum_output_pad_play_done
 ags_drum_output_pad_play_cancel
+</SECTION>
+
+<SECTION>
+<FILE>ags_dssi_browser</FILE>
+<TITLE>AgsDssiBrowser</TITLE>
+ags_dssi_browser_get_plugin_filename
+ags_dssi_browser_get_plugin_effect
+ags_dssi_browser_combo_box_controls_new
+ags_dssi_browser_preview_new
+ags_dssi_browser_new
+<SUBSECTION Standard>
+AGS_DSSI_BROWSER
+AGS_DSSI_BROWSER_CLASS
+AGS_DSSI_BROWSER_GET_CLASS
+AGS_IS_DSSI_BROWSER
+AGS_IS_DSSI_BROWSER_CLASS
+AGS_TYPE_DSSI_BROWSER
+AgsDssiBrowser
+AgsDssiBrowserClass
+ags_dssi_browser_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_dssi_browser_callbacks</FILE>
+ags_dssi_browser_plugin_filename_callback
+ags_dssi_browser_plugin_effect_callback
 </SECTION>
 
 <SECTION>
@@ -2705,6 +2730,37 @@ ags_free_selection_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_function</FILE>
+<TITLE>AgsFunction</TITLE>
+AGS_SYMBOLIC_EULER
+AGS_SYMBOLIC_PI
+AGS_SYMBOLIC_INFINIT
+AGS_SYMBOLIC_COMPLEX_UNIT
+AgsFunctionFlags
+ags_function_find_literals
+ags_function_literal_solve
+ags_function_push_equation
+ags_function_pop_equation
+ags_function_get_expanded
+ags_funciton_get_normalized
+ags_function_compute_term
+ags_function_symbolic_translate_value
+ags_function_substitute_values
+ags_function_translate_value
+ags_function_new
+<SUBSECTION Standard>
+AGS_FUNCTION
+AGS_FUNCTION_CLASS
+AGS_FUNCTION_GET_CLASS
+AGS_IS_FUNCTION
+AGS_IS_FUNCTION_CLASS
+AGS_TYPE_FUNCTION
+AgsFunction
+AgsFunctionClass
+ags_function_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_functional_application_context_util</FILE>
 ags_functional_application_context_util_xorg_setup
 </SECTION>
@@ -3123,7 +3179,10 @@ ags_iterator_thread_get_type
 <FILE>ags_jack_client</FILE>
 <TITLE>AgsJackClient</TITLE>
 AgsJackClientFlags
+ags_jack_client_find
 ags_jack_client_open
+ags_jack_client_add_port
+ags_jack_client_remove_port
 ags_jack_client_new
 <SUBSECTION Standard>
 AGS_IS_JACK_CLIENT
@@ -3184,7 +3243,9 @@ ags_jack_midiin_get_type
 <FILE>ags_jack_port</FILE>
 <TITLE>AgsJackPort</TITLE>
 AgsJackPortFlags
+ags_jack_port_find
 ags_jack_port_register
+ags_jack_port_unregister
 ags_jack_port_new
 <SUBSECTION Standard>
 AGS_IS_JACK_PORT
@@ -3201,7 +3262,15 @@ ags_jack_port_get_type
 <SECTION>
 <FILE>ags_jack_server</FILE>
 <TITLE>AgsJackServer</TITLE>
+AGS_JACK_SERVER_DEFAULT_PROTOCOL
+AGS_JACK_SERVER_DEFAULT_HOST
+AGS_JACK_SERVER_DEFAULT_PORT
 AgsJackServerFlags
+ags_jack_server_find_url
+ags_jack_server_find_client
+ags_jack_server_find_port
+ags_jack_server_add_client
+ags_jack_server_remove_client
 ags_jack_server_new
 <SUBSECTION Standard>
 AGS_IS_JACK_SERVER
@@ -3522,13 +3591,6 @@ ags_link_editor_parent_set_callback
 ags_link_editor_destroy_callback
 ags_link_editor_show_callback
 ags_link_editor_combo_callback
-</SECTION>
-
-<SECTION>
-<FILE>ags_list</FILE>
-ags_list_free_and_free_link
-ags_list_free_and_unref_link
-ags_list_duplicate_list
 </SECTION>
 
 <SECTION>
@@ -3892,6 +3954,7 @@ g_cclosure_user_marshal_VOID__UINT_BOOLEAN
 g_cclosure_user_marshal_VOID__UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_UINT_BOOLEAN
 g_cclosure_user_marshal_VOID__UINT_UINT_UINT
+g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT
@@ -3919,6 +3982,7 @@ g_cclosure_user_marshal_STRING__STRING_STRING
 g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER
 g_cclosure_user_marshal_POINTER__VOID
 g_cclosure_user_marshal_POINTER__UINT
+g_cclosure_user_marshal_POINTER__POINTER_UINT
 g_cclosure_user_marshal_POINTER__STRING_STRING
 g_cclosure_user_marshal_OBJECT__VOID
 g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING
@@ -3942,6 +4006,38 @@ AGS_TYPE_MATRIX
 AgsMatrix
 AgsMatrixClass
 ags_matrix_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_matrix_bridge</FILE>
+<TITLE>AgsMatrixBridge</TITLE>
+ags_matrix_bridge_new
+<SUBSECTION Standard>
+AGS_IS_MATRIX_BRIDGE
+AGS_IS_MATRIX_BRIDGE_CLASS
+AGS_MATRIX_BRIDGE
+AGS_MATRIX_BRIDGE_CLASS
+AGS_MATRIX_BRIDGE_GET_CLASS
+AGS_TYPE_MATRIX_BRIDGE
+AgsMatrixBridge
+AgsMatrixBridgeClass
+ags_matrix_bridge_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_matrix_bulk_input</FILE>
+<TITLE>AgsMatrixBulkInput</TITLE>
+ags_matrix_bulk_input_new
+<SUBSECTION Standard>
+AGS_IS_MATRIX_BULK_INPUT
+AGS_IS_MATRIX_BULK_INPUT_CLASS
+AGS_MATRIX_BULK_INPUT
+AGS_MATRIX_BULK_INPUT_CLASS
+AGS_MATRIX_BULK_INPUT_GET_CLASS
+AGS_TYPE_MATRIX_BULK_INPUT
+AgsMatrixBulkInput
+AgsMatrixBulkInputClass
+ags_matrix_bulk_input_get_type
 </SECTION>
 
 <SECTION>
@@ -4082,6 +4178,15 @@ ags_meter_configure_event
 </SECTION>
 
 <SECTION>
+<FILE>ags_midi_buffer_util</FILE>
+ags_midi_buffer_util_get_varlength_size
+ags_midi_buffer_util_put_varlength
+ags_midi_buffer_util_put_key_on
+ags_midi_buffer_util_put_key_off
+ags_midi_buffer_util_put_key_pressure
+</SECTION>
+
+<SECTION>
 <FILE>ags_midi_builder</FILE>
 <TITLE>AgsMidiBuilder</TITLE>
 ags_midi_builder_midi_putc
@@ -4148,8 +4253,12 @@ ags_midi_dialog_get_type
 <SECTION>
 <FILE>ags_midi_dialog_callbacks</FILE>
 ags_midi_dialog_backend_changed_callback
-ags_midi_dialog_add_callback
-ags_midi_dialog_remove_callback
+ags_midi_dialog_add_server_callback
+ags_midi_dialog_remove_server_callback
+ags_midi_dialog_add_client_callback
+ags_midi_dialog_remove_client_callback
+ags_midi_dialog_add_port_callback
+ags_midi_dialog_remove_port_callback
 ags_midi_dialog_apply_callback
 ags_midi_dialog_ok_callback
 ags_midi_dialog_cancel_callback
@@ -4227,6 +4336,7 @@ ags_midi_file_reader_get_type
 <SECTION>
 <FILE>ags_midi_file_writer</FILE>
 <TITLE>AgsMidiFileWriter</TITLE>
+ags_midi_file_writer_write_bytes
 ags_midi_file_writer_write_channel_message
 ags_midi_file_writer_write_status_message
 ags_midi_file_writer_new
@@ -4240,6 +4350,28 @@ AGS_TYPE_MIDI_FILE_WRITER
 AgsMidiFileWriter
 AgsMidiFileWriterClass
 ags_midi_file_writer_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_midi_import_wizard</FILE>
+<TITLE>AgsMidiImportWizard</TITLE>
+AgsMidiImportWizardFlags
+ags_midi_import_wizard_new
+<SUBSECTION Standard>
+AGS_IS_MIDI_IMPORT_WIZARD
+AGS_IS_MIDI_IMPORT_WIZARD_CLASS
+AGS_MIDI_IMPORT_WIZARD
+AGS_MIDI_IMPORT_WIZARD_CLASS
+AGS_MIDI_IMPORT_WIZARD_GET_CLASS
+AGS_TYPE_MIDI_IMPORT_WIZARD
+AgsMidiImportWizard
+AgsMidiImportWizardClass
+ags_midi_import_wizard_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_midi_import_wizard_callbacks</FILE>
+ags_midi_import_wizard_response_callback
 </SECTION>
 
 <SECTION>
@@ -4278,6 +4410,7 @@ ags_midi_parser_ticks_to_sec
 ags_midi_parser_midi_getc
 ags_midi_parser_on_error
 ags_midi_parser_parse_full
+ags_midi_parser_parse_bytes
 ags_midi_parser_parse_header
 ags_midi_parser_parse_track
 ags_midi_parser_channel_message
@@ -4312,6 +4445,16 @@ AGS_TYPE_MIDI_PARSER
 AgsMidiParser
 AgsMidiParserClass
 ags_midi_parser_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_midi_util</FILE>
+ags_midi_util_envelope_to_velocity
+ags_midi_util_velocity_to_envelope
+ags_midi_util_envelope_to_pressure
+ags_midi_util_pressure_to_envelope
+ags_midi_util_delta_time_to_offset
+ags_midi_util_offset_to_delta_time
 </SECTION>
 
 <SECTION>
@@ -4617,18 +4760,23 @@ ags_notation_get_type
 <SECTION>
 <FILE>ags_note</FILE>
 <TITLE>AgsNote</TITLE>
+USECS_PER_SEC
 AgsNoteFlags
+ags_note_find_prev
+ags_note_find_next
 ags_note_to_raw_midi
 ags_note_to_seq_event
 ags_note_from_raw_midi
 ags_note_from_seq_event
 ags_note_duplicate
 ags_note_new
+ags_note_new_with_offset
 <SUBSECTION Standard>
 AGS_IS_NOTE
 AGS_IS_NOTE_CLASS
 AGS_NOTE
 AGS_NOTE_CLASS
+AGS_NOTE_DEFAULT_TICKS_PER_QUARTER_NOTE
 AGS_NOTE_GET_CLASS
 AGS_TYPE_NOTE
 AgsNote
@@ -5107,6 +5255,38 @@ AGS_TYPE_PEAK_RECYCLING
 AgsPeakRecycling
 AgsPeakRecyclingClass
 ags_peak_recycling_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_perform_automation_audio</FILE>
+<TITLE>AgsPerformAutomationAudio</TITLE>
+ags_perform_automation_audio_new
+<SUBSECTION Standard>
+AGS_IS_PERFORM_AUTOMATION_AUDIO
+AGS_IS_PERFORM_AUTOMATION_AUDIO_CLASS
+AGS_PERFORM_AUTOMATION_AUDIO
+AGS_PERFORM_AUTOMATION_AUDIO_CLASS
+AGS_PERFORM_AUTOMATION_AUDIO_GET_CLASS
+AGS_TYPE_PERFORM_AUTOMATION_AUDIO
+AgsPerformAutomationAudio
+AgsPerformAutomationAudioClass
+ags_perform_automation_audio_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_perform_automation_audio_run</FILE>
+<TITLE>AgsPerformAutomationAudioRun</TITLE>
+ags_perform_automation_audio_run_new
+<SUBSECTION Standard>
+AGS_IS_PERFORM_AUTOMATION_AUDIO_RUN
+AGS_IS_PERFORM_AUTOMATION_AUDIO_RUN_CLASS
+AGS_PERFORM_AUTOMATION_AUDIO_RUN
+AGS_PERFORM_AUTOMATION_AUDIO_RUN_CLASS
+AGS_PERFORM_AUTOMATION_AUDIO_RUN_GET_CLASS
+AGS_TYPE_PERFORM_AUTOMATION_AUDIO_RUN
+AgsPerformAutomationAudioRun
+AgsPerformAutomationAudioRunClass
+ags_perform_automation_audio_run_get_type
 </SECTION>
 
 <SECTION>
@@ -6675,6 +6855,7 @@ ags_sequencer_get_type
 <FILE>ags_sequencer_thread</FILE>
 <TITLE>AgsSequencerThread</TITLE>
 AGS_SEQUENCER_THREAD_DEFAULT_JIFFIE
+ags_sequencer_thread_interval_timeout
 ags_sequencer_thread_new
 <SUBSECTION Standard>
 AGS_IS_SEQUENCER_THREAD
@@ -7130,6 +7311,22 @@ ags_synth_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_synth_bridge</FILE>
+<TITLE>AgsSynthBridge</TITLE>
+ags_synth_bridge_new
+<SUBSECTION Standard>
+AGS_IS_SYNTH_BRIDGE
+AGS_IS_SYNTH_BRIDGE_CLASS
+AGS_SYNTH_BRIDGE
+AGS_SYNTH_BRIDGE_CLASS
+AGS_SYNTH_BRIDGE_GET_CLASS
+AGS_TYPE_SYNTH_BRIDGE
+AgsSynthBridge
+AgsSynthBridgeClass
+ags_synth_bridge_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_synth_callbacks</FILE>
 ags_synth_parent_set_callback
 ags_synth_lower_callback
@@ -7167,6 +7364,43 @@ AGS_TYPE_SYNTH_INPUT_PAD
 AgsSynthInputPad
 AgsSynthInputPadClass
 ags_synth_input_pad_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_synth_output_line</FILE>
+<TITLE>AgsSynthOutputLine</TITLE>
+ags_synth_output_line_new
+<SUBSECTION Standard>
+AGS_IS_SYNTH_OUTPUT_LINE
+AGS_IS_SYNTH_OUTPUT_LINE_CLASS
+AGS_SYNTH_OUTPUT_LINE
+AGS_SYNTH_OUTPUT_LINE_CLASS
+AGS_SYNTH_OUTPUT_LINE_GET_CLASS
+AGS_TYPE_SYNTH_OUTPUT_LINE
+AgsSynthOutputLine
+AgsSynthOutputLineClass
+ags_synth_output_line_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_synth_output_line_callbacks</FILE>
+ags_synth_output_line_notify_channel_callback
+</SECTION>
+
+<SECTION>
+<FILE>ags_synth_output_pad</FILE>
+<TITLE>AgsSynthOutputPad</TITLE>
+ags_synth_output_pad_new
+<SUBSECTION Standard>
+AGS_IS_SYNTH_OUTPUT_PAD
+AGS_IS_SYNTH_OUTPUT_PAD_CLASS
+AGS_SYNTH_OUTPUT_PAD
+AGS_SYNTH_OUTPUT_PAD_CLASS
+AGS_SYNTH_OUTPUT_PAD_GET_CLASS
+AGS_TYPE_SYNTH_OUTPUT_PAD
+AgsSynthOutputPad
+AgsSynthOutputPadClass
+ags_synth_output_pad_get_type
 </SECTION>
 
 <SECTION>
@@ -7597,6 +7831,44 @@ AGS_TOOLBAR_MODE_ALL_CHANNELS
 </SECTION>
 
 <SECTION>
+<FILE>ags_track_collection</FILE>
+<TITLE>AgsTrackCollection</TITLE>
+ags_track_collection_parse
+ags_track_collection_add_mapper
+ags_track_collection_new
+<SUBSECTION Standard>
+AGS_IS_TRACK_COLLECTION
+AGS_IS_TRACK_COLLECTION_CLASS
+AGS_TRACK_COLLECTION
+AGS_TRACK_COLLECTION_CLASS
+AGS_TRACK_COLLECTION_GET_CLASS
+AGS_TYPE_TRACK_COLLECTION
+AgsTrackCollection
+AgsTrackCollectionClass
+ags_track_collection_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_track_collection_mapper</FILE>
+<TITLE>AgsTrackCollectionMapper</TITLE>
+AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS
+AGS_MIDI_DEFAULT_BEATS
+ags_track_collection_mapper_find_instrument_with_sequence
+ags_track_collection_mapper_map
+ags_track_collection_mapper_new
+<SUBSECTION Standard>
+AGS_IS_TRACK_COLLECTION_MAPPER
+AGS_IS_TRACK_COLLECTION_MAPPER_CLASS
+AGS_TRACK_COLLECTION_MAPPER
+AGS_TRACK_COLLECTION_MAPPER_CLASS
+AGS_TRACK_COLLECTION_MAPPER_GET_CLASS
+AGS_TYPE_TRACK_COLLECTION_MAPPER
+AgsTrackCollectionMapper
+AgsTrackCollectionMapperClass
+ags_track_collection_mapper_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_tree_iterator</FILE>
 <TITLE>AgsTreeIterator</TITLE>
 ags_tree_iterator_set_inverse_mode
@@ -7621,17 +7893,55 @@ ags_tree_iterator_get_type
 <FILE>ags_turtle</FILE>
 <TITLE>AgsTurtle</TITLE>
 AGS_TURTLE_DEFAULT_ENCODING
-AGS_TURTLE_STRING_LITERAL_QUOTE
-AGS_TURTLE_STRING_LITERAL_SINGLE_QUOTE
-AGS_TURTLE_STRING_LITERAL_LONG_QUOTE
-AGS_TURTLE_STRING_LITERAL_LONG_SINGLE_QUOTE
+AGS_TURTLE_DEFAULT_VERSION
+AGS_TURTLE_UTF8_RANGE_0
+AGS_TURTLE_UTF8_RANGE_1
+AGS_TURTLE_UTF8_RANGE_2
+AGS_TURTLE_UTF8_RANGE_3
+AGS_TURTLE_UTF8_RANGE_4
+AGS_TURTLE_UTF8_RANGE_5
+AGS_TURTLE_UTF8_RANGE_6
+AGS_TURTLE_UTF8_RANGE_7
+AGS_TURTLE_UTF8_RANGE_8
+AGS_TURTLE_UTF8_RANGE_9
+AGS_TURTLE_UTF8_RANGE_10
+AGS_TURTLE_UTF8_RANGE_11
+AGS_TURTLE_UTF8_RANGE_12
+AGS_TURTLE_UTF8_RANGE_ALL
+AGS_TURLTE_UTF8_RANGE_ALL_PATTERN
 AgsTurtleFlags
-AgsTurtleParserContext
-ags_turtle_parser_context_alloc
-ags_turtle_parser_context_free
+ags_turtle_read_iriref
+ags_turtle_read_pname_ns
+ags_turtle_read_pname_ln
+ags_turtle_read_blank_node_label
+ags_turtle_read_langtag
+ags_turtle_read_boolean
+ags_turtle_read_integer
+ags_turtle_read_decimal
+ags_turtle_read_double
+ags_turtle_read_exponent
+ags_turtle_read_string
+ags_turtle_read_string_literal_quote
+ags_turtle_read_string_literal_single_quote
+ags_turtle_read_string_literal_long_quote
+ags_turtle_read_string_literal_long_single_quote
+ags_turtle_read_uchar
+ags_turtle_read_echar
+ags_turtle_read_ws
+ags_turtle_read_anon
+ags_turtle_read_pn_chars_base
+ags_turtle_read_pn_chars_u
+ags_turtle_read_pn_chars
+ags_turtle_read_pn_prefix
+ags_turtle_read_pn_local
+ags_turtle_read_plx
+ags_turtle_read_percent
+ags_turtle_read_hex
+ags_turtle_read_pn_local_esc
 ags_turtle_find_xpath
 ags_turtle_load
 ags_turtle_new
+AgsTurtleParserContext
 <SUBSECTION Standard>
 AGS_IS_TURTLE
 AGS_IS_TURTLE_CLASS
