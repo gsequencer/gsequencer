@@ -665,7 +665,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 					   x1, y1,
 					   TRUE);
 
-      pthread_mutex_lock(audio_mutex);
+      pthread_mutex_unlock(audio_mutex);
 
       /* iterate */
       i++;
@@ -1141,7 +1141,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 {
   AgsEditor *editor;
   AgsMachine *machine;
-      
+
+  AgsAudio *audio;      
   AgsChannel *channel;
 
   AgsMutexManager *mutex_manager;
@@ -1152,7 +1153,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
   gboolean do_feedback;
   
   pthread_mutex_t *application_mutex;
-
+  pthread_mutex_t *audio_mutex;
+  
   auto void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel, AgsNote *note);
 
   void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel, AgsNote *note){
@@ -1210,6 +1212,14 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
     pthread_mutex_unlock(audio_mutex);
 
+    /* lookup soundcard mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) soundcard);
+
+    pthread_mutex_unlock(application_mutex);
+
     /* get application_context */
     pthread_mutex_lock(soundcard_mutex);
 
@@ -1264,9 +1274,21 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 						 AGS_TYPE_EDITOR);
 
   machine = editor->selected_machine;
+  audio = machine->audio;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+        
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+    
+  pthread_mutex_unlock(application_mutex);
 
   do_feedback = FALSE;
-
+  
   switch(event->keyval){
   case GDK_KEY_Control_L:
     {
@@ -1324,12 +1346,16 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
-	  list_notation = g_list_nth(machine->audio->notation,
+	  pthread_mutex_lock(audio_mutex);
+	  
+	  list_notation = g_list_nth(audio->notation,
 				     i);
 
 	  if(list_notation == NULL){
 	    i++;
 	
+	    pthread_mutex_unlock(audio_mutex);
+	    
 	    continue;
 	  }
 
@@ -1337,9 +1363,12 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 					 note_edit->selected_x, note_edit->selected_y,
 					 FALSE);
 
-	  if(note->x[1] - note->x[0] - tact >= tact){
+	  if(note != NULL &&
+	     note->x[1] - note->x[0] - tact >= tact){
 	    note->x[1] -= tact;
 	  }
+
+	  pthread_mutex_unlock(audio_mutex);
 	  
 	  i++;
 	}
@@ -1380,20 +1409,29 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
-	  list_notation = g_list_nth(machine->audio->notation,
+	  pthread_mutex_lock(audio_mutex);
+
+	  list_notation = g_list_nth(audio->notation,
 				     i);
 
 	  if(list_notation == NULL){
 	    i++;
-	
+	    
+	    pthread_mutex_unlock(audio_mutex);
+	    
 	    continue;
 	  }
 
 	  note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
 					 note_edit->selected_x, note_edit->selected_y,
 					 FALSE);
-	  note->x[1] += tact;
-	
+
+	  if(note != NULL){
+	    note->x[1] += tact;
+	  }
+	  
+	  pthread_mutex_unlock(audio_mutex);
+	  
 	  i++;
 	}
       }
@@ -1455,12 +1493,16 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       
       while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					      i)) != -1){
-	list_notation = g_list_nth(machine->audio->notation,
+	pthread_mutex_lock(audio_mutex);
+
+	list_notation = g_list_nth(audio->notation,
 				   i);
 
 	if(list_notation == NULL){
 	  i++;
 	
+	   pthread_mutex_unlock(audio_mutex);
+	  
 	  continue;
 	}
       
@@ -1471,6 +1513,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	
 	ags_notation_add_note(AGS_NOTATION(list_notation->data), note, FALSE);
 
+	pthread_mutex_unlock(audio_mutex);
+	
 	i++;
       }
 
@@ -1487,17 +1531,22 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
       while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					      i)) != -1){
-	list_notation = g_list_nth(machine->audio->notation,
+	pthread_mutex_lock(audio_mutex);
+	
+	list_notation = g_list_nth(audio->notation,
 				   i);
 
 	if(list_notation == NULL){
 	  i++;
+
+	  pthread_mutex_unlock(audio_mutex);
 	
 	  continue;
 	}
 
 	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
 					     note_edit->selected_x, note_edit->selected_y);
+	pthread_mutex_unlock(audio_mutex);
 	
 	i++;
       }
@@ -1508,27 +1557,12 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
   }
 
   if(do_feedback){
-    AgsAudio *audio;
+    AgsChannel *input;
     AgsNote *current_note;
 
+    guint input_pads;
     guint flags;
-    gboolean has_note;
     
-    pthread_mutex_t *audio_mutex;
-
-    audio = machine->audio;
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* lookup audio mutex */
-    pthread_mutex_lock(application_mutex);
-        
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
-    
-    pthread_mutex_unlock(application_mutex);
- 
     /* audible feedback */
     i = 0;
 
@@ -1549,21 +1583,21 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       }
 
       pthread_mutex_lock(audio_mutex);
-      
-      has_note = ((ags_notation_find_point(list_notation->data,
-					   note_edit->selected_x, note_edit->selected_y,
-					   FALSE) != NULL) ?
-		  TRUE:
-		  FALSE);
+
+      input = audio->input;
+      input_pads = audio->input_pads;
+      current_note = ags_notation_find_point(list_notation->data,
+					     note_edit->selected_x, note_edit->selected_y,
+					     FALSE)
 
       pthread_mutex_unlock(audio_mutex);
       
-      if(has_note){
-	channel = ags_channel_nth(machine->audio->input,
+      if(current_note != NULL){
+	channel = ags_channel_nth(input,
 				  i);
 
 	if((AGS_AUDIO_REVERSE_MAPPING & (flags)) != 0){
-	  channel = ags_channel_pad_nth(channel, machine->audio->input_pads - note_edit->selected_y - 1);
+	  channel = ags_channel_pad_nth(channel, input_pads - note_edit->selected_y - 1);
 	}else{
 	  channel = ags_channel_pad_nth(channel, note_edit->selected_y);
 	}
@@ -1595,33 +1629,23 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
   AgsConfig *config;
   
   GList *recall, *tmp;
-
-  guint samplerate;
-  guint buffer_size;
-  gchar *str;
-
-  channel = AGS_INIT_CHANNEL(task)->channel;
-
-  config = ags_config_get_instance();
+  GList *delay_audio;
   
-  str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0");
-  buffer_size = g_ascii_strtoull(str,
-				 NULL,
-				 10);
-  free(str);
-
-  str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
+  gchar *str;
+  gdouble notation_delay;
+  guint samplerate;
+  
+  GValue value = {0,};
+  
+  channel = AGS_INIT_CHANNEL(task)->channel;
 
   soundcard = channel->soundcard;
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    NULL,
+			    NULL);
   
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
   task_thread = ags_thread_find_type(audio_loop,
@@ -1644,9 +1668,24 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
   tmp = recall;
   recall = ags_recall_find_type(recall,
 				AGS_TYPE_PLAY_CHANNEL_RUN);
-  //TODO:JK: fix me
+  //FIXME:JK: below
   //    g_list_free(tmp);
 
+  /* read notation delay */
+  delay_audio = channel->recall;
+  delay_audio = ags_recall_find_type(delay_audio,
+				     AGS_TYPE_DELAY_AUDIO);
+  
+  if(delay_audio != NULL){
+    g_value_init(&value,
+		 G_TYPE_DOUBLE);
+    ags_port_safe_read(AGS_DELAY_AUDIO(delay_audio->data)->notation_delay,
+		       &value);
+    notation_delay = g_value_get_double(&value);
+  }else{
+    notation_delay = 1.0;
+  }
+  
   if(recall != NULL){
     AgsAudioSignal *audio_signal;
       
@@ -1660,7 +1699,7 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
       /* add audio signal */
       ags_recycling_create_audio_signal_with_frame_count(recycling,
 							 audio_signal,
-							 samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
+							 (note->x[1] - note->x[0]) * ((gdouble) samplerate / notation_delay),
 							 0.0, 0);
       audio_signal->stream_current = audio_signal->stream_beginning;
       ags_audio_signal_connect(audio_signal);

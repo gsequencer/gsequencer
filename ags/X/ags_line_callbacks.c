@@ -140,9 +140,13 @@ ags_line_add_effect_callback(AgsChannel *channel,
 			     gchar *effect,
 			     AgsLine *line)
 {
+  gdk_threads_enter();
+
   ags_line_add_effect(line,
 		      filename,
 		      effect);
+
+  gdk_threads_leave();
 }
 
 void
@@ -150,8 +154,12 @@ ags_line_remove_effect_callback(AgsChannel *channel,
 				guint nth,
 				AgsLine *line)
 {
+  gdk_threads_enter();
+
   ags_line_remove_effect(line,
 			 nth);
+
+  gdk_threads_leave();
 }
 
 void
@@ -211,6 +219,8 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   GValue value = {0,};
 
   pthread_mutex_t *application_mutex;
+
+  gdk_threads_enter();
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
@@ -268,6 +278,8 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   }
 
   g_list_free(list_start);
+
+  gdk_threads_leave();
 }
 
 void

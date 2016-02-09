@@ -744,8 +744,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
 						       NULL);
 	  dial = ags_line_member_get_widget(line_member);
 	  gtk_widget_set_size_request(dial,
-				      2 * dial->radius + 2 * dial->outline_strength + 2 * (dial->button_width + 4),
-				      2 * dial->radius + 2 * dial->outline_strength + 1);
+				      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
+				      2 * (dial->radius + dial->outline_strength + 1));
 		
 	  /* add controls of ports and apply range  */
 	  lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;

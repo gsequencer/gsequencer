@@ -632,6 +632,8 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 
     pthread_mutex_unlock(audio_mutex);
 
+    i = 0;
+    
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					    i)) != -1){
       /* retrieve notation */
@@ -1116,6 +1118,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   AgsEditor *editor;
   AgsMachine *machine;
       
+  AgsAudio *audio;
   AgsChannel *channel;
 
   AgsMutexManager *mutex_manager;
@@ -1124,6 +1127,9 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
   gint i;
   gboolean do_feedback;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
   auto void ags_pattern_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel);
 
@@ -1244,7 +1250,20 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 						 AGS_TYPE_EDITOR);
 
   machine = editor->selected_machine;
+  audio = machine->audio;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+	
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+    
+  pthread_mutex_unlock(application_mutex);
+
+  /* evaluate key */
   do_feedback = FALSE;
   
   if(machine != NULL){
@@ -1362,12 +1381,16 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
-	  list_notation = g_list_nth(machine->audio->notation,
+	  pthread_mutex_lock(audio_mutex);
+	  
+	  list_notation = g_list_nth(audio->notation,
 				     i);
 
 	  if(list_notation == NULL){
 	    i++;
-	
+
+	    pthread_mutex_unlock(audio_mutex);
+	    
 	    continue;
 	  }
       
@@ -1378,6 +1401,8 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	
 	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note, FALSE);
 
+	  pthread_mutex_unlock(audio_mutex);
+	  
 	  i++;
 	}
 
@@ -1394,18 +1419,24 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
-	  list_notation = g_list_nth(machine->audio->notation,
+	  pthread_mutex_lock(audio_mutex);
+	  
+	  list_notation = g_list_nth(audio->notation,
 				     i);
 
 	  if(list_notation == NULL){
 	    i++;
-	
+
+	    pthread_mutex_unlock(audio_mutex);
+	    
 	    continue;
 	  }
 
 	  ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
 					       pattern_edit->selected_x, pattern_edit->selected_y);
 
+	  pthread_mutex_unlock(audio_mutex);
+	  
 	  i++;
 	}
 
@@ -1415,29 +1446,13 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     }
   }
   
-  if(do_feedback){  
-    AgsAudio *audio;
+  if(do_feedback){
+    AgsChannel *input;
     AgsNote *current_note;
 
-    guint flags;
-    gboolean has_note;
-    
-    pthread_mutex_t *audio_mutex;
-    pthread_mutex_t *application_mutex;
-    
-    audio = machine->audio;
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-	
-    /* lookup audio mutex */
-    pthread_mutex_lock(application_mutex);
-    
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
-    
-    pthread_mutex_unlock(application_mutex);
- 
+    guint input_pads;
+    guint flags;    
+     
     /* audible feedback */
     i = 0;
 
@@ -1458,21 +1473,21 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       }
 
       pthread_mutex_lock(audio_mutex);
-      
-      has_note = ((ags_notation_find_point(list_notation->data,
-					   pattern_edit->selected_x, pattern_edit->selected_y,
-					   FALSE) != NULL) ?
-		  TRUE:
-		  FALSE);
+
+      input_pads = audio->input_pads;
+      input = audio->input;
+      current_note = ags_notation_find_point(list_notation->data,
+					     pattern_edit->selected_x, pattern_edit->selected_y,
+					     FALSE);
 
       pthread_mutex_unlock(audio_mutex);
       
-      if(has_note){
-	channel = ags_channel_nth(machine->audio->input,
+      if(current_note != NULL){
+	channel = ags_channel_nth(input,
 				  i);
 
 	if((AGS_AUDIO_REVERSE_MAPPING & (flags)) != 0){
-	  channel = ags_channel_pad_nth(channel, machine->audio->input_pads - pattern_edit->selected_y - 1);
+	  channel = ags_channel_pad_nth(channel, input_pads - pattern_edit->selected_y - 1);
 	}else{
 	  channel = ags_channel_pad_nth(channel, pattern_edit->selected_y);
 	}

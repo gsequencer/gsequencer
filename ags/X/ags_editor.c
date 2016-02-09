@@ -785,7 +785,7 @@ ags_editor_paste(AgsEditor *editor)
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     
     if(buffer == NULL){
-      pthread_mutex_lock(audio_mutex);
+      pthread_mutex_unlock(audio_mutex);
 
       return;
     }
