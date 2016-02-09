@@ -54,7 +54,7 @@ void ags_jack_port_finalize(GObject *gobject);
  * @short_description: JACK resource.
  * @title: AgsJackPort
  * @section_id:
- * @include: ags/jack_port/ags_jack_port.h
+ * @include: ags/audio/jack/ags_jack_port.h
  *
  * The #AgsJackPort represents either a JACK sequencer or soundcard to communicate
  * with.

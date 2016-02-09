@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-# SUBDIRS = docs/
+SUBDIRS = docs/reference/ags
 
 AM_CPPFLAGS = -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
 
@@ -1275,6 +1275,12 @@ midi2xml_CFLAGS= $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 midi2xml_SOURCES = ags/midi2xml_main.c ags/audio/midi/ags_midi_parser.c ags/audio/midi/ags_midi_parser.h ags/object/ags_marshal.c ags/object/ags_marshal.h
+
+ags-docs-local:
+	cd docs/reference/ags
+	make
+	gtkdoc-fixxref
+	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool

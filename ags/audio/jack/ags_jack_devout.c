@@ -42,7 +42,7 @@
  * @short_description: Output to soundcard
  * @title: AgsJackDevout
  * @section_id:
- * @include: ags/object/ags_soundcard.h
+ * @include: ags/audio/jack/ags_jack_devout.h
  *
  * #AgsJackDevout represents a soundcard and supports output.
  */

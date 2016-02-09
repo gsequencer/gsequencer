@@ -1,0 +1,7 @@
+<!ENTITY package "gsequencer">
+<!ENTITY package_bugreport "jkraehemann-guest@users.alioth.debian.org">
+<!ENTITY package_name "gsequencer">
+<!ENTITY package_string "gsequencer 0.7.3">
+<!ENTITY package_tarname "gsequencer">
+<!ENTITY package_url "">
+<!ENTITY package_version "0.7.3">

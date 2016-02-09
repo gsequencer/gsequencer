@@ -48,7 +48,7 @@
  * @short_description: Input from sequencer
  * @title: AgsJackMidiin
  * @section_id:
- * @include: ags/object/ags_sequencer.h
+ * @include: ags/audio/jack/ags_jack_midiin.h
  *
  * #AgsJackMidiin represents a sequencer and supports midi input.
  */
