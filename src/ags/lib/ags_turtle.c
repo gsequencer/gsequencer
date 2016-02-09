@@ -1467,9 +1467,6 @@ ags_turtle_load(AgsTurtle *turtle,
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
 
     /* read numeric */
-    str = ags_turtle_read_integer(look_ahead,
-				  &(buffer[sb->st_size]));
-
     if(str == NULL){
       str = ags_turtle_read_decimal(look_ahead,
 				    &(buffer[sb->st_size]));
@@ -1479,6 +1476,9 @@ ags_turtle_load(AgsTurtle *turtle,
       str = ags_turtle_read_double(look_ahead,
 				   &(buffer[sb->st_size]));      
     }
+
+    str = ags_turtle_read_integer(look_ahead,
+				  &(buffer[sb->st_size]));
 
     if(str == NULL){
       str = ags_turtle_read_boolean(look_ahead,
