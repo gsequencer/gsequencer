@@ -436,13 +436,16 @@ ags_lv2_manager_load_default_directory()
 				       "//rdf-triple//rdf-predicate-object-list[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0");
 
       /* persist XML */
+      //NOTE:JK: no need for it
+      /*
       xmlDocDumpFormatMemoryEnc(manifest->doc, &buffer, &size, "UTF-8\0", TRUE);
 
       out = fopen(g_strdup_printf("%s/manifest.xml\0", plugin_path), "w+\0");
 
       fwrite(buffer, size, sizeof(xmlChar), out);
       fflush(out);
-
+      */
+      
       /* load */
       while(ttl_list != NULL &&
 	    binary_list != NULL){
@@ -496,6 +499,8 @@ ags_lv2_manager_load_default_directory()
 				  filename);
 
 	/* persist XML */
+	//NOTE:JK: no need for it
+	/*
 	xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
 
 	out = fopen(g_strdup_printf("%s/%s.xml\0", plugin_path, turtle_path), "w+\0");
@@ -503,7 +508,8 @@ ags_lv2_manager_load_default_directory()
 	fwrite(buffer, size, sizeof(xmlChar), out);
 	fflush(out);
 	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
-
+	*/
+	
 	ttl_list = ttl_list->next;
 	binary_list = binary_list->next;
       }
