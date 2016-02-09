@@ -44,7 +44,7 @@
 #include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_file_selection.h>
 
-#define AGS_RENAME_ENTRY "AgsRenameEntry"
+#define AGS_RENAME_ENTRY "AgsRenameEntry\0"
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
@@ -161,6 +161,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
 
+  g_object_ref(machine->audio);
   remove_audio = ags_remove_audio_new(window->soundcard,
 				      machine->audio);
   ags_task_thread_append_task(task_thread,
@@ -579,6 +580,8 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
   AgsSoundcardThread *soundcard_thread;
   AgsTask *task;
 
+  gdk_threads_enter();
+
   task = (AgsTask *) task_completion->task;
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
@@ -596,6 +599,8 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
 		     G_CALLBACK(ags_machine_start_complete_response), machine);
     gtk_widget_show_all((GtkWidget *) dialog);
   }
+
+  gdk_threads_leave();
 }
 
 void

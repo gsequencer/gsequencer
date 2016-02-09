@@ -229,20 +229,28 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
   AgsGenericPreferences *generic_preferences; 
+
   AgsConfig *config;
- 
+
+  gchar *str;
+  
   generic_preferences = AGS_GENERIC_PREFERENCES(applicable);
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
+
   config = ags_config_get_instance();
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "autosave-thread\0");
   
   gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->autosave_thread,
-			       ((!strncmp(ags_config_get_value(config,
-							 AGS_CONFIG_GENERIC,
-							 "autosave-thread\0"),
+			       ((!strncmp(str,
 					  "true\0",
 					  5)) ? TRUE: FALSE));
+
+  free(str);
 }
 
 static void
