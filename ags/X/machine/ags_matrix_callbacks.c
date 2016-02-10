@@ -276,6 +276,11 @@ ags_matrix_tact_callback(AgsAudio *audio,
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
   }
 
+  if(play_count_beats_audio == NULL ||
+     play_count_beats_audio_run == NULL){
+    return;
+  }
+
   /* set optical feedback */
   active_led_new = play_count_beats_audio_run->sequencer_counter;
   matrix->cell_pattern->active_led = (guint) active_led_new;

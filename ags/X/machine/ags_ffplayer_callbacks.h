@@ -39,6 +39,6 @@ gboolean ags_ffplayer_drawing_area_expose_callback(GtkWidget *widget, GdkEventEx
 gboolean ags_ffplayer_drawing_area_configure_callback(GtkWidget *widget, GdkEventConfigure *event, AgsFFPlayer *ffplayer);
 gboolean ags_ffplayer_drawing_area_button_press_callback(GtkWidget *widget, AgsFFPlayer *ffplayer);
 
-void ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayers);
+void ags_ffplayer_hscrollbar_value_changed(GtkAdjustment *adjustment, AgsFFPlayer *ffplayer);
 
 #endif /*__AGS_FFPLAYER_CALLBACKS_H__ */

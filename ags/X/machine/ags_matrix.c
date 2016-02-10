@@ -538,7 +538,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 				    pads_old);
       }
     }else{
-      /* empty */
+      matrix->mapped_input_pad = pads;
     }
   }else{
     if(grow){
@@ -593,7 +593,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 				     pads_old);
       }
     }else{
-      /* empty */
+      matrix->mapped_output_pad = pads;
     }
   }
 }
@@ -803,7 +803,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   current = source;
 
   while(current != NULL){
-    /* ags-stream */
+    /* ags-play */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-play\0",
@@ -847,8 +847,6 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
-  AgsLoopChannel *recall_loop_channel;
-  AgsLoopChannelRun *recall_loop_channel_run;
 
   GList *list;
 

@@ -141,8 +141,8 @@ ags_ffplayer_get_type(void)
     };
 
     ags_type_ffplayer = g_type_register_static(AGS_TYPE_MACHINE,
-					    "AgsFFPlayer\0", &ags_ffplayer_info,
-					    0);
+					       "AgsFFPlayer\0", &ags_ffplayer_info,
+					       0);
     
     g_type_add_interface_static(ags_type_ffplayer,
 				AGS_TYPE_CONNECTABLE,
@@ -370,6 +370,7 @@ void
 ags_ffplayer_map_recall(AgsMachine *machine)
 {
   AgsWindow *window;
+  AgsFFPlayer *ffplayer;
   
   AgsAudio *audio;
 
@@ -387,6 +388,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
     return;
   }
 
+  ffplayer = AGS_FFPLAYER(machine);
+  
   window = gtk_widget_get_ancestor(machine,
 				   AGS_TYPE_WINDOW);
 
@@ -469,6 +472,13 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
+  /* depending on destination */
+  ags_ffplayer_input_map_recall(ffplayer, 0);
+
+  /* depending on destination */
+  ags_ffplayer_output_map_recall(ffplayer, 0);
+
+  /* call parent */
   AGS_MACHINE_CLASS(ags_ffplayer_parent_class)->map_recall(machine);  
 }
 
@@ -589,7 +599,7 @@ ags_ffplayer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -873,13 +883,16 @@ ags_ffplayer_set_pads(AgsAudio *audio, GType type,
     return;
   }
 
-  if(pads_old == pads)
+  if(pads_old == pads){
     return;
-  if(pads_old < pads)
+  }
+  
+  if(pads_old < pads){
     grow = TRUE;
-  else
+  }else{
     grow = FALSE;
-
+  }
+  
   if(type == AGS_TYPE_INPUT){
     if(grow){
       /* depending on destination */
@@ -909,8 +922,6 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 
   if(ffplayer->mapped_input_pad > input_pad_start){
     return;
-  }else{
-    ffplayer->mapped_input_pad = audio->input_pads;
   }
 
   source = ags_channel_nth(audio->input,
@@ -938,7 +949,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
   current = source;
 
   while(current != NULL){
-    /* ags-stream */
+    /* ags-play */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-play\0",
@@ -970,20 +981,20 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 
     current = current->next_pad;
   }
+
+  ffplayer->mapped_input_pad = audio->input_pads;
 }
 
 void
 ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *source, *input;;
+  AgsChannel *source, *input, *current;
 
   audio = AGS_MACHINE(ffplayer)->audio;
 
   if(ffplayer->mapped_output_pad > output_pad_start){
     return;
-  }else{
-    ffplayer->mapped_output_pad = audio->output_pads;
   }
   
   source = ags_channel_nth(audio->output,
@@ -1007,18 +1018,25 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
 
     input = input->next_pad;
   }
-  
-  /* ags-stream */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-stream\0",
-			    source->audio_channel, source->audio_channel + 1,
-			    output_pad_start, audio->output_pads,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+
+  current = source;
+
+  while(current != NULL){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream\0",
+			      0, audio->audio_channels,
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
+
+  ffplayer->mapped_output_pad = audio->output_pads;
 }
 
 void

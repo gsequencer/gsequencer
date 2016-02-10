@@ -1960,6 +1960,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	if(alloc_recycling){
 	  first_recycling =
 	    last_recycling = ags_recycling_new(audio->soundcard);
+	  g_object_ref(first_recycling);
 	  
 	  first_recycling->channel = (GObject *) channel;
 	  
@@ -2440,6 +2441,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	if(alloc_recycling){
 	  first_recycling =
 	    last_recycling = ags_recycling_new(audio->soundcard);
+	  g_object_ref(first_recycling);
 	  
 	  first_recycling->channel = (GObject *) channel;
 	  
