@@ -484,7 +484,7 @@ ags_drum_tact_callback(AgsAudio *audio,
   }
 
   if(play_count_beats_audio == NULL ||
-     play_count_beats_audio_rung == NULL){
+     play_count_beats_audio_run == NULL){
     return;
   }
 

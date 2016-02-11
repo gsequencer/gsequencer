@@ -241,7 +241,6 @@
       <xi:include href="xml/ags_play_notation_audio.xml"/>
       <xi:include href="xml/ags_play_notation_audio_run.xml"/>
       <xi:include href="xml/ags_play_note.xml"/>
-      <xi:include href="xml/ags_play_pattern.xml"/>
       <xi:include href="xml/ags_play_recycling.xml"/>
       <xi:include href="xml/ags_route_dssi_audio.xml"/>
       <xi:include href="xml/ags_route_dssi_audio_run.xml"/>
