@@ -54,7 +54,7 @@ struct _AgsPort
   guint port_value_size;
   guint port_value_length;
 
-  pthread_mutex_t mutex;
+  pthread_mutex_t *mutex;
 
   union _AgsPortValue{
     gboolean ags_port_boolean;
