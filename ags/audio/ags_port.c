@@ -348,7 +348,8 @@ ags_port_init(AgsPort *port)
   pthread_mutexattr_init(&mutexattr);
   pthread_mutexattr_settype(&mutexattr, PTHREAD_MUTEX_RECURSIVE);
 
-  pthread_mutex_init(&(port->mutex), &mutexattr);
+  port->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(port->mutex, &mutexattr);
 }
 
 void
@@ -499,9 +500,9 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
-  overall_size = port->port_value_length * port->port_value_size;
+  pthread_mutex_lock(port->mutex);
 
-  pthread_mutex_lock(&(port->mutex));
+  overall_size = port->port_value_length * port->port_value_size;
 
   if(!port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){
@@ -543,7 +544,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
     g_value_set_pointer(value, data);
   }
   
-  pthread_mutex_unlock(&(port->mutex));
+  pthread_mutex_unlock(port->mutex);
 }
 
 /**
@@ -578,7 +579,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
 
   overall_size = port->port_value_length * port->port_value_size;
 
-  pthread_mutex_lock(&(port->mutex));
+  pthread_mutex_lock(port->mutex);
 
   if(!port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){
@@ -622,7 +623,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
     }
   }
 
-  pthread_mutex_unlock(&(port->mutex));
+  pthread_mutex_unlock(port->mutex);
 }
 
 /**
@@ -648,13 +649,13 @@ ags_port_safe_write(AgsPort *port, GValue *value)
 void
 ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  pthread_mutex_lock(&(port->mutex));
+  pthread_mutex_lock(port->mutex);
 
   g_object_get_property(port->port_value.ags_port_object,
 			property_name,
 			value);
 
-  pthread_mutex_unlock(&(port->mutex));
+  pthread_mutex_unlock(port->mutex);
 }
 
 /**
@@ -681,13 +682,13 @@ ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 void
 ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  pthread_mutex_lock(&(port->mutex));
+  pthread_mutex_lock(port->mutex);
 
   g_object_set_property(port->port_value.ags_port_object,
 			property_name,
 			value);
 
-  pthread_mutex_unlock(&(port->mutex));
+  pthread_mutex_unlock(port->mutex);
 }
 
 /**

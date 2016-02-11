@@ -1448,7 +1448,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
+      list = list_next;
       continue;
     }
 
@@ -1489,7 +1489,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
+      list = list_next;
       continue;
     }
 
@@ -1530,7 +1530,7 @@ ags_recall_real_run_post(AgsRecall *recall)
 
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
+      list = list_next;
       continue;
     }
 
@@ -1640,7 +1640,7 @@ ags_recall_done(AgsRecall *recall)
 void
 ags_recall_real_cancel(AgsRecall *recall)
 {
-  GList *list;
+  GList *list, *list_next;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     return;
@@ -1650,9 +1650,11 @@ ags_recall_real_cancel(AgsRecall *recall)
   list = recall->children;
 
   while(list != NULL){
+    list_next = list->next;
+    
     ags_recall_cancel(AGS_RECALL(list->data));
     
-    list = list->next;
+    list = list_next;
   }
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
