@@ -761,7 +761,7 @@ ags_recall_channel_run_remove(AgsRecall *recall)
   if(AGS_RECALL_CHANNEL_RUN(recall)->source != NULL){
     ags_channel_remove_recall(AGS_RECALL_CHANNEL_RUN(recall)->source,
 			      recall,
-			      ((recall->recall_id->recycling_container->parent) ? TRUE: FALSE));
+			      ((recall->recall_id->recycling_context->parent) ? TRUE: FALSE));
   }
  
   AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->remove(recall);

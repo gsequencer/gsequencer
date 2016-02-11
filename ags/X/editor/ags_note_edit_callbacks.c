@@ -36,6 +36,8 @@
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
 #include <ags/audio/recall/ags_play_channel_run.h>
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
 
 #include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_init_channel.h>
@@ -1588,7 +1590,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       input_pads = audio->input_pads;
       current_note = ags_notation_find_point(list_notation->data,
 					     note_edit->selected_x, note_edit->selected_y,
-					     FALSE)
+					     FALSE);
 
       pthread_mutex_unlock(audio_mutex);
       

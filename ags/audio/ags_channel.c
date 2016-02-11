@@ -3119,7 +3119,7 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
     recall = AGS_RECALL(list_recall->data);
     
     if(recall->recall_id == NULL ||
-       recall->recall_id->recycling_container == NULL ||
+       recall->recall_id->recycling_context == NULL ||
        AGS_IS_RECALL_CHANNEL(recall)){
       list_recall = list_recall->next;
       continue;
@@ -4579,7 +4579,7 @@ ags_channel_set_recycling(AgsChannel *channel,
 	    
     current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 				     "recycling\0", first_recycling,
-				     "recycling-container\0", AGS_RECALL_ID(recall_id->data)->recycling_context,
+				     "recycling-context\0", AGS_RECALL_ID(recall_id->data)->recycling_context,
 				     NULL);
 	  
     ags_channel_add_recall_id(channel,
@@ -4625,7 +4625,7 @@ ags_channel_set_recycling(AgsChannel *channel,
 				       (GObject *) old_recycling_context);
 
     g_object_set(recall_id->data,
-		 "recycling-container\0", recycling_context,
+		 "recycling-context\0", recycling_context,
 		 NULL);
     
     ags_channel_recursive_reset_recycling_context(channel,
@@ -4705,7 +4705,7 @@ ags_channel_recursive_reset_recycling_context(AgsChannel *channel,
     while(recall_id != NULL){
       if(AGS_RECALL_ID(recall_id->data)->recycling_context == old_recycling_context){
 	g_object_set(recall_id->data,
-		     "recycling-container\0", recycling_context,
+		     "recycling-context\0", recycling_context,
 		     NULL);
       }
       
@@ -8948,7 +8948,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	    /* recall id */
 	    recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 				     "recycling\0", current->first_recycling,
-				     "recycling-container\0", default_recall_id->recycling_context,
+				     "recycling-context\0", default_recall_id->recycling_context,
 				     NULL);
 
 	    if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0){
@@ -9014,7 +9014,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	  /* recall id */
 	  recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 				   "recycling\0", current->first_recycling,
-				   "recycling-container\0", default_recall_id->recycling_context,
+				   "recycling-context\0", default_recall_id->recycling_context,
 				   NULL);
 
 	  if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0){
@@ -9131,7 +9131,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	/* recall id */
 	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 				 "recycling\0", current->first_recycling,
-				 "recycling-container\0", recycling_context,
+				 "recycling-context\0", recycling_context,
 				 NULL);
 
 	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0){
@@ -9177,7 +9177,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	/* recall id */
 	recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 				 "recycling\0", input->first_recycling,
-				 "recycling-container\0", recycling_context,
+				 "recycling-context\0", recycling_context,
 				 NULL);
 
 	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id_list->data)->flags)) != 0){

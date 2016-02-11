@@ -908,9 +908,10 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   GList *stream, *template_stream, *template_loop;
 
   guint frames_copied;
-  guint loop_start, loop_attack;
+  guint loop_start, loop_end, loop_attack;
   gboolean enter_loop, initial_loop;
-
+  guint i, j;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex;
 
@@ -950,7 +951,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   audio_signal->samplerate = template->samplerate;
   audio_signal->buffer_size = template->buffer_size;
-  audio_signal->resolution = template->resolution;
+  audio_signal->format = template->format;
+  audio_signal->word_size = template->word_size;
 
   audio_signal->last_frame = (((guint)(delay *
 				       template->buffer_size) +

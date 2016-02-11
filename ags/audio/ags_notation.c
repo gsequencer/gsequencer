@@ -728,7 +728,23 @@ ags_notation_add_note(AgsNotation *notation,
       while(list->next != NULL){
 	if((AGS_NOTE(list->data))->x[0] > note->x[0] ||
 	   (AGS_NOTE(list->data))->y >= note->y){
-	  ags_notation_add_note_add1();
+	  list_new = (GList *) g_list_alloc();
+	  list_new->data = (gpointer) note;
+
+	  list_new->prev = list->prev;
+	  list_new->next = list;
+
+	  list->prev = list_new;
+    
+	  if(list->prev != NULL){
+	    list_new->prev->next = list_new;
+	  }else{        
+	    if(use_selection_list){
+	      notation->selection = list_new;
+	    }else{
+	      notation->notes = list_new;
+	    }
+	  }
 
 	  return;
 	}
