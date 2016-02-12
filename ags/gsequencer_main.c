@@ -228,8 +228,7 @@ main(int argc, char **argv)
   LIBXML_TEST_VERSION;
 
   g_thread_init(NULL);
-  gdk_threads_init();
-
+  gdk_threads_enter();
   gtk_init(&argc, &argv);
   ipatch_init();
 
@@ -363,7 +362,6 @@ main(int argc, char **argv)
 	    g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
 	pthread_cond_wait(audio_loop->start_cond,
 			  audio_loop->start_mutex);
-	val = g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags));
       }
     }
     
@@ -376,6 +374,24 @@ main(int argc, char **argv)
     pth_join(gui_thread->thread,
 	     NULL);
 #else
+    /* wait for audio loop */
+    pthread_mutex_lock(gui_thread->start_mutex);
+
+    if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+      guint val;
+    
+      g_atomic_int_set(&(gui_thread->start_wait),
+		       TRUE);
+      
+      while(g_atomic_int_get(&(gui_thread->start_wait)) == TRUE &&
+	    g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+	pthread_cond_wait(gui_thread->start_cond,
+			  gui_thread->start_mutex);
+      }
+    }
+    
+    pthread_mutex_unlock(gui_thread->start_mutex);
+
     pthread_join(*(gui_thread->thread),
 		 NULL);
 #endif
@@ -393,6 +409,8 @@ main(int argc, char **argv)
     ags_thread_start((AgsThread *) single_thread);
   }
     
+  gdk_threads_leave();
+
   /* free managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
   g_object_unref(ladspa_manager);

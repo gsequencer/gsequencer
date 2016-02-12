@@ -162,7 +162,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   lv2_browser->path = NULL;
 
-  ags_lv2_manager_load_default_directory();
+  //  ags_lv2_manager_load_default_directory();
   filenames =
     filenames_start = ags_lv2_manager_get_filenames();
 
