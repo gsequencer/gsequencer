@@ -308,11 +308,12 @@ main(int argc, char **argv)
     gui_thread = ags_thread_find_type(application_context->main_loop,
 				      AGS_TYPE_GUI_THREAD);
   }else{
+    GList *start_queue;
+    
     guint val;
 
     /* wait for audio loop */
     thread_pool->parent = audio_loop;
-    ags_thread_pool_start(thread_pool);
 
     task_thread = ags_thread_find_type(audio_loop,
 				       AGS_TYPE_TASK_THREAD);
@@ -320,9 +321,16 @@ main(int argc, char **argv)
     gui_thread = ags_thread_find_type(audio_loop,
 				      AGS_TYPE_GUI_THREAD);
 
-    ags_thread_start(task_thread);
+    start_queue = NULL;
+    start_queue = g_list_prepend(start_queue,
+				 task_thread);
+    start_queue = g_list_prepend(start_queue,
+				 gui_thread);
+    g_atomic_pointer_set(&(audio_loop->start_queue),
+			 start_queue);
+    
     ags_thread_start(audio_loop);
-    ags_thread_start(gui_thread);
+    ags_thread_pool_start(thread_pool);
 
 #ifdef AGS_USE_TIMER
     /* Start the timer */
@@ -345,25 +353,21 @@ main(int argc, char **argv)
 
     /* wait for audio loop */
     pthread_mutex_lock(audio_loop->start_mutex);
-  
-    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags)))) != 0){
-      pthread_cond_wait(audio_loop->start_cond,
-			audio_loop->start_mutex);
-      val = g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags));
-    }
-  
-    pthread_mutex_unlock(audio_loop->start_mutex);
 
-    /* wait for audio loop */
-    pthread_mutex_lock(gui_thread->start_mutex);
-  
-    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags)))) != 0){
-      pthread_cond_wait(gui_thread->start_cond,
-			gui_thread->start_mutex);
-      val = g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags));
+    if(g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
+	
+      g_atomic_int_set(&(audio_loop->start_wait),
+		       TRUE);
+      
+      while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
+	    g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
+	pthread_cond_wait(audio_loop->start_cond,
+			  audio_loop->start_mutex);
+	val = g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags));
+      }
     }
-  
-    pthread_mutex_unlock(gui_thread->start_mutex);
+    
+    pthread_mutex_unlock(audio_loop->start_mutex);
   }
 
   if(!single_thread){

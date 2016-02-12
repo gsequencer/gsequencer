@@ -314,7 +314,10 @@ ags_thread_pool_creation_thread(void *ptr)
 {
   AgsThreadPool *thread_pool;
   AgsThread *thread;
+
   GList *tmplist;
+  GList *start_queue;
+
   guint n_threads, max_threads;
   guint i, i_stop;
   
@@ -349,7 +352,8 @@ ags_thread_pool_creation_thread(void *ptr)
 #ifdef AGS_DEBUG
     g_message("ags_thread_pool_creation_thread@loop0\0");
 #endif
-    
+
+    start_queue = NULL;    
     g_atomic_int_and(&(thread_pool->flags),
 		     (~AGS_THREAD_POOL_READY));
     
@@ -358,9 +362,13 @@ ags_thread_pool_creation_thread(void *ptr)
 	thread = (AgsThread *) ags_returnable_thread_new((GObject *) thread_pool);
 	tmplist = g_atomic_pointer_get(&(thread_pool->returnable_thread));
 	g_atomic_pointer_set(&(thread_pool->returnable_thread),
-			     g_list_prepend(tmplist, thread));      
-	ags_thread_add_child(AGS_THREAD(thread_pool->parent),
-			     thread);
+			     g_list_prepend(tmplist, thread));
+	start_queue = g_list_prepend(start_queue,
+				     thread);
+
+	ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),
+				      thread,
+				      FALSE, FALSE);
 	ags_connectable_connect(AGS_CONNECTABLE(thread));
 	g_atomic_int_inc(&(thread_pool->n_threads));
 
@@ -368,6 +376,14 @@ ags_thread_pool_creation_thread(void *ptr)
       }
     }
 
+    if(start_queue != NULL){
+      if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
+	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
+			     g_list_concat(start_queue,
+					   g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
+      }
+    }
+    
     pthread_mutex_unlock(thread_pool->creation_mutex);
     
 #ifdef AGS_DEBUG
@@ -477,6 +493,8 @@ void
 ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 {
   GList *list;
+  GList *start_queue;
+  
   gint n_threads;
   gint i;
 
@@ -487,13 +505,27 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 		 &(ags_thread_pool_creation_thread), thread_pool);
 
   list = g_atomic_pointer_get(&(thread_pool->returnable_thread));
+  
+  start_queue = NULL;
 
   while(list != NULL){
-    ags_thread_add_child(AGS_THREAD(thread_pool->parent),
-			 AGS_THREAD(list->data));
+    start_queue = g_list_prepend(start_queue,
+				 list->data);
+    ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),
+				  AGS_THREAD(list->data),
+				  FALSE, FALSE);
+    
     //    ags_thread_start(AGS_THREAD(list->data));
 
     list = list->next;
+  }
+
+  if(start_queue != NULL){
+    if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
+      g_atomic_pointer_set(&(thread_pool->parent->start_queue),
+			   g_list_concat(start_queue,
+					 g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
+    }
   }
 }
 

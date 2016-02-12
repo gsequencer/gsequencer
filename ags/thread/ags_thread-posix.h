@@ -157,7 +157,6 @@ struct _AgsThread
 
   volatile AgsThread *children;
 
-  GMainLoop *main_loop;
   gpointer data;
 };
 

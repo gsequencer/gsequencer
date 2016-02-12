@@ -325,7 +325,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
     if(is_output){
       jack_port->device = ags_jack_devout_new(application_context);
       g_object_set(AGS_JACK_DEVOUT(jack_port->device),
-		   "out-port\0", jack_port->port,
+		   "jack-port\0", jack_port,
 		   NULL);
     }else{
       g_warning("ags_jack_port.c: audio input not supported\0");
@@ -350,7 +350,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
     }else{
       jack_port->device = ags_jack_midiin_new(application_context);
       g_object_set(AGS_JACK_MIDIIN(jack_port->device),
-		   "in-port\0", jack_port->port,
+		   "jack-port\0", jack_port,
 		   NULL);
     }
     

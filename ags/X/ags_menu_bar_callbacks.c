@@ -624,6 +624,17 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   gtk_widget_show_all((GtkWidget *) ffplayer);
 }
 
+void
+ags_menu_bar_add_dssi_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  //TODO:JK: implement me
+}
 
 void
 ags_menu_bar_automation_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)

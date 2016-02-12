@@ -299,7 +299,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
     samplerate = g_ascii_strtoull(str0,
 				  NULL,
 				  10);
-    buffer_size = g_ascii_strtoull(str0,
+    buffer_size = g_ascii_strtoull(str1,
 				   NULL,
 				   10);
 
@@ -542,34 +542,6 @@ ags_audio_loop_start(AgsThread *thread)
   audio_loop = AGS_AUDIO_LOOP(thread);
 
   if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
-    AgsMutexManager *mutex_manager;
-    
-    AgsThread *async_queue;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *mutex;
-
-    /* lookup thread mutex */
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    pthread_mutex_lock(application_mutex);
-    
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     thread);
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* get async queue and gui thread */
-    pthread_mutex_lock(mutex);
-    
-    async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(thread));
-
-    pthread_mutex_unlock(mutex);
-
-    /*  */
-    ags_thread_start(async_queue);
-
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
   }
