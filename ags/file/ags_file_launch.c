@@ -48,6 +48,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_REFERENCE,
   PROP_NODE,
   PROP_FILE,
   PROP_APPLICATION_CONTEXT,
@@ -108,6 +109,14 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 				  PROP_NODE,
 				  param_spec);
 
+  param_spec = g_param_spec_pointer("reference\0",
+				    "the reference\0",
+				    "The reference to find the element\0",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REFERENCE,
+				  param_spec);
+
   param_spec = g_param_spec_object("file\0",
 				   "file assigned to\0",
 				   "The entire file assigned to\0",
@@ -143,6 +152,9 @@ void
 ags_file_launch_init(AgsFileLaunch *file_launch)
 {
   file_launch->application_context = NULL;
+
+  file_launch->reference = NULL;
+  
   file_launch->node = NULL;
   file_launch->file = NULL;
 }
@@ -165,6 +177,15 @@ ags_file_launch_set_property(GObject *gobject,
       node = (xmlNode *) g_value_get_pointer(value);
 
       file_launch->node = node;
+    }
+    break;
+  case PROP_REFERENCE:
+    {
+      gpointer ref;
+
+      ref = g_value_get_pointer(value);
+
+      file_launch->reference = ref;
     }
     break;
   case PROP_FILE:
@@ -217,6 +238,11 @@ ags_file_launch_get_property(GObject *gobject,
   case PROP_NODE:
     {
       g_value_set_pointer(value, file_launch->node);
+    }
+    break;
+  case PROP_REFERENCE:
+    {
+      g_value_set_pointer(value, file_launch->reference);
     }
     break;
   case PROP_FILE:

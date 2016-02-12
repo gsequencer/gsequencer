@@ -186,7 +186,7 @@ ags_start_soundcard_launch(AgsTask *task)
   
   ags_thread_start(AGS_THREAD(soundcard_thread));
   
-  if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(soundcard_thread)->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->flags)))) == 0){
     if(soundcard_thread->error != NULL){
       error = soundcard_thread->error;
 
