@@ -514,6 +514,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
     ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),
 				  AGS_THREAD(list->data),
 				  FALSE, FALSE);
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
     
     //    ags_thread_start(AGS_THREAD(list->data));
 

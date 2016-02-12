@@ -501,6 +501,33 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 void
 ags_devout_init(AgsDevout *devout)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  /* insert devout mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) devout,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* flags */
   devout->flags = (AGS_DEVOUT_ALSA);
 

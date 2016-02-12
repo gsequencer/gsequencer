@@ -163,7 +163,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 
   dssi_browser->path = NULL;
 
-  ags_dssi_manager_load_default_directory();
+  //  ags_dssi_manager_load_default_directory();
   filenames =
     filenames_start = ags_dssi_manager_get_filenames();
 
