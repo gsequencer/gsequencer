@@ -41,6 +41,8 @@ struct _AgsFileLaunch
 
   GObject *application_context;
 
+  gpointer reference;
+  
   xmlNode *node;
   GObject *file;
 };

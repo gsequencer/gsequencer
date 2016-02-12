@@ -35,23 +35,22 @@
 #define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
 
-#define AGS_ACCOUNTING_TABLE(ptr) ((AgsAccountingTable *)(ptr))
-
-#define USEC_PER_SEC    (1000000) /* The number of usecs per sec. */
+#define USEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
-
-#define AGS_PRIORITY (5)
-#define AGS_RT_PRIORITY (49)
 
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
-#define AGS_THREAD_DEFAULT_JIFFIE (250)
-#define AGS_THREAD_MAX_PRECISION (250)
+
+#define AGS_RT_PRIORITY (45)
+
+#define AGS_THREAD_HERTZ_JIFFIE (1000.0)
+#define AGS_THREAD_DEFAULT_JIFFIE (250.0)
+#define AGS_THREAD_MAX_PRECISION (250.0)
+
 #define AGS_THREAD_DEFAULT_ATTACK (1.0)
 
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
-typedef struct _AgsAccountingTable AgsAccountingTable;;
 
 typedef enum{
   AGS_THREAD_RUNNING                 = 1,
@@ -103,6 +102,13 @@ struct _AgsThread
   gboolean rt_setup;
   
   sigset_t wait_mask;
+
+  guint delay;
+  guint tic_delay;
+  guint current_tic;
+
+  guint cycle_iteration;
+  struct timespec *computing_time;
   
   pthread_t *thread;
   pthread_attr_t thread_attr;
@@ -159,6 +165,8 @@ struct _AgsThreadClass
 {
   GObjectClass object;
 
+  guint (*clock)(AgsThread *thread);
+  
   void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
   void (*suspend)(AgsThread *thread);
@@ -167,20 +175,10 @@ struct _AgsThreadClass
   void (*stop)(AgsThread *thread);
 };
 
-struct _AgsAccountingTable
-{
-  AgsThread *thread;
-  gdouble sanity;
-};
-
 GType ags_thread_get_type();
 
 void ags_thread_resume_handler(int sig);
 void ags_thread_suspend_handler(int sig);
-
-AgsAccountingTable* ags_accounting_table_alloc(AgsThread *thread);
-void ags_accounting_table_set_sanity(GList *table,
-				     AgsThread *thread, gdouble sanity);
 
 void ags_thread_set_sync(AgsThread *thread, guint tic);
 void ags_thread_set_sync_all(AgsThread *thread, guint tic);
@@ -228,6 +226,8 @@ void ags_thread_wait_children(AgsThread *thread);
 void ags_thread_signal_parent(AgsThread *thread, AgsThread *parent, gboolean broadcast);
 void ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast);
 void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
+
+guint ags_thread_clock(AgsThread *thread);
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);

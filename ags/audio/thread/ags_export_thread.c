@@ -180,7 +180,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
   str0 = ags_config_get_value(config,
 			AGS_CONFIG_SOUNDCARD,
 			"samplerate\0");
-  str0 = ags_config_get_value(config,
+  str1 = ags_config_get_value(config,
 			AGS_CONFIG_SOUNDCARD,
 			"buffer_size\0");
 
@@ -193,7 +193,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
     samplerate = g_ascii_strtoull(str0,
 				  NULL,
 				  10);
-    buffer_size = g_ascii_strtoull(str0,
+    buffer_size = g_ascii_strtoull(str1,
 				   NULL,
 				   10);
 
