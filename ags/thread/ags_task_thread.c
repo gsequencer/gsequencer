@@ -358,10 +358,16 @@ ags_task_thread_run(AgsThread *thread)
 
   pthread_mutex_unlock(task_thread->read_mutex);
 
-  /* async-queue run */
+  /* async queue */
+  pthread_mutex_lock(task_thread->run_mutex);
+  
   ags_async_queue_set_run(AGS_ASYNC_QUEUE(task_thread),
 			  TRUE);
-
+	
+  pthread_cond_broadcast(task_thread->run_cond);
+  
+  pthread_mutex_unlock(task_thread->run_mutex);
+  
   /* clean-up */
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   //  pango_cairo_font_map_set_default(NULL);

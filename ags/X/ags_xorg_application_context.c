@@ -67,7 +67,11 @@ AgsThread* ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *co
 AgsThread* ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 GList* ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider);
+void ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
+						GList *soundcar);
 GList* ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider);
+void ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
+						GList *sequencer);
 GList* ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_finalize(GObject *gobject);
 
@@ -205,7 +209,9 @@ void
 ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider)
 {
   sound_provider->get_soundcard = ags_xorg_application_context_get_soundcard;
+  sound_provider->set_soundcard = ags_xorg_application_context_set_soundcard;
   sound_provider->get_sequencer = ags_xorg_application_context_get_sequencer;
+  sound_provider->set_sequencer = ags_xorg_application_context_set_sequencer;
   sound_provider->get_distributed_manager = ags_xorg_application_context_get_distributed_manager;
 }
 
@@ -466,10 +472,24 @@ ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider)
   return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard);
 }
 
+void
+ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
+					   GList *soundcard)
+{
+  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard = soundcard;
+}
+
 GList*
 ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider)
 {
   return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer);
+}
+
+void
+ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
+					   GList *sequencer)
+{
+  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer = sequencer;
 }
 
 GList*

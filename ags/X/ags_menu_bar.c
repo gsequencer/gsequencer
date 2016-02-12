@@ -22,6 +22,20 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <ladspa.h>
+#include <lv2.h>
+#include <dssi.h>
+
 void ags_menu_bar_class_init(AgsMenuBarClass *menu_bar);
 void ags_menu_bar_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_menu_bar_init(AgsMenuBar *menu_bar);
@@ -171,9 +185,20 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("FPlayer\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
+  /* bridge */
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("DSSI\0"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Lv2\0"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  /* edit */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Automation\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
+  /*  */
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
@@ -309,25 +334,6 @@ ags_menu_bar_show(GtkWidget *widget)
   gtk_widget_show_all(widget);
 }
 
-/**
- * ags_menu_bar_new:
- *
- * Creates an #AgsMenuBar
- *
- * Returns: a new #AgsMenuBar
- *
- * Since: 0.3
- */
-AgsMenuBar*
-ags_menu_bar_new()
-{
-  AgsMenuBar *menu_bar;
-
-  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR,
-					 NULL);
-
-  return(menu_bar);
-}
 
 GtkMenu*
 ags_zoom_menu_new()
@@ -523,4 +529,142 @@ ags_tact_combo_box_new()
 				 "1/16\0");
 
   return((GtkComboBox *) combo_box);
+}
+
+GtkMenu*
+ags_dssi_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkImageMenuItem *item;
+
+  AgsDssiManager *dssi_manager;
+  
+  GList *list;
+
+  gchar *effect_name;
+
+  void *plugin_so;
+  DSSI_Descriptor_Function dssi_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
+  unsigned long index;
+
+  menu = (GtkMenu *) gtk_menu_new();
+  dssi_manager = ags_dssi_manager_get_instance();
+
+  list = dssi_manager->dssi_plugin;
+
+  while(list != NULL){
+    plugin_so = AGS_DSSI_PLUGIN(list->data)->plugin_so;
+    
+    if(plugin_so){
+      dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
+							 "dssi_descriptor\0");
+
+      if(dlerror() == NULL && dssi_descriptor){
+	for(index = 0; ; index++){
+	  
+	  plugin_descriptor = dssi_descriptor(index);
+	  
+	  if(plugin_descriptor == NULL){
+	    break;
+	  }
+	  
+	  effect_name = plugin_descriptor->LADSPA_Plugin->Name;
+	  
+	  item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strdup(effect_name));
+	  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);	  
+	}
+      }
+    }
+
+    list = list->next;
+  }
+  
+  return(menu);
+}
+
+GtkMenu*
+ags_lv2_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkImageMenuItem *item;
+
+  AgsLv2Manager *lv2_manager;
+  
+  AgsTurtle *turtle;
+
+  xmlNode *node;
+  
+  GList *list;
+  GList *effect_list;
+
+  gchar *effect_name;
+  
+  menu = (GtkMenu *) gtk_menu_new();
+
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  list = lv2_manager->lv2_plugin;
+
+  while(list != NULL){
+    turtle = AGS_LV2_PLUGIN(list->data)->turtle;
+    
+    if(turtle != NULL){
+      effect_list = ags_turtle_find_xpath(turtle,
+					  "//rdf-triple/rdf-predicate-object-list[//rdf-pname-ln[text() = 'doap:name']]/rdf-object-list//rdf-string[1]\0");
+
+      while(effect_list != NULL){
+	node = effect_list->data;
+	
+	if(node == NULL){
+	  effect_list = effect_list->next;
+	  
+	  continue;
+	}
+	  
+	effect_name = xmlNodeGetContent(node);
+
+	if(strlen(effect_name) < 2){
+	  effect_list = effect_list->next;
+	  
+	  continue;
+	}
+	
+	g_message("%s\0", effect_name);
+	
+	item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strndup(effect_name + 1,
+									   strlen(effect_name) - 2));
+	gtk_menu_shell_append((GtkMenuShell *) menu,
+			      (GtkWidget *) item);
+
+	break;
+	
+	effect_list = effect_list->next;
+      }
+    }
+
+    list = list->next;
+  }
+
+  return(menu);
+}
+
+/**
+ * ags_menu_bar_new:
+ *
+ * Creates an #AgsMenuBar
+ *
+ * Returns: a new #AgsMenuBar
+ *
+ * Since: 0.3
+ */
+AgsMenuBar*
+ags_menu_bar_new()
+{
+  AgsMenuBar *menu_bar;
+
+  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR,
+					 NULL);
+
+  return(menu_bar);
 }

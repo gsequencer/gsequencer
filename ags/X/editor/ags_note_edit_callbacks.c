@@ -1060,9 +1060,20 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
   AgsEditor *editor;
 
   AgsMachine *machine;
+
+  gboolean retval;
   
-  if(event->keyval == GDK_KEY_Tab){
-    return(FALSE);
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
   }
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
@@ -1135,7 +1146,7 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
     }
   }
 
-  return(TRUE);
+  return(retval);
 }
 
 gboolean
@@ -1153,6 +1164,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
   gint i;
   gboolean do_feedback;
+  gboolean retval;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
@@ -1268,8 +1280,17 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     ags_task_thread_append_tasks(task_thread, tasks);
   }
 
-  if(event->keyval == GDK_KEY_Tab){
-    return(FALSE);
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
   }
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
@@ -1612,7 +1633,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     }
   }
 
-  return(TRUE);
+  return(retval);
 }
 
 void

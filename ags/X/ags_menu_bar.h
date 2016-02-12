@@ -49,12 +49,15 @@ struct _AgsMenuBarClass
 
 GType ags_menu_bar_get_type(void);
 
-AgsMenuBar* ags_menu_bar_new();
-
 GtkMenu* ags_zoom_menu_new();
 GtkMenu* ags_tact_menu_new();
 
 GtkComboBox* ags_zoom_combo_box_new();
 GtkComboBox* ags_tact_combo_box_new();
+
+GtkMenu *ags_dssi_bridge_menu_new();
+GtkMenu *ags_lv2_bridge_menu_new();
+
+AgsMenuBar* ags_menu_bar_new();
 
 #endif /*__AGS_MENU_BAR_H__*/
