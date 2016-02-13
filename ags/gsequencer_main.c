@@ -319,10 +319,9 @@ main(int argc, char **argv)
     guint val;
 
     /* wait for audio loop */
-    thread_pool->parent = audio_loop;
-
     task_thread = ags_thread_find_type(audio_loop,
 				       AGS_TYPE_TASK_THREAD);
+    thread_pool->parent = task_thread;
 
     gui_thread = ags_thread_find_type(audio_loop,
 				      AGS_TYPE_GUI_THREAD);
@@ -385,13 +384,14 @@ main(int argc, char **argv)
     pthread_mutex_lock(gui_thread->start_mutex);
 
     if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      guint val;
-    
+      
       g_atomic_int_set(&(gui_thread->start_wait),
 		       TRUE);
-      
-      while(g_atomic_int_get(&(gui_thread->start_wait)) == TRUE &&
-	    g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+
+      while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+	g_atomic_int_set(&(gui_thread->start_wait),
+			 TRUE);
+	
 	pthread_cond_wait(gui_thread->start_cond,
 			  gui_thread->start_mutex);
       }

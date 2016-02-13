@@ -22,12 +22,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio.h>
@@ -166,8 +160,6 @@ ags_init_audio_launch(AgsTask *task)
   AgsAudio *audio;
   AgsRecallID *recall_id;
 
-  AgsThread *main_loop;
-
   AgsApplicationContext *application_context;
   
   GList *playback;
@@ -180,13 +172,10 @@ ags_init_audio_launch(AgsTask *task)
 
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
-  main_loop = application_context->main_loop;
-  
   g_message("init\0");
   
   /* init audio */
   if(init_audio->do_playback){
-    GList *start_queue;
     
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_PLAYBACK);
@@ -195,34 +184,17 @@ ags_init_audio_launch(AgsTask *task)
     
     list = ags_audio_recursive_play_init(audio,
 					 TRUE, FALSE, FALSE);
-    start_queue = NULL;
-
+    
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[0] = list->data;
       g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
 		      AGS_PLAYBACK_PLAYBACK);
 
-      start_queue = g_list_prepend(start_queue,
-				   AGS_PLAYBACK(playback->data)->channel_thread[0]);
-      
       playback = playback->next;
-    }
-
-    if(start_queue != NULL){
-      if(g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue)) != NULL){
-	g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-			     g_list_concat(start_queue,
-					   g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue))));
-      }else{
-	g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-			     start_queue);
-      }
     }
   }
 
-  if(init_audio->do_sequencer){
-    GList *start_queue;
-    
+  if(init_audio->do_sequencer){    
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_SEQUENCER);
 
@@ -230,28 +202,13 @@ ags_init_audio_launch(AgsTask *task)
 
     list = ags_audio_recursive_play_init(audio,
 					 FALSE, TRUE, FALSE);
-    start_queue = NULL;
 
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[1] = list->data;
       g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
 		      AGS_PLAYBACK_SEQUENCER);
       
-      start_queue = g_list_prepend(start_queue,
-				   AGS_PLAYBACK(playback->data)->channel_thread[1]);
-      
       playback = playback->next;
-    }
-
-    if(start_queue != NULL){
-      if(g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue)) != NULL){
-	g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-			     g_list_concat(start_queue,
-					   g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue))));
-      }else{
-	g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-			     start_queue);
-      }
     }
   }
 
@@ -263,29 +220,12 @@ ags_init_audio_launch(AgsTask *task)
 
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
-    list = ags_audio_recursive_play_init(audio,
-					 FALSE, FALSE, TRUE);
-
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[2] = list->data;
       g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
 		      AGS_PLAYBACK_NOTATION);
 
-      start_queue = g_list_prepend(start_queue,
-				   AGS_PLAYBACK(playback->data)->channel_thread[2]);
-
       playback = playback->next;
-    }
-
-    if(start_queue != NULL){
-      if(g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue)) != NULL){
-	g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-			     g_list_concat(start_queue,
-					   g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue))));
-      }else{
-	g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-			     start_queue);
-      }
     }
   }
 }

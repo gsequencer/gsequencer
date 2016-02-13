@@ -195,7 +195,7 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
 			"samplerate\0");
   str1 = ags_config_get_value(config,
 			AGS_CONFIG_SOUNDCARD,
-			"buffer_size\0");
+			"buffer-size\0");
 
   if(str0 == NULL || str1 == NULL){
     thread->freq = AGS_AUDIO_THREAD_DEFAULT_JIFFIE;
@@ -359,31 +359,6 @@ ags_audio_thread_finalize(GObject *gobject)
 void
 ags_audio_thread_start(AgsThread *thread)
 {
-  AgsThread *child;
-  
-  GList *start_queue;
-
-  child = g_atomic_pointer_get(&(thread->children));
-  start_queue = NULL;
-
-  while(child != NULL){
-    start_queue = g_list_prepend(start_queue,
-				 child);
-
-    child = child->next;
-  }
-  
-  if(start_queue != NULL){
-    if(g_atomic_pointer_get(&(AGS_THREAD(thread)->start_queue)) != NULL){
-      g_atomic_pointer_set(&(AGS_THREAD(thread)->start_queue),
-			   g_list_concat(start_queue,
-					 g_atomic_pointer_get(&(AGS_THREAD(thread)->start_queue))));
-    }else{
-      g_atomic_pointer_set(&(AGS_THREAD(thread)->start_queue),
-			       start_queue);
-    }
-  }
-
   /* reset status */
   g_atomic_int_or(&(AGS_AUDIO_THREAD(thread)->flags),
 		   (AGS_AUDIO_THREAD_WAIT |
@@ -437,12 +412,11 @@ ags_audio_thread_run(AgsThread *thread)
   
   /* start - wait until signaled */
   pthread_mutex_lock(audio_thread->wakeup_mutex);
+        
+  if((AGS_AUDIO_THREAD_WAIT & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
+    g_atomic_int_and(&(audio_thread->flags),
+		     (~AGS_AUDIO_THREAD_DONE));
     
-  g_atomic_int_and(&(audio_thread->flags),
-		   (~AGS_AUDIO_THREAD_DONE));
-    
-  if((AGS_AUDIO_THREAD_WAIT & (g_atomic_int_get(&(audio_thread->flags)))) != 0 &&
-     (AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
     while((AGS_AUDIO_THREAD_WAIT & (g_atomic_int_get(&(audio_thread->flags)))) != 0 &&
 	  (AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
       pthread_cond_wait(audio_thread->wakeup_cond,
@@ -679,11 +653,10 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
   
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback->channel_thread[1]->flags)))) != 0){
 
-      g_atomic_int_and(&(channel_thread->flags),
-		       (~AGS_CHANNEL_THREAD_DONE_SYNC));
-
-      if((AGS_CHANNEL_THREAD_DONE_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
-	 (AGS_CHANNEL_THREAD_WAIT_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
+      if((AGS_CHANNEL_THREAD_WAIT_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
+	g_atomic_int_and(&(channel_thread->flags),
+			 (~AGS_CHANNEL_THREAD_DONE_SYNC));
+      
 	while((AGS_CHANNEL_THREAD_DONE_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
 	      (AGS_CHANNEL_THREAD_WAIT_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
 	  pthread_cond_wait(channel_thread->done_cond,
@@ -710,12 +683,11 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback->channel_thread[2]->flags)))) != 0){
 
-      g_atomic_int_and(&(channel_thread->flags),
-		       (~AGS_CHANNEL_THREAD_DONE_SYNC));
-    
-      if((AGS_CHANNEL_THREAD_DONE_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
-	 (AGS_CHANNEL_THREAD_WAIT_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
+      if((AGS_CHANNEL_THREAD_WAIT_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
 
+	g_atomic_int_and(&(channel_thread->flags),
+			 (~AGS_CHANNEL_THREAD_DONE_SYNC));
+    
 	while((AGS_CHANNEL_THREAD_DONE_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
 	      (AGS_CHANNEL_THREAD_WAIT_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
 	  pthread_cond_wait(channel_thread->done_cond,

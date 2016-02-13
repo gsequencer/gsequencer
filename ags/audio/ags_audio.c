@@ -801,16 +801,6 @@ ags_audio_init(AgsAudio *audio)
   audio->playback_domain = ags_playback_domain_new();
   AGS_PLAYBACK_DOMAIN(audio->playback_domain)->domain = (GObject *) audio;
 
-  
-  g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-	       "audio\0", audio,
-	       NULL);
-
-  g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
-	       "audio\0", audio,
-	       NULL);
-
-  /** /
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
@@ -850,7 +840,6 @@ ags_audio_init(AgsAudio *audio)
 
   free(str0);
   free(str1);
-  */
   
   audio->notation = NULL;
   audio->automation = NULL;
@@ -1579,13 +1568,17 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   audio->soundcard = (GObject *) soundcard;
 
   /* playback domain */
-  g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-	       "soundcard\0", soundcard,
-	       NULL);
-  
-  g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
-	       "soundcard\0", soundcard,
-	       NULL);
+  if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] != NULL){
+    g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
+		 "soundcard\0", soundcard,
+		 NULL);
+  }
+
+  if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] != NULL){
+    g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
+		 "soundcard\0", soundcard,
+		 NULL);
+  }
   
   /* recall */
   list = audio->play;

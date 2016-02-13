@@ -381,6 +381,9 @@ ags_thread_pool_creation_thread(void *ptr)
 	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
 			     g_list_concat(start_queue,
 					   g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
+      }else{
+	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
+			     start_queue);
       }
     }
     
@@ -526,6 +529,9 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
       g_atomic_pointer_set(&(thread_pool->parent->start_queue),
 			   g_list_concat(start_queue,
 					 g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
+    }else{
+      g_atomic_pointer_set(&(thread_pool->parent->start_queue),
+			   start_queue);
     }
   }
 }

@@ -182,7 +182,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
 			"samplerate\0");
   str1 = ags_config_get_value(config,
 			AGS_CONFIG_SOUNDCARD,
-			"buffer_size\0");
+			"buffer-size\0");
 
   if(str0 == NULL || str1 == NULL){
     thread->freq = AGS_EXPORT_THREAD_DEFAULT_JIFFIE;

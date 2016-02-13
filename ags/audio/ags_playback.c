@@ -113,9 +113,9 @@ ags_playback_init(AgsPlayback *playback)
   /* super threaded channel */
   playback->channel_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
 
-  playback->channel_thread[0] = ags_channel_thread_new(NULL, NULL);
-  playback->channel_thread[1] = ags_channel_thread_new(NULL, NULL);
-  playback->channel_thread[2] = ags_channel_thread_new(NULL, NULL);
+  playback->channel_thread[0] = NULL;
+  playback->channel_thread[1] = NULL;
+  playback->channel_thread[2] = NULL;
 
   /* iterator thread */
   playback->iterator_thread = (AgsIteratorThread **) malloc(3 * sizeof(AgsIteratorThread *));

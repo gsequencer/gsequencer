@@ -607,19 +607,7 @@ ags_channel_init(AgsChannel *channel)
   channel->playback = ags_playback_new();
   AGS_PLAYBACK(channel->playback)->source = (GObject *) channel;
 
-  g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[0],
-	       "channel\0", channel,
-	       NULL);
-
-  g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[1],
-	       "channel\0", channel,
-	       NULL);
-
-  g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[2],
-	       "channel\0", channel,
-	       NULL);
-
-  /* config * /
+  /* config */
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
@@ -663,7 +651,6 @@ ags_channel_init(AgsChannel *channel)
  
   free(str0);
   free(str1);
- */
    
   channel->recall_id = NULL;
   channel->container = NULL;
@@ -1767,17 +1754,23 @@ ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard)
   channel->soundcard = (GObject *) soundcard;
 
   /* playback */
-  g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[0],
-	       "soundcard\0", soundcard,
-	       NULL);
-
-  g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[1],
-	       "soundcard\0", soundcard,
-	       NULL);
-
-  g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[2],
-	       "soundcard\0", soundcard,
-	       NULL);
+  if(AGS_PLAYBACK(channel->playback)->channel_thread[0] != NULL){
+    g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[0],
+		 "soundcard\0", soundcard,
+		 NULL);
+  }
+    
+  if(AGS_PLAYBACK(channel->playback)->channel_thread[1] != NULL){
+    g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[1],
+		 "soundcard\0", soundcard,
+		 NULL);
+  }
+  
+  if(AGS_PLAYBACK(channel->playback)->channel_thread[2] != NULL){
+    g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[2],
+		 "soundcard\0", soundcard,
+		 NULL);
+  }
   
   /* recall */
   list = channel->play;
