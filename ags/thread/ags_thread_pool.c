@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <stdlib.h>
@@ -314,14 +315,28 @@ ags_thread_pool_creation_thread(void *ptr)
 {
   AgsThreadPool *thread_pool;
   AgsThread *thread;
-
+  AgsMutexManager *mutex_manager;
+  
   GList *tmplist;
   GList *start_queue;
 
   guint n_threads, max_threads;
   guint i, i_stop;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *parent_mutex;
   
   thread_pool = AGS_THREAD_POOL(ptr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  parent_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  thread_pool->parent);
+  
+  pthread_mutex_unlock(application_mutex);
   
 #ifdef AGS_DEBUG
   g_message("ags_thread_pool_creation_thread\0");
@@ -376,6 +391,8 @@ ags_thread_pool_creation_thread(void *ptr)
       }
     }
 
+    pthread_mutex_lock(parent_mutex);
+    
     if(start_queue != NULL){
       if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
 	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
@@ -386,6 +403,8 @@ ags_thread_pool_creation_thread(void *ptr)
 			     start_queue);
       }
     }
+
+    pthread_mutex_unlock(parent_mutex);
     
     pthread_mutex_unlock(thread_pool->creation_mutex);
     
