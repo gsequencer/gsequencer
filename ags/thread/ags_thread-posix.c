@@ -1007,14 +1007,16 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
 {
   AgsThread *toplevel;
 
-  if(thread == NULL || child == NULL){
+  if(thread == NULL ||
+     child == NULL ||
+     g_atomic_pointer_get(&(child->parent)) == thread){
     return;
   }
 
   toplevel = ags_thread_get_toplevel(thread);
 
   if(g_atomic_pointer_get(&(child->parent)) != NULL){
-    ags_thread_remove_child(child->parent, child);
+    ags_thread_remove_child(g_atomic_pointer_get(&(child->parent)), child);
   }
 
   /*  */

@@ -592,38 +592,41 @@ GObject*
 ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 {
   AgsJackClient *default_client;
-  AgsJackPort *default_soundcard;
-
+  AgsJackPort *soundcard;
   gchar *str;
-
-  default_client = jack_server->default_client;
-
-  if(default_client == NULL){
-    jack_server->default_client = 
-      default_client = ags_jack_client_new(jack_server);
+    
+  /* the default client */
+  if(jack_server->default_client == NULL){
+    jack_server->default_client = ags_jack_client_new(jack_server);
     ags_jack_server_add_client(jack_server,
-			       default_client);
+			       jack_server->default_client);
     
     ags_jack_client_open(jack_server->default_client,
 			 g_strdup("ags-default-client\0"));
+
+    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
+      g_warning("ags_jack_server.c - can't open JACK client");
+      
+      return;
+    }
   }
 
-  str = g_strdup_printf("ags-soundcard-%04d\0",
-			jack_server->n_soundcards);
+  default_client = jack_server->default_client;
 
-  jack_server->default_soundcard = 
-    default_soundcard = ags_jack_port_new(default_client);
-  ags_jack_client_add_port(default_client,
-			   default_soundcard);
+  /* register soundcard */
+  str = g_strdup("ags-soundcard-default\0");
+  g_message("%s\0", str);
   
-  ags_jack_port_register(default_soundcard,
+  soundcard = ags_jack_port_new(default_client);
+  ags_jack_client_add_port(default_client,
+			   soundcard);
+  
+  ags_jack_port_register(soundcard,
 			 str,
 			 TRUE, FALSE,
 			 TRUE);
-
-  jack_server->n_soundcards += 1;
   
-  return(default_soundcard->device);
+  return(soundcard->device);
 }
 
 /**
