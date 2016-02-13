@@ -638,6 +638,24 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   }
 
   flags = g_atomic_int_get(&(thread->flags));
+  
+  switch(thread->current_tic){
+  case 0:
+    {
+      thread->current_tic = 1;
+    }
+    break;
+  case 1:
+    {
+      thread->current_tic = 2;
+    }
+    break;
+  case 2:
+    {
+      thread->current_tic = 0;
+    }
+    break;
+  }
 
   switch(tic){
   case 0:
@@ -1208,13 +1226,7 @@ ags_thread_is_current_ready(AgsThread *current,
     retval = TRUE;
   }
 
-  if(retval){
-    //    pthread_mutex_unlock(current->mutex);
-
-    return(TRUE);
-  }
-
-  if(current->current_tic == tic){
+  if(tic == ags_main_loop_get_tic(AGS_MAIN_LOOP(toplevel))){
     retval = TRUE;
   }
 
@@ -1256,7 +1268,35 @@ ags_thread_is_tree_ready(AgsThread *thread,
     }
 
     if(tic == current->current_tic){
+
+      switch(tic){
+      case 0:
+	{
+	  if((AGS_THREAD_WAIT_0 & flags) != 0){
+	    retval = TRUE;
+	  }
+	}
+	break;
+      case 1:
+	{
+	  if((AGS_THREAD_WAIT_1 & flags) != 0){
+	    retval = TRUE;
+	  }
+	}
+	break;
+      case 2:
+	{
+	  if((AGS_THREAD_WAIT_2 & flags) != 0){
+	    retval = TRUE;
+	  }
+	}
+	break;
+      }
+      
       //      g_message("%d %d\0", tic, current->current_tic);
+    }
+
+    if(thread == current){
       retval = TRUE;
     }
     
@@ -1897,38 +1937,41 @@ ags_thread_real_clock(AgsThread *thread)
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
     if(!ags_thread_is_tree_ready(thread,
-				 thread->current_tic)){
-      switch(thread->current_tic){
-      case 0:
-	{
-	  g_atomic_int_or(&(thread->flags),
-			  AGS_THREAD_WAIT_0);
-	}
-	break;
-      case 1:
-	{
-	  g_atomic_int_or(&(thread->flags),
-			  AGS_THREAD_WAIT_1);
-	}
-	break;
-      case 2:
-	{
-	  g_atomic_int_or(&(thread->flags),
-			  AGS_THREAD_WAIT_2);
-	}
-	break;
-      }
-      
+				 thread->current_tic)){      
       pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
       
       //      ags_thread_hangcheck(main_loop);
       pthread_mutex_lock(thread->mutex);
-      
-      while(!ags_thread_is_current_ready(thread,
-					 thread->current_tic)){
-      
-	pthread_cond_wait(thread->cond,
-			  thread->mutex);
+
+      if(!ags_thread_is_current_ready(thread,
+				      thread->current_tic)){
+	switch(thread->current_tic){
+	case 0:
+	  {
+	    g_atomic_int_or(&(thread->flags),
+			    AGS_THREAD_WAIT_0);
+	  }
+	  break;
+	case 1:
+	  {
+	    g_atomic_int_or(&(thread->flags),
+			    AGS_THREAD_WAIT_1);
+	  }
+	  break;
+	case 2:
+	  {
+	    g_atomic_int_or(&(thread->flags),
+			    AGS_THREAD_WAIT_2);
+	  }
+	  break;
+	}
+
+	while(!ags_thread_is_current_ready(thread,
+					   thread->current_tic)){
+	  
+	  pthread_cond_wait(thread->cond,
+			    thread->mutex);
+	}
       }
       
       pthread_mutex_unlock(thread->mutex);
@@ -1942,11 +1985,11 @@ ags_thread_real_clock(AgsThread *thread)
       }
 
       /* thread tree */
-      ags_thread_set_sync_all(main_loop, thread->current_tic);
-      
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), thread->current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), thread->current_tic);
       
+      ags_thread_set_sync_all(main_loop, thread->current_tic);
+
       pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
     }
   }
@@ -2274,7 +2317,11 @@ ags_thread_loop(void *ptr)
 		  (AGS_THREAD_RUNNING |
 		   AGS_THREAD_INITIAL_RUN));
 
+  pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+
   thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+  pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
   running = g_atomic_int_get(&(thread->flags));
   
@@ -2288,25 +2335,6 @@ ags_thread_loop(void *ptr)
   }
   
   while((AGS_THREAD_RUNNING & running) != 0){
-    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
-      switch(thread->current_tic){
-      case 0:
-	{
-	  thread->current_tic = 1;
-	}
-	break;
-      case 1:
-	{
-	  thread->current_tic = 2;
-	}
-	break;
-      case 2:
-	{
-	thread->current_tic = 0;
-	}
-	break;
-      }
-    }
     
     /* start queue */
     pthread_mutex_lock(mutex);
@@ -2585,10 +2613,10 @@ ags_thread_loop(void *ptr)
 			      FALSE);
     }
 
-    ags_thread_set_sync_all(main_loop, thread->current_tic);
-
     ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), thread->current_tic);
     ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), thread->current_tic);
+
+    ags_thread_set_sync_all(main_loop, thread->current_tic);
   }
   
   if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
