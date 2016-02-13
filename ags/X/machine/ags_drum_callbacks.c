@@ -449,8 +449,6 @@ ags_drum_tact_callback(AgsAudio *audio,
   
   pthread_mutex_unlock(application_mutex);
 
-  pthread_mutex_lock(audio_mutex);
-
   /* get window and application_context  */
   window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) drum, AGS_TYPE_WINDOW));
   
@@ -468,6 +466,8 @@ ags_drum_tact_callback(AgsAudio *audio,
 						       AGS_TYPE_TASK_THREAD);
 
   /* get some recalls */
+  pthread_mutex_lock(audio_mutex);
+
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO);
   
@@ -485,6 +485,7 @@ ags_drum_tact_callback(AgsAudio *audio,
 
   if(play_count_beats_audio == NULL ||
      play_count_beats_audio_run == NULL){
+    pthread_mutex_unlock(audio_mutex);
     return;
   }
 
@@ -503,6 +504,8 @@ ags_drum_tact_callback(AgsAudio *audio,
     active_led_old = (guint) (drum->pattern_box->active_led - 1.0) % AGS_PATTERN_BOX_N_CONTROLS;
   }
 
+  g_message("do\0");
+  
   toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(drum->pattern_box->led)),
 				  (guint) active_led_new,
 				  (guint) active_led_old);

@@ -450,7 +450,6 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 				     *groups,
 				     *keys,
 				     NULL);
-
 	ags_config_set_value(config,
 		       *groups,
 		       *keys,

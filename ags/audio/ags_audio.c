@@ -801,7 +801,16 @@ ags_audio_init(AgsAudio *audio)
   audio->playback_domain = ags_playback_domain_new();
   AGS_PLAYBACK_DOMAIN(audio->playback_domain)->domain = (GObject *) audio;
 
-  /**/
+  
+  g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
+	       "audio\0", audio,
+	       NULL);
+
+  g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
+	       "audio\0", audio,
+	       NULL);
+
+  /** /
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
@@ -841,6 +850,7 @@ ags_audio_init(AgsAudio *audio)
 
   free(str0);
   free(str1);
+  */
   
   audio->notation = NULL;
   audio->automation = NULL;
@@ -1568,6 +1578,15 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
 
   audio->soundcard = (GObject *) soundcard;
 
+  /* playback domain */
+  g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
+	       "soundcard\0", soundcard,
+	       NULL);
+  
+  g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
+	       "soundcard\0", soundcard,
+	       NULL);
+  
   /* recall */
   list = audio->play;
   
@@ -3431,9 +3450,9 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   /* initial checks */
   pthread_mutex_lock(mutex);
   
-#ifdef AGS_DEBUG
+  //#ifdef AGS_DEBUG
   g_message("ags_audio_duplicate_recall: %s - audio.lines[%u,%u]\n\0", G_OBJECT_TYPE_NAME(audio->machine), audio->output_lines, audio->input_lines);  
-#endif
+  //#endif
 
   playback = FALSE;
   sequencer = FALSE;

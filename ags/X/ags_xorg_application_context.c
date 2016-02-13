@@ -48,6 +48,11 @@
 
 #include <sys/mman.h>
 
+#include <jack/jslist.h>
+#include <jack/jack.h>
+#include <jack/control.h>
+#include <stdbool.h>
+
 void ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_application_context);
 void ags_xorg_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_xorg_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
@@ -228,7 +233,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   AgsJackServer *jack_server;
   
   AgsConfig *config;
-  
+
+  JSList *jslist;
   struct passwd *pw;
   uid_t uid;
   gchar *wdir, *config_file;
@@ -258,14 +264,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   g_free(wdir);
   g_free(config_file);
-  
-  /* AgsSoundcard */
-  xorg_application_context->soundcard = NULL;
-
-  soundcard = ags_devout_new(xorg_application_context);
-  xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
-						       soundcard);
-  g_object_ref(G_OBJECT(soundcard));
 
   /* distributed manager */
   xorg_application_context->distributed_manager = NULL;
@@ -275,7 +273,32 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->distributed_manager = g_list_prepend(xorg_application_context->distributed_manager,
 								 jack_server);
   g_object_ref(G_OBJECT(jack_server));
-  
+
+  /* AgsSoundcard */
+  xorg_application_context->soundcard = NULL;
+
+  soundcard = ags_devout_new(xorg_application_context);
+  xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
+						       soundcard);
+  g_object_ref(G_OBJECT(soundcard));
+
+  jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
+  //  jackctl_server_start(jack_server->jackctl);
+  jackctl_server_open(jack_server->jackctl,
+  		      jslist->data);
+    
+  soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+							 TRUE);
+  xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
+						       soundcard);
+  g_object_ref(G_OBJECT(soundcard));
+
+  if(soundcard != NULL){
+    xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
+							 soundcard);
+    g_object_ref(G_OBJECT(soundcard));
+  }
+
   /* AgsSequencer */
   xorg_application_context->sequencer = NULL;
 
