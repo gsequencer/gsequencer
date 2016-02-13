@@ -182,22 +182,6 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 				  param_spec);
 
   /**
-   * AgsRecycling:channel:
-   *
-   * The assigned #AgsChannel.
-   * 
-   * Since: 0.7.2
-   */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel it is assigned with\0",
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CHANNEL,
-				  param_spec);
-
-  /**
    * AgsRecycling:parent:
    *
    * The assigned parent #AgsRecycling.

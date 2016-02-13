@@ -248,11 +248,11 @@ ags_append_audio_launch(AgsTask *task)
   free(str1);
   
   /* add to server registry */
-  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
+  //  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
 
-  if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->audio));
-  }
+  //  if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
+  //    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->audio));
+  //  }
 }
 
 /**

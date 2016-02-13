@@ -53,6 +53,11 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
+#include <jack/jslist.h>
+#include <jack/jack.h>
+#include <jack/control.h>
+#include <stdbool.h>
+
 #include <libintl.h>
 #include <stdio.h>
 #include <signal.h>
@@ -227,6 +232,8 @@ main(int argc, char **argv)
   /**/
   LIBXML_TEST_VERSION;
 
+  jackctl_setup_signals(0);
+  
   g_thread_init(NULL);
   gdk_threads_enter();
   gtk_init(&argc, &argv);
@@ -238,7 +245,7 @@ main(int argc, char **argv)
   
   dssi_manager = ags_dssi_manager_get_instance();
   ags_dssi_manager_load_default_directory();
-  
+    
   lv2_manager = ags_lv2_manager_get_instance();
   ags_lv2_manager_load_default_directory();
   

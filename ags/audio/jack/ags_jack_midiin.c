@@ -923,7 +923,7 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   jack_set_process_callback(AGS_JACK_PORT(jack_midiin->jack_port)->jack_client,
 			    ags_jack_midiin_process_thread,
 			    jack_midiin);
-  jack_activate(AGS_JACK_PORT(jack_midiin->jack_port));
+  jack_activate(AGS_JACK_PORT(jack_midiin->jack_port)->port);
 
   /*  */
   jack_midiin->tact_counter = 0.0;

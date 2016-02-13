@@ -23,7 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <jack/jslist.h>
 #include <jack/jack.h>
+#include <jack/control.h>
+#include <stdbool.h>
 
 #define AGS_TYPE_JACK_SERVER                (ags_jack_server_get_type())
 #define AGS_JACK_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_SERVER, AgsJackServer))
@@ -52,6 +55,7 @@ struct _AgsJackServer
   GObject *application_context;
 
   gchar *url;
+  jackctl_server_t *jackctl;
   
   guint *port;
   guint port_count;

@@ -686,6 +686,7 @@ ags_devout_set_property(GObject *gobject,
 	devout->out.alsa.device = g_strdup(ags_config_get_value(config,
 								AGS_CONFIG_SOUNDCARD,
 								"alsa-handle\0"));
+	g_message("device %s\n", devout->out.alsa.device);
 
 	ags_devout_adjust_delay_and_attack(devout);
 	ags_devout_realloc_buffer(devout);

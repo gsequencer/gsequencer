@@ -736,8 +736,8 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     pthread_mutex_unlock(mutex);
     return;
   }
-  
-#ifdef AGS_DEBUG
+
+  //#ifdef AGS_DEBUG
   g_message("add %s:%x -> %x @ %x\0",
 	    G_OBJECT_TYPE_NAME(recall),
 	    recall->recall_id,
@@ -754,13 +754,14 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   if(!AGS_IS_INPUT(source->channel)){
     g_message("ags_recall_recycling_source_add_audio_signal_callback[%s]\0", G_OBJECT_TYPE_NAME(recall));
   }
-#endif
+  //#endif
 
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
     g_object_set(G_OBJECT(recall_recycling),
 		 "child_source\0", audio_signal,
 		 NULL);
   }
+
 
   if(AGS_RECALL(recall_recycling)->child_type != G_TYPE_NONE){
     recall_audio_signal = g_object_new(AGS_RECALL(recall_recycling)->child_type,
@@ -777,7 +778,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     
     ags_recall_add_child(AGS_RECALL(recall_recycling), AGS_RECALL(recall_audio_signal));
   }
-  
+
   pthread_mutex_unlock(mutex);
 }
 
