@@ -55,7 +55,7 @@ void ags_soundcard_stopped_all_callback(AgsAudioLoop *audio_loop,
  * @short_description: soundcard thread
  * @title: AgsSoundcardThread
  * @section_id:
- * @include: ags/thread/ags_soundcard_thread.h
+ * @include: ags/audio/thread/ags_soundcard_thread.h
  *
  * The #AgsSoundcardThread acts as audio output thread to soundcard.
  */
@@ -167,7 +167,7 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   soundcard_thread->soundcard = NULL;
 
   soundcard_thread->timestamp_thread = ags_timestamp_thread_new();
-  ags_thread_add_child(thread, soundcard_thread->timestamp_thread);
+  //  ags_thread_add_child(thread, soundcard_thread->timestamp_thread);
 
   soundcard_thread->error = NULL;
 }
@@ -222,6 +222,9 @@ ags_soundcard_thread_get_property(GObject *gobject,
       g_value_set_object(value, G_OBJECT(soundcard_thread->soundcard));
     }
     break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
   }
 }
 
@@ -273,7 +276,7 @@ ags_soundcard_thread_start(AgsThread *thread)
 
   /* abort if already playing */
   if(ags_soundcard_is_playing(soundcard)){
-    return;
+    //    return;
   }
 
   /* check if already initialized */
@@ -283,9 +286,9 @@ ags_soundcard_thread_start(AgsThread *thread)
     ags_soundcard_play_init(soundcard,
 			    &(soundcard_thread->error));
       
-#ifdef AGS_DEBUG
+    //#ifdef AGS_DEBUG
     g_message("ags_devout_alsa_play\0");
-#endif
+    //#endif
   }
 
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -305,15 +308,15 @@ ags_soundcard_thread_run(AgsThread *thread)
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
 
-  if(ags_soundcard_is_playing(soundcard)){
+  //  if(ags_soundcard_is_playing(soundcard)){
     error = NULL;
     ags_soundcard_play(soundcard,
 		       &error);
-    
+    g_message("play\0");
     if(error != NULL){
       //TODO:JK: implement me
     }
-  }
+    //  }
 }
 
 void

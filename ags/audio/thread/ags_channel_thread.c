@@ -188,7 +188,7 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
 			      "samplerate\0");
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_SOUNDCARD,
-			      "buffer_size\0");
+			      "buffer-size\0");
 
   if(str0 == NULL || str1 == NULL){
     thread->freq = AGS_CHANNEL_THREAD_DEFAULT_JIFFIE;
@@ -420,11 +420,12 @@ ags_channel_thread_run(AgsThread *thread)
   /* start - wait until signaled */
   pthread_mutex_lock(channel_thread->wakeup_mutex);
 
-  g_atomic_int_and(&(channel_thread->flags),
-		   (~AGS_CHANNEL_THREAD_DONE));
-  
   if((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
      (AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
+
+    g_atomic_int_and(&(channel_thread->flags),
+		     (~AGS_CHANNEL_THREAD_DONE));
+    
     while((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
 	  (AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
       pthread_cond_wait(channel_thread->wakeup_cond,

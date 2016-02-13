@@ -166,11 +166,13 @@ ags_start_soundcard_launch(AgsTask *task)
 			AGS_AUDIO_LOOP_PLAY_CHANNEL |
 			AGS_AUDIO_LOOP_PLAY_RECALL);
 
+  /*
   if(ags_soundcard_is_starting(soundcard) ||
      ags_soundcard_is_playing(soundcard)){
     return;
   }
-
+  */
+  
   soundcard_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
@@ -188,6 +190,9 @@ ags_start_soundcard_launch(AgsTask *task)
       g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
 			   g_list_concat(start_queue,
 					 g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
+    }else{
+      g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			   start_queue);
     }
   }
 }

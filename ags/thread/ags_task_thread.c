@@ -275,15 +275,6 @@ ags_task_thread_start(AgsThread *thread)
 
   task_thread = AGS_TASK_THREAD(thread);
 
-  if(task_thread->thread_pool != NULL &&
-     (AGS_THREAD_POOL_RUNNING & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
-    ags_thread_pool_start(task_thread->thread_pool);
-
-    while((AGS_THREAD_POOL_READY & (g_atomic_int_get(&(task_thread->thread_pool->flags)))) == 0){
-      usleep(500000);
-    }
-  }
-
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AGS_THREAD_CLASS(ags_task_thread_parent_class)->start(thread);
   }
@@ -336,9 +327,9 @@ ags_task_thread_run(AgsThread *thread)
     for(i = 0; i < g_atomic_int_get(&(task_thread->pending)); i++){
       task = AGS_TASK(list->data);
 
-#ifdef AGS_DEBUG
+      //#ifdef AGS_DEBUG
       g_message("ags_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
-#endif
+      //#endif
 
       ags_task_launch(task);
       

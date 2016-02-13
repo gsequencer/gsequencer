@@ -700,7 +700,7 @@ ags_jack_devout_set_property(GObject *gobject,
 	jack_devout->card_uri = g_strdup(ags_config_get_value(config,
 							      AGS_CONFIG_SOUNDCARD,
 							      "jack-uri\0"));
-	jack_devout->jack_port = NULL;
+	//	jack_devout->jack_port = NULL;
 
 	ags_jack_devout_adjust_delay_and_attack(jack_devout);
 	ags_jack_devout_realloc_buffer(jack_devout);

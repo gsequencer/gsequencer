@@ -111,8 +111,8 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   playback_domain->audio_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
 
   playback_domain->audio_thread[0] = NULL;
-  playback_domain->audio_thread[1] = ags_audio_thread_new(NULL, NULL);
-  playback_domain->audio_thread[2] = ags_audio_thread_new(NULL, NULL);
+  playback_domain->audio_thread[1] = NULL;
+  playback_domain->audio_thread[2] = NULL;
 
   playback_domain->domain = NULL;
   playback_domain->playback = NULL;

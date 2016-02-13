@@ -276,12 +276,13 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* AgsSoundcard */
   xorg_application_context->soundcard = NULL;
-
+  /*
   soundcard = ags_devout_new(xorg_application_context);
   xorg_application_context->soundcard = g_list_prepend(xorg_application_context->soundcard,
 						       soundcard);
   g_object_ref(G_OBJECT(soundcard));
-
+  */
+  
   jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
   //  jackctl_server_start(jack_server->jackctl);
   jackctl_server_open(jack_server->jackctl,
@@ -346,9 +347,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* AgsTaskThread */
   AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
-  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
-		       g_list_append(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)),
-				     AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread));
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
 				TRUE, TRUE);
@@ -371,9 +369,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* AgsGuiThread */
   xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
-  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
-		       g_list_append(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)),
-				     xorg_application_context->gui_thread));
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				xorg_application_context->gui_thread,
 				TRUE, TRUE);

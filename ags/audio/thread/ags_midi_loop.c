@@ -242,7 +242,7 @@ ags_midi_loop_init(AgsMidiLoop *midi_loop)
 			      "samplerate\0");
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_SEQUENCER,
-			      "buffer_size\0");
+			      "buffer-size\0");
 
   pthread_mutex_unlock(application_mutex);
 
