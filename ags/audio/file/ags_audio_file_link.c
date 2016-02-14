@@ -106,7 +106,7 @@ ags_audio_file_link_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_audio_file_link = g_type_register_static(G_TYPE_OBJECT,
+    ags_type_audio_file_link = g_type_register_static(AGS_TYPE_FILE_LINK,
 						      "AgsAudioFileLink\0",
 						      &ags_audio_file_link_info,
 						      0);

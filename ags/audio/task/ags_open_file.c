@@ -22,7 +22,7 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/file/ags_file_link.h>
+#include <ags/audio/file/ags_audio_file_link.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -226,7 +226,7 @@ ags_open_file_launch(AgsTask *task)
     j = 0;
     
     while(iter != channel->next_pad && audio_signal != NULL){
-      file_link = g_object_new(AGS_TYPE_FILE_LINK,
+      file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
 			       "filename\0", current_filename,
 			       "audio-channel\0", j,
 			       NULL);

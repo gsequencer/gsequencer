@@ -1785,6 +1785,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 
   pthread_mutex_t *mutex;
   
+  devout = AGS_DEVOUT(soundcard);
+
   application_context = ags_soundcard_get_application_context(soundcard);
   
   pthread_mutex_lock(application_context->mutex);
@@ -1799,8 +1801,6 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
     return;
   }
-
-  devout = AGS_DEVOUT(soundcard);
   
   snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);

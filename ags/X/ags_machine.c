@@ -1022,6 +1022,8 @@ ags_machine_set_audio_channels(AgsAudio *audio,
   
   pthread_mutex_unlock(application_mutex);
 
+  gdk_threads_enter();
+  
   if(audio_channels > audio_channels_old){
     /* grow lines */
     AgsPad *pad;
@@ -1143,9 +1145,76 @@ ags_machine_set_audio_channels(AgsAudio *audio,
 
       g_list_free(list_output_pad_start);
     }
+
+    /* show all */
+    if(gtk_widget_get_visible(machine)){
+      if(audio_channels_old == 0){
+	/* AgsInput */
+	if(machine->input != NULL){
+	  list_input_pad = list_input_pad_start;
+
+	  while(list_input_pad != NULL){
+	    gtk_widget_show_all(GTK_WIDGET(list_input_pad->data));
+
+	    list_input_pad = list_input_pad->next;
+	  }
+	}
+	
+	/* AgsOutput */
+	if(machine->output != NULL){
+	  list_output_pad = list_output_pad_start;
+	  
+	  while(list_input_pad != NULL){
+	    gtk_widget_show_all(GTK_WIDGET(list_input_pad->data));
+	    
+	    list_input_pad = list_input_pad->next;
+	  }
+	}
+      }else{
+	if(machine->input != NULL){
+	  GList *list_input_line;
+	  
+	  list_input_pad = list_input_pad_start;
+
+	  while(list_input_pad != NULL){
+	    list_input_line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_input_pad->data)->expander_set));
+	    list_input_line = g_list_nth(list_input_line,
+					 audio_channels_old);
+	    
+	    while(list_input_line != NULL){
+	      gtk_widget_show_all(GTK_WIDGET(list_input_line->data));
+
+	      list_input_line = list_input_line->next;
+	    }
+	    
+	    list_input_pad = list_input_pad->next;
+	  }
+	}
+	
+	/* AgsOutput */
+	if(machine->output != NULL){
+	  GList *list_output_line;
+
+	  list_output_pad = list_output_pad_start;
+	  
+	  while(list_output_pad != NULL){
+	    list_output_line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_output_pad->data)->expander_set));
+	    list_output_line = g_list_nth(list_output_line,
+					 audio_channels_old);
+	    
+	    while(list_output_line != NULL){
+	      gtk_widget_show_all(GTK_WIDGET(list_output_line->data));
+
+	      list_output_line = list_output_line->next;
+	    }	    
+	    
+	    list_output_pad = list_output_pad->next;
+	  }
+	}	
+      }
+    }
   }else if(audio_channels < audio_channels_old){
     /* shrink lines */
-
     list_output_pad_start = 
       list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
 
@@ -1195,7 +1264,9 @@ ags_machine_set_audio_channels(AgsAudio *audio,
     if(list_input_pad_start){
       g_list_free(list_input_pad_start);
     }
-  }  
+  }
+
+  gdk_threads_leave();
 }
 
 void
@@ -1210,6 +1281,8 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
   
   AgsMutexManager *mutex_manager;
 
+  GList *list_pad;
+  
   guint i, j;
 
   pthread_mutex_t *application_mutex;
@@ -1227,6 +1300,8 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
   
   pthread_mutex_unlock(application_mutex);
 
+  gdk_threads_enter();
+  
   if(pads_old < pads){
     pthread_mutex_lock(audio_mutex);
 
@@ -1266,6 +1341,17 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
 	
 	  pthread_mutex_unlock(channel_mutex);
 	}
+
+	/* show all */
+	list_pad = gtk_container_get_children(GTK_CONTAINER(machine->input));
+	list_pad = g_list_nth(list_pad,
+			      pads_old);
+
+	while(list_pad != NULL){
+	  gtk_widget_show_all(GTK_WIDGET(list_pad->data));
+
+	  list_pad = list_pad->next;
+	}
       }
     }
     
@@ -1299,6 +1385,17 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
 	
 	  pthread_mutex_unlock(channel_mutex);
 	}
+
+	/* show all */
+	list_pad = gtk_container_get_children(GTK_CONTAINER(machine->output));
+	list_pad = g_list_nth(list_pad,
+			      pads_old);
+
+	while(list_pad != NULL){
+	  gtk_widget_show_all(GTK_WIDGET(list_pad->data));
+
+	  list_pad = list_pad->next;
+	}
       }
     }
   }else if(pads_old > pads){
@@ -1328,6 +1425,8 @@ ags_machine_set_pads(AgsAudio *audio, GType type,
       list = list_next;
     }
   }
+
+  gdk_threads_leave();
 }
 
 /**
