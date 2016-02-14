@@ -1099,18 +1099,13 @@ AgsMatrix*
 ags_matrix_new(GObject *soundcard)
 {
   AgsMatrix *matrix;
-  GValue value = {0,};
 
   matrix = (AgsMatrix *) g_object_new(AGS_TYPE_MATRIX,
 				      NULL);
-
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(matrix)->audio),
-			  "soundcard\0", &value);
-    g_value_unset(&value);
-  }
-
+  
+  g_object_set(AGS_MACHINE(matrix)->audio,
+	       "soundcard\0", soundcard,
+	       NULL);
+  
   return(matrix);
 }

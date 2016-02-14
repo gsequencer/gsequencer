@@ -55,8 +55,9 @@ GtkMenu* ags_tact_menu_new();
 GtkComboBox* ags_zoom_combo_box_new();
 GtkComboBox* ags_tact_combo_box_new();
 
-GtkMenu *ags_dssi_bridge_menu_new();
-GtkMenu *ags_lv2_bridge_menu_new();
+GtkMenu* ags_ladspa_bridge_menu_new();
+GtkMenu* ags_dssi_bridge_menu_new();
+GtkMenu* ags_lv2_bridge_menu_new();
 
 AgsMenuBar* ags_menu_bar_new();
 

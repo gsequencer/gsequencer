@@ -319,17 +319,50 @@ ags_task_thread_run(AgsThread *thread)
   /* launch tasks */
   if(list != NULL){
     AgsTask *task;
-    int i;
 
+    GMainContext *main_context;
+    
+    int i;
+    
+    static GMutex mutex;
+    static GCond cond;
+
+    static gboolean initialized = FALSE;
+
+    if(!initialized){
+      initialized = TRUE;
+      
+      g_cond_init(&cond);
+      g_mutex_init(&mutex);
+    }
+    
+    main_context = g_main_context_default();
+
+    if(!g_main_context_acquire(main_context)){
+      gboolean got_ownership = FALSE;
+
+      g_mutex_lock(&mutex);
+      
+      while(!got_ownership){
+	got_ownership = g_main_context_wait(main_context,
+					    &cond,
+					    &mutex);
+      }
+
+      g_mutex_unlock(&mutex);
+    }
+
+    //    gdk_threads_enter();
+    
     pthread_mutex_lock(task_thread->launch_mutex);
     //    pthread_mutex_lock(AGS_AUDIO_LOOP(thread->parent)->recall_mutex);
 
     for(i = 0; i < g_atomic_int_get(&(task_thread->pending)); i++){
       task = AGS_TASK(list->data);
 
-      //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
       g_message("ags_task_thread - launching task: %s\n\0", G_OBJECT_TYPE_NAME(task));
-      //#endif
+#endif
 
       ags_task_launch(task);
       
@@ -338,6 +371,11 @@ ags_task_thread_run(AgsThread *thread)
 
     //    pthread_mutex_unlock(AGS_AUDIO_LOOP(thread->parent)->recall_mutex);
     pthread_mutex_unlock(task_thread->launch_mutex);
+    
+    //    gdk_threads_leave();
+    
+    g_main_context_release(main_context);
+    
   }
 
   pthread_mutex_lock(task_thread->read_mutex);
@@ -384,7 +422,7 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   task_thread = g_atomic_pointer_get(&(append->task_thread));
   task = AGS_TASK(g_atomic_pointer_get(&(append->data)));
 
-  free(append);
+  //  free(append);
 
   /* lock */
   pthread_mutex_lock(task_thread->read_mutex);
@@ -463,7 +501,7 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
   task_thread = g_atomic_pointer_get(&(append->task_thread));
   list = (GList *) g_atomic_pointer_get(&(append->data));
 
-  free(append);
+  //  free(append);
 
   /* lock */
   pthread_mutex_lock(task_thread->read_mutex);

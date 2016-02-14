@@ -56,7 +56,7 @@ void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
  * This can achieve enormeous performance.
  */
 
-#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 32
+#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 64
 #define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 1024
 
 enum{
@@ -378,14 +378,14 @@ ags_thread_pool_creation_thread(void *ptr)
 	tmplist = g_atomic_pointer_get(&(thread_pool->returnable_thread));
 	g_atomic_pointer_set(&(thread_pool->returnable_thread),
 			     g_list_prepend(tmplist, thread));
-	start_queue = g_list_prepend(start_queue,
-				     thread);
-
 	ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),
 				      thread,
 				      FALSE, FALSE);
 	ags_connectable_connect(AGS_CONNECTABLE(thread));
 	g_atomic_int_inc(&(thread_pool->n_threads));
+
+	start_queue = g_list_prepend(start_queue,
+				     thread);
 
 	n_threads++;
       }
@@ -531,14 +531,14 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   start_queue = NULL;
 
   while(list != NULL){
-    start_queue = g_list_prepend(start_queue,
-				 list->data);
     ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),
 				  AGS_THREAD(list->data),
 				  FALSE, FALSE);
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
     
     //    ags_thread_start(AGS_THREAD(list->data));
+    start_queue = g_list_prepend(start_queue,
+				 list->data);
 
     list = list->next;
   }

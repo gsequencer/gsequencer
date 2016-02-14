@@ -276,7 +276,7 @@ ags_soundcard_thread_start(AgsThread *thread)
 
   /* abort if already playing */
   if(ags_soundcard_is_playing(soundcard)){
-    //    return;
+    //   return;
   }
 
   /* check if already initialized */
@@ -286,9 +286,9 @@ ags_soundcard_thread_start(AgsThread *thread)
     ags_soundcard_play_init(soundcard,
 			    &(soundcard_thread->error));
       
-    //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
     g_message("ags_devout_alsa_play\0");
-    //#endif
+#endif
   }
 
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -308,15 +308,14 @@ ags_soundcard_thread_run(AgsThread *thread)
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
 
-  //  if(ags_soundcard_is_playing(soundcard)){
+  if(ags_soundcard_is_playing(soundcard)){
     error = NULL;
     ags_soundcard_play(soundcard,
 		       &error);
-    g_message("play\0");
     if(error != NULL){
       //TODO:JK: implement me
     }
-    //  }
+  }
 }
 
 void

@@ -22,6 +22,7 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
 
@@ -186,6 +187,10 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
   /* bridge */
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("LADSPA\0"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("DSSI\0"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
@@ -532,6 +537,57 @@ ags_tact_combo_box_new()
 }
 
 GtkMenu*
+ags_ladspa_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkImageMenuItem *item;
+
+  AgsLadspaManager *ladspa_manager;
+  
+  GList *list;
+
+  gchar *effect_name;
+
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  unsigned long index;
+
+  menu = (GtkMenu *) gtk_menu_new();
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  list = ladspa_manager->ladspa_plugin;
+
+  while(list != NULL){
+    plugin_so = AGS_LADSPA_PLUGIN(list->data)->plugin_so;
+    
+    if(plugin_so){
+      ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							     "ladspa_descriptor\0");
+
+      if(dlerror() == NULL && ladspa_descriptor){
+	for(index = 0; ; index++){	  
+	  plugin_descriptor = ladspa_descriptor(index);
+	  
+	  if(plugin_descriptor == NULL){
+	    break;
+	  }
+	  
+	  effect_name = plugin_descriptor->Name;
+	  
+	  item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strdup(effect_name));
+	  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
+	}
+      }
+    }
+
+    list = list->next;
+  }
+
+  return(menu);
+}
+
+GtkMenu*
 ags_dssi_bridge_menu_new()
 {
   GtkMenu *menu;
@@ -572,7 +628,7 @@ ags_dssi_bridge_menu_new()
 	  effect_name = plugin_descriptor->LADSPA_Plugin->Name;
 	  
 	  item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strdup(effect_name));
-	  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);	  
+	  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
 	}
       }
     }
