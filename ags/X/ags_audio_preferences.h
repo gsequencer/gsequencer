@@ -40,6 +40,11 @@ struct _AgsAudioPreferences
   GtkSpinButton *audio_channels;
   GtkSpinButton *samplerate;
   GtkSpinButton *buffer_size;
+
+  GtkCheckButton *enable_jack;
+  GtkComboBoxText *jack_driver;
+  GtkButton *start_jack;
+  GtkButton *stop_jack;
 };
 
 struct _AgsAudioPreferencesClass
