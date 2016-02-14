@@ -700,7 +700,7 @@ ags_audio_file_new(gchar *filename,
 					     "filename\0", filename,
 					     "soundcard\0", soundcard,
 					     "start-channel\0", start_channel,
-					     "audio-channel\0", audio_channels,
+					     "audio-channels\0", audio_channels,
 					     NULL);
 
   return(audio_file);

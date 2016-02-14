@@ -20,6 +20,7 @@
 #ifndef __AGS_AUDIO_SIGNAL_H__
 #define __AGS_AUDIO_SIGNAL_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_AUDIO_SIGNAL                (ags_audio_signal_get_type())
@@ -31,18 +32,12 @@
 
 typedef struct _AgsAudioSignal AgsAudioSignal;
 typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
-typedef struct _AgsAttack AgsAttack;
 
 typedef enum{
   AGS_AUDIO_SIGNAL_TEMPLATE             = 1,
   AGS_AUDIO_SIGNAL_PLAY_DONE            = 1 << 1,
   AGS_AUDIO_SIGNAL_STANDALONE           = 1 << 2,
 }AgsAudioSignalFlags;
-
-typedef enum{
-  AGS_ATTACK_INITIAL_RUN  = 1,
-  AGS_ATTACK_SWAP         = 1 << 1,
-}AgsAttackFlags;
 
 struct _AgsAudioSignal
 {

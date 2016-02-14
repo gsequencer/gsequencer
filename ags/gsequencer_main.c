@@ -146,10 +146,14 @@ main(int argc, char **argv)
   AgsThread *audio_loop, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
 
+  AgsConfig *config;
+  
   GFile *autosave_file;
     
   gchar *filename, *autosave_filename;
+  gchar *str;
   gboolean single_thread = FALSE;
+  gboolean jack_enabled;
   guint i;
 
   struct passwd *pw;
@@ -232,8 +236,8 @@ main(int argc, char **argv)
   /**/
   LIBXML_TEST_VERSION;
 
-  jackctl_setup_signals(0);
-  
+  ao_initialize();
+
   g_thread_init(NULL);
   gdk_threads_enter();
   gtk_init(&argc, &argv);
@@ -265,8 +269,22 @@ main(int argc, char **argv)
   task_thread = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
-  ao_initialize();
+  config = application_context->config;
 
+  /* JACK */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "jack\0");
+  jack_enabled = (str != NULL && !g_ascii_strncasecmp(str, "enabled\0", 8)) ? TRUE: FALSE;
+
+  if(str != NULL){
+    free(str);
+  }
+  
+  if(jack_enabled){
+    jackctl_setup_signals(0);
+  }
+  
   /* parse command line parameter */
   filename = NULL;
 
