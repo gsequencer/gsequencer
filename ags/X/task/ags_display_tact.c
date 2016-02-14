@@ -149,9 +149,11 @@ ags_display_tact_launch(AgsTask *task)
   AgsNavigation *navigation;
   gchar *timestr;
   gdouble delay, tact;
+
+  gdk_threads_enter();
   
   display_tact = AGS_DISPLAY_TACT(task);
-  
+
   navigation = AGS_NAVIGATION(display_tact->navigation);
   window = gtk_widget_get_ancestor(navigation,
 				   AGS_TYPE_WINDOW);
@@ -167,6 +169,8 @@ ags_display_tact_launch(AgsTask *task)
   gtk_label_set_label(navigation->duration_time, timestr);
   gtk_widget_queue_draw(navigation->duration_time);
   g_free(timestr);
+
+  gdk_threads_leave();
 }
 
 /**

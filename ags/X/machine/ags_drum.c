@@ -864,19 +864,13 @@ AgsDrum*
 ags_drum_new(GObject *soundcard)
 {
   AgsDrum *drum;
-  GValue value = {0,};
 
   drum = (AgsDrum *) g_object_new(AGS_TYPE_DRUM,
 				  NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-
-    g_object_set_property(G_OBJECT(drum->machine.audio),
-			  "soundcard\0", &value);
-    g_value_unset(&value);
-  }
+  g_object_set(G_OBJECT(AGS_MACHINE(drum)->audio),
+	       "soundcard\0", soundcard,
+	       NULL);
 
   return(drum);
 }

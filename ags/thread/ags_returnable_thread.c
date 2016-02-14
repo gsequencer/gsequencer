@@ -213,14 +213,6 @@ ags_returnable_thread_run(AgsThread *thread)
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
   thread_pool = (AgsThreadPool *) returnable_thread->thread_pool;
   
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-#ifdef AGS_DEBUG
-    g_message("returnable thread initial\0");
-#endif
-
-    return;
-  }
-
   /* safe run */
   pthread_mutex_lock(returnable_thread->reset_mutex);
 

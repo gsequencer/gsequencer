@@ -391,7 +391,7 @@ ags_channel_thread_run(AgsThread *thread)
     thread->rt_setup = TRUE;
   }
 
-  g_message("eer\0");
+  //  g_message("eer\0");
   channel_thread = AGS_CHANNEL_THREAD(thread);
 
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;

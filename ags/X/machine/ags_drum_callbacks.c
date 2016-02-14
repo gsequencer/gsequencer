@@ -439,6 +439,8 @@ ags_drum_tact_callback(AgsAudio *audio,
     return;
   }
 
+  gdk_threads_enter();
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
@@ -486,6 +488,9 @@ ags_drum_tact_callback(AgsAudio *audio,
   if(play_count_beats_audio == NULL ||
      play_count_beats_audio_run == NULL){
     pthread_mutex_unlock(audio_mutex);
+
+    gdk_threads_leave();
+    
     return;
   }
 
@@ -503,8 +508,6 @@ ags_drum_tact_callback(AgsAudio *audio,
   }else{
     active_led_old = (guint) (drum->pattern_box->active_led - 1.0) % AGS_PATTERN_BOX_N_CONTROLS;
   }
-
-  g_message("do\0");
   
   toggle_led = ags_toggle_led_new(gtk_container_get_children(GTK_CONTAINER(drum->pattern_box->led)),
 				  (guint) active_led_new,
@@ -514,6 +517,8 @@ ags_drum_tact_callback(AgsAudio *audio,
 			      AGS_TASK(toggle_led));
 
   pthread_mutex_unlock(audio_mutex);
+
+  gdk_threads_leave();
 }
 
 void
@@ -524,6 +529,8 @@ ags_drum_done_callback(AgsAudio *audio,
   GList *playback;
   gboolean all_done;
 
+  gdk_threads_enter();
+  
   playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
   /* check unset */
@@ -553,4 +560,6 @@ ags_drum_done_callback(AgsAudio *audio,
 
     g_list_free(list_start);
   }
+  
+  gdk_threads_leave();
 }

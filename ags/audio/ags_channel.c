@@ -2905,9 +2905,9 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     return;
   }
   
-  //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
   g_message("duplicate channel %d\0", channel->line);
-  //#endif
+#endif
 
   /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -2983,9 +2983,9 @@ ags_channel_duplicate_recall(AgsChannel *channel,
       continue;
     }
     
-    //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
     g_message("recall duplicated: %s\0", G_OBJECT_TYPE_NAME(copy));
-    //#endif
+#endif
     
     /* set appropriate flag */
     if(do_playback){

@@ -408,7 +408,7 @@ ags_audio_thread_run(AgsThread *thread)
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  g_message(" --- a");
+  //  g_message(" --- a");
   
   /* start - wait until signaled */
   pthread_mutex_lock(audio_thread->wakeup_mutex);

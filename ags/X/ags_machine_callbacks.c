@@ -538,6 +538,8 @@ ags_machine_done_callback(AgsAudio *audio,
     return;
   }
 
+  gdk_threads_enter();
+  
   machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
   if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) != 0){
@@ -568,6 +570,8 @@ ags_machine_done_callback(AgsAudio *audio,
   }
 
   machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
+
+  gdk_threads_leave();
 }
 
 void

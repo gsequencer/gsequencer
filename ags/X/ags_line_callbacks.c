@@ -293,6 +293,8 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
   GList *current_recall;
   gboolean all_done;
 
+  gdk_threads_enter();
+  
   channel = AGS_PAD(AGS_LINE(line)->pad)->channel;
   next_pad = channel->next_pad;
 
@@ -319,4 +321,6 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
       gtk_toggle_button_set_active(pad->play, FALSE);
     }
   }
+
+  gdk_threads_leave();
 }

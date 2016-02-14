@@ -737,7 +737,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     return;
   }
 
-  //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
   g_message("add %s:%x -> %x @ %x\0",
 	    G_OBJECT_TYPE_NAME(recall),
 	    recall->recall_id,
@@ -754,7 +754,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   if(!AGS_IS_INPUT(source->channel)){
     g_message("ags_recall_recycling_source_add_audio_signal_callback[%s]\0", G_OBJECT_TYPE_NAME(recall));
   }
-  //#endif
+#endif
 
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
     g_object_set(G_OBJECT(recall_recycling),

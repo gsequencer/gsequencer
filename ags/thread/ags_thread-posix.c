@@ -1013,16 +1013,18 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
     return;
   }
 
-  toplevel = ags_thread_get_toplevel(thread);
+  g_object_ref(thread);
+  g_object_ref(child);
+  //  toplevel = ags_thread_get_toplevel(thread);
 
   if(g_atomic_pointer_get(&(child->parent)) != NULL){
     ags_thread_remove_child(g_atomic_pointer_get(&(child->parent)), child);
   }
 
   /*  */
-  if(AGS_IS_MAIN_LOOP(toplevel)){
-    pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(toplevel)));
-  }
+  //  if(AGS_IS_MAIN_LOOP(toplevel)){
+    //    pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(toplevel)));
+  //  }
 
   if(g_atomic_pointer_get(&(thread->children)) == NULL){
     g_atomic_pointer_set(&(thread->children),
@@ -1042,12 +1044,12 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
 			 thread);
   }
     
-  if(AGS_IS_MAIN_LOOP(toplevel)){
-    pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(toplevel)));
-  }
+  //  if(AGS_IS_MAIN_LOOP(toplevel)){
+  //    pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(toplevel)));
+  //  }
   
   if(!no_start){
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
       /* start child */
       ags_thread_start(child);
 
@@ -2238,9 +2240,9 @@ ags_thread_real_start(AgsThread *thread)
   main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
   thread->rt_setup = FALSE;
   
-  //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
   g_message("thread start: %s\0", G_OBJECT_TYPE_NAME(thread));
-  //#endif
+#endif
 
   /* */
   val = g_atomic_int_get(&(thread->flags));
@@ -2607,6 +2609,12 @@ ags_thread_loop(void *ptr)
   
   pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
+  if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
+    ags_thread_remove_child(g_atomic_pointer_get(&(thread->parent)),
+    			    thread);
+    g_object_unref(thread);
+  }
+
   if(ags_thread_is_tree_ready(main_loop,
 			      thread->current_tic)){
     /* async-queue */
@@ -2621,12 +2629,6 @@ ags_thread_loop(void *ptr)
     ags_thread_set_sync_all(main_loop, thread->current_tic);
   }
   
-  if((AGS_THREAD_UNREF_ON_EXIT & (g_atomic_int_get(&(thread->flags)))) != 0){
-    ags_thread_remove_child(g_atomic_pointer_get(&(thread->parent)),
-    			    thread);
-    g_object_unref(thread);
-  }
-
   pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
 #ifdef AGS_DEBUG
