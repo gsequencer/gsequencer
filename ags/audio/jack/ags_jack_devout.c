@@ -1304,6 +1304,9 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   memset(jack_devout->buffer[2], 0, jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
   memset(jack_devout->buffer[3], 0, jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
 
+  jack_set_buffer_size(AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client,
+		       jack_devout->dsp_channels * jack_devout->buffer_size);
+
   /* port setup */
   jack_set_process_callback(AGS_JACK_CLIENT(AGS_JACK_PORT(jack_devout->jack_port)->jack_client)->client,
 			    ags_jack_devout_process_callback,
@@ -1741,6 +1744,7 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
   jack_default_audio_sample_t *out;
 
   guint word_size;
+  guint i, j;
   
   pthread_mutex_t *mutex;
   
@@ -1763,64 +1767,80 @@ ags_jack_devout_process_callback(jack_nframes_t nframes, void *ptr)
 
   /* retrieve word size */
   pthread_mutex_lock(mutex);
+  
+  out = jack_port_get_buffer(AGS_JACK_PORT(jack_devout->jack_port)->port, nframes);
 
+  if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
+    j = 0;
+  }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
+    j = 1;
+  }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
+    j = 2;
+  }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+    j = 3;
+  }
+  
+
+  //FIXME:JK: buggy
+  /* check buffer flag */
   switch(jack_devout->format){
   case AGS_SOUNDCARD_RESOLUTION_8_BIT:
     {
       word_size = sizeof(signed char);
+
+	
+      for(i = 0; i < jack_devout->dsp_channels * jack_devout->buffer_size; i++){
+	out[i] = ((signed char *) jack_devout->buffer[j])[i];
+      }
     }
     break;
   case AGS_SOUNDCARD_RESOLUTION_16_BIT:
     {
       word_size = sizeof(signed short);
+
+      for(i = 0; i < jack_devout->dsp_channels * jack_devout->buffer_size; i++){
+	out[i] = ((signed short *) jack_devout->buffer[j])[i];
+      }
     }
     break;
   case AGS_SOUNDCARD_RESOLUTION_24_BIT:
     {
       word_size = sizeof(signed long);
+
+      for(i = 0; i < jack_devout->dsp_channels * jack_devout->buffer_size; i++){
+	out[i] = ((signed long *) jack_devout->buffer[j])[i];
+      }
     }
     break;
   case AGS_SOUNDCARD_RESOLUTION_32_BIT:
     {
       word_size = sizeof(signed long);
+
+      for(i = 0; i < jack_devout->dsp_channels * jack_devout->buffer_size; i++){
+	out[i] = ((signed long *) jack_devout->buffer[j])[i];
+      }
     }
     break;
   case AGS_SOUNDCARD_RESOLUTION_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      g_warning("ags_jack_devout_port_play(): unsupported word size 64 bit\0");
     }
     break;
   default:
     g_warning("ags_jack_devout_port_play(): unsupported word size\0");
     return;
   }
-  
-  out = jack_port_get_buffer(AGS_JACK_PORT(jack_devout->jack_port)->port, nframes);
 
-  //FIXME:JK: buggy
-  /* check buffer flag * /
   if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
     memset(jack_devout->buffer[3], 0, (size_t) jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
-
-    memcpy(jack_devout->buffer[0], out,
-	   nframes * sizeof(jack_default_audio_sample_t));
   }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
     memset(jack_devout->buffer[0], 0, (size_t) jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
-
-    memcpy(jack_devout->buffer[1], out,
-	   nframes * sizeof(jack_default_audio_sample_t));
   }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
     memset(jack_devout->buffer[1], 0, (size_t) jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
-
-    memcpy(jack_devout->buffer[2], out,
-	   nframes * sizeof(jack_default_audio_sample_t));
   }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
     memset(jack_devout->buffer[2], 0, (size_t) jack_devout->dsp_channels * jack_devout->buffer_size * word_size);
-
-    memcpy(jack_devout->buffer[3], out,
-	   nframes * sizeof(jack_default_audio_sample_t));
   }
-  */
+  
   /* tic */
   ags_soundcard_tic(AGS_SOUNDCARD(jack_devout));
 

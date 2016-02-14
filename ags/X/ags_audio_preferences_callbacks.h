@@ -36,4 +36,11 @@ void ags_audio_preferences_samplerate_changed(GtkSpinButton *spin_button,
 void ags_audio_preferences_buffer_size_changed(GtkSpinButton *spin_button,
 					       AgsAudioPreferences *audio_preferences);
 
+void ags_audio_preferences_enable_jack_callback(GtkCheckButton *check_button,
+						AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_start_jack_callback(GtkButton *button,
+					       AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_stop_jack_callback(GtkButton *button,
+					      AgsAudioPreferences *audio_preferences);
+
 #endif /*__AGS_AUDIO_PREFERENCES_CALLBACKS_H__*/

@@ -139,13 +139,14 @@ void
 ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 {
   GtkTable *table;
+  GtkHBox *hbox;
   GtkLabel *label;
   GtkCellRenderer *cell_renderer;
 
   g_signal_connect_after((GObject *) audio_preferences, "parent_set\0",
 			 G_CALLBACK(ags_audio_preferences_parent_set_callback), (gpointer) audio_preferences);
 
-  table = (GtkTable *) gtk_table_new(2, 4, FALSE);
+  table = (GtkTable *) gtk_table_new(2, 7, FALSE);
   gtk_box_pack_start(GTK_BOX(audio_preferences),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
@@ -243,6 +244,68 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  /* JACK */
+  audio_preferences->enable_jack = (GtkCheckButton *) gtk_check_button_new_with_label("Enable JACK\0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(audio_preferences->enable_jack),
+		   0, 2,
+		   4, 5,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  label = gtk_label_new("JACK driver\0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   5, 6,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  audio_preferences->jack_driver = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(audio_preferences->jack_driver),
+		   1, 2,
+		   5, 6,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  label = gtk_label_new("JACK server\0");
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   6, 7,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  hbox = (GtkHBox *) gtk_hbox_new(TRUE, 0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(hbox),
+		   1, 2,
+		   6, 7,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  audio_preferences->start_jack = (GtkButton *) gtk_button_new_with_label("start\0");
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(audio_preferences->start_jack),
+		     FALSE, FALSE,
+		     0);
+
+  audio_preferences->stop_jack = (GtkButton *) gtk_button_new_with_label("stop\0");
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(audio_preferences->stop_jack),
+		     FALSE, FALSE,
+		     0);
+  
+  /* set default insensitive */
+  gtk_widget_set_sensitive(audio_preferences->jack_driver,
+			   FALSE);
+  
+  gtk_widget_set_sensitive(audio_preferences->start_jack,
+			   FALSE);
+  gtk_widget_set_sensitive(audio_preferences->stop_jack,
+			   FALSE);
 }
 
 void
@@ -254,6 +317,15 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(audio_preferences->card), "changed\0",
 		   G_CALLBACK(ags_audio_preferences_card_changed_callback), audio_preferences);
+
+  g_signal_connect(G_OBJECT(audio_preferences->enable_jack), "clicked\0",
+		   G_CALLBACK(ags_audio_preferences_enable_jack_callback), audio_preferences);
+
+  g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked\0",
+		   G_CALLBACK(ags_audio_preferences_start_jack_callback), audio_preferences);
+
+  g_signal_connect(G_OBJECT(audio_preferences->stop_jack), "clicked\0",
+		   G_CALLBACK(ags_audio_preferences_stop_jack_callback), audio_preferences);
 }
 
 void
