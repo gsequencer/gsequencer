@@ -414,7 +414,7 @@ ags_notation_set_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       if(notation->current_notes != NULL){
 	g_list_free_full(notation->current_notes,
@@ -433,7 +433,7 @@ ags_notation_set_property(GObject *gobject,
 
       notation->current_notes = current_notes;
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_NEXT_NOTES:
@@ -445,7 +445,7 @@ ags_notation_set_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       if(notation->next_notes != NULL){
 	g_list_free_full(notation->next_notes,
@@ -464,7 +464,7 @@ ags_notation_set_property(GObject *gobject,
 
       notation->next_notes = next_notes;
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
     }
     break;
   default:
@@ -499,11 +499,11 @@ ags_notation_get_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       g_value_set_pointer(value, g_list_copy(notation->notes));
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_CURRENT_NOTES:
@@ -513,7 +513,7 @@ ags_notation_get_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       start = 
 	list = g_list_copy(notation->current_notes);
@@ -524,7 +524,7 @@ ags_notation_get_property(GObject *gobject,
 	list = list->next;
       }
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
 
       g_value_set_pointer(value, (gpointer) start);
     }
@@ -536,7 +536,7 @@ ags_notation_get_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       start = 
 	list = g_list_copy(notation->next_notes);
@@ -547,7 +547,7 @@ ags_notation_get_property(GObject *gobject,
 	list = list->next;
       }
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
 
       g_value_set_pointer(value, (gpointer) start);
     }
