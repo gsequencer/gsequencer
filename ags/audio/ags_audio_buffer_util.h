@@ -57,6 +57,7 @@ typedef enum{
   /* signed 16 bit source */  
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24,
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32,
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT,
@@ -64,6 +65,7 @@ typedef enum{
   /* signed 24 bit source */
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24,
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32,
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT,
@@ -71,6 +73,7 @@ typedef enum{
   /* signed 32 bit source */
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24,
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32,
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT,
@@ -78,6 +81,7 @@ typedef enum{
   /* signed 64 bit source */
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24,
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32,
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT,
@@ -85,6 +89,7 @@ typedef enum{
   /* float source */
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24,
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32,
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT,
@@ -92,6 +97,7 @@ typedef enum{
   /* double source */
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8,
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24,
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32,
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT,
@@ -176,6 +182,9 @@ void ags_audio_buffer_util_copy_s8_to_s8(signed char *destination, guint dchanne
 void ags_audio_buffer_util_copy_s8_to_s16(signed short *destination, guint dchannels,
 					  signed char *source, guint schannels,
 					  guint count);
+void ags_audio_buffer_util_copy_s8_to_s24(signed long *destination, guint dchannels,
+					  signed char *source, guint schannels,
+					  guint count);
 void ags_audio_buffer_util_copy_s8_to_s32(signed long *destination, guint dchannels,
 					  signed char *source, guint schannels,
 					  guint count);
@@ -194,6 +203,9 @@ void ags_audio_buffer_util_copy_s16_to_s8(signed char *destination, guint dchann
 					  signed short *source, guint schannels,
 					  guint count);
 void ags_audio_buffer_util_copy_s16_to_s16(signed short *destination, guint dchannels,
+					   signed short *source, guint schannels,
+					   guint count);
+void ags_audio_buffer_util_copy_s16_to_s24(signed long *destination, guint dchannels,
 					   signed short *source, guint schannels,
 					   guint count);
 void ags_audio_buffer_util_copy_s16_to_s32(signed long *destination, guint dchannels,
@@ -216,6 +228,9 @@ void ags_audio_buffer_util_copy_s24_to_s8(signed char *destination, guint dchann
 void ags_audio_buffer_util_copy_s24_to_s16(signed short *destination, guint dchannels,
 					   signed long *source, guint schannels,
 					   guint count);
+void ags_audio_buffer_util_copy_s24_to_s24(signed long *destination, guint dchannels,
+					   signed long *source, guint schannels,
+					   guint count);
 void ags_audio_buffer_util_copy_s24_to_s32(signed long *destination, guint dchannels,
 					   signed long *source, guint schannels,
 					   guint count);
@@ -234,6 +249,9 @@ void ags_audio_buffer_util_copy_s32_to_s8(signed char *destination, guint dchann
 					  signed long *source, guint schannels,
 					  guint count);
 void ags_audio_buffer_util_copy_s32_to_s16(signed short *destination, guint dchannels,
+					   signed long *source, guint schannels,
+					   guint count);
+void ags_audio_buffer_util_copy_s32_to_s24(signed long *destination, guint dchannels,
 					   signed long *source, guint schannels,
 					   guint count);
 void ags_audio_buffer_util_copy_s32_to_s32(signed long *destination, guint dchannels,
@@ -256,6 +274,9 @@ void ags_audio_buffer_util_copy_s64_to_s8(signed char *destination, guint dchann
 void ags_audio_buffer_util_copy_s64_to_s16(signed short *destination, guint dchannels,
 					   signed long long *source, guint schannels,
 					   guint count);
+void ags_audio_buffer_util_copy_s64_to_s24(signed long *destination, guint dchannels,
+					   signed long long *source, guint schannels,
+					   guint count);
 void ags_audio_buffer_util_copy_s64_to_s32(signed long *destination, guint dchannels,
 					   signed long long *source, guint schannels,
 					   guint count);
@@ -276,6 +297,9 @@ void ags_audio_buffer_util_copy_float_to_s8(signed char *destination, guint dcha
 void ags_audio_buffer_util_copy_float_to_s16(signed short *destination, guint dchannels,
 					     signed float *source, guint schannels,
 					     guint count);
+void ags_audio_buffer_util_copy_float_to_s24(signed long *destination, guint dchannels,
+					     signed float *source, guint schannels,
+					     guint count);
 void ags_audio_buffer_util_copy_float_to_s32(signed long *destination, guint dchannels,
 					     signed float *source, guint schannels,
 					     guint count);
@@ -294,6 +318,9 @@ void ags_audio_buffer_util_copy_double_to_s8(signed char *destination, guint dch
 					     signed double *source, guint schannels,
 					     guint count);
 void ags_audio_buffer_util_copy_double_to_s16(signed short *destination, guint dchannels,
+					      signed double *source, guint schannels,
+					      guint count);
+void ags_audio_buffer_util_copy_double_to_s24(signed long *destination, guint dchannels,
 					      signed double *source, guint schannels,
 					      guint count);
 void ags_audio_buffer_util_copy_double_to_s32(signed long *destination, guint dchannels,

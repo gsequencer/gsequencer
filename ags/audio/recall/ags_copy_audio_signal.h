@@ -49,7 +49,6 @@ GType ags_copy_audio_signal_get_type();
 
 AgsCopyAudioSignal* ags_copy_audio_signal_new(AgsAudioSignal *destination,
 					      AgsAudioSignal *source,
-					      GObject *soundcard,
-					      AgsAttack *attack);
+					      GObject *soundcard);
 
 #endif /*__AGS_COPY_AUDIO_SIGNAL_H__*/
