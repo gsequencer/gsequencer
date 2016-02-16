@@ -282,11 +282,11 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
-			AGS_CONFIG_SOUNDCARD,
-			"samplerate\0");
+			      AGS_CONFIG_SOUNDCARD,
+			      "samplerate\0");
   str1 = ags_config_get_value(config,
-			AGS_CONFIG_SOUNDCARD,
-			"buffer-size\0");
+			      AGS_CONFIG_SOUNDCARD,
+			      "buffer-size\0");
 
   pthread_mutex_unlock(application_mutex);
 

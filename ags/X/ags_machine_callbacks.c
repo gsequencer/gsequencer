@@ -546,29 +546,6 @@ ags_machine_done_callback(AgsAudio *audio,
     gtk_toggle_button_set_active(machine->play, FALSE);
   }
   
-  /* cancel playback */
-  channel = audio->output;
-  
-  while(channel != NULL){
-    if(AGS_PLAYBACK(channel->playback)->recall_id[0] == recall_id){
-      ags_channel_tillrecycling_cancel(channel,
-				       AGS_PLAYBACK(channel->playback)->recall_id[0]);
-    }
-
-    if(AGS_PLAYBACK(channel->playback)->recall_id[1] == recall_id){
-      ags_channel_tillrecycling_cancel(channel,
-				       AGS_PLAYBACK(channel->playback)->recall_id[1]);
-    }
-
-    if(AGS_PLAYBACK(channel->playback)->recall_id[2] == recall_id){
-      ags_channel_tillrecycling_cancel(channel,
-				       AGS_PLAYBACK(channel->playback)->recall_id[2]);
-    }
-    
-    /* set remove flag */
-    channel = channel->next;
-  }
-
   machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
 
   gdk_threads_leave();

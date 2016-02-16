@@ -409,13 +409,15 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
 {
   AgsTask *task;
   AgsTaskThread *task_thread;
+
   AgsTaskThreadAppend *append;
   GList *tmplist;
+
   gboolean initial_wait;
   int ret;
 
   g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
-		   (~AGS_THREAD_READY));
+  		   (~AGS_THREAD_READY));
 
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
@@ -456,6 +458,8 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
   AgsTaskThreadAppend *append;
   AgsThread *thread;
 
+  guint flags;
+  
 #ifdef AGS_DEBUG
   g_message("append task\0");
 #endif
@@ -481,6 +485,22 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 		  AGS_RETURNABLE_THREAD_IN_USE);
     
   pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
+
+  /* pass-through */
+  pthread_mutex_lock(thread->mutex);
+  
+  //  g_atomic_int_or(&(thread->flags),
+  //		  AGS_THREAD_READY);
+
+  flags = g_atomic_int_get(&(thread->flags));
+  
+  if((AGS_THREAD_WAIT_0 & flags) != 0 ||
+     (AGS_THREAD_WAIT_1 & flags) != 0 ||
+     (AGS_THREAD_WAIT_2 & flags) != 0){
+    pthread_cond_signal(thread->cond);
+  }
+  
+  pthread_mutex_unlock(thread->mutex);
 }
 
 void
@@ -494,7 +514,7 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
   int ret;
 
   g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
-		   (~AGS_THREAD_READY));
+  		   (~AGS_THREAD_READY));
 
   append = (AgsTaskThreadAppend *) g_atomic_pointer_get(&(returnable_thread->safe_data));
 
@@ -534,6 +554,8 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
   AgsTaskThreadAppend *append;
   AgsThread *thread;
 
+  guint flags;
+  
 #ifdef AGS_DEBUG
   g_message("append tasks\0");
 #endif
@@ -559,6 +581,22 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 		  AGS_RETURNABLE_THREAD_IN_USE);
   
   pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
+
+  /* pass-through */
+  pthread_mutex_lock(thread->mutex);
+  
+  //  g_atomic_int_or(&(thread->flags),
+  //		  AGS_THREAD_READY);
+
+  flags = g_atomic_int_get(&(thread->flags));
+  
+  if((AGS_THREAD_WAIT_0 & flags) != 0 ||
+     (AGS_THREAD_WAIT_1 & flags) != 0 ||
+     (AGS_THREAD_WAIT_2 & flags) != 0){
+    pthread_cond_signal(thread->cond);
+  }
+  
+  pthread_mutex_unlock(thread->mutex);
 }
 
 /**
