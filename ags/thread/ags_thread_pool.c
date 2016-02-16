@@ -576,11 +576,26 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 void
 ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *list;
   GList *start_queue;
   
   gint n_threads;
   gint i;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *parent_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  parent_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  thread_pool->parent);
+  
+  pthread_mutex_unlock(application_mutex);
 
   g_atomic_int_or(&(thread_pool->flags),
 		  AGS_THREAD_POOL_RUNNING);
@@ -605,6 +620,8 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
     list = list->next;
   }
 
+  pthread_mutex_lock(parent_mutex);
+
   if(start_queue != NULL){
     if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
       g_atomic_pointer_set(&(thread_pool->parent->start_queue),
@@ -615,6 +632,8 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 			   start_queue);
     }
   }
+
+  pthread_mutex_unlock(parent_mutex);
 }
 
 /**
