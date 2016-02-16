@@ -44,6 +44,8 @@ struct _AgsRecycling
 
   guint flags;
 
+  gboolean parent_locked;
+  
   GObject *channel;
   GObject *soundcard;
 
