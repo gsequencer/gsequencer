@@ -26,6 +26,7 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2ui_manager.h>
 
@@ -975,6 +976,308 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 }
 
 GList*
+ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
+				GList *control_type_name,
+				gchar *filename,
+				gchar *effect)
+{
+  AgsWindow *window;
+  AgsBulkMember *bulk_member;
+  AgsAddBulkMember *add_bulk_member;
+  AgsUpdateBulkMember *update_bulk_member;
+  GtkAdjustment *adjustment;
+
+  AgsChannel *current;
+  AgsRecallContainer *recall_container;
+  AgsRecallChannelRunDummy *recall_channel_run_dummy;
+  AgsRecallDssi *recall_dssi;
+  AgsDssiPlugin *dssi_plugin;
+  AgsAddRecallContainer *add_recall_container;
+  AgsAddRecall *add_recall;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+  
+  GList *port, *recall_port;
+  GList *list, *list_start;
+  GList *task;
+  guint pads, audio_channels;
+  gdouble step;
+  guint x, y;
+  guint i, j;
+
+  void *plugin_so;
+  DSSI_Descriptor_Function dssi_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
+  LADSPA_Data lower_bound, upper_bound;
+  unsigned long effect_index;
+  unsigned long k;
+
+  effect_bulk->plugin = g_list_append(effect_bulk->plugin,
+				      ags_effect_bulk_plugin_alloc(filename,
+								   effect));
+
+  window = gtk_widget_get_ancestor(effect_bulk,
+				   AGS_TYPE_WINDOW);
+  
+  application_context = window->application_context;
+
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
+  audio_channels = effect_bulk->audio->audio_channels;
+
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+    current = effect_bulk->audio->output;
+    
+    pads = effect_bulk->audio->output_pads;
+  }else{
+    current = effect_bulk->audio->input;
+
+    pads = effect_bulk->audio->input_pads;
+  }
+
+  /*  */
+  effect_index = ags_dssi_manager_effect_index(filename,
+					       effect);
+
+  task = NULL;
+  
+  /* load plugin */
+  ags_dssi_manager_load_file(filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+
+  plugin_so = dssi_plugin->plugin_so;
+
+  for(i = 0; i < pads; i++){
+    for(j = 0; j < audio_channels; j++){
+
+      /* dssi play */
+      recall_container = ags_recall_container_new();
+
+      add_recall_container = ags_add_recall_container_new(current->audio,
+							  recall_container);
+      task = g_list_prepend(task,
+			    add_recall_container);
+
+      recall_dssi = ags_recall_dssi_new(current,
+					filename,
+					effect,
+					effect_index);
+      g_object_set(G_OBJECT(recall_dssi),
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "recall-container\0", recall_container,
+		   NULL);
+      AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
+      ags_recall_dssi_load(recall_dssi);
+      port = ags_recall_dssi_load_ports(recall_dssi);
+
+      add_recall = ags_add_recall_new(current,
+				      recall_dssi,
+				      TRUE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* dummy */
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_DSSI_RUN);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "recall-container\0", recall_container,
+		   "recall-channel\0", recall_dssi,
+		   NULL);
+
+      add_recall = ags_add_recall_new(current,
+				      recall_channel_run_dummy,
+				      TRUE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* dssi recall */
+      recall_container = ags_recall_container_new();
+
+      add_recall_container = ags_add_recall_container_new(current->audio,
+							  recall_container);
+      task = g_list_prepend(task,
+			    add_recall_container);
+
+      recall_dssi = ags_recall_dssi_new(current,
+					filename,
+					effect,
+					effect_index);
+      g_object_set(G_OBJECT(recall_dssi),
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "recall-container\0", recall_container,
+		   NULL);
+      AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
+      ags_recall_dssi_load(recall_dssi);
+      recall_port = ags_recall_dssi_load_ports(recall_dssi);
+            
+      add_recall = ags_add_recall_new(current,
+				      recall_dssi,
+				      FALSE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      /* dummy */
+      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
+								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
+								  AGS_TYPE_RECALL_DSSI_RUN);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      g_object_set(G_OBJECT(recall_channel_run_dummy),
+		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "recall-container\0", recall_container,
+		   "recall-channel\0", recall_dssi,
+		   NULL);
+
+      add_recall = ags_add_recall_new(current,
+				      recall_channel_run_dummy,
+				      FALSE);
+      task = g_list_prepend(task,
+			    add_recall);
+
+      
+      current = current->next;
+    }
+  }
+
+  /* retrieve position within table  */
+  x = 0;
+  y = 0;
+  
+  list_start = 
+    list = effect_bulk->table->children;
+
+  while(list != NULL){
+    if(y <= ((GtkTableChild *) list->data)->top_attach){
+      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    }
+
+    list = list->next;
+  }
+  
+  /* load ports */
+  if(effect_index != -1 &&
+     plugin_so){
+    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
+						       "dssi_descriptor\0");
+
+    if(dlerror() == NULL && dssi_descriptor){
+      plugin_descriptor = dssi_descriptor(effect_index);
+
+      port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
+
+      for(k = 0; k < plugin_descriptor->LADSPA_Plugin->PortCount; k++){
+	if((LADSPA_IS_PORT_CONTROL(port_descriptor[k]) && 
+	    (LADSPA_IS_PORT_INPUT(port_descriptor[k]) ||
+	     LADSPA_IS_PORT_OUTPUT(port_descriptor[k])))){
+	  GtkWidget *child_widget;
+	  
+	  GType widget_type;
+
+	  if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
+	    x = 0;
+	    y++;
+	    gtk_table_resize(effect_bulk->table,
+			     y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
+	  }
+
+	  if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->LADSPA_Plugin->PortRangeHints[k].HintDescriptor)){
+	    widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	  }else{
+	    widget_type = AGS_TYPE_DIAL;
+	  }
+
+	  /* add bulk member */
+	  bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						       "widget-type\0", widget_type,
+						       "widget-label\0", plugin_descriptor->LADSPA_Plugin->PortNames[k],
+						       "plugin-name\0", g_strdup_printf("ladspa-%lu\0", plugin_descriptor->LADSPA_Plugin->UniqueID),
+						       "filename\0", filename,
+						       "effect\0", effect,
+						       "specifier\0", g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[k]),
+						       "control-port\0", g_strdup_printf("%d/%d\0",
+											 k,
+											 plugin_descriptor->LADSPA_Plugin->PortCount),
+						       NULL);
+	  child_widget = ags_bulk_member_get_widget(bulk_member);
+
+	  if(AGS_IS_DIAL(child_widget)){
+	    AgsDial *dial;
+	    GtkAdjustment *adjustment;
+
+	    dial = child_widget;
+
+	    /* add controls of ports and apply range  */
+	    lower_bound = plugin_descriptor->LADSPA_Plugin->PortRangeHints[k].LowerBound;
+	    upper_bound = plugin_descriptor->LADSPA_Plugin->PortRangeHints[k].UpperBound;
+
+	    adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	    g_object_set(dial,
+			 "adjustment", adjustment,
+			 NULL);
+
+	    if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    }else if(upper_bound < 0.0 && lower_bound < 0.0){
+	      step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    }else{
+	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    }
+
+	    gtk_adjustment_set_step_increment(adjustment,
+					      step);
+	    gtk_adjustment_set_lower(adjustment,
+				     lower_bound);
+	    gtk_adjustment_set_upper(adjustment,
+				     upper_bound);
+	    gtk_adjustment_set_value(adjustment,
+				     lower_bound);
+	  }
+
+#ifdef AGS_DEBUG
+	  g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
+#endif
+	  
+	  /* create task */
+	  add_bulk_member = ags_add_bulk_member_new(effect_bulk,
+						    bulk_member,
+						    x, y,
+						    1, 1);
+	  task = g_list_prepend(task,
+				add_bulk_member);
+
+	  /* update ports */
+	  update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+							  bulk_member,
+							  pads,
+							  0,
+							  TRUE);
+	  task = g_list_prepend(task,
+				update_bulk_member);
+
+	  x++;
+	}
+      }
+    }
+  }
+
+  /* launch tasks */
+  task = g_list_reverse(task);      
+  ags_task_thread_append_tasks(task_thread,
+			       task);
+
+  return(port);
+}
+
+GList*
 ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			       GList *control_type_name,
 			       gchar *filename,
@@ -1654,6 +1957,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 				gchar *effect)
 {
   AgsLadspaPlugin *ladspa_plugin;
+  AgsDssiPlugin *dssi_plugin;
   AgsLv2Plugin *lv2_plugin;
   
   GList *port;
@@ -1667,27 +1971,43 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 					     control_type_name,
 					     filename,
 					     effect);
-  }else{
+  }
+
+  if(ladspa_plugin == NULL){
+    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+
+    if(dssi_plugin != NULL){
+      port = ags_effect_bulk_add_dssi_effect(effect_bulk,
+					     control_type_name,
+					     filename,
+					     effect);
+    }
+  }
+  
+  if(ladspa_plugin == NULL &&
+     dssi_plugin == NULL){
     GList *ui_node;
     gchar *str;
     
     lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
 
-    /* load ui */
-    str = g_strdup_printf("//rdf-triple/rdf-verb[@do=\"uiext:binary\"]/rdf-list/rdf-value[1]\0");
-    ui_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-				    str);
-    
-    if(ui_node != NULL){
-      port = ags_effect_bulk_add_lv2ui_effect(effect_bulk,
+    if(lv2_plugin != NULL){
+      /* load ui */
+      str = g_strdup_printf("//rdf-triple/rdf-verb[@do=\"uiext:binary\"]/rdf-list/rdf-value[1]\0");
+      ui_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+				      str);
+      
+      if(ui_node != NULL){
+	port = ags_effect_bulk_add_lv2ui_effect(effect_bulk,
+						control_type_name,
+						filename,
+						effect);
+      }else if(lv2_plugin != NULL){
+	port = ags_effect_bulk_add_lv2_effect(effect_bulk,
 					      control_type_name,
 					      filename,
 					      effect);
-    }else if(lv2_plugin != NULL){
-      port = ags_effect_bulk_add_lv2_effect(effect_bulk,
-					    control_type_name,
-					    filename,
-					    effect);
+      }
     }
   }
   

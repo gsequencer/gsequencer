@@ -21,14 +21,25 @@
 #include <ags/X/machine/ags_dssi_bridge_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
+
+#include <ags/plugin/ags_dssi_manager.h>
 
 #include <ags/audio/ags_input.h>
 
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 void ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge);
 void ags_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -214,6 +225,7 @@ ags_dssi_bridge_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 {
+  GtkVBox *vbox;
   GtkTable *table;
 
   AgsAudio *audio;
@@ -235,10 +247,23 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   dssi_bridge->effect = NULL;
   dssi_bridge->effect_index = 0;
 
-  AGS_MACHINE(dssi_bridge)->bridge = ags_effect_bridge_new(audio);
+  vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add(gtk_bin_get_child(dssi_bridge),
-		    (GtkWidget *) AGS_MACHINE(dssi_bridge)->bridge);
+		    (GtkWidget *) vbox);
 
+  dssi_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) dssi_bridge->program,
+		     FALSE, FALSE,
+		     0);
+
+  AGS_MACHINE(dssi_bridge)->bridge = ags_effect_bridge_new(audio);
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) AGS_MACHINE(dssi_bridge)->bridge,
+		     FALSE, FALSE,
+		     0);
+
+  
   table = (GtkTable *) gtk_table_new(1, 2, FALSE);
   gtk_box_pack_start(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge),
 		     table,
@@ -409,8 +434,38 @@ ags_dssi_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
 void
 ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 {
+  AgsDssiPlugin *dssi_plugin;
+
+  AgsConfig *config;
+  
   GList *list;
 
+  gchar *str;
+
+  void *plugin_so;
+  DSSI_Descriptor_Function dssi_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
+  DSSI_Program_Descriptor *program_descriptor;
+  unsigned long samplerate;
+  unsigned long effect_index;
+  unsigned long i;
+
+  config = ags_config_get_instance();
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+  
+  if(str != NULL){
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+
+  /*  */
   list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
   
   while(list != NULL){
@@ -419,7 +474,46 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
     list = list->next;
   }
 
-  g_message("%s %s\0",dssi_bridge->filename, dssi_bridge->effect);
+  g_message("ags_dssi_bridge.c - load %s %s\0",dssi_bridge->filename, dssi_bridge->effect);
+ 
+  /* load plugin */
+  ags_dssi_manager_load_file(dssi_bridge->filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_bridge->filename);
+
+  plugin_so = dssi_plugin->plugin_so;
+
+  /*  */
+  gtk_list_store_clear(gtk_combo_box_get_model(dssi_bridge->program));
+  
+  /*  */
+  effect_index = ags_dssi_manager_effect_index(dssi_bridge->filename,
+					       dssi_bridge->effect);
+
+  /* load ports */
+  if(effect_index != -1 &&
+     plugin_so){
+    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
+						       "dssi_descriptor\0");
+
+    if(dlerror() == NULL && dssi_descriptor){
+      plugin_descriptor = dssi_descriptor(effect_index);
+
+      dssi_bridge->ladspa_handle = plugin_descriptor->LADSPA_Plugin->instantiate(plugin_descriptor->LADSPA_Plugin,
+										 samplerate);
+      
+      if(plugin_descriptor->get_program != NULL){
+	for(i = 0; (program_descriptor = plugin_descriptor->get_program(dssi_bridge->ladspa_handle, i)) != NULL; i++){
+	  gtk_combo_box_text_append_text(dssi_bridge->program,
+					 g_strdup_printf("%d,%d %s\0",
+							 program_descriptor->Bank,
+							 program_descriptor->Program,
+							 program_descriptor->Name));
+	}
+      }
+    }
+  }
+
+  /* add to effect bridge */
   ags_effect_bulk_add_effect(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,
 			     NULL,
 			     dssi_bridge->filename,
