@@ -1301,14 +1301,15 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
+
+  xmlNode *parent;
   
   GList *port, *recall_port;
   GList *list, *list_start;
   GList *task;
-  GList *node_list;
-  GList *port_type_node, *port_name_node, *port_max_node, *port_min_node, *port_default_node;
+  GList *port_name_node, *output_port_node, *input_port_node, *port_property_node, *port_max_node, *port_min_node, *port_default_node;
 
-  gchar *port_type_0, *port_type_1;
+  gchar *port_name;
   gchar *str;
   gdouble step;
   guint pads, audio_channels;
@@ -1462,99 +1463,161 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   }
 
   /* find ports */
-  g_message(effect);
+  g_message("%s\0", effect);
   
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]/rdf-verb[@do=\"doap:name\"]/rdf-list/rdf-value[1]\0",
-			effect);
-  node_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-				    str);
-  free(str);
-  
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0",
-			effect);
-  port_type_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					 str);
-
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value\0",
+  str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::rdf-verb[1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and ancestor::rdf-object-list/preceding-sibling::rdf-verb[1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']]",
 			effect);
   port_name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
 					 str);
   free(str);
-
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:minimum\"]/rdf-list/rdf-value\0",
-			effect);
-  port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					str);
-  free(str);
-
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:maximum\"]/rdf-list/rdf-value\0",
-			effect);
-  port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					str);
-  free(str);
-
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0",
-			effect);
-  port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    str);
-  free(str);
-
+  
   /* load ports */
   k = 0;
-  
-  while(port_type_node != NULL){
-    port_type_0 = xmlGetProp(port_type_node->data,
-			     "value\0");
-    port_type_1 = xmlGetProp(port_type_node->next->data,
-			     "value\0");
 
-    if(!g_ascii_strncasecmp(port_type_0,
-			    "lv2:ControlPort\0",
-			    15) ||
-       !g_ascii_strncasecmp(port_type_1,
-			    "lv2:ControlPort\0",
-			    15)){
+  while(port_name_node != NULL){
+    GtkWidget *child_widget;
+      
+    GType widget_type;
+
+    port_name = xmlNodeGetContent((xmlNode *) port_name_node->data);
+    g_message("%s\0", port_name);
+
+    str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort' and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			  effect,
+			  port_name);
+    output_port_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					     str);
+    free(str);
+    
+    str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort' and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			  effect,
+			  port_name);
+    input_port_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					    str);
+    free(str);
+    
+    /*  */
+    if(output_port_node != NULL){
+      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':portProperty') + 1) = ':portProperty'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			    effect,
+			    port_name);
+      port_property_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+						 str);
+      free(str);
+      
+      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':minimum') + 1) = ':minimum'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			    effect,
+			    port_name);
+      port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					    str);
+      free(str);
+      
+      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':maximum') + 1) = ':maximum'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			    effect,
+			    port_name);
+      port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					    str);
+      free(str);
+    
+      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':default') + 1) = ':default'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			    effect,
+			    port_name);
+      port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+						str);
+      free(str);
+    }else if(input_port_node != NULL){
+      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':portProperty') + 1) = ':portProperty'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			    effect,
+			    port_name);
+      port_property_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+						 str);
+      free(str);
+
+      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':minimum') + 1) = ':minimum'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			    effect,
+			    port_name);
+      port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					    str);
+      free(str);
+    
+      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':maximum') + 1) = ':maximum'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			    effect,
+			    port_name);
+      port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+					    str);
+      free(str);
+    
+      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':default') + 1) = ':default'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
+			    effect,
+			    port_name);
+      port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+						str);
+      free(str);
+    }else{
+      port_name_node = port_name_node->next;
+
+      continue;
+    }
+    
+
+    /* */
+    if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
+      x = 0;
+      y++;
+      gtk_table_resize(effect_bulk->table,
+		       y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
+    }
+
+    if(port_property_node != NULL &&
+       !g_ascii_strncasecmp("lv2:toggled\0",
+			    xmlNodeGetContent(port_property_node->data),
+			    12)){
+      widget_type = GTK_TYPE_TOGGLE_BUTTON;
+    }else{
+      widget_type = AGS_TYPE_DIAL;
+    }
+    
+    /* add bulk member */
+    bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						 "widget-type\0", widget_type,
+						 "widget-label\0", port_name,
+						 "plugin-name\0", g_strdup_printf("lv2-%s\0", effect),
+						 "filename\0", filename,
+						 "effect\0", effect,
+						 "specifier\0", g_strdup(port_name),
+						 "control-port\0", g_strdup_printf("%d/%d\0",
+										   k,
+										   g_list_length(port_name_node)),
+						 NULL);
+    child_widget = ags_bulk_member_get_widget(bulk_member);
+
+    if(AGS_IS_DIAL(child_widget)){
       AgsDial *dial;
-      GtkAdjustment *adjustment;
 
-      if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
-	x = 0;
-	y++;
-	gtk_table_resize(effect_bulk->table,
-			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
+      dial = AGS_DIAL(child_widget);
+	
+      /* add controls of ports and apply range  */
+      if(port_min_node != NULL){
+	lower_bound = (float) g_ascii_strtod(xmlNodeGetContent((xmlNode *) port_min_node->data),
+					     NULL);
+      }else{
+	lower_bound = 0.0;
       }
 
-      /* add bulk member */
-      bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						   "widget-type\0", AGS_TYPE_DIAL,
-						   "widget-label\0", xmlGetProp(port_name_node->data,
-										"value\0"),
-						   "plugin-name\0", g_strdup_printf("lv2-%s\0", xmlGetProp(((xmlNode *) node_list->data)->parent->parent->parent,
-													   "subject\0")),
-						   "filename\0", filename,
-						   "effect\0", effect,
-						   "specifier\0", xmlGetProp(port_name_node->data,
-									     "value\0"),
-						   "control-port\0", g_strdup_printf("%d/%d\0",
-										     k,
-										     g_list_length(port_name_node)),
-						   NULL);
-      dial = ags_bulk_member_get_widget(bulk_member);
-      gtk_widget_set_size_request(dial,
-				  2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
-				  2 * dial->radius + 2 * dial->outline_strength + 1);
-		
-      /* add controls of ports and apply range  */
-      lower_bound = (float) g_ascii_strtod(xmlGetProp(port_min_node->data,
-						      "value\0"),
-					   NULL);
-      upper_bound = (float) g_ascii_strtod(xmlGetProp(port_max_node->data,
-						      "value\0"),
-					   NULL);
-      default_bound = (float) g_ascii_strtod(xmlGetProp(port_default_node->data,
-							"value\0"),
+      if(port_max_node != NULL){
+	upper_bound = (float) g_ascii_strtod(xmlNodeGetContent((xmlNode *) port_max_node->data),
 					     NULL);
+      }else{
+	upper_bound = 0.0;
+      }
 
+      if(port_default_node != NULL){
+	default_bound = (float) g_ascii_strtod(xmlNodeGetContent((xmlNode *) port_default_node->data),
+					       NULL);
+      }else{
+	default_bound = 0.0;
+      }
+      
       adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
       g_object_set(dial,
 		   "adjustment", adjustment,
@@ -1578,33 +1641,28 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			       default_bound);
 
       g_message("%f %f\0", lower_bound, upper_bound);
-	  
-      /* create task */
-      add_bulk_member = ags_add_bulk_member_new(effect_bulk,
-						bulk_member,
-						x, y,
-						1, 1);
-      task = g_list_prepend(task,
-			    add_bulk_member);
-
-      /* update ports */
-      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
-						      bulk_member,
-						      pads,
-						      0,
-						      TRUE);
-      task = g_list_prepend(task,
-			    update_bulk_member);
-
-      port_default_node = port_default_node->next;
-      port_min_node = port_min_node->next;
-      port_max_node = port_max_node->next;
-      x++;
-      k++;
     }
+      
+    /* create task */
+    add_bulk_member = ags_add_bulk_member_new(effect_bulk,
+					      bulk_member,
+					      x, y,
+					      1, 1);
+    task = g_list_prepend(task,
+			  add_bulk_member);
 
+    /* update ports */
+    update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+						    bulk_member,
+						    pads,
+						    0,
+						    TRUE);
+    task = g_list_prepend(task,
+			  update_bulk_member);
+      
+    x++;
+    k++;
     port_name_node = port_name_node->next;
-    port_type_node = port_type_node->next->next;
   }
 
   /* launch tasks */
@@ -1992,22 +2050,10 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
     lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
 
     if(lv2_plugin != NULL){
-      /* load ui */
-      str = g_strdup_printf("//rdf-triple/rdf-verb[@do=\"uiext:binary\"]/rdf-list/rdf-value[1]\0");
-      ui_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-				      str);
-      
-      if(ui_node != NULL){
-	port = ags_effect_bulk_add_lv2ui_effect(effect_bulk,
-						control_type_name,
-						filename,
-						effect);
-      }else if(lv2_plugin != NULL){
-	port = ags_effect_bulk_add_lv2_effect(effect_bulk,
-					      control_type_name,
-					      filename,
-					      effect);
-      }
+      port = ags_effect_bulk_add_lv2_effect(effect_bulk,
+					    control_type_name,
+					    filename,
+					    effect);
     }
   }
   

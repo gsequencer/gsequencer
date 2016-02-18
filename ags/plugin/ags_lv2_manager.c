@@ -428,12 +428,12 @@ ags_lv2_manager_load_default_directory()
 
       /* read binary from turtle */
       binary_list = ags_turtle_find_xpath(manifest,
-					  "//rdf-triple//rdf-predicate-object-list[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0");
+					  "//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]/following-sibling::rdf-object-list//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0");
 
       
       /* read turtle from manifest */
       ttl_list = ags_turtle_find_xpath(manifest,
-				       "//rdf-triple//rdf-predicate-object-list[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0");
+				       "//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]/following-sibling::rdf-object-list//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0");
 
       /* persist XML */
       //NOTE:JK: no need for it
