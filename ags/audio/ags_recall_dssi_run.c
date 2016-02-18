@@ -324,7 +324,7 @@ ags_recall_dssi_run_run_inter(AgsRecall *recall)
 						    buffer_size,
 						    *(event_count),
 						    *(event_buffer));
-
+	  
 	  event_buffer++;
 	  event_count++;
 	}

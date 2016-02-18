@@ -789,7 +789,7 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 							samplerate,
 							0, buffer_length);
 	  ags_midi_buffer_util_put_key_on(&buffer,
-					  route_dssi_audio_run->delta_time,
+					  0, // play immediately since DSSI doesn't know timing: route_dssi_audio_run->delta_time,
 					  0,
 					  channel->pad,
 					  velocity);
@@ -798,6 +798,8 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 	  snd_midi_event_encode(parser, &buffer, seq_length, seq_event);
 	}else if(count_beats_audio_run->notation_counter >= note->x[1]){
 	  /* key off */
+	  //NOTE:JK: not allowed
+	  /* 
 	  seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
 
 	  seq_length = ags_midi_buffer_util_get_varlength_size(route_dssi_audio_run->delta_time);
@@ -819,12 +821,16 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 	  seq_length += 3;
 	  
 	  snd_midi_event_encode(parser, &buffer, seq_length, seq_event);
-
+	  */
 	  /* remove note */
+	  /*
 	  route_dssi_audio_run->feed_midi = g_list_remove(route_dssi_audio_run->feed_midi,
 							  note);
+	  */
 	}else{
 	  /* key pressure */
+	  //NOTE:JK: no need for it
+	  /*
 	  seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
 
 	  seq_length = ags_midi_buffer_util_get_varlength_size(route_dssi_audio_run->delta_time);
@@ -846,6 +852,7 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 	  seq_length += 3;
 	  
 	  snd_midi_event_encode(parser, &buffer, seq_length, seq_event);
+	  */
 	}
 
 	list_recall = list_recall->next;

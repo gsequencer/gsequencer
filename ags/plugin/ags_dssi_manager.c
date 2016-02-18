@@ -326,10 +326,10 @@ ags_dssi_manager_effect_index(gchar *filename,
 
   void *plugin_so;
   DSSI_Descriptor_Function dssi_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
 
-  long effect_index;
-  long i;
+  unsigned long effect_index;
+  unsigned long i;
 
   if(filename == NULL ||
      effect == NULL){
@@ -354,7 +354,7 @@ ags_dssi_manager_effect_index(gchar *filename,
     
     if(dlerror() == NULL && dssi_descriptor){
       for(i = 0; (plugin_descriptor = dssi_descriptor(i)) != NULL; i++){
-	if(!strncmp(plugin_descriptor->Name,
+	if(!strncmp(plugin_descriptor->LADSPA_Plugin->Name,
 		    effect,
 		    strlen(effect))){
 	  effect_index = i;

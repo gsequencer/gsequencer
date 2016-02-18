@@ -143,6 +143,7 @@ main(int argc, char **argv)
   AgsLv2Manager *lv2_manager;;
   AgsLv2uiManager *lv2ui_manager;
   
+  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
 
@@ -166,6 +167,9 @@ main(int argc, char **argv)
   int result;
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
+
+  pthread_mutex_t *audio_loop_mutex;
+  pthread_mutex_t *application_mutex;
   
   //  mtrace();
   atexit(ags_signal_cleanup);
@@ -336,6 +340,16 @@ main(int argc, char **argv)
     
     guint val;
 
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    pthread_mutex_lock(application_mutex);
+    
+    audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+						audio_loop);
+    
+    pthread_mutex_unlock(application_mutex);
+  
     /* wait for audio loop */
     task_thread = ags_thread_find_type(audio_loop,
 				       AGS_TYPE_TASK_THREAD);
@@ -344,6 +358,8 @@ main(int argc, char **argv)
     gui_thread = ags_thread_find_type(audio_loop,
 				      AGS_TYPE_GUI_THREAD);
 
+    pthread_mutex_lock(audio_loop_mutex);
+    
     start_queue = NULL;
     start_queue = g_list_prepend(start_queue,
 				 task_thread);
@@ -351,6 +367,8 @@ main(int argc, char **argv)
 				 gui_thread);
     g_atomic_pointer_set(&(audio_loop->start_queue),
 			 start_queue);
+
+    pthread_mutex_unlock(audio_loop_mutex);
     
     ags_thread_start(audio_loop);
     ags_thread_pool_start(thread_pool);

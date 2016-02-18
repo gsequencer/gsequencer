@@ -24,6 +24,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <dssi.h>
+
 #include <ags/audio/ags_channel.h>
 
 #include <ags/X/ags_machine.h>
@@ -65,6 +67,10 @@ struct _AgsDssiBridge
   gchar *filename;
   gchar *effect;
   unsigned long effect_index;
+
+  LADSPA_Handle ladspa_handle;
+  
+  GtkComboBoxText *program;
 };
 
 struct _AgsDssiBridgeClass

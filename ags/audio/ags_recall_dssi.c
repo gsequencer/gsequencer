@@ -361,8 +361,8 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
   unsigned long i;
 
   void *plugin_so;
-  LADSPA_Descriptor_Function dssi_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
+  DSSI_Descriptor_Function dssi_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_PortRangeHintDescriptor hint_descriptor;
 
@@ -374,15 +374,15 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
   plugin_so = dssi_plugin->plugin_so;
 
   if(plugin_so){
-    dssi_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
 						       "dssi_descriptor\0");
 
     if(dlerror() == NULL && dssi_descriptor){
       recall_dssi->plugin_descriptor = 
 	plugin_descriptor = dssi_descriptor(recall_dssi->index);
 
-      port_count = plugin_descriptor->PortCount;
-      port_descriptor = plugin_descriptor->PortDescriptors;
+      port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
+      port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
 
       for(i = 0; i < port_count; i++){
 	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
@@ -391,10 +391,10 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 	    gchar *plugin_name;
 	    gchar *specifier;
 
-	    hint_descriptor = plugin_descriptor->PortRangeHints[i].HintDescriptor;
+	    hint_descriptor = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].HintDescriptor;
 
-	    plugin_name = g_strdup_printf("dssi-%lu\0", plugin_descriptor->UniqueID);
-	    specifier = g_strdup(plugin_descriptor->PortNames[i]);
+	    plugin_name = g_strdup_printf("dssi-%lu\0", plugin_descriptor->LADSPA_Plugin->UniqueID);
+	    specifier = g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[i]);
 
 	    list = port;
 	    current = NULL;
@@ -409,7 +409,7 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 	      list = list->next;
 	    }
 	    
-	    current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
+	    current->port_value.ags_port_float = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].LowerBound;
 
 	    g_message("connecting port: %d/%d\0", i, port_count);
 	  }
@@ -551,8 +551,8 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
   AgsDssiPlugin *dssi_plugin;
 
   void *plugin_so;
-  LADSPA_Descriptor_Function dssi_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
+  DSSI_Descriptor_Function dssi_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
 
   /*  */
   ags_dssi_manager_load_file(recall_dssi->filename);
@@ -561,7 +561,7 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
   plugin_so = dssi_plugin->plugin_so;
 
   if(plugin_so){
-    dssi_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
 						       "dssi_descriptor\0");
 
     if(dlerror() == NULL && dssi_descriptor){
@@ -592,8 +592,8 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   unsigned long i;
 
   void *plugin_so;
-  LADSPA_Descriptor_Function dssi_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
+  DSSI_Descriptor_Function dssi_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_PortRangeHintDescriptor hint_descriptor;
 
@@ -604,15 +604,15 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   plugin_so = dssi_plugin->plugin_so;
 
   if(plugin_so){
-    dssi_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
 						       "dssi_descriptor\0");
 
     if(dlerror() == NULL && dssi_descriptor){
       recall_dssi->plugin_descriptor = 
 	plugin_descriptor = dssi_descriptor(recall_dssi->index);
 
-      port_count = plugin_descriptor->PortCount;
-      port_descriptor = plugin_descriptor->PortDescriptors;
+      port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
+      port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
 
       for(i = 0; i < port_count; i++){
 	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
@@ -621,10 +621,10 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	    gchar *plugin_name;
 	    gchar *specifier;
 
-	    hint_descriptor = plugin_descriptor->PortRangeHints[i].HintDescriptor;
+	    hint_descriptor = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].HintDescriptor;
 
-	    plugin_name = g_strdup_printf("dssi-%lu\0", plugin_descriptor->UniqueID);
-	    specifier = g_strdup(plugin_descriptor->PortNames[i]);
+	    plugin_name = g_strdup_printf("dssi-%lu\0", plugin_descriptor->LADSPA_Plugin->UniqueID);
+	    specifier = g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[i]);
 
 	    current = g_object_new(AGS_TYPE_PORT,
 				   "plugin-name\0", plugin_name,
@@ -635,7 +635,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 				   "port-value-is-pointer\0", FALSE,
 				   "port-value-type\0", G_TYPE_FLOAT,
 				   NULL);
-	    current->port_value.ags_port_float = plugin_descriptor->PortRangeHints[i].LowerBound;
+	    current->port_value.ags_port_float = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].LowerBound;
 
 	    g_message("connecting port: %d/%d\0", i, port_count);
 
@@ -739,7 +739,7 @@ ags_recall_dssi_float_to_short(LADSPA_Data *buffer,
  */
 GList*
 ags_recall_dssi_find(GList *recall,
-		       gchar *filename, gchar *effect)
+		     gchar *filename, gchar *effect)
 {
   while(recall != NULL){
     if(AGS_IS_RECALL_DSSI(recall->data)){

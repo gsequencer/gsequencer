@@ -88,26 +88,27 @@ guint
 ags_midi_buffer_util_get_varlength(unsigned char *buffer,
 				   long *varlength)
 {
-  long val;
-  unsigned char c;
+  long value;
   guint i;
-  long mask;
+  char c;
   
-  /* retrieve new size and value */
-  val = 0;
-  i = 0;
-  mask = 0xff;
-
-  do{
-    c = ((mask << (i * 8)) & varlength) >> (i * 8);
-    val = (val << 7) + (c & 0x7f);
-    i++;
-  }while(0x80 & c);
+  c = buffer[0];
+  value = c;
+  i = 1;
+  
+  if(c & 0x80){
+    value &= 0x7F;
+   
+    do{
+      value = (value << 7) + ((c = buffer[i]) & 0x7F);
+      i++;
+    }while(c & 0x80);
+  }
 
   if(varlength != NULL){
-    *varlength = val;
+    *varlength = value;
   }
-  
+
   return(i);
 }
 
