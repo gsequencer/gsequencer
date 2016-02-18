@@ -719,7 +719,7 @@ ags_lv2_bridge_menu_new()
     
     if(turtle != NULL){
       effect_list = ags_turtle_find_xpath(turtle,
-					  "//rdf-triple/rdf-predicate-object-list[//rdf-pname-ln[text() = 'doap:name']]/rdf-object-list//rdf-string[1]\0");
+					  "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0");
 
       while(effect_list != NULL){
 	node = effect_list->data;
