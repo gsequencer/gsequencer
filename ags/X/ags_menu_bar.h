@@ -29,6 +29,9 @@
 #define AGS_IS_MENU_BAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MENU_BAR))
 #define AGS_MENU_BAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MENU_BAR, AgsMenuBarClass))
 
+#define AGS_MENU_ITEM_FILENAME_KEY "ags-menu-bar-filename-key\0"
+#define AGS_MENU_ITEM_EFFECT_KEY "ags-menu-bar-effect-key\0"
+
 typedef struct _AgsMenuBar AgsMenuBar;
 typedef struct _AgsMenuBarClass AgsMenuBarClass;
 

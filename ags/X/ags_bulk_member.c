@@ -593,17 +593,20 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
 {
   GtkWidget *child_widget;
 
-  if(g_type_is_a(bulk_member->widget_type, GTK_TYPE_BUTTON) ||
-     bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
+  if(g_type_is_a(bulk_member->widget_type, GTK_TYPE_BUTTON)){
     child_widget = gtk_bin_get_child(GTK_BIN(bulk_member));
 
     g_object_set(G_OBJECT(child_widget),
 		 "label\0", label,
 		 NULL);
   }else{
-    GtkLabel *label;
-
-    //TODO:JK: implement me
+    gtk_frame_set_label_widget(bulk_member,
+			       g_object_new(GTK_TYPE_LABEL,
+					    "wrap\0", TRUE,
+					    "wrap-mode\0", PANGO_WRAP_CHAR,
+					    "use-markup\0", TRUE,
+					    "label", g_strdup_printf("<small>%s</small>", label),
+					    NULL));
   }
 
 

@@ -258,15 +258,16 @@ ags_machine_init(AgsMachine *machine)
   GtkFrame *frame;
   GtkMenuToolButton *menu_tool_button;
 
-  machine->flags = 0;
-  machine->file_input_flags = 0;
-  machine->mapping_flags = 0;
-
   machine->name = NULL;
 
   machine->version = AGS_MACHINE_DEFAULT_VERSION;
   machine->build_id = AGS_MACHINE_DEFAULT_BUILD_ID;
 
+  machine->flags = 0;
+  machine->file_input_flags = 0;
+  machine->mapping_flags = 0;
+  machine->connection_flags = 0;
+  
   machine->output_pad_type = G_TYPE_NONE;
   machine->input_pad_type = G_TYPE_NONE;
 
@@ -313,6 +314,8 @@ ags_machine_init(AgsMachine *machine)
   machine->properties = NULL;
   machine->rename = NULL;
   machine->connection = NULL;
+
+  machine->application_context = NULL;
 }
 
 void

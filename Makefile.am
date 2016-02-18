@@ -1098,6 +1098,8 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_drum_output_line.h \
 	ags/X/machine/ags_drum_output_pad_callbacks.h \
 	ags/X/machine/ags_drum_output_pad.h \
+	ags/X/machine/ags_dssi_bridge_callbacks.h \
+	ags/X/machine/ags_dssi_bridge.h \
 	ags/X/machine/ags_ffplayer_callbacks.h \
 	ags/X/machine/ags_ffplayer.h \
 	ags/X/machine/ags_ffplayer_bridge_callbacks.h \
@@ -1155,6 +1157,8 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_drum_output_line_callbacks.c \
 	ags/X/machine/ags_drum_output_pad.c \
 	ags/X/machine/ags_drum_output_pad_callbacks.c \
+	ags/X/machine/ags_dssi_bridge.c \
+	ags/X/machine/ags_dssi_bridge_callbacks.c \
 	ags/X/machine/ags_ffplayer.c \
 	ags/X/machine/ags_ffplayer_callbacks.c \
 	ags/X/machine/ags_ffplayer_bridge.c \

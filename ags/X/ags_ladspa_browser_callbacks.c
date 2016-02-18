@@ -50,7 +50,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   filename = GTK_COMBO_BOX(list->next->data);
   effect = GTK_COMBO_BOX(list->next->next->next->data);
 
-  gtk_list_store_clear(GTK_LIST_STORE(effect));
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(effect)));
 
   ags_ladspa_manager_load_file(gtk_combo_box_text_get_active_text(filename));
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename));
@@ -190,11 +190,18 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 				  0, 1,
 				  y, y + 1);
 
-	gtk_table_attach_defaults(table,
-				  GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
-				  1, 2,
-				  y, y + 1);
-
+	if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor)){
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_ladspa_browser_combo_box_boolean_controls_new()),
+				    1, 2,
+				    y, y + 1);
+	}else{
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
+				    1, 2,
+				    y, y + 1);
+	}
+	
 	y++;
       }
 

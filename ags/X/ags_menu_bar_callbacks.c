@@ -48,6 +48,9 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_ladspa_bridge.h>
+#include <ags/X/machine/ags_dssi_bridge.h>
+#include <ags/X/machine/ags_lv2_bridge.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -625,15 +628,219 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 }
 
 void
+ags_menu_bar_add_ladspa_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  AgsWindow *window;
+  AgsLadspaBridge *ladspa_bridge;
+
+  GObject *sequencer;
+  
+  AgsAddAudio *add_audio;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  gchar *filename, *effect;
+  
+  pthread_mutex_t *application_mutex;
+
+  filename = g_object_get_data(menu_item,
+			       AGS_MENU_ITEM_FILENAME_KEY);
+  effect = g_object_get_data(menu_item,
+			     AGS_MENU_ITEM_EFFECT_KEY);
+  
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+  application_context = window->application_context;
+
+  ladspa_bridge = ags_ladspa_bridge_new(G_OBJECT(window->soundcard),
+					filename,
+					effect);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+  
+  add_audio = ags_add_audio_new(window->soundcard,
+				AGS_MACHINE(ladspa_bridge)->audio);
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(add_audio));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(ladspa_bridge),
+		     FALSE, FALSE, 0);
+
+  /* */
+  ladspa_bridge->machine.audio->audio_channels = 2;
+
+  /*  */
+  ags_audio_set_pads(ladspa_bridge->machine.audio, AGS_TYPE_INPUT, 1);
+  ags_audio_set_pads(ladspa_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(ladspa_bridge));
+
+  /*  */
+  ags_ladspa_bridge_load(ladspa_bridge);
+
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(ladspa_bridge));
+}
+
+void
 ags_menu_bar_add_dssi_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  //TODO:JK: implement me
+  AgsWindow *window;
+  AgsDssiBridge *dssi_bridge;
+
+  GObject *sequencer;
+  
+  AgsAddAudio *add_audio;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  gchar *filename, *effect;
+  
+  pthread_mutex_t *application_mutex;
+
+  filename = g_object_get_data(menu_item,
+			       AGS_MENU_ITEM_FILENAME_KEY);
+  effect = g_object_get_data(menu_item,
+			     AGS_MENU_ITEM_EFFECT_KEY);
+  
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+  application_context = window->application_context;
+
+  dssi_bridge = ags_dssi_bridge_new(G_OBJECT(window->soundcard),
+				    filename,
+				    effect);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+  
+  add_audio = ags_add_audio_new(window->soundcard,
+				AGS_MACHINE(dssi_bridge)->audio);
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(add_audio));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(dssi_bridge),
+		     FALSE, FALSE, 0);
+  
+  /* */
+  dssi_bridge->machine.audio->audio_channels = 2;
+
+  /*  */
+  ags_audio_set_pads(dssi_bridge->machine.audio, AGS_TYPE_INPUT, 78);
+  ags_audio_set_pads(dssi_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(dssi_bridge));
+
+  /*  */
+  ags_dssi_bridge_load(dssi_bridge);
+
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(dssi_bridge));
 }
 
 void
 ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
-  //TODO:JK: implement me
+  AgsWindow *window;
+  AgsLv2Bridge *lv2_bridge;
+
+  GObject *sequencer;
+  
+  AgsAddAudio *add_audio;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  gchar *filename, *effect;
+  
+  pthread_mutex_t *application_mutex;
+
+  filename = g_object_get_data(menu_item,
+			       AGS_MENU_ITEM_FILENAME_KEY);
+  effect = g_object_get_data(menu_item,
+			     AGS_MENU_ITEM_EFFECT_KEY);
+  
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+  application_context = window->application_context;
+
+  lv2_bridge = ags_lv2_bridge_new(G_OBJECT(window->soundcard),
+					filename,
+					effect);
+    
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+  
+  add_audio = ags_add_audio_new(window->soundcard,
+				AGS_MACHINE(lv2_bridge)->audio);
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(add_audio));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(lv2_bridge),
+		     FALSE, FALSE, 0);
+
+  /*  */
+  lv2_bridge->machine.audio->audio_channels = 2;
+
+  /*  */
+  ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_INPUT, 1);
+  ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(lv2_bridge));
+
+  /*  */
+  ags_lv2_bridge_load(lv2_bridge);
+
+  /* */
+  gtk_widget_show_all(GTK_WIDGET(lv2_bridge));
 }
 
 void

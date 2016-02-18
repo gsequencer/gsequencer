@@ -320,7 +320,7 @@ ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_line_member_init(AgsLineMember *line_member)
 {
-  GtkWidget *control;
+  AgsDial *dial;
   
   g_signal_connect_after((GObject *) line_member, "parent_set\0",
 			 G_CALLBACK(ags_line_member_parent_set_callback), (gpointer) line_member);
@@ -329,11 +329,15 @@ ags_line_member_init(AgsLineMember *line_member)
 			AGS_LINE_MEMBER_APPLY_RECALL);
 
   line_member->widget_type = AGS_TYPE_DIAL;
-  control = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
+  dial = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
 				       "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				       NULL);
+  gtk_widget_set_size_request(dial,
+			      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
+			      2 * (dial->radius + dial->outline_strength + 1));
+  
   gtk_container_add(GTK_CONTAINER(line_member),
-		    control);
+		    dial);
 
   line_member->widget_label = NULL;
 
@@ -385,6 +389,17 @@ ags_line_member_set_property(GObject *gobject,
       new_child = (GtkWidget *) g_object_new(widget_type,
 					     NULL);
 
+
+      if(AGS_IS_DIAL(new_child)){
+	AgsDial *dial;
+
+	dial = new_child;
+	
+	gtk_widget_set_size_request(dial,
+				    2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
+				    2 * (dial->radius + dial->outline_strength + 1));
+      }
+      
       gtk_container_add(GTK_CONTAINER(line_member),
 			new_child);
 			
