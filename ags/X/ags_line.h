@@ -97,6 +97,7 @@ void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_line_group_changed(AgsLine *line);
 
 GList* ags_line_add_effect(AgsLine *line,
+			   GList *control_type_name,
 			   gchar *filename,
 			   gchar *effect);
 void ags_line_remove_effect(AgsLine *line,

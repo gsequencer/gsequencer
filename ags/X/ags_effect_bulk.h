@@ -107,6 +107,7 @@ AgsEffectBulkPlugin* ags_effect_bulk_plugin_alloc(gchar *filename,
 						  gchar *effect);
 
 GList* ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
+				  GList *control_type_name,
 				  gchar *filename,
 				  gchar *effect);
 void ags_effect_bulk_remove_effect(AgsEffectBulk *effect_bulk,

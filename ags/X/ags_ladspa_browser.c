@@ -388,6 +388,33 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 }
 
 /**
+ * ags_ladspa_browser_combo_box_boolean_controls_new:
+ *
+ * Creates a #GtkComboBox containing suitable widgets as controls.
+ *
+ * Returns: a new #GtkComboBox
+ *
+ * Since: 0.7.4
+ */
+GtkWidget*
+ags_ladspa_browser_combo_box_boolean_controls_new()
+{
+  GtkComboBoxText *combo_box;
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(combo_box,
+				 "check-button\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "toggle button\0");
+
+  gtk_combo_box_set_active(combo_box,
+			   1);
+
+  return(combo_box);
+}
+
+/**
  * ags_ladspa_browser_combo_box_controls_new:
  *
  * Creates a #GtkComboBox containing suitable widgets as controls.

@@ -72,12 +72,15 @@ void ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 GList* ags_line_add_ladspa_effect(AgsLine *line,
+				  GList *control_type_name,
 				  gchar *filename,
 				  gchar *effect);
 GList* ags_line_add_lv2_effect(AgsLine *line,
+			       GList *control_type_name,
 			       gchar *filename,
 			       gchar *effect);
 GList* ags_line_real_add_effect(AgsLine *line,
+				GList *control_type_name,
 				gchar *filename,
 				gchar *effect);
 void ags_line_real_remove_effect(AgsLine *line,
@@ -267,8 +270,9 @@ ags_line_class_init(AgsLineClass *line)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLineClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__STRING_STRING,
-		 G_TYPE_POINTER, 2,
+		 g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING,
+		 G_TYPE_POINTER, 3,
+		 G_TYPE_POINTER,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING);
 
@@ -641,6 +645,7 @@ ags_line_group_changed(AgsLine *line)
 
 GList*
 ags_line_add_ladspa_effect(AgsLine *line,
+			   GList *control_type_name,
 			   gchar *filename,
 			   gchar *effect)
 {
@@ -724,55 +729,81 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
 	    (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
-	  AgsDial *dial;
+	  GtkWidget *new_child;
 	  GtkAdjustment *adjustment;
 
+	  GType widget_type;
+	  
 	  if(x == 2){
 	    x = 0;
 	    y++;
 	  }
+
+	  if(control_type_name != NULL){
+	    widget_type = g_type_from_name((gchar *) control_type_name->data);
+	  }
+	  
+	  if(control_type_name == NULL ||
+	     widget_type == G_TYPE_NONE){
+	    if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor)){
+	      widget_type = GTK_TYPE_CHECK_BUTTON;
+	    }else{
+	      widget_type = AGS_TYPE_DIAL;
+	    }
+	  }
 	  
 	  g_message("line_add_effect - add line member\0");
-
+	  
 	  /* add line member */
 	  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-						       "widget-type\0", AGS_TYPE_DIAL,
+						       "widget-type\0", widget_type,
 						       "widget-label\0", plugin_descriptor->PortNames[i],
 						       "plugin-name\0", AGS_PORT(port->data)->plugin_name,
 						       "specifier\0", AGS_PORT(port->data)->specifier,
 						       "control-port\0", AGS_PORT(port->data)->control_port,
 						       NULL);
-	  dial = ags_line_member_get_widget(line_member);
-	  gtk_widget_set_size_request(dial,
-				      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
-				      2 * (dial->radius + dial->outline_strength + 1));
-		
-	  /* add controls of ports and apply range  */
+	  new_child = gtk_bin_get_child(GTK_BIN(line_member));
+
+	  adjustment = NULL;
 	  lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
 	  upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
+	  step = 0.001;
+	  
+	  /* add controls of ports and apply range  */
+	  if(AGS_IS_DIAL(new_child)){
+	    AgsDial *dial;
 
-	  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-	  g_object_set(dial,
-		       "adjustment", adjustment,
-		       NULL);
+	    dial = new_child;
+	    
+	    adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	    g_object_set(dial,
+			 "adjustment", adjustment,
+			 NULL);
 
-	  if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	    step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }else{
-	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    }else if(upper_bound < 0.0 && lower_bound < 0.0){
+	      step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    }else{
+	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    }
+	  }else if(GTK_IS_RANGE(new_child)){
+	    adjustment = GTK_RANGE(new_child)->adjustment;
+	  }else if(GTK_IS_SPIN_BUTTON(new_child)){
+	    adjustment = GTK_SPIN_BUTTON(new_child)->adjustment;
 	  }
 
-	  gtk_adjustment_set_step_increment(adjustment,
-					    step);
-	  gtk_adjustment_set_lower(adjustment,
-				   lower_bound);
-	  gtk_adjustment_set_upper(adjustment,
-				   upper_bound);
-	  gtk_adjustment_set_value(adjustment,
-				   lower_bound);
-
+	  if(adjustment != NULL){
+	    gtk_adjustment_set_step_increment(adjustment,
+					      step);
+	    gtk_adjustment_set_lower(adjustment,
+				     lower_bound);
+	    gtk_adjustment_set_upper(adjustment,
+				     upper_bound);
+	    gtk_adjustment_set_value(adjustment,
+				     lower_bound);
+	  }
+	  
 	  ags_expander_add(line->expander,
 			   line_member,
 			   x, y,
@@ -785,6 +816,10 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	  x++;
 	  port = port->next;
 	  recall_port = recall_port->next;
+
+	  if(control_type_name != NULL){
+	    control_type_name = control_type_name->next;
+	  }
 	}
 
 	i++;
@@ -797,6 +832,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
 GList*
 ags_line_add_lv2_effect(AgsLine *line,
+			GList *control_type_name,
 			gchar *filename,
 			gchar *effect)
 {
@@ -977,6 +1013,7 @@ ags_line_add_lv2_effect(AgsLine *line,
 
 GList*
 ags_line_real_add_effect(AgsLine *line,
+			 GList *control_type_name,
 			 gchar *filename,
 			 gchar *effect)
 {
@@ -991,6 +1028,7 @@ ags_line_real_add_effect(AgsLine *line,
   
   if(ladspa_plugin != NULL){
     port = ags_line_add_ladspa_effect(line,
+				      control_type_name,
 				      filename,
 				      effect);
   }else{
@@ -998,6 +1036,7 @@ ags_line_real_add_effect(AgsLine *line,
     
     if(lv2_plugin != NULL){
       port = ags_line_add_lv2_effect(line,
+				     control_type_name,
 				     filename,
 				     effect);
     }
@@ -1017,6 +1056,7 @@ ags_line_real_add_effect(AgsLine *line,
  */
 GList*
 ags_line_add_effect(AgsLine *line,
+		    GList *control_type_name,
 		    gchar *filename,
 		    gchar *effect)
 {
@@ -1027,6 +1067,7 @@ ags_line_add_effect(AgsLine *line,
   g_object_ref((GObject *) line);
   g_signal_emit(G_OBJECT(line),
 		line_signals[ADD_EFFECT], 0,
+		control_type_name,
 		filename,
 		effect,
 		&port);

@@ -49,6 +49,8 @@
 #include <ags/audio/ags_recall_recycling_dummy.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_ladspa_run.h>
+#include <ags/audio/ags_recall_dssi.h>
+#include <ags/audio/ags_recall_dssi_run.h>
 #include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_lv2_run.h>
 
@@ -98,15 +100,23 @@ void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
 void ags_effect_bulk_show(GtkWidget *widget);
 
 GList* ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
+					 GList *control_type_name,
 					 gchar *filename,
 					 gchar *effect);
+GList* ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
+				       GList *control_type_name,
+				       gchar *filename,
+				       gchar *effect);
 GList* ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
+				      GList *control_type_name,
 				      gchar *filename,
 				      gchar *effect);
 GList* ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
+					GList *control_type_name,
 					gchar *filename,
 					gchar *effect);
 GList* ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
+				       GList *control_type_name,
 				       gchar *filename,
 				       gchar *effect);
 void ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
@@ -268,8 +278,9 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectBulkClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__STRING_STRING,
-		 G_TYPE_POINTER, 2,
+		 g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING,
+		 G_TYPE_POINTER, 3,
+		 G_TYPE_POINTER,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING);
 
@@ -663,6 +674,7 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
 
 GList*
 ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
+				  GList *control_type_name,
 				  gchar *filename,
 				  gchar *effect)
 {
@@ -863,8 +875,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	if((LADSPA_IS_PORT_CONTROL(port_descriptor[k]) && 
 	    (LADSPA_IS_PORT_INPUT(port_descriptor[k]) ||
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[k])))){
-	  AgsDial *dial;
-	  GtkAdjustment *adjustment;
+	  GtkWidget *child_widget;
+	  
+	  GType widget_type;
 
 	  if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	    x = 0;
@@ -873,9 +886,15 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 			     y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
 	  }
 
+	  if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[k].HintDescriptor)){
+	    widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	  }else{
+	    widget_type = AGS_TYPE_DIAL;
+	  }
+
 	  /* add bulk member */
 	  bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						       "widget-type\0", AGS_TYPE_DIAL,
+						       "widget-type\0", widget_type,
 						       "widget-label\0", plugin_descriptor->PortNames[k],
 						       "plugin-name\0", g_strdup_printf("ladspa-%lu\0", plugin_descriptor->UniqueID),
 						       "filename\0", filename,
@@ -885,36 +904,40 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 											 k,
 											 plugin_descriptor->PortCount),
 						       NULL);
-	  dial = ags_bulk_member_get_widget(bulk_member);
-	  gtk_widget_set_size_request(dial,
-				      2 * dial->radius + 2 * dial->outline_strength + 2 * (dial->button_width + 4),
-				      2 * dial->radius + 2 * dial->outline_strength + 1);
-		
-	  /* add controls of ports and apply range  */
-	  lower_bound = plugin_descriptor->PortRangeHints[k].LowerBound;
-	  upper_bound = plugin_descriptor->PortRangeHints[k].UpperBound;
+	  child_widget = ags_bulk_member_get_widget(bulk_member);
 
-	  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-	  g_object_set(dial,
-		       "adjustment", adjustment,
-		       NULL);
+	  if(AGS_IS_DIAL(child_widget)){
+	    AgsDial *dial;
+	    GtkAdjustment *adjustment;
 
-	  if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	    step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }else{
-	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    dial = child_widget;
+
+	    /* add controls of ports and apply range  */
+	    lower_bound = plugin_descriptor->PortRangeHints[k].LowerBound;
+	    upper_bound = plugin_descriptor->PortRangeHints[k].UpperBound;
+
+	    adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	    g_object_set(dial,
+			 "adjustment", adjustment,
+			 NULL);
+
+	    if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    }else if(upper_bound < 0.0 && lower_bound < 0.0){
+	      step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    }else{
+	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	    }
+
+	    gtk_adjustment_set_step_increment(adjustment,
+					      step);
+	    gtk_adjustment_set_lower(adjustment,
+				     lower_bound);
+	    gtk_adjustment_set_upper(adjustment,
+				     upper_bound);
+	    gtk_adjustment_set_value(adjustment,
+				     lower_bound);
 	  }
-
-	  gtk_adjustment_set_step_increment(adjustment,
-					    step);
-	  gtk_adjustment_set_lower(adjustment,
-				   lower_bound);
-	  gtk_adjustment_set_upper(adjustment,
-				   upper_bound);
-	  gtk_adjustment_set_value(adjustment,
-				   lower_bound);
 
 #ifdef AGS_DEBUG
 	  g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
@@ -953,6 +976,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
 GList*
 ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
+			       GList *control_type_name,
 			       gchar *filename,
 			       gchar *effect)
 {
@@ -1290,6 +1314,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
 GList*
 ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
+				 GList *control_type_name,
 				 gchar *filename,
 				 gchar *effect)
 {
@@ -1624,6 +1649,7 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
 
 GList*
 ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
+				GList *control_type_name,
 				gchar *filename,
 				gchar *effect)
 {
@@ -1638,6 +1664,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   
   if(ladspa_plugin != NULL){
     port = ags_effect_bulk_add_ladspa_effect(effect_bulk,
+					     control_type_name,
 					     filename,
 					     effect);
   }else{
@@ -1653,10 +1680,12 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
     
     if(ui_node != NULL){
       port = ags_effect_bulk_add_lv2ui_effect(effect_bulk,
+					      control_type_name,
 					      filename,
 					      effect);
     }else if(lv2_plugin != NULL){
       port = ags_effect_bulk_add_lv2_effect(effect_bulk,
+					    control_type_name,
 					    filename,
 					    effect);
     }
@@ -1667,6 +1696,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 
 GList*
 ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
+			   GList *control_type_name,
 			   gchar *filename,
 			   gchar *effect)
 {
@@ -1677,6 +1707,7 @@ ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
   g_object_ref((GObject *) effect_bulk);
   g_signal_emit(G_OBJECT(effect_bulk),
 		effect_bulk_signals[ADD_EFFECT], 0,
+		control_type_name,
 		filename,
 		effect,
 		&list);

@@ -60,7 +60,9 @@ typedef enum{
 }AgsMachineFileInputFlags;
 
 typedef enum{
-  AGS_MACHINE_MONO = 1,
+  AGS_MACHINE_MONO                  = 1,
+  AGS_MACHINE_DISABLE_LINE_MEMBER   = 1 <<  1,
+  AGS_MACHINE_DISABLE_BULK_MEMBER   = 1 <<  2,
 }AgsMachineMappingFlags;
 
 typedef enum{
@@ -70,13 +72,13 @@ typedef enum{
 
 typedef enum{
   AGS_MACHINE_POPUP_MIDI_DIALOG           = 1,
+  AGS_MACHINE_SHOW_MIDI_INPUT             = 1 <<  1,
+  AGS_MACHINE_SHOW_MIDI_OUTPUT            = 1 <<  2,
 }AgsMachineConnectionOptions;
 
 struct _AgsMachine
 {
   GtkHandleBox handle_box;
-
-  GObject *application_context;
 
   char *name;
 
@@ -86,6 +88,7 @@ struct _AgsMachine
   guint flags;
   guint file_input_flags;
   guint mapping_flags;
+  guint connection_flags;
   
   guint bank_0;
   guint bank_1;
@@ -115,6 +118,8 @@ struct _AgsMachine
   GtkDialog *properties;
   GtkDialog *rename;
   GtkDialog *connection;
+
+  GObject *application_context;
 };
 
 struct _AgsMachineClass

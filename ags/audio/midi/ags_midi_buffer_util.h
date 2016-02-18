@@ -26,21 +26,43 @@
 guint ags_midi_buffer_util_get_varlength_size(long varlength);
 void ags_midi_buffer_util_put_varlength(unsigned char *buffer,
 					long varlength);
+guint ags_midi_buffer_util_get_varlength(unsigned char *buffer,
+					 long *varlength);
 
 void ags_midi_buffer_util_put_key_on(unsigned char *buffer,
 				     long delta_time,
 				     long channel,
 				     long key,
 				     long velocity);
+
+guint ags_midi_buffer_util_get_key_on(unsigned char *buffer,
+				      long *delta_time,
+				      long *channel,
+				      long *key,
+				      long *velocity);
+
 void ags_midi_buffer_util_put_key_off(unsigned char *buffer,
 				      long delta_time,
 				      long channel,
 				      long key,
 				      long velocity);
+
+guint ags_midi_buffer_util_get_key_off(unsigned char *buffer,
+				       long *delta_time,
+				       long *channel,
+				       long *key,
+				       long *velocity);
+
 void ags_midi_buffer_util_put_key_pressure(unsigned char *buffer,
 					   long delta_time,
 					   long channel,
 					   long key,
 					   long pressure);
+
+guint ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
+					    long *delta_time,
+					    long *channel,
+					    long *key,
+					    long *pressure);
 
 #endif /*__AGS_MIDI_BUFFER_UTIL_H__*/

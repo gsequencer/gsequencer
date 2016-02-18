@@ -17,5 +17,15 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/machine/ags_lv2_bridge_callbacks.h>
+#ifndef __AGS_DSSI_BRIDGE_CALLBACKS_H__
+#define __AGS_DSSI_BRIDGE_CALLBACKS_H__
 
+#include <glib.h>
+#include <glib-object.h>
+#include <gtk/gtk.h>
+
+#include <ags/X/machine/ags_dssi_bridge.h>
+
+
+
+#endif /*__AGS_DSSI_BRIDGE_CALLBACKS_H__*/
