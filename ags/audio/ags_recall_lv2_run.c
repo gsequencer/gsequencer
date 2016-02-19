@@ -335,6 +335,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 
   gchar *str;
   uint32_t port_count;
+  uint32_t port_index;
   uint32_t i, j;
 
   LV2_Descriptor *plugin_descriptor;
@@ -343,86 +344,24 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 
   port = AGS_RECALL(recall_lv2)->port;
   
-  plugin_descriptor = recall_lv2->plugin_descriptor;
-
   /* connect control port */
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0",
-			plugin_descriptor->URI);
-  port_node = ags_turtle_find_xpath(recall_lv2->turtle,
-				    str);
-  free(str);
-      
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value[1]\0",
-			plugin_descriptor->URI);
-  port_name_node = ags_turtle_find_xpath(recall_lv2->turtle,
-					 str);
-  free(str);
-      
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:index\"]/rdf-list/rdf-value\0",
-			plugin_descriptor->URI);
-  port_index_node = ags_turtle_find_xpath(recall_lv2->turtle,
-					  "//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:index\"]/rdf-list/rdf-value\0");
-  free(str);
-
   port_count = g_list_length(port_node);
 
-  for(i = 0; i < port_count; i++){
-    gchar *port_type_0, *port_type_1;
-    
-    port_type_0 = xmlGetProp(port_node->data,
-			     "value\0");
-    port_type_1 = xmlGetProp(port_node->next->data,
-			     "value\0");
-	
-
-    if(!g_ascii_strncasecmp(port_type_0,
-			    "lv2:ControlPort\0",
-			    14) ||
-       !g_ascii_strncasecmp(port_type_1,
-			    "lv2:ControlPort\0\0",
-			    14)){
-      GList *list;
+  /* connect audio ports */
+  for(j = 0; j < recall_lv2->input_lines; j++){
+    for(i = 0; i < port_count; i++){
       float *port_data;
-      gchar *plugin_name;
-      gchar *specifier;
-
-      specifier = g_strdup(xmlGetProp(port_name_node->data,
-				      "value\0"));
-
-      list = port;
-
-      while(list != NULL){
-	current = port->data;
-
-	if(!g_strcmp0(specifier,
-		      current->specifier)){
-	  break;
-	}
-
-	list = list->next;
-      }
-
-      for(j = 0; j < recall_lv2->input_lines; j++){
-	g_message("connecting port[%d]: %d/%d\0",
-		  j,
-		  g_ascii_strtoull(xmlGetProp(port_index_node->data,
-					      "value\0"),
-				   10,
-				   NULL),
-		  port_count);
-	port_data = &(current->port_value.ags_port_float);
-	recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[j],
-						    g_ascii_strtoull(xmlGetProp(port_index_node->data,
-										"value\0"),
-								     10,
-								     NULL),
-						    port_data);
-      }
+      
+      current = AGS_PORT(port->data);
+      port_data = &(current->port_value.ags_port_float);
+      sscanf(current->control_port, "%d/\0", &port_index);
+      recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[j],
+						  port_index,
+						  port_data);
+      
+      port = port->next;
     }
 
-    port_node = port_node->next->next;
-    port_name_node = port_name_node->next;
-    port_index_node = port_index_node->next;
   }
 }
 
