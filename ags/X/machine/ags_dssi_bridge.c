@@ -20,17 +20,34 @@
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_soundcard.h>
-
-#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_seekable.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_thread-posix.h>
 
 #include <ags/plugin/ags_dssi_manager.h>
 
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall_factory.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_play_notation_audio.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_route_dssi_audio.h>
+#include <ags/audio/recall/ags_route_dssi_audio_run.h>
+
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 
@@ -59,6 +76,15 @@ gchar* ags_dssi_bridge_get_version(AgsPlugin *plugin);
 void ags_dssi_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_dssi_bridge_get_build_id(AgsPlugin *plugin);
 void ags_dssi_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
+
+void ags_dssi_bridge_set_audio_channels(AgsAudio *audio,
+					guint audio_channels, guint audio_channels_old,
+					gpointer data);
+void ags_dssi_bridge_set_pads(AgsAudio *audio, GType type,
+			      guint pads, guint pads_old,
+			      gpointer data);
+
+void ags_dssi_bridge_map_recall(AgsMachine *machine);
 
 /**
  * SECTION:ags_dssi_bridge
@@ -131,6 +157,7 @@ ags_dssi_bridge_get_type(void)
 void
 ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge)
 {
+  AgsMachineClass *machine;
   GObjectClass *gobject;
   GParamSpec *param_spec;
 
@@ -192,6 +219,11 @@ ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge)
   g_object_class_install_property(gobject,
 				  PROP_INDEX,
 				  param_spec);
+
+  /* AgsMachine */
+  machine = (AgsMachineClass *) dssi_bridge;
+
+  machine->map_recall = ags_dssi_bridge_map_recall;
 }
 
 void
@@ -231,7 +263,18 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   AgsAudio *audio;
 
   audio = AGS_MACHINE(dssi_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC);
+  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_SYNC |
+		   AGS_AUDIO_ASYNC |
+		   AGS_AUDIO_HAS_NOTATION | 
+		   AGS_AUDIO_NOTATION_DEFAULT);
+
+  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_dssi_bridge_set_audio_channels), NULL);
+
+  g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
+			 G_CALLBACK(ags_dssi_bridge_set_pads), NULL);
   
   dssi_bridge->flags = 0;
 
@@ -240,8 +283,8 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   dssi_bridge->version = AGS_DSSI_BRIDGE_DEFAULT_VERSION;
   dssi_bridge->build_id = AGS_DSSI_BRIDGE_DEFAULT_BUILD_ID;
   
-  dssi_bridge->mapped_output = 0;
-  dssi_bridge->mapped_input = 0;
+  dssi_bridge->mapped_output_pad = 0;
+  dssi_bridge->mapped_input_pad = 0;
   
   dssi_bridge->filename = NULL;
   dssi_bridge->effect = NULL;
@@ -429,6 +472,401 @@ ags_dssi_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
   dssi_bridge = AGS_DSSI_BRIDGE(plugin);
 
   dssi_bridge->build_id = build_id;
+}
+
+void
+ags_dssi_bridge_set_audio_channels(AgsAudio *audio,
+				   guint audio_channels, guint audio_channels_old,
+				   gpointer data)
+{
+  /* empty */
+}
+
+void
+ags_dssi_bridge_set_pads(AgsAudio *audio, GType type,
+			 guint pads, guint pads_old,
+			 gpointer data)
+{
+  AgsMachine *machine;
+  AgsDssiBridge *dssi_bridge;
+
+  AgsChannel *channel, *source;
+  AgsAudioSignal *audio_signal;
+
+  AgsMutexManager *mutex_manager;
+
+  guint i, j;
+  gboolean grow;
+
+  GValue value = {0,};
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *source_mutex;
+
+  if(pads == pads_old){
+    return;
+  }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get machine */
+  pthread_mutex_lock(audio_mutex);
+  
+  dssi_bridge = (AgsDssiBridge *) audio->machine;
+
+  pthread_mutex_unlock(audio_mutex);
+
+  machine = AGS_MACHINE(dssi_bridge);
+
+  if(pads_old < pads){
+    grow = TRUE;
+  }else{
+    grow = FALSE;
+  }
+  
+  if(g_type_is_a(type, AGS_TYPE_INPUT)){
+    GList *list, *notation;
+
+    pthread_mutex_lock(audio_mutex);
+
+    source = audio->input;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    if(grow){
+      if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+	ags_dssi_bridge_input_map_recall(dssi_bridge,
+					 pads_old);
+      }
+    }else{
+      dssi_bridge->mapped_input_pad = pads;
+    }
+  }else{
+    if(grow){
+      AgsChannel *current, *output;
+      GList *recall;
+      GList *list;
+      guint stop;
+
+      pthread_mutex_lock(audio_mutex);
+
+      source = audio->output;
+
+      pthread_mutex_unlock(audio_mutex);
+
+      source = ags_channel_nth(audio->output, pads_old);
+
+      if(source != NULL){
+	AgsSoundcard *soundcard;
+	AgsRecycling *recycling;
+	AgsAudioSignal *audio_signal;
+
+	pthread_mutex_lock(audio_mutex);
+	
+	soundcard = audio->soundcard;
+
+	pthread_mutex_unlock(audio_mutex);
+
+	/* lookup source mutex */
+	pthread_mutex_lock(application_mutex);
+
+	source_mutex = ags_mutex_manager_lookup(mutex_manager,
+						(GObject *) source);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* get recycling */
+	pthread_mutex_lock(source_mutex);
+
+	recycling = source->first_recycling;
+
+	pthread_mutex_unlock(source_mutex);
+
+	/* instantiate template audio signal */
+	audio_signal = ags_audio_signal_new((GObject *) soundcard,
+					    (GObject *) recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_recycling_add_audio_signal(recycling,
+				       audio_signal);
+
+	ags_dssi_bridge_output_map_recall(dssi_bridge,
+					  pads_old);
+      }
+    }else{
+      dssi_bridge->mapped_output_pad = pads;
+    }
+  }
+}
+
+void
+ags_dssi_bridge_map_recall(AgsMachine *machine)
+{  
+  AgsWindow *window;
+  AgsDssiBridge *dssi_bridge;
+  
+  AgsAudio *audio;
+
+  AgsDelayAudio *play_delay_audio;
+  AgsDelayAudioRun *play_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
+  AgsPlayNotationAudio *recall_notation_audio;
+  AgsPlayNotationAudioRun *recall_notation_audio_run;
+  AgsRouteDssiAudio *route_dssi_audio;
+  AgsRouteDssiAudioRun *route_dssi_audio_run;
+
+  GList *list;
+  
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
+
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
+  dssi_bridge = machine;
+  audio = machine->audio;
+
+  /* ags-delay */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-delay\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
+
+  if(list != NULL){
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+  }
+  
+  /* ags-count-beats */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-count-beats\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+  
+  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+
+  if(list != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+
+    /* set dependency */  
+    g_object_set(G_OBJECT(play_count_beats_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
+		      window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
+		      TRUE);
+  }
+
+  /* ags-play-notation */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-notation\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+  if(list != NULL){
+    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 NULL);
+  }
+
+  /* ags-route-dssi */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-route-dssi\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  list = ags_recall_find_type(audio->recall, AGS_TYPE_ROUTE_DSSI_AUDIO_RUN);
+
+  /* depending on destination */
+  ags_dssi_bridge_input_map_recall(dssi_bridge, 0);
+
+  /* depending on destination */
+  ags_dssi_bridge_output_map_recall(dssi_bridge, 0);
+
+  /* call parent */
+  AGS_MACHINE_CLASS(ags_dssi_bridge_parent_class)->map_recall(machine);
+}
+
+void
+ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge, guint input_pad_start)
+{
+  AgsAudio *audio;
+  AgsChannel *source, *current;
+  
+  GList *list;
+
+  audio = AGS_MACHINE(dssi_bridge)->audio;
+
+  if(dssi_bridge->mapped_input_pad > input_pad_start){
+    return;
+  }
+
+  source = ags_channel_nth(audio->input,
+			   input_pad_start * audio->audio_channels);
+
+  /* map dependending on output */
+  current = source;
+
+  while(current != NULL){
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      0, audio->audio_channels, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
+  
+  /*  */
+  current = source;
+
+  while(current != NULL){
+    /* ags-play */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-play\0",
+			      current->audio_channel, current->audio_channel + 1, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
+
+  /*  */
+  current = source;
+
+  while(current != NULL){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream\0",
+			      current->audio_channel, current->audio_channel + 1, 
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next_pad;
+  }
+
+  dssi_bridge->mapped_input_pad = audio->input_pads;
+}
+
+void
+ags_dssi_bridge_output_map_recall(AgsDssiBridge *dssi_bridge, guint output_pad_start)
+{
+  AgsAudio *audio;
+  AgsChannel *source, *input, *current;
+
+  AgsDelayAudio *recall_delay_audio;
+  AgsCountBeatsAudioRun *recall_count_beats_audio_run;
+
+  GList *list;
+
+  audio = AGS_MACHINE(dssi_bridge)->audio;
+
+  if(dssi_bridge->mapped_output_pad > output_pad_start){
+    return;
+  }
+
+  source = ags_channel_nth(audio->output,
+			   output_pad_start * audio->audio_channels);
+
+  /* remap for input */
+  input = audio->input;
+
+  while(input != NULL){
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      0, audio->audio_channels, 
+			      input->pad, input->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    input = input->next_pad;
+  }
+
+  current = ags_channel_nth(audio->output,
+			    output_pad_start * audio->audio_channels);
+
+  while(current != NULL){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream\0",
+			      current->audio_channel, current->audio_channel + 1,
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next;
+  }
+
+  dssi_bridge->mapped_output_pad = audio->output_pads;
 }
 
 void
