@@ -247,10 +247,10 @@ ags_matrix_init(AgsMatrix *matrix)
   AGS_MACHINE(matrix)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->output_line_type = G_TYPE_NONE;
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_matrix_set_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
 			 G_CALLBACK(ags_matrix_set_pads), NULL);
 
   /*  */

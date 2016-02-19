@@ -3,6 +3,11 @@ ags (0.7.4)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* forwarded changes since 0.6.18
 	* fixed dead-lock, initial run of thread won't skipped anymore
+	* migrated lv2 related XPath queries to new DTD
+	* implemented adding dssi plugin to effect bulk within the effect bridge
+	* implemented effect bridge menus of ladspa, dssi and lv2
+	* implemented ags_thread_clock() as signal
+	* implemented ags_dssi_bridge.c
 
 ags (0.7.3)
 
