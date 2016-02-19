@@ -581,6 +581,137 @@ ags_lv2_manager_uri_index(gchar *filename,
 }
 
 /**
+ * ags_lv2_manager_find_uri:
+ * @filename: the plugin.so filename
+ * @effect: the uri's effect
+ *
+ * Retrieve the uri of @filename and @effect
+ *
+ * Returns: the appropriate uri
+ *
+ * Since: 0.4.3
+ */
+gchar*
+ags_lv2_manager_find_uri(gchar *filename,
+			 gchar *effect)
+{
+  AgsLv2Plugin *lv2_plugin;
+  
+  GList *uri_node;
+
+  gchar *uri;
+  gchar *str;
+  
+  /* load plugin */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  
+  str = g_strdup_printf("//rdf-triple//rdf-subject[ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':Plugin') + 1) = ':Plugin'] and ancestor::*[self::rdf-triple][1]//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name']]/following-sibling::*//rdf-string[text()='%s']]/rdf-iri",
+			effect);
+  uri_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+				   str);
+  free(str);
+  
+  uri = NULL;
+  
+  if(uri_node != NULL){
+    xmlNode *child;
+
+    child = ((xmlNode *) uri_node->data)->children;
+
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"rdf-iriref\0",
+				11)){
+	  uri = xmlNodeGetContent(child);
+
+	  if(strlen(uri) > 2){
+	    uri = g_strndup(uri + 1,
+			    strlen(uri) - 2);
+	  }
+
+	  break;
+	}else if(!g_ascii_strncasecmp(child->name,
+				      "rdf-prefixed-name\0",
+				      18)){
+	  xmlNode *pname_node;
+
+	  gchar *pname;
+	  
+	  pname_node = child->children;
+	  pname = NULL;
+	  
+	  while(pname_node != NULL){
+	    if(pname_node->type == XML_ELEMENT_NODE){
+	      if(!g_ascii_strncasecmp(pname_node->name,
+				      "rdf-pname-ln\0",
+				      11)){
+		pname = xmlNodeGetContent(pname_node);
+		
+		break;
+	      }
+	    }
+
+	    pname_node = pname_node->next;
+	  }
+
+	  if(pname != NULL){
+	    gchar *suffix, *prefix;
+	    gchar *offset;
+
+	    offset = index(pname, ':');
+
+	    if(offset != NULL){
+	      GList *prefix_node;
+	      
+	      offset++;
+	      suffix = g_strndup(offset,
+				 strlen(pname) - (offset - pname));
+	      prefix = g_strndup(pname,
+				 offset - pname);
+
+	      str = g_strdup_printf("//rdf-pname-ns[text()='%s']/following-sibling::rdf-iriref",
+				    prefix);
+	      prefix_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+						  str);
+	      free(str);
+
+	      if(prefix_node != NULL){
+		gchar *iriref;
+
+		iriref = xmlNodeGetContent(prefix_node->data);
+
+		if(iriref != NULL){
+		  if(strlen(iriref) > 2){
+		    gchar *tmp;
+		    
+		    tmp = g_strndup(iriref + 1,
+				    strlen(iriref) - 2);
+		    uri = g_strdup_printf("%s/%s\0",
+					  tmp,
+					  suffix);
+
+		    free(tmp);
+		  }
+		  
+		  free(iriref);
+		}
+	      }
+	    }
+	  }
+	  
+	  break;
+	}
+      }
+
+      child = child->next;
+    }
+  }
+
+  return(uri);
+}
+
+/**
  * ags_lv2_manager_get_instance:
  *
  * Get instance.

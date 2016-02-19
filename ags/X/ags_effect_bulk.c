@@ -1309,6 +1309,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   GList *task;
   GList *port_name_node, *output_port_node, *input_port_node, *port_property_node, *port_max_node, *port_min_node, *port_default_node;
 
+  gchar *uri;
   gchar *port_name;
   gchar *str;
   gdouble step;
@@ -1316,7 +1317,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   guint x, y;
   guint i, j;
   guint k;
-  
+
+  uint32_t *uri_index;
   float lower_bound, upper_bound, default_bound;
 
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
@@ -1345,7 +1347,14 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
     pads = effect_bulk->audio->input_pads;
   }
 
-  /*  */
+  /* read uri */
+  uri = ags_lv2_manager_find_uri(filename,
+				 effect);
+  
+  /* uri index */
+  uri_index = ags_lv2_manager_uri_index(filename,
+					uri);
+  
   task = NULL;
   
   /* load plugin */
@@ -1366,7 +1375,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
-				      index);
+				      uri,
+				      uri_index);
       g_object_set(G_OBJECT(recall_lv2),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1410,7 +1420,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
-				      index);
+				      uri,
+				      uri_index);
       g_object_set(G_OBJECT(recall_lv2),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1476,11 +1487,12 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   while(port_name_node != NULL){
     GtkWidget *child_widget;
-      
+    
     GType widget_type;
 
     port_name = xmlNodeGetContent((xmlNode *) port_name_node->data);
-    g_message("%s\0", port_name);
+
+    g_message("ags_effect_bulk.c - %s\0", port_name);
 
     str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort' and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
 			  effect,
@@ -1581,7 +1593,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
     bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						 "widget-type\0", widget_type,
 						 "widget-label\0", port_name,
-						 "plugin-name\0", g_strdup_printf("lv2-%s\0", effect),
+						 "plugin-name\0", g_strdup_printf("lv2-%s\0", uri),
 						 "filename\0", filename,
 						 "effect\0", effect,
 						 "specifier\0", g_strdup(port_name),
@@ -1705,6 +1717,7 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
 
   gchar *path, *ui_filename;
   gchar *ui_uri;
+  gchar *uri;
   gchar *port_type_0, *port_type_1;
   gchar *str;
   gdouble step;
@@ -1754,6 +1767,8 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
 
   /*  */
   task = NULL;
+
+  uri = NULL;
   
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
@@ -1819,6 +1834,7 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
+				      uri,
 				      index);
       g_object_set(G_OBJECT(recall_lv2),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
@@ -1863,6 +1879,7 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
+				      uri,
 				      index);
       g_object_set(G_OBJECT(recall_lv2),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
