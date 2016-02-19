@@ -779,7 +779,7 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 	  /* key on */
 	  seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
 
-	  seq_length = ags_midi_buffer_util_get_varlength_size(route_dssi_audio_run->delta_time);
+	  seq_length = ags_midi_buffer_util_get_varlength_size(0); // (route_dssi_audio_run->delta_time);
 
 	  velocity = ags_midi_util_envelope_to_velocity(note->attack,
 							note->decay,
@@ -796,7 +796,37 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 	  seq_length += 3;
 	  
 	  snd_midi_event_encode(parser, &buffer, seq_length, seq_event);
+
+	  if(recall_dssi_run->event_buffer == NULL){
+	    recall_dssi_run->event_buffer = (snd_seq_event_t **) malloc(sizeof(snd_seq_event_t *));
+	    recall_dssi_run->event_buffer[0] = seq_event;
+
+	    recall_dssi_run->event_count = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_dssi_run->event_count[0] = 1;
+	  }else{
+	    snd_seq_event_t **event_buffer;
+	    guint length;
+
+	    event_buffer = recall_dssi_run->event_buffer;
+	    length = 0;
+	    
+	    while(*event_buffer != NULL){
+	      event_buffer++;
+	      length++;
+	    }
+
+	    recall_dssi_run->event_buffer = (snd_seq_event_t **) realloc((length + 1) * sizeof(snd_seq_event_t *),
+									 recall_dssi_run->event_buffer);
+	    recall_dssi_run->event_buffer[length] = seq_event;
+
+	    recall_dssi_run->event_count = (unsigned long *) realloc((length + 1) * sizeof(unsigned long),
+								     recall_dssi_run->event_count);
+	    recall_dssi_run->event_count[length] = 1;
+	  }
 	}else if(count_beats_audio_run->notation_counter >= note->x[1]){
+	  /* just stop processing */
+	  ags_recall_done(recall_dssi_run);
+	  
 	  /* key off */
 	  //NOTE:JK: not allowed
 	  /* 

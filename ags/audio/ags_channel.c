@@ -2418,8 +2418,10 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 
   /* find plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+
+  uri = ags_lv2_manager_find_uri(filename,
+				 effect);
   
-  uri = effect;
   effect_index = ags_lv2_manager_uri_index(filename,
 					   uri);
   
@@ -2431,6 +2433,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   recall_lv2 = ags_recall_lv2_new(channel,
 				  lv2_plugin->turtle,
 				  filename,
+				  effect,
 				  uri,
 				  effect_index);
   g_object_set(G_OBJECT(recall_lv2),
@@ -2520,6 +2523,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   recall_lv2 = ags_recall_lv2_new(channel,
 				  lv2_plugin->turtle,
 				  filename,
+				  effect,
 				  uri,
 				  effect_index);
   g_object_set(G_OBJECT(recall_lv2),
