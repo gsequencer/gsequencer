@@ -1,3 +1,8 @@
+ags (0.7.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed DSSI support
+	
 ags (0.7.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

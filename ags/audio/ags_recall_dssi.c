@@ -234,7 +234,10 @@ ags_recall_dssi_init(AgsRecallDssi *recall_dssi)
   recall_dssi->filename = NULL;
   recall_dssi->effect = NULL;
   recall_dssi->index = 0;
-
+  
+  recall_dssi->bank = 0;
+  recall_dssi->program = 0;
+  
   recall_dssi->plugin_descriptor = NULL;
 
   recall_dssi->input_port = NULL;

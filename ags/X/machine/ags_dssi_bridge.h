@@ -68,7 +68,10 @@ struct _AgsDssiBridge
   gchar *effect;
   unsigned long effect_index;
 
+  DSSI_Descriptor *dssi_descriptor;
   LADSPA_Handle ladspa_handle;
+  
+  LADSPA_Data *port_values;
   
   GtkComboBoxText *program;
 };

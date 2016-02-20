@@ -26,6 +26,6 @@
 
 #include <ags/X/machine/ags_dssi_bridge.h>
 
-
+void ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *dssi_bridge);
 
 #endif /*__AGS_DSSI_BRIDGE_CALLBACKS_H__*/

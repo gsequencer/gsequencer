@@ -261,6 +261,12 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 
 
   for(i = 0; i < i_stop; i++){
+    if(recall_dssi->plugin_descriptor->select_program != NULL){
+      recall_dssi->plugin_descriptor->select_program(recall_dssi_run->ladspa_handle[i],
+						     recall_dssi->bank,
+						     recall_dssi->program);
+    }
+
     if(recall_dssi->plugin_descriptor->LADSPA_Plugin->activate != NULL){
       recall_dssi->plugin_descriptor->LADSPA_Plugin->activate(recall_dssi_run->ladspa_handle[i]);
     }
