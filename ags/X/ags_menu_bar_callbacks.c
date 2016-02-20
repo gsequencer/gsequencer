@@ -758,7 +758,7 @@ ags_menu_bar_add_dssi_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar
   dssi_bridge->machine.audio->audio_channels = 2;
 
   /*  */
-  ags_audio_set_pads(dssi_bridge->machine.audio, AGS_TYPE_INPUT, 78);
+  ags_audio_set_pads(dssi_bridge->machine.audio, AGS_TYPE_INPUT, 128);
   ags_audio_set_pads(dssi_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
 
   /* connect everything */

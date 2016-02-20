@@ -1128,7 +1128,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 					 AGS_RECALL_NOTATION);
       ags_recall_dssi_load(recall_dssi);
       recall_port = ags_recall_dssi_load_ports(recall_dssi);
-            
+      
       add_recall = ags_add_recall_new(current,
 				      recall_dssi,
 				      FALSE);

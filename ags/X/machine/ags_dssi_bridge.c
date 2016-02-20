@@ -258,6 +258,8 @@ void
 ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 {
   GtkVBox *vbox;
+  GtkHBox *hbox;
+  GtkLabel *label;
   GtkTable *table;
 
   AgsAudio *audio;
@@ -292,13 +294,27 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   dssi_bridge->filename = NULL;
   dssi_bridge->effect = NULL;
   dssi_bridge->effect_index = 0;
-
+  
+  dssi_bridge->dssi_descriptor = NULL;
+  
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add(gtk_bin_get_child(dssi_bridge),
 		    (GtkWidget *) vbox);
 
-  dssi_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) hbox,
+		     FALSE, FALSE,
+		     0);
+
+  label = gtk_label_new("program\0");
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) label,
+		     FALSE, FALSE,
+		     0);
+
+  dssi_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) dssi_bridge->program,
 		     FALSE, FALSE,
 		     0);
@@ -437,6 +453,9 @@ ags_dssi_bridge_connect(AgsConnectable *connectable)
   ags_dssi_bridge_parent_connectable_interface->connect(connectable);
 
   dssi_bridge = AGS_DSSI_BRIDGE(connectable);
+
+  g_signal_connect(G_OBJECT(dssi_bridge->program), "changed\0",
+		   G_CALLBACK(ags_dssi_bridge_program_changed_callback), dssi_bridge);
 }
 
 void
@@ -831,6 +850,9 @@ ags_dssi_bridge_output_map_recall(AgsDssiBridge *dssi_bridge, guint output_pad_s
 void
 ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 {
+  GtkListStore *model;
+  GtkTreeIter iter;
+
   AgsDssiPlugin *dssi_plugin;
 
   AgsConfig *config;
@@ -843,8 +865,12 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
   DSSI_Program_Descriptor *program_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
+  LADSPA_PortRangeHintDescriptor hint_descriptor;
+
   unsigned long samplerate;
   unsigned long effect_index;
+  unsigned long port_count;
   unsigned long i;
 
   config = ags_config_get_instance();
@@ -887,28 +913,58 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 					       dssi_bridge->effect);
 
   /* load ports */
+  model = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_UINT, G_TYPE_UINT);
+
   if(effect_index != -1 &&
      plugin_so){
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
 						       "dssi_descriptor\0");
 
     if(dlerror() == NULL && dssi_descriptor){
-      plugin_descriptor = dssi_descriptor(effect_index);
+      dssi_bridge->dssi_descriptor = 
+	plugin_descriptor = dssi_descriptor(effect_index);
 
       dssi_bridge->ladspa_handle = plugin_descriptor->LADSPA_Plugin->instantiate(plugin_descriptor->LADSPA_Plugin,
 										 samplerate);
+
+      port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
+      port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
+
+      dssi_bridge->port_values = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
+      
+      for(i = 0; i < port_count; i++){
+	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
+	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	    GList *list;
+	    LADSPA_Data *port_data;
+	    gchar *plugin_name;
+	    gchar *specifier;
+
+	    hint_descriptor = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].HintDescriptor;
+	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
+
+	    plugin_descriptor->LADSPA_Plugin->connect_port(dssi_bridge->ladspa_handle,
+							   i,
+							   &(dssi_bridge->port_values[i]));
+	  }
+	}
+      }
       
       if(plugin_descriptor->get_program != NULL){
 	for(i = 0; (program_descriptor = plugin_descriptor->get_program(dssi_bridge->ladspa_handle, i)) != NULL; i++){
-	  gtk_combo_box_text_append_text(dssi_bridge->program,
-					 g_strdup_printf("%d,%d %s\0",
-							 program_descriptor->Bank,
-							 program_descriptor->Program,
-							 program_descriptor->Name));
+	  gtk_list_store_append(model, &iter);
+	  gtk_list_store_set(model, &iter,
+			     0, program_descriptor->Name,
+			     1, program_descriptor->Bank,
+			     2, program_descriptor->Program,
+			     -1);
 	}
       }
     }
   }
+  gtk_combo_box_set_model(dssi_bridge->program,
+			  model);
 
   /* add to effect bridge */
   ags_effect_bulk_add_effect(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input,

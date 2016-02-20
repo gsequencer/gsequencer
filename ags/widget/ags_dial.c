@@ -1022,9 +1022,11 @@ ags_dial_motion_notify(GtkWidget *widget,
 
 /**
  * ags_dial_draw:
- * @dial an #AgsDial
+ * @dial: an #AgsDial
  *
  * draws the widget
+ *
+ * Since: 0.4.0
  */
 void
 ags_dial_draw(AgsDial *dial)
@@ -1213,11 +1215,14 @@ ags_dial_draw(AgsDial *dial)
     g_warning("ags_dial.c - range = 0.0\0");
     return;
   }
-  
-  if(dial->adjustment->lower < 0.0){
+
+  /* this is odd */
+  if(dial->adjustment->lower < 0.0 && dial->adjustment->upper < 0.0){
+    translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
+  }else if(dial->adjustment->lower < 0.0){
     translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
   }else{
-    translated_value = (gdouble) scale_precision * (dial->adjustment->value + dial->adjustment->lower) / range;
+    translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
   }
 
   //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);

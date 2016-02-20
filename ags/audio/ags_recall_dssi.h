@@ -47,6 +47,9 @@ struct _AgsRecallDssi
   gchar *effect;
   unsigned long index;
 
+  unsigned long bank;
+  unsigned long program;
+  
   DSSI_Descriptor *plugin_descriptor;
 
   unsigned long *input_port;
