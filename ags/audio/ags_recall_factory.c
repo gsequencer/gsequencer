@@ -2875,8 +2875,6 @@ ags_recall_factory_create_route_dssi(AgsAudio *audio,
 							  NULL);
     ags_recall_set_flags(AGS_RECALL(route_dssi_audio), (AGS_RECALL_TEMPLATE |
 							(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							AGS_RECALL_PLAYBACK |
-							AGS_RECALL_SEQUENCER |
 							AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) route_dssi_audio, TRUE);
     ags_connectable_connect(AGS_CONNECTABLE(route_dssi_audio));
@@ -2888,8 +2886,6 @@ ags_recall_factory_create_route_dssi(AgsAudio *audio,
 								 NULL);
     ags_recall_set_flags(AGS_RECALL(route_dssi_audio_run), (AGS_RECALL_TEMPLATE |
 							    (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							    AGS_RECALL_PLAYBACK |
-							    AGS_RECALL_SEQUENCER |
 							    AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) route_dssi_audio_run, TRUE);
     ags_connectable_connect(AGS_CONNECTABLE(route_dssi_audio_run));
@@ -2910,8 +2906,6 @@ ags_recall_factory_create_route_dssi(AgsAudio *audio,
 							  NULL);
     ags_recall_set_flags(AGS_RECALL(route_dssi_audio), (AGS_RECALL_TEMPLATE |
 							(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							AGS_RECALL_PLAYBACK |
-							AGS_RECALL_SEQUENCER |
 							AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) route_dssi_audio, FALSE);
     ags_connectable_connect(AGS_CONNECTABLE(route_dssi_audio));
@@ -2920,12 +2914,10 @@ ags_recall_factory_create_route_dssi(AgsAudio *audio,
 								 "soundcard\0", audio->soundcard,
 								 "recall_audio\0", route_dssi_audio,
 								 "recall_container\0", recall_container,
-								 //TODO:JK: add missing dependency "route_dssi-audio\0"
+								 //TODO:JK: add missing dependency "delay-audio\0"
 								 NULL);
     ags_recall_set_flags(AGS_RECALL(route_dssi_audio_run), (AGS_RECALL_TEMPLATE |
 							    (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
-							    AGS_RECALL_PLAYBACK |
-							    AGS_RECALL_SEQUENCER |
 							    AGS_RECALL_NOTATION));
     ags_audio_add_recall(audio, (GObject *) route_dssi_audio_run, FALSE);
     ags_connectable_connect(AGS_CONNECTABLE(route_dssi_audio_run));

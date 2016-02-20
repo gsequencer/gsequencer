@@ -758,7 +758,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
     g_object_set(G_OBJECT(recall_recycling),
-		 "child_source\0", audio_signal,
+		 "child-source\0", audio_signal,
 		 NULL);
   }
 

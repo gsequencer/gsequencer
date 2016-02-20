@@ -539,74 +539,16 @@ ags_dssi_bridge_set_pads(AgsAudio *audio, GType type,
   }
   
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
-    GList *list, *notation;
-
-    pthread_mutex_lock(audio_mutex);
-
-    source = audio->input;
-
-    pthread_mutex_unlock(audio_mutex);
-
     if(grow){
-      if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
-	ags_dssi_bridge_input_map_recall(dssi_bridge,
-					 pads_old);
-      }
+      ags_dssi_bridge_input_map_recall(dssi_bridge,
+				       pads_old);
     }else{
       dssi_bridge->mapped_input_pad = pads;
     }
   }else{
     if(grow){
-      AgsChannel *current, *output;
-      GList *recall;
-      GList *list;
-      guint stop;
-
-      pthread_mutex_lock(audio_mutex);
-
-      source = audio->output;
-
-      pthread_mutex_unlock(audio_mutex);
-
-      source = ags_channel_nth(audio->output, pads_old);
-
-      if(source != NULL){
-	AgsSoundcard *soundcard;
-	AgsRecycling *recycling;
-	AgsAudioSignal *audio_signal;
-
-	pthread_mutex_lock(audio_mutex);
-	
-	soundcard = audio->soundcard;
-
-	pthread_mutex_unlock(audio_mutex);
-
-	/* lookup source mutex */
-	pthread_mutex_lock(application_mutex);
-
-	source_mutex = ags_mutex_manager_lookup(mutex_manager,
-						(GObject *) source);
-  
-	pthread_mutex_unlock(application_mutex);
-
-	/* get recycling */
-	pthread_mutex_lock(source_mutex);
-
-	recycling = source->first_recycling;
-
-	pthread_mutex_unlock(source_mutex);
-
-	/* instantiate template audio signal */
-	audio_signal = ags_audio_signal_new((GObject *) soundcard,
-					    (GObject *) recycling,
-					    NULL);
-	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	ags_recycling_add_audio_signal(recycling,
-				       audio_signal);
-
-	ags_dssi_bridge_output_map_recall(dssi_bridge,
-					  pads_old);
-      }
+      ags_dssi_bridge_output_map_recall(dssi_bridge,
+					pads_old);
     }else{
       dssi_bridge->mapped_output_pad = pads;
     }
@@ -627,8 +569,8 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
   AgsPlayNotationAudio *recall_notation_audio;
   AgsPlayNotationAudioRun *recall_notation_audio_run;
-  AgsRouteDssiAudio *route_dssi_audio;
-  AgsRouteDssiAudioRun *route_dssi_audio_run;
+  AgsRouteDssiAudio *recall_route_dssi_audio;
+  AgsRouteDssiAudioRun *recall_route_dssi_audio_run;
 
   GList *list;
   
@@ -728,6 +670,20 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 
   list = ags_recall_find_type(audio->recall, AGS_TYPE_ROUTE_DSSI_AUDIO_RUN);
 
+  if(list != NULL){
+    recall_notation_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(list->data);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 NULL);
+  }
+  
   /* depending on destination */
   ags_dssi_bridge_input_map_recall(dssi_bridge, 0);
 
@@ -781,7 +737,7 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge, guint input_pad_sta
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-play\0",
-			      current->audio_channel, current->audio_channel + 1, 
+			      0, audio->audio_channels, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
@@ -799,7 +755,7 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge, guint input_pad_sta
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream\0",
-			      current->audio_channel, current->audio_channel + 1, 
+			      0, audio->audio_channels, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
@@ -859,14 +815,14 @@ ags_dssi_bridge_output_map_recall(AgsDssiBridge *dssi_bridge, guint output_pad_s
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream\0",
-			      current->audio_channel, current->audio_channel + 1,
+			      0, audio->audio_channels,
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_OUTPUT |
 			       AGS_RECALL_FACTORY_PLAY |
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 
-    current = current->next;
+    current = current->next_pad;
   }
 
   dssi_bridge->mapped_output_pad = audio->output_pads;
@@ -979,17 +935,14 @@ ags_dssi_bridge_new(GObject *soundcard,
 		    gchar *effect)
 {
   AgsDssiBridge *dssi_bridge;
-  GValue value = {0,};
 
   dssi_bridge = (AgsDssiBridge *) g_object_new(AGS_TYPE_DSSI_BRIDGE,
 					       NULL);
 
   if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(dssi_bridge)->audio),
-			  "soundcard\0", &value);
-    g_value_unset(&value);
+    g_object_set(G_OBJECT(AGS_MACHINE(dssi_bridge)->audio),
+		 "soundcard\0", soundcard,
+		 NULL);
   }
 
   g_object_set(dssi_bridge,

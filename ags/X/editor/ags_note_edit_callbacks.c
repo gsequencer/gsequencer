@@ -1244,8 +1244,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     /* lookup soundcard mutex */
     pthread_mutex_lock(application_mutex);
 
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) soundcard);
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) soundcard);
 
     pthread_mutex_unlock(application_mutex);
 

@@ -124,8 +124,8 @@ void ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 					guint nth);
 
 void ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
-				      guint new_size,
-				      guint old_size);
+						guint new_size,
+						guint old_size);
 void ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 				      guint new_size,
 				      guint old_size);
@@ -1073,7 +1073,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_dssi)->flags |= (AGS_RECALL_TEMPLATE |
+					 AGS_RECALL_PLAYBACK |
+					 AGS_RECALL_SEQUENCER |
+					 AGS_RECALL_NOTATION);
       ags_recall_dssi_load(recall_dssi);
       port = ags_recall_dssi_load_ports(recall_dssi);
 
@@ -1087,7 +1090,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_DSSI_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_PLAYBACK |
+						      AGS_RECALL_SEQUENCER |
+						      AGS_RECALL_NOTATION);
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1116,7 +1122,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_dssi)->flags |= (AGS_RECALL_TEMPLATE |
+					 AGS_RECALL_PLAYBACK |
+					 AGS_RECALL_SEQUENCER |
+					 AGS_RECALL_NOTATION);
       ags_recall_dssi_load(recall_dssi);
       recall_port = ags_recall_dssi_load_ports(recall_dssi);
             
@@ -1130,7 +1139,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_DSSI_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_PLAYBACK |
+						      AGS_RECALL_SEQUENCER |
+						      AGS_RECALL_NOTATION);
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1381,7 +1393,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_lv2)->flags |= (AGS_RECALL_TEMPLATE |
+					AGS_RECALL_PLAYBACK |
+					AGS_RECALL_SEQUENCER |
+					AGS_RECALL_NOTATION);
       ags_recall_lv2_load(recall_lv2);
       port = ags_recall_lv2_load_ports(recall_lv2);
 
@@ -1395,7 +1410,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_LV2_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_PLAYBACK |
+						      AGS_RECALL_SEQUENCER |
+						      AGS_RECALL_NOTATION);
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1426,7 +1444,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_lv2)->flags |= (AGS_RECALL_TEMPLATE |
+					AGS_RECALL_PLAYBACK |
+					AGS_RECALL_SEQUENCER |
+					AGS_RECALL_NOTATION);
       ags_recall_lv2_load(recall_lv2);
       recall_port = ags_recall_lv2_load_ports(recall_lv2);
             
@@ -1440,7 +1461,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_LV2_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_PLAYBACK |
+						      AGS_RECALL_SEQUENCER |
+						      AGS_RECALL_NOTATION);
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1840,7 +1864,10 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_lv2)->flags |= (AGS_RECALL_TEMPLATE |
+					AGS_RECALL_PLAYBACK |
+					AGS_RECALL_SEQUENCER |
+					AGS_RECALL_NOTATION);
       ags_recall_lv2_load(recall_lv2);
       port = ags_recall_lv2_load_ports(recall_lv2);
 
@@ -1854,7 +1881,10 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_LV2_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_PLAYBACK |
+						      AGS_RECALL_SEQUENCER |
+						      AGS_RECALL_NOTATION);
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1885,7 +1915,10 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_lv2)->flags |= (AGS_RECALL_TEMPLATE |
+					AGS_RECALL_PLAYBACK |
+					AGS_RECALL_SEQUENCER |
+					AGS_RECALL_NOTATION);
       ags_recall_lv2_load(recall_lv2);
       recall_port = ags_recall_lv2_load_ports(recall_lv2);
             
@@ -1899,7 +1932,10 @@ ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_LV2_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_PLAYBACK |
+						      AGS_RECALL_SEQUENCER |
+						      AGS_RECALL_NOTATION);
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
