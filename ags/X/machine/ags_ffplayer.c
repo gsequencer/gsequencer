@@ -953,7 +953,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-play\0",
-			      current->audio_channel, current->audio_channel + 1, 
+			      0, audio->audio_channels, 
 			      current->pad, current->pad + 1,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |

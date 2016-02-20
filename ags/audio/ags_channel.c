@@ -36,6 +36,7 @@
 #include <ags/file/ags_file_link.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
 
 #include <ags/audio/ags_audio.h>
@@ -54,6 +55,8 @@
 #include <ags/audio/ags_recall_recycling_dummy.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_ladspa_run.h>
+#include <ags/audio/ags_recall_dssi.h>
+#include <ags/audio/ags_recall_dssi_run.h>
 #include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_lv2_run.h>
 #include <ags/audio/ags_port.h>
@@ -72,6 +75,7 @@
 #include <stdio.h>
 
 #include <ladspa.h>
+#include <dssi.h>
 #include <lv2.h>
 
 /**
@@ -108,6 +112,9 @@ static void ags_channel_finalize(GObject *gobject);
 GList* ags_channel_add_ladspa_effect(AgsChannel *channel,
 				     gchar *filename,
 				     gchar *effect);
+GList* ags_channel_add_dssi_effect(AgsChannel *channel,
+				   gchar *filename,
+				   gchar *effect);
 GList* ags_channel_add_lv2_effect(AgsChannel *channel,
 				  gchar *filename,
 				  gchar *effect);
@@ -2393,6 +2400,214 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 }
 
 GList*
+ags_channel_add_dssi_effect(AgsChannel *channel,
+			    gchar *filename,
+			    gchar *effect)
+{
+  AgsRecallContainer *recall_container;
+  AgsRecallChannelRunDummy *recall_channel_run_dummy;
+  AgsRecallDssi *recall_dssi;
+  AgsDssiPlugin *dssi_plugin;
+  AgsAddRecallContainer *add_recall_container;
+  AgsAddRecall *add_recall;
+  
+  GList *port;
+
+  void *plugin_so;
+  DSSI_Descriptor_Function dssi_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
+  long effect_index;
+
+  /* load plugin */
+  ags_dssi_manager_load_file(filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+
+  effect_index = ags_dssi_manager_effect_index(filename,
+					       effect);
+
+  /* dssi play */
+  recall_container = ags_recall_container_new();
+  ags_channel_add_recall_container(channel,
+				   recall_container);
+
+  recall_dssi = ags_recall_dssi_new(channel,
+				    filename,
+				    effect,
+				    effect_index);
+  g_object_set(G_OBJECT(recall_dssi),
+	       "soundcard\0", channel->soundcard,
+	       "recall-container\0", recall_container,
+	       NULL);
+  AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
+  ags_channel_add_recall(channel,
+			 recall_dssi,
+			 TRUE);
+
+  /* load */
+  ags_recall_dssi_load(recall_dssi);
+  port = ags_recall_dssi_load_ports(recall_dssi);
+  
+  
+  /* dummy */
+  recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
+							      AGS_TYPE_RECALL_RECYCLING_DUMMY,
+							      AGS_TYPE_RECALL_DSSI_RUN);
+  AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+  g_object_set(G_OBJECT(recall_channel_run_dummy),
+	       "soundcard\0", channel->soundcard,
+	       "recall-container\0", recall_container,
+	       "recall-channel\0", recall_dssi,
+	       NULL);
+  ags_channel_add_recall(channel,
+			 recall_channel_run_dummy,
+			 TRUE);
+  
+  /* check if connected or running */
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+    AgsRecall *current;
+    GList *recall_id;
+    
+    ags_connectable_connect(AGS_CONNECTABLE(recall_container));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_dssi));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+
+    recall_id = channel->recall_id;
+    
+    while(recall_id != NULL){
+      if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
+	current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+
+	/* set appropriate flag */
+	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
+	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
+	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	}
+
+	/* append to AgsAudio */
+	channel->play = g_list_append(channel->play, current);
+
+	/* connect */
+	ags_connectable_connect(AGS_CONNECTABLE(current));
+
+	/* notify run */
+	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	/* resolve */
+	ags_recall_resolve_dependencies(current);
+
+	/* init */
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+      
+	current->flags &= (~AGS_RECALL_HIDE);
+	ags_recall_run_init_pre(current);
+	current->flags &= (~AGS_RECALL_REMOVE);
+      
+	ags_recall_run_init_inter(current);
+	ags_recall_run_init_post(current);
+      }
+      
+      /* iterate */
+      recall_id = recall_id->next;
+    }
+  }
+
+  /* dssi recall */
+  recall_container = ags_recall_container_new();
+  ags_channel_add_recall_container(channel,
+				   recall_container);
+  
+  recall_dssi = ags_recall_dssi_new(channel,
+				    filename,
+				    effect,
+				    effect_index);
+  g_object_set(G_OBJECT(recall_dssi),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       NULL);
+  ags_channel_add_recall(channel,
+			 recall_dssi,
+			 FALSE);
+  
+  AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
+  ags_recall_dssi_load(recall_dssi);
+
+  if(port != NULL){
+    port = g_list_concat(port,
+			 ags_recall_dssi_load_ports(recall_dssi));
+  }
+  
+  /* dummy */
+  recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
+							      AGS_TYPE_RECALL_RECYCLING_DUMMY,
+							      AGS_TYPE_RECALL_DSSI_RUN);
+  AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
+  g_object_set(G_OBJECT(recall_channel_run_dummy),
+	       "soundcard\0", AGS_AUDIO(channel->audio)->soundcard,
+	       "recall-container\0", recall_container,
+	       "recall-channel\0", recall_dssi,
+	       NULL);
+  ags_channel_add_recall(channel,
+			 recall_channel_run_dummy,
+			 FALSE);  
+  
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+    AgsRecall *current;
+    GList *recall_id;
+
+    ags_connectable_connect(AGS_CONNECTABLE(recall_container));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_dssi));
+    ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+
+    recall_id = channel->recall_id;
+    
+    while(recall_id != NULL){
+      if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL){
+	current = ags_recall_duplicate(recall_channel_run_dummy, recall_id->data);
+
+	/* set appropriate flag */
+	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
+	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
+	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
+	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	}
+
+	/* append to AgsAudio */
+	channel->recall = g_list_append(channel->recall, current);
+
+	/* connect */
+	ags_connectable_connect(AGS_CONNECTABLE(current));
+
+	/* notify run */
+	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	/* resolve */
+	ags_recall_resolve_dependencies(current);
+
+	/* init */
+	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
+      
+	current->flags &= (~AGS_RECALL_HIDE);
+	ags_recall_run_init_pre(current);
+	current->flags &= (~AGS_RECALL_REMOVE);
+      
+	ags_recall_run_init_inter(current);
+	ags_recall_run_init_post(current);
+      }
+      
+      /* iterate */
+      recall_id = recall_id->next;
+    }
+  }
+
+  return(port);
+}
+
+GList*
 ags_channel_add_lv2_effect(AgsChannel *channel,
 			   gchar *filename,
 			   gchar *effect)
@@ -2616,6 +2831,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 			    gchar *effect)
 {
   AgsLadspaPlugin *ladspa_plugin;
+  AgsDssiPlugin *dssi_plugin;
   AgsLv2Plugin *lv2_plugin;
   
   GList *port;
@@ -2628,7 +2844,20 @@ ags_channel_real_add_effect(AgsChannel *channel,
     port = ags_channel_add_ladspa_effect(channel,
 					 filename,
 					 effect);
-  }else{
+  }
+
+  if(ladspa_plugin == NULL){
+    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+    
+    if(dssi_plugin != NULL){
+      port = ags_channel_add_dssi_effect(channel,
+					 filename,
+					 effect);
+    }
+  }
+  
+  if(ladspa_plugin == NULL &&
+     dssi_plugin == NULL){
     lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
     
     if(lv2_plugin != NULL){

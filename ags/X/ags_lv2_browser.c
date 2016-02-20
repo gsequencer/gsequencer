@@ -163,14 +163,17 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   lv2_browser->path = NULL;
 
   //  ags_lv2_manager_load_default_directory();
-  filenames =
-    filenames_start = ags_lv2_manager_get_filenames();
+  //  filenames =
+  //    filenames_start = ags_lv2_manager_get_filenames();
+  filenames = NULL;
 
-  while(*filenames != NULL){
-    gtk_combo_box_text_append_text(combo_box,
-				   *filenames);
-
-    filenames++;
+  if(filenames != NULL){
+    while(*filenames != NULL){
+      gtk_combo_box_text_append_text(combo_box,
+				     *filenames);
+      
+      filenames++;
+    }
   }
 
   //  free(filenames_start);
