@@ -1267,7 +1267,8 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
   widget = (GtkWidget *) note_edit->drawing_area;
 
   mutex_manager = ags_mutex_manager_get_instance();
-
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   /* lookup audio mutex */
   pthread_mutex_lock(application_mutex);
   

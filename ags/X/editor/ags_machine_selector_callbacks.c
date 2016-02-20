@@ -25,6 +25,8 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_dssi_bridge.h>
+#include <ags/X/machine/ags_lv2_bridge.h>
 
 void ags_machine_selector_selection_response(GtkWidget *machine_selection,
 					     gint response,
@@ -172,7 +174,7 @@ ags_machine_selector_selection_response(GtkWidget *machine_selection,
 	index = gtk_container_get_children(vbox);
 
       while(list != NULL){
-	if(AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data)){
+	if(AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data) || AGS_IS_DSSI_BRIDGE(list->data)){
 	  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
 	    machine = AGS_MACHINE(list->data);
 

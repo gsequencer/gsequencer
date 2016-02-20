@@ -270,6 +270,9 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 		   AGS_AUDIO_HAS_NOTATION | 
 		   AGS_AUDIO_NOTATION_DEFAULT);
 
+  AGS_MACHINE(dssi_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
+				      AGS_MACHINE_REVERSE_NOTATION);
+
   g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_dssi_bridge_set_audio_channels), NULL);
 

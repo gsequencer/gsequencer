@@ -276,7 +276,7 @@ ags_soundcard_thread_start(AgsThread *thread)
 
   /* abort if already playing */
   if(ags_soundcard_is_playing(soundcard)){
-    //   return;
+    return;
   }
 
   /* check if already initialized */
@@ -312,6 +312,7 @@ ags_soundcard_thread_run(AgsThread *thread)
     error = NULL;
     ags_soundcard_play(soundcard,
 		       &error);
+    
     if(error != NULL){
       //TODO:JK: implement me
     }
