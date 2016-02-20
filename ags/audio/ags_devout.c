@@ -1825,6 +1825,8 @@ ags_devout_tic(AgsSoundcard *soundcard)
   devout->delay_counter += 1.0;
 
   if(devout->delay_counter >= delay){
+    ags_soundcard_set_note_offset(soundcard,
+				  devout->note_offset + 1);
     /* delay */
     ags_soundcard_offset_changed(soundcard,
 				 devout->note_offset);

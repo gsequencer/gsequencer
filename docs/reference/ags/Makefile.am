@@ -69,12 +69,12 @@ expand_content_files=
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 GTKDOC_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS)
 GTKDOC_LDFLAGS = -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS)
-GTKDOC_LIBS = $(top_builddir)/libags.la $(top_builddir)/libags_thread.la $(top_builddir)/libags_server.la $(top_builddir)/libags_audio.la $(top_builddir)/libags_gui.la $(top_builddir)/libgsequencer.la
+# GTKDOC_LIBS = $(top_builddir)/libags.la $(top_builddir)/libags_thread.la $(top_builddir)/libags_server.la $(top_builddir)/libags_audio.la $(top_builddir)/libags_gui.la $(top_builddir)/libgsequencer.la
 # GTKDOC_CFLAGS=
 # GTKDOC_LIBS=
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
-include $(top_srcdir)/gtk-doc.make
+# include $(top_srcdir)/gtk-doc.make
 
 # Comment this out if you want 'make check' to test you doc status
 # and run some sanity checks
@@ -85,4 +85,4 @@ TESTS_ENVIRONMENT = \
 TESTS = $(GTKDOC_CHECK)
 endif
 
--include $(top_srcdir)/git.mk
+# -include $(top_srcdir)/git.mk

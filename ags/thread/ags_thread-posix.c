@@ -2134,7 +2134,7 @@ ags_thread_real_clock(AgsThread *thread)
 	}
       }else{
 	if(delay_per_hertz * time_unit > time_spent){
-	  timed_sleep.tv_nsec = delay_per_hertz * time_unit - time_spent;
+	  //	  timed_sleep.tv_nsec = delay_per_hertz * time_unit - time_spent;
 	}
       }
       

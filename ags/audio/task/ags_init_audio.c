@@ -212,13 +212,14 @@ ags_init_audio_launch(AgsTask *task)
     }
   }
 
-  if(init_audio->do_notation){
-    GList *start_queue;
-    
+  if(init_audio->do_notation){    
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_NOTATION);
 
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
+
+    list = ags_audio_recursive_play_init(audio,
+					 FALSE, FALSE, TRUE);
 
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[2] = list->data;

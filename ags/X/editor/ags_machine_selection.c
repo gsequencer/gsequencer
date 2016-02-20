@@ -28,6 +28,8 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_dssi_bridge.h>
+#include <ags/X/machine/ags_lv2_bridge.h>
 
 void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
 void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -152,7 +154,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
   while(list != NULL){
     GtkRadioButton *radio_button;
 
-    if(AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data)){
+    if(AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data)  || AGS_IS_DSSI_BRIDGE(list->data)){
       radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
 										    g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
       gtk_box_pack_start(GTK_BOX(vbox),
@@ -205,7 +207,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
       index = gtk_container_get_children((GtkContainer *) vbox);
 
     while(index != NULL){
-      if(AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data)){
+      if(AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data) || AGS_IS_DSSI_BRIDGE(list->data)){
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
 	  machine = AGS_MACHINE(list->data);
 	  
