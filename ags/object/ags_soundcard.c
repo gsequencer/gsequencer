@@ -726,6 +726,28 @@ ags_soundcard_get_attack(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_get_delay_counter:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get current playback note offset. 
+ *
+ * Returns: offset
+ *
+ * Since: 0.7.6
+ */
+guint
+ags_soundcard_get_delay_counter(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_delay_counter, G_MAXUINT);
+
+  return(soundcard_interface->get_delay_counter(soundcard));
+}
+
+/**
  * ags_soundcard_get_note_offset:
  * @soundcard: an #AgsSoundcard
  *

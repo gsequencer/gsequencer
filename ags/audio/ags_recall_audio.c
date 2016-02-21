@@ -20,6 +20,7 @@
 #include <ags/audio/ags_recall_audio.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_packable.h>
 
 #include <ags/audio/ags_recall_container.h>
@@ -42,6 +43,7 @@ gboolean ags_recall_audio_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_audio_unpack(AgsPackable *packable);
 void ags_recall_audio_finalize(GObject *gobject);
 
+void ags_recall_audio_automate(AgsRecall *recall);
 AgsRecall* ags_recall_audio_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
 				      guint *n_params, GParameter *parameter);
@@ -148,7 +150,8 @@ ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_audio;
-  
+
+  recall->automate = ags_recall_audio_automate;
   recall->duplicate = ags_recall_audio_duplicate;
 }
 
@@ -336,6 +339,51 @@ ags_recall_audio_finalize(GObject *gobject)
     g_object_unref(G_OBJECT(recall_audio->audio));
 
   G_OBJECT_CLASS(ags_recall_audio_parent_class)->finalize(gobject);
+}
+
+void
+ags_recall_audio_automate(AgsRecall *recall)
+{
+  GObject *soundcard;
+  AgsAudio *audio;
+
+  GList *automation;
+  GList *port;
+
+  gdouble delay;
+  guint note_offset, delay_counter;
+  guint x;
+  
+  audio = AGS_RECALL_AUDIO(recall)->audio;
+  soundcard = audio->soundcard;
+
+  /* retrieve position */
+  port = recall->port;
+
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+  
+  x = 64 * note_offset + (guint) floor((1.0 / 64.0) * ((gdouble) delay_counter / delay));
+  
+  while(port != NULL){
+    automation = audio->automation;
+    automation = ags_automation_find_port(automation,
+					  port->data);
+    
+    if(automation != NULL){
+      GValue value = {0,};
+
+      ags_automation_get_value(automation->data,
+			       x,
+			       &value);
+      ags_port_safe_write(port->data,
+			  &value);
+    }
+
+    port = port->next;
+  }
 }
 
 AgsRecall*
