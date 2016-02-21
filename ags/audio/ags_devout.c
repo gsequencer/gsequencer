@@ -126,6 +126,8 @@ guint ags_devout_get_attack(AgsSoundcard *soundcard);
 void* ags_devout_get_buffer(AgsSoundcard *soundcard);
 void* ags_devout_get_next_buffer(AgsSoundcard *soundcard);
 
+guint ags_devout_get_delay_counter(AgsSoundcard *soundcard);
+
 void ags_devout_set_note_offset(AgsSoundcard *soundcard,
 				guint note_offset);
 guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
@@ -490,6 +492,8 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_buffer = ags_devout_get_buffer;
   soundcard->get_next_buffer = ags_devout_get_next_buffer;
+
+  soundcard->get_delay_counter = ags_devout_get_delay_counter;
 
   soundcard->set_note_offset = ags_devout_set_note_offset;
   soundcard->get_note_offset = ags_devout_get_note_offset;
@@ -1968,6 +1972,12 @@ ags_devout_get_next_buffer(AgsSoundcard *soundcard)
   }
 
   return(buffer);
+}
+
+guint
+ags_devout_get_delay_counter(AgsSoundcard *soundcard)
+{
+  return(AGS_DEVOUT(soundcard)->delay_counter);
 }
 
 void

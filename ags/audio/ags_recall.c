@@ -101,6 +101,7 @@ void ags_recall_real_run_init_pre(AgsRecall *recall);
 void ags_recall_real_run_init_inter(AgsRecall *recall);
 void ags_recall_real_run_init_post(AgsRecall *recall);
 
+void ags_recall_real_run_automate(AgsRecall *recall);
 void ags_recall_real_run_pre(AgsRecall *recall);
 void ags_recall_real_run_inter(AgsRecall *recall);
 void ags_recall_real_run_post(AgsRecall *recall);
@@ -131,6 +132,7 @@ enum{
   RUN_INIT_PRE,
   RUN_INIT_INTER,
   RUN_INIT_POST,
+  AUTOMATE,
   RUN_PRE,
   RUN_INTER,
   RUN_POST,
@@ -361,6 +363,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->run_init_inter = ags_recall_real_run_init_inter;
   recall->run_init_post = ags_recall_real_run_init_post;
 
+  recall->automate = NULL;
   recall->run_pre = ags_recall_real_run_pre;
   recall->run_inter = ags_recall_real_run_inter;
   recall->run_post = ags_recall_real_run_post;
@@ -438,6 +441,22 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_post),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsRecall::automate:
+   * @recall: the object to play 
+   *
+   * The ::automate signal notifies about running
+   * automation and is normally called during ::run-pre.
+   */
+  recall_signals[AUTOMATE] =
+    g_signal_new("automate\0",
+		 G_TYPE_FROM_CLASS (recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallClass, automate),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -1436,11 +1455,32 @@ ags_recall_run_init_post(AgsRecall *recall)
   g_object_unref(G_OBJECT(recall));
 }
 
+/**
+ * ags_recall_automate:
+ * @recall: an #AgsRecall
+ *
+ * This is the automate port of @recall.
+ * 
+ * Since: 0.7.6
+ */
+void
+ags_recall_automate(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[AUTOMATE], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
 void
 ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list, *list_next;
 
+  ags_recall_automate(recall);
+  
   list = recall->children;
 
   while(list != NULL){

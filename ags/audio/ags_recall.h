@@ -120,6 +120,7 @@ struct _AgsRecallClass
   void (*run_init_inter)(AgsRecall *recall);
   void (*run_init_post)(AgsRecall *recall);
 
+  void (*automate)(AgsRecall *recall);
   void (*run_pre)(AgsRecall *recall);
   void (*run_inter)(AgsRecall *recall);
   void (*run_post)(AgsRecall *recall);
@@ -167,6 +168,7 @@ void ags_recall_run_init_pre(AgsRecall *recall);
 void ags_recall_run_init_inter(AgsRecall *recall);
 void ags_recall_run_init_post(AgsRecall *recall);
 
+void ags_recall_automate(AgsRecall *recall);
 void ags_recall_run_pre(AgsRecall *recall);
 void ags_recall_run_inter(AgsRecall *recall);
 void ags_recall_run_post(AgsRecall *recall);
