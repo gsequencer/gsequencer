@@ -40,6 +40,9 @@
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
@@ -238,6 +241,8 @@ ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_ru
 
   play_notation_audio_run->delay_audio_run = NULL;
   play_notation_audio_run->count_beats_audio_run = NULL;
+
+  play_notation_audio_run->notation = NULL;
 }
 
 void
@@ -642,13 +647,14 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   GObject *soundcard;
   AgsAudio *audio;
   AgsChannel *selected_channel, *channel, *next_pad;
-  AgsAudioSignal *audio_signal;
   AgsRecycling *recycling;
+  AgsAudioSignal *audio_signal;
   AgsNotation *notation;
   AgsNote *note;
 
   AgsPlayNotationAudio *play_notation_audio;
-
+  AgsDelayAudio *delay_audio;
+  
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
   AgsTimestampThread *timestamp_thread;
@@ -658,10 +664,14 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   
   GList *current_position;
   GList *list;
+
   guint audio_channel;
   guint samplerate;
   guint buffer_length;
   guint i;
+  gchar *str;
+  
+  GValue value = {0,};
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
@@ -671,6 +681,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   
   play_notation_audio = AGS_PLAY_NOTATION_AUDIO(AGS_RECALL_AUDIO_RUN(play_notation_audio_run)->recall_audio);
 
+  delay_audio = AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio;
+  
   audio = AGS_RECALL_AUDIO(play_notation_audio)->audio;
 
   mutex_manager = ags_mutex_manager_get_instance();
@@ -702,7 +714,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   
   pthread_mutex_unlock(application_mutex);
 
-  /*  */
   pthread_mutex_lock(audio_mutex);
 
   soundcard = (GObject *) audio->soundcard;
@@ -756,6 +767,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   current_position = notation->notes; // start_loop
   
   while(current_position != NULL){
+    AgsRecallID *child_recall_id;
+    GList *list;
+
+        
     if(current_position != NULL){
       note = AGS_NOTE(current_position->data);
     
@@ -767,11 +782,37 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	}
 
 	if(selected_channel == NULL){
+	  current_position = current_position->next;
 	  continue;
 	}
 
+	if(selected_channel->link == NULL){
+	  list = selected_channel->recall_id;
+	  child_recall_id = NULL;
+
+	  while(list != NULL){
+	    if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
+	      child_recall_id = (AgsRecallID *) list->data;
+	      break;
+	    }
+	  
+	    list = list->next;
+	  }
+	}else{
+	  list = selected_channel->link->recall_id;
+
+	  while(list != NULL){
+	    if(AGS_RECALL_ID(list->data)->recycling_context->parent->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
+	      child_recall_id = (AgsRecallID *) list->data;
+	      break;
+	    }
+	  
+	    list = list->next;
+	  }
+	}
+
 	/* lookup channel mutex */
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_lock(application_mutex);
 
 	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						 (GObject *) channel);
@@ -791,7 +832,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	while(recycling != selected_channel->last_recycling->next){
 	  /* lookup recycling mutex */
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_lock(application_mutex);
 
 	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 						     (GObject *) recycling);
@@ -801,16 +842,27 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  /* create audio signal */
 	  audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					      (GObject *) recycling,
-					      (GObject *) AGS_RECALL(play_notation_audio_run)->recall_id);
+					      (GObject *) child_recall_id);
 
 	  if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
 	    ags_recycling_create_audio_signal_with_defaults(recycling,
 							    audio_signal,
 							    delay, attack);
 	  }else{
+	    gdouble notation_delay;
+
+	    GValue value = {0,};
+
+	    g_value_init(&value,
+			 G_TYPE_DOUBLE);
+	    ags_port_safe_read(delay_audio->notation_delay,
+			       &value);
+
+	    notation_delay = g_value_get_double(&value);
+	    
 	    ags_recycling_create_audio_signal_with_frame_count(recycling,
 							       audio_signal,
-							       samplerate /  ((double) samplerate / (double) buffer_length) * (note->x[1] - note->x[0]),
+							       ((double) samplerate / notation_delay) * (note->x[1] - note->x[0]),
 							       delay, attack);
 	  }
 	  

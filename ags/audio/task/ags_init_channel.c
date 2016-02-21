@@ -22,8 +22,11 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
@@ -152,20 +155,26 @@ ags_init_channel_finalize(GObject *gobject)
 void
 ags_init_channel_launch(AgsTask *task)
 {
+  AgsPlaybackDomain *playback_domain;
   AgsChannel *channel;
   AgsRecallID *recall_id;
   
   AgsInitChannel *init_channel;
 
   GList *list, *list_start;
+  GList *start_queue;
 
   gint stage;
+  guint nth_domain;
   gboolean arrange_recall_id, duplicate_templates, resolve_dependencies;
 
   init_channel = AGS_INIT_CHANNEL(task);
-
+  playback_domain = AGS_AUDIO(AGS_CHANNEL(init_channel->channel)->audio)->playback_domain;
+  
   list = NULL;
   list_start = NULL;
+
+  start_queue = NULL;
 
   /* init channel */
   if(init_channel->play_pad){
@@ -191,6 +200,8 @@ ags_init_channel_launch(AgsTask *task)
       while(channel != next_pad){
 	if(stage == 0){
 	  if(init_channel->do_playback){
+	    nth_domain = 0;
+	    
 	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
 			    AGS_PLAYBACK_PLAYBACK);
 
@@ -200,9 +211,14 @@ ags_init_channel_launch(AgsTask *task)
 							resolve_dependencies,
 							NULL);
 	    AGS_PLAYBACK(channel->playback)->recall_id[0] = recall_id;
+
+	    start_queue = g_list_prepend(start_queue,
+					 AGS_PLAYBACK(channel->playback)->channel_thread[0]);
 	  }
 	  
 	  if(init_channel->do_sequencer){
+	    nth_domain = 1;
+
 	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
 			      AGS_PLAYBACK_SEQUENCER);
 
@@ -212,9 +228,14 @@ ags_init_channel_launch(AgsTask *task)
 							resolve_dependencies,
 							NULL);
 	    AGS_PLAYBACK(channel->playback)->recall_id[1] = recall_id;
+
+	    start_queue = g_list_prepend(start_queue,
+					 AGS_PLAYBACK(channel->playback)->channel_thread[1]);
 	  }
 	  
 	  if(init_channel->do_notation){
+	    nth_domain = 2;
+
 	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
 			    AGS_PLAYBACK_NOTATION);
 
@@ -224,12 +245,17 @@ ags_init_channel_launch(AgsTask *task)
 							resolve_dependencies,
 							NULL);
 	    AGS_PLAYBACK(channel->playback)->recall_id[2] = recall_id;
+
+	    start_queue = g_list_prepend(start_queue,
+					 AGS_PLAYBACK(channel->playback)->channel_thread[2]);
 	  }
 
 	  list_start = g_list_append(list_start,
 				     recall_id);
 	}else{
 	  if(init_channel->do_playback){
+	    nth_domain = 0;
+
 	    ags_channel_recursive_play_init(channel, stage,
 					    arrange_recall_id, duplicate_templates,
 					    TRUE, FALSE, FALSE,
@@ -238,6 +264,8 @@ ags_init_channel_launch(AgsTask *task)
 	  }
 
 	  if(init_channel->do_sequencer){
+	    nth_domain = 1;
+	    
 	    ags_channel_recursive_play_init(channel, stage,
 					    arrange_recall_id, duplicate_templates,
 					    FALSE, TRUE, FALSE,
@@ -246,6 +274,8 @@ ags_init_channel_launch(AgsTask *task)
 	  }
 
 	  if(init_channel->do_notation){
+	    nth_domain = 2;
+	    
 	    ags_channel_recursive_play_init(channel, stage,
 					    arrange_recall_id, duplicate_templates,
 					    FALSE, FALSE, TRUE,
@@ -282,7 +312,9 @@ ags_init_channel_launch(AgsTask *task)
       
       if(stage == 0){
 	if(init_channel->do_playback){
-	  g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+	    nth_domain = 0;
+	    
+	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
 			  AGS_PLAYBACK_PLAYBACK);
 
 	  recall_id = ags_channel_recursive_play_init(channel, stage,
@@ -291,9 +323,14 @@ ags_init_channel_launch(AgsTask *task)
 						      resolve_dependencies,
 						      NULL);
 	  AGS_PLAYBACK(channel->playback)->recall_id[0] = recall_id;
+
+	  start_queue = g_list_prepend(start_queue,
+				       AGS_PLAYBACK(channel->playback)->channel_thread[0]);
 	}
 	  
 	if(init_channel->do_sequencer){
+	  nth_domain = 1;
+	    
 	  g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
 			  AGS_PLAYBACK_SEQUENCER);
 
@@ -303,9 +340,14 @@ ags_init_channel_launch(AgsTask *task)
 						      resolve_dependencies,
 						      NULL);
 	  AGS_PLAYBACK(channel->playback)->recall_id[1] = recall_id;
+
+	  start_queue = g_list_prepend(start_queue,
+				       AGS_PLAYBACK(channel->playback)->channel_thread[1]);
 	}
 	  
 	if(init_channel->do_notation){
+	  nth_domain = 2;
+	  
 	  g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
 			  AGS_PLAYBACK_NOTATION);
 
@@ -315,6 +357,9 @@ ags_init_channel_launch(AgsTask *task)
 						      resolve_dependencies,
 						      NULL);
 	  AGS_PLAYBACK(channel->playback)->recall_id[2] = recall_id;
+
+	  start_queue = g_list_prepend(start_queue,
+				       AGS_PLAYBACK(channel->playback)->channel_thread[2]);
 	}
 
 	list_start = g_list_append(list_start,
@@ -345,6 +390,18 @@ ags_init_channel_launch(AgsTask *task)
 	
 	}
       }
+    }
+  }
+
+  /*  */
+  if(start_queue != NULL){
+    if(g_atomic_pointer_get(&(AGS_THREAD(playback_domain->audio_thread[nth_domain])->start_queue)) != NULL){
+      g_atomic_pointer_set(&(AGS_THREAD(playback_domain->audio_thread[nth_domain])->start_queue),
+			   g_list_concat(start_queue,
+					 g_atomic_pointer_get(&(AGS_THREAD(playback_domain->audio_thread[nth_domain])->start_queue))));
+    }else{
+      g_atomic_pointer_set(&(AGS_THREAD(playback_domain->audio_thread[nth_domain])->start_queue),
+			   start_queue);
     }
   }
 }

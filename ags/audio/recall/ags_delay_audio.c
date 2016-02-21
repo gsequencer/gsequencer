@@ -594,7 +594,8 @@ ags_delay_audio_notify_soundcard_callback(GObject *gobject,
   GObject *soundcard;
   gdouble bpm;
   gdouble delay;
-
+  gchar *str;
+  
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
   soundcard = AGS_RECALL(delay_audio)->soundcard;
@@ -899,8 +900,9 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duratio
   
   guint buffer_size;
   guint samplerate;
-  gdouble bpm;
   gdouble delay;
+  gchar *str;
+  
   GValue value = {0,};
 
   config = ags_config_get_instance();
@@ -950,8 +952,9 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
   
   guint buffer_size;
   guint samplerate;
-  gdouble bpm;
   gdouble delay;
+  gchar *str;
+  
   GValue value = {0,};
   
   delay_audio = AGS_DELAY_AUDIO(tactable);
@@ -988,8 +991,6 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
 
   //  g_message("%f\0", duration * delay * AGS_SOUNDCARD_DEFAULT_SCALE);
   
-  delay = ((gdouble) samplerate / (gdouble) buffer_size) * (60.0 / bpm);
-
   g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_double(&value, duration * delay * AGS_SOUNDCARD_DEFAULT_SCALE);
   ags_port_safe_write(delay_audio->notation_duration,

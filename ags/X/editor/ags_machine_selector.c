@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/editor/ags_machine_selector.h>
@@ -151,7 +152,24 @@ ags_machine_selector_init(AgsMachineSelector *machine_selector)
 void
 ags_machine_selector_connect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsMachineSelector *machine_selector;
+  GList *list, *list_start;
+  
+  machine_selector = AGS_MACHINE_SELECTOR(connectable);
+  
+  list =
+    list_start = gtk_container_get_children(machine_selector);
+  
+  list = list->next;
+  
+  while(list != NULL){
+    g_signal_connect_after(G_OBJECT(list->data), "clicked\0",
+			   G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
+
+    list = list->next;
+  }
+  
+  g_list_free(list_start);
 }
 
 void
@@ -207,19 +225,21 @@ ags_machine_selector_new()
 GtkMenu*
 ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
 {
-  GtkMenu *popup;
+  GtkMenu *popup, *keys;
   GtkMenuItem *item;
   GList *list, *list_start;
 
   popup = (GtkMenu *) gtk_menu_new();
   g_object_set_data((GObject *) popup, g_type_name(AGS_TYPE_MACHINE_SELECTOR), machine_selector);
 
+  /*
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add tab\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("remove tab\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
-
+  */
+  
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup("add index\0"));
   gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
 
@@ -283,6 +303,7 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
   list_start = 
     list = gtk_container_get_children((GtkContainer *) popup);
 
+  /*
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_add_tab_callback), (gpointer) machine_selector);
 
@@ -291,6 +312,8 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
 		   G_CALLBACK(ags_machine_selector_popup_remove_tab_callback), (gpointer) machine_selector);
 
   list = list->next;
+  */
+  
   g_signal_connect(G_OBJECT(list->data), "activate\0",
 		   G_CALLBACK(ags_machine_selector_popup_add_index_callback), (gpointer) machine_selector);
 

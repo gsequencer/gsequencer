@@ -20,6 +20,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/thread/ags_audio_thread.h>
+
 /**
  * SECTION:ags_playback_domain
  * @short_description: Outputting to soundcard domain
@@ -103,7 +105,7 @@ void
 ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 {
   g_atomic_int_set(&(playback_domain->flags),
-		   0);
+		   AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
 
   /* super threaded audio */
   playback_domain->audio_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));

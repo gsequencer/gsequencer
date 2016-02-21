@@ -152,11 +152,9 @@ ags_start_soundcard_launch(AgsTask *task)
 
   AgsApplicationContext *application_context;
   AgsSoundcard *soundcard;
+
+  GList *start_queue;
   
-  guint val;
-
-  GError *error;
-
   start_soundcard = AGS_START_SOUNDCARD(task);
 
   soundcard = AGS_SOUNDCARD(start_soundcard->soundcard);
@@ -164,54 +162,37 @@ ags_start_soundcard_launch(AgsTask *task)
   application_context = ags_soundcard_get_application_context(soundcard);
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
+  audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
+			AGS_AUDIO_LOOP_PLAY_CHANNEL |
+			AGS_AUDIO_LOOP_PLAY_RECALL);
+
+  /*
   if(ags_soundcard_is_starting(soundcard) ||
      ags_soundcard_is_playing(soundcard)){
-    audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
-			  AGS_AUDIO_LOOP_PLAY_CHANNEL |
-			  AGS_AUDIO_LOOP_PLAY_RECALL);
     return;
   }
-
+  */
+  
   soundcard_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
   /* append to AgsSoundcard */
-  audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
-			AGS_AUDIO_LOOP_PLAY_CHANNEL |
-			AGS_AUDIO_LOOP_PLAY_RECALL);
-  
   soundcard_thread->error = NULL;
 
   g_message("start soundcard\0");
-  
-  ags_thread_start(AGS_THREAD(soundcard_thread));
-  
-  if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(soundcard_thread)->flags)) == 0){
-    if(soundcard_thread->error != NULL){
-      error = soundcard_thread->error;
 
-      ags_task_failure(AGS_TASK(start_soundcard), error);
-      
-      g_message("starting soundcard failed\0");
+  start_queue = NULL;    
+  start_queue = g_list_prepend(start_queue,
+			       soundcard_thread);
+
+  if(start_queue != NULL){
+    if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
+      g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			   g_list_concat(start_queue,
+					 g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
     }else{
-      /* wait thread */
-      pthread_mutex_lock(AGS_THREAD(soundcard_thread)->start_mutex);
-
-      g_atomic_int_set(&(AGS_THREAD(soundcard_thread)->start_wait),
-		       TRUE);
-	
-      if(g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->start_wait)) == TRUE &&
-	 g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->start_done)) == FALSE){
-	while(g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->start_wait)) == TRUE &&
-	      g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->start_done)) == FALSE){
-	  pthread_cond_wait(AGS_THREAD(soundcard_thread)->start_cond,
-			    AGS_THREAD(soundcard_thread)->start_mutex);
-	}
-      }
-	
-      pthread_mutex_unlock(AGS_THREAD(soundcard_thread)->start_mutex);
-      
-      g_message("started soundcard\0");
+      g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			   start_queue);
     }
   }
 }

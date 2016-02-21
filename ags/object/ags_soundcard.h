@@ -38,7 +38,7 @@
 #define AGS_SOUNDCARD_DEFAULT_SAMPLERATE (44100.0)
 #define AGS_SOUNDCARD_DEFAULT_FORMAT (AGS_SOUNDCARD_RESOLUTION_16_BIT)
 #define AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE (944)
-#define AGS_SOUNDCARD_DEFAULT_DEVICE "hw:0"
+#define AGS_SOUNDCARD_DEFAULT_DEVICE "hw:0\0"
 #define AGS_SOUNDCARD_DEFAULT_BPM (120.0)
 #define AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR (1.0 / 4.0)
 #define AGS_SOUNDCARD_DEFAULT_JIFFIE ((double) AGS_SOUNDCARD_DEFAULT_SAMPLERATE / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE)
@@ -204,27 +204,6 @@ gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
 				    gdouble delay_factor);
-gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
-
-gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);
-guint ags_soundcard_get_attack(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
-				   guint note_offset);
-guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_audio(AgsSoundcard *soundcard,
-			     GList *audio);
-GList* ags_soundcard_get_audio(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
-			   gdouble bpm);
-
-gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
-				    gdouble delay_factor);
-
 gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
 
 gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);

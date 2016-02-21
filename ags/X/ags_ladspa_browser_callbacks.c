@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_ladspa_browser_callbacks.h>
@@ -49,7 +50,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   filename = GTK_COMBO_BOX(list->next->data);
   effect = GTK_COMBO_BOX(list->next->next->next->data);
 
-  gtk_list_store_clear(GTK_LIST_STORE(effect));
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(effect)));
 
   ags_ladspa_manager_load_file(gtk_combo_box_text_get_active_text(filename));
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename));
@@ -189,11 +190,18 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 				  0, 1,
 				  y, y + 1);
 
-	gtk_table_attach_defaults(table,
-				  GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
-				  1, 2,
-				  y, y + 1);
-
+	if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[i].HintDescriptor)){
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_ladspa_browser_combo_box_boolean_controls_new()),
+				    1, 2,
+				    y, y + 1);
+	}else{
+	  gtk_table_attach_defaults(table,
+				    GTK_WIDGET(ags_ladspa_browser_combo_box_controls_new()),
+				    1, 2,
+				    y, y + 1);
+	}
+	
 	y++;
       }
 

@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/machine/ags_oscillator.h>
@@ -28,8 +29,6 @@
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
-
-#include <math.h>
 
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
 void ags_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -177,7 +176,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new("length\0"),
 			    4, 5, 0, 1);
-  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(44100.0 / AGS_OSCILLATOR_BASE_FREQUENCY, 100000.0, 1.0);
+  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(44100.0 / 27.5, 100000.0, 1.0);
   oscillator->frame_count->adjustment->value = 3200;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frame_count, 5, 6, 0, 1);
 

@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/machine/ags_drum_output_line.h>
@@ -297,7 +298,7 @@ ags_drum_output_line_map_recall(AgsLine *line,
 {
   AgsAudio *audio;
 
-  AgsChannel *output;
+  AgsChannel *output, *input;
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
 
@@ -310,7 +311,25 @@ ags_drum_output_line_map_recall(AgsLine *line,
 
   output = line->channel;
   audio = AGS_AUDIO(output->audio);
+  
+  /* remap for input */
+  input = audio->input;
 
+  while(input != NULL){
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      0, audio->audio_channels, 
+			      input->pad, input->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    input = input->next_pad;
+  }
+  
   /* get some recalls */
   list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO);
 

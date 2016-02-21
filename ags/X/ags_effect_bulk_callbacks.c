@@ -121,6 +121,7 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 	
       /* add effect */
       ags_effect_bulk_add_effect(effect_bulk,
+				 NULL,
 				 filename,
 				 effect);
     }

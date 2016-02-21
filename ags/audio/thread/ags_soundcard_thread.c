@@ -55,7 +55,7 @@ void ags_soundcard_stopped_all_callback(AgsAudioLoop *audio_loop,
  * @short_description: soundcard thread
  * @title: AgsSoundcardThread
  * @section_id:
- * @include: ags/thread/ags_soundcard_thread.h
+ * @include: ags/audio/thread/ags_soundcard_thread.h
  *
  * The #AgsSoundcardThread acts as audio output thread to soundcard.
  */
@@ -167,7 +167,7 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   soundcard_thread->soundcard = NULL;
 
   soundcard_thread->timestamp_thread = ags_timestamp_thread_new();
-  ags_thread_add_child(thread, soundcard_thread->timestamp_thread);
+  //  ags_thread_add_child(thread, soundcard_thread->timestamp_thread);
 
   soundcard_thread->error = NULL;
 }
@@ -221,6 +221,9 @@ ags_soundcard_thread_get_property(GObject *gobject,
     {
       g_value_set_object(value, G_OBJECT(soundcard_thread->soundcard));
     }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
 }

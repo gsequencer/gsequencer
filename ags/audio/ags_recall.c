@@ -23,17 +23,12 @@
 
 #include <ags/lib/ags_parameter.h>
 
-#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_packable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/server/ags_service_provider.h>
-#include <ags/server/ags_server.h>
 
 #include <ags/server/ags_server.h>
 #include <ags/server/ags_service_provider.h>
@@ -54,15 +49,12 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_recall_ladspa.h>
-#include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
-#include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -275,7 +267,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    */
   param_spec = g_param_spec_object("recall-container\0",
 				   "container of recall\0",
-				   "The container what recall is packed into\0",
+				   "The container which this recall is packed into\0",
 				   AGS_TYPE_RECALL_CONTAINER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -898,6 +890,8 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
   AgsApplicationContext *application_context;
   AgsServer *server;
   AgsRecall *recall;
+  AgsRegistryEntry *entry;
+  GList *list;
   
   recall = AGS_RECALL(connectable);
 
@@ -1454,7 +1448,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
+      list = list_next;
       continue;
     }
 
@@ -1495,7 +1489,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
+      list = list_next;
       continue;
     }
 
@@ -1536,7 +1530,7 @@ ags_recall_real_run_post(AgsRecall *recall)
 
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
-      list = list->next;
+      list = list_next;
       continue;
     }
 
@@ -1646,7 +1640,7 @@ ags_recall_done(AgsRecall *recall)
 void
 ags_recall_real_cancel(AgsRecall *recall)
 {
-  GList *list;
+  GList *list, *list_next;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     return;
@@ -1656,9 +1650,11 @@ ags_recall_real_cancel(AgsRecall *recall)
   list = recall->children;
 
   while(list != NULL){
+    list_next = list->next;
+    
     ags_recall_cancel(AGS_RECALL(list->data));
     
-    list = list->next;
+    list = list_next;
   }
 
   if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
@@ -2061,7 +2057,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 		 "recall_id\0", parent->recall_id,
 		 NULL);
     g_signal_connect(G_OBJECT(child), "done\0",
-		     G_CALLBACK(ags_recall_child_done), parent);
+    		     G_CALLBACK(ags_recall_child_done), parent);
   }
   
   child->parent = parent;
@@ -2237,7 +2233,7 @@ ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar
 /**
  * ags_recall_find_type:
  * @recall_i: a #GList containing recalls
- * @recall_type: a #GType
+ * @type: a #GType
  * 
  * Finds next matching recall for type. Intended to be used as
  * iteration function.
@@ -2247,14 +2243,14 @@ ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar
  * Since: 0.4
  */
 GList*
-ags_recall_find_type(GList *recall_i, GType recall_type)
+ags_recall_find_type(GList *recall_i, GType type)
 {
   AgsRecall *recall;
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if(G_OBJECT_TYPE(recall) == recall_type)
+    if(G_OBJECT_TYPE(recall) == type)
       break;
 
     recall_i = recall_i->next;
@@ -2294,7 +2290,7 @@ ags_recall_find_template(GList *recall_i)
 /**
  * ags_recall_template_find_type:
  * @recall_i: a #GList containing recalls
- * @recall_type: a #GType
+ * @type: a #GType
  * 
  * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
  * Intended to be used as iteration function.
@@ -2304,7 +2300,7 @@ ags_recall_find_template(GList *recall_i)
  * Since: 0.4
  */
 GList*
-ags_recall_template_find_type(GList *recall_i, GType recall_type)
+ags_recall_template_find_type(GList *recall_i, GType type)
 {
   AgsRecall *recall;
 
@@ -2312,9 +2308,8 @@ ags_recall_template_find_type(GList *recall_i, GType recall_type)
     recall = AGS_RECALL(recall_i->data);
 
     if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
-       G_TYPE_CHECK_INSTANCE_TYPE((recall), recall_type)){
+       G_OBJECT_TYPE(recall) == type)
       break;
-    }
 
     recall_i = recall_i->next;
   }

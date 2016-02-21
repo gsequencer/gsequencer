@@ -201,7 +201,7 @@ ags_resize_audio_launch(AgsTask *task)
 				 resize_audio->audio_channels);
   }
 }
-
+  
 /**
  * ags_resize_audio_new:
  * @audio: the #AgsAudio to resize

@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_navigation_callbacks.h>
@@ -30,6 +31,7 @@
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_editor.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 
@@ -111,11 +113,6 @@ ags_navigation_bpm_callback(GtkWidget *widget,
 
   pthread_mutex_t *application_mutex;
   
-  AgsThread *main_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));
   
@@ -154,8 +151,8 @@ ags_navigation_rewind_callback(GtkWidget *widget,
   tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
   
   gtk_spin_button_set_value(navigation->position_tact,
-			    -1.0 * AGS_NAVIGATION_REWIND_STEPS +
-			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
+			    tact +
+			    (-1.0 * AGS_NAVIGATION_REWIND_STEPS));
 }
 
 void
@@ -170,8 +167,8 @@ ags_navigation_prev_callback(GtkWidget *widget,
   tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
   
   gtk_spin_button_set_value(navigation->position_tact,
-			    -1.0 * AGS_NAVIGATION_SEEK_STEPS +
-			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
+			    tact +
+			    (-1.0 * AGS_NAVIGATION_SEEK_STEPS));
 }
 
 void
@@ -181,20 +178,25 @@ ags_navigation_play_callback(GtkWidget *widget,
   AgsWindow *window;
   AgsMachine *machine;
   GList *machines, *machines_start;
-
+  gboolean initialized_time;
+  
   if((AGS_NAVIGATION_BLOCK_PLAY & (navigation->flags)) != 0){
     return;
   }
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
+  
   machines_start =
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
-
+  
+  initialized_time = FALSE;
+  
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
+    if(((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0) ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
       printf("found machine to play!\n\0");
 #endif
       
@@ -206,7 +208,6 @@ ags_navigation_play_callback(GtkWidget *widget,
       ags_machine_set_run_extended(machine,
 				   TRUE,
 				   !gtk_toggle_button_get_active(navigation->exclude_sequencer), TRUE);
-      g_message("well off\0");
     }
 
     machines = machines->next;
@@ -222,6 +223,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
   AgsWindow *window;
   AgsMachine *machine;
   GList *machines,*machines_start;
+  gchar *timestr;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start = 
@@ -234,8 +236,9 @@ ags_navigation_stop_callback(GtkWidget *widget,
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
       printf("found machine to stop!\n\0");
 
-      ags_machine_set_run(machine,
-			  FALSE);
+      ags_machine_set_run_extended(machine,
+				   FALSE,
+				   !gtk_toggle_button_get_active(navigation->exclude_sequencer), TRUE);
     }
 
     machines = machines->next;
@@ -275,8 +278,8 @@ ags_navigation_next_callback(GtkWidget *widget,
   tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
 
   gtk_spin_button_set_value(navigation->position_tact,
-			    AGS_NAVIGATION_REWIND_STEPS+
-			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
+			    tact +
+			    AGS_NAVIGATION_REWIND_STEPS);
 }
 
 void
@@ -291,7 +294,7 @@ ags_navigation_forward_callback(GtkWidget *widget,
   tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) - navigation->start_tact;
 
   gtk_spin_button_set_value(navigation->position_tact,
-			    AGS_NAVIGATION_SEEK_STEPS +
+			    tact +
 			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
 }
 
@@ -304,9 +307,9 @@ ags_navigation_loop_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
   GList *machines, *machines_start;
-  GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+  GList *list, *list_start;
   GValue value = {0,};
-
+  
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
@@ -340,18 +343,47 @@ ags_navigation_loop_callback(GtkWidget *widget,
   }
 
   g_list_free(machines_start);
+
+  /* enable fader */
+  list = window->editor->editor_child;
+
+  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))){
+    while(list != NULL){
+      GtkWidget *edit_widget;
+
+      edit_widget = AGS_EDITOR_CHILD(list->data)->edit_widget;
+      
+      if(AGS_IS_PATTERN_EDIT(edit_widget)){
+	AGS_PATTERN_EDIT(edit_widget)->flags |= AGS_PATTERN_EDIT_DRAW_FADER;
+      }else if(AGS_IS_NOTE_EDIT(edit_widget)){
+	AGS_NOTE_EDIT(edit_widget)->flags |= AGS_NOTE_EDIT_DRAW_FADER;
+      }
+
+      list = list->next;
+    }
+  }else{
+    while(list != NULL){
+      GtkWidget *edit_widget;
+
+      edit_widget = AGS_EDITOR_CHILD(list->data)->edit_widget;
+      
+      if(AGS_IS_PATTERN_EDIT(edit_widget)){
+	AGS_PATTERN_EDIT(edit_widget)->flags &= (~AGS_PATTERN_EDIT_DRAW_FADER);
+      }else if(AGS_IS_NOTE_EDIT(edit_widget)){
+	AGS_NOTE_EDIT(edit_widget)->flags &= (~AGS_NOTE_EDIT_DRAW_FADER);
+      }
+
+      list = list->next;
+    }
+  }
 }
 
 void
 ags_navigation_position_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
-  gdouble bpm;
-
-  bpm = navigation->bpm->adjustment->value;
   ags_navigation_change_position(navigation,
-				 gtk_spin_button_get_value(widget),
-				 bpm);
+				 gtk_spin_button_get_value((GtkSpinButton *) widget));
 }
 
 void

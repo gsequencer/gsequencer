@@ -18,11 +18,7 @@
 
 #include <ags-client/scripting/ags_schema_factory.h>
 
-<<<<<<< HEAD
-#include <ags/object/ags_connectable.h>
-=======
 #include <ags-lib/object/ags_connectable.h>
->>>>>>> 0.5.0
 
 void ags_schema_factory_class_init(AgsSchemaFactoryClass *schema_factory);
 void ags_schema_factory_connectable_interface_init(AgsConnectableInterface *connectable);

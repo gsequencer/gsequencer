@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/machine/ags_drum_input_pad.h>
@@ -23,14 +24,13 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 #include <ags/file/ags_file_lookup.h>
+#include <ags/file/ags_file_launch.h>
 
 #include <ags/X/ags_window.h>
 
@@ -42,7 +42,7 @@ void ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad);
 void ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);
-void ags_drum_input_pad_destroy(GtkObject *object);
+static void ags_drum_input_pad_finalize(GObject *gobject);
 void ags_drum_input_pad_connect(AgsConnectable *connectable);
 void ags_drum_input_pad_disconnect(AgsConnectable *connectable);
 gchar* ags_drum_input_pad_get_name(AgsPlugin *plugin);
@@ -50,8 +50,7 @@ void ags_drum_input_pad_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_input_pad_get_xml_type(AgsPlugin *plugin);
 void ags_drum_input_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-void ags_drum_input_pad_resolve_drum(AgsFileLookup *file_lookup,
-				     AgsDrumInputPad *drum_input_pad);
+void ags_drum_input_pad_launch_task(AgsFileLaunch *file_launch, AgsDrumInputPad *drum_input_pad);
 xmlNode* ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
@@ -121,9 +120,16 @@ void
 ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad)
 {
   AgsPadClass *pad;
-
+  GObjectClass *gobject;
+  
   ags_drum_input_pad_parent_class = g_type_class_peek_parent(drum_input_pad);
 
+  /*  */
+  gobject = (GObjectClass *) drum_input_pad;
+
+  gobject->finalize = ags_drum_input_pad_finalize;
+
+  /*  */
   pad = (AgsPadClass *) drum_input_pad;
 
   pad->set_channel = ags_drum_input_pad_set_channel;
@@ -187,6 +193,22 @@ ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad)
   drum_input_pad->pad_play_ref = 0;
 }
 
+static void
+ags_drum_input_pad_finalize(GObject *gobject)
+{
+  AgsDrumInputPad *drum_input_pad;
+
+  drum_input_pad = AGS_DRUM_INPUT_PAD(gobject);
+
+  //FIXME:JK: won't be called
+  //NOTE:JK: work-around in ags_drum.c
+  if(drum_input_pad->file_chooser != NULL){
+    //    gtk_widget_destroy(drum_input_pad->file_chooser);
+  }
+  
+  G_OBJECT_CLASS(ags_drum_input_pad_parent_class)->finalize(gobject);
+}
+
 void
 ags_drum_input_pad_connect(AgsConnectable *connectable)
 {
@@ -216,12 +238,6 @@ ags_drum_input_pad_disconnect(AgsConnectable *connectable)
 {
   ags_drum_input_pad_parent_connectable_interface->disconnect(connectable);
 
-  /* empty */
-}
-
-void
-ags_drum_input_pad_destroy(GtkObject *object)
-{
   /* empty */
 }
 
@@ -271,7 +287,7 @@ void
 ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsDrumInputPad *gobject;
-  AgsFileLookup *file_lookup;
+  AgsFileLaunch *file_launch;
 
   gobject = AGS_DRUM_INPUT_PAD(plugin);
 
@@ -283,38 +299,31 @@ ags_drum_input_pad_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", gobject,
 				   NULL));
+  
+  /*  */
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       "file\0", file,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_drum_input_pad_launch_task), gobject);
+  ags_file_add_launch(file,
+		      (GObject *) file_launch);
+}
+
+void
+ags_drum_input_pad_launch_task(AgsFileLaunch *file_launch, AgsDrumInputPad *drum_input_pad)
+{
+  xmlNode *node;
+
+  node = file_launch->node;
 
   if(!xmlStrncmp(xmlGetProp(node,
 			    "edit\0"),
 		 AGS_FILE_TRUE,
 		 5)){
-    gtk_toggle_button_set_active(gobject->edit,
-				 TRUE);
-  }else{
-    gtk_toggle_button_set_active(gobject->edit,
-				 FALSE);
+    gtk_button_clicked(drum_input_pad->edit);
   }
-
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", gobject,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
-		   G_CALLBACK(ags_drum_input_pad_resolve_drum), gobject);
-}
-
-void
-ags_drum_input_pad_resolve_drum(AgsFileLookup *file_lookup,
-				AgsDrumInputPad *drum_input_pad)
-{
-  AgsDrum *drum;
-
-  drum = (AgsDrum *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad, AGS_TYPE_DRUM);
-
-  drum->selected_edit_button = (GtkToggleButton *) drum_input_pad->edit;
-  drum->selected_pad = drum_input_pad;
 }
 
 xmlNode*

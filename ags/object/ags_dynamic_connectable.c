@@ -1,22 +1,25 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/object/ags_dynamic_connectable.h>
+
+#include <stdio.h>
 
 void ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface);
 
@@ -27,7 +30,10 @@ void ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface
  * @section_id:
  * @include: ags/object/ags_dynamic_connectable.h
  *
- * The #AgsDynamicConnectable interface gives you a unique access to recalls.
+ * The #AgsDynamicConnectable interface gives you a unique access to recalls. Its main
+ * purpose is to setup up signal handlers with dynamic context for ::connect-dynamic.
+ * A dynamic context would be a dependency that has to be resolved first within run
+ * initialization.
  */
 
 GType
@@ -60,7 +66,9 @@ ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface)
  * ags_dynamic_connectable_connect_dynamic:
  * @connectable: an #AgsDynamicConnectable
  *
- * Connect dynamic.
+ * Connect signal handlers within dynamic context.
+ *
+ * Since: 0.3
  */
 void
 ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
@@ -77,7 +85,9 @@ ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
  * ags_dynamic_connectable_disconnect_dynamic:
  * @connectable: an #AgsDynamicConnectable
  *
- * Disconnect dynamic.
+ * Disconnect signal handlers within dynamic context.
+ *
+ * Since: 0.3
  */
 void
 ags_dynamic_connectable_disconnect_dynamic(AgsDynamicConnectable *connectable)

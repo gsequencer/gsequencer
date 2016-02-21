@@ -99,9 +99,10 @@ ags_distributed_manager_get_url(AgsDistributedManager *distributed_manager)
 }
 
 /**
- * ags_distributed_manager_set_ports:
+ * ags_distributed_manager_set_port:
  * @distributed_manager: The #AgsDistributedManager
- * @ports: the ports to set
+ * @port: the ports to set
+ * @port_count: the number of ports
  *
  * Sets the ports of @distributed_manager.
  *
@@ -109,7 +110,7 @@ ags_distributed_manager_get_url(AgsDistributedManager *distributed_manager)
  */
 void
 ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
-				  gchar **ports)
+				  guint *port, guint port_count)
 {
   AgsDistributedManagerInterface *distributed_manager_interface;
 
@@ -118,12 +119,13 @@ ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
   g_return_if_fail(distributed_manager_interface->set_ports);
   
   distributed_manager_interface->set_ports(distributed_manager,
-					   ports);
+					   port, port_count);
 }
 
 /**
  * ags_distributed_manager_get_ports:
  * @distributed_manager: the #AgsDistributedManager
+ * @port_count: the number of ports returned
  *
  * Gets the ports of @distributed_manager.
  *
@@ -131,8 +133,9 @@ ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
  *
  * Since: 0.7.1
  */
-gchar**
-ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager)
+guint*
+ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager,
+				  guint *port_count)
 {
   AgsDistributedManagerInterface *distributed_manager_interface;
 
@@ -140,22 +143,23 @@ ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager)
   distributed_manager_interface = AGS_DISTRIBUTED_MANAGER_GET_INTERFACE(distributed_manager);
   g_return_val_if_fail(distributed_manager_interface->get_ports, NULL);
 
-  return(distributed_manager_interface->get_ports(distributed_manager));
+  return(distributed_manager_interface->get_ports(distributed_manager,
+						  port_count));
 }
 
 /**
  * ags_distributed_manager_set_soundcard:
  * @distributed_manager: The #AgsDistributedManager
- * @uri: the location to fetch from
+ * @port_uuid: the location to fetch from
  * @soundcard: the soundcard to set
  *
- * Sets the soundcard at @uri.
+ * Sets the soundcard at @port_uuid.
  *
  * Since: 0.7.1
  */
 void
 ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager,
-				      gchar *uri,
+				      gchar *port_uuid,
 				      GObject *soundcard)
 {
   AgsDistributedManagerInterface *distributed_manager_interface;
@@ -165,16 +169,16 @@ ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager
   g_return_if_fail(distributed_manager_interface->set_soundcard);
   
   distributed_manager_interface->set_soundcard(distributed_manager,
-					       uri,
+					       port_uuid,
 					       soundcard);
 }
 
 /**
  * ags_distributed_manager_get_soundcard:
- * @uri: the URI
+ * @port_uuid: the port uuid
  * @distributed_manager: the #AgsDistributedManager
  *
- * Gets the soundcard of @distributed_manager associated with @uri.
+ * Gets the soundcard of @distributed_manager associated with @port_uuid.
  *
  * Returns: the soundcard as #GObject
  *
@@ -182,7 +186,7 @@ ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager
  */
 GObject*
 ags_distributed_manager_get_soundcard(AgsDistributedManager *distributed_manager,
-				      gchar *uri)
+				      gchar *port_uuid)
 {
   AgsDistributedManagerInterface *distributed_manager_interface;
 
@@ -191,22 +195,22 @@ ags_distributed_manager_get_soundcard(AgsDistributedManager *distributed_manager
   g_return_val_if_fail(distributed_manager_interface->get_soundcard, NULL);
 
   return(distributed_manager_interface->get_soundcard(distributed_manager,
-						      uri));
+						      port_uuid));
 }
 
 /**
  * ags_distributed_manager_set_sequencer:
  * @distributed_manager: The #AgsDistributedManager
- * @uri: the location to fetch from
+ * @port_uuid: the location to fetch from
  * @sequencer: the sequencer to set
  *
- * Sets the sequencer at @uri.
+ * Sets the sequencer at @port_uuid.
  *
  * Since: 0.7.1
  */
 void
 ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_manager,
-				      gchar *uri,
+				      gchar *port_uuid,
 				      GObject *sequencer)
 {
   AgsDistributedManagerInterface *distributed_manager_interface;
@@ -216,16 +220,16 @@ ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_manager
   g_return_if_fail(distributed_manager_interface->set_sequencer);
   
   distributed_manager_interface->set_sequencer(distributed_manager,
-					       uri,
+					       port_uuid,
 					       sequencer);
 }
 
 /**
  * ags_distributed_manager_get_sequencer:
- * @uri: the URI
+ * @port_uuid: the port uuid
  * @distributed_manager: the #AgsDistributedManager
  *
- * Gets the sequencer of @distributed_manager associated with @uri.
+ * Gets the sequencer of @distributed_manager associated with @port_uuid.
  *
  * Returns: the sequencer as #GObject
  *
@@ -233,7 +237,7 @@ ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_manager
  */
 GObject*
 ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager,
-				      gchar *uri)
+				      gchar *port_uuid)
 {
   AgsDistributedManagerInterface *distributed_manager_interface;
 
@@ -242,7 +246,7 @@ ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager
   g_return_val_if_fail(distributed_manager_interface->get_sequencer, NULL);
 
   return(distributed_manager_interface->get_sequencer(distributed_manager,
-						      uri));
+						      port_uuid));
 }
 
 /**

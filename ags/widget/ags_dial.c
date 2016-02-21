@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ags_dial.h"
@@ -364,7 +365,7 @@ ags_dial_set_property(GObject *gobject,
 			 G_CALLBACK(ags_dial_adjustment_changed_callback), dial);
       }
 
-      dial->adjustment = (GObject *) adjustment;
+      dial->adjustment = adjustment;
     }
     break;
   default:
@@ -569,7 +570,7 @@ ags_dial_map(GtkWidget *widget)
     GTK_WIDGET_CLASS (ags_dial_parent_class)->map(widget);
     
     gdk_window_show(widget->window);
-    ags_dial_draw(widget);
+    ags_dial_draw((AgsDial *) widget);
   }
 }
 
@@ -854,7 +855,14 @@ gboolean
 ags_dial_key_press(GtkWidget *widget,
 		   GdkEventKey *event)
 {
-  if(event->keyval == GDK_KEY_Tab){
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
     return(GTK_WIDGET_CLASS(ags_dial_parent_class)->key_press_event(widget, event));
   }
   
@@ -867,7 +875,14 @@ ags_dial_key_release(GtkWidget *widget,
 {
   AgsDial *dial;
   
-  if(event->keyval == GDK_KEY_Tab){
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
     return(GTK_WIDGET_CLASS(ags_dial_parent_class)->key_release_event(widget, event));
   }
 
@@ -927,21 +942,39 @@ ags_dial_motion_notify(GtkWidget *widget,
   auto void ags_dial_motion_notify_do_dial();
   void ags_dial_motion_notify_do_dial(){
     GtkAdjustment *adjustment;
+
+    guint i;
+    gint sign_one;
     gboolean gravity_up;
+    
+    static const gboolean movement_matrix[] = {
+      FALSE,
+      TRUE,
+      FALSE,
+      FALSE,
+      TRUE,
+      FALSE,
+      TRUE,
+      TRUE,
+    };      
 
     adjustment = dial->adjustment;
 
-    if(dial->gravity_y < dial->current_y){
-      if(dial->gravity_x < dial->current_x){
-	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
+    gravity_up = FALSE;
+
+    for(i = 0; i < 8 ; i++){
+      if(!movement_matrix[i]){
+	sign_one = -1;
       }else{
-	gravity_up = (-1 * (dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
+	sign_one = 1;
       }
-    }else{
-      if(dial->gravity_x < dial->current_x){
-	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < -1 * (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
-      }else{
-	gravity_up = ((dial->gravity_x - dial->current_x) * dial->tolerance < (dial->gravity_y - dial->current_y) * dial->tolerance) ? TRUE: FALSE;
+      
+      if((movement_matrix[i] &&
+	  (sign_one * (dial->gravity_x - dial->current_x) < sign_one * (dial->gravity_y - dial->current_y))) ||
+	 (!movement_matrix[i] &&
+	  (sign_one * (dial->gravity_x - dial->current_x) > sign_one * (dial->gravity_y - dial->current_y)))){
+	gravity_up = TRUE;
+	break;
       }
     }
 
@@ -989,9 +1022,11 @@ ags_dial_motion_notify(GtkWidget *widget,
 
 /**
  * ags_dial_draw:
- * @dial an #AgsDial
+ * @dial: an #AgsDial
  *
  * draws the widget
+ *
+ * Since: 0.4.0
  */
 void
 ags_dial_draw(AgsDial *dial)
@@ -1177,14 +1212,17 @@ ags_dial_draw(AgsDial *dial)
   }
 
   if(range == 0.0){
-    g_warning("ags_dial.c: range = 0, lower = %f, upper = %f\0", dial->adjustment->lower, dial->adjustment->upper);
+    g_warning("ags_dial.c - range = 0.0\0");
     return;
   }
-  
-  if(dial->adjustment->lower < 0.0){
+
+  /* this is odd */
+  if(dial->adjustment->lower < 0.0 && dial->adjustment->upper < 0.0){
+    translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
+  }else if(dial->adjustment->lower < 0.0){
     translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
   }else{
-    translated_value = (gdouble) scale_precision * (dial->adjustment->value + dial->adjustment->lower) / range;
+    translated_value = (gdouble) scale_precision * (dial->adjustment->value - dial->adjustment->lower) / range;
   }
 
   //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);

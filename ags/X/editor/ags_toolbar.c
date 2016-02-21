@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/editor/ags_toolbar.h>
@@ -31,6 +32,7 @@
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtkcheckbutton.h>
 #include <gtk/gtklabel.h>
+#include <gtk/gtkoptionmenu.h>
 #include <gtk/gtkimage.h>
 #include <gtk/gtkstock.h>
 
@@ -39,13 +41,14 @@ void ags_toolbar_connectable_interface_init(AgsConnectableInterface *connectable
 void ags_toolbar_init(AgsToolbar *toolbar);
 void ags_toolbar_connect(AgsConnectable *connectable);
 void ags_toolbar_disconnect(AgsConnectable *connectable);
+void ags_toolbar_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_toolbar
  * @short_description: edit tool
  * @title: AgsToolbar
  * @section_id:
- * @include: ags/X/editor/ags_note_edit.h
+ * @include: ags/X/editor/ags_toolbar.h
  *
  * The #AgsToolbar lets you choose edit tool.
  */
@@ -151,13 +154,19 @@ ags_toolbar_init(AgsToolbar *toolbar)
 					      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->paste, "paste notes\0", NULL);
 
+  toolbar->invert = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
+					       "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_CONVERT, GTK_ICON_SIZE_LARGE_TOOLBAR),
+					       "relief\0", GTK_RELIEF_NONE,
+					       NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->invert, "invert notes\0", NULL);
+
   /* zoom */
   label = (GtkLabel *) gtk_label_new("zoom\0");
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) label, NULL, NULL);
 
-  toolbar->zoom_history = 4;
-  toolbar->zoom = ags_zoom_combo_box_new();
-  gtk_combo_box_set_active(toolbar->zoom, 4);
+  toolbar->zoom_history = 2;
+  toolbar->zoom = (GtkComboBoxText *) ags_zoom_combo_box_new();
+  gtk_combo_box_set_active((GtkComboBox *) toolbar->zoom, 2);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->zoom, NULL , NULL);
 
   /* edit modes */
@@ -172,7 +181,7 @@ ags_toolbar_init(AgsToolbar *toolbar)
   //				 AGS_TOOLBAR_MODE_MULTI_CHANNEL);
   //  gtk_combo_box_text_append_text(toolbar->mode,
   //				 AGS_TOOLBAR_MODE_ALL_CHANNELS);
-  gtk_combo_box_set_active(toolbar->mode,
+  gtk_combo_box_set_active((GtkComboBox *) toolbar->mode,
 			   0);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->mode, NULL, NULL);
 }
@@ -183,6 +192,9 @@ ags_toolbar_connect(AgsConnectable *connectable)
   AgsToolbar *toolbar;
 
   toolbar = AGS_TOOLBAR(connectable);
+
+  g_signal_connect((GObject *) toolbar, "show\0",
+		   G_CALLBACK(ags_toolbar_show_callback), (gpointer) toolbar);
 
   /* tool */
   g_signal_connect_after((GObject *) toolbar->position, "toggled\0",
@@ -207,6 +219,9 @@ ags_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) toolbar->paste, "clicked\0",
 		   G_CALLBACK(ags_toolbar_paste_callback), (gpointer) toolbar);
 
+  g_signal_connect((GObject *) toolbar->invert, "clicked\0",
+		   G_CALLBACK(ags_toolbar_invert_callback), (gpointer) toolbar);
+
   /* zoom */
   g_signal_connect_after((GObject *) toolbar->zoom, "changed\0",
 			 G_CALLBACK(ags_toolbar_zoom_callback), (gpointer) toolbar);
@@ -220,6 +235,22 @@ void
 ags_toolbar_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_toolbar_show(GtkWidget *widget)
+{
+  /*
+  GList *list;
+
+  list = gtk_container_get_children((GtkContainer *) widget);
+
+  while(list != NULL){
+    gtk_widget_show_all((GtkWidget *) widget);
+
+    list = list->next;
+  }
+  */
 }
 
 /**

@@ -23,7 +23,6 @@
 
 #include <ags/audio/ags_playable.h>
 
-#include <ags/audio/file/ags_playable.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 void ags_ipatch_class_init(AgsIpatchClass *ipatch);
@@ -147,11 +146,10 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
   gobject->finalize = ags_ipatch_finalize;
 
   /* properties */
-  param_spec = g_param_spec_string("filename\0",
+  param_spec = g_param_spec_pointer("filename\0",
 				   "the filename\0",
 				   "The filename to open\0",
-				   NULL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
 				  param_spec);
@@ -235,9 +233,9 @@ ags_ipatch_set_property(GObject *gobject,
     {
       gchar *filename;
 
-      filename = (gchar *) g_value_get_string(value);
+      filename = (gchar *) g_value_get_pointer(value);
 
-      ags_playable_open(AGS_PLAYABLE(ipatch), filename);
+      ags_playable_open(AGS_PLAYABLE(ipatch), g_strdup(filename));
     }
     break;
   case PROP_MODE:
@@ -315,14 +313,14 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
   AgsIpatch *ipatch;
   IpatchFileIOFuncs *io_funcs;
   GError *error;
-
+  
 #ifdef AGS_DEBUG
   g_message("open %s with libinstpatch.\0", filename);
 #endif
 
   ipatch = AGS_IPATCH(playable);
 
-  ipatch->filename = g_strdup(filename);
+  ipatch->filename = filename;
 
   error = NULL;
   ipatch->handle = ipatch_file_identify_open(ipatch->filename,
@@ -716,10 +714,6 @@ ags_ipatch_info(AgsPlayable *playable,
   AgsIpatch *ipatch;
   IpatchSample *sample;
 
-  if(ipatch == NULL){
-    return;
-  }
-  
   ipatch = AGS_IPATCH(playable);
 
   if(ipatch->iter == NULL){
@@ -739,11 +733,13 @@ ags_ipatch_info(AgsPlayable *playable,
       *loop_end = 0;
     }
 
-    g_set_error(error,
-		AGS_PLAYABLE_ERROR,
-		AGS_PLAYABLE_ERROR_NO_SAMPLE,
-		"no sample selected for file: %s\0",
-		ipatch->filename);
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_PLAYABLE_ERROR,
+		  AGS_PLAYABLE_ERROR_NO_SAMPLE,
+		  "no sample selected for file: %s\0",
+		  ipatch->filename);
+    }
   }
 
   sample = IPATCH_SAMPLE(ipatch->iter->data);
@@ -771,10 +767,6 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
   guint i;
   GError *this_error;
 
-  if(ipatch == NULL){
-    return(NULL);
-  }
-  
   ipatch = AGS_IPATCH(playable);
 
   this_error = NULL;
@@ -784,13 +776,17 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
 		    &this_error);
 
   if(this_error != NULL){
-    g_error("%s\0", this_error->message);
+    g_warning("%s\0", this_error->message);
   }
 
   buffer = (signed short *) malloc(channels * frames * sizeof(signed short));
   
   if(ipatch->nth_level == 3){
-    sample = IPATCH_SAMPLE(ipatch->iter->data);
+    if(ipatch->iter != NULL){
+      sample = IPATCH_SAMPLE(ipatch->iter->data);
+    }else{
+      sample = NULL;
+    }
   }else{
     sample = NULL;
 
@@ -842,32 +838,6 @@ ags_ipatch_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_ipatch_parent_class)->finalize(gobject);
 
   /* empty */
-}
-
-/**
- * ags_ipatch_read_audio_signal:
- * @ipatch: an AgsIpatch
- *
- * Reads an AgsAudioSignal from current sample and iterates to the next sample. Prior,
- * you should have called #ags_playable_iter_start.
- *
- * Returns:
- */
-GList*
-ags_ipatch_read_audio_signal(AgsPlayable *playable,
-			     GObject *soundcard,
-			     guint start_channel, guint channels)
-{
-  AgsIpatch *ipatch;
-  GList *list;
-
-  ipatch = AGS_IPATCH(playable);
-
-  list = ags_playable_read_audio_signal(AGS_PLAYABLE(ipatch->reader),
-					ipatch->soundcard,
-					0, 2);
-
-  ipatch->audio_signal = list;
 }
 
 /**

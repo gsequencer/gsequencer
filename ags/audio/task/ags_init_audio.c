@@ -22,8 +22,11 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
@@ -152,69 +155,78 @@ void
 ags_init_audio_launch(AgsTask *task)
 {
   AgsInitAudio *init_audio;
+
+  GObject *soundcard;
   AgsAudio *audio;
   AgsRecallID *recall_id;
+
+  AgsApplicationContext *application_context;
+  
   GList *playback;
   GList *list;
 
   init_audio = AGS_INIT_AUDIO(task);
 
   audio = init_audio->audio;
+  soundcard = audio->soundcard;
+
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
   g_message("init\0");
   
   /* init audio */
   if(init_audio->do_playback){
+    
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_PLAYBACK);
+
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
     
     list = ags_audio_recursive_play_init(audio,
 					 TRUE, FALSE, FALSE);
-
-    while(list != NULL){
+    
+    while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[0] = list->data;
       g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
 		      AGS_PLAYBACK_PLAYBACK);
 
       playback = playback->next;
-      list = list->next;
     }
   }
 
-  if(init_audio->do_sequencer){
+  if(init_audio->do_sequencer){    
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_SEQUENCER);
+
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
     list = ags_audio_recursive_play_init(audio,
 					 FALSE, TRUE, FALSE);
 
-    while(list != NULL){
+    while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[1] = list->data;
       g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
 		      AGS_PLAYBACK_SEQUENCER);
       
       playback = playback->next;
-      list = list->next;
     }
   }
 
-  if(init_audio->do_notation){
+  if(init_audio->do_notation){    
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_NOTATION);
+
     playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
     list = ags_audio_recursive_play_init(audio,
 					 FALSE, FALSE, TRUE);
 
-    while(list != NULL){
+    while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[2] = list->data;
       g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
 		      AGS_PLAYBACK_NOTATION);
 
       playback = playback->next;
-      list = list->next;
     }
   }
 }

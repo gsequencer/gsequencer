@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_MENU_BAR_H__
@@ -28,11 +29,8 @@
 #define AGS_IS_MENU_BAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MENU_BAR))
 #define AGS_MENU_BAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MENU_BAR, AgsMenuBarClass))
 
-#define AGS_MENU_BAR_LADSPA_FILENAME_KEY "ags-menu-bar-ladspa-filename\0"
-#define AGS_MENU_BAR_LADSPA_EFFECT_KEY "ags-menu-bar-ladspa-effect\0"
-
-#define AGS_MENU_BAR_LV2_FILENAME_KEY "ags-menu-bar-lv2-filename\0"
-#define AGS_MENU_BAR_LV2_URI_KEY "ags-menu-bar-lv2-uri\0"
+#define AGS_MENU_ITEM_FILENAME_KEY "ags-menu-bar-filename-key\0"
+#define AGS_MENU_ITEM_EFFECT_KEY "ags-menu-bar-effect-key\0"
 
 typedef struct _AgsMenuBar AgsMenuBar;
 typedef struct _AgsMenuBarClass AgsMenuBarClass;
@@ -42,13 +40,8 @@ struct _AgsMenuBar
   GtkMenuBar menu_bar;
 
   GtkMenu *file;
-  
   GtkMenu *edit;
   GtkMenu *add;
-  GtkMenu *bridge;
-  GtkMenu *ladspa;
-  GtkMenu *lv2;
-  
   GtkMenu *help;
 };
 
@@ -59,15 +52,16 @@ struct _AgsMenuBarClass
 
 GType ags_menu_bar_get_type(void);
 
-AgsMenuBar* ags_menu_bar_new();
-
 GtkMenu* ags_zoom_menu_new();
 GtkMenu* ags_tact_menu_new();
 
-GtkMenu* ags_ladspa_menu_new();
-GtkMenu* ags_lv2_menu_new();
-
 GtkComboBox* ags_zoom_combo_box_new();
 GtkComboBox* ags_tact_combo_box_new();
+
+GtkMenu* ags_ladspa_bridge_menu_new();
+GtkMenu* ags_dssi_bridge_menu_new();
+GtkMenu* ags_lv2_bridge_menu_new();
+
+AgsMenuBar* ags_menu_bar_new();
 
 #endif /*__AGS_MENU_BAR_H__*/

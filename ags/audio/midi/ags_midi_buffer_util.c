@@ -74,13 +74,53 @@ ags_midi_buffer_util_put_varlength(unsigned char *buffer,
 }
 
 /**
- * ags_midi_buffer_util_put_key_on:
- * @delta_time:
- * @channel:
- * @key:
- * @velocity:
- * 
+ * ags_midi_buffer_util_get_varlength:
+ * @buffer: the character buffer
+ * @varlength: the return location
  *
+ * Get the variable lenght value from @buffer.
+ *
+ * Returns: the number of bytes read.
+ *
+ * Since: 0.7.4
+ */
+guint
+ags_midi_buffer_util_get_varlength(unsigned char *buffer,
+				   long *varlength)
+{
+  long value;
+  guint i;
+  char c;
+  
+  c = buffer[0];
+  value = c;
+  i = 1;
+  
+  if(c & 0x80){
+    value &= 0x7F;
+   
+    do{
+      value = (value << 7) + ((c = buffer[i]) & 0x7F);
+      i++;
+    }while(c & 0x80);
+  }
+
+  if(varlength != NULL){
+    *varlength = value;
+  }
+
+  return(i);
+}
+
+/**
+ * ags_midi_buffer_util_put_key_on:
+ * @buffer: the character buffer
+ * @delta_time: timing information
+ * @channel: valid channels from 0-15
+ * @key: valid keys to play 0-128
+ * @velocity: the key dynamics
+ * 
+ * Puts the given values to @buffer with appropriate channel message.
  *
  * Since: 0.7.2
  */
@@ -91,17 +131,82 @@ ags_midi_buffer_util_put_key_on(unsigned char *buffer,
 				long key,
 				long velocity)
 {
-  //TODO:JK: implement me
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  ags_midi_buffer_util_put_varlength(buffer,
+				     delta_time);
+
+  /* key-on channel message */
+  buffer[delta_time_size + 1] = 0x90;
+  buffer[delta_time_size + 1] |= (0xf & channel);
+
+  /* key */
+  buffer[delta_time_size + 2] = 0x7f & key;
+
+  /* velocity */
+  buffer[delta_time_size + 3] = 0x7f & velocity;
+}
+
+/**
+ * ags_midi_buffer_util_get_key_on:
+ * @buffer: the character buffer
+ * @delta_time: the return location of timing information
+ * @channel: the return location of channel
+ * @key: the return location of key
+ * @velocity: the return location of velocity
+ *
+ * Get the key-on message from @buffer.
+ *
+ * Returns: the number of bytes read.
+ *
+ * Since: 0.7.4
+ */
+guint
+ags_midi_buffer_util_get_key_on(unsigned char *buffer,
+				long *delta_time,
+				long *channel,
+				long *key,
+				long *velocity)
+{
+  long val;
+  guint delta_time_size;
+  
+  if(buffer == NULL){
+    return(0);
+  }
+
+  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
+						       &val);
+  
+  if(delta_time != NULL){
+    *delta_time = val;
+  }
+
+  if(channel != NULL){
+    *channel = (0xf & buffer[delta_time_size]);
+  }
+
+  if(key != NULL){
+    *key = (0x7f & buffer[delta_time_size + 1]);
+  }
+
+  if(velocity != NULL){
+    *velocity = (0x7f & buffer[delta_time_size + 2]);
+  }
+  
+  return(delta_time_size + 3);
 }
 
 /**
  * ags_midi_buffer_util_put_key_off:
- * @delta_time:
- * @channel:
- * @key:
- * @velocity:
+ * @buffer: the character buffer
+ * @delta_time: timing information
+ * @channel: valid channels from 0-15
+ * @key: valid keys to play 0-128
+ * @velocity: the key dynamics
  * 
- *
+ * Puts the given values to @buffer with appropriate channel message.
  *
  * Since: 0.7.2
  */
@@ -112,17 +217,82 @@ ags_midi_buffer_util_put_key_off(unsigned char *buffer,
 				 long key,
 				 long velocity)
 {
-  //TODO:JK: implement me
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  ags_midi_buffer_util_put_varlength(buffer,
+				     delta_time);
+
+  /* key-off channel message */
+  buffer[delta_time_size] = 0x80;
+  buffer[delta_time_size] |= (0xf & channel);
+
+  /* key */
+  buffer[delta_time_size + 1] = 0x7f & key;
+
+  /* velocity */
+  buffer[delta_time_size + 2] = 0x7f & velocity;
+}
+
+/**
+ * ags_midi_buffer_util_get_key_off:
+ * @buffer: the character buffer
+ * @delta_time: the return location of timing information
+ * @channel: the return location of channel
+ * @key: the return location of key
+ * @velocity: the return location of velocity
+ *
+ * Get the key-off message from @buffer.
+ *
+ * Returns: the number of bytes read.
+ *
+ * Since: 0.7.4
+ */
+guint
+ags_midi_buffer_util_get_key_off(unsigned char *buffer,
+				 long *delta_time,
+				 long *channel,
+				 long *key,
+				 long *velocity)
+{
+  long val;
+  guint delta_time_size;
+  
+  if(buffer == NULL){
+    return(0);
+  }
+
+  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
+						       &val);
+  
+  if(delta_time != NULL){
+    *delta_time = val;
+  }
+
+  if(channel != NULL){
+    *channel = (0xf & buffer[delta_time_size]);
+  }
+
+  if(key != NULL){
+    *key = (0x7f & buffer[delta_time_size + 1]);
+  }
+
+  if(velocity != NULL){
+    *velocity = (0x7f & buffer[delta_time_size + 2]);
+  }
+  
+  return(delta_time_size + 3);
 }
 
 /**
  * ags_midi_buffer_util_put_key_pressure:
- * @delta_time:
- * @channel:
- * @key:
- * @pressure:
+ * @buffer: the character buffer
+ * @delta_time: timing information
+ * @channel: valid channels from 0-15
+ * @key: valid keys to play 0-128
+ * @pressure: the key dynamics
  * 
- *
+ * Puts the given values to @buffer with appropriate channel message.
  *
  * Since: 0.7.2
  */
@@ -133,5 +303,69 @@ ags_midi_buffer_util_put_key_pressure(unsigned char *buffer,
 				      long key,
 				      long pressure)
 {
-  //TODO:JK: implement me
+  guint delta_time_size;
+
+  delta_time_size = ags_midi_buffer_util_get_varlength_size(delta_time);
+  ags_midi_buffer_util_put_varlength(buffer,
+				     delta_time);
+
+  /* key-pressure channel message */
+  buffer[delta_time_size + 1] = 0xa0;
+  buffer[delta_time_size + 1] |= (0xf & channel);
+
+  /* key */
+  buffer[delta_time_size + 2] = 0x7f & key;
+
+  /* velocity */
+  buffer[delta_time_size + 3] = 0x7f & pressure;
+}
+
+/**
+ * ags_midi_buffer_util_get_key_pressure:
+ * @buffer: the character buffer
+ * @delta_time: the return location of timing information
+ * @channel: the return location of channel
+ * @key: the return location of key
+ * @pressure: the return location of pressure
+ *
+ * Get the key-pressure message from @buffer.
+ *
+ * Returns: the number of bytes read.
+ *
+ * Since: 0.7.4
+ */
+guint
+ags_midi_buffer_util_get_key_pressure(unsigned char *buffer,
+				      long *delta_time,
+				      long *channel,
+				      long *key,
+				      long *pressure)
+{
+  long val;
+  guint delta_time_size;
+  
+  if(buffer == NULL){
+    return(0);
+  }
+
+  delta_time_size = ags_midi_buffer_util_get_varlength(buffer,
+						       &val);
+  
+  if(delta_time != NULL){
+    *delta_time = val;
+  }
+
+  if(channel != NULL){
+    *channel = (0xf & buffer[delta_time_size]);
+  }
+
+  if(key != NULL){
+    *key = (0x7f & buffer[delta_time_size + 1]);
+  }
+
+  if(pressure != NULL){
+    *pressure = (0x7f & buffer[delta_time_size + 2]);
+  }
+  
+  return(delta_time_size + 3);
 }

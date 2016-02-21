@@ -501,6 +501,33 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 void
 ags_devout_init(AgsDevout *devout)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  /* insert devout mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) devout,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* flags */
   devout->flags = (AGS_DEVOUT_ALSA);
 
@@ -659,6 +686,7 @@ ags_devout_set_property(GObject *gobject,
 	devout->out.alsa.device = g_strdup(ags_config_get_value(config,
 								AGS_CONFIG_SOUNDCARD,
 								"alsa-handle\0"));
+	g_message("device %s\n", devout->out.alsa.device);
 
 	ags_devout_adjust_delay_and_attack(devout);
 	ags_devout_realloc_buffer(devout);
@@ -1757,6 +1785,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 
   pthread_mutex_t *mutex;
   
+  devout = AGS_DEVOUT(soundcard);
+
   application_context = ags_soundcard_get_application_context(soundcard);
   
   pthread_mutex_lock(application_context->mutex);
@@ -1771,8 +1801,6 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   if((AGS_DEVOUT_INITIALIZED & (devout->flags)) == 0){
     return;
   }
-
-  devout = AGS_DEVOUT(soundcard);
   
   snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
@@ -1797,6 +1825,9 @@ ags_devout_tic(AgsSoundcard *soundcard)
   devout->delay_counter += 1.0;
 
   if(devout->delay_counter >= delay){
+    ags_soundcard_set_note_offset(soundcard,
+				  devout->note_offset + 1);
+    
     /* delay */
     ags_soundcard_offset_changed(soundcard,
 				 devout->note_offset);

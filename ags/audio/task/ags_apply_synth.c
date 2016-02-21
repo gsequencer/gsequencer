@@ -169,6 +169,7 @@ ags_apply_synth_launch(AgsTask *task)
   AgsConfig *config;
   
   GList *stream;
+
   gint wave;
   guint attack, frame_count, stop, phase, frequency;
   double volume;
@@ -178,7 +179,8 @@ ags_apply_synth_launch(AgsTask *task)
   double factor;
   guint buffer_size;
   guint samplerate;
-
+  gchar *str;
+  
   double ags_apply_synth_calculate_factor(guint base_frequency, guint wished_frequency, guint wave){
     double factor;
 
@@ -213,21 +215,21 @@ ags_apply_synth_launch(AgsTask *task)
 
   apply_synth = AGS_APPLY_SYNTH(task);
   channel = apply_synth->start_channel;
-  soundcard = AGS_SOUNDCARD(channel>soundcard);
+  soundcard = AGS_SOUNDCARD(channel->soundcard);
 
   config = ags_config_get_instance();
   
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0");
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
   buffer_size = g_ascii_strtoull(str,
 				 NULL,
 				 10);
   free(str);
-
+  
   str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0");
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
   samplerate = g_ascii_strtoull(str,
 				NULL,
 				10);

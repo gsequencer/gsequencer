@@ -61,6 +61,51 @@ ags_concurrent_tree_base_init(AgsConcurrentTreeInterface *interface)
 }
 
 /**
+ * ags_concurrent_tree_set_parent_locked:
+ * @concurrent_tree an #AgsConcurrent_Tree
+ * @parent_locked: %TRUE means the parent is locked
+ *
+ * Set context owns parent lock
+ *
+ * Since: 0.7.4
+ */
+void
+ags_concurrent_tree_set_parent_locked(AgsConcurrentTree *concurrent_tree,
+				      gboolean parent_locked)
+{
+  AgsConcurrentTreeInterface *concurrent_tree_interface;
+
+  g_return_val_if_fail(AGS_IS_CONCURRENT_TREE(concurrent_tree), NULL);
+  concurrent_tree_interface = AGS_CONCURRENT_TREE_GET_INTERFACE(concurrent_tree);
+  g_return_val_if_fail(concurrent_tree_interface->set_parent_locked, NULL);
+
+  concurrent_tree_interface->set_parent_locked(concurrent_tree,
+					       parent_locked);
+}
+
+/**
+ * ags_concurrent_tree_get_parent_locked:
+ * @concurrent_tree an #AgsConcurrent_Tree
+ *
+ * If context owns parent lock
+ *
+ * Returns: the %TRUE if parent locked, else %FALSE
+ *
+ * Since: 0.7.4
+ */
+gboolean
+ags_concurrent_tree_get_parent_locked(AgsConcurrentTree *concurrent_tree)
+{
+  AgsConcurrentTreeInterface *concurrent_tree_interface;
+
+  g_return_val_if_fail(AGS_IS_CONCURRENT_TREE(concurrent_tree), NULL);
+  concurrent_tree_interface = AGS_CONCURRENT_TREE_GET_INTERFACE(concurrent_tree);
+  g_return_val_if_fail(concurrent_tree_interface->get_parent_locked, NULL);
+
+  return(concurrent_tree_interface->get_parent_locked(concurrent_tree));
+}
+
+/**
  * ags_concurrent_tree_get_lock:
  * @concurrent_tree an #AgsConcurrent_Tree
  *
@@ -110,7 +155,7 @@ ags_concurrent_tree_get_parent_lock(AgsConcurrentTree *concurrent_tree)
  *
  * Locks the context of @concurrent_tree and blocks until success.
  *
- * Returns: %TRUE
+ * Returns: %TRUE if parent locked
  *
  * Since: 0.6.0
  */
@@ -119,23 +164,32 @@ ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
 {
   pthread_mutex_t *parent_mutex, *mutex;
 
-  gboolean lock_parent = TRUE;
+  int err;
+  gboolean parent_locked;
   
+  static pthread_mutex_t exclusive_lock = PTHREAD_MUTEX_INITIALIZER;
+
   parent_mutex = ags_concurrent_tree_get_parent_lock(concurrent_tree);
   mutex = ags_concurrent_tree_get_lock(concurrent_tree);
 
-  if(lock_parent){
-    static pthread_mutex_t exclusive_lock = PTHREAD_MUTEX_INITIALIZER;
 
-    pthread_mutex_lock(&exclusive_lock);
-    
-    pthread_mutex_lock(parent_mutex);
-    pthread_mutex_lock(mutex);
+  pthread_mutex_lock(&exclusive_lock);
+  
+  err = pthread_mutex_trylock(parent_mutex);
+  pthread_mutex_lock(mutex);
 
-    pthread_mutex_unlock(&exclusive_lock);
-
-    return(TRUE);
+  if(err == EBUSY){
+    parent_locked = FALSE;
+  }else{
+    parent_locked = TRUE;
   }
+  
+  ags_concurrent_tree_set_parent_locked(concurrent_tree,
+					parent_locked);
+  
+  pthread_mutex_unlock(&exclusive_lock);
+
+  return(parent_locked);
 }
 
 /**
@@ -151,13 +205,12 @@ ags_concurrent_tree_unlock_context(AgsConcurrentTree *concurrent_tree)
 {
   pthread_mutex_t *parent_mutex, *mutex;
 
-  gboolean lock_parent = TRUE;
-  
   parent_mutex = ags_concurrent_tree_get_parent_lock(concurrent_tree);
   mutex = ags_concurrent_tree_get_lock(concurrent_tree);
 
-  if(lock_parent){
-    pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(mutex);
+
+  if(ags_concurrent_tree_get_parent_locked(concurrent_tree)){
     pthread_mutex_unlock(parent_mutex);
   }
 }

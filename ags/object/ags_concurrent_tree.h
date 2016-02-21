@@ -38,11 +38,19 @@ struct _AgsConcurrentTreeInterface
 {
   GTypeInterface interface;
 
+  void (*set_parent_locked)(AgsConcurrentTree *concurrent_tree,
+			    gboolean parent_locked);
+  gboolean (*get_parent_locked)(AgsConcurrentTree *concurrent_tree);
+  
   pthread_mutex_t* (*get_lock)(AgsConcurrentTree *concurrent_tree);
   pthread_mutex_t* (*get_parent_lock)(AgsConcurrentTree *concurrent_tree);
 };
 
 GType ags_concurrent_tree_get_type();
+
+void ags_concurrent_tree_set_parent_locked(AgsConcurrentTree *concurrent_tree,
+					   gboolean parent_locked);
+gboolean ags_concurrent_tree_get_parent_locked(AgsConcurrentTree *concurrent_tree);
 
 pthread_mutex_t* ags_concurrent_tree_get_lock(AgsConcurrentTree *concurrent_tree);
 pthread_mutex_t* ags_concurrent_tree_get_parent_lock(AgsConcurrentTree *concurrent_tree);

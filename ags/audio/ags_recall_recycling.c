@@ -670,7 +670,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   pthread_mutex_lock(application_mutex);
- 
+  
   mutex = ags_mutex_manager_lookup(mutex_manager,
 				   (GObject *) channel);
   
@@ -686,25 +686,23 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   }
 
   recall_id = audio_signal->recall_id;
+
+  if(recall_id->recycling_context == NULL){
+    pthread_mutex_unlock(mutex);
+    return;
+  }
   
   if(recall_id->recycling_context != recall->recall_id->recycling_context){
     if(AGS_IS_INPUT(channel)){
       if(channel->link != NULL){
-	if(recall->recall_id->recycling_context->parent != NULL){
+	if(recall_id->recycling_context->parent != NULL){
 	  if(recall_id->recycling_context->parent != recall->recall_id->recycling_context){
   	    pthread_mutex_unlock(mutex);
 	    return;
 	  }
 	}else{
-	  AgsRecyclingContext *parent_container;
-
-	  parent_container = ags_recall_id_find_parent_recycling_context(AGS_AUDIO(channel->audio)->recall_id,
-									 recall->recall_id->recycling_context);
-
-	  if(recall_id->recycling_context->parent != parent_container){
-	    pthread_mutex_unlock(mutex);
-	    return;
-	  }
+	  pthread_mutex_unlock(mutex);
+	  return;
 	}
       }else{
 	pthread_mutex_unlock(mutex);
@@ -719,10 +717,10 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   
   if(AGS_RECALL_CHANNEL_RUN(recall->parent)->destination != NULL &&
      ags_recall_id_find_recycling_context(AGS_RECALL_CHANNEL_RUN(recall->parent)->destination->recall_id,
-					  recall_id->recycling_context->parent) == NULL){
+					    recall_id->recycling_context->parent) == NULL){
     if(AGS_RECALL_CHANNEL_RUN(recall->parent)->source->link != NULL){
       if(ags_recall_id_find_recycling_context(AGS_RECALL_CHANNEL_RUN(recall->parent)->destination->recall_id,
-					      recall_id->recycling_context->parent->parent) == NULL){
+						recall_id->recycling_context->parent->parent) == NULL){
 	pthread_mutex_unlock(mutex);
 	return;
       }
@@ -738,7 +736,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     pthread_mutex_unlock(mutex);
     return;
   }
-  
+
 #ifdef AGS_DEBUG
   g_message("add %s:%x -> %x @ %x\0",
 	    G_OBJECT_TYPE_NAME(recall),
@@ -760,9 +758,10 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 
   if((AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE & (recall_recycling->flags)) != 0){
     g_object_set(G_OBJECT(recall_recycling),
-		 "child_source\0", audio_signal,
+		 "child-source\0", audio_signal,
 		 NULL);
   }
+
 
   if(AGS_RECALL(recall_recycling)->child_type != G_TYPE_NONE){
     recall_audio_signal = g_object_new(AGS_RECALL(recall_recycling)->child_type,
@@ -779,7 +778,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     
     ags_recall_add_child(AGS_RECALL(recall_recycling), AGS_RECALL(recall_audio_signal));
   }
-  
+
   pthread_mutex_unlock(mutex);
 }
 
@@ -877,7 +876,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
       //   	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
       //				      NULL);
 	
-      //	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->application_context)->main_loop)->task_thread),
+      //	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(soundcard->application_context)->main_loop)->task_thread),
       //			    (AgsTask *) cancel_recall);
 
       break;
@@ -1081,7 +1080,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
       //	cancel_recall = ags_cancel_recall_new(AGS_RECALL(recall_audio_signal),
       //				      NULL);
 
-      //	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(devout->application_context)->main_loop)->task_thread),
+      //	ags_task_thread_append_task(AGS_TASK_THREAD(AGS_AUDIO_LOOP(AGS_MAIN(soundcard->application_context)->main_loop)->task_thread),
       //			    (AgsTask *) cancel_recall);
     }
 

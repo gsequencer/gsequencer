@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2013 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_preferences.h>
@@ -144,7 +145,7 @@ ags_preferences_init(AgsPreferences *preferences)
 
   preferences->flags = 0;
 
-  preferences->parent = NULL;
+  preferences->window = NULL;
 
   gtk_window_set_title(GTK_WINDOW(preferences),
 		       g_strdup("preferences\0"));
@@ -229,9 +230,7 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_preferences_apply(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
-  AgsApplicationContext *application_context;
   AgsConfig *config;
   AgsFile *file;
   struct passwd *pw;
@@ -241,12 +240,9 @@ ags_preferences_apply(AgsApplicable *applicable)
   GError *error;
 
   preferences = AGS_PREFERENCES(applicable);
-  window = preferences->parent;
 
   config = ags_config_get_instance();
 
-  config = application_context->config;
-  
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
@@ -266,12 +262,12 @@ ags_preferences_apply(AgsApplicable *applicable)
 				  "main\0", AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context),
 				  "filename\0", filename,
 				  NULL);
-  ags_file_write_concurrent(file);
+  ags_file_write(file);
   g_object_unref(file);
   
   error = NULL;
 
-  g_spawn_command_line_async(g_strdup_printf("./ags --filename %s\0",
+  g_spawn_command_line_async(g_strdup_printf("gsequencer --filename %s\0",
 					     filename),
 			     &error);
 

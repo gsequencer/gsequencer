@@ -414,7 +414,7 @@ ags_notation_set_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       if(notation->current_notes != NULL){
 	g_list_free_full(notation->current_notes,
@@ -433,7 +433,7 @@ ags_notation_set_property(GObject *gobject,
 
       notation->current_notes = current_notes;
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_NEXT_NOTES:
@@ -445,7 +445,7 @@ ags_notation_set_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       if(notation->next_notes != NULL){
 	g_list_free_full(notation->next_notes,
@@ -464,7 +464,7 @@ ags_notation_set_property(GObject *gobject,
 
       notation->next_notes = next_notes;
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
     }
     break;
   default:
@@ -499,11 +499,11 @@ ags_notation_get_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       g_value_set_pointer(value, g_list_copy(notation->notes));
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_CURRENT_NOTES:
@@ -513,7 +513,7 @@ ags_notation_get_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       start = 
 	list = g_list_copy(notation->current_notes);
@@ -524,7 +524,7 @@ ags_notation_get_property(GObject *gobject,
 	list = list->next;
       }
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
 
       g_value_set_pointer(value, (gpointer) start);
     }
@@ -536,7 +536,7 @@ ags_notation_get_property(GObject *gobject,
 
       port = AGS_PORT(notation->port);
 
-      pthread_mutex_lock(&(port->mutex));
+      pthread_mutex_lock(port->mutex);
 
       start = 
 	list = g_list_copy(notation->next_notes);
@@ -547,7 +547,7 @@ ags_notation_get_property(GObject *gobject,
 	list = list->next;
       }
 
-      pthread_mutex_unlock(&(port->mutex));
+      pthread_mutex_unlock(port->mutex);
 
       g_value_set_pointer(value, (gpointer) start);
     }
@@ -644,7 +644,7 @@ ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue
  *
  * Returns: Next match.
  *
- * Since: 0.4.2
+ * Since: 0.4
  */
 GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
@@ -664,7 +664,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       continue;
     }
 
-    current_timestamp = AGS_NOTATION(notation->data)->timestamp;
+    current_timestamp = (AgsTimestamp *) AGS_NOTATION(notation->data)->timestamp;
 
     if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0){
       if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
@@ -697,44 +697,29 @@ ags_notation_add_note(AgsNotation *notation,
 		      gboolean use_selection_list)
 {
   GList *list, *list_new;
-
-  auto void ags_notation_add_note_add1();
   
-  void ags_notation_add_note_add1(){
-    list_new = (GList *) malloc(sizeof(GList));
-    list_new->data = (gpointer) note;
-
-    if(list->prev == NULL){
-      list_new->prev = NULL;
-      list_new->next = list;
-      list->prev = list_new;
-
-      if(use_selection_list)
-	notation->selection = list_new;
-      else
-	notation->notes = list_new;
-    }else{
-      list_new->prev = list->prev;
-      list_new->next = list;
-      list->prev = list_new;
-      list_new->prev->next = list_new;
-    }
+  if(note == NULL){
+    return;
   }
 
-  if(use_selection_list)
+  g_object_ref(note);
+  
+  if(use_selection_list){
     list = notation->selection;
-  else
+  }else{
     list = notation->notes;
-
+  }
+  
   if(list == NULL){
     list_new = g_list_alloc();
     list_new->data = (gpointer) note;
 
-    if(use_selection_list)
+    if(use_selection_list){
       notation->selection = list_new;
-    else
+    }else{
       notation->notes = list_new;
-
+    }
+    
     return;
   }
 
@@ -743,7 +728,23 @@ ags_notation_add_note(AgsNotation *notation,
       while(list->next != NULL){
 	if((AGS_NOTE(list->data))->x[0] > note->x[0] ||
 	   (AGS_NOTE(list->data))->y >= note->y){
-	  ags_notation_add_note_add1();
+	  list_new = (GList *) g_list_alloc();
+	  list_new->data = (gpointer) note;
+
+	  list_new->prev = list->prev;
+	  list_new->next = list;
+
+	  list->prev = list_new;
+    
+	  if(list->prev != NULL){
+	    list_new->prev->next = list_new;
+	  }else{        
+	    if(use_selection_list){
+	      notation->selection = list_new;
+	    }else{
+	      notation->notes = list_new;
+	    }
+	  }
 
 	  return;
 	}
@@ -757,11 +758,28 @@ ags_notation_add_note(AgsNotation *notation,
     list = list->next;
   }
 
-  if((AGS_NOTE(list->data))->x[0] >= note->x[0])
-    ags_notation_add_note_add1();
-  else{
+  if((AGS_NOTE(list->data))->x[0] >= note->x[0]){
+    list_new = (GList *) g_list_alloc();
+    list_new->data = (gpointer) note;
+
+    list_new->prev = list->prev;
+    list_new->next = list;
+
+    list->prev = list_new;
+    
+    if(list->prev != NULL){
+      list_new->prev->next = list_new;
+    }else{        
+      if(use_selection_list){
+	notation->selection = list_new;
+      }else{
+	notation->notes = list_new;
+      }
+    }
+  }else{
     list_new = g_list_alloc();
     list_new->data = (gpointer) note;
+    
     list_new->prev = list;
     list->next = list_new;
   }
@@ -784,7 +802,8 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 				     guint x, guint y)
 {
   AgsNote *note;
-  GList *notes, *notes_end_region, *reverse_start;
+  GList *notes, *notes_next, *notes_prev;
+  GList *notes_end_region, *reverse_start;
   guint x_start, i;
 
   notes = notation->notes;
@@ -794,23 +813,46 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   }
 
   /* get entry point */
-  while(notes->next != NULL && (note = AGS_NOTE(notes->data))->x[0] < x)
+  while(notes->next != NULL && (note = AGS_NOTE(notes->data))->x[0] < x){
     notes = notes->next;
+  }
 
   notes_end_region = notes;
 
   /* search in y region for appropriate note */
   if(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x){
     do{
+      notes_next = notes->next;
+      
       if(note->y == y){
-	g_message("remove");
-	notation->notes = g_list_delete_link(notation->notes, notes);
+#ifdef AGS_DEBUG
+	g_message("remove\0");
+#endif
+	//TODO:JK: work-around
+	//	notation->notes = g_list_delete_link(notation->notes, notes);
+
+	if(notes->prev != NULL){
+	  notes->prev->next = notes->next;
+	}
+
+	if(notes->next != NULL){
+	  notes->next->prev = notes->prev;
+	}
+
+	if(notation->notes == notes){
+	  notation->notes = notes->next;
+	}
+
+	notes->prev = NULL;
+	notes->next = NULL;
+	g_list_free_1(notes);
+	
 	g_object_unref(note);
 
 	return(TRUE);
       } 
 
-      notes = notes->next;
+      notes = notes_next;
     }while(notes != NULL &&
 	   (note = AGS_NOTE(notes->data))->x[0] == x &&
 	   note->y <= y);
@@ -821,38 +863,39 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   }
 
   /* search backward until x_start */
-  reverse_start = notes;
+  while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] >= x - (notation->maximum_note_length / notation->tact)){
+    if(note->y == y){
+      if(note->x[0] < x){
+#ifdef AGS_DEBUG
+	g_message("remove\0");
+#endif
 
-  for(i = 0; i < notation->maximum_note_length / notation->tact; i++){
-    notes = reverse_start;
+	//TODO:JK: work-around
+	//	notation->notes = g_list_delete_link(notation->notes, notes);
 
-    if(x < notation->maximum_note_length){
-      x_start = 0;
-    }else{
-      x_start = x - notation->maximum_note_length;
-    }
+	if(notes->prev != NULL){
+	  notes->prev->next = notes->next;
+	}
 
-    while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] >= x_start){
-      if(note->y == y){
-	do{
-	  if(note->x[0] < x && note->x[1] == x + i){
-	    g_message("remove");
-	    notation->notes = g_list_delete_link(notation->notes, notes);
-	    g_object_unref(note);
+	if(notes->next != NULL){
+	  notes->next->prev = notes->prev;
+	}
+
+	if(notation->notes == notes){
+	  notation->notes = notes->next;
+	}
 	
-	    return(TRUE);
-	  }
+	notes->prev = NULL;
+	notes->next = NULL;
+	g_list_free_1(notes);
 
-	  notes = notes->prev;
-	}while(notes != NULL &&
-	       (note = AGS_NOTE(notes->data))->x[0] >= x_start &&
-	       note->y == y);
-
-	continue;
+	g_object_unref(note);
+	
+	return(TRUE);
       }
-
-      notes = notes->prev;
     }
+    
+    notes = notes->prev;
   }
 
   return(FALSE);
@@ -893,9 +936,8 @@ ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
   selection = notation->selection;
 
   while(selection != NULL && AGS_NOTE(selection->data)->x[0] <= note->x[0]){
-    if(selection->data == note){
+    if(selection->data == note)
       return(TRUE);
-    }
 
     selection = selection->next;
   }
@@ -956,6 +998,8 @@ ags_notation_find_point(AgsNotation *notation,
 
   return(prev_note);
 }
+
+
 
 /**
  * ags_notation_find_region:
@@ -1050,6 +1094,33 @@ ags_notation_free_selection(AgsNotation *notation)
   list = notation->selection;
   notation->selection = NULL;
   g_list_free(list);
+}
+
+/**
+ * ags_notation_add_all_to_selection:
+ * @notation: an #AgsNotation
+ *
+ * Select all.
+ *
+ * Since: 0.4.2
+ */
+void
+ags_notation_add_all_to_selection(AgsNotation *notation)
+{
+  AgsNote *note;
+  GList *region, *list;
+
+  ags_notation_free_selection(notation);
+  list = notation->notes;
+  
+  while(list != NULL){
+    AGS_NOTE(list->data)->flags |= AGS_NOTE_IS_SELECTED;
+    g_object_ref(G_OBJECT(list->data));
+    
+    list = list->next;
+  }
+
+  notation->selection = g_list_copy(notation->notes);
 }
 
 /**
@@ -1238,11 +1309,11 @@ ags_notation_remove_region_from_selection(AgsNotation *notation,
  *
  * Since: 0.4
  */
-xmlNode*
+xmlNodePtr
 ags_notation_copy_selection(AgsNotation *notation)
 {
   AgsNote *note;
-  xmlNode *notation_node, *current_note;
+  xmlNodePtr notation_node, current_note;
   GList *selection;
   guint x_boundary, y_boundary;
 
@@ -1301,8 +1372,8 @@ ags_notation_copy_selection(AgsNotation *notation)
 xmlNode*
 ags_notation_cut_selection(AgsNotation *notation)
 {
-  xmlNode *notation_node;
-  GList *selection, *notes;
+  xmlNode* notation_node;
+  GList *selection, *selection_next, *notes;
   
   notation_node = ags_notation_copy_selection(notation);
 
@@ -1311,7 +1382,8 @@ ags_notation_cut_selection(AgsNotation *notation)
 
   while(selection != NULL){
     notes = g_list_find(notes, selection->data);
-
+    selection_next = selection->next;
+    
     if(notes->prev == NULL){
       notation->notes = g_list_remove_link(notes, notes);
       notes = notation->notes;
@@ -1324,7 +1396,7 @@ ags_notation_cut_selection(AgsNotation *notation)
       if(next_note != NULL)
 	next_note->prev = notes->prev;
 
-      g_list_free1(notes);
+      g_list_free_1(notes);
 
       notes = next_note;
     }
@@ -1332,7 +1404,7 @@ ags_notation_cut_selection(AgsNotation *notation)
     AGS_NOTE(selection->data)->flags &= (~AGS_NOTE_IS_SELECTED);
     g_object_unref(selection->data);
 
-    selection = selection->next;
+    selection = selection_next;
   }
 
   ags_notation_free_selection(notation);
@@ -1359,17 +1431,15 @@ ags_notation_cut_selection(AgsNotation *notation)
  */
 void
 ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
-						xmlNode *root_node, char *version,
+						xmlNodePtr root_node, char *version,
 						char *base_frequency,
 						char *x_boundary, char *y_boundary,
 						gboolean reset_x_offset, guint x_offset,
 						gboolean reset_y_offset, guint y_offset)
 {
-  auto void ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
-
   void ags_notation_insert_native_piano_from_clipboard_version_0_3_12(){
     AgsNote *note;
-    xmlNode *node;
+    xmlNodePtr node;
     char *endptr;
     guint x_boundary_val, y_boundary_val;
     char *x0, *x1, *y;
@@ -1388,7 +1458,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	if(errno == ERANGE){
 	  goto dont_reset_x_offset;
 	} 
-
+	
 	if(x_boundary == endptr){
 	  goto dont_reset_x_offset;
 	}
@@ -1433,56 +1503,77 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
       }
     }
     
-    for(; node != NULL; node = node->next){
+    for(; node != NULL; ){
       if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("note\0", node->name, 5)){
 	/* retrieve x0 offset */
 	x0 = xmlGetProp(node, "x\0");
 
-	if(x0 == NULL)
+	if(x0 == NULL){
+	  node = node->next;
+	  
 	  continue;
+	}
 
 	errno = 0;
 	x0_val = strtoul(x0, &endptr, 10);
 
 	if(errno == ERANGE){
+	  node = node->next;
+	  
 	  continue;
 	} 
 
 	if(x0 == endptr){
+	  node = node->next;
+	  
 	  continue;
 	}
 
 	/* retrieve x1 offset */
 	x1 = xmlGetProp(node, "x1\0");
 
-	if(x1 == NULL)
+	if(x1 == NULL){
+	  node = node->next;
+	  
 	  continue;
+	}
 
 	errno = 0;
 	x1_val = strtoul(x1, &endptr, 10);
 
 	if(errno == ERANGE){
+	  node = node->next;
+	  
 	  continue;
 	} 
 
 	if(x1 == endptr){
+	  node = node->next;
+	  
 	  continue;
 	}
 
 	/* retrieve y offset */
 	y = xmlGetProp(node, "y\0");
 
-	if(y == NULL)
+	if(y == NULL){
+	  node = node->next;
+	  
 	  continue;
+	}
 
 	errno = 0;
 	y_val = strtoul(y, &endptr, 10);
 
 	if(errno == ERANGE){
+	  node = node->next;
+	  
 	  continue;
 	} 
 
 	if(y == endptr){
+	  node = node->next;
+	  
 	  continue;
 	}
 
@@ -1502,16 +1593,22 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	  if(subtract_x){
 	    x0_val -= base_x_difference;
 
-	    if(errno != 0)
+	    if(errno != 0){
+	      node = node->next;
+	      
 	      continue;
+	    }
 
 	    x1_val -= base_x_difference;
 	  }else{
 	    x0_val += base_x_difference;
 	    x1_val += base_x_difference;
 
-	    if(errno != 0)
+	    if(errno != 0){
+	      node = node->next;
+	      
 	      continue;
+	    }
 	  }
 	}
 
@@ -1524,13 +1621,19 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	    y_val += base_y_difference;
 	  }
 
-	  if(errno != 0)
+	  if(errno != 0){
+	    node = node->next;
+	    
 	    continue;
+	  }
 	}
 
 	/* check if max length wasn't exceeded */
-	if(x1_val - x0_val > notation->maximum_note_length)
+	if(x1_val - x0_val > notation->maximum_note_length){
+	  node = node->next;
+	  
 	  continue;
+	}
 
 	/* add note */
 	note = ags_note_new();
@@ -1546,10 +1649,11 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 			      note,
 			      FALSE);
       }
+
+      node = node->next;
     }
   }
 
-  /* entry point */
   if(!xmlStrncmp("0.3.12\0", version, 7)){
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }else if(!xmlStrncmp("0.4.2\0", version, 7)){

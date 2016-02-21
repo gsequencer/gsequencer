@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_ladspa_browser.h>
@@ -162,7 +163,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   ladspa_browser->path = NULL;
 
-  ags_ladspa_manager_load_default_directory();
+  //  ags_ladspa_manager_load_default_directory();
   filenames =
     filenames_start = ags_ladspa_manager_get_filenames();
 
@@ -384,6 +385,33 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
   }
 
   return(effect_name);
+}
+
+/**
+ * ags_ladspa_browser_combo_box_boolean_controls_new:
+ *
+ * Creates a #GtkComboBox containing suitable widgets as controls.
+ *
+ * Returns: a new #GtkComboBox
+ *
+ * Since: 0.7.4
+ */
+GtkWidget*
+ags_ladspa_browser_combo_box_boolean_controls_new()
+{
+  GtkComboBoxText *combo_box;
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(combo_box,
+				 "check-button\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "toggle button\0");
+
+  gtk_combo_box_set_active(combo_box,
+			   1);
+
+  return(combo_box);
 }
 
 /**

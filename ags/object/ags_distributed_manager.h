@@ -41,20 +41,21 @@ struct _AgsDistributedManagerInterface
   gchar* (*get_url)(AgsDistributedManager *distributed_manager);
 
   void (*set_ports)(AgsDistributedManager *distributed_manager,
-		    gchar **ports);
-  gchar** (*get_ports)(AgsDistributedManager *distributed_manager);
-
+		    guint *ports, guint port_count);
+  guint* (*get_ports)(AgsDistributedManager *distributed_manager,
+		      guint port_count);
+  
   void (*set_soundcard)(AgsDistributedManager *distributed_manager,
-			gchar *uri,
+			gchar *port_uuid,
 			GObject *soundcard);
   GObject* (*get_soundcard)(AgsDistributedManager *distributed_manager,
-			    gchar *uri);
+			    gchar *port_uuid);
 
   void (*set_sequencer)(AgsDistributedManager *distributed_manager,
-			gchar *uri,
+			gchar *port_uuid,
 			GObject *sequencer);
   GObject* (*get_sequencer)(AgsDistributedManager *distributed_manager,
-			    gchar *uri);
+			    gchar *port_uuid);
 
   GObject* (*register_soundcard)(AgsDistributedManager *distributed_manager,
 				 gboolean is_output);
@@ -74,20 +75,21 @@ void ags_distributed_manager_set_url(AgsDistributedManager *distributed_manager,
 gchar* ags_distributed_manager_get_url(AgsDistributedManager *distributed_manager);
 
 void ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
-				       gchar **ports);
-gchar** ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager);
+				       guint *port, guint port_count);
+guint* ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager,
+					 guint *port_count);
 
 void ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager,
-					   gchar *uri,
+					   gchar *port_uuid,
 					   GObject *soundcard);
 GObject* ags_distributed_manager_get_soundcard(AgsDistributedManager *distributed_manager,
-					       gchar *uri);
+					       gchar *port_uuid);
 
 void ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_manager,
-					   gchar *uri,
+					   gchar *port_uuid,
 					   GObject *sequencer);
 GObject* ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager,
-					       gchar *uri);
+					       gchar *port_uuid);
 
 GObject* ags_distributed_manager_register_soundcard(AgsDistributedManager *distributed_manager,
 						    gboolean is_output);

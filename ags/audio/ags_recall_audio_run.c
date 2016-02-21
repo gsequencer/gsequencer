@@ -53,6 +53,7 @@ void ags_recall_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connect
 void ags_recall_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_audio_run_finalize(GObject *gobject);
 
+void ags_recall_audio_run_remove(AgsRecall *recall);
 AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
 					  guint *n_params, GParameter *parameter);
@@ -173,6 +174,7 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_audio_run;
 
+  recall->remove = ags_recall_audio_run_remove;
   recall->duplicate = ags_recall_audio_run_duplicate;
 
   /* AgsRecallAudioRunClass */
@@ -443,6 +445,19 @@ ags_recall_audio_run_unpack(AgsPackable *packable)
   g_object_unref(recall_container);
 
   return(FALSE);
+}
+
+void
+ags_recall_audio_run_remove(AgsRecall *recall)
+{
+  if(AGS_RECALL_AUDIO_RUN(recall)->recall_audio != NULL &&
+     AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio != NULL){
+    ags_audio_remove_recall(AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio,
+			    recall,
+			    ((recall->recall_id->recycling_context->parent) ? TRUE: FALSE));
+  }
+  
+  AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->remove(recall);
 }
 
 AgsRecall*

@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2013 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/thread/ags_returnable_thread.h>
@@ -37,6 +38,7 @@ void ags_returnable_thread_finalize(GObject *gobject);
 
 void ags_returnable_thread_start(AgsThread *thread);
 void ags_returnable_thread_run(AgsThread *thread);
+void ags_returnable_thread_stop(AgsThread *thread);
 void ags_returnable_thread_resume(AgsThread *thread);
 
 /**
@@ -110,10 +112,11 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
   gobject->finalize = ags_returnable_thread_finalize;
 
   /* AgsThreadClass */
-  thread = (AgsThread *) returnable_thread;
+  thread = (AgsThreadClass *) returnable_thread;
 
   thread->start = ags_returnable_thread_start;
   thread->run = ags_returnable_thread_run;
+  thread->stop = ags_returnable_thread_stop;
   thread->resume = ags_returnable_thread_resume;
 
   /* AgsReturnableThreadClass */
@@ -151,13 +154,13 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 			      PTHREAD_CREATE_DETACHED);
 
   g_atomic_int_or(&(thread->flags),
-		  AGS_THREAD_UNREF_ON_EXIT);
+  		  AGS_THREAD_UNREF_ON_EXIT);
 
   thread->freq = AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE;
 
   g_atomic_int_set(&(returnable_thread->flags),
 		   0);
-  
+
   returnable_thread->reset_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(returnable_thread->reset_mutex, NULL);
   
@@ -184,8 +187,9 @@ ags_returnable_thread_disconnect(AgsConnectable *connectable)
 void
 ags_returnable_thread_finalize(GObject *gobject)
 {
-  pthread_mutex_destroy(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
-
+  //  pthread_mutex_destroy(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
+  free(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_returnable_thread_parent_class)->finalize(gobject);
 }
@@ -207,56 +211,17 @@ ags_returnable_thread_run(AgsThread *thread)
   
   /* retrieve some variables */
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
-  thread_pool = returnable_thread->thread_pool;
+  thread_pool = (AgsThreadPool *) returnable_thread->thread_pool;
   
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-#ifdef AGS_DEBUG
-    g_message("returnable thread initial\0");
-#endif
-
-    return;
-  }
-
   /* safe run */
-  pthread_mutex_lock(returnable_thread->reset_mutex);
-
   if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
 
     ags_returnable_thread_safe_run(returnable_thread);
-
-    pthread_mutex_unlock(returnable_thread->reset_mutex);
-
-    /* release thread in thread pool */
-    pthread_mutex_lock(thread_pool->pull_mutex);
-
-    tmplist = g_atomic_pointer_get(&(thread_pool->running_thread));
-    g_atomic_pointer_set(&(thread_pool->running_thread),
-			 g_list_remove(tmplist,
-				       thread));
-
-    ags_returnable_thread_disconnect(returnable_thread);
-    ags_returnable_thread_disconnect_safe_run(returnable_thread);
     g_atomic_int_and(&(returnable_thread->flags),
 		     (~AGS_RETURNABLE_THREAD_IN_USE));
-    
-    pthread_mutex_unlock(thread_pool->pull_mutex);
-
-    pthread_mutex_lock(thread_pool->return_mutex);
-
-    g_atomic_int_dec_and_test(&(thread_pool->n_threads));
-    //    ags_thread_remove_child(thread->parent,
-    //			    thread);
 
     g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
     		     (~AGS_THREAD_RUNNING));
-
-    if(g_atomic_int_get(&(thread_pool->queued)) > 0){
-      pthread_cond_signal(thread_pool->return_cond);
-    }
-
-    pthread_mutex_unlock(thread_pool->return_mutex);
-  }else{
-    pthread_mutex_unlock(returnable_thread->reset_mutex);
   }
 }
 
@@ -269,6 +234,12 @@ ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread)
   g_signal_emit(G_OBJECT(returnable_thread),
 		returnable_thread_signals[SAFE_RUN], 0);
   g_object_unref(G_OBJECT(returnable_thread));
+}
+
+void
+ags_returnable_thread_stop(AgsThread *thread)
+{
+  AGS_THREAD_CLASS(ags_returnable_thread_parent_class)->stop(thread);
 }
 
 void

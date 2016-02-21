@@ -43,7 +43,7 @@ void ags_copy_notation_audio_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
+  PROP_DEVOUT,
   PROP_NOTATION,
   PROP_AUDIO_CHANNEL,
 };
@@ -136,7 +136,7 @@ ags_copy_notation_audio_set_property(GObject *gobject,
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEVOUT:
     {
       GObject *soundcard;
 
@@ -197,7 +197,7 @@ ags_copy_notation_audio_get_property(GObject *gobject,
   copy_notation_audio = AGS_COPY_NOTATION_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEVOUT:
     {
       g_value_set_object(value, copy_notation_audio->soundcard);
     }
@@ -226,7 +226,7 @@ ags_copy_notation_audio_finalize(GObject *gobject)
 
 /**
  * ags_copy_notation_audio_new:
- * @soundcard: the #GObject implementing #AgsSoundcard
+ * @audio: the #AgsAudio
  * @notation: the notation
  * @audio_channel: the audio channel to use
  *

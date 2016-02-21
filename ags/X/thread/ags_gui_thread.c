@@ -186,72 +186,31 @@ ags_gui_thread_run(AgsThread *thread)
 {
   AgsGuiThread *gui_thread;
   GMainContext *main_context;
-  int success;
 
-  auto void ags_gui_thread_do_gtk_iteration();
   auto void ags_gui_thread_complete_task();
   
-  void ags_gui_thread_do_gtk_iteration(){
+  void ags_gui_thread_complete_task()
+  {
+    GList *list, *list_next;
 
     if(!g_main_context_acquire(main_context)){
       gboolean got_ownership = FALSE;
 
+      g_mutex_lock(&(gui_thread->mutex));
+      
       while(!got_ownership){
 	got_ownership = g_main_context_wait(main_context,
 					    &(gui_thread->cond),
 					    &(gui_thread->mutex));
       }
+
+      g_mutex_unlock(&(gui_thread->mutex));
     }
-
-    /*  */
-    //    success = pthread_mutex_trylock(thread->suspend_mutex);
-    success = FALSE;
-    
-    if(success){
-      g_atomic_int_set(&(thread->critical_region),
-		       TRUE);
-    }
-
-    /*  */
-    //    pthread_mutex_lock(audio_loop->recall_mutex);
-
-    if(success){
-      /*  */
-      pthread_mutex_unlock(thread->suspend_mutex);
-    }else{
-      //      g_atomic_int_set(&(thread->critical_region),
-      //	       TRUE);
-    }
-
-    /*  */
-    gdk_threads_enter();
-    gdk_threads_leave();
-
-    g_main_context_iteration(main_context, FALSE);
-
-    /*  */
-    //    success = pthread_mutex_trylock(thread->suspend_mutex);
-      
-    /*  */
-    //    pthread_mutex_unlock(audio_loop->recall_mutex);
-
-    /*  */
-    //    g_atomic_int_set(&(thread->critical_region),
-    //		     FALSE);
-
-    if(success){
-      pthread_mutex_unlock(thread->suspend_mutex);
-    }
-
-    g_main_context_release(main_context);
-  }
-
-  void ags_gui_thread_complete_task()
-  {
-    GList *list, *list_next;
 
     list = gui_thread->task_completion;
 
+    gdk_threads_enter();
+    
     while(list != NULL){
       list_next = list->next;
       
@@ -264,14 +223,37 @@ ags_gui_thread_run(AgsThread *thread)
 
       list = list_next;
     }
+
+    gdk_threads_leave();
+    
+    g_main_context_release(main_context);
   }
   
   gui_thread = AGS_GUI_THREAD(thread);
 
   /*  */
   main_context = g_main_context_default();
+  
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
 
-  ags_gui_thread_do_gtk_iteration();
+    g_mutex_lock(&(gui_thread->mutex));
+    
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
+    }
+
+    g_mutex_unlock(&(gui_thread->mutex));
+  }
+  
+  gdk_threads_enter();
+  g_main_context_iteration(main_context,
+			   FALSE);
+  gdk_threads_leave();
+
+  g_main_context_release(main_context);
 
   ags_gui_thread_complete_task();  
 

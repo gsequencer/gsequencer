@@ -40,10 +40,11 @@
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/audio/task/ags_cancel_audio.h>
-
 #include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
+
+#include <ags/audio/task/ags_cancel_audio.h>
 
 #include <math.h>
 
@@ -120,11 +121,11 @@ void ags_count_beats_audio_run_stop(AgsCountBeatsAudioRun *count_beats_audio_run
  */
 
 enum{
-  NOTATION_START,
   NOTATION_LOOP,
+  NOTATION_START,
   NOTATION_STOP,
-  SEQUENCER_START,
   SEQUENCER_LOOP,
+  SEQUENCER_START,
   SEQUENCER_STOP,
   LAST_SIGNAL,
 };

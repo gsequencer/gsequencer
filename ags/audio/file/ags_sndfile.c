@@ -35,48 +35,29 @@ void ags_sndfile_disconnect(AgsConnectable *connectable);
 
 gboolean ags_sndfile_open(AgsPlayable *playable, gchar *name);
 gboolean ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
-			     gboolean create);
+			     gboolean create,
+			     guint samplerate, guint channels,
+			     guint frames,
+			     guint format);
 guint ags_sndfile_level_count(AgsPlayable *playable);
 gchar** ags_sndfile_sublevel_names(AgsPlayable *playable);
 void ags_sndfile_iter_start(AgsPlayable *playable);
 gboolean ags_sndfile_iter_next(AgsPlayable *playable);
-void ags_sndfile_set_pointer(AgsPlayable *playable,
-			     guchar *data);
-guchar* ags_sndfile_get_pointer(AgsPlayable *playable);
-void ags_sndfile_set_current(AgsPlayable *playable,
-			     guchar *current);
-guchar* ags_sndfile_get_current(AgsPlayable *playable);
 void ags_sndfile_info(AgsPlayable *playable,
 		      guint *channels, guint *frames,
 		      guint *loop_start, guint *loop_end,
 		      GError **error);
-void ags_sndfile_set_presets(AgsPlayable *playable,
-			     guint samplerate,
-			     guint buffer_size,
-			     guint channels,
-			     guint format);
-void ags_sndfile_get_presets(AgsPlayable *playable,
-			     guint *samplerate,
-			     guint *buffer_size,
-			     guint *channels,
-			     guint *format);
-void ags_sndfile_set_channels(AgsPlayable *playable,
-			      guint channels);
-guint ags_sndfile_get_channels(AgsPlayable *playable);
-void ags_sndfile_set_frames(AgsPlayable *playable,
-			    guint frames);
-guint ags_sndfile_get_frames(AgsPlayable *playable);
 signed short* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
 void ags_sndfile_write(AgsPlayable *playable, signed short *buffer, guint buffer_length);
 void ags_sndfile_flush(AgsPlayable *playable);
 void ags_sndfile_seek(AgsPlayable *playable, guint frames, gint whence);
 void ags_sndfile_close(AgsPlayable *playable);
 
-sf_vio_get_filelen ags_sndfile_vio_get_filelen(void *user_data);
-sf_vio_seek ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data);
-sf_vio_read ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data);
-sf_vio_write ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data);
-sf_vio_tell ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data);
+sf_count_t ags_sndfile_vio_get_filelen(void *user_data);
+sf_count_t ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data);
+sf_count_t ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data);
+sf_count_t ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data);
+sf_count_t ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data);
 
 /**
  * SECTION:ags_sndfile
@@ -187,24 +168,9 @@ ags_sndfile_playable_interface_init(AgsPlayableInterface *playable)
   playable->iter_start = ags_sndfile_iter_start;
   playable->iter_next = ags_sndfile_iter_next;
 
-  playable->set_pointer = ags_sndfile_set_pointer;
-  playable->get_pointer = ags_sndfile_get_pointer;
-
-  playable->set_current = ags_sndfile_set_current;
-  playable->get_current = ags_sndfile_get_current;
-  
   playable->info = ags_sndfile_info;
-
-  playable->set_presets = ags_sndfile_set_presets;
-  playable->get_presets = ags_sndfile_get_presets;
-
-  playable->set_channels = ags_sndfile_set_channels;
-  playable->get_channels = ags_sndfile_get_channels;
-
-  playable->set_frames = ags_sndfile_set_frames;
-  playable->get_frames = ags_sndfile_get_frames;
-  
   playable->read = ags_sndfile_read;
+
   playable->write = ags_sndfile_write;
   playable->flush = ags_sndfile_flush;
 
@@ -218,7 +184,7 @@ ags_sndfile_init(AgsSndfile *sndfile)
 {
   sndfile->flags = 0;
 
-  sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
+  sndfile->info = NULL;
   sndfile->file = NULL;
 
   sndfile->pointer = NULL;
@@ -268,22 +234,30 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
 
 gboolean
 ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
-		    gboolean create)
+		    gboolean create,
+		    guint samplerate, guint channels,
+		    guint frames,
+		    guint format)
 {
   AgsSndfile *sndfile;
   sf_count_t multi_frames;
   
   sndfile = AGS_SNDFILE(playable);
 
+  sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
+
+  sndfile->info->samplerate = (int) samplerate;
+  sndfile->info->channels = (int) channels;
+  sndfile->info->format = (int) format;
   sndfile->info->frames = 0;
   sndfile->info->seekable = 0;
   sndfile->info->sections = 0;
 
   g_message("export to: %s\n  samplerate: %d\n  channels: %d\n  format: %x\0",
 	    name,
-	    sndfile->info->samplerate,
-	    sndfile->info->channels,
-	    sndfile->info->format);
+	    samplerate,
+	    channels,
+	    format);
 
   if(!sf_format_check(sndfile->info)){
     g_warning("invalid format");
@@ -297,7 +271,7 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_RDWR, sndfile->info, sndfile);
   }
 
-  multi_frames = sndfile->info->frames * sndfile->info->channels;
+  multi_frames = frames * sndfile->info->channels;
   //  sf_command(sndfile->file, SFC_FILE_TRUNCATE, &(multi_frames), sizeof(multi_frames));
   //  sf_command (sndfile, SFC_SET_SCALE_INT_FLOAT_WRITE, NULL, SF_TRUE);
   //  sf_seek(sndfile->file, 0, SEEK_SET);
@@ -349,48 +323,6 @@ ags_sndfile_iter_next(AgsPlayable *playable)
 }
 
 void
-ags_sndfile_set_pointer(AgsPlayable *playable,
-			guchar *data)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  sndfile->pointer = data;  
-}
-
-guchar*
-ags_sndfile_get_pointer(AgsPlayable *playable)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  return(sndfile->pointer);
-}
-
-void
-ags_sndfile_set_current(AgsPlayable *playable,
-			guchar *current)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  sndfile->current = current;
-}
-
-guchar*
-ags_sndfile_get_current(AgsPlayable *playable)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  return(sndfile->current);
-}
-
-void
 ags_sndfile_info(AgsPlayable *playable,
 		 guint *channels, guint *frames,
 		 guint *loop_start, guint *loop_end,
@@ -404,94 +336,6 @@ ags_sndfile_info(AgsPlayable *playable,
   *frames = sndfile->info->frames;
   *loop_start = 0;
   *loop_end = 0;
-}
-
-void
-ags_sndfile_set_presets(AgsPlayable *playable,
-			guint samplerate,
-			guint buffer_size,
-			guint channels,
-			guint format)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  sndfile->info->samplerate = samplerate;
-  //TODO:JK: buffer_size
-  sndfile->info->channels = channels;
-  //FIXME:JK: translate format
-  sndfile->info->format = format;
-}
-
-void
-ags_sndfile_get_presets(AgsPlayable *playable,
-			guint *samplerate,
-			guint *buffer_size,
-			guint *channels,
-			guint *format)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  if(samplerate != NULL){
-    *samplerate = sndfile->info->samplerate;
-  }
-
-  //TODO:JK: buffer_size
-  
-  if(channels != NULL){
-    *channels = sndfile->info->channels;
-  }
-
-  //FIXME:JK: translate format
-
-  if(format != NULL){
-    *format = sndfile->info->format;
-  }
-}
-
-void
-ags_sndfile_set_channels(AgsPlayable *playable,
-			 guint channels)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  sndfile->info->channels = channels;
-}
-
-guint
-ags_sndfile_get_channels(AgsPlayable *playable)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  return(sndfile->info->channels);
-}
-
-void
-ags_sndfile_set_frames(AgsPlayable *playable,
-		       guint frames)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  sndfile->info->frames = frames;
-}
-
-guint
-ags_sndfile_get_frames(AgsPlayable *playable)
-{
-  AgsSndfile *sndfile;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  return(sndfile->info->frames);
 }
 
 signed short*
@@ -579,28 +423,31 @@ ags_sndfile_finalize(GObject *gobject)
   /* empty */
 }
 
-sf_vio_get_filelen
+sf_count_t
 ags_sndfile_vio_get_filelen(void *user_data)
 {
   return(AGS_SNDFILE(user_data)->length);
 }
 
-sf_vio_seek
+sf_count_t
 ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data)
 {
   switch(whence){
   case SEEK_CUR:
     AGS_SNDFILE(user_data)->current += offset;
+    break;
   case SEEK_SET:
     AGS_SNDFILE(user_data)->current = &(AGS_SNDFILE(user_data)->pointer[offset]);
+    break;
   case SEEK_END:
     AGS_SNDFILE(user_data)->current = &(AGS_SNDFILE(user_data)->pointer[AGS_SNDFILE(user_data)->length - offset]);
+    break;
   }
 
   return(AGS_SNDFILE(user_data)->current - AGS_SNDFILE(user_data)->pointer);
 }
 
-sf_vio_read
+sf_count_t
 ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data)
 {
   guchar *retval;
@@ -610,7 +457,7 @@ ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data)
   return(retval - AGS_SNDFILE(user_data)->pointer);
 }
 
-sf_vio_write
+sf_count_t
 ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data)
 {
   guchar *retval;
@@ -620,7 +467,7 @@ ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data)
   return(retval - AGS_SNDFILE(user_data)->pointer);
 }
 
-sf_vio_tell
+sf_count_t
 ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data)
 {
   return(AGS_SNDFILE(user_data)->current - AGS_SNDFILE(user_data)->pointer);

@@ -51,18 +51,19 @@ void ags_jack_server_set_url(AgsDistributedManager *distributed_manager,
 			     gchar *url);
 gchar* ags_jack_server_get_url(AgsDistributedManager *distributed_manager);
 void ags_jack_server_set_ports(AgsDistributedManager *distributed_manager,
-			       gchar **ports);
-gchar** ags_jack_server_get_ports(AgsDistributedManager *distributed_manager);
+			       guint *ports, guint port_count);
+guint* ags_jack_server_get_ports(AgsDistributedManager *distributed_manager,
+				 guint *port_count);
 void ags_jack_server_set_soundcard(AgsDistributedManager *distributed_manager,
-				   gchar *uri,
+				   gchar *port_uuid,
 				   GObject *soundcard);
 GObject* ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
-				       gchar *uri);
+				     gchar *port_uuid);
 void ags_jack_server_set_sequencer(AgsDistributedManager *distributed_manager,
-				   gchar *uri,
+				   gchar *port_uuid,
 				   GObject *sequencer);
 GObject* ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
-				       gchar *uri);
+				     gchar *port_uuid);
 GObject* ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 					    gboolean is_output);
 void ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
@@ -77,7 +78,7 @@ void ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_man
  * @short_description: JACK instance
  * @title: AgsJackServer
  * @section_id:
- * @include: ags/jack_server/ags_jack_server.h
+ * @include: ags/audio/jack/ags_jack_server.h
  *
  * The #AgsJackServer is an object to represent a running JACK instance.
  */
@@ -217,8 +218,17 @@ ags_jack_server_init(AgsJackServer *jack_server)
   jack_server->flags = 0;
 
   jack_server->application_context = NULL;
-  jack_server->url = NULL;
 
+  jack_server->url = g_strdup_printf("%s://%s:%d",
+				     AGS_JACK_SERVER_DEFAULT_PROTOCOL,
+				     AGS_JACK_SERVER_DEFAULT_HOST,
+				     AGS_JACK_SERVER_DEFAULT_PORT);
+  jack_server->jackctl = jackctl_server_create(NULL,
+  					       NULL);
+
+  jack_server->port = NULL;
+  jack_server->port_count = 0;
+  
   jack_server->n_soundcards = 0;
   jack_server->n_sequencers = 0;
   
@@ -344,45 +354,95 @@ ags_jack_server_get_url(AgsDistributedManager *distributed_manager)
 
 void
 ags_jack_server_set_ports(AgsDistributedManager *distributed_manager,
-			  gchar **ports)
+			  guint *port, guint port_count)
 {
-  //TODO:JK: implement me
+  AGS_JACK_SERVER(distributed_manager)->port = port;
+  AGS_JACK_SERVER(distributed_manager)->port_count = port_count;
 }
 
-gchar**
-ags_jack_server_get_ports(AgsDistributedManager *distributed_manager)
+guint*
+ags_jack_server_get_ports(AgsDistributedManager *distributed_manager,
+			  guint *port_count)
 {
-  //TODO:JK: implement me
+  if(port_count != NULL){
+    *port_count = AGS_JACK_SERVER(distributed_manager)->port_count;
+  }
+  
+  return(AGS_JACK_SERVER(distributed_manager)->port);
 }
 
 void
 ags_jack_server_set_soundcard(AgsDistributedManager *distributed_manager,
-			      gchar *uri,
+			      gchar *port_uuid,
 			      GObject *soundcard)
 {
-  //TODO:JK: implement me
+  AgsJackServer *jack_server;
+  AgsJackPort *jack_port;
+
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+
+  jack_port = ags_jack_server_find_port(jack_server,
+					port_uuid);
+
+  if(jack_port != NULL){
+    jack_port->device = soundcard;
+  }
 }
 
 GObject*
 ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
-			      gchar *uri)
+			      gchar *port_uuid)
 {
-  //TODO:JK: implement me
+  AgsJackServer *jack_server;
+  AgsJackPort *jack_port;
+  
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+
+  jack_port = ags_jack_server_find_port(jack_server,
+					port_uuid);
+  
+  if(jack_port != NULL){
+    return(jack_port->device);
+  }else{
+    return(NULL);
+  }
 }
 
 void
 ags_jack_server_set_sequencer(AgsDistributedManager *distributed_manager,
-			      gchar *uri,
+			      gchar *port_uuid,
 			      GObject *sequencer)
 {
-  //TODO:JK: implement me
+  AgsJackServer *jack_server;
+  AgsJackPort *jack_port;
+
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+
+  jack_port = ags_jack_server_find_port(jack_server,
+					    port_uuid);
+  
+  if(jack_port != NULL){
+    jack_port->device = sequencer;
+  }
 }
 
 GObject*
 ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
-			      gchar *uri)
+			      gchar *port_uuid)
 {
-  //TODO:JK: implement me
+  AgsJackServer *jack_server;
+  AgsJackPort *jack_port;
+  
+  jack_server = AGS_JACK_SERVER(distributed_manager);
+
+  jack_port = ags_jack_server_find_port(jack_server,
+					port_uuid);
+  
+  if(jack_port != NULL){
+    return(jack_port->device);
+  }else{
+    return(NULL);
+  }
 }
 
 GObject*
@@ -404,6 +464,9 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   /* the default client */
   if(jack_server->default_client == NULL){
     jack_server->default_client = ags_jack_client_new(jack_server);
+    ags_jack_server_add_client(jack_server,
+			       jack_server->default_client);
+    
     ags_jack_client_open(jack_server->default_client,
 			 g_strdup("ags-default-client\0"));
 
@@ -412,10 +475,6 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
       
       return;
     }
-
-    jack_server->client = g_list_prepend(jack_server->client,
-					 default_client);
-    g_object_ref(default_client);
   }
 
   default_client = jack_server->default_client;
@@ -426,12 +485,13 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   g_message("%s\0", str);
   
   soundcard = ags_jack_port_new(default_client);
+  ags_jack_client_add_port(default_client,
+			   soundcard);
+  
   ags_jack_port_register(soundcard,
 			 str,
 			 TRUE, FALSE,
 			 TRUE);
-  soundcard->device = ags_jack_devout_new(jack_server->application_context);
-  AGS_JACK_DEVOUT(soundcard->device)->out_port = soundcard->port;
 
   jack_server->n_soundcards += 1;
   
@@ -453,8 +513,7 @@ ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
     return;
   }
   
-  jack_port_unregister(default_client->client,
-		       AGS_JACK_DEVOUT(soundcard)->out_port);
+  ags_jack_port_unregister(AGS_JACK_DEVOUT(soundcard)->jack_port);
 }
 
 GObject*
@@ -476,6 +535,9 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
   /* the default client */
   if(jack_server->default_client == NULL){
     jack_server->default_client = ags_jack_client_new(jack_server);
+    ags_jack_server_add_client(jack_server,
+			       jack_server->default_client);
+    
     ags_jack_client_open(jack_server->default_client,
 			 g_strdup("ags-default-client\0"));
 
@@ -484,26 +546,24 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
       
       return;
     }
-
-    jack_server->client = g_list_prepend(jack_server->client,
-					 default_client);
-    g_object_ref(default_client);
   }
 
   default_client = jack_server->default_client;
   
   /* register sequencer */
   str = g_strdup_printf("ags-sequencer-%04d\0",
-			jack_server->n_soundcards);
+			jack_server->n_sequencers);
   g_message("%s\0", str);
 
   sequencer = ags_jack_port_new(default_client);
+  ags_jack_client_add_port(default_client,
+			   sequencer);
+  
+
   ags_jack_port_register(sequencer,
 			 str,
 			 FALSE, TRUE,
 			 FALSE);
-  sequencer->device = ags_jack_midiin_new(jack_server->application_context);
-  AGS_JACK_MIDIIN(sequencer->device)->in_port = sequencer->port;
 
   jack_server->n_sequencers += 1;
   
@@ -525,46 +585,189 @@ ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
     return;
   }
   
-  jack_port_unregister(default_client->client,
-		       AGS_JACK_MIDIIN(sequencer)->in_port);
+  ags_jack_port_unregister(AGS_JACK_MIDIIN(sequencer)->jack_port);
 }
 
 GObject*
 ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 {
   AgsJackClient *default_client;
-  AgsJackPort *default_soundcard;
-
+  AgsJackPort *soundcard;
   gchar *str;
+    
+  /* the default client */
+  if(jack_server->default_client == NULL){
+    jack_server->default_client = ags_jack_client_new(jack_server);
+    ags_jack_server_add_client(jack_server,
+			       jack_server->default_client);
+    
+    ags_jack_client_open(jack_server->default_client,
+			 g_strdup("ags-default-client\0"));
+
+    if(AGS_JACK_CLIENT(jack_server->default_client)->client == NULL){
+      g_warning("ags_jack_server.c - can't open JACK client");
+      
+      return;
+    }
+  }
 
   default_client = jack_server->default_client;
 
-  if(default_client == NULL){
-    jack_server->default_client = 
-      default_client = ags_jack_client_new(jack_server);
-
-    ags_jack_client_open(jack_server->default_client,
-			 g_strdup("ags-default-client\0"));
-    
-    jack_server->client = g_list_prepend(jack_server->client,
-					 default_client);
-  }
-
-  str = g_strdup_printf("ags-soundcard-%04d\0",
-			jack_server->n_soundcards);
-
-  jack_server->default_soundcard = 
-    default_soundcard = ags_jack_port_new(default_client);
-  ags_jack_port_register(default_soundcard,
+  /* register soundcard */
+  str = g_strdup("ags-soundcard-default\0");
+  g_message("%s\0", str);
+  
+  soundcard = ags_jack_port_new(default_client);
+  ags_jack_client_add_port(default_client,
+			   soundcard);
+  
+  ags_jack_port_register(soundcard,
 			 str,
 			 TRUE, FALSE,
 			 TRUE);
-  default_soundcard->device = ags_jack_devout_new(jack_server->application_context);
-  AGS_JACK_DEVOUT(default_soundcard->device)->out_port = default_soundcard->port;
-
-  jack_server->n_soundcards += 1;
   
-  return(default_soundcard->device);
+  return(soundcard->device);
+}
+
+/**
+ * ags_jack_server_find_url:
+ * @jack_server: the #AgsJackServer
+ * @url: the url to find
+ *
+ * Find #AgsJackServer by url.
+ *
+ * Returns: the #GList containing a #AgsJackServer matching @url or %NULL
+ *
+ * Since: 0.7.3
+ */
+GList*
+ags_jack_server_find_url(GList *jack_server,
+			 gchar *url)
+{
+  while(jack_server != NULL){
+    if(!g_ascii_strcasecmp(AGS_JACK_SERVER(jack_server->data)->url,
+			    url)){
+      return(jack_server);
+    }
+
+    jack_server = jack_server->next;
+  }
+
+  return(NULL);
+}
+
+/**
+ * ags_jack_server_find_client:
+ * @jack_server: the #AgsJackServer
+ * @client_uuid: the uuid to find
+ *
+ * Find #AgsJackClient by uuid.
+ *
+ * Returns: the #AgsJackClient found or %NULL
+ *
+ * Since: 0.7.3
+ */
+GObject*
+ags_jack_server_find_client(AgsJackServer *jack_server,
+			    gchar *client_uuid)
+{
+  GList *list;
+
+  list = jack_server->client;
+  
+  while(list != NULL){
+    if(!g_ascii_strcasecmp(AGS_JACK_CLIENT(list->data)->uuid,
+			   client_uuid)){
+      return(list->data);
+    }
+
+    list = list->next;
+  }
+  
+  return(NULL);
+}
+
+/**
+ * ags_jack_server_find_port:
+ * @jack_server: the #AgsJackServer
+ * @port_uuid: the uuid to find
+ *
+ * Find #AgsJackPort by uuid.
+ *
+ * Returns: the #AgsJackPort found or %NULL
+ *
+ * Since: 0.7.3
+ */
+GObject*
+ags_jack_server_find_port(AgsJackServer *jack_server,
+			  gchar *port_uuid)
+{
+  GList *client, *port;
+
+  client = jack_server->client;
+  
+  while(client != NULL){
+    port = AGS_JACK_CLIENT(client->data);
+
+    while(port != NULL){
+      if(!g_ascii_strcasecmp(AGS_JACK_CLIENT(port->data)->uuid,
+			     port_uuid)){
+	return(port->data);
+      }
+
+      port = port->next;
+    }
+    
+    client = client->next;
+  }
+  
+  return(NULL);
+}
+
+/**
+ * ags_jack_server_add_client:
+ * @jack_server: the #AgsJackServer
+ * @jack_client: the #AgsJackClient to add
+ *
+ * Add @jack_client to @jack_server
+ *
+ * Since: 0.7.3
+ */
+void
+ags_jack_server_add_client(AgsJackServer *jack_server,
+			   GObject *jack_client)
+{
+  if(!AGS_IS_JACK_SERVER(jack_server) ||
+     !AGS_IS_JACK_CLIENT(jack_client)){
+    return;
+  }
+
+  g_object_ref(jack_client);
+  jack_server->client = g_list_prepend(jack_server->client,
+				       jack_client);
+}
+
+/**
+ * ags_jack_server_remove_client:
+ * @jack_server: the #AgsJackServer
+ * @jack_client: the #AgsJackClient to remove
+ *
+ * Remove @jack_client to @jack_server
+ *
+ * Since: 0.7.3
+ */
+void
+ags_jack_server_remove_client(AgsJackServer *jack_server,
+			      GObject *jack_client)
+{
+  if(!AGS_IS_JACK_SERVER(jack_server) ||
+     !AGS_IS_JACK_CLIENT(jack_client)){
+    return;
+  }
+
+  jack_server->client = g_list_remove(jack_server->client,
+				      jack_client);
+  g_object_unref(jack_client);
 }
 
 /**

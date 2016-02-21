@@ -51,6 +51,8 @@ struct _AgsRecallDssiRun
   
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
+
+  GObject *note;
 };
 
 struct _AgsRecallDssiRunClass

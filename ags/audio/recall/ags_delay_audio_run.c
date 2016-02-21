@@ -25,7 +25,6 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
@@ -698,7 +697,8 @@ ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, gui
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[NOTATION_ALLOC_OUTPUT], 0,
-		run_order, attack);
+		run_order,
+		delay, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
@@ -722,7 +722,8 @@ ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guin
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[NOTATION_ALLOC_INPUT], 0,
-		run_order, attack);
+		run_order,
+		delay, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 
@@ -746,7 +747,8 @@ ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint run_
   g_object_ref(G_OBJECT(delay_audio_run));
   g_signal_emit(G_OBJECT(delay_audio_run),
 		delay_audio_run_signals[NOTATION_COUNT], 0,
-		run_order, attack);
+		run_order,
+		delay, attack);
   g_object_unref(G_OBJECT(delay_audio_run));
 }
 

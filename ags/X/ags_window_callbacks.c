@@ -1,26 +1,23 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_window_callbacks.h>
-
-#include <ags/ags_main.h>
-
-#include <ags/object/ags_application_context.h>
 
 #include <ags/file/ags_file.h>
 
@@ -29,7 +26,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/file/task/ags_save_file.h>
+#include <ags/audio/task/ags_save_file.h>
 
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
@@ -63,8 +60,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   response = gtk_dialog_run(dialog);
 
   if(response == GTK_RESPONSE_YES){
-    AgsThread *main_loop;
-    AgsTaskThread *task_thread;
+    AgsFile *file;
     AgsSaveFile *save_file;
 
     AgsThread *audio_loop;
@@ -73,11 +69,6 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     AgsApplicationContext *application_context;
     
     char *filename;
-    
-    main_loop = application_context->main_loop;
-    
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
 
     application_context = window->application_context;
 

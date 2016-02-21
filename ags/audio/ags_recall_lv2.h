@@ -47,6 +47,7 @@ struct _AgsRecallLv2
   AgsTurtle *turtle;
   
   gchar *filename;
+  gchar *effect;
   gchar *uri;
   uint32_t index;
 
@@ -75,12 +76,13 @@ void ags_recall_lv2_float_to_short(float *buffer,
 				   signed short *destination,
 				   guint buffer_size, guint lines);
 
-GList* ags_recall_ladpsa_find(GList *recall,
-			      gchar *filename, gchar *uri);
+GList* ags_recall_lv2_find(GList *recall,
+			   gchar *filename, gchar *uri);
 
 AgsRecallLv2* ags_recall_lv2_new(AgsChannel *source,
 				 AgsTurtle *turtle,
 				 gchar *filename,
+				 gchar *effect,
 				 gchar *uri,
 				 uint32_t index);
 

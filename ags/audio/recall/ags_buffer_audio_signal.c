@@ -1,20 +1,19 @@
-/* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+/* AGS - Advanced GTK Sequencer
+ * Copyright (C) 2014 Joël Krähemann
  *
- * This file is part of GSequencer.
- *
- * GSequencer is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * GSequencer is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
@@ -178,6 +177,10 @@ ags_buffer_audio_signal_finalize(GObject *gobject)
 void
 ags_buffer_audio_signal_connect(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_buffer_audio_signal_parent_connectable_interface->connect(connectable);
 
@@ -196,6 +199,10 @@ ags_buffer_audio_signal_disconnect(AgsConnectable *connectable)
 void
 ags_buffer_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
+    return;
+  }
+
   /* call parent */
   ags_buffer_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 
@@ -228,6 +235,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   AgsConfig *config;
   
   GList *stream;
+  gdouble delay;
+  guint attack;
   guint buffer_size;
   guint samplerate;
   guint length;
@@ -393,11 +402,6 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 					     soundcard_buffer_size - source->attack);
     }
   }
-  
-  //TODO:JK: in future release buffer size may differ
-  ags_audio_signal_copy_buffer_to_buffer((signed short *) stream_destination->data, 1,
-					 (signed short *) stream_source->data, 1,
-					 source->buffer_size);
 }
 
 AgsRecall*

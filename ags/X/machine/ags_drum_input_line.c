@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/machine/ags_drum_input_line.h>
@@ -23,8 +24,6 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_portlet.h>
 
@@ -212,7 +211,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 		   1, 1);
   widget = gtk_bin_get_child(GTK_BIN(line_member));
 
-  adjustment = gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_set(widget,
 	       "adjustment\0", adjustment,
 	       NULL);
@@ -400,7 +399,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
   AgsAudio *audio;
   AgsChannel *source;
-  AgsChannel *current, *destination;
+  AgsChannel *current;
   AgsPattern *pattern;
   AgsRecallHandler *recall_handler;
 
@@ -423,6 +422,50 @@ ags_drum_input_line_map_recall(AgsLine *line,
   audio = AGS_AUDIO(line->channel->audio);
 
   source = line->channel;
+
+  /* ags-peak */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-peak\0",
+			    source->audio_channel, source->audio_channel + 1, 
+			    source->pad, source->pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+
+  /* play - connect run_post */
+  list = ags_recall_template_find_type(source->play,
+				       AGS_TYPE_PEAK_CHANNEL_RUN);
+
+  if(list != NULL){
+    play_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
+
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
+    recall_handler->data = (gpointer) line;
+
+    ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
+  }
+
+  /* recall - connect run_post */
+  list = ags_recall_template_find_type(source->recall,
+				       AGS_TYPE_PEAK_CHANNEL_RUN);
+
+  if(list != NULL){
+    recall_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
+
+    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
+
+    recall_handler->signal_name = "run-post\0";
+    recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
+    recall_handler->data = (gpointer) line;
+
+    ags_recall_add_handler(AGS_RECALL(recall_peak_channel_run), recall_handler);
+  }
 
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
@@ -471,52 +514,8 @@ ags_drum_input_line_map_recall(AgsLine *line,
 		       source->audio_channel);
     ags_port_safe_write(play_channel->audio_channel,
 			&audio_channel_value);
-
+    
     list = list->next;
-  }
-
-  /* ags-peak */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-peak\0",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  /* play - connect run_post */
-  list = ags_recall_template_find_type(source->play,
-				       AGS_TYPE_PEAK_CHANNEL_RUN);
-
-  if(list != NULL){
-    play_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
-
-    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-    recall_handler->signal_name = "run-post\0";
-    recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
-    recall_handler->data = (gpointer) line;
-
-    ags_recall_add_handler(AGS_RECALL(play_peak_channel_run), recall_handler);
-  }
-
-  /* recall - connect run_post */
-  list = ags_recall_template_find_type(source->recall,
-				       AGS_TYPE_PEAK_CHANNEL_RUN);
-
-  if(list != NULL){
-    recall_peak_channel_run = AGS_PEAK_CHANNEL_RUN(list->data);
-
-    recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
-
-    recall_handler->signal_name = "run-post\0";
-    recall_handler->callback = G_CALLBACK(ags_line_peak_run_post_callback);
-    recall_handler->data = (gpointer) line;
-
-    ags_recall_add_handler(AGS_RECALL(recall_peak_channel_run), recall_handler);
   }
 
   /* ags-volume */
@@ -530,50 +529,6 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			     AGS_RECALL_FACTORY_RECALL |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
-
-  /* ags-buffer */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-buffer\0",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_RECALL |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  current = source;
-  destination = ags_channel_nth(audio->output,
-				current->audio_channel);
-
-  while(destination != NULL){
-    /* recall */
-    list = current->recall;
-
-    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL)) != NULL){
-      buffer_channel = AGS_BUFFER_CHANNEL(list->data);
-
-      g_object_set(G_OBJECT(buffer_channel),
-		   "destination\0", destination,
-		   NULL);
-
-      list = list->next;
-    }
-
-    list = current->recall;
-    
-    while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL_RUN)) != NULL){
-      buffer_channel_run = AGS_BUFFER_CHANNEL_RUN(list->data);
-
-      g_object_set(G_OBJECT(buffer_channel_run),
-		   "destination\0", destination,
-		   NULL);
-
-      list = list->next;
-    }
-
-    destination = destination->next_pad;
-  }
 
   /* ags-stream */
   ags_recall_factory_create(audio,

@@ -65,20 +65,18 @@ static gpointer ags_count_beats_audio_parent_class = NULL;
 
 static const gchar *ags_count_beats_audio_plugin_name = "ags-count-beats\0";
 static const gchar *ags_count_beats_audio_specifier[] = {
-  "./sequencer_loop[0]\0",
-  "./notation_loop[0]\0",
+  "./loop[0]\0",
   "./sequencer_loop_start[0]\0",
   "./notation_loop_start[0]\0",
   "./sequencer_loop_end[0]\0",
   "./notation_loop_end[0]\0"
 };
 static const gchar *ags_count_beats_audio_control_port[] = {
-  "1/6\0",
-  "2/6\0",
-  "3/6\0",
-  "4/6\0",
-  "5/6\0",
-  "6/6\0",
+  "1/5\0",
+  "2/5\0",
+  "3/5\0",
+  "4/5\0",
+  "5/5\0",
 };
 
 GType
@@ -598,7 +596,7 @@ ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port)
   }
 }
 
-void
+  void
 ags_count_beats_audio_finalize(GObject *gobject)
 {
   AgsCountBeatsAudio *count_beats_audio;

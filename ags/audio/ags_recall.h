@@ -66,7 +66,6 @@ typedef enum{
   AGS_RECALL_PERSISTENT_SEQUENCER  = 1 << 18,
   AGS_RECALL_PERSISTENT_NOTATION   = 1 << 19,
   AGS_RECALL_SKIP_DEPENDENCIES     = 1 << 20,
-  AGS_RECALL_BULK_MODE             = 1 << 21,
 }AgsRecallFlags;
 
 typedef enum{
@@ -199,7 +198,7 @@ GList* ags_recall_get_children(AgsRecall *recall);
 GList* ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect);
 GList* ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect);
 
-GList* ags_recall_find_type(GList *recall, GType recall_type);
+GList* ags_recall_find_type(GList *recall, GType type);
 GList* ags_recall_find_template(GList *recall);
 GList* ags_recall_template_find_type(GList *recall, GType type);
 GList* ags_recall_template_find_all_type(GList *recall, ...);

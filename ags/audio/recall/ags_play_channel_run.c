@@ -29,7 +29,6 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_id.h>
@@ -378,48 +377,8 @@ ags_play_channel_run_run_init_inter(AgsRecall *recall)
 void
 ags_play_channel_run_run_pre(AgsRecall *recall)
 {
-  AgsChannel *source;
-  AgsRecycling *recycling;
-  AgsAudioSignal *audio_signal;
-  gdouble delay;
-  guint attack;
-  guint tic_counter_incr;
-
-  //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u\0",
-  //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
-  //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
-
-  /* get source */
-  source = AGS_RECALL_CHANNEL_RUN(recall)->source;
-
-  /* create new audio signals */
-  recycling = source->first_recycling;
-
-  attack = 0;
-  delay = 0.0;
-
-  if(recycling != NULL){
-    while(recycling != source->last_recycling->next){    
-      audio_signal = ags_audio_signal_new((GObject *) recall->soundcard,
-					  (GObject *) recycling,
-					  (GObject *) recall->recall_id);
-      ags_recycling_create_audio_signal_with_defaults(recycling,
-						      audio_signal,
-						      delay, attack);
-      audio_signal->stream_current = audio_signal->stream_beginning;
-      ags_audio_signal_connect(audio_signal);
-	
-      /*
-       * emit add_audio_signal on AgsRecycling
-       */
-      ags_recycling_add_audio_signal(recycling,
-				     audio_signal);
-
-      /*  */
-      recycling = recycling->next;
-    }
-  }
-
+  /* empty */
+  
   /* call parent */
   AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_pre(recall);
 }
@@ -468,7 +427,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   }
 
   if(!found){
-    ags_play_channel_run_stop(recall);
+    ags_play_channel_run_stop((AgsPlayChannelRun *) recall);
   }
 }
 
@@ -555,10 +514,6 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   GObject *soundcard;
   AgsChannel *channel;
   AgsCancelChannel *cancel_channel;
-  AgsThread *main_loop;
-  AgsThread *task_thread;
-  AgsApplicationContext *application_context;
-  AgsSoundcard *soundcard;
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;

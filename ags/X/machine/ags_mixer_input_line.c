@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/machine/ags_mixer_input_line.h>
@@ -142,7 +143,7 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 		   1, 1);
   widget = gtk_bin_get_child(GTK_BIN(line_member));
 
-  adjustment = gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_set(widget,
 	       "adjustment\0", adjustment,
 	       NULL);
@@ -239,7 +240,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
 
   audio = AGS_AUDIO(line->channel->audio);
 
-  mixer = AGS_MIXER(audio->machine_widget);
+  mixer = AGS_MIXER(audio->machine);
 
   source = line->channel;
 
@@ -287,6 +288,18 @@ ags_mixer_input_line_map_recall(AgsLine *line,
     ags_recall_add_handler(AGS_RECALL(recall_peak_channel_run), recall_handler);
   }
 
+  /* ags-mute */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-mute\0",
+			    source->audio_channel, source->audio_channel + 1,
+			    source->pad, source->pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+  
   /* ags-volume */
   ags_recall_factory_create(audio,
 			    NULL, NULL,

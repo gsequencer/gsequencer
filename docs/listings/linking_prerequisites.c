@@ -1,4 +1,3 @@
-AgsTaskThread *task_thread;
 AgsDevout *devout;
 AgsAudio *master_audio, *slave_audio;
 AgsLinkChannel *linkChannel;
@@ -6,7 +5,6 @@ GError *error;
 
 /* some pseudo code */
 devout = AGS_WINDOW(gtk_widget_get_toblevel(widget))->devout;
-task_thread = AGS_AUDIO_LOOP(AGS_MAIN(devout->ags_main)->main_loop)->task_thread;
 
 /* create AgsAudio objects */
 master_audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,

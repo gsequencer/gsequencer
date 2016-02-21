@@ -225,7 +225,7 @@ ags_synth_input_line_map_recall(AgsLine *line,
 
   audio = AGS_AUDIO(line->channel->audio);
 
-  synth = AGS_SYNTH(audio->machine_widget);
+  synth = AGS_SYNTH(audio->machine);
 
   source = line->channel;
 

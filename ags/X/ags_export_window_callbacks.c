@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_export_window_callbacks.h>
@@ -56,14 +57,14 @@ ags_export_window_file_chooser_button_callback(GtkWidget *file_chooser_button,
 		       filename);
   }
   
-  gtk_widget_destroy(file_chooser);
+  gtk_widget_destroy((GtkWidget *) file_chooser);
 }
 
 void
 ags_export_window_tact_callback(GtkWidget *spin_button,
 				AgsExportWindow *export_window)
 {
-  gdouble bpm;
+  AgsWindow *window;
 
   window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
 
@@ -87,8 +88,6 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   AgsApplicationContext *application_context;
   
   GList *machines_start;
-  guint delay, attack;
-  guint tic_counter_incr;
   gboolean success;
 
   pthread_mutex_t *application_mutex;
@@ -112,22 +111,9 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
 						       AGS_TYPE_TASK_THREAD);
   
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-  
-  soundcard = AGS_SOUNDCARD(window->soundcard);
-  
-  delay = AGS_SOUNDCARD_DEFAULT_DELAY;
-
-  if(soundcard != NULL){
-    attack = ags_soundcard_get_attack(soundcard);
-    delay = ags_soundcard_get_delay(soundcard);
-  }
-
   machines_start = NULL;
 
-  if(gtk_toggle_button_get_active(toggle_button)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
     AgsExportOutput *export_output;
     AgsExportThread *export_thread;
     GList *machines;
@@ -139,6 +125,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
     filename = gtk_entry_get_text(export_window->filename);
 
+    /* test filename */
     if(filename == NULL ||
        strlen(filename) == 0){
       return;
@@ -153,26 +140,29 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 		     (G_FILE_TEST_IS_DIR | G_FILE_TEST_IS_SYMLINK))){
 	return;
       }
-      dialog = gtk_message_dialog_new(export_window,
+
+      dialog = gtk_message_dialog_new((GtkWindow *) export_window,
 				      GTK_DIALOG_MODAL,
 				      GTK_MESSAGE_QUESTION,
 				      GTK_BUTTONS_OK_CANCEL,
 				      "Replace existing file?\0");
       response = gtk_dialog_run(dialog);
-      gtk_widget_destroy(dialog);
-      
+      gtk_widget_destroy((GtkWidget *) dialog);
+
       if(response == GTK_RESPONSE_REJECT){
 	return;
       }
-      
+
       g_remove(filename);
     }
-    
-    live_performance = gtk_toggle_button_get_active(export_window->live_export);
+
+    /* get some preferences */
+    live_performance = gtk_toggle_button_get_active((GtkToggleButton *) export_window->live_export);
 
     machines_start = 
       machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
+    /* start machines */
     success = FALSE;
 
     while(machines != NULL){
@@ -182,15 +172,16 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 	printf("found machine to play!\n\0");
 
-	ags_machine_set_run(machine,
-			    TRUE);
+	ags_machine_set_run_extended(machine,
+				     TRUE,
+				     !gtk_toggle_button_get_active(export_window->exclude_sequencer), TRUE);
 	success = TRUE;
       }
 
       machines = machines->next;
     }
 
-    /* create start task */
+    /* start export thread */
     if(success){
       guint tic;
       gdouble delay;
@@ -232,6 +223,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     machines_start = 
       machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
+    /* stop machines */
     while(machines != NULL){
       machine = AGS_MACHINE(machines->data);
 
@@ -248,12 +240,14 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       machines = machines->next;
     }
 
+    /* disable auto-seeking */
     if(success){
       ags_navigation_set_seeking_sensitive(window->navigation,
 					   TRUE);
     }
   }
 
+  /* free machine list */
   g_list_free(machines_start);
 }
 

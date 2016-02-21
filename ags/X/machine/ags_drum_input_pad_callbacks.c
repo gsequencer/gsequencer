@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/machine/ags_drum_input_pad_callbacks.h>
@@ -29,7 +30,6 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
-#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_pattern.h>
@@ -99,7 +99,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 		     FALSE, FALSE,
 		     0);
 
-  spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 16.0, 1.0);
+  spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_AUDIO(AGS_PAD(drum_input_pad)->channel->audio)->audio_channels - 1, 1.0);
   g_object_set_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_SPIN_BUTTON, spin_button);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) spin_button,
@@ -110,11 +110,11 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
     gtk_widget_set_sensitive((GtkWidget *) spin_button,
 			     FALSE);
 
-  play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					  "label\0", GTK_STOCK_MEDIA_PLAY,
-					  "use-stock\0", TRUE,
-					  "use-underline\0", TRUE,
-					  NULL);
+  //  play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+  //					  "label\0", GTK_STOCK_MEDIA_PLAY,
+  //					  "use-stock\0", TRUE,
+  //					  "use-underline\0", TRUE,
+  //					  NULL);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, FALSE, FALSE, 0);
   gtk_box_reorder_child((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, 0);
 
@@ -122,8 +122,8 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 
   g_signal_connect((GObject *) file_chooser, "response\0",
 		   G_CALLBACK(ags_drum_input_pad_open_response_callback), (gpointer) drum_input_pad);
-  g_signal_connect((GObject *) play, "toggled\0",
-		   G_CALLBACK(ags_drum_input_pad_open_play_callback), (gpointer) drum_input_pad);
+  //  g_signal_connect((GObject *) play, "toggled\0",
+  //		   G_CALLBACK(ags_drum_input_pad_open_play_callback), (gpointer) drum_input_pad);
 }
 
 void
@@ -185,19 +185,9 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
     
     guint pcm_channels;
     guint i;
-    guint pcm_channels;
 
     drum_input_pad->flags &= (~AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE);
 
-    /*  */
-    window = gtk_widget_get_toplevel(drum_input_pad);
-
-    application_context = window->application_context;
-    
-    main_loop = application_context->main_loop;
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
-    
     /* AgsAudioFile */
     if(!g_strcmp0(name0, name1)){
       audio_file = (AgsAudioFile *) g_object_get_data((GObject *) file_chooser, g_type_name(AGS_TYPE_AUDIO_FILE));
@@ -389,24 +379,6 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 				     AGS_TYPE_TASK_THREAD);
 
   if(response == GTK_RESPONSE_ACCEPT){
-    AgsWindow *window;
-    GtkSpinButton *spin_button;
-
-    AgsOpenSingleFile *open_single_file;
-
-    AgsThread *main_loop, *current;
-    AgsTaskThread *task_thread;
-
-    AgsApplicationContext *application_context;
-    
-    char *name0, *name1;
-
-    window = gtk_widget_get_toplevel(drum);
-    
-    main_loop = application_context->main_loop;
-    task_thread = ags_thread_find_type(main_loop,
-				       AGS_TYPE_TASK_THREAD);
-
     name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
     name1 = (char *) g_object_get_data((GObject *) file_chooser, AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME);
 

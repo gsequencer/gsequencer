@@ -242,7 +242,7 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
     {
-      AgsCountBeatsAudioRun *delay_audio_run;
+      AgsDelayAudioRun *delay_audio_run;
       gboolean is_template;
 
       delay_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);

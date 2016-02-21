@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_THREAD_H__
@@ -34,23 +35,22 @@
 #define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
 
-#define AGS_ACCOUNTING_TABLE(ptr) ((AgsAccountingTable *)(ptr))
-
-#define USEC_PER_SEC    (1000000) /* The number of usecs per sec. */
+#define USEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
-
-#define AGS_PRIORITY (5)
-#define AGS_RT_PRIORITY (49)
 
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
-#define AGS_THREAD_DEFAULT_JIFFIE (250)
-#define AGS_THREAD_MAX_PRECISION (250)
+
+#define AGS_RT_PRIORITY (45)
+
+#define AGS_THREAD_HERTZ_JIFFIE (1000.0)
+#define AGS_THREAD_DEFAULT_JIFFIE (250.0)
+#define AGS_THREAD_MAX_PRECISION (250.0)
+
 #define AGS_THREAD_DEFAULT_ATTACK (1.0)
 
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
-typedef struct _AgsAccountingTable AgsAccountingTable;;
 
 typedef enum{
   AGS_THREAD_RUNNING                 = 1,
@@ -99,14 +99,22 @@ struct _AgsThread
 
   volatile guint flags;
 
+  gboolean rt_setup;
+  
   sigset_t wait_mask;
+
+  guint delay;
+  guint tic_delay;
+  guint current_tic;
+
+  guint cycle_iteration;
+  struct timespec *computing_time;
   
   pthread_t *thread;
   pthread_attr_t thread_attr;
 
-  gboolean rt_setup;
   gdouble freq;
-  
+
   pthread_mutex_t *mutex;
   pthread_mutexattr_t mutexattr;
   pthread_cond_t *cond;
@@ -149,7 +157,6 @@ struct _AgsThread
 
   volatile AgsThread *children;
 
-  GMainLoop *main_loop;
   gpointer data;
 };
 
@@ -157,6 +164,8 @@ struct _AgsThreadClass
 {
   GObjectClass object;
 
+  guint (*clock)(AgsThread *thread);
+  
   void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
   void (*suspend)(AgsThread *thread);
@@ -165,20 +174,10 @@ struct _AgsThreadClass
   void (*stop)(AgsThread *thread);
 };
 
-struct _AgsAccountingTable
-{
-  AgsThread *thread;
-  gdouble sanity;
-};
-
 GType ags_thread_get_type();
 
 void ags_thread_resume_handler(int sig);
 void ags_thread_suspend_handler(int sig);
-
-AgsAccountingTable* ags_accounting_table_alloc(AgsThread *thread);
-void ags_accounting_table_set_sanity(GList *table,
-				     AgsThread *thread, gdouble sanity);
 
 void ags_thread_set_sync(AgsThread *thread, guint tic);
 void ags_thread_set_sync_all(AgsThread *thread, guint tic);
@@ -193,6 +192,8 @@ AgsThread* ags_thread_last(AgsThread *thread);
 
 void ags_thread_remove_child(AgsThread *thread, AgsThread *child);
 void ags_thread_add_child(AgsThread *thread, AgsThread *child);
+void ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
+				   gboolean no_start, gboolean no_Wait);
 
 gboolean ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent);
 gboolean ags_thread_sibling_is_locked(AgsThread *thread);
@@ -225,6 +226,8 @@ void ags_thread_signal_parent(AgsThread *thread, AgsThread *parent, gboolean bro
 void ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast);
 void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
 
+guint ags_thread_clock(AgsThread *thread);
+
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
 void ags_thread_suspend(AgsThread *thread);
@@ -236,8 +239,6 @@ void ags_thread_hangcheck(AgsThread *thread);
 
 AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
 AgsThread* ags_thread_self(void);
-
-void ags_thread_cleanup(AgsThread *thread);
 
 AgsThread* ags_thread_new(gpointer data);
 

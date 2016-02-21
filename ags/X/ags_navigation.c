@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_navigation.h>
@@ -31,7 +32,11 @@
 
 #include <ags/audio/task/ags_seek_soundcard.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
+
+#include <ags/X/editor/ags_note_edit.h>
+#include <ags/X/editor/ags_pattern_edit.h>
 
 void ags_navigation_class_init(AgsNavigationClass *navigation);
 void ags_navigation_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -51,8 +56,7 @@ void ags_navigation_destroy(GtkObject *object);
 void ags_navigation_show(GtkWidget *widget);
 
 void ags_navigation_real_change_position(AgsNavigation *navigation,
-					 gdouble tact,
-					 gdouble bpm);
+					 gdouble tact);
 
 /**
  * SECTION:ags_navigation
@@ -165,7 +169,7 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsNavigationClass, change_position),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+		 g_cclosure_marshal_VOID__DOUBLE,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_DOUBLE);
 }
@@ -185,7 +189,7 @@ ags_navigation_init(AgsNavigation *navigation)
   GtkHBox *hbox;
   GtkLabel *label;
 
-  navigation->flags = 0;
+  navigation->flags = AGS_NAVIGATION_BLOCK_TIC;
 
   navigation->soundcard = NULL;
 
@@ -213,7 +217,7 @@ ags_navigation_init(AgsNavigation *navigation)
 
   navigation->current_bpm = 120.0;
 
-  navigation->rewind = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+  navigation->rewind = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
 							"image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_REWIND, GTK_ICON_SIZE_LARGE_TOOLBAR),
 							NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->rewind, FALSE, FALSE, 0);
@@ -238,15 +242,13 @@ ags_navigation_init(AgsNavigation *navigation)
 						NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->next, FALSE, FALSE, 0);
 
-  navigation->forward = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+  navigation->forward = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
 							 "image\0", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_FORWARD, GTK_ICON_SIZE_LARGE_TOOLBAR),
 							 NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->forward, FALSE, FALSE, 0);
 
 
   navigation->loop = (GtkCheckButton *) gtk_check_button_new_with_label("loop\0");
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->loop),
-			       TRUE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop, FALSE, FALSE, 2);
 
   label = (GtkLabel *) gtk_label_new("position\0");
@@ -266,11 +268,12 @@ ags_navigation_init(AgsNavigation *navigation)
   g_object_set(navigation->duration_time,
 	       "label\0", g_strdup("0000:00.000\0"),
 	       NULL);
-  gtk_widget_queue_draw(navigation->duration_time);
+  gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
 
-  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
+  navigation->duration_tact = NULL;
+  //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
+  //  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
 
 
   /* expansion */
@@ -292,10 +295,17 @@ ags_navigation_init(AgsNavigation *navigation)
 			    4.0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->loop_right_tact, FALSE, FALSE, 2);
 
+  navigation->scroll = NULL;
   navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label("auto-scroll\0");
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->scroll),
-			       TRUE);
+			       FALSE);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->scroll, FALSE, FALSE, 2);
+
+  navigation->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label("exclude sequencers\0");
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(navigation->exclude_sequencer),
+			       TRUE);
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->exclude_sequencer, FALSE, FALSE, 2);
+
 }
 
 void
@@ -393,8 +403,8 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) navigation->position_tact, "value-changed\0",
 			 G_CALLBACK(ags_navigation_position_tact_callback), (gpointer) navigation);
 
-  g_signal_connect((GObject *) navigation->duration_tact, "value-changed\0",
-		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
+  //  g_signal_connect((GObject *) navigation->duration_tact, "value-changed\0",
+  //		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
   /* soundcard */
   g_signal_connect_after((GObject *) navigation->soundcard, "tic\0",
@@ -441,8 +451,7 @@ ags_navigation_show(GtkWidget *widget)
 
 void
 ags_navigation_real_change_position(AgsNavigation *navigation,
-				    gdouble tact,
-				    gdouble bpm)
+				    gdouble tact_counter)
 {
   AgsWindow *window;
   AgsEditor *editor;
@@ -537,15 +546,14 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
  */
 void
 ags_navigation_change_position(AgsNavigation *navigation,
-			       gdouble tact,
-			       gdouble bpm)
+			       gdouble tact)
 {
   g_return_if_fail(AGS_IS_NAVIGATION(navigation));
 
   g_object_ref(G_OBJECT(navigation));
   g_signal_emit(G_OBJECT(navigation),
 		navigation_signals[CHANGE_POSITION], 0,
-		tact, bpm);
+		tact);
   g_object_unref(G_OBJECT(navigation));
 }
 
@@ -561,7 +569,8 @@ ags_navigation_change_position(AgsNavigation *navigation,
  */
 gchar*
 ags_navigation_tact_to_time_string(gdouble tact,
-				   gdouble bpm)
+				   gdouble bpm,
+				   gdouble delay_factor)
 {
   gdouble delay_min, delay_sec, delay_msec;
   gchar *timestr;
@@ -604,8 +613,9 @@ ags_navigation_tact_to_time_string(gdouble tact,
  */
 void
 ags_navigation_update_time_string(double tact,
-				  gchar *time_string,
-				  gdouble bpm)
+				  gdouble bpm,
+				  gdouble delay_factor,
+				  gchar *time_string)
 {
   gdouble delay_min, delay_sec, delay_msec;
   gchar *timestr;
@@ -746,17 +756,17 @@ void
 ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 				     gboolean enabled)
 {
-  gtk_widget_set_sensitive(navigation->rewind,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->rewind,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->previous,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->previous,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->play,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->play,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->stop,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->stop,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->next,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->next,
 			   enabled);
-  gtk_widget_set_sensitive(navigation->forward,
+  gtk_widget_set_sensitive((GtkWidget *) navigation->forward,
 			   enabled);
 }
 

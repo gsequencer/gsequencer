@@ -44,6 +44,8 @@ struct _AgsRecycling
 
   guint flags;
 
+  gboolean parent_locked;
+  
   GObject *channel;
   GObject *soundcard;
 
@@ -65,7 +67,7 @@ struct _AgsRecyclingClass
 			      AgsAudioSignal *audio_signal);
 };
 
-GType ags_recycling_get_type();
+GType ags_recycling_get_type(void);
 
 void ags_recycling_set_soundcard(AgsRecycling *recycling, GObject *soundcard);
 

@@ -492,7 +492,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	g_message("play %x\0", AGS_RECALL(copy_pattern_channel_run)->recall_id);
 #endif
 
-	audio_signal->recall_id = child_recall_id;
+	audio_signal->recall_id = (GObject *) child_recall_id;
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
 

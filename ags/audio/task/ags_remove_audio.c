@@ -20,6 +20,7 @@
 #include <ags/audio/task/ags_remove_audio.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_soundcard.h>
 
 void ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio);
 void ags_remove_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -170,11 +171,13 @@ ags_remove_audio_launch(AgsTask *task)
   }
   
   /* remove audio */
-  list = ags_soundcard_get_audio(remove_audio->soundcard);
+  list = ags_soundcard_get_audio(AGS_SOUNDCARD(remove_audio->soundcard));
   list = g_list_remove(list,
-		       G_OBJECT(remove_audio->audio));
-  ags_soundcard_set_audio(remove_audio->soundcard,
+		       remove_audio->audio);
+  ags_soundcard_set_audio(AGS_SOUNDCARD(remove_audio->soundcard),
 			  list);
+
+  g_object_unref(remove_audio->audio);
 }
 
 /**

@@ -49,6 +49,154 @@ AgsComplex *ptr
 AgsComplex *ptr, complex z
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_FUNCTION</NAME>
+#define AGS_TYPE_FUNCTION                (ags_function_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_FUNCTION</NAME>
+#define AGS_FUNCTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FUNCTION, AgsFunction))
+</MACRO>
+<MACRO>
+<NAME>AGS_FUNCTION_CLASS</NAME>
+#define AGS_FUNCTION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FUNCTION, AgsFunctionClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_FUNCTION</NAME>
+#define AGS_IS_FUNCTION(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FUNCTION))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_FUNCTION_CLASS</NAME>
+#define AGS_IS_FUNCTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FUNCTION))
+</MACRO>
+<MACRO>
+<NAME>AGS_FUNCTION_GET_CLASS</NAME>
+#define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_SYMBOLIC_EULER</NAME>
+#define AGS_SYMBOLIC_EULER "ℯ\0"
+</MACRO>
+<MACRO>
+<NAME>AGS_SYMBOLIC_PI</NAME>
+#define AGS_SYMBOLIC_PI "𝜋\0"
+</MACRO>
+<MACRO>
+<NAME>AGS_SYMBOLIC_INFINIT</NAME>
+#define AGS_SYMBOLIC_INFINIT "∞\0"
+</MACRO>
+<MACRO>
+<NAME>AGS_SYMBOLIC_COMPLEX_UNIT</NAME>
+#define AGS_SYMBOLIC_COMPLEX_UNIT "𝑖\0"
+</MACRO>
+<ENUM>
+<NAME>AgsFunctionFlags</NAME>
+typedef enum{
+  AGS_FUNCTION_LINEAR               = 1,
+  AGS_FUNCTION_EXPONENTIAL          = 1 <<  1,
+  AGS_FUNCTION_LOGARITHMIC          = 1 <<  2,
+  AGS_FUNCTION_IS_UNIQUE            = 1 <<  3,
+  AGS_FUNCTION_SOLVE_PIVOT_TABLE    = 1 <<  4,
+  AGS_FUNCTION_SOLVE_MAXIMUM_COLON  = 1 <<  5,
+  AGS_FUNCTION_SOLVE_GAUSS          = 1 <<  6,
+}AgsFunctionFlags;
+</ENUM>
+<STRUCT>
+<NAME>AgsFunction</NAME>
+struct _AgsFunction
+{
+  GObject gobject;
+
+  guint flags;
+  
+  gboolean is_pushing;
+  gchar **equation;
+  guint equation_count;
+  
+  gchar *source_function;
+
+  gchar *normalized_function;
+
+  gchar **symbol;
+  guint symbol_count;
+
+  guint n_rows;
+  guint n_cols;
+  AgsComplex*** pivot_table;
+  
+  guint solver_level;
+  AgsComplex **solver_vector;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsFunctionClass</NAME>
+struct _AgsFunctionClass
+{
+  GObjectClass gobject;
+
+  void (*literal_solve)(AgsFunction *function);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_function_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_find_literals</NAME>
+<RETURNS>gchar ** </RETURNS>
+AgsFunction *function, guint *n_symbols
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_literal_solve</NAME>
+<RETURNS>void  </RETURNS>
+AgsFunction *function
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_push_equation</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsFunction *function, gchar *equation
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_pop_equation</NAME>
+<RETURNS>void  </RETURNS>
+AgsFunction *function, GError **error
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_get_expanded</NAME>
+<RETURNS>gchar * </RETURNS>
+AgsFunction *function, gchar **symbols, guint n_symbols
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_funciton_get_normalized</NAME>
+<RETURNS>gchar * </RETURNS>
+AgsFunction *function
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_compute_term</NAME>
+<RETURNS>AgsComplex * </RETURNS>
+gchar *term, gchar *substitute_symbol, AgsComplex *subsitute_value
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_symbolic_translate_value</NAME>
+<RETURNS>AgsComplex ** </RETURNS>
+AgsFunction *function, gchar *symbol, AgsComplex *value
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_substitute_values</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsFunction *function, gchar *symbol, ...
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_translate_value</NAME>
+<RETURNS>AgsComplex * </RETURNS>
+AgsFunction *function, AgsComplex *value
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_function_new</NAME>
+<RETURNS>AgsFunction * </RETURNS>
+
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_TURTLE</NAME>
 #define AGS_TYPE_TURTLE                (ags_turtle_get_type())
 </MACRO>
@@ -77,20 +225,80 @@ AgsComplex *ptr, complex z
 #define AGS_TURTLE_DEFAULT_ENCODING "UTF-8\0"
 </MACRO>
 <MACRO>
-<NAME>AGS_TURTLE_STRING_LITERAL_QUOTE</NAME>
-#define AGS_TURTLE_STRING_LITERAL_QUOTE "\"\0"
+<NAME>AGS_TURTLE_DEFAULT_VERSION</NAME>
+#define AGS_TURTLE_DEFAULT_VERSION "0.7.3\0"
 </MACRO>
 <MACRO>
-<NAME>AGS_TURTLE_STRING_LITERAL_SINGLE_QUOTE</NAME>
-#define AGS_TURTLE_STRING_LITERAL_SINGLE_QUOTE "'\0"
+<NAME>AGS_TURTLE_UTF8_RANGE_0</NAME>
+#define AGS_TURTLE_UTF8_RANGE_0 "([A-Za-z])"
 </MACRO>
 <MACRO>
-<NAME>AGS_TURTLE_STRING_LITERAL_LONG_QUOTE</NAME>
-#define AGS_TURTLE_STRING_LITERAL_LONG_QUOTE "\"\"\"\0"
+<NAME>AGS_TURTLE_UTF8_RANGE_1</NAME>
+#define AGS_TURTLE_UTF8_RANGE_1 "(\xC3[\x80-\x96])"
 </MACRO>
 <MACRO>
-<NAME>AGS_TURTLE_STRING_LITERAL_LONG_SINGLE_QUOTE</NAME>
-#define AGS_TURTLE_STRING_LITERAL_LONG_SINGLE_QUOTE "'''\0"
+<NAME>AGS_TURTLE_UTF8_RANGE_2</NAME>
+#define AGS_TURTLE_UTF8_RANGE_2 "(0xC3[\x98-\xB6])"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_3</NAME>
+#define AGS_TURTLE_UTF8_RANGE_3 "((\xC3[\xB8-\xBF])|([\xC3-\xCA][\x80-\xBF])|(\xCB[\x80-\xBF]))"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_4</NAME>
+#define AGS_TURTLE_UTF8_RANGE_4 "(\xCD[\xB0-\xBD])"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_5</NAME>
+#define AGS_TURTLE_UTF8_RANGE_5 "((\xCD[\xBF-\xDF])|([\xCE-\xDF][\x80-\xBF])|([\xE0-\xE1][\x80\xBF][\x80-\xBF]))"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_6</NAME>
+#define AGS_TURTLE_UTF8_RANGE_6 "(\xE2\x80[\x8C-\x8D])"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_7</NAME>
+#define AGS_TURTLE_UTF8_RANGE_7 "((\xE2\x81[\xB0-\xBF])|(\xE2[\x81-\x85][\x80-\xBF])|(\xE2\x86[\x80-\x8F]))"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_8</NAME>
+#define AGS_TURTLE_UTF8_RANGE_8 "((\xE2[\xB0-\xBE][\x80-\xBF])(\xE2\xBF[\x80-\xAF]))"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_9</NAME>
+#define AGS_TURTLE_UTF8_RANGE_9 "((\xE3[\x80-\xBF][\x81-\xBF])|([\xE4-\xEC][\x80-\x9F][\x80-\xBF]))"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_10</NAME>
+#define AGS_TURTLE_UTF8_RANGE_10 "((\xEF[\xA4-\xB6][\x80-\xBF])|(\xEF\xB7[\x80-\x8F]))"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_11</NAME>
+#define AGS_TURTLE_UTF8_RANGE_11 "((\xEF\xB7[\xB0-\xBF])|(\xEF[\xB8-\xBE][\x80-\xBF])|(\xEF\xBF[\x80-\xBD]))"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_12</NAME>
+#define AGS_TURTLE_UTF8_RANGE_12 "(([\xF0-\xF3][\x90-\xAF][\x80-\xBF][\x80-\xBF]))"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURTLE_UTF8_RANGE_ALL</NAME>
+#define AGS_TURTLE_UTF8_RANGE_ALL "(" AGS_TURTLE_UTF8_RANGE_0 "|" \
+  AGS_TURTLE_UTF8_RANGE_1 "|" \
+  AGS_TURTLE_UTF8_RANGE_2 "|" \
+  AGS_TURTLE_UTF8_RANGE_3 "|" \
+  AGS_TURTLE_UTF8_RANGE_4 "|" \
+  AGS_TURTLE_UTF8_RANGE_5 "|" \
+  AGS_TURTLE_UTF8_RANGE_6 "|" \
+  AGS_TURTLE_UTF8_RANGE_7 "|" \
+  AGS_TURTLE_UTF8_RANGE_8 "|" \
+  AGS_TURTLE_UTF8_RANGE_9 "|" \
+  AGS_TURTLE_UTF8_RANGE_10 "|" \
+  AGS_TURTLE_UTF8_RANGE_11 "|" \
+  AGS_TURTLE_UTF8_RANGE_12 ")"
+</MACRO>
+<MACRO>
+<NAME>AGS_TURLTE_UTF8_RANGE_ALL_PATTERN</NAME>
+#define AGS_TURLTE_UTF8_RANGE_ALL_PATTERN "^" AGS_TURTLE_UTF8_RANGE_ALL
 </MACRO>
 <ENUM>
 <NAME>AgsTurtleFlags</NAME>
@@ -110,8 +318,6 @@ struct _AgsTurtle
   guint flags;
   
   gchar *filename;
-
-  GList *parser_context;
   
   xmlDoc *doc;
 };
@@ -123,31 +329,150 @@ struct _AgsTurtleClass
   GObjectClass object;
 };
 </STRUCT>
-<STRUCT>
-<NAME>AgsTurtleParserContext</NAME>
-struct _AgsTurtleParserContext
-{
-  gchar *subject_delimiter;
-  gchar *verb_delimiter;
-  gchar *value_delimiter;
-  
-  xmlNode *statement_node;
-};
-</STRUCT>
 <FUNCTION>
 <NAME>ags_turtle_get_type</NAME>
 <RETURNS>GType  </RETURNS>
 void
 </FUNCTION>
 <FUNCTION>
-<NAME>ags_turtle_parser_context_alloc</NAME>
-<RETURNS>AgsTurtleParserContext * </RETURNS>
-
+<NAME>ags_turtle_read_iriref</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
 </FUNCTION>
 <FUNCTION>
-<NAME>ags_turtle_parser_context_free</NAME>
-<RETURNS>void  </RETURNS>
-AgsTurtleParserContext *parser_context
+<NAME>ags_turtle_read_pname_ns</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_pname_ln</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_blank_node_label</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_langtag</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_boolean</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_integer</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_decimal</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_double</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_exponent</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_string</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_string_literal_quote</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_string_literal_single_quote</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_string_literal_long_quote</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_string_literal_long_single_quote</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_uchar</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_echar</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_ws</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_anon</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_pn_chars_base</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_pn_chars_u</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_pn_chars</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_pn_prefix</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_pn_local</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_plx</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_percent</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_hex</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_turtle_read_pn_local_esc</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *offset, gchar *end_ptr
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_turtle_find_xpath</NAME>
@@ -156,13 +481,172 @@ AgsTurtle *turtle, gchar *xpath
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_turtle_load</NAME>
-<RETURNS>void  </RETURNS>
+<RETURNS>xmlDoc * </RETURNS>
 AgsTurtle *turtle, GError **error
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_turtle_new</NAME>
 <RETURNS>AgsTurtle * </RETURNS>
 gchar *filename
+</FUNCTION>
+<STRUCT>
+<NAME>AgsTurtleParserContext</NAME>
+</STRUCT>
+<MACRO>
+<NAME>AGS_TYPE_LOG</NAME>
+#define AGS_TYPE_LOG                (ags_log_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_LOG</NAME>
+#define AGS_LOG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOG, AgsLog))
+</MACRO>
+<MACRO>
+<NAME>AGS_LOG_CLASS</NAME>
+#define AGS_LOG_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_LOG, AgsLog))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_LOG</NAME>
+#define AGS_IS_LOG(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_LOG))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_LOG_CLASS</NAME>
+#define AGS_IS_LOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LOG))
+</MACRO>
+<MACRO>
+<NAME>AGS_LOG_GET_CLASS</NAME>
+#define AGS_LOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_LOG, AgsLogClass))
+</MACRO>
+<MACRO>
+<NAME>ags_default_log</NAME>
+#define ags_default_log ags_default_log
+</MACRO>
+<ENUM>
+<NAME>AgsLogFlags</NAME>
+typedef enum{
+  AGS_LOG_STARTING                    = 1,
+  AGS_LOG_RUNNING                     = 1 <<  1,
+  AGS_LOG_TIMER_SLEEP                 = 1 <<  2,
+  AGS_LOG_OUTPUT_SUSPEND              = 1 <<  3,
+  AGS_LOG_OUTPUT_WAITS_FOR_QUEUE      = 1 <<  4,
+  AGS_LOG_QUEUE_SUSPEND               = 1 <<  5,
+  AGS_LOG_SUSPEND                     = 1 <<  6,
+  AGS_LOG_COPY_FROM_QUEUE_TO_OUTPUT   = 1 <<  7,
+  AGS_LOG_OMMIT_DEBUG                 = 1 <<  8,
+}AgsLogFlags;
+</ENUM>
+<STRUCT>
+<NAME>AgsLog</NAME>
+struct _AgsLog
+{
+  GObject object;
+
+  guint flags;
+
+  FILE *file;
+  pthread_mutex_t start_mutex;
+  pthread_cond_t start_wait_cond;
+
+  struct timespec *log_interval;
+  struct timespec *free_float;
+  pthread_t timer_thread;
+  pthread_attr_t timer_thread_attr;
+  pthread_mutex_t timer_mutex;
+  pthread_mutexattr_t timer_mutex_attr;
+  gboolean timer_started;
+  gboolean timer_active;
+  gboolean timer_awaken;
+  pthread_cond_t timer_wait_cond;
+
+  pthread_t broker_thread;
+  pthread_attr_t broker_thread_attr;
+  pthread_mutex_t broker_mutex;
+  pthread_mutexattr_t broker_mutex_attr;
+  gboolean broker_started;
+  gboolean broker_active;
+  gboolean broker_awaken;
+  gboolean signaled_timer;
+  gboolean signaled_log;
+  gboolean signaled_queue;
+  gboolean signaled_output;
+  pthread_cond_t broker_wait_cond;
+
+  GList *output_formated_message;
+  pthread_t output_thread;
+  pthread_attr_t output_thread_attr;
+  pthread_mutex_t output_mutex;
+  pthread_mutexattr_t output_mutex_attr;
+  gboolean output_started;
+  gboolean output_active;
+  gboolean output_awaken;
+  pthread_cond_t output_wait_cond;
+
+  GList *queue_formated_message;
+  GList *queue_message;
+  pthread_t queue_thread;
+  pthread_attr_t queue_thread_attr;
+  pthread_mutex_t queue_mutex;
+  pthread_mutexattr_t queue_mutex_attr;
+  gboolean queue_started;
+  gboolean queue_active;
+  gboolean queue_awaken;
+  pthread_cond_t queue_wait_cond;
+
+  GList *log;
+  guint active_logs;
+  guint suspended_logs;
+  pthread_cond_t log_wait_cond;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsLogClass</NAME>
+struct _AgsLogClass
+{
+  GObjectClass object;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsLogMessage</NAME>
+struct _AgsLogMessage
+{
+  gboolean debug;
+
+  struct timespec *time;
+  char *format;
+  va_list args;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsLogFormatedMessage</NAME>
+struct _AgsLogFormatedMessage
+{
+  int length;
+  char *message;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_log_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_log_start_queue</NAME>
+<RETURNS>void  </RETURNS>
+AgsLog *log
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_log_stop_queue</NAME>
+<RETURNS>void  </RETURNS>
+AgsLog *log
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_log_debug</NAME>
+<RETURNS>void  </RETURNS>
+AgsLog *log, char *format, ...
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_log_message</NAME>
+<RETURNS>void  </RETURNS>
+AgsLog *log, char *format, ...
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_parameter_grow</NAME>
@@ -529,6 +1013,14 @@ struct _AgsPropertyListingEditorClass
 <NAME>AGS_MENU_BAR_GET_CLASS</NAME>
 #define AGS_MENU_BAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MENU_BAR, AgsMenuBarClass))
 </MACRO>
+<MACRO>
+<NAME>AGS_MENU_ITEM_FILENAME_KEY</NAME>
+#define AGS_MENU_ITEM_FILENAME_KEY "ags-menu-bar-filename-key\0"
+</MACRO>
+<MACRO>
+<NAME>AGS_MENU_ITEM_EFFECT_KEY</NAME>
+#define AGS_MENU_ITEM_EFFECT_KEY "ags-menu-bar-effect-key\0"
+</MACRO>
 <STRUCT>
 <NAME>AgsMenuBar</NAME>
 struct _AgsMenuBar
@@ -554,11 +1046,6 @@ struct _AgsMenuBarClass
 void
 </FUNCTION>
 <FUNCTION>
-<NAME>ags_menu_bar_new</NAME>
-<RETURNS>AgsMenuBar * </RETURNS>
-
-</FUNCTION>
-<FUNCTION>
 <NAME>ags_zoom_menu_new</NAME>
 <RETURNS>GtkMenu * </RETURNS>
 
@@ -576,6 +1063,26 @@ void
 <FUNCTION>
 <NAME>ags_tact_combo_box_new</NAME>
 <RETURNS>GtkComboBox * </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_ladspa_bridge_menu_new</NAME>
+<RETURNS>GtkMenu * </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_bridge_menu_new</NAME>
+<RETURNS>GtkMenu * </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_lv2_bridge_menu_new</NAME>
+<RETURNS>GtkMenu * </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_menu_bar_new</NAME>
+<RETURNS>AgsMenuBar * </RETURNS>
 
 </FUNCTION>
 <MACRO>
@@ -1753,6 +2260,21 @@ GtkWidget *menu_item, AgsMenuBar *menu_bar
 GtkWidget *menu_item, AgsMenuBar *menu_bar
 </FUNCTION>
 <FUNCTION>
+<NAME>ags_menu_bar_add_ladspa_bridge_callback</NAME>
+<RETURNS>void  </RETURNS>
+GtkWidget *menu_item, AgsMenuBar *menu_bar
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_menu_bar_add_dssi_bridge_callback</NAME>
+<RETURNS>void  </RETURNS>
+GtkWidget *menu_item, AgsMenuBar *menu_bar
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_menu_bar_add_lv2_bridge_callback</NAME>
+<RETURNS>void  </RETURNS>
+GtkWidget *menu_item, AgsMenuBar *menu_bar
+</FUNCTION>
+<FUNCTION>
 <NAME>ags_menu_bar_automation_callback</NAME>
 <RETURNS>void  </RETURNS>
 GtkWidget *menu_item, AgsMenuBar *menu_bar
@@ -1896,7 +2418,9 @@ typedef enum{
 <ENUM>
 <NAME>AgsMachineMappingFlags</NAME>
 typedef enum{
-  AGS_MACHINE_MONO = 1,
+  AGS_MACHINE_MONO                  = 1,
+  AGS_MACHINE_DISABLE_LINE_MEMBER   = 1 <<  1,
+  AGS_MACHINE_DISABLE_BULK_MEMBER   = 1 <<  2,
 }AgsMachineMappingFlags;
 </ENUM>
 <ENUM>
@@ -1910,6 +2434,8 @@ typedef enum{
 <NAME>AgsMachineConnectionOptions</NAME>
 typedef enum{
   AGS_MACHINE_POPUP_MIDI_DIALOG           = 1,
+  AGS_MACHINE_SHOW_MIDI_INPUT             = 1 <<  1,
+  AGS_MACHINE_SHOW_MIDI_OUTPUT            = 1 <<  2,
 }AgsMachineConnectionOptions;
 </ENUM>
 <STRUCT>
@@ -1917,8 +2443,6 @@ typedef enum{
 struct _AgsMachine
 {
   GtkHandleBox handle_box;
-
-  GObject *application_context;
 
   char *name;
 
@@ -1928,6 +2452,7 @@ struct _AgsMachine
   guint flags;
   guint file_input_flags;
   guint mapping_flags;
+  guint connection_flags;
   
   guint bank_0;
   guint bank_1;
@@ -1957,6 +2482,8 @@ struct _AgsMachine
   GtkDialog *properties;
   GtkDialog *rename;
   GtkDialog *connection;
+
+  GObject *application_context;
 };
 </STRUCT>
 <STRUCT>
@@ -2373,7 +2900,7 @@ gchar *filename, gchar *effect
 <FUNCTION>
 <NAME>ags_effect_bulk_add_effect</NAME>
 <RETURNS>GList * </RETURNS>
-AgsEffectBulk *effect_bulk, gchar *filename, gchar *effect
+AgsEffectBulk *effect_bulk, GList *control_type_name, gchar *filename, gchar *effect
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_effect_bulk_remove_effect</NAME>
@@ -2460,15 +2987,27 @@ struct _AgsMidiDialog
   GtkCheckButton *record;
   
   GtkSpinButton *audio_start;
-  GtkSpinButton *midi_start;
-
-  GtkComboBox *backend;
+  GtkSpinButton *audio_end;
   
-  GtkComboBoxText *midi_device;
+  GtkSpinButton *midi_start;
+  GtkSpinButton *midi_end;
 
-  GtkEntry *connection_name;
-  GtkButton *add;
-  GtkButton *remove;
+  GtkComboBoxText *backend;  
+  GtkComboBoxText *midi_device;
+  
+  GtkComboBoxText *jack_server;
+  GtkEntry *server_name;
+  GtkButton *add_server;
+  GtkButton *remove_server;
+  
+  GtkComboBoxText *jack_client;
+  GtkEntry *client_name;
+  GtkButton *add_client;
+  GtkButton *remove_client;
+  
+  GtkEntry *port_name;
+  GtkButton *add_port;
+  GtkButton *remove_port;
   
   GtkButton *apply;
   GtkButton *ok;
@@ -2606,6 +3145,21 @@ GtkSpinButton *spin_button, AgsAudioPreferences *audio_preferences
 <RETURNS>void  </RETURNS>
 GtkSpinButton *spin_button, AgsAudioPreferences *audio_preferences
 </FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_preferences_enable_jack_callback</NAME>
+<RETURNS>void  </RETURNS>
+GtkCheckButton *check_button, AgsAudioPreferences *audio_preferences
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_preferences_start_jack_callback</NAME>
+<RETURNS>void  </RETURNS>
+GtkButton *button, AgsAudioPreferences *audio_preferences
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_preferences_stop_jack_callback</NAME>
+<RETURNS>void  </RETURNS>
+GtkButton *button, AgsAudioPreferences *audio_preferences
+</FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_PREFERENCES</NAME>
 #define AGS_TYPE_PREFERENCES                (ags_preferences_get_type())
@@ -2673,6 +3227,16 @@ void
 <RETURNS>AgsPreferences * </RETURNS>
 
 </FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_browser_plugin_filename_callback</NAME>
+<RETURNS>void  </RETURNS>
+GtkComboBoxText *combo_box, AgsDssiBrowser *dssi_browser
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_browser_plugin_effect_callback</NAME>
+<RETURNS>void  </RETURNS>
+GtkComboBoxText *combo_box, AgsDssiBrowser *dssi_browser
+</FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_PLUGIN_BROWSER</NAME>
 #define AGS_TYPE_PLUGIN_BROWSER                (ags_plugin_browser_get_type())
@@ -2710,7 +3274,9 @@ struct _AgsPluginBrowser
   GtkWidget *active_browser;
   
   GtkWidget *lv2_browser;
+  GtkWidget *dssi_browser;
   GtkWidget *ladspa_browser;
+  GtkWidget *vst_browser;
   
   GtkButton *apply;
   GtkButton *ok;
@@ -2849,7 +3415,7 @@ AgsLine *line
 <FUNCTION>
 <NAME>ags_line_add_effect</NAME>
 <RETURNS>GList * </RETURNS>
-AgsLine *line, gchar *filename, gchar *effect
+AgsLine *line, GList *control_type_name, gchar *filename, gchar *effect
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_line_remove_effect</NAME>
@@ -2887,12 +3453,32 @@ GtkToggleButton *toggle, AgsPropertyEditor *property_editor
 GtkWidget *widget, AgsMidiDialog *midi_dialog
 </FUNCTION>
 <FUNCTION>
-<NAME>ags_midi_dialog_add_callback</NAME>
+<NAME>ags_midi_dialog_add_server_callback</NAME>
 <RETURNS>int  </RETURNS>
 GtkWidget *widget, AgsMidiDialog *midi_dialog
 </FUNCTION>
 <FUNCTION>
-<NAME>ags_midi_dialog_remove_callback</NAME>
+<NAME>ags_midi_dialog_remove_server_callback</NAME>
+<RETURNS>int  </RETURNS>
+GtkWidget *widget, AgsMidiDialog *midi_dialog
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_dialog_add_client_callback</NAME>
+<RETURNS>int  </RETURNS>
+GtkWidget *widget, AgsMidiDialog *midi_dialog
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_dialog_remove_client_callback</NAME>
+<RETURNS>int  </RETURNS>
+GtkWidget *widget, AgsMidiDialog *midi_dialog
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_dialog_add_port_callback</NAME>
+<RETURNS>int  </RETURNS>
+GtkWidget *widget, AgsMidiDialog *midi_dialog
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_dialog_remove_port_callback</NAME>
 <RETURNS>int  </RETURNS>
 GtkWidget *widget, AgsMidiDialog *midi_dialog
 </FUNCTION>
@@ -3768,6 +4354,81 @@ AgsAutomationEditor *automation_editor, AgsMachine *machine
 
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_DSSI_BROWSER</NAME>
+#define AGS_TYPE_DSSI_BROWSER                (ags_dssi_browser_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_DSSI_BROWSER</NAME>
+#define AGS_DSSI_BROWSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_DSSI_BROWSER, AgsDssiBrowser))
+</MACRO>
+<MACRO>
+<NAME>AGS_DSSI_BROWSER_CLASS</NAME>
+#define AGS_DSSI_BROWSER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_DSSI_BROWSER, AgsDssiBrowserClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_DSSI_BROWSER</NAME>
+#define AGS_IS_DSSI_BROWSER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_DSSI_BROWSER))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_DSSI_BROWSER_CLASS</NAME>
+#define AGS_IS_DSSI_BROWSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DSSI_BROWSER))
+</MACRO>
+<MACRO>
+<NAME>AGS_DSSI_BROWSER_GET_CLASS</NAME>
+#define AGS_DSSI_BROWSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_DSSI_BROWSER, AgsDssiBrowserClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsDssiBrowser</NAME>
+struct _AgsDssiBrowser
+{
+  GtkVBox vbox;
+
+  gchar *path;
+
+  GtkHBox *plugin;
+  GtkVBox *description;
+
+  GtkWidget *preview;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsDssiBrowserClass</NAME>
+struct _AgsDssiBrowserClass
+{
+  GtkVBoxClass vbox;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_dssi_browser_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_browser_get_plugin_filename</NAME>
+<RETURNS>gchar * </RETURNS>
+AgsDssiBrowser *dssi_browser
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_browser_get_plugin_effect</NAME>
+<RETURNS>gchar * </RETURNS>
+AgsDssiBrowser *dssi_browser
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_browser_combo_box_controls_new</NAME>
+<RETURNS>GtkWidget * </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_browser_preview_new</NAME>
+<RETURNS>GtkWidget * </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_browser_new</NAME>
+<RETURNS>AgsDssiBrowser * </RETURNS>
+
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_EXPORT_WINDOW</NAME>
 #define AGS_TYPE_EXPORT_WINDOW                (ags_export_window_get_type())
 </MACRO>
@@ -4152,6 +4813,11 @@ AgsLadspaBrowser *ladspa_browser
 AgsLadspaBrowser *ladspa_browser
 </FUNCTION>
 <FUNCTION>
+<NAME>ags_ladspa_browser_combo_box_boolean_controls_new</NAME>
+<RETURNS>GtkWidget * </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
 <NAME>ags_ladspa_browser_combo_box_controls_new</NAME>
 <RETURNS>GtkWidget * </RETURNS>
 
@@ -4281,6 +4947,11 @@ struct _AgsAudioPreferences
   GtkSpinButton *audio_channels;
   GtkSpinButton *samplerate;
   GtkSpinButton *buffer_size;
+
+  GtkCheckButton *enable_jack;
+  GtkComboBoxText *jack_driver;
+  GtkButton *start_jack;
+  GtkButton *stop_jack;
 };
 </STRUCT>
 <STRUCT>
@@ -5125,6 +5796,90 @@ AgsMachineSelection *machine_selection
 <NAME>ags_machine_selection_new</NAME>
 <RETURNS>AgsMachineSelection * </RETURNS>
 AgsWindow *window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_sf2_chooser_preset_changed</NAME>
+<RETURNS>void  </RETURNS>
+GtkComboBox *combo_box, AgsSF2Chooser *sf2_chooser
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_sf2_chooser_instrument_changed</NAME>
+<RETURNS>void  </RETURNS>
+GtkComboBox *combo_box, AgsSF2Chooser *sf2_chooser
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_sf2_chooser_sample_changed</NAME>
+<RETURNS>void  </RETURNS>
+GtkComboBox *combo_box, AgsSF2Chooser *sf2_chooser
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_SF2_CHOOSER</NAME>
+#define AGS_TYPE_SF2_CHOOSER                (ags_sf2_chooser_get_type ())
+</MACRO>
+<MACRO>
+<NAME>AGS_SF2_CHOOSER</NAME>
+#define AGS_SF2_CHOOSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SF2_CHOOSER, AgsSF2Chooser))
+</MACRO>
+<MACRO>
+<NAME>AGS_SF2_CHOOSER_CLASS</NAME>
+#define AGS_SF2_CHOOSER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SF2_CHOOSER, AgsSF2ChooserClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SF2_CHOOSER</NAME>
+#define AGS_IS_SF2_CHOOSER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SF2_CHOOSER))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SF2_CHOOSER_CLASS</NAME>
+#define AGS_IS_SF2_CHOOSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SF2_CHOOSER))
+</MACRO>
+<MACRO>
+<NAME>AGS_SF2_CHOOSER_GET_CLASS</NAME>
+#define AGS_SF2_CHOOSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SF2_CHOOSER, AgsSF2ChooserClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsSF2Chooser</NAME>
+struct _AgsSF2Chooser
+{
+  GtkVBox vbox;
+
+  AgsIpatch *ipatch;
+
+  GtkComboBoxText *preset;
+  GtkComboBoxText *instrument;
+  GtkComboBoxText *sample;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsSF2ChooserClass</NAME>
+struct _AgsSF2ChooserClass
+{
+  GtkVBoxClass vbox;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_sf2_chooser_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_sf2_chooser_open</NAME>
+<RETURNS>void  </RETURNS>
+AgsSF2Chooser *sf2_chooser, gchar *filename
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_sf2_chooser_completed</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsSF2Chooser *sf2_chooser
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_sf2_chooser_remove_all_from_combo</NAME>
+<RETURNS>void  </RETURNS>
+GtkComboBoxText *combo
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_sf2_chooser_new</NAME>
+<RETURNS>AgsSF2Chooser * </RETURNS>
+
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_notebook_scroll_prev_callback</NAME>
@@ -6965,6 +7720,54 @@ void
 GObject *soundcard
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_SYNTH_BRIDGE</NAME>
+#define AGS_TYPE_SYNTH_BRIDGE                (ags_synth_bridge_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_SYNTH_BRIDGE</NAME>
+#define AGS_SYNTH_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH_BRIDGE, AgsSynthBridge))
+</MACRO>
+<MACRO>
+<NAME>AGS_SYNTH_BRIDGE_CLASS</NAME>
+#define AGS_SYNTH_BRIDGE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNTH_BRIDGE, AgsSynthBridgeClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SYNTH_BRIDGE</NAME>
+#define AGS_IS_SYNTH_BRIDGE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SYNTH_BRIDGE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SYNTH_BRIDGE_CLASS</NAME>
+#define AGS_IS_SYNTH_BRIDGE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SYNTH_BRIDGE))
+</MACRO>
+<MACRO>
+<NAME>AGS_SYNTH_BRIDGE_GET_CLASS</NAME>
+#define AGS_SYNTH_BRIDGE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_SYNTH_BRIDGE, AgsSynthBridgeClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsSynthBridge</NAME>
+struct _AgsSynthBridge
+{
+  AgsEffectBridge effect_bridge;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsSynthBridgeClass</NAME>
+struct _AgsSynthBridgeClass
+{
+  AgsEffectBridgeClass effect_bridge;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_synth_bridge_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_synth_bridge_new</NAME>
+<RETURNS>AgsSynthBridge * </RETURNS>
+AgsAudio *audio
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_SYNTH</NAME>
 #define AGS_TYPE_SYNTH                (ags_synth_get_type())
 </MACRO>
@@ -7087,6 +7890,54 @@ void
 <NAME>ags_panel_new</NAME>
 <RETURNS>AgsPanel * </RETURNS>
 
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_MATRIX_BRIDGE</NAME>
+#define AGS_TYPE_MATRIX_BRIDGE                (ags_matrix_bridge_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_MATRIX_BRIDGE</NAME>
+#define AGS_MATRIX_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MATRIX_BRIDGE, AgsMatrixBridge))
+</MACRO>
+<MACRO>
+<NAME>AGS_MATRIX_BRIDGE_CLASS</NAME>
+#define AGS_MATRIX_BRIDGE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MATRIX_BRIDGE, AgsMatrixBridgeClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MATRIX_BRIDGE</NAME>
+#define AGS_IS_MATRIX_BRIDGE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_MATRIX_BRIDGE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MATRIX_BRIDGE_CLASS</NAME>
+#define AGS_IS_MATRIX_BRIDGE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MATRIX_BRIDGE))
+</MACRO>
+<MACRO>
+<NAME>AGS_MATRIX_BRIDGE_GET_CLASS</NAME>
+#define AGS_MATRIX_BRIDGE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_MATRIX_BRIDGE, AgsMatrixBridgeClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsMatrixBridge</NAME>
+struct _AgsMatrixBridge
+{
+  AgsEffectBridge effect_bridge;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsMatrixBridgeClass</NAME>
+struct _AgsMatrixBridgeClass
+{
+  AgsEffectBridgeClass effect_bridge;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_matrix_bridge_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_matrix_bridge_new</NAME>
+<RETURNS>AgsMatrixBridge * </RETURNS>
+AgsAudio *audio
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_DRUM_INPUT_LINE</NAME>
@@ -7589,6 +8440,152 @@ GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern
 GtkWidget *widget, AgsCellPattern *cell_pattern
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_DSSI_BRIDGE</NAME>
+#define AGS_TYPE_DSSI_BRIDGE                (ags_dssi_bridge_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_DSSI_BRIDGE</NAME>
+#define AGS_DSSI_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DSSI_BRIDGE, AgsDssiBridge))
+</MACRO>
+<MACRO>
+<NAME>AGS_DSSI_BRIDGE_CLASS</NAME>
+#define AGS_DSSI_BRIDGE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_DSSI_BRIDGE, AgsDssiBridgeClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_DSSI_BRIDGE</NAME>
+#define AGS_IS_DSSI_BRIDGE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_DSSI_BRIDGE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_DSSI_BRIDGE_CLASS</NAME>
+#define AGS_IS_DSSI_BRIDGE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_DSSI_BRIDGE))
+</MACRO>
+<MACRO>
+<NAME>AGS_DSSI_BRIDGE_GET_CLASS</NAME>
+#define AGS_DSSI_BRIDGE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_DSSI_BRIDGE, AgsDssiBridgeClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_DSSI_BRIDGE_DEFAULT_VERSION</NAME>
+#define AGS_DSSI_BRIDGE_DEFAULT_VERSION "0.7.4\0"
+</MACRO>
+<MACRO>
+<NAME>AGS_DSSI_BRIDGE_DEFAULT_BUILD_ID</NAME>
+#define AGS_DSSI_BRIDGE_DEFAULT_BUILD_ID "CEST 16-02-2016 23:36\0"
+</MACRO>
+<ENUM>
+<NAME>AgsDssiBridgeFlags</NAME>
+typedef enum{
+  AGS_DSSI_BRIDGE_DISPLAY_INPUT    = 1,
+  AGS_DSSI_BRIDGE_BULK_OUTPUT      = 1 <<  1,
+  AGS_DSSI_BRIDGE_DISPLAY_OUTPUT   = 1 <<  2,
+  AGS_DSSI_BRIDGE_BULK_INPUT       = 1 <<  3,
+}AgsDssiBridgeFlags;
+</ENUM>
+<STRUCT>
+<NAME>AgsDssiBridge</NAME>
+struct _AgsDssiBridge
+{
+  AgsMachine machine;
+
+  guint flags;
+
+  gchar *name;
+
+  gchar *version;
+  gchar *build_id;
+
+  guint mapped_output_pad;
+  guint mapped_input_pad;
+
+  gchar *filename;
+  gchar *effect;
+  unsigned long effect_index;
+
+  LADSPA_Handle ladspa_handle;
+  
+  GtkComboBoxText *program;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsDssiBridgeClass</NAME>
+struct _AgsDssiBridgeClass
+{
+  AgsMachineClass machine;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_dssi_bridge_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_bridge_input_map_recall</NAME>
+<RETURNS>void  </RETURNS>
+AgsDssiBridge *dssi_bridge, guint input_pad_start
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_bridge_output_map_recall</NAME>
+<RETURNS>void  </RETURNS>
+AgsDssiBridge *dssi_bridge, guint output_pad_start
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_bridge_load</NAME>
+<RETURNS>void  </RETURNS>
+AgsDssiBridge *dssi_bridge
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_dssi_bridge_new</NAME>
+<RETURNS>AgsDssiBridge * </RETURNS>
+GObject *soundcard, gchar *filename, gchar *effect
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_SYNTH_OUTPUT_PAD</NAME>
+#define AGS_TYPE_SYNTH_OUTPUT_PAD                (ags_synth_output_pad_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_SYNTH_OUTPUT_PAD</NAME>
+#define AGS_SYNTH_OUTPUT_PAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH_OUTPUT_PAD, AgsSynthOutputPad))
+</MACRO>
+<MACRO>
+<NAME>AGS_SYNTH_OUTPUT_PAD_CLASS</NAME>
+#define AGS_SYNTH_OUTPUT_PAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNTH_OUTPUT_PAD, AgsSynthOutputPadClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SYNTH_OUTPUT_PAD</NAME>
+#define AGS_IS_SYNTH_OUTPUT_PAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SYNTH_OUTPUT_PAD))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SYNTH_OUTPUT_PAD_CLASS</NAME>
+#define AGS_IS_SYNTH_OUTPUT_PAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SYNTH_OUTPUT_PAD))
+</MACRO>
+<MACRO>
+<NAME>AGS_SYNTH_OUTPUT_PAD_GET_CLASS</NAME>
+#define AGS_SYNTH_OUTPUT_PAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SYNTH_OUTPUT_PAD, AgsSynthOutputPadClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsSynthOutputPad</NAME>
+struct _AgsSynthOutputPad
+{
+  AgsEffectPad effect_pad;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsSynthOutputPadClass</NAME>
+struct _AgsSynthOutputPadClass
+{
+  AgsEffectPadClass effect_pad;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_synth_output_pad_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_synth_output_pad_new</NAME>
+<RETURNS>AgsSynthOutputPad * </RETURNS>
+AgsChannel *channel
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_FFPLAYER_INPUT_LINE</NAME>
 #define AGS_TYPE_FFPLAYER_INPUT_LINE                (ags_ffplayer_input_line_get_type())
 </MACRO>
@@ -7710,6 +8707,54 @@ GtkToggleButton *button, AgsDrumInputPad *drum_input_pad
 <NAME>ags_drum_input_pad_edit_callback</NAME>
 <RETURNS>void  </RETURNS>
 GtkWidget *toggle_button, AgsDrumInputPad *drum_input_pad
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_MATRIX_BULK_INPUT</NAME>
+#define AGS_TYPE_MATRIX_BULK_INPUT                (ags_matrix_bulk_input_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_MATRIX_BULK_INPUT</NAME>
+#define AGS_MATRIX_BULK_INPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MATRIX_BULK_INPUT, AgsMatrixBulkInput))
+</MACRO>
+<MACRO>
+<NAME>AGS_MATRIX_BULK_INPUT_CLASS</NAME>
+#define AGS_MATRIX_BULK_INPUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MATRIX_BULK_INPUT, AgsMatrixBulkInputClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MATRIX_BULK_INPUT</NAME>
+#define AGS_IS_MATRIX_BULK_INPUT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_MATRIX_BULK_INPUT))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MATRIX_BULK_INPUT_CLASS</NAME>
+#define AGS_IS_MATRIX_BULK_INPUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MATRIX_BULK_INPUT))
+</MACRO>
+<MACRO>
+<NAME>AGS_MATRIX_BULK_INPUT_GET_CLASS</NAME>
+#define AGS_MATRIX_BULK_INPUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MATRIX_BULK_INPUT, AgsMatrixBulkInputClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsMatrixBulkInput</NAME>
+struct _AgsMatrixBulkInput
+{
+  AgsEffectBulk effect_bulk;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsMatrixBulkInputClass</NAME>
+struct _AgsMatrixBulkInputClass
+{
+  AgsEffectBulkClass effect_bulk;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_matrix_bulk_input_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_matrix_bulk_input_new</NAME>
+<RETURNS>AgsMatrixBulkInput * </RETURNS>
+AgsAudio *audio, GType channel_type
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_OSCILLATOR</NAME>
@@ -8056,7 +9101,7 @@ GtkWidget *widget, AgsFFPlayer *ffplayer
 <FUNCTION>
 <NAME>ags_ffplayer_hscrollbar_value_changed</NAME>
 <RETURNS>void  </RETURNS>
-GtkAdjustment *adjustment, AgsFFPlayer *ffplayers
+GtkAdjustment *adjustment, AgsFFPlayer *ffplayer
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_mixer_parent_set_callback</NAME>
@@ -8335,6 +9380,54 @@ struct _AgsDrumOutputPadClass
 <RETURNS>AgsDrumOutputPad * </RETURNS>
 AgsChannel *channel
 </FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_SYNTH_OUTPUT_LINE</NAME>
+#define AGS_TYPE_SYNTH_OUTPUT_LINE                (ags_synth_output_line_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_SYNTH_OUTPUT_LINE</NAME>
+#define AGS_SYNTH_OUTPUT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH_OUTPUT_LINE, AgsSynthOutputLine))
+</MACRO>
+<MACRO>
+<NAME>AGS_SYNTH_OUTPUT_LINE_CLASS</NAME>
+#define AGS_SYNTH_OUTPUT_LINE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNTH_OUTPUT_LINE, AgsSynthOutputLineClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SYNTH_OUTPUT_LINE</NAME>
+#define AGS_IS_SYNTH_OUTPUT_LINE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SYNTH_OUTPUT_LINE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SYNTH_OUTPUT_LINE_CLASS</NAME>
+#define AGS_IS_SYNTH_OUTPUT_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SYNTH_OUTPUT_LINE))
+</MACRO>
+<MACRO>
+<NAME>AGS_SYNTH_OUTPUT_LINE_GET_CLASS</NAME>
+#define AGS_SYNTH_OUTPUT_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SYNTH_OUTPUT_LINE, AgsSynthOutputLineClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsSynthOutputLine</NAME>
+struct _AgsSynthOutputLine
+{
+  AgsEffectLine effect_line;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsSynthOutputLineClass</NAME>
+struct _AgsSynthOutputLineClass
+{
+  AgsEffectLineClass effect_line;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_synth_output_line_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_synth_output_line_new</NAME>
+<RETURNS>AgsSynthOutputLine * </RETURNS>
+AgsChannel *channel
+</FUNCTION>
 <FUNCTION>
 <NAME>ags_oscillator_wave_callback</NAME>
 <RETURNS>void  </RETURNS>
@@ -8467,6 +9560,11 @@ struct _AgsMixerInputLineClass
 <NAME>ags_mixer_input_line_new</NAME>
 <RETURNS>AgsMixerInputLine * </RETURNS>
 AgsChannel *channel
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_synth_output_line_notify_channel_callback</NAME>
+<RETURNS>void  </RETURNS>
+GObject *gobject, GParamSpec *pspec, gpointer user_data
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_FFPLAYER_BRIDGE</NAME>
@@ -8892,6 +9990,223 @@ AgsFile *file, xmlNode *node, AgsNavigation **navigation
 <RETURNS>xmlNode * </RETURNS>
 AgsFile *file, xmlNode *parent, AgsNavigation *navigation
 </FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_import_wizard_response_callback</NAME>
+<RETURNS>void  </RETURNS>
+GtkWidget *wizard, gint response, gpointer data
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_TRACK_COLLECTION_MAPPER</NAME>
+#define AGS_TYPE_TRACK_COLLECTION_MAPPER                (ags_track_collection_mapper_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_TRACK_COLLECTION_MAPPER</NAME>
+#define AGS_TRACK_COLLECTION_MAPPER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionMapper))
+</MACRO>
+<MACRO>
+<NAME>AGS_TRACK_COLLECTION_MAPPER_CLASS</NAME>
+#define AGS_TRACK_COLLECTION_MAPPER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionMapperClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_TRACK_COLLECTION_MAPPER</NAME>
+#define AGS_IS_TRACK_COLLECTION_MAPPER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_TRACK_COLLECTION_MAPPER_CLASS</NAME>
+#define AGS_IS_TRACK_COLLECTION_MAPPER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TRACK_COLLECTION_MAPPER))
+</MACRO>
+<MACRO>
+<NAME>AGS_TRACK_COLLECTION_MAPPER_GET_CLASS</NAME>
+#define AGS_TRACK_COLLECTION_MAPPER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TRACK_COLLECTION_MAPPER, AgsTrackCollectionMapperClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS</NAME>
+#define AGS_TRACK_COLLECTION_MAPPER_DEFAULT_BEATS (16.0)
+</MACRO>
+<MACRO>
+<NAME>AGS_MIDI_DEFAULT_BEATS</NAME>
+#define AGS_MIDI_DEFAULT_BEATS (4.0)
+</MACRO>
+<STRUCT>
+<NAME>AgsTrackCollectionMapper</NAME>
+struct _AgsTrackCollectionMapper
+{
+  GtkTable table;
+
+  gchar *instrument;
+  gchar *sequence;
+  
+  GList *track;
+
+  GList *notation;
+  
+  GtkCheckButton *enabled;
+
+  GtkVBox *info;
+  
+  GtkComboBoxText *machine_type;
+  GtkSpinButton *audio_channels;
+  GtkSpinButton *offset;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsTrackCollectionMapperClass</NAME>
+struct _AgsTrackCollectionMapperClass
+{
+  GtkTableClass table;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_track_collection_mapper_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_track_collection_mapper_find_instrument_with_sequence</NAME>
+<RETURNS>GList * </RETURNS>
+GList *track_collection_mapper, gchar *instrument, gchar *sequence
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_track_collection_mapper_map</NAME>
+<RETURNS>void  </RETURNS>
+AgsTrackCollectionMapper *track_collection_mapper
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_track_collection_mapper_new</NAME>
+<RETURNS>AgsTrackCollectionMapper * </RETURNS>
+
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_MIDI_IMPORT_WIZARD</NAME>
+#define AGS_TYPE_MIDI_IMPORT_WIZARD                (ags_midi_import_wizard_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_MIDI_IMPORT_WIZARD</NAME>
+#define AGS_MIDI_IMPORT_WIZARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_IMPORT_WIZARD, AgsMidiImportWizard))
+</MACRO>
+<MACRO>
+<NAME>AGS_MIDI_IMPORT_WIZARD_CLASS</NAME>
+#define AGS_MIDI_IMPORT_WIZARD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MIDI_IMPORT_WIZARD, AgsMidiImportWizardClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MIDI_IMPORT_WIZARD</NAME>
+#define AGS_IS_MIDI_IMPORT_WIZARD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_MIDI_IMPORT_WIZARD))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MIDI_IMPORT_WIZARD_CLASS</NAME>
+#define AGS_IS_MIDI_IMPORT_WIZARD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_IMPORT_WIZARD))
+</MACRO>
+<MACRO>
+<NAME>AGS_MIDI_IMPORT_WIZARD_GET_CLASS</NAME>
+#define AGS_MIDI_IMPORT_WIZARD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MIDI_IMPORT_WIZARD, AgsMidiImportWizardClass))
+</MACRO>
+<ENUM>
+<NAME>AgsMidiImportWizardFlags</NAME>
+typedef enum{
+  AGS_MIDI_IMPORT_WIZARD_SHOW_FILE_CHOOSER       = 1,
+  AGS_MIDI_IMPORT_WIZARD_SHOW_TRACK_COLLECTION   = 1 << 1,
+}AgsMidiImportWizardFlags;
+</ENUM>
+<STRUCT>
+<NAME>AgsMidiImportWizard</NAME>
+struct _AgsMidiImportWizard
+{
+  GtkDialog dialog;
+
+  guint flags;
+  
+  GtkWidget *parent;
+  
+  GtkWidget *file_chooser;
+  GtkWidget *track_collection;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsMidiImportWizardClass</NAME>
+struct _AgsMidiImportWizardClass
+{
+  GtkDialogClass dialog;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_midi_import_wizard_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_import_wizard_new</NAME>
+<RETURNS>AgsMidiImportWizard * </RETURNS>
+
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_TRACK_COLLECTION</NAME>
+#define AGS_TYPE_TRACK_COLLECTION                (ags_track_collection_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_TRACK_COLLECTION</NAME>
+#define AGS_TRACK_COLLECTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TRACK_COLLECTION, AgsTrackCollection))
+</MACRO>
+<MACRO>
+<NAME>AGS_TRACK_COLLECTION_CLASS</NAME>
+#define AGS_TRACK_COLLECTION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TRACK_COLLECTION, AgsTrackCollectionClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_TRACK_COLLECTION</NAME>
+#define AGS_IS_TRACK_COLLECTION(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_TRACK_COLLECTION))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_TRACK_COLLECTION_CLASS</NAME>
+#define AGS_IS_TRACK_COLLECTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TRACK_COLLECTION))
+</MACRO>
+<MACRO>
+<NAME>AGS_TRACK_COLLECTION_GET_CLASS</NAME>
+#define AGS_TRACK_COLLECTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TRACK_COLLECTION, AgsTrackCollectionClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsTrackCollection</NAME>
+struct _AgsTrackCollection
+{
+  GtkVBox vbox;
+
+  xmlDoc *midi_doc;
+
+  guint first_offset;
+  gdouble bpm;
+  
+  GType child_type;
+  guint child_parameter_count;
+  GParameter *child_parameter;
+
+  GtkVBox *child;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsTrackCollectionClass</NAME>
+struct _AgsTrackCollectionClass
+{
+  GtkVBoxClass vbox;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_track_collection_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_track_collection_parse</NAME>
+<RETURNS>void  </RETURNS>
+AgsTrackCollection *track_collection
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_track_collection_add_mapper</NAME>
+<RETURNS>void  </RETURNS>
+AgsTrackCollection *track_collection, xmlNode *track, gchar *instrument, gchar *sequence
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_track_collection_new</NAME>
+<RETURNS>AgsTrackCollection * </RETURNS>
+GType child_type, guint child_parameter_count, GParameter *child_parameter
+</FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_GUI_THREAD</NAME>
 #define AGS_TYPE_GUI_THREAD                (ags_gui_thread_get_type())
@@ -9123,6 +10438,112 @@ GtkMenu *menu, gchar *path
 <NAME>ags_id_generator_create_uuid</NAME>
 <RETURNS>gchar * </RETURNS>
 
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_RUNNABLE</NAME>
+#define AGS_TYPE_RUNNABLE                    (ags_runnable_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_RUNNABLE</NAME>
+#define AGS_RUNNABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RUNNABLE, AgsRunnable))
+</MACRO>
+<MACRO>
+<NAME>AGS_RUNNABLE_INTERFACE</NAME>
+#define AGS_RUNNABLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_RUNNABLE, AgsRunnableInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_RUNNABLE</NAME>
+#define AGS_IS_RUNNABLE(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_RUNNABLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_RUNNABLE_INTERFACE</NAME>
+#define AGS_IS_RUNNABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_RUNNABLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_RUNNABLE_GET_INTERFACE</NAME>
+#define AGS_RUNNABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_RUNNABLE, AgsRunnableInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsRunnable</NAME>
+typedef void AgsRunnable;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsRunnableInterface</NAME>
+struct _AgsRunnableInterface
+{
+  GTypeInterface interface;
+
+  void (*run)(AgsRunnable *runnable);
+  void (*stop)(AgsRunnable *runnable);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_runnable_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_runnable_run</NAME>
+<RETURNS>void  </RETURNS>
+AgsRunnable *runnable
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_runnable_stop</NAME>
+<RETURNS>void  </RETURNS>
+AgsRunnable *runnable
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_STACKABLE</NAME>
+#define AGS_TYPE_STACKABLE                    (ags_stackable_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_STACKABLE</NAME>
+#define AGS_STACKABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_STACKABLE, AgsStackable))
+</MACRO>
+<MACRO>
+<NAME>AGS_STACKABLE_INTERFACE</NAME>
+#define AGS_STACKABLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_STACKABLE, AgsStackableInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_STACKABLE</NAME>
+#define AGS_IS_STACKABLE(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_STACKABLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_STACKABLE_INTERFACE</NAME>
+#define AGS_IS_STACKABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_STACKABLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_STACKABLE_GET_INTERFACE</NAME>
+#define AGS_STACKABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_STACKABLE, AgsStackableInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsStackable</NAME>
+typedef void AgsStackable;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsStackableInterface</NAME>
+struct _AgsStackableInterface
+{
+  GTypeInterface interface;
+
+  void (*push)(AgsStackable *stackable);
+  void (*pop)(AgsStackable *stackable);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_stackable_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_stackable_push</NAME>
+<RETURNS>void  </RETURNS>
+AgsStackable *stackable
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_stackable_pop</NAME>
+<RETURNS>void  </RETURNS>
+AgsStackable *stackable
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_TACTABLE</NAME>
@@ -9475,6 +10896,138 @@ AgsConfig *config
 GObject *application_context
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_GLOBAL_ACCESSIBLE</NAME>
+#define AGS_TYPE_GLOBAL_ACCESSIBLE                    (ags_global_accessible_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_GLOBAL_ACCESSIBLE</NAME>
+#define AGS_GLOBAL_ACCESSIBLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_GLOBAL_ACCESSIBLE, AgsGlobalAccessible))
+</MACRO>
+<MACRO>
+<NAME>AGS_GLOBAL_ACCESSIBLE_INTERFACE</NAME>
+#define AGS_GLOBAL_ACCESSIBLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_GLOBAL_ACCESSIBLE, AgsGlobalAccessibleInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_GLOBAL_ACCESSIBLE</NAME>
+#define AGS_IS_GLOBAL_ACCESSIBLE(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_GLOBAL_ACCESSIBLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_GLOBAL_ACCESSIBLE_INTERFACE</NAME>
+#define AGS_IS_GLOBAL_ACCESSIBLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_GLOBAL_ACCESSIBLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_GLOBAL_ACCESSIBLE_GET_INTERFACE</NAME>
+#define AGS_GLOBAL_ACCESSIBLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_GLOBAL_ACCESSIBLE, AgsGlobalAccessibleInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsGlobalAccessible</NAME>
+typedef void AgsGlobalAccessible;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsGlobalAccessibleInterface</NAME>
+struct _AgsGlobalAccessibleInterface
+{
+  AtkAction action;
+
+  gboolean (*move_to_insert_note_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_delete_note_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_edit_pattern_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_set_sequence_length_dialog)(AgsGlobalAccessible *global_accessible);
+
+  gboolean (*move_to_main_window)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_preferences_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_export_window)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_rename_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_properties_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_link_index_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_open_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_save_as_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_about_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_confirm_close_dialog)(AgsGlobalAccessible *global_accessible);
+  gboolean (*move_to_error_dialog)(AgsGlobalAccessible *global_accessible);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_global_accessible_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_insert_note_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_delete_note_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_edit_pattern_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_sequence_length_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_main_window</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_preferences_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_export_window</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_rename_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_properties_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_link_index_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_confirm_open_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_confirm_save_as_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_about_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_confirm_close_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_global_accessible_move_to_error_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGlobalAccessible *global_accessible
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_COUNTABLE</NAME>
 #define AGS_TYPE_COUNTABLE                    (ags_countable_get_type())
 </MACRO>
@@ -9701,8 +11254,10 @@ struct _AgsSequencerInterface
   void (*offset_changed)(AgsSequencer *sequencer,
 			 guint note_offset);
 
-  void* (*get_buffer)(AgsSequencer *sequencer);
-  void* (*get_next_buffer)(AgsSequencer *sequencer);  
+  void* (*get_buffer)(AgsSequencer *sequencer,
+		      guint *buffer_length);
+  void* (*get_next_buffer)(AgsSequencer *sequencer,
+			   guint *buffer_length);
 
   void (*set_bpm)(AgsSequencer *sequencer,
 		  gdouble bpm);
@@ -9814,12 +11369,12 @@ AgsSequencer *sequencer, guint note_offset
 <FUNCTION>
 <NAME>ags_sequencer_get_buffer</NAME>
 <RETURNS>void * </RETURNS>
-AgsSequencer *sequencer
+AgsSequencer *sequencer, guint *buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_sequencer_get_next_buffer</NAME>
 <RETURNS>void * </RETURNS>
-AgsSequencer *sequencer
+AgsSequencer *sequencer, guint *buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_sequencer_set_bpm</NAME>
@@ -9860,6 +11415,158 @@ AgsSequencer *sequencer, GList *audio
 <NAME>ags_sequencer_get_audio</NAME>
 <RETURNS>GList * </RETURNS>
 AgsSequencer *sequencer
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_ACCESSIBLE_WINDOW</NAME>
+#define AGS_TYPE_ACCESSIBLE_WINDOW                    (ags_accessible_window_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_WINDOW</NAME>
+#define AGS_ACCESSIBLE_WINDOW(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ACCESSIBLE_WINDOW, AgsAccessibleWindow))
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_WINDOW_INTERFACE</NAME>
+#define AGS_ACCESSIBLE_WINDOW_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_ACCESSIBLE_WINDOW, AgsAccessibleWindowInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_ACCESSIBLE_WINDOW</NAME>
+#define AGS_IS_ACCESSIBLE_WINDOW(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_ACCESSIBLE_WINDOW))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_ACCESSIBLE_WINDOW_INTERFACE</NAME>
+#define AGS_IS_ACCESSIBLE_WINDOW_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_ACCESSIBLE_WINDOW))
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_WINDOW_GET_INTERFACE</NAME>
+#define AGS_ACCESSIBLE_WINDOW_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_ACCESSIBLE_WINDOW, AgsAccessibleWindowInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsAccessibleWindow</NAME>
+typedef void AgsAccessibleWindow;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsAccessibleWindowInterface</NAME>
+struct _AgsAccessibleWindowInterface
+{
+  AgsGlobalAccessible global_accessible;
+
+  gboolean (*move_to_machines_pane)(AgsAccessibleWindow *accessible_window);
+  gboolean (*move_to_editor_index_pane)(AgsAccessibleWindow *accessible_window);
+  gboolean (*move_to_notation_editor_pane)(AgsAccessibleWindow *accessible_window);
+  gboolean (*move_to_navigation)(AgsAccessibleWindow *accessible_window);
+  
+  gboolean (*open_file)(AgsAccessibleWindow *accessible_window);
+  gboolean (*save_file)(AgsAccessibleWindow *accessible_window);
+  gboolean (*save_file_as)(AgsAccessibleWindow *accessible_window);
+  gboolean (*export_to_audio_file)(AgsAccessibleWindow *accessible_window);
+  gboolean (*quit)(AgsAccessibleWindow *accessible_window);
+
+  gboolean (*add_panel)(AgsAccessibleWindow *accessible_window);
+  gboolean (*add_mixer)(AgsAccessibleWindow *accessible_window);
+  gboolean (*add_drum)(AgsAccessibleWindow *accessible_window);
+  gboolean (*add_matrix)(AgsAccessibleWindow *accessible_window);
+  gboolean (*add_synth)(AgsAccessibleWindow *accessible_window);
+  gboolean (*add_ffplayer)(AgsAccessibleWindow *accessible_window);
+  gboolean (*remove_machine)(AgsAccessibleWindow *accessible_window);
+  gboolean (*show_preferences)(AgsAccessibleWindow *accessible_window);
+
+  gboolean (*show_about_dialog)(AgsAccessibleWindow *accessible_window);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_accessible_window_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_move_to_machines_pane</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_move_to_editor_index_pane</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_move_to_notation_editor_pane</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_move_to_navigation</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_open_file</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_save_file</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_save_file_as</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_export_to_audio_file</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_quit</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_add_panel</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_add_mixer</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_add_drum</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_add_matrix</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_add_synth</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_add_ffplayer</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_remove_machine</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_show_preferences</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_window_show_about_dialog</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleWindow *accessible_window
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_DYNAMIC_CONNECTABLE</NAME>
@@ -10026,6 +11733,53 @@ AgsConnectable *connectable
 <NAME>ags_connectable_disconnect</NAME>
 <RETURNS>void  </RETURNS>
 AgsConnectable *connectable
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_GENERIC_ACCESSIBLE</NAME>
+#define AGS_TYPE_GENERIC_ACCESSIBLE                    (ags_generic_accessible_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_GENERIC_ACCESSIBLE</NAME>
+#define AGS_GENERIC_ACCESSIBLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_GENERIC_ACCESSIBLE, AgsGenericAccessible))
+</MACRO>
+<MACRO>
+<NAME>AGS_GENERIC_ACCESSIBLE_INTERFACE</NAME>
+#define AGS_GENERIC_ACCESSIBLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_GENERIC_ACCESSIBLE, AgsGenericAccessibleInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_GENERIC_ACCESSIBLE</NAME>
+#define AGS_IS_GENERIC_ACCESSIBLE(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_GENERIC_ACCESSIBLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_GENERIC_ACCESSIBLE_INTERFACE</NAME>
+#define AGS_IS_GENERIC_ACCESSIBLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_GENERIC_ACCESSIBLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_GENERIC_ACCESSIBLE_GET_INTERFACE</NAME>
+#define AGS_GENERIC_ACCESSIBLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_GENERIC_ACCESSIBLE, AgsGenericAccessibleInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsGenericAccessible</NAME>
+typedef void AgsGenericAccessible;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsGenericAccessibleInterface</NAME>
+struct _AgsGenericAccessibleInterface
+{
+  AtkAction action;
+
+  gboolean (*get_global_accessible)(AgsGenericAccessible *generic_accessible);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_generic_accessible_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_generic_accessible_get_global_accessible</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsGenericAccessible *generic_accessible
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_PORTLET</NAME>
@@ -10223,6 +11977,10 @@ struct _AgsConcurrentTreeInterface
 {
   GTypeInterface interface;
 
+  void (*set_parent_locked)(AgsConcurrentTree *concurrent_tree,
+			    gboolean parent_locked);
+  gboolean (*get_parent_locked)(AgsConcurrentTree *concurrent_tree);
+  
   pthread_mutex_t* (*get_lock)(AgsConcurrentTree *concurrent_tree);
   pthread_mutex_t* (*get_parent_lock)(AgsConcurrentTree *concurrent_tree);
 };
@@ -10231,6 +11989,16 @@ struct _AgsConcurrentTreeInterface
 <NAME>ags_concurrent_tree_get_type</NAME>
 <RETURNS>GType  </RETURNS>
 
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_concurrent_tree_set_parent_locked</NAME>
+<RETURNS>void  </RETURNS>
+AgsConcurrentTree *concurrent_tree, gboolean parent_locked
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_concurrent_tree_get_parent_locked</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsConcurrentTree *concurrent_tree
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_concurrent_tree_get_lock</NAME>
@@ -10252,6 +12020,132 @@ AgsConcurrentTree *concurrent_tree
 <RETURNS>void  </RETURNS>
 AgsConcurrentTree *concurrent_tree
 </FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_ACCESSIBLE_EDITOR</NAME>
+#define AGS_TYPE_ACCESSIBLE_EDITOR                    (ags_accessible_editor_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_EDITOR</NAME>
+#define AGS_ACCESSIBLE_EDITOR(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ACCESSIBLE_EDITOR, AgsAccessibleEditor))
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_EDITOR_INTERFACE</NAME>
+#define AGS_ACCESSIBLE_EDITOR_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_ACCESSIBLE_EDITOR, AgsAccessibleEditorInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_ACCESSIBLE_EDITOR</NAME>
+#define AGS_IS_ACCESSIBLE_EDITOR(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_ACCESSIBLE_EDITOR))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_ACCESSIBLE_EDITOR_INTERFACE</NAME>
+#define AGS_IS_ACCESSIBLE_EDITOR_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_ACCESSIBLE_EDITOR))
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_EDITOR_GET_INTERFACE</NAME>
+#define AGS_ACCESSIBLE_EDITOR_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_ACCESSIBLE_EDITOR, AgsAccessibleEditorInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsAccessibleEditor</NAME>
+typedef void AgsAccessibleEditor;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsAccessibleEditorInterface</NAME>
+struct _AgsAccessibleEditorInterface
+{
+  AgsGenericAccessible generic_accessible;
+
+  gboolean (*insert_note)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*delete_note)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*select_region)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*select_all)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*unselect_all)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*copy)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*cut)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*paste)(AgsAccessibleEditor *accessible_editor);
+
+  gboolean (*add_index)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*remove_index)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*link_index)(AgsAccessibleEditor *accessible_editor);
+  gboolean (*reverse_mapping)(AgsAccessibleEditor *accessible_editor);
+  
+  gboolean (*move_to_index)(AgsAccessibleEditor *accessible_editor);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_accessible_editor_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_insert_note</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_delete_note</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_select_region</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_select_all</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_unselect_all</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_copy</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_cut</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_paste</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_add_index</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_remove_index</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_link_index</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_reverse_mapping</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_editor_move_to_index</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleEditor *accessible_editor
+</FUNCTION>
+<FUNCTION>
+<NAME>g_cclosure_user_marshal_UINT__VOID</NAME>
+<RETURNS>void  </RETURNS>
+GClosure     *closure, GValue       *return_value, guint         n_param_values, const GValue *param_values, gpointer      invocation_hint, gpointer      marshal_data
+</FUNCTION>
 <FUNCTION>
 <NAME>g_cclosure_user_marshal_VOID__UINT_BOOLEAN</NAME>
 <RETURNS>void  </RETURNS>
@@ -10269,6 +12163,11 @@ GClosure     *closure, GValue       *return_value, guint         n_param_values,
 </FUNCTION>
 <FUNCTION>
 <NAME>g_cclosure_user_marshal_VOID__UINT_UINT_UINT</NAME>
+<RETURNS>void  </RETURNS>
+GClosure     *closure, GValue       *return_value, guint         n_param_values, const GValue *param_values, gpointer      invocation_hint, gpointer      marshal_data
+</FUNCTION>
+<FUNCTION>
+<NAME>g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT</NAME>
 <RETURNS>void  </RETURNS>
 GClosure     *closure, GValue       *return_value, guint         n_param_values, const GValue *param_values, gpointer      invocation_hint, gpointer      marshal_data
 </FUNCTION>
@@ -10408,7 +12307,17 @@ GClosure     *closure, GValue       *return_value, guint         n_param_values,
 GClosure     *closure, GValue       *return_value, guint         n_param_values, const GValue *param_values, gpointer      invocation_hint, gpointer      marshal_data
 </FUNCTION>
 <FUNCTION>
+<NAME>g_cclosure_user_marshal_POINTER__POINTER_UINT</NAME>
+<RETURNS>void  </RETURNS>
+GClosure     *closure, GValue       *return_value, guint         n_param_values, const GValue *param_values, gpointer      invocation_hint, gpointer      marshal_data
+</FUNCTION>
+<FUNCTION>
 <NAME>g_cclosure_user_marshal_POINTER__STRING_STRING</NAME>
+<RETURNS>void  </RETURNS>
+GClosure     *closure, GValue       *return_value, guint         n_param_values, const GValue *param_values, gpointer      invocation_hint, gpointer      marshal_data
+</FUNCTION>
+<FUNCTION>
+<NAME>g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING</NAME>
 <RETURNS>void  </RETURNS>
 GClosure     *closure, GValue       *return_value, guint         n_param_values, const GValue *param_values, gpointer      invocation_hint, gpointer      marshal_data
 </FUNCTION>
@@ -10431,6 +12340,206 @@ GClosure     *closure, GValue       *return_value, guint         n_param_values,
 <NAME>g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT</NAME>
 <RETURNS>void  </RETURNS>
 GClosure     *closure, GValue       *return_value, guint         n_param_values, const GValue *param_values, gpointer      invocation_hint, gpointer      marshal_data
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_PERSISTABLE</NAME>
+#define AGS_TYPE_PERSISTABLE                    (ags_persistable_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_PERSISTABLE</NAME>
+#define AGS_PERSISTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PERSISTABLE, AgsPersistable))
+</MACRO>
+<MACRO>
+<NAME>AGS_PERSISTABLE_INTERFACE</NAME>
+#define AGS_PERSISTABLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_PERSISTABLE, AgsPersistableInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_PERSISTABLE</NAME>
+#define AGS_IS_PERSISTABLE(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_PERSISTABLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_PERSISTABLE_INTERFACE</NAME>
+#define AGS_IS_PERSISTABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_PERSISTABLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_PERSISTABLE_GET_INTERFACE</NAME>
+#define AGS_PERSISTABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_PERSISTABLE, AgsPersistableInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsPersistable</NAME>
+typedef void AgsPersistable;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsPersistableInterface</NAME>
+struct _AgsPersistableInterface
+{
+  GTypeInterface interface;
+  
+  AgsPersistable* (*read)(AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node);
+  void (*read_link)(AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node);
+
+  xmlNodePtr (*write)(AgsPersistable *persistable, xmlDocPtr doc);
+  void (*write_link)(AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_persistable_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_persistable_read</NAME>
+<RETURNS>AgsPersistable * </RETURNS>
+AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_persistable_read_link</NAME>
+<RETURNS>void  </RETURNS>
+AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_persistable_write</NAME>
+<RETURNS>xmlNodePtr  </RETURNS>
+AgsPersistable *persistable, xmlDocPtr doc
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_persistable_write_link</NAME>
+<RETURNS>void  </RETURNS>
+AgsPersistable *persistable, xmlDocPtr doc, xmlNodePtr node
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_ACCESSIBLE_MACHINE</NAME>
+#define AGS_TYPE_ACCESSIBLE_MACHINE                    (ags_accessible_machine_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_MACHINE</NAME>
+#define AGS_ACCESSIBLE_MACHINE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ACCESSIBLE_MACHINE, AgsAccessibleMachine))
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_MACHINE_INTERFACE</NAME>
+#define AGS_ACCESSIBLE_MACHINE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_ACCESSIBLE_MACHINE, AgsAccessibleMachineInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_ACCESSIBLE_MACHINE</NAME>
+#define AGS_IS_ACCESSIBLE_MACHINE(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_ACCESSIBLE_MACHINE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_ACCESSIBLE_MACHINE_INTERFACE</NAME>
+#define AGS_IS_ACCESSIBLE_MACHINE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_ACCESSIBLE_MACHINE))
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_MACHINE_GET_INTERFACE</NAME>
+#define AGS_ACCESSIBLE_MACHINE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_ACCESSIBLE_MACHINE, AgsAccessibleMachineInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsAccessibleMachine</NAME>
+typedef void AgsAccessibleMachine;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsAccessibleMachineInterface</NAME>
+struct _AgsAccessibleMachineInterface
+{
+  AgsGenericAccessible generic_accessible;
+
+  gboolean (*move_to_pad)(AgsAccessibleMachine *accessible_machine);
+  gboolean (*move_to_line)(AgsAccessibleMachine *accessible_machine);
+  gboolean (*move_to_line_member)(AgsAccessibleMachine *accessible_machine);
+
+  gboolean (*move_up)(AgsAccessibleMachine *accessible_machine);
+  gboolean (*move_down)(AgsAccessibleMachine *accessible_machine);
+  gboolean (*destroy)(AgsAccessibleMachine *accessible_machine);
+  gboolean (*rename)(AgsAccessibleMachine *accessible_machine);
+  
+  gboolean (*popup_context_menu)(AgsAccessibleMachine *accessible_machine);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_accessible_machine_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_machine_move_to_pad</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleMachine *accessible_machine
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_machine_move_to_line</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleMachine *accessible_machine
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_machine_move_to_line_member</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleMachine *accessible_machine
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_machine_move_up</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleMachine *accessible_machine
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_machine_move_down</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleMachine *accessible_machine
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_machine_destroy</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleMachine *accessible_machine
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_machine_rename</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleMachine *accessible_machine
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_accessible_machine_popup_context_menu</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsAccessibleMachine *accessible_machine
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_ACCESSIBLE_SEQUENCER</NAME>
+#define AGS_TYPE_ACCESSIBLE_SEQUENCER                    (ags_accessible_sequencer_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_SEQUENCER</NAME>
+#define AGS_ACCESSIBLE_SEQUENCER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ACCESSIBLE_SEQUENCER, AgsAccessibleSequencer))
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_SEQUENCER_INTERFACE</NAME>
+#define AGS_ACCESSIBLE_SEQUENCER_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_ACCESSIBLE_SEQUENCER, AgsAccessibleSequencerInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_ACCESSIBLE_SEQUENCER</NAME>
+#define AGS_IS_ACCESSIBLE_SEQUENCER(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_ACCESSIBLE_SEQUENCER))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_ACCESSIBLE_SEQUENCER_INTERFACE</NAME>
+#define AGS_IS_ACCESSIBLE_SEQUENCER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_ACCESSIBLE_SEQUENCER))
+</MACRO>
+<MACRO>
+<NAME>AGS_ACCESSIBLE_SEQUENCER_GET_INTERFACE</NAME>
+#define AGS_ACCESSIBLE_SEQUENCER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_ACCESSIBLE_SEQUENCER, AgsAccessibleSequencerInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsAccessibleSequencer</NAME>
+typedef void AgsAccessibleSequencer;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsAccessibleSequencerInterface</NAME>
+struct _AgsAccessibleSequencerInterface
+{
+  AgsGenericAccessible generic_accessible;
+
+  gboolean (*edit_pattern)(AgsAccessibleSequencer *accessible_sequencer);
+  gboolean (*set_sequence_length)(AgsAccessibleSequencer *accessible_sequencer);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_accessible_sequencer_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_PLUGIN</NAME>
@@ -10855,20 +12964,21 @@ struct _AgsDistributedManagerInterface
   gchar* (*get_url)(AgsDistributedManager *distributed_manager);
 
   void (*set_ports)(AgsDistributedManager *distributed_manager,
-		    gchar **ports);
-  gchar** (*get_ports)(AgsDistributedManager *distributed_manager);
-
+		    guint *ports, guint port_count);
+  guint* (*get_ports)(AgsDistributedManager *distributed_manager,
+		      guint port_count);
+  
   void (*set_soundcard)(AgsDistributedManager *distributed_manager,
-			gchar *uri,
+			gchar *port_uuid,
 			GObject *soundcard);
   GObject* (*get_soundcard)(AgsDistributedManager *distributed_manager,
-			    gchar *uri);
+			    gchar *port_uuid);
 
   void (*set_sequencer)(AgsDistributedManager *distributed_manager,
-			gchar *uri,
+			gchar *port_uuid,
 			GObject *sequencer);
   GObject* (*get_sequencer)(AgsDistributedManager *distributed_manager,
-			    gchar *uri);
+			    gchar *port_uuid);
 
   GObject* (*register_soundcard)(AgsDistributedManager *distributed_manager,
 				 gboolean is_output);
@@ -10899,32 +13009,32 @@ AgsDistributedManager *distributed_manager
 <FUNCTION>
 <NAME>ags_distributed_manager_set_ports</NAME>
 <RETURNS>void  </RETURNS>
-AgsDistributedManager *distributed_manager, gchar **ports
+AgsDistributedManager *distributed_manager, guint *port, guint port_count
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_distributed_manager_get_ports</NAME>
-<RETURNS>gchar ** </RETURNS>
-AgsDistributedManager *distributed_manager
+<RETURNS>guint * </RETURNS>
+AgsDistributedManager *distributed_manager, guint *port_count
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_distributed_manager_set_soundcard</NAME>
 <RETURNS>void  </RETURNS>
-AgsDistributedManager *distributed_manager, gchar *uri, GObject *soundcard
+AgsDistributedManager *distributed_manager, gchar *port_uuid, GObject *soundcard
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_distributed_manager_get_soundcard</NAME>
 <RETURNS>GObject * </RETURNS>
-AgsDistributedManager *distributed_manager, gchar *uri
+AgsDistributedManager *distributed_manager, gchar *port_uuid
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_distributed_manager_set_sequencer</NAME>
 <RETURNS>void  </RETURNS>
-AgsDistributedManager *distributed_manager, gchar *uri, GObject *sequencer
+AgsDistributedManager *distributed_manager, gchar *port_uuid, GObject *sequencer
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_distributed_manager_get_sequencer</NAME>
 <RETURNS>GObject * </RETURNS>
-AgsDistributedManager *distributed_manager, gchar *uri
+AgsDistributedManager *distributed_manager, gchar *port_uuid
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_distributed_manager_register_soundcard</NAME>
@@ -10945,6 +13055,46 @@ AgsDistributedManager *distributed_manager, gboolean is_output
 <NAME>ags_distributed_manager_unregister_sequencer</NAME>
 <RETURNS>void  </RETURNS>
 AgsDistributedManager *distributed_manager, GObject *sequencer
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_EFFECT</NAME>
+#define AGS_TYPE_EFFECT                    (ags_effect_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_EFFECT</NAME>
+#define AGS_EFFECT(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT, AgsEffect))
+</MACRO>
+<MACRO>
+<NAME>AGS_EFFECT_INTERFACE</NAME>
+#define AGS_EFFECT_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_EFFECT, AgsEffectInterface))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_EFFECT</NAME>
+#define AGS_IS_EFFECT(obj)                 (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_EFFECT))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_EFFECT_INTERFACE</NAME>
+#define AGS_IS_EFFECT_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_EFFECT))
+</MACRO>
+<MACRO>
+<NAME>AGS_EFFECT_GET_INTERFACE</NAME>
+#define AGS_EFFECT_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_EFFECT, AgsEffectInterface))
+</MACRO>
+<TYPEDEF>
+<NAME>AgsEffect</NAME>
+typedef void AgsEffect;
+</TYPEDEF>
+<STRUCT>
+<NAME>AgsEffectInterface</NAME>
+struct _AgsEffectInterface
+{
+  GTypeInterface interface;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_effect_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_SOUNDCARD</NAME>
@@ -10992,7 +13142,7 @@ AgsDistributedManager *distributed_manager, GObject *sequencer
 </MACRO>
 <MACRO>
 <NAME>AGS_SOUNDCARD_DEFAULT_DEVICE</NAME>
-#define AGS_SOUNDCARD_DEFAULT_DEVICE "hw:0"
+#define AGS_SOUNDCARD_DEFAULT_DEVICE "hw:0\0"
 </MACRO>
 <MACRO>
 <NAME>AGS_SOUNDCARD_DEFAULT_BPM</NAME>
@@ -11422,13 +13572,6 @@ typedef enum{
   AGS_AUDIO_SIGNAL_STANDALONE           = 1 << 2,
 }AgsAudioSignalFlags;
 </ENUM>
-<ENUM>
-<NAME>AgsAttackFlags</NAME>
-typedef enum{
-  AGS_ATTACK_INITIAL_RUN  = 1,
-  AGS_ATTACK_SWAP         = 1 << 1,
-}AgsAttackFlags;
-</ENUM>
 <STRUCT>
 <NAME>AgsAudioSignal</NAME>
 struct _AgsAudioSignal
@@ -11445,8 +13588,10 @@ struct _AgsAudioSignal
   guint samplerate;
   guint buffer_size;
   guint format;
-
+  guint word_size;
+  
   guint length;
+  guint first_frame;
   guint last_frame; // the last frame at stream_end
   guint loop_start;
   guint loop_end;
@@ -11571,9 +13716,6 @@ GObject *soundcard, GObject *recycling, GObject *recall_id
 <RETURNS>AgsAudioSignal * </RETURNS>
 GObject *soundcard, GObject *recycling, GObject *recall_id, guint length
 </FUNCTION>
-<STRUCT>
-<NAME>AgsAttack</NAME>
-</STRUCT>
 <MACRO>
 <NAME>AGS_TYPE_RECALL_LV2</NAME>
 #define AGS_TYPE_RECALL_LV2                (ags_recall_lv2_get_type())
@@ -11607,6 +13749,7 @@ struct _AgsRecallLv2
   AgsTurtle *turtle;
   
   gchar *filename;
+  gchar *effect;
   gchar *uri;
   uint32_t index;
 
@@ -11647,14 +13790,14 @@ signed short *buffer, float *destination, guint buffer_size, guint lines
 float *buffer, signed short *destination, guint buffer_size, guint lines
 </FUNCTION>
 <FUNCTION>
-<NAME>ags_recall_ladpsa_find</NAME>
+<NAME>ags_recall_lv2_find</NAME>
 <RETURNS>GList * </RETURNS>
 GList *recall, gchar *filename, gchar *uri
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_recall_lv2_new</NAME>
 <RETURNS>AgsRecallLv2 * </RETURNS>
-AgsChannel *source, AgsTurtle *turtle, gchar *filename, gchar *uri, uint32_t index
+AgsChannel *source, AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, uint32_t index
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_RECALL_DSSI</NAME>
@@ -12237,6 +14380,73 @@ struct _AgsMidiinClass
 <NAME>ags_midiin_new</NAME>
 <RETURNS>AgsMidiin * </RETURNS>
 GObject *application_context
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_GARBAGE_COLLECTOR</NAME>
+#define AGS_TYPE_GARBAGE_COLLECTOR                (ags_garbage_collector_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_GARBAGE_COLLECTOR</NAME>
+#define AGS_GARBAGE_COLLECTOR(obj)                ((AgsGarbage_Collector*) G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_GARBAGE_COLLECTOR, AgsGarbageCollector))
+</MACRO>
+<MACRO>
+<NAME>AGS_GARBAGE_COLLECTOR_CLASS</NAME>
+#define AGS_GARBAGE_COLLECTOR_CLASS(class)        ((AgsGarbage_CollectorClass*) G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_GARBAGE_COLLECTOR, AgsGarbageCollectorClass))
+</MACRO>
+<ENUM>
+<NAME>AgsGarbageCollectorFlags</NAME>
+typedef enum{
+  AGS_GARBAGE_COLLECTOR_RUN         = 1, // cancel flag of ags_garbage_collector run
+  AGS_GARBAGE_COLLECTOR_CANCEL_RUN  = 1 <<  1, // used by ags_garbage_collector_remove to remove the current (stopped) AgsRecycling while ags_garbage_collector_run is running
+}AgsGarbageCollectorFlags;
+</ENUM>
+<STRUCT>
+<NAME>AgsGarbageCollector</NAME>
+struct _AgsGarbageCollector
+{
+  GObject object;
+
+  guint32 flags;
+
+  GObject *devout;
+
+  GList *list; // data of type AgsRecycling
+  GList *stopped;
+  GList *start;
+  GList *end;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsGarbageCollectorClass</NAME>
+struct _AgsGarbageCollectorClass
+{
+  GObjectClass object;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_garbage_collector_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_garbage_collector_add</NAME>
+<RETURNS>void  </RETURNS>
+AgsGarbageCollector *garbage_collector, AgsRecycling *recycling
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_garbage_collector_remove</NAME>
+<RETURNS>void  </RETURNS>
+AgsGarbageCollector *garbage_collector, AgsRecycling *recycling
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_garbage_collector_run</NAME>
+<RETURNS>void  </RETURNS>
+AgsGarbageCollector *garbage_collector
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_garbage_collector_new</NAME>
+<RETURNS>AgsGarbageCollector * </RETURNS>
+
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_RECALL_CONTAINER</NAME>
@@ -13292,6 +15502,16 @@ AgsChannel *channel, GObject *recall, gboolean play
 AgsChannel *channel, GObject *recall, gboolean play
 </FUNCTION>
 <FUNCTION>
+<NAME>ags_channel_remove_pattern</NAME>
+<RETURNS>void  </RETURNS>
+AgsChannel *channel, GObject *pattern
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_channel_add_pattern</NAME>
+<RETURNS>void  </RETURNS>
+AgsChannel *channel, GObject *pattern
+</FUNCTION>
+<FUNCTION>
 <NAME>ags_channel_add_effect</NAME>
 <RETURNS>GList * </RETURNS>
 AgsChannel *channel, char *filename, gchar *effect
@@ -13490,6 +15710,8 @@ struct _AgsRecycling
 
   guint flags;
 
+  gboolean parent_locked;
+  
   GObject *channel;
   GObject *soundcard;
 
@@ -13516,7 +15738,7 @@ struct _AgsRecyclingClass
 <FUNCTION>
 <NAME>ags_recycling_get_type</NAME>
 <RETURNS>GType  </RETURNS>
-
+void
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_recycling_set_soundcard</NAME>
@@ -13612,9 +15834,11 @@ struct _AgsAudio
   GObject *sequencer;
   GObject *midi_file;
   
+  guint samplerate;
+  guint buffer_length;
   guint sequence_length;
+
   guint audio_channels;
-  guint frequence;
 
   guint output_pads;
   guint output_lines;
@@ -13622,6 +15846,12 @@ struct _AgsAudio
   guint input_pads;
   guint input_lines;
 
+  guint audio_start_mapping;
+  guint audio_end_mapping;
+
+  guint midi_start_mapping;
+  guint midi_end_mapping;
+  
   AgsChannel *output;
   AgsChannel *input;
 
@@ -13689,6 +15919,16 @@ AgsAudio *audio, guint audio_channels
 <NAME>ags_audio_set_pads</NAME>
 <RETURNS>void  </RETURNS>
 AgsAudio *audio, GType type, guint pads
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_set_samplerate</NAME>
+<RETURNS>void  </RETURNS>
+AgsAudio *audio, guint samplerate
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_set_buffer_length</NAME>
+<RETURNS>void  </RETURNS>
+AgsAudio *audio, guint buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_audio_set_sequence_length</NAME>
@@ -14095,7 +16335,7 @@ AgsNotation *notation
 <FUNCTION>
 <NAME>ags_notation_new</NAME>
 <RETURNS>AgsNotation * </RETURNS>
-guint audio_channel
+GObject *audio, guint audio_channel
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_INPUT</NAME>
@@ -14181,6 +16421,11 @@ struct _AgsRecallDssiRun
 
   LADSPA_Data *input;
   LADSPA_Data *output;
+
+  long delta_time;
+  
+  snd_seq_event_t **event_buffer;
+  unsigned long *event_count;
 };
 </STRUCT>
 <STRUCT>
@@ -14492,7 +16737,7 @@ struct _AgsPort
   guint port_value_size;
   guint port_value_length;
 
-  pthread_mutex_t mutex;
+  pthread_mutex_t *mutex;
 
   union _AgsPortValue{
     gboolean ags_port_boolean;
@@ -14560,6 +16805,428 @@ GList *port, gchar *specifier
 <NAME>ags_port_new</NAME>
 <RETURNS>AgsPort * </RETURNS>
 
+</FUNCTION>
+<ENUM>
+<NAME>AgsAudioBufferUtilFormat</NAME>
+typedef enum{
+  AGS_AUDIO_BUFFER_UTIL_S8,
+  AGS_AUDIO_BUFFER_UTIL_S16,
+  AGS_AUDIO_BUFFER_UTIL_S24,
+  AGS_AUDIO_BUFFER_UTIL_S32,
+  AGS_AUDIO_BUFFER_UTIL_S64,
+  AGS_AUDIO_BUFFER_UTIL_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+}AgsAudioBufferUtilFormat;
+</ENUM>
+<ENUM>
+<NAME>AgsAudioBufferUtilSamplerate</NAME>
+typedef enum{
+  AGS_AUDIO_BUFFER_UTIL_8000HZ,
+  AGS_AUDIO_BUFFER_UTIL_44100HZ,
+  AGS_AUDIO_BUFFER_UTIL_48000HZ,
+  AGS_AUDIO_BUFFER_UTIL_96000HZ,
+  AGS_AUDIO_BUFFER_UTIL_176400HZ,
+  AGS_AUDIO_BUFFER_UTIL_192000HZ,
+  AGS_AUDIO_BUFFER_UTIL_352800HZ,
+  AGS_AUDIO_BUFFER_UTIL_2822400HZ,
+  AGS_AUDIO_BUFFER_UTIL_5644800HZ,
+}AgsAudioBufferUtilSamplerate;
+</ENUM>
+<ENUM>
+<NAME>AgsAudioBufferUtilCopyMode</NAME>
+typedef enum{
+  /* signed 8 bit source*/
+  AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S24,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE,
+  /* signed 16 bit source */  
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE,
+  /* signed 24 bit source */
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE,
+  /* signed 32 bit source */
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE,
+  /* signed 64 bit source */
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE,
+  /* float source */
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE,
+  /* double source */
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8,
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16,
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24,
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64,
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT,
+  AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE,
+}AgsAudioBufferUtilCopyMode;
+</ENUM>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_morph_s8</NAME>
+<RETURNS>signed char * </RETURNS>
+signed char *buffer, guint channels, guint buffer_length, guint morph_lookbehind, AgsComplex *morph
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_morph_s16</NAME>
+<RETURNS>signed short * </RETURNS>
+signed short *buffer, guint channels, guint buffer_length, guint morph_lookbehind, AgsComplex *morph
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_morph_s24</NAME>
+<RETURNS>signed long * </RETURNS>
+signed long *buffer, guint channels, guint buffer_length, guint morph_lookbehind, AgsComplex *morph
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_morph_s32</NAME>
+<RETURNS>signed long * </RETURNS>
+signed long *buffer, guint channels, guint buffer_length, guint morph_lookbehind, AgsComplex *morph
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_morph_s64</NAME>
+<RETURNS>signed long long * </RETURNS>
+signed char *buffer, guint channels, guint buffer_length, guint morph_lookbehind, AgsComplex *morph
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_morph_float</NAME>
+<RETURNS>float * </RETURNS>
+float *buffer, guint channels, guint buffer_length, guint morph_lookbehind, AgsComplex *morph
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_morph_double</NAME>
+<RETURNS>double * </RETURNS>
+double *buffer, guint channels, guint buffer_length, guint morph_lookbehind, AgsComplex *morph
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_morph</NAME>
+<RETURNS>void * </RETURNS>
+void *buffer, guint channels, guint format, guint buffer_length, guint morph_lookbehind, AgsComplex *morph
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_resample_s8</NAME>
+<RETURNS>signed char * </RETURNS>
+signed char *buffer, guint channels, guint samplerate, guint buffer_length, guint target_samplerate
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_resample_s16</NAME>
+<RETURNS>signed short * </RETURNS>
+signed short *buffer, guint channels, guint samplerate, guint buffer_length, guint target_samplerate
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_resample_s24</NAME>
+<RETURNS>signed long * </RETURNS>
+signed long *buffer, guint channels, guint samplerate, guint buffer_length, guint target_samplerate
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_resample_s32</NAME>
+<RETURNS>signed long * </RETURNS>
+signed long *buffer, guint channels, guint samplerate, guint buffer_length, guint target_samplerate
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_resample_s64</NAME>
+<RETURNS>signed long long * </RETURNS>
+signed char *buffer, guint channels, guint samplerate, guint buffer_length, guint target_samplerate
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_resample_float</NAME>
+<RETURNS>float * </RETURNS>
+float *buffer, guint channels, guint samplerate, guint buffer_length, guint target_samplerate
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_resample_double</NAME>
+<RETURNS>double * </RETURNS>
+double *buffer, guint channels, guint samplerate, guint buffer_length, guint target_samplerate
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_resample</NAME>
+<RETURNS>void * </RETURNS>
+void *buffer, guint channels, guint format,  guint samplerate, guint buffer_length, guint target_samplerate
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s8_to_s8</NAME>
+<RETURNS>void  </RETURNS>
+signed char *destination, guint dchannels, signed char *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s8_to_s16</NAME>
+<RETURNS>void  </RETURNS>
+signed short *destination, guint dchannels, signed char *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s8_to_s24</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed char *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s8_to_s32</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed char *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s8_to_s64</NAME>
+<RETURNS>void  </RETURNS>
+signed long long *destination, guint dchannels, signed char *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s8_to_float</NAME>
+<RETURNS>void  </RETURNS>
+signed float *destination, guint dchannels, signed char *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s8_to_double</NAME>
+<RETURNS>void  </RETURNS>
+signed double *destination, guint dchannels, signed char *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s16_to_s8</NAME>
+<RETURNS>void  </RETURNS>
+signed char *destination, guint dchannels, signed short *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s16_to_s16</NAME>
+<RETURNS>void  </RETURNS>
+signed short *destination, guint dchannels, signed short *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s16_to_s24</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed short *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s16_to_s32</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed short *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s16_to_s64</NAME>
+<RETURNS>void  </RETURNS>
+signed long long *destination, guint dchannels, signed short *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s16_to_float</NAME>
+<RETURNS>void  </RETURNS>
+signed float *destination, guint dchannels, signed short *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s16_to_double</NAME>
+<RETURNS>void  </RETURNS>
+signed double *destination, guint dchannels, signed short *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s24_to_s8</NAME>
+<RETURNS>void  </RETURNS>
+signed char *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s24_to_s16</NAME>
+<RETURNS>void  </RETURNS>
+signed short *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s24_to_s24</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s24_to_s32</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s24_to_s64</NAME>
+<RETURNS>void  </RETURNS>
+signed long long *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s24_to_float</NAME>
+<RETURNS>void  </RETURNS>
+signed float *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s24_to_double</NAME>
+<RETURNS>void  </RETURNS>
+signed double *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s32_to_s8</NAME>
+<RETURNS>void  </RETURNS>
+signed char *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s32_to_s16</NAME>
+<RETURNS>void  </RETURNS>
+signed short *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s32_to_s24</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s32_to_s32</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s32_to_s64</NAME>
+<RETURNS>void  </RETURNS>
+signed long long *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s32_to_float</NAME>
+<RETURNS>void  </RETURNS>
+signed float *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s32_to_double</NAME>
+<RETURNS>void  </RETURNS>
+signed double *destination, guint dchannels, signed long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s64_to_s8</NAME>
+<RETURNS>void  </RETURNS>
+signed char *destination, guint dchannels, signed long long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s64_to_s16</NAME>
+<RETURNS>void  </RETURNS>
+signed short *destination, guint dchannels, signed long long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s64_to_s24</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed long long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s64_to_s32</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed long long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s64_to_s64</NAME>
+<RETURNS>void  </RETURNS>
+signed long long *destination, guint dchannels, signed long long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s64_to_float</NAME>
+<RETURNS>void  </RETURNS>
+signed float *destination, guint dchannels, signed long long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_s64_to_double</NAME>
+<RETURNS>void  </RETURNS>
+signed double *destination, guint dchannels, signed long long *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_float_to_s8</NAME>
+<RETURNS>void  </RETURNS>
+signed char *destination, guint dchannels, signed float *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_float_to_s16</NAME>
+<RETURNS>void  </RETURNS>
+signed short *destination, guint dchannels, signed float *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_float_to_s24</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed float *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_float_to_s32</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed float *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_float_to_s64</NAME>
+<RETURNS>void  </RETURNS>
+signed long long *destination, guint dchannels, signed float *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_float_to_float</NAME>
+<RETURNS>void  </RETURNS>
+signed float *destination, guint dchannels, signed float *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_float_to_double</NAME>
+<RETURNS>void  </RETURNS>
+signed double *destination, guint dchannels, signed float *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_double_to_s8</NAME>
+<RETURNS>void  </RETURNS>
+signed char *destination, guint dchannels, signed double *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_double_to_s16</NAME>
+<RETURNS>void  </RETURNS>
+signed short *destination, guint dchannels, signed double *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_double_to_s24</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed double *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_double_to_s32</NAME>
+<RETURNS>void  </RETURNS>
+signed long *destination, guint dchannels, signed double *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_double_to_s64</NAME>
+<RETURNS>void  </RETURNS>
+signed long long *destination, guint dchannels, signed double *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_double_to_float</NAME>
+<RETURNS>void  </RETURNS>
+signed float *destination, guint dchannels, signed double *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_double_to_double</NAME>
+<RETURNS>void  </RETURNS>
+signed double *destination, guint dchannels, signed double *source, guint schannels, guint count
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_get_copy_mode</NAME>
+<RETURNS>void  </RETURNS>
+guint dformat, gboolean source_is_soundcard, guint sformat, gboolean destination_is_soundcard
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_audio_buffer_util_copy_buffer_to_buffer</NAME>
+<RETURNS>void  </RETURNS>
+void *destination, guint dchannels, void *source, guint schannels, guint count, guint mode
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_PLAYABLE</NAME>
@@ -14852,6 +17519,14 @@ AgsSoundProvider *sound_provider
 <NAME>AGS_NOTE_GET_CLASS</NAME>
 #define AGS_NOTE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_NOTE, AgsNoteClass))
 </MACRO>
+<MACRO>
+<NAME>USECS_PER_SEC</NAME>
+#define USECS_PER_SEC (1000000)
+</MACRO>
+<MACRO>
+<NAME>AGS_NOTE_DEFAULT_TICKS_PER_QUARTER_NOTE</NAME>
+#define AGS_NOTE_DEFAULT_TICKS_PER_QUARTER_NOTE (16.0)
+</MACRO>
 <ENUM>
 <NAME>AgsNoteFlags</NAME>
 typedef enum{
@@ -14874,6 +17549,9 @@ struct _AgsNote
   guint x[2];
   guint y;
 
+  gdouble stream_delay;
+  gdouble stream_attack;
+  
   AgsComplex attack;
   AgsComplex decay;
   AgsComplex sustain;
@@ -14898,24 +17576,34 @@ struct _AgsNoteClass
 
 </FUNCTION>
 <FUNCTION>
+<NAME>ags_note_find_prev</NAME>
+<RETURNS>GList * </RETURNS>
+GList *note, guint x0, guint y
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_note_find_next</NAME>
+<RETURNS>GList * </RETURNS>
+GList *note, guint x0, guint y
+</FUNCTION>
+<FUNCTION>
 <NAME>ags_note_to_raw_midi</NAME>
-<RETURNS>char * </RETURNS>
-AgsNote *note, guint *buffer_length
+<RETURNS>unsigned char * </RETURNS>
+AgsNote *note, gdouble bpm, gdouble delay_factor, guint *buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_note_to_seq_event</NAME>
 <RETURNS>snd_seq_event_t * </RETURNS>
-AgsNote *note, guint *n_events
+AgsNote *note, gdouble bpm, gdouble delay_factor, guint *n_events
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_note_from_raw_midi</NAME>
 <RETURNS>GList * </RETURNS>
-char *raw_midi, guint length
+unsigned char *raw_midi, gdouble bpm, gdouble delay_factor, guint length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_note_from_seq_event</NAME>
 <RETURNS>GList * </RETURNS>
-snd_seq_event_t *event, guint n_events
+snd_seq_event_t *event, gdouble bpm, gdouble delay_factor, guint n_events
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_note_duplicate</NAME>
@@ -14926,6 +17614,11 @@ AgsNote *note
 <NAME>ags_note_new</NAME>
 <RETURNS>AgsNote * </RETURNS>
 
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_note_new_with_offset</NAME>
+<RETURNS>AgsNote * </RETURNS>
+guint x0, guint x1, guint y, gdouble stream_delay, gdouble stream_attack
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_RECYCLING_CONTEXT</NAME>
@@ -15559,7 +18252,7 @@ GObject *application_context
 <ENUM>
 <NAME>AgsAutomationFlags</NAME>
 typedef enum{
-  AGS_AUTOMATION_BYPASS   = 1,
+  AGS_AUTOMATION_BYPASS               = 1,
 }AgsAutomationFlags;
 </ENUM>
 <STRUCT>
@@ -15581,6 +18274,8 @@ struct _AgsAutomation
   gdouble upper;
   gdouble lower;
   gdouble default_value;
+
+  AgsFunction *source_function;
   
   GList *acceleration;
 
@@ -16148,6 +18843,54 @@ struct _AgsStartSoundcardClass
 <NAME>ags_start_soundcard_new</NAME>
 <RETURNS>AgsStartSoundcard * </RETURNS>
 GObject *soundcard
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_APPLY_WAVETABLE</NAME>
+#define AGS_TYPE_APPLY_WAVETABLE                (ags_apply_wavetable_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_APPLY_WAVETABLE</NAME>
+#define AGS_APPLY_WAVETABLE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_WAVETABLE, AgsApplyWavetable))
+</MACRO>
+<MACRO>
+<NAME>AGS_APPLY_WAVETABLE_CLASS</NAME>
+#define AGS_APPLY_WAVETABLE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_APPLY_WAVETABLE, AgsApplyWavetableClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_APPLY_WAVETABLE</NAME>
+#define AGS_IS_APPLY_WAVETABLE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_APPLY_WAVETABLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_APPLY_WAVETABLE_CLASS</NAME>
+#define AGS_IS_APPLY_WAVETABLE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_APPLY_WAVETABLE))
+</MACRO>
+<MACRO>
+<NAME>AGS_APPLY_WAVETABLE_GET_CLASS</NAME>
+#define AGS_APPLY_WAVETABLE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_APPLY_WAVETABLE, AgsApplyWavetableClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsApplyWavetable</NAME>
+struct _AgsApplyWavetable
+{
+  AgsTask task;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsApplyWavetableClass</NAME>
+struct _AgsApplyWavetableClass
+{
+  AgsTaskClass task;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_apply_wavetable_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_apply_wavetable_new</NAME>
+<RETURNS>AgsApplyWavetable * </RETURNS>
+
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_SET_AUDIO_CHANNELS</NAME>
@@ -18374,7 +21117,7 @@ struct _AgsJackMidiin
   guint note_offset;
 
   gchar *card_uri;
-  jack_port_t *in_port;
+  GObject *jack_port;
   
   GObject *application_context;
   pthread_mutex_t *application_mutex;
@@ -18428,6 +21171,18 @@ GObject *application_context
 <NAME>AGS_JACK_SERVER_GET_CLASS</NAME>
 #define AGS_JACK_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_SERVER, AgsJackServerClass))
 </MACRO>
+<MACRO>
+<NAME>AGS_JACK_SERVER_DEFAULT_PROTOCOL</NAME>
+#define AGS_JACK_SERVER_DEFAULT_PROTOCOL "udp"
+</MACRO>
+<MACRO>
+<NAME>AGS_JACK_SERVER_DEFAULT_HOST</NAME>
+#define AGS_JACK_SERVER_DEFAULT_HOST "localhost"
+</MACRO>
+<MACRO>
+<NAME>AGS_JACK_SERVER_DEFAULT_PORT</NAME>
+#define AGS_JACK_SERVER_DEFAULT_PORT (3000)
+</MACRO>
 <ENUM>
 <NAME>AgsJackServerFlags</NAME>
 typedef enum{
@@ -18443,8 +21198,13 @@ struct _AgsJackServer
   guint flags;
 
   GObject *application_context;
-  gchar *url;
 
+  gchar *url;
+  jackctl_server_t *jackctl;
+  
+  guint *port;
+  guint port_count;
+  
   guint n_soundcards;
   guint n_sequencers;
   
@@ -18465,6 +21225,31 @@ struct _AgsJackServerClass
 <NAME>ags_jack_server_get_type</NAME>
 <RETURNS>GType  </RETURNS>
 
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_jack_server_find_url</NAME>
+<RETURNS>GList * </RETURNS>
+GList *jack_server, gchar *url
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_jack_server_find_client</NAME>
+<RETURNS>GObject * </RETURNS>
+AgsJackServer *jack_server, gchar *client_uuid
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_jack_server_find_port</NAME>
+<RETURNS>GObject * </RETURNS>
+AgsJackServer *jack_server, gchar *port_uuid
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_jack_server_add_client</NAME>
+<RETURNS>void  </RETURNS>
+AgsJackServer *jack_server, GObject *jack_client
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_jack_server_remove_client</NAME>
+<RETURNS>void  </RETURNS>
+AgsJackServer *jack_server, GObject *jack_client
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_jack_server_new</NAME>
@@ -18562,7 +21347,7 @@ struct _AgsJackDevout
   guint note_offset;
 
   gchar *card_uri;
-  jack_port_t *out_port;
+  GObject *jack_port;
   
   GObject *application_context;
   pthread_mutex_t *application_mutex;
@@ -18662,9 +21447,24 @@ struct _AgsJackClientClass
 
 </FUNCTION>
 <FUNCTION>
+<NAME>ags_jack_client_find</NAME>
+<RETURNS>GList * </RETURNS>
+GList *jack_client, gchar *client_name
+</FUNCTION>
+<FUNCTION>
 <NAME>ags_jack_client_open</NAME>
 <RETURNS>void  </RETURNS>
 AgsJackClient *jack_client, gchar *client_name
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_jack_client_add_port</NAME>
+<RETURNS>void  </RETURNS>
+AgsJackClient *jack_client, GObject *jack_port
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_jack_client_remove_port</NAME>
+<RETURNS>void  </RETURNS>
+AgsJackClient *jack_client, GObject *jack_port
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_jack_client_new</NAME>
@@ -18713,7 +21513,6 @@ struct _AgsJackPort
   
   gchar *uuid;
   gchar *name;
-  gchar *uri;
   
   jack_port_t *port;
   
@@ -18733,9 +21532,19 @@ struct _AgsJackPortClass
 
 </FUNCTION>
 <FUNCTION>
+<NAME>ags_jack_port_find</NAME>
+<RETURNS>GList * </RETURNS>
+GList *jack_port, gchar *port_name
+</FUNCTION>
+<FUNCTION>
 <NAME>ags_jack_port_register</NAME>
 <RETURNS>void  </RETURNS>
 AgsJackPort *jack_port, gchar *name, gboolean is_audio, gboolean is_midi, gboolean is_output
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_jack_port_unregister</NAME>
+<RETURNS>void  </RETURNS>
+AgsJackPort *jack_port
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_jack_port_new</NAME>
@@ -18800,23 +21609,28 @@ struct _AgsMidiBuilderClass
 		       gchar *track_name);
 
   void (*append_key_on)(AgsMidiBuilder *midi_builder,
+			guint delta_time,
 			guint audio_channel,
 			guint note,
 			guint velocity);
   void (*append_key_off)(AgsMidiBuilder *midi_builder,
+			 guint delta_time,
 			 guint audio_channel,
 			 guint note,
 			 guint velocity);
   void (*append_key_pressure)(AgsMidiBuilder *midi_builder,
+			      guint delta_time,
 			      guint audio_channel,
 			      guint note,
 			      guint pressure);
 
   void (*append_change_parameter)(AgsMidiBuilder *midi_builder,
+				  guint delta_time,
 				  guint channel,
 				  guint control,
 				  guint value);
   void (*append_change_pitch_bend)(AgsMidiBuilder *midi_builder,
+				   guint delta_time,
 				   guint channel,
 				   guint pitch,
 				   guint transmitter);
@@ -18824,35 +21638,47 @@ struct _AgsMidiBuilderClass
 				guint channel,
 				guint program);
   void (*append_change_pressure)(AgsMidiBuilder *midi_builder,
+				 guint delta_time,
 				 guint channel,
 				 guint pressure);
 
   /* sysex and system common */
   void (*append_sysex)(AgsMidiBuilder *midi_builder,
+		       guint delta_time,
 		       unsigned char *sysex_data, guint length);
 
   void (*append_quarter_frame)(AgsMidiBuilder *midi_builder,
-			       guint quarter_frame);
+			       guint delta_time,
+			       guint message_type,
+			       guint values);
   void (*append_song_position)(AgsMidiBuilder *midi_builder,
+			       guint delta_time,
 			       guint song_position);
   void (*append_song_select)(AgsMidiBuilder *midi_builder,
+			     guint delta_time,
 			     guint song_select);
-  void (*append_tune_request)(AgsMidiBuilder *midi_builder);
+  void (*append_tune_request)(AgsMidiBuilder *midi_builder,
+				 guint delta_time);
   
   /* meta events */
   void (*append_sequence_number)(AgsMidiBuilder *midi_builder,
+				 guint delta_time,
 				 guint sequence);
   void (*append_smtpe)(AgsMidiBuilder *midi_builder,
+		       guint delta_time,
 		       guint hr, guint mn, guint se, guint fr, guint ff);
   void (*append_tempo)(AgsMidiBuilder *midi_builder,
 		       guint tempo);  
   void (*append_time_signature)(AgsMidiBuilder *midi_builder,
+				guint delta_time,
 				guint nn, guint denom, guint dd, guint cc, guint bb);
   void (*append_key_signature)(AgsMidiBuilder *midi_builder,
 			       guint sf, guint mi);
   void (*append_sequencer_meta_event)(AgsMidiBuilder *midi_builder,
+				      guint delta_time,
 				      guint len, guint id, guint data);
   void (*append_text_event)(AgsMidiBuilder *midi_builder,
+			    guint delta_time,
 			    gchar *text, guint length);
 };
 </STRUCT>
@@ -18884,97 +21710,97 @@ AgsMidiBuilder *midi_builder, gchar *track_name
 <FUNCTION>
 <NAME>ags_midi_builder_append_key_on</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint audio_channel, guint note, guint velocity
+AgsMidiBuilder *midi_builder, guint delta_time, guint audio_channel, guint note, guint velocity
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_key_off</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint audio_channel, guint note, guint velocity
+AgsMidiBuilder *midi_builder, guint delta_time, guint audio_channel, guint note, guint velocity
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_key_pressure</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint audio_channel, guint note, guint pressure
+AgsMidiBuilder *midi_builder, guint delta_time, guint audio_channel, guint note, guint pressure
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_change_parameter</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint channel, guint control, guint value
+AgsMidiBuilder *midi_builder, guint delta_time, guint channel, guint control, guint value
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_change_pitch_bend</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint channel, guint pitch, guint transmitter
+AgsMidiBuilder *midi_builder, guint delta_time, guint channel, guint pitch, guint transmitter
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_change_program</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint channel, guint program
+AgsMidiBuilder *midi_builder, guint delta_time, guint channel, guint program
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_change_pressure</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint channel, guint pressure
+AgsMidiBuilder *midi_builder, guint delta_time, guint channel, guint pressure
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_sysex</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, unsigned char *sysex_data, guint length
+AgsMidiBuilder *midi_builder, guint delta_time, unsigned char *sysex_data, guint length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_quarter_frame</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint quarter_frame
+AgsMidiBuilder *midi_builder, guint delta_time, guint message_type, guint values
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_song_position</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint song_position
+AgsMidiBuilder *midi_builder, guint delta_time, guint song_position
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_song_select</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint song_select
+AgsMidiBuilder *midi_builder, guint delta_time, guint song_select
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_tune_request</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder
+AgsMidiBuilder *midi_builder, guint delta_time
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_sequence_number</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint sequence
+AgsMidiBuilder *midi_builder, guint delta_time, guint sequence
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_smtpe</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint hr, guint mn, guint se, guint fr, guint ff
+AgsMidiBuilder *midi_builder, guint delta_time, guint hr, guint mn, guint se, guint fr, guint ff
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_tempo</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint tempo
+AgsMidiBuilder *midi_builder, guint delta_time, guint tempo
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_time_signature</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint nn, guint denom, guint dd, guint cc, guint bb
+AgsMidiBuilder *midi_builder, guint delta_time, guint nn, guint denom, guint dd, guint cc, guint bb
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_key_signature</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint sf, guint mi
+AgsMidiBuilder *midi_builder, guint delta_time, guint sf, guint mi
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_sequencer_meta_event</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, guint len, guint id, guint data
+AgsMidiBuilder *midi_builder, guint delta_time, guint len, guint id, guint data
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_text_event</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiBuilder *midi_builder, gchar *text, guint length
+AgsMidiBuilder *midi_builder, guint delta_time, gchar *text, guint length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_builder_append_xml_node</NAME>
@@ -19108,10 +21934,10 @@ struct _AgsMidiFile
   FILE *file;
   gchar *filename;
   
-  char *buffer;
+  unsigned char *buffer;
   guint buffer_length;
 
-  char *iter;
+  unsigned char *iter;
   
   guint offset;
   guint format;
@@ -19140,7 +21966,7 @@ struct _AgsMidiFileTrack
   GObject *sequencer;
 
   gchar *track_name;
-  char *buffer;
+  unsigned char *buffer;
 };
 </STRUCT>
 <FUNCTION>
@@ -19156,7 +21982,7 @@ AgsMidiFile *midi_file
 <FUNCTION>
 <NAME>ags_midi_file_open_from_data</NAME>
 <RETURNS>gboolean  </RETURNS>
-AgsMidiFile *midi_file, char *data, guint buffer_length
+AgsMidiFile *midi_file, unsigned char *data, guint buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_file_rw_open</NAME>
@@ -19176,7 +22002,7 @@ AgsMidiFile *midi_file
 <FUNCTION>
 <NAME>ags_midi_file_write</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiFile *midi_file, char *data, guint buffer_length
+AgsMidiFile *midi_file, unsigned char *data, guint buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_file_seek</NAME>
@@ -19240,28 +22066,73 @@ AgsMidiFile *midi_file, gchar *text, guint length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_file_read_header</NAME>
-<RETURNS>char * </RETURNS>
+<RETURNS>unsigned char * </RETURNS>
 AgsMidiFile *midi_file, guint *buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_file_write_header</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiFile *midi_file, char *data, guint buffer_length
+AgsMidiFile *midi_file, unsigned char *buffer, guint buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_file_read_track_data</NAME>
-<RETURNS>gchar * </RETURNS>
-AgsMidiFile *midi_file, char **buffer, guint *buffer_length
+<RETURNS>unsigned char * </RETURNS>
+AgsMidiFile *midi_file, guint *buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_file_write_track_data</NAME>
 <RETURNS>void  </RETURNS>
-AgsMidiFile *midi_file, gchar *track_name, char *data, guint buffer_length
+AgsMidiFile *midi_file, unsigned char *buffer, guint buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_file_new</NAME>
 <RETURNS>AgsMidiFile * </RETURNS>
 gchar *filename
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_buffer_util_get_varlength_size</NAME>
+<RETURNS>guint  </RETURNS>
+long varlength
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_buffer_util_put_varlength</NAME>
+<RETURNS>void  </RETURNS>
+unsigned char *buffer, long varlength
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_buffer_util_get_varlength</NAME>
+<RETURNS>guint  </RETURNS>
+unsigned char *buffer, long *varlength
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_buffer_util_put_key_on</NAME>
+<RETURNS>void  </RETURNS>
+unsigned char *buffer, long delta_time, long channel, long key, long velocity
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_buffer_util_get_key_on</NAME>
+<RETURNS>guint  </RETURNS>
+unsigned char *buffer, long *delta_time, long *channel, long *key, long *velocity
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_buffer_util_put_key_off</NAME>
+<RETURNS>void  </RETURNS>
+unsigned char *buffer, long delta_time, long channel, long key, long velocity
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_buffer_util_get_key_off</NAME>
+<RETURNS>guint  </RETURNS>
+unsigned char *buffer, long *delta_time, long *channel, long *key, long *velocity
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_buffer_util_put_key_pressure</NAME>
+<RETURNS>void  </RETURNS>
+unsigned char *buffer, long delta_time, long channel, long key, long pressure
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_buffer_util_get_key_pressure</NAME>
+<RETURNS>guint  </RETURNS>
+unsigned char *buffer, long *delta_time, long *channel, long *key, long *pressure
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_MIDI_PARSER</NAME>
@@ -19342,12 +22213,15 @@ struct _AgsMidiParserClass
   int (*midi_getc)(AgsMidiParser *midi_parser);
   void (*on_error)(AgsMidiParser *midi_parser,
 		   GError **error);
-  
+
   xmlDoc* (*parse_full)(AgsMidiParser *midi_parser);
+  xmlNode* (*parse_bytes)(AgsMidiParser *midi_parser,
+			  unsigned char *midi_buffer,
+			  guint buffer_length);
   
   xmlNode* (*parse_header)(AgsMidiParser *midi_parser);
   xmlNode* (*parse_track)(AgsMidiParser *midi_parser);
-
+  
   xmlNode* (*key_on)(AgsMidiParser *midi_parser, guint status);
   xmlNode* (*key_off)(AgsMidiParser *midi_parser, guint status);
   xmlNode* (*key_pressure)(AgsMidiParser *midi_parser, guint status);
@@ -19421,6 +22295,11 @@ AgsMidiParser *midi_parser, GError **error
 <NAME>ags_midi_parser_parse_full</NAME>
 <RETURNS>xmlDoc * </RETURNS>
 AgsMidiParser *midi_parser
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_parser_parse_bytes</NAME>
+<RETURNS>xmlNode * </RETURNS>
+AgsMidiParser *midi_parser, unsigned char *midi_buffer, guint buffer_length
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_midi_parser_parse_header</NAME>
@@ -19648,6 +22527,11 @@ struct _AgsMidiFileWriterClass
 void
 </FUNCTION>
 <FUNCTION>
+<NAME>ags_midi_file_writer_write_bytes</NAME>
+<RETURNS>void  </RETURNS>
+AgsMidiFileWriter *midi_file_writer, unsigned char buffer, guint buffer_length
+</FUNCTION>
+<FUNCTION>
 <NAME>ags_midi_file_writer_write_channel_message</NAME>
 <RETURNS>void  </RETURNS>
 AgsMidiFileWriter *midi_file_writer, gchar *track_name, guint status, ...
@@ -19661,6 +22545,36 @@ AgsMidiFileWriter *midi_file_writer, gchar *track_name, guint status, ...
 <NAME>ags_midi_file_writer_new</NAME>
 <RETURNS>AgsMidiFileWriter * </RETURNS>
 gchar *filename
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_util_envelope_to_velocity</NAME>
+<RETURNS>long  </RETURNS>
+AgsComplex *attack, AgsComplex *decay, AgsComplex *sustain, AgsComplex *release, AgsComplex *ratio, guint samplerate, guint start_frame, guint end_frame
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_util_velocity_to_envelope</NAME>
+<RETURNS>void  </RETURNS>
+long delta_time, gboolean is_release, AgsComplex **attack, AgsComplex **decay, AgsComplex **sustain, AgsComplex **release, AgsComplex **ratio, guint *samplerate, guint *start_frame, guint *end_frame
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_util_envelope_to_pressure</NAME>
+<RETURNS>long  </RETURNS>
+AgsComplex *attack, AgsComplex *decay, AgsComplex *sustain, AgsComplex *release, AgsComplex *ratio, guint samplerate, guint start_frame, guint end_frame
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_util_pressure_to_envelope</NAME>
+<RETURNS>void  </RETURNS>
+long delta_time, gboolean is_sustain, AgsComplex **attack, AgsComplex **decay, AgsComplex **sustain, AgsComplex **release, AgsComplex **ratio, guint *samplerate, guint *start_frame, guint *end_frame
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_util_delta_time_to_offset</NAME>
+<RETURNS>guint  </RETURNS>
+long delta_time, gdouble bpm, gdouble delay_factor, gdouble *delay, guint *attack
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_util_offset_to_delta_time</NAME>
+<RETURNS>long  </RETURNS>
+guint x, gdouble bpm, gdouble delay_factor
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_AUDIO_FILE_LINK</NAME>
@@ -20133,26 +23047,6 @@ AgsFile *file, xmlNode *node, GList **embedded_audio
 <NAME>ags_file_write_embedded_audio_list</NAME>
 <RETURNS>xmlNode * </RETURNS>
 AgsFile *file, xmlNode *parent, GList *embedded_audio
-</FUNCTION>
-<FUNCTION>
-<NAME>ags_file_read_file_link</NAME>
-<RETURNS>void  </RETURNS>
-AgsFile *file, xmlNode *node, AgsFileLink **file_link
-</FUNCTION>
-<FUNCTION>
-<NAME>ags_file_write_file_link</NAME>
-<RETURNS>xmlNode * </RETURNS>
-AgsFile *file, xmlNode *parent, AgsFileLink *file_link
-</FUNCTION>
-<FUNCTION>
-<NAME>ags_file_read_file_link_list</NAME>
-<RETURNS>void  </RETURNS>
-AgsFile *file, xmlNode *node, GList **file_link
-</FUNCTION>
-<FUNCTION>
-<NAME>ags_file_write_file_link_list</NAME>
-<RETURNS>xmlNode * </RETURNS>
-AgsFile *file, xmlNode *parent, GList *file_link
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_AUDIO_FILE</NAME>
@@ -20967,6 +23861,90 @@ struct _AgsExportThreadClass
 GObject *soundcard, AgsAudioFile *audio_file
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_MIDI_LOOP</NAME>
+#define AGS_TYPE_MIDI_LOOP                (ags_midi_loop_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_MIDI_LOOP</NAME>
+#define AGS_MIDI_LOOP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_LOOP, AgsMidiLoop))
+</MACRO>
+<MACRO>
+<NAME>AGS_MIDI_LOOP_CLASS</NAME>
+#define AGS_MIDI_LOOP_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_MIDI_LOOP, AgsMidiLoopClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MIDI_LOOP</NAME>
+#define AGS_IS_MIDI_LOOP(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_MIDI_LOOP))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MIDI_LOOP_CLASS</NAME>
+#define AGS_IS_MIDI_LOOP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_LOOP))
+</MACRO>
+<MACRO>
+<NAME>AGS_MIDI_LOOP_GET_CLASS</NAME>
+#define AGS_MIDI_LOOP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MIDI_LOOP, AgsMidiLoopClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_MIDI_LOOP_DEFAULT_JIFFIE</NAME>
+#define AGS_MIDI_LOOP_DEFAULT_JIFFIE (48.0)
+</MACRO>
+<STRUCT>
+<NAME>AgsMidiLoop</NAME>
+struct _AgsMidiLoop
+{
+  AgsThread thread;
+
+  guint flags;
+
+  volatile guint tic;
+  volatile guint last_sync;
+
+  GObject *application_context;
+  GObject *sequencer;
+  
+  GObject *async_queue;
+    
+  pthread_mutexattr_t tree_lock_mutexattr;
+  pthread_mutex_t *tree_lock;
+  pthread_mutex_t *recall_mutex;
+
+  guint play_midi_ref;
+  GList *play_midi; // play AgsMidi
+
+  guint play_notation_ref;
+  GList *play_notation;
+
+  GList *tree_sanity;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsMidiLoopClass</NAME>
+struct _AgsMidiLoopClass
+{
+  AgsThreadClass thread;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_midi_loop_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_loop_add_midi</NAME>
+<RETURNS>void  </RETURNS>
+AgsMidiLoop *midi_loop, GObject *midi
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_loop_remove_midi</NAME>
+<RETURNS>void  </RETURNS>
+AgsMidiLoop *midi_loop, GObject *midi
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_midi_loop_new</NAME>
+<RETURNS>AgsMidiLoop * </RETURNS>
+GObject *sequencer, GObject *application_context
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_ITERATOR_THREAD</NAME>
 #define AGS_TYPE_ITERATOR_THREAD                (ags_iterator_thread_get_type())
 </MACRO>
@@ -21223,12 +24201,19 @@ struct _AgsSequencerThread
 struct _AgsSequencerThreadClass
 {
   AgsThreadClass thread;
+
+  void (*interval_timeout)(AgsSequencerThread *sequencer_thread);
 };
 </STRUCT>
 <FUNCTION>
 <NAME>ags_sequencer_thread_get_type</NAME>
 <RETURNS>GType  </RETURNS>
 
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_sequencer_thread_interval_timeout</NAME>
+<RETURNS>void  </RETURNS>
+AgsSequencerThread *sequencer_thread
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_sequencer_thread_new</NAME>
@@ -21745,6 +24730,54 @@ AgsPeakChannel *peak_channel, gboolean is_play
 AgsChannel *source
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_PERFORM_AUTOMATION_AUDIO</NAME>
+#define AGS_TYPE_PERFORM_AUTOMATION_AUDIO                (ags_perform_automation_audio_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_PERFORM_AUTOMATION_AUDIO</NAME>
+#define AGS_PERFORM_AUTOMATION_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PERFORM_AUTOMATION_AUDIO, AgsPerformAutomationAudio))
+</MACRO>
+<MACRO>
+<NAME>AGS_PERFORM_AUTOMATION_AUDIO_CLASS</NAME>
+#define AGS_PERFORM_AUTOMATION_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PERFORM_AUTOMATION_AUDIO, AgsPerformAutomationAudio))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_PERFORM_AUTOMATION_AUDIO</NAME>
+#define AGS_IS_PERFORM_AUTOMATION_AUDIO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PERFORM_AUTOMATION_AUDIO))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_PERFORM_AUTOMATION_AUDIO_CLASS</NAME>
+#define AGS_IS_PERFORM_AUTOMATION_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PERFORM_AUTOMATION_AUDIO))
+</MACRO>
+<MACRO>
+<NAME>AGS_PERFORM_AUTOMATION_AUDIO_GET_CLASS</NAME>
+#define AGS_PERFORM_AUTOMATION_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PERFORM_AUTOMATION_AUDIO, AgsPerformAutomationAudioClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsPerformAutomationAudio</NAME>
+struct _AgsPerformAutomationAudio
+{
+  AgsRecallAudio recall_audio;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsPerformAutomationAudioClass</NAME>
+struct _AgsPerformAutomationAudioClass
+{
+  AgsRecallAudioClass recall_audio;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_perform_automation_audio_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_perform_automation_audio_new</NAME>
+<RETURNS>AgsPerformAutomationAudio * </RETURNS>
+
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_MUTE_CHANNEL</NAME>
 #define AGS_TYPE_MUTE_CHANNEL                (ags_mute_channel_get_type())
 </MACRO>
@@ -21891,7 +24924,7 @@ struct _AgsCopyAudioSignalClass
 <FUNCTION>
 <NAME>ags_copy_audio_signal_new</NAME>
 <RETURNS>AgsCopyAudioSignal * </RETURNS>
-AgsAudioSignal *destination, AgsAudioSignal *source, GObject *soundcard, AgsAttack *attack
+AgsAudioSignal *destination, AgsAudioSignal *source, GObject *soundcard
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_COPY_NOTATION_AUDIO</NAME>
@@ -22559,6 +25592,7 @@ struct _AgsRecordMidiAudioRun
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
+  GObject *midi_parser;
   GObject *midi_file_writer;
 };
 </STRUCT>
@@ -23153,6 +26187,9 @@ struct _AgsRouteDssiAudioRun
 
   AgsNotation *notation;
   GObject *sequencer;
+
+  GList *feed_midi;
+  long delta_time;
 };
 </STRUCT>
 <STRUCT>
@@ -23682,6 +26719,54 @@ struct _AgsEnvelopeChannelClass
 <FUNCTION>
 <NAME>ags_envelope_channel_new</NAME>
 <RETURNS>AgsEnvelopeChannel * </RETURNS>
+
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_PERFORM_AUTOMATION_AUDIO_RUN</NAME>
+#define AGS_TYPE_PERFORM_AUTOMATION_AUDIO_RUN                (ags_perform_automation_audio_run_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_PERFORM_AUTOMATION_AUDIO_RUN</NAME>
+#define AGS_PERFORM_AUTOMATION_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PERFORM_AUTOMATION_AUDIO_RUN, AgsPerformAutomationAudioRun))
+</MACRO>
+<MACRO>
+<NAME>AGS_PERFORM_AUTOMATION_AUDIO_RUN_CLASS</NAME>
+#define AGS_PERFORM_AUTOMATION_AUDIO_RUN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PERFORM_AUTOMATION_AUDIO_RUN, AgsPerformAutomationAudioRun))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_PERFORM_AUTOMATION_AUDIO_RUN</NAME>
+#define AGS_IS_PERFORM_AUTOMATION_AUDIO_RUN(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PERFORM_AUTOMATION_AUDIO_RUN))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_PERFORM_AUTOMATION_AUDIO_RUN_CLASS</NAME>
+#define AGS_IS_PERFORM_AUTOMATION_AUDIO_RUN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PERFORM_AUTOMATION_AUDIO_RUN))
+</MACRO>
+<MACRO>
+<NAME>AGS_PERFORM_AUTOMATION_AUDIO_RUN_GET_CLASS</NAME>
+#define AGS_PERFORM_AUTOMATION_AUDIO_RUN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PERFORM_AUTOMATION_AUDIO_RUN, AgsPerformAutomationAudioRunClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsPerformAutomationAudioRun</NAME>
+struct _AgsPerformAutomationAudioRun
+{
+  AgsRecallAudioRun recall_audio_run;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsPerformAutomationAudioRunClass</NAME>
+struct _AgsPerformAutomationAudioRunClass
+{
+  AgsRecallAudioRunClass recall_audio_run;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_perform_automation_audio_run_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_perform_automation_audio_run_new</NAME>
+<RETURNS>AgsPerformAutomationAudioRun * </RETURNS>
 
 </FUNCTION>
 <MACRO>
@@ -25014,6 +28099,11 @@ AgsTurtle *turtle, gchar *filename
 gchar *filename, gchar *uri
 </FUNCTION>
 <FUNCTION>
+<NAME>ags_lv2_manager_find_uri</NAME>
+<RETURNS>gchar * </RETURNS>
+gchar *filename, gchar *effect
+</FUNCTION>
+<FUNCTION>
 <NAME>ags_lv2_manager_get_instance</NAME>
 <RETURNS>AgsLv2Manager * </RETURNS>
 
@@ -25625,6 +28715,49 @@ AgsLed *led
 
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_TIMEBAR</NAME>
+#define AGS_TYPE_TIMEBAR                (ags_timebar_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_TIMEBAR</NAME>
+#define AGS_TIMEBAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TIMEBAR, AgsTimebar))
+</MACRO>
+<MACRO>
+<NAME>AGS_TIMEBAR_CLASS</NAME>
+#define AGS_TIMEBAR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TIMEBAR, AgsTimebarClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_TIMEBAR</NAME>
+#define AGS_IS_TIMEBAR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_TIMEBAR))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_TIMEBAR_CLASS</NAME>
+#define AGS_IS_TIMEBAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_TIMEBAR))
+</MACRO>
+<MACRO>
+<NAME>AGS_TIMEBAR_GET_CLASS</NAME>
+#define AGS_TIMEBAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_TIMEBAR, AgsTimebarClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsTimebar</NAME>
+struct _AgsTimebar
+{
+  GtkRange range;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsTimebarClass</NAME>
+struct _AgsTimebarClass
+{
+  GtkRangeClass range;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_timebar_new</NAME>
+<RETURNS>AgsTimebar * </RETURNS>
+
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_INDICATOR</NAME>
 #define AGS_TYPE_INDICATOR                (ags_indicator_get_type())
 </MACRO>
@@ -25940,6 +29073,155 @@ AgsExpander *expander, GtkWidget *widget
 guint width, guint height
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_WAVEFORM</NAME>
+#define AGS_TYPE_WAVEFORM                (ags_waveform_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_WAVEFORM</NAME>
+#define AGS_WAVEFORM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WAVEFORM, AgsWaveform))
+</MACRO>
+<MACRO>
+<NAME>AGS_WAVEFORM_CLASS</NAME>
+#define AGS_WAVEFORM_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_WAVEFORM, AgsWaveformClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_WAVEFORM</NAME>
+#define AGS_IS_WAVEFORM(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_WAVEFORM))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_WAVEFORM_CLASS</NAME>
+#define AGS_IS_WAVEFORM_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_WAVEFORM))
+</MACRO>
+<MACRO>
+<NAME>AGS_WAVEFORM_GET_CLASS</NAME>
+#define AGS_WAVEFORM_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_WAVEFORM, AgsWaveformClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsWaveform</NAME>
+struct _AgsWaveform
+{
+  GtkWidget widget;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsWaveformClass</NAME>
+struct _AgsWaveformClass
+{
+  GtkWidgetClass widget;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_waveform_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_waveform_new</NAME>
+<RETURNS>AgsWaveform * </RETURNS>
+
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_OPTION_MENU</NAME>
+#define AGS_TYPE_OPTION_MENU                (ags_option_menu_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_OPTION_MENU</NAME>
+#define AGS_OPTION_MENU(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPTION_MENU, AgsOptionMenu))
+</MACRO>
+<MACRO>
+<NAME>AGS_OPTION_MENU_CLASS</NAME>
+#define AGS_OPTION_MENU_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OPTION_MENU, AgsOptionMenuClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_OPTION_MENU</NAME>
+#define AGS_IS_OPTION_MENU(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_OPTION_MENU))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_OPTION_MENU_CLASS</NAME>
+#define AGS_IS_OPTION_MENU_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_OPTION_MENU))
+</MACRO>
+<MACRO>
+<NAME>AGS_OPTION_MENU_GET_CLASS</NAME>
+#define AGS_OPTION_MENU_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OPTION_MENU, AgsOptionMenuClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsOptionMenu</NAME>
+struct _AgsOptionMenu
+{
+  GtkHBox hbox;
+
+  GtkWidget *button;
+  AgsTable *table;
+
+  GtkWidget *menu;
+  GList *active_item;
+  GtkWidget *focus;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsOptionMenuClass</NAME>
+struct _AgsOptionMenuClass
+{
+  GtkHBoxClass hbox;
+
+  void (*changed)(AgsOptionMenu *option_menu);
+  void (*focus_changed)(AgsOptionMenu *option_menu);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_option_menu_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_option_menu_new</NAME>
+<RETURNS>AgsOptionMenu * </RETURNS>
+
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_HTIMEBAR</NAME>
+#define AGS_TYPE_HTIMEBAR                (ags_htimebar_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_HTIMEBAR</NAME>
+#define AGS_HTIMEBAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_HTIMEBAR, AgsHTimebar))
+</MACRO>
+<MACRO>
+<NAME>AGS_HTIMEBAR_CLASS</NAME>
+#define AGS_HTIMEBAR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_HTIMEBAR, AgsHTimebarClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_HTIMEBAR</NAME>
+#define AGS_IS_HTIMEBAR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_HTIMEBAR))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_HTIMEBAR_CLASS</NAME>
+#define AGS_IS_HTIMEBAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_HTIMEBAR))
+</MACRO>
+<MACRO>
+<NAME>AGS_HTIMEBAR_GET_CLASS</NAME>
+#define AGS_HTIMEBAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_HTIMEBAR, AgsHTimebarClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsHTimebar</NAME>
+struct _AgsHTimebar
+{
+  AgsTimebar range;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsHTimebarClass</NAME>
+struct _AgsHTimebarClass
+{
+  AgsTimebarClass timebar;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_htimebar_new</NAME>
+<RETURNS>AgsHTimebar * </RETURNS>
+
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_VINDICATOR</NAME>
 #define AGS_TYPE_VINDICATOR                (ags_vindicator_get_type())
 </MACRO>
@@ -25988,9 +29270,202 @@ void
 
 </FUNCTION>
 <MACRO>
+<NAME>AGS_TYPE_CARTESIAN</NAME>
+#define AGS_TYPE_CARTESIAN                (ags_cartesian_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_CARTESIAN</NAME>
+#define AGS_CARTESIAN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CARTESIAN, AgsCartesian))
+</MACRO>
+<MACRO>
+<NAME>AGS_CARTESIAN_CLASS</NAME>
+#define AGS_CARTESIAN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CARTESIAN, AgsCartesianClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_CARTESIAN</NAME>
+#define AGS_IS_CARTESIAN(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_CARTESIAN))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_CARTESIAN_CLASS</NAME>
+#define AGS_IS_CARTESIAN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CARTESIAN))
+</MACRO>
+<MACRO>
+<NAME>AGS_CARTESIAN_GET_CLASS</NAME>
+#define AGS_CARTESIAN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CARTESIAN, AgsCartesianClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsCartesian</NAME>
+struct _AgsCartesian
+{
+  GtkWidget widget;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsCartesianClass</NAME>
+struct _AgsCartesianClass
+{
+  GtkWidgetClass widget;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_cartesian_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_cartesian_new</NAME>
+<RETURNS>AgsCartesian * </RETURNS>
+
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_SEGMENT</NAME>
+#define AGS_TYPE_SEGMENT                (ags_segment_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_SEGMENT</NAME>
+#define AGS_SEGMENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SEGMENT, AgsSegment))
+</MACRO>
+<MACRO>
+<NAME>AGS_SEGMENT_CLASS</NAME>
+#define AGS_SEGMENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SEGMENT, AgsSegmentClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SEGMENT</NAME>
+#define AGS_IS_SEGMENT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SEGMENT))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_SEGMENT_CLASS</NAME>
+#define AGS_IS_SEGMENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SEGMENT))
+</MACRO>
+<MACRO>
+<NAME>AGS_SEGMENT_GET_CLASS</NAME>
+#define AGS_SEGMENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SEGMENT, AgsSegmentClass))
+</MACRO>
+<ENUM>
+<NAME>AGS_SEGMENT_FLAGS</NAME>
+typedef enum{
+  AGS_SEGMENT_MONOCHROME      = 1,
+  AGS_SEGMENT_COLOR_RED       = 1 <<  1,
+  AGS_SEGMENT_COLOR_BLUE      = 1 <<  2,
+  AGS_SGEMENT_COLOR_GREEN     = 1 <<  3,
+}AGS_SEGMENT_FLAGS;
+</ENUM>
+<ENUM>
+<NAME>AgsSegmentFields</NAME>
+typedef enum{
+  AGS_SEGMENT_UPPER_LEFT                = 1,
+  AGS_SEGMENT_UPPER_RIGHT               = 1 <<  1,
+  AGS_SEGMENT_LOWER_LEFT                = 1 <<  2,
+  AGS_SEGMENT_LOWER_RIGHT               = 1 <<  3,
+  AGS_SEGMENT_LEFT_UPPER_1              = 1 <<  4,
+  AGS_SEGMENT_LEFT_UPPER_2              = 1 <<  5,
+  AGS_SEGMENT_LEFT_LOWER_1              = 1 <<  6,
+  AGS_SEGMENT_LEFT_LOWER_2              = 1 <<  7,
+  AGS_SEGMENT_RIGHT_UPPER_1             = 1 <<  8,
+  AGS_SEGMENT_RIGHT_UPPER_2             = 1 <<  9,
+  AGS_SEGMENT_RIGHT_LOWER_1             = 1 << 10,
+  AGS_SEGMENT_RIGHT_LOWER_2             = 1 << 11,
+  AGS_SEGMENT_DIAGONAL_UPPER_LEFT_1     = 1 << 12,
+  AGS_SEGMENT_DIAGONAL_UPPER_LEFT_2     = 1 << 13,
+  AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_1    = 1 << 14,
+  AGS_SEGMENT_DIAGONAL_UPPER_RIGHT_2    = 1 << 15,
+  AGS_SEGMENT_DIAGONAL_LOWER_LEFT_1     = 1 << 16,
+  AGS_SEGMENT_DIAGONAL_LOWER_LEFT_2     = 1 << 17,
+  AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_1    = 1 << 18,
+  AGS_SEGMENT_DIAGONAL_LOWER_RIGHT_2    = 1 << 19,
+}AgsSegmentFields;
+</ENUM>
+<STRUCT>
+<NAME>AgsSegment</NAME>
+struct _AgsSegment
+{
+  GtkWidget widget;
+
+  guint flags;
+
+  guint count;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsSegmentClass</NAME>
+struct _AgsSegmentClass
+{
+  GtkWidgetClass widget;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_segment_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_segment_field_on</NAME>
+<RETURNS>void  </RETURNS>
+AgsSegment *segment, guint field
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_segment_field_off</NAME>
+<RETURNS>void  </RETURNS>
+AgsSegment *segment, guint field
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_segment_draw_string</NAME>
+<RETURNS>void  </RETURNS>
+AgsSegment *segment, gchar **string
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_segment_new</NAME>
+<RETURNS>AgsSegment * </RETURNS>
+
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_MENU_ITEM</NAME>
 #define AGS_TYPE_MENU_ITEM                (ags_menu_get_type())
 </MACRO>
+<MACRO>
+<NAME>AGS_MENU_ITEM</NAME>
+#define AGS_MENU_ITEM(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MENU_ITEM, AgsMenuItem))
+</MACRO>
+<MACRO>
+<NAME>AGS_MENU_ITEM_CLASS</NAME>
+#define AGS_MENU_ITEM_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MENU_ITEM, AgsMenuItemClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MENU_ITEM</NAME>
+#define AGS_IS_MENU_ITEM(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_MENU_ITEM))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_MENU_ITEM_CLASS</NAME>
+#define AGS_IS_MENU_ITEM_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MENU_ITEM))
+</MACRO>
+<MACRO>
+<NAME>AGS_MENU_ITEM_GET_CLASS</NAME>
+#define AGS_MENU_ITEM_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MENU_ITEM, AgsMenuItemClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsMenuItem</NAME>
+struct _AgsMenuItem
+{
+  AgsTable table;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsMenuItemClass</NAME>
+struct _AgsMenuItemClass
+{
+  AgsTableClass table;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_menu_item_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_menu_item_new</NAME>
+<RETURNS>AgsMenuItem * </RETURNS>
+
+</FUNCTION>
 <FUNCTION>
 <NAME>ags_container_add_all</NAME>
 <RETURNS>void  </RETURNS>
@@ -26701,6 +30176,102 @@ AgsFile *file, xmlNode *parent, GObject *application_context
 #define AGS_FILE_CONTEXT_PROP "context\0"
 </MACRO>
 <MACRO>
+<NAME>AGS_TYPE_FILE_WRITE</NAME>
+#define AGS_TYPE_FILE_WRITE                (ags_file_write_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_FILE_WRITE</NAME>
+#define AGS_FILE_WRITE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_WRITE, AgsFileWrite))
+</MACRO>
+<MACRO>
+<NAME>AGS_FILE_WRITE_CLASS</NAME>
+#define AGS_FILE_WRITE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FILE_WRITE, AgsFileWriteClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_FILE_WRITE</NAME>
+#define AGS_IS_FILE_WRITE(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FILE_WRITE))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_FILE_WRITE_CLASS</NAME>
+#define AGS_IS_FILE_WRITE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_WRITE))
+</MACRO>
+<MACRO>
+<NAME>AGS_FILE_WRITE_GET_CLASS</NAME>
+#define AGS_FILE_WRITE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE_WRITE, AgsFileWriteClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsFileWrite</NAME>
+struct _AgsFileWrite
+{
+  GObject object;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsFileWriteClass</NAME>
+struct _AgsFileWriteClass
+{
+  GObjectClass object;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_file_write_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_file_write_new</NAME>
+<RETURNS>AgsFileWrite * </RETURNS>
+
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_FILE_READ</NAME>
+#define AGS_TYPE_FILE_READ                (ags_file_read_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_FILE_READ</NAME>
+#define AGS_FILE_READ(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FILE_READ, AgsFileRead))
+</MACRO>
+<MACRO>
+<NAME>AGS_FILE_READ_CLASS</NAME>
+#define AGS_FILE_READ_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_FILE_READ, AgsFileReadClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_FILE_READ</NAME>
+#define AGS_IS_FILE_READ(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FILE_READ))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_FILE_READ_CLASS</NAME>
+#define AGS_IS_FILE_READ_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_READ))
+</MACRO>
+<MACRO>
+<NAME>AGS_FILE_READ_GET_CLASS</NAME>
+#define AGS_FILE_READ_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE_READ, AgsFileReadClass))
+</MACRO>
+<STRUCT>
+<NAME>AgsFileRead</NAME>
+struct _AgsFileRead
+{
+  GObject object;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsFileReadClass</NAME>
+struct _AgsFileReadClass
+{
+  GObjectClass object;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_file_read_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_file_read_new</NAME>
+<RETURNS>AgsFileRead * </RETURNS>
+
+</FUNCTION>
+<MACRO>
 <NAME>AGS_TYPE_FILE_LAUNCH</NAME>
 #define AGS_TYPE_FILE_LAUNCH                (ags_file_launch_get_type())
 </MACRO>
@@ -26732,6 +30303,8 @@ struct _AgsFileLaunch
 
   GObject *application_context;
 
+  gpointer reference;
+  
   xmlNode *node;
   GObject *file;
 };
@@ -26940,24 +30513,12 @@ AgsThread *parent
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
 </MACRO>
 <MACRO>
-<NAME>AGS_ACCOUNTING_TABLE</NAME>
-#define AGS_ACCOUNTING_TABLE(ptr) ((AgsAccountingTable *)(ptr))
-</MACRO>
-<MACRO>
 <NAME>USEC_PER_SEC</NAME>
-#define USEC_PER_SEC    (1000000) /* The number of usecs per sec. */
+#define USEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 </MACRO>
 <MACRO>
 <NAME>NSEC_PER_SEC</NAME>
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
-</MACRO>
-<MACRO>
-<NAME>AGS_PRIORITY</NAME>
-#define AGS_PRIORITY (5)
-</MACRO>
-<MACRO>
-<NAME>AGS_RT_PRIORITY</NAME>
-#define AGS_RT_PRIORITY (49)
 </MACRO>
 <MACRO>
 <NAME>AGS_THREAD_RESUME_SIG</NAME>
@@ -26968,12 +30529,20 @@ AgsThread *parent
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
 </MACRO>
 <MACRO>
+<NAME>AGS_RT_PRIORITY</NAME>
+#define AGS_RT_PRIORITY (45)
+</MACRO>
+<MACRO>
+<NAME>AGS_THREAD_HERTZ_JIFFIE</NAME>
+#define AGS_THREAD_HERTZ_JIFFIE (1000.0)
+</MACRO>
+<MACRO>
 <NAME>AGS_THREAD_DEFAULT_JIFFIE</NAME>
-#define AGS_THREAD_DEFAULT_JIFFIE (250)
+#define AGS_THREAD_DEFAULT_JIFFIE (250.0)
 </MACRO>
 <MACRO>
 <NAME>AGS_THREAD_MAX_PRECISION</NAME>
-#define AGS_THREAD_MAX_PRECISION (250)
+#define AGS_THREAD_MAX_PRECISION (250.0)
 </MACRO>
 <MACRO>
 <NAME>AGS_THREAD_DEFAULT_ATTACK</NAME>
@@ -27033,6 +30602,13 @@ struct _AgsThread
   gboolean rt_setup;
   
   sigset_t wait_mask;
+
+  guint delay;
+  guint tic_delay;
+  guint current_tic;
+
+  guint cycle_iteration;
+  struct timespec *computing_time;
   
   pthread_t *thread;
   pthread_attr_t thread_attr;
@@ -27081,7 +30657,6 @@ struct _AgsThread
 
   volatile AgsThread *children;
 
-  GMainLoop *main_loop;
   gpointer data;
 };
 </STRUCT>
@@ -27091,20 +30666,14 @@ struct _AgsThreadClass
 {
   GObjectClass object;
 
+  guint (*clock)(AgsThread *thread);
+  
   void (*start)(AgsThread *thread);
   void (*run)(AgsThread *thread);
   void (*suspend)(AgsThread *thread);
   void (*resume)(AgsThread *thread);
   void (*timelock)(AgsThread *thread);
   void (*stop)(AgsThread *thread);
-};
-</STRUCT>
-<STRUCT>
-<NAME>AgsAccountingTable</NAME>
-struct _AgsAccountingTable
-{
-  AgsThread *thread;
-  gdouble sanity;
 };
 </STRUCT>
 <FUNCTION>
@@ -27121,16 +30690,6 @@ int sig
 <NAME>ags_thread_suspend_handler</NAME>
 <RETURNS>void  </RETURNS>
 int sig
-</FUNCTION>
-<FUNCTION>
-<NAME>ags_accounting_table_alloc</NAME>
-<RETURNS>AgsAccountingTable * </RETURNS>
-AgsThread *thread
-</FUNCTION>
-<FUNCTION>
-<NAME>ags_accounting_table_set_sanity</NAME>
-<RETURNS>void  </RETURNS>
-GList *table, AgsThread *thread, gdouble sanity
 </FUNCTION>
 <FUNCTION>
 <NAME>ags_thread_set_sync</NAME>
@@ -27298,6 +30857,11 @@ AgsThread *thread, gboolean broadcast
 AgsThread *thread, gboolean broadcast
 </FUNCTION>
 <FUNCTION>
+<NAME>ags_thread_clock</NAME>
+<RETURNS>guint  </RETURNS>
+AgsThread *thread
+</FUNCTION>
+<FUNCTION>
 <NAME>ags_thread_start</NAME>
 <RETURNS>void  </RETURNS>
 AgsThread *thread
@@ -27398,6 +30962,304 @@ struct _AgsSingleThreadClass
 <NAME>ags_single_thread_new</NAME>
 <RETURNS>AgsSingleThread * </RETURNS>
 
+</FUNCTION>
+<MACRO>
+<NAME>AGS_TYPE_PORTABLE_THREAD</NAME>
+#define AGS_TYPE_PORTABLE_THREAD                (ags_portable_thread_get_type())
+</MACRO>
+<MACRO>
+<NAME>AGS_PORTABLE_THREAD</NAME>
+#define AGS_PORTABLE_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_THREAD, AgsPortableThread))
+</MACRO>
+<MACRO>
+<NAME>AGS_PORTABLE_THREAD_CLASS</NAME>
+#define AGS_PORTABLE_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_THREAD, AgsPortableThreadClass))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_PORTABLE_THREAD</NAME>
+#define AGS_IS_PORTABLE_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_THREAD))
+</MACRO>
+<MACRO>
+<NAME>AGS_IS_PORTABLE_THREAD_CLASS</NAME>
+#define AGS_IS_PORTABLE_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
+</MACRO>
+<MACRO>
+<NAME>AGS_PORTABLE_THREAD_GET_CLASS</NAME>
+#define AGS_PORTABLE_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsPortableThreadClass))
+</MACRO>
+<ENUM>
+<NAME>AgsPortableThreadFlags</NAME>
+typedef enum{
+  AGS_PORTABLE_THREAD_RUNNING                 = 1,
+  AGS_PORTABLE_THREAD_IDLE                    = 1 << 1,
+  AGS_PORTABLE_THREAD_LOCKED                  = 1 << 2,
+  AGS_PORTABLE_THREAD_WAIT_FOR_PARENT         = 1 << 3,
+  AGS_PORTABLE_THREAD_WAIT_FOR_SIBLING        = 1 << 4,
+  AGS_PORTABLE_THREAD_WAIT_FOR_CHILDREN       = 1 << 5,
+  AGS_PORTABLE_THREAD_WAIT_FOR_BARRIER        = 1 << 6,
+  AGS_PORTABLE_THREAD_WAITING_FOR_PARENT      = 1 << 7,
+  AGS_PORTABLE_THREAD_WAITING_FOR_SIBLING     = 1 << 8,
+  AGS_PORTABLE_THREAD_WAITING_FOR_CHILDREN    = 1 << 9,
+  AGS_PORTABLE_THREAD_WAITING_FOR_BARRIER     = 1 << 10,
+  AGS_PORTABLE_THREAD_BROADCAST_PARENT        = 1 << 11,
+  AGS_PORTABLE_THREAD_BROADCAST_SIBLING       = 1 << 12,
+  AGS_PORTABLE_THREAD_BROADCAST_CHILDREN      = 1 << 13,
+  AGS_PORTABLE_THREAD_INITIAL_RUN             = 1 << 14,
+  AGS_PORTABLE_THREAD_TREE_SYNC_0             = 1 << 15,
+  AGS_PORTABLE_THREAD_WAIT_0                  = 1 << 16,
+  AGS_PORTABLE_THREAD_TREE_SYNC_1             = 1 << 17,
+  AGS_PORTABLE_THREAD_WAIT_1                  = 1 << 18,
+  AGS_PORTABLE_THREAD_TREE_SYNC_2             = 1 << 19,
+  AGS_PORTABLE_THREAD_WAIT_2                  = 1 << 20,
+  AGS_PORTABLE_THREAD_TIMELOCK_RUN            = 1 << 21,
+  AGS_PORTABLE_THREAD_TIMELOCK_WAIT           = 1 << 22,
+  AGS_PORTABLE_THREAD_TIMELOCK_RESUME         = 1 << 23,
+}AgsPortableThreadFlags;
+</ENUM>
+<STRUCT>
+<NAME>AgsPortableThread</NAME>
+struct _AgsPortableThread
+{
+  GObject object;
+
+  volatile guint flags;
+
+  pth_t thread;
+  pth_attr_t thread_attr;
+
+  pth_mutex_t mutex;
+  pth_cond_t cond;
+
+  pth_mutex_t start_mutex;
+  pth_cond_t start_cond;
+
+  pth_barrier_t barrier[2];
+  gboolean first_barrier;
+  int wait_count[2];
+
+  pth_t timelock_thread;
+  pth_mutex_t timelock_mutex;
+  pth_cond_t timelock_cond;
+
+  long timelock;
+
+  GObject *devout;
+  AgsPortableThread *parent;
+
+  AgsPortableThread *next;
+  AgsPortableThread *prev;
+
+  AgsPortableThread *children;
+
+  GObject *data;
+};
+</STRUCT>
+<STRUCT>
+<NAME>AgsPortableThreadClass</NAME>
+struct _AgsPortableThreadClass
+{
+  GObjectClass object;
+
+  void (*start)(AgsPortableThread *thread);
+  void (*run)(AgsPortableThread *thread);
+  void (*timelock)(AgsPortableThread *thread);
+  void (*stop)(AgsPortableThread *thread);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>ags_portable_thread_get_type</NAME>
+<RETURNS>GType  </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_lock</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_trylock</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_unlock</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_get_toplevel</NAME>
+<RETURNS>AgsPortableThread * </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_first</NAME>
+<RETURNS>AgsPortableThread * </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_last</NAME>
+<RETURNS>AgsPortableThread * </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_remove_child</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread, AgsPortableThread *child
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_add_child</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread, AgsPortableThread *child
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_parental_is_locked</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsPortableThread *thread, AgsPortableThread *parent
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_sibling_is_locked</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_children_is_locked</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_is_current_ready</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsPortableThread *current
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_is_current_synced</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsPortableThread *current
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_is_tree_ready</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_is_tree_synced</NAME>
+<RETURNS>gboolean  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_main_loop_unlock_children</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_next_parent_locked</NAME>
+<RETURNS>AgsPortableThread * </RETURNS>
+AgsPortableThread *thread, AgsPortableThread *parent
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_next_sibling_locked</NAME>
+<RETURNS>AgsPortableThread * </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_next_children_locked</NAME>
+<RETURNS>AgsPortableThread * </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_lock_parent</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread, AgsPortableThread *parent
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_lock_sibling</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_lock_children</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_lock_all</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_unlock_parent</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread, AgsPortableThread *parent
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_unlock_sibling</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_unlock_children</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_unlock_all</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_wait_parent</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread, AgsPortableThread *parent
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_wait_sibling</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_wait_children</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_signal_parent</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread, AgsPortableThread *parent, gboolean broadcast
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_signal_sibling</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread, gboolean broadcast
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_signal_children</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread, gboolean broadcast
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_start</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_run</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_timelock</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_stop</NAME>
+<RETURNS>void  </RETURNS>
+AgsPortableThread *thread
+</FUNCTION>
+<FUNCTION>
+<NAME>ags_portable_thread_new</NAME>
+<RETURNS>AgsPortableThread * </RETURNS>
+GObject *data
 </FUNCTION>
 <MACRO>
 <NAME>AGS_TYPE_CONCURRENCY_PROVIDER</NAME>

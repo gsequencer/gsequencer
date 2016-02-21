@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_LINE_H__
@@ -86,7 +87,7 @@ struct _AgsLineClass
   
   void (*map_recall)(AgsLine *line,
 		     guint output_pad_start);
-  GList (*find_port)(AgsLine *line);
+  GList* (*find_port)(AgsLine *line);
 };
 
 GType ags_line_get_type(void);
@@ -96,18 +97,13 @@ void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_line_group_changed(AgsLine *line);
 
 GList* ags_line_add_effect(AgsLine *line,
+			   GList *control_type_name,
 			   gchar *filename,
 			   gchar *effect);
 void ags_line_remove_effect(AgsLine *line,
 			    guint nth);
 
 GList* ags_line_find_next_grouped(GList *line);
-
-GList* ags_line_add_effect(AgsLine *line,
-			   gchar *filename,
-			   gchar *effect);
-void ags_line_remove_effect(AgsLine *line,
-			    guint nth);
 
 void ags_line_map_recall(AgsLine *line,
 			 guint output_pad_start);

@@ -20,7 +20,6 @@
 #ifndef __AGS_AUDIO_H__
 #define __AGS_AUDIO_H__
 
-#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/audio/ags_channel.h>
@@ -36,18 +35,17 @@ typedef struct _AgsAudio AgsAudio;
 typedef struct _AgsAudioClass AgsAudioClass;
 
 typedef enum{
-  AGS_AUDIO_CONNECTED                   = 1,
-  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  1,
-  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  2,
-  AGS_AUDIO_INPUT_TAKES_FILE            = 1 <<  3,
-  AGS_AUDIO_HAS_NOTATION                = 1 <<  4,
-  AGS_AUDIO_SYNC                        = 1 <<  5, // can be combined with below
-  AGS_AUDIO_ASYNC                       = 1 <<  6,
-  AGS_AUDIO_RUNNING                     = 1 <<  7,
-  AGS_AUDIO_PLAYING                     = 1 <<  8,
-  AGS_AUDIO_NOTATION_DEFAULT            = 1 <<  9,
-  AGS_AUDIO_REVERSE_MAPPING             = 1 << 10,
-  AGS_AUDIO_PATTERN_MODE                = 1 << 11,
+  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1,
+  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  1,
+  AGS_AUDIO_INPUT_TAKES_FILE            = 1 <<  2,
+  AGS_AUDIO_HAS_NOTATION                = 1 <<  3,
+  AGS_AUDIO_SYNC                        = 1 <<  4, // can be combined with below
+  AGS_AUDIO_ASYNC                       = 1 <<  5,
+  AGS_AUDIO_RUNNING                     = 1 <<  6,
+  AGS_AUDIO_PLAYING                     = 1 <<  7,
+  AGS_AUDIO_NOTATION_DEFAULT            = 1 <<  8,
+  AGS_AUDIO_REVERSE_MAPPING             = 1 <<  9,
+  AGS_AUDIO_PATTERN_MODE                = 1 << 10,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -63,7 +61,7 @@ struct _AgsAudio
   GObject *midi_file;
   
   guint samplerate;
-  guint buffer_size;
+  guint buffer_length;
   guint sequence_length;
 
   guint audio_channels;
@@ -74,8 +72,11 @@ struct _AgsAudio
   guint input_pads;
   guint input_lines;
 
-  guint audio_mapping;
-  guint midi_mapping;
+  guint audio_start_mapping;
+  guint audio_end_mapping;
+
+  guint midi_start_mapping;
+  guint midi_end_mapping;
   
   AgsChannel *output;
   AgsChannel *input;
@@ -123,6 +124,8 @@ void ags_audio_unset_flags(AgsAudio *audio, guint flags);
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
 void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
 
+void ags_audio_set_samplerate(AgsAudio *audio, guint samplerate);
+void ags_audio_set_buffer_length(AgsAudio *audio, guint buffer_length);
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
 void ags_audio_add_notation(AgsAudio *audio,
@@ -178,6 +181,6 @@ void ags_audio_open_files(AgsAudio *audio,
 GList* ags_audio_recursive_play_init(AgsAudio *audio,
 				     gboolean playback, gboolean sequencer, gboolean notation);
 
-AgsAudio* ags_audio_new(GObject *soundcard);
+AgsAudio* ags_audio_new();
 
 #endif /*__AGS_AUDIO_H__*/

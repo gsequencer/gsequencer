@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_window.h>
@@ -136,7 +137,7 @@ ags_window_class_init(AgsWindowClass *window)
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_APPLICATION_CONTEXT,
+				  PROP_MAIN,
 				  param_spec);
 
 
@@ -167,9 +168,8 @@ ags_window_init(AgsWindow *window)
 
   error = NULL;
   
-  window->name = g_strdup("unnamed\0");
   g_object_set(G_OBJECT(window),
-  	       "icon\0", gdk_pixbuf_new_from_file("./doc/images/jumper.png\0", &error),
+  	       "icon\0", gdk_pixbuf_new_from_file(g_strdup_printf("%s%s\0", DESTDIR, "/gsequencer/icons/jumper.png\0"), &error),
   	       NULL);
 
   window->application_context = NULL;
@@ -177,7 +177,7 @@ ags_window_init(AgsWindow *window)
 
   window->name = g_strdup("unnamed\0");
 
-  gtk_window_set_title((GtkWindow *) window, g_strconcat("ags - \0", window->name, NULL));
+  gtk_window_set_title((GtkWindow *) window, g_strconcat("GSequencer - \0", window->name, NULL));
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
@@ -191,8 +191,9 @@ ags_window_init(AgsWindow *window)
   gtk_box_pack_start((GtkBox*) vbox, (GtkWidget*) window->paned, TRUE, TRUE, 0);
 
   scrolled_window = (GtkWidget *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_paned_add1((GtkPaned *) window->paned,
-		 scrolled_window);
+  gtk_paned_pack1((GtkPaned *) window->paned,
+		  scrolled_window,
+		  TRUE, TRUE);
 
   window->machines = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_scrolled_window_add_with_viewport((GtkScrolledWindow *) scrolled_window,
@@ -264,7 +265,7 @@ ags_window_set_property(GObject *gobject,
 		   NULL);
     }
     break;
-  case PROP_APPLICATION_CONTEXT:
+  case PROP_MAIN:
     {
       AgsApplicationContext *application_context;
 
@@ -331,7 +332,7 @@ ags_window_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(window->menu_bar));
 
   list_start = 
-    list = gtk_container_get_children(window->machines);
+    list = gtk_container_get_children((GtkContainer *) window->machines);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -347,7 +348,6 @@ ags_window_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
 
   ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
-  ags_connectable_connect(AGS_CONNECTABLE(window->import_window));
 }
 
 void
@@ -377,11 +377,11 @@ ags_window_show(GtkWidget *widget)
 {
   AgsWindow *window;
 
-  GTK_WIDGET_CLASS(ags_window_parent_class)->show(widget);
-
   window = (AgsWindow *) widget;
 
   gtk_widget_show((GtkWidget *) window->menu_bar);
+
+  GTK_WIDGET_CLASS(ags_window_parent_class)->show(widget);
 }
 
 gboolean

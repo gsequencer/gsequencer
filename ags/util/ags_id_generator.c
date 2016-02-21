@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #include <ags/util/ags_id_generator.h>
 
 #include <stdlib.h>
@@ -38,15 +37,9 @@
 /**
  * ags_id_generator_create_uuid:
  *
-<<<<<<< HEAD
- * Creates an new string containing UUID. 
- *
- * Returns: a new string
-=======
  * Creates a new string containing UUID. 
  *
  * Returns: the string
->>>>>>> 0.5.0
  *
  * Since: 0.4
  */

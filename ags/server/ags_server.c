@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <ags/server/ags_server.h>
 
@@ -166,73 +167,6 @@ ags_server_init(AgsServer *server)
 
   server->registry = ags_registry_new();
   server->remote_task = ags_remote_task_new();
-}
-void
-ags_server_set_property(GObject *gobject,
-			guint prop_id,
-			const GValue *value,
-			GParamSpec *param_spec)
-{
-  AgsServer *server;
-
-  server = AGS_SERVER(gobject);
-
-  //TODO:JK: implement set functionality
-  
-  switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      AgsApplicationContext *application_context;
-
-      application_context = g_value_get_object(value);
-
-      if(server->application_context == application_context){
-	return;
-      }
-
-      if(server->application_context != NULL){
-	g_object_unref(G_OBJECT(server->application_context));
-      }
-
-      if(application_context != NULL){
-	AgsConfig *config;
-	
-	g_object_ref(G_OBJECT(application_context));
-
-	server->application_mutex = &(application_context->mutex);
-      }else{
-	server->application_mutex = NULL;
-      }
-
-      server->application_context = application_context;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_server_get_property(GObject *gobject,
-			guint prop_id,
-			GValue *value,
-			GParamSpec *param_spec)
-{
-  AgsServer *server;
-
-  server = AGS_SERVER(gobject);
-  
-  switch(prop_id){
-  case PROP_APPLICATION_CONTEXT:
-    {
-      g_value_set_object(value, server->application_context);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void

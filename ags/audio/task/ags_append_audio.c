@@ -24,6 +24,8 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/server/ags_server.h>
 #include <ags/server/ags_service_provider.h>
 
@@ -35,6 +37,7 @@
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
 
 void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);
 void ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -157,23 +160,48 @@ ags_append_audio_finalize(GObject *gobject)
 void
 ags_append_audio_launch(AgsTask *task)
 {
-  AgsApplicationContext *application_context;
-  AgsServer *server;
+  AgsAudio *audio;
+
   AgsAppendAudio *append_audio;
+
   AgsAudioLoop *audio_loop;
+  AgsSoundcardThread *soundcard_thread;
+  
+  AgsServer *server;
+
+  AgsMutexManager *mutex_manager;
 
   AgsConfig *config;
-  
+
+  GList *start_queue;
+      
   gchar *str0, *str1;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_thread_mutex;
 
   append_audio = AGS_APPEND_AUDIO(task);
 
+  audio = append_audio->audio;
+  
   audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);
+  soundcard_thread = ags_thread_find_type(audio_loop,
+					  AGS_TYPE_SOUNDCARD_THREAD);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_thread_mutex = ags_mutex_manager_lookup(mutex_manager,
+						    soundcard_thread);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* append to AgsAudioLoop */
   ags_audio_loop_add_audio(audio_loop,
 			   audio);
-  
+
   /**/
   config = ags_config_get_instance();
   
@@ -194,19 +222,41 @@ ags_append_audio_launch(AgsTask *task)
        !g_ascii_strncasecmp(str1,
 			    "channel\0",
 			    8)){
+      start_queue = NULL;
+
       /* super threaded setup - audio */
-      if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->parent == NULL &&
-	 (AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) != 0){
-	ags_thread_add_child_extended(audio_loop, AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-				      TRUE, TRUE);
-	ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]));
+      if((AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) != 0){
+	start_queue = g_list_prepend(start_queue,
+				     AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]);
+
+	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->parent == NULL){
+	  ags_thread_add_child_extended(soundcard_thread, AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
+					TRUE, TRUE);
+	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]));
+	}
       }
 
-      if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->parent == NULL &&
-	 (AGS_PLAYBACK_DOMAIN_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) != 0){
-	ags_thread_add_child_extended(audio_loop, AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
-				      TRUE, TRUE);
-	ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]));
+      if((AGS_PLAYBACK_DOMAIN_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) != 0){
+	start_queue = g_list_prepend(start_queue,
+				     AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]);
+
+	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->parent == NULL){
+	  ags_thread_add_child_extended(soundcard_thread, AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
+					TRUE, TRUE);
+	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]));
+	}
+      }
+
+      /* start queue */
+      if(start_queue != NULL){
+	if(g_atomic_pointer_get(&(AGS_THREAD(soundcard_thread)->start_queue)) != NULL){
+	  g_atomic_pointer_set(&(AGS_THREAD(soundcard_thread)->start_queue),
+			       g_list_concat(start_queue,
+					     g_atomic_pointer_get(&(AGS_THREAD(soundcard_thread)->start_queue))));
+	}else{
+	  g_atomic_pointer_set(&(AGS_THREAD(soundcard_thread)->start_queue),
+			       start_queue);
+	}
       }
 
       /* super threaed setup - channel */
@@ -216,38 +266,66 @@ ags_append_audio_launch(AgsTask *task)
 	AgsChannel *output;
 
 	output = audio->output;
+	
+	start_queue = NULL;
 
 	while(output != NULL){
-	  if(AGS_PLAYBACK(output->playback)->channel_thread[1]->parent == NULL &&
-	     (AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) != 0){
-	    ags_thread_add_child_extended(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-					  AGS_PLAYBACK(output->playback)->channel_thread[1],
-					  TRUE, TRUE);
-	    ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(output->playback)->channel_thread[1]));
+	  if((AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) != 0){
+	    start_queue = g_list_prepend(start_queue,
+					 AGS_PLAYBACK(output->playback)->channel_thread[1]);
+
+	    if(AGS_PLAYBACK(output->playback)->channel_thread[1]->parent == NULL){
+	      ags_thread_add_child_extended(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
+					    AGS_PLAYBACK(output->playback)->channel_thread[1],
+					    TRUE, TRUE);
+	      ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(output->playback)->channel_thread[1]));
+	    }
 	  }
 
-	  if(AGS_PLAYBACK(output->playback)->channel_thread[2]->parent == NULL &&
-	     (AGS_PLAYBACK_DOMAIN_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) != 0){
-	    ags_thread_add_child_extended(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
-					  AGS_PLAYBACK(output->playback)->channel_thread[2],
-					  TRUE, TRUE);
-	    ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(output->playback)->channel_thread[2]));
+	  if((AGS_PLAYBACK_DOMAIN_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) != 0){
+	    start_queue = g_list_prepend(start_queue,
+					 AGS_PLAYBACK(output->playback)->channel_thread[2]);
+
+	    if(AGS_PLAYBACK(output->playback)->channel_thread[2]->parent == NULL){
+	      ags_thread_add_child_extended(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
+					    AGS_PLAYBACK(output->playback)->channel_thread[2],
+					    TRUE, TRUE);
+	      ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(output->playback)->channel_thread[2]));
+	    }
 	  }
 	  
 	  output = output->next;
+	}	
+      }
+
+      /* start queue */
+      pthread_mutex_lock(soundcard_thread_mutex);
+	
+      if(start_queue != NULL){
+	if(g_atomic_pointer_get(&(AGS_THREAD(soundcard_thread)->start_queue)) != NULL){
+	  g_atomic_pointer_set(&(AGS_THREAD(soundcard_thread)->start_queue),
+			       g_list_concat(start_queue,
+					     g_atomic_pointer_get(&(AGS_THREAD(soundcard_thread)->start_queue))));
+	}else{
+	  g_atomic_pointer_set(&(AGS_THREAD(soundcard_thread)->start_queue),
+			       start_queue);
 	}
       }
+
+      pthread_mutex_unlock(soundcard_thread_mutex);
+
     }
+  }
 
   free(str0);
   free(str1);
   
   /* add to server registry */
-  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
+  //  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
 
-  if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->audio));
-  }
+  //  if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
+  //    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->audio));
+  //  }
 }
 
 /**

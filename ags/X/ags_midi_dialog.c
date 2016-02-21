@@ -187,7 +187,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   midi_dialog->machine = NULL;
 
   /* connection */
-  table = (GtkTable *) gtk_table_new(6, 2,
+  table = (GtkTable *) gtk_table_new(14, 2,
 				     FALSE);
   gtk_box_pack_start(GTK_DIALOG(midi_dialog)->vbox,
 		     GTK_WIDGET(table),
@@ -211,7 +211,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   0, 0);
   
   /* audio start */
-  label = (GtkLabel *) gtk_label_new("audio mapping\0");
+  label = (GtkLabel *) gtk_label_new("audio start mapping\0");
   g_object_set(label,
 	       "xalign\0", 0.0,
 	       NULL);
@@ -232,25 +232,69 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  /* midi start */
-  label = (GtkLabel *) gtk_label_new("midi mapping\0");
+  /* audio end */
+  label = (GtkLabel *) gtk_label_new("audio end mapping\0");
   g_object_set(label,
 	       "xalign\0", 0.0,
 	       NULL);
-    gtk_table_attach(table,
+  gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
 		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
+  midi_dialog->audio_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									    65535.0,
+									    1.0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->audio_end),
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* midi start */
+  label = (GtkLabel *) gtk_label_new("midi start mapping\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   4, 5,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
   midi_dialog->midi_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									      128.0,
-									      1.0);
+									     128.0,
+									     1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(midi_dialog->midi_start),
 		   1, 2,
-		   3, 4,
+		   4, 5,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* midi end */
+  label = (GtkLabel *) gtk_label_new("midi end mapping\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   5, 6,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  midi_dialog->midi_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+									   128.0,
+									   1.0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->midi_end),
+		   1, 2,
+		   5, 6,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -262,7 +306,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   5, 6,
+		   6, 7,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
@@ -274,7 +318,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_table_attach(table,
 		   GTK_WIDGET(midi_dialog->backend),
 		   1, 2,
-		   5, 6,
+		   6, 7,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   gtk_combo_box_set_active(midi_dialog->backend,
@@ -288,7 +332,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_table_attach(table,
 		   GTK_WIDGET(label),
 		   0, 1,
-		   6, 7,
+		   7, 8,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
@@ -296,44 +340,167 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
   gtk_table_attach(table,
 		   GTK_WIDGET(midi_dialog->midi_device),
 		   1, 2,
-		   6, 7,
+		   7, 8,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  /* connection */  
+  /* server */  
+  label = (GtkLabel *) gtk_label_new("jack server\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   8, 9,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  midi_dialog->jack_server = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->jack_server),
+		   1, 2,
+		   8, 9,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);
   gtk_table_attach(table,
 		   GTK_WIDGET(hbox),
 		   0, 2,
-		   8, 9,
+		   9, 10,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  midi_dialog->connection_name = (GtkEntry *) gtk_entry_new();
+  midi_dialog->server_name = (GtkEntry *) gtk_entry_new();
   gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->connection_name),
+		     GTK_WIDGET(midi_dialog->server_name),
 		     TRUE, TRUE,
 		     0);
 
-  midi_dialog->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  midi_dialog->add_server = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->add),
+		     GTK_WIDGET(midi_dialog->add_server),
 		     FALSE, FALSE,
 		     0);
 
-  midi_dialog->remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  midi_dialog->remove_server = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(midi_dialog->remove),
+		     GTK_WIDGET(midi_dialog->remove_server),
+		     FALSE, FALSE,
+		     0);
+
+  /* client */  
+  label = (GtkLabel *) gtk_label_new("jack client\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   10, 11,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  midi_dialog->jack_client = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(midi_dialog->jack_client),
+		   1, 2,
+		   10, 11,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(hbox),
+		   0, 2,
+		   11, 12,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  midi_dialog->client_name = (GtkEntry *) gtk_entry_new();
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->client_name),
+		     TRUE, TRUE,
+		     0);
+
+  midi_dialog->add_client = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->add_client),
+		     FALSE, FALSE,
+		     0);
+
+  midi_dialog->remove_client = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->remove_client),
+		     FALSE, FALSE,
+		     0);
+
+  /* port */  
+  label = (GtkLabel *) gtk_label_new("jack port\0");
+  g_object_set(label,
+	       "xalign\0", 0.0,
+	       NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   12, 13,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(hbox),
+		   0, 2,
+		   13, 14,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  midi_dialog->port_name = (GtkEntry *) gtk_entry_new();
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->port_name),
+		     TRUE, TRUE,
+		     0);
+
+  midi_dialog->add_port = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->add_port),
+		     FALSE, FALSE,
+		     0);
+
+  midi_dialog->remove_port = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(midi_dialog->remove_port),
 		     FALSE, FALSE,
 		     0);
 
   /* insensitive for alsa */
-  gtk_widget_set_sensitive(midi_dialog->connection_name,
+  gtk_widget_set_sensitive(midi_dialog->jack_server,
 			   FALSE);
-  gtk_widget_set_sensitive(midi_dialog->add,
+  gtk_widget_set_sensitive(midi_dialog->server_name,
 			   FALSE);
-  gtk_widget_set_sensitive(midi_dialog->remove,
+  gtk_widget_set_sensitive(midi_dialog->add_server,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->remove_server,
+			   FALSE);
+
+  gtk_widget_set_sensitive(midi_dialog->jack_client,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->client_name,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->add_client,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->remove_client,
+			   FALSE);
+
+  gtk_widget_set_sensitive(midi_dialog->port_name,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->add_port,
+			   FALSE);
+  gtk_widget_set_sensitive(midi_dialog->remove_port,
 			   FALSE);
 
   /* GtkButton's in GtkDialog->action_area  */
@@ -427,12 +594,26 @@ ags_midi_dialog_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) midi_dialog->backend, "changed\0",
 		   G_CALLBACK(ags_midi_dialog_backend_changed_callback), (gpointer) midi_dialog);
 
-  /* connection */
-  g_signal_connect((GObject *) midi_dialog->add, "clicked\0",
-		   G_CALLBACK(ags_midi_dialog_add_callback), (gpointer) midi_dialog);
+  /* server */
+  g_signal_connect((GObject *) midi_dialog->add_server, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_add_server_callback), (gpointer) midi_dialog);
 
-  g_signal_connect((GObject *) midi_dialog->remove, "clicked\0",
-		   G_CALLBACK(ags_midi_dialog_remove_callback), (gpointer) midi_dialog);
+  g_signal_connect((GObject *) midi_dialog->remove_server, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_remove_server_callback), (gpointer) midi_dialog);
+
+  /* client */
+  g_signal_connect((GObject *) midi_dialog->add_client, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_add_client_callback), (gpointer) midi_dialog);
+
+  g_signal_connect((GObject *) midi_dialog->remove_client, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_remove_client_callback), (gpointer) midi_dialog);
+
+  /* port */
+  g_signal_connect((GObject *) midi_dialog->add_port, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_add_port_callback), (gpointer) midi_dialog);
+
+  g_signal_connect((GObject *) midi_dialog->remove_port, "clicked\0",
+		   G_CALLBACK(ags_midi_dialog_remove_port_callback), (gpointer) midi_dialog);
 
   /* applicable */
   g_signal_connect((GObject *) midi_dialog->apply, "clicked\0",
@@ -509,8 +690,6 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
   
   /* find device */
   pthread_mutex_lock(application_mutex);
-  
-  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
   if(!g_ascii_strncasecmp("alsa\0",
 			  backend,
@@ -521,6 +700,8 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
 				4)){
     sequencer_type = AGS_TYPE_JACK_MIDIIN;
   }
+    
+  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
     if(g_type_is_a(G_OBJECT_TYPE(list->data),
@@ -540,7 +721,8 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
   /* set properties */
   g_object_set(audio,
 	       "audio-mapping\0", gtk_spin_button_get_value(midi_dialog->audio_start),
-	       "midi-mapping\0", gtk_spin_button_get_value(midi_dialog->midi_start),
+	       "midi-start-mapping\0", gtk_spin_button_get_value(midi_dialog->midi_start),
+	       "midi-end-mapping\0", gtk_spin_button_get_value(midi_dialog->midi_end),
 	       "sequencer\0", sequencer,
 	       NULL);
 }
@@ -566,8 +748,8 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
   gchar *backend;
   gchar *midi_device;
   gchar *str;
-  guint audio_start;
-  guint midi_start;
+  guint audio_start, audio_end;
+  guint midi_start, midi_end;
   guint i;
   gboolean found_device;
   
@@ -589,24 +771,60 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
   /* audio and sequencer */
   audio = machine->audio;
 
-  sequencer = NULL;
-  backend = gtk_combo_box_text_get_active_text(midi_dialog->backend);
-  midi_device = gtk_combo_box_text_get_active_text(midi_dialog->midi_device);
+  sequencer = audio->sequencer;
+
+  if(sequencer == NULL){
+    GList *list;
+
+    list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+
+    if(list != NULL){
+      sequencer = list->data;
+    }
+  }
+
+  if(AGS_IS_MIDIIN(sequencer)){
+    gtk_combo_box_set_active(midi_dialog->backend,
+			     0);
+    
+    backend = "alsa\0";
+    midi_device = ags_sequencer_get_device(AGS_SEQUENCER(sequencer));
+  }else if(AGS_IS_JACK_MIDIIN(sequencer)){
+    gtk_combo_box_set_active(midi_dialog->backend,
+			     1);
+    
+    backend = "jack\0";
+    midi_device = ags_sequencer_get_device(AGS_SEQUENCER(sequencer));
+  }else{
+    backend = NULL;
+    midi_device = NULL;
+  }
 
   /*  */
   g_object_get(audio,
-	       "audio-start\0", &audio_start,
-	       "midi-start\0", &midi_start,
+	       "audio-start-mapping\0", &audio_start,
+	       "audio-end-mapping\0", &audio_end,
+	       "midi-start-mapping\0", &midi_start,
+	       "midi-end-mapping\0", &midi_end,
 	       "sequencer\0", &sequencer,
 	       NULL);
   
-  /* find device */
+  /* mapping */
   gtk_spin_button_set_value(midi_dialog->audio_start,
 			    (gdouble) audio_start);
+  gtk_spin_button_set_value(midi_dialog->audio_end,
+			    (gdouble) audio_end);
+  
   gtk_spin_button_set_value(midi_dialog->midi_start,
 			    (gdouble) midi_start);
-  
-  midi_device = ags_sequencer_get_device(AGS_SEQUENCER(list->data));
+  gtk_spin_button_set_value(midi_dialog->midi_end,
+			    (gdouble) midi_end);
+
+
+  /* load midi devices */
+  ags_midi_dialog_load_sequencers(midi_dialog);
+
+  /* find device */
   found_device = FALSE;
   
   if(midi_device != NULL){
@@ -719,8 +937,8 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
   /* null device */
   gtk_list_store_append(model, &iter);
   gtk_list_store_set(model, &iter,
-		     0, "(null)\0",
-		     1, "NULL\0",
+		     0, "NULL\0",
+		     1, "(null)\0",
 		     -1);
 
   /* load sequencer */

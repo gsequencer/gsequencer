@@ -532,7 +532,6 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   
   audio_signal->format = AGS_SOUNDCARD_RESOLUTION_16_BIT;
 
-  
   audio_signal->length = 0;
   audio_signal->last_frame = 0;
   audio_signal->loop_start = 0;
@@ -753,83 +752,10 @@ ags_audio_signal_get_property(GObject *gobject,
     g_value_set_object(value, audio_signal->soundcard);
     break;
   case PROP_RECYCLING:
-    {
-      g_value_set_object(value, audio_signal->recycling);
-    }
+    g_value_set_object(value, audio_signal->recycling);
     break;
   case PROP_RECALL_ID:
-    {
-      g_value_set_object(value, audio_signal->recall_id);
-    }
-    break;
-  case PROP_SAMPLERATE:
-    {
-      g_value_set_uint(value, audio_signal->samplerate);
-    }
-    break;
-  case PROP_BUFFER_SIZE:
-    {
-      g_value_set_uint(value, audio_signal->buffer_size);
-    }
-  case PROP_FORMAT:
-    {
-      g_value_set_uint(value, audio_signal->format);
-    }
-    break;
-  case PROP_WORD_SIZE:
-    {
-      //TODO:JK: implement me
-    }
-    break;
-  case PROP_LENGTH:
-    {
-      g_value_set_uint(value, audio_signal->length);
-    }
-    break;
-  case PROP_FIRST_FRAME:
-    {
-      g_value_set_uint(value, audio_signal->first_frame);
-    }
-    break;
-  case PROP_LAST_FRAME:
-    {
-      g_value_set_uint(value, audio_signal->last_frame);
-    }
-    break;
-  case PROP_LOOP_START:
-    {
-      g_value_set_uint(value, audio_signal->loop_start);
-    }
-    break;
-  case PROP_LOOP_END:
-    {
-      g_value_set_uint(value, audio_signal->loop_end);
-    }
-    break;
-  case PROP_DELAY:
-    {
-      g_value_set_double(value, audio_signal->delay);
-    }
-    break;
-  case PROP_ATTACK:
-    {
-      g_value_set_uint(value, audio_signal->attack);
-    }
-    break;
-  case PROP_STREAM:
-    {
-      g_value_set_pointer(value, g_list_copy(audio_signal->stream_beginning));
-    }
-    break;
-  case PROP_STREAM_END:
-    {
-      g_value_set_pointer(value, audio_signal->stream_end);
-    }
-    break;
-  case PROP_STREAM_CURRENT:
-    {
-      g_value_set_pointer(value, audio_signal->stream_current);
-    }
+    g_value_set_object(value, audio_signal->recall_id);
     break;
   case PROP_SAMPLERATE:
     {
@@ -1331,21 +1257,25 @@ ags_audio_signal_copy_buffer_to_buffer(signed short *destination, guint dchannel
   guint limit;
   guint i;
 
-  /* unrolled function */
-  limit = size - 7;
+  i = 0;
   
-  for(i = 0; i < limit; i += 8){
-    *destination = 0xffff & ((signed long) ((*destination) + (*source)));
-    destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + source[1 * schannels]));
-    destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + source[2 * schannels]));
-    destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + source[3 * schannels]));
-    destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + source[4 * schannels]));
-    destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + source[5 * schannels]));
-    destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + source[6 * schannels]));
-    destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + source[7 * schannels]));
+  /* unrolled function */
+  if(size > 8){
+    limit = size - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = 0xffff & ((signed long) ((*destination) + (*source)));
+      destination[1 * dchannels] = 0xffff & ((signed long) (destination[1 * dchannels] + source[1 * schannels]));
+      destination[2 * dchannels] = 0xffff & ((signed long) (destination[2 * dchannels] + source[2 * schannels]));
+      destination[3 * dchannels] = 0xffff & ((signed long) (destination[3 * dchannels] + source[3 * schannels]));
+      destination[4 * dchannels] = 0xffff & ((signed long) (destination[4 * dchannels] + source[4 * schannels]));
+      destination[5 * dchannels] = 0xffff & ((signed long) (destination[5 * dchannels] + source[5 * schannels]));
+      destination[6 * dchannels] = 0xffff & ((signed long) (destination[6 * dchannels] + source[6 * schannels]));
+      destination[7 * dchannels] = 0xffff & ((signed long) (destination[7 * dchannels] + source[7 * schannels]));
 
-    destination += (8 * dchannels);
-    source += (8 * schannels);
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
   }
 
   for(; i < size; i++){
@@ -1435,6 +1365,8 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
   }else{
     //    AgsSoundcard *soundcard;
     GList *template_stream, *stream;
+    //    guint i, j, j_offcut;
+    //    guint k, template_k;
 
     audio_signal->buffer_size = template->buffer_size;
     ags_audio_signal_stream_resize(audio_signal,
@@ -1442,6 +1374,9 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 
     stream = audio_signal->stream_beginning;
     template_stream = template->stream_beginning;
+
+    //    k = 0;
+    //    template_k = 0;
 
     //TODO:JK: enhance me
     while(template_stream != NULL){
@@ -1635,7 +1570,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 					     template_buffer, 1, j_offcut);
     }else{
       /* deep copy */
-      ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer[j], 1,
+      ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
 					     &(template_buffer[j_offcut]), 1, k_end - j_offcut);
       k += (k_end - j_offcut);
 
@@ -1674,7 +1609,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
   remaining_size = frame_count - (i * audio_signal->buffer_size);
 
   if(remaining_size > k_end - j_offcut){
-    ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer[j], 1,
+    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
 					   &(template_buffer[j_offcut]), 1, k_end - j_offcut);
 
     if(k_end + j_offcut == template->buffer_size){
@@ -1685,10 +1620,10 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
       }
     }
 
-    ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer[j], 1,
+    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
 					   &(template_buffer[j_offcut]), 1, remaining_size - (k_end - j_offcut));
   }else{
-    ags_audio_signal_copy_buffer_to_buffer(audio_signal_buffer[j], 1,
+    ags_audio_signal_copy_buffer_to_buffer(&(audio_signal_buffer[j]), 1,
 					   &(template_buffer[j_offcut]), 1, remaining_size);
   }
 

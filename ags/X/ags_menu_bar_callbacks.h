@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_MENU_BAR_CALLBACKS_H__
@@ -33,7 +34,6 @@ void ags_menu_bar_open_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_export_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
-void ags_menu_bar_import_midi_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
 void ags_menu_bar_add_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
@@ -44,6 +44,10 @@ void ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+
+void ags_menu_bar_add_ladspa_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_add_dssi_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
 void ags_menu_bar_automation_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_preferences_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);

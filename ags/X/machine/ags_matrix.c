@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/machine/ags_matrix.h>
@@ -25,10 +26,9 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_plugin.h>
+#include <ags/object/ags_seekable.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
@@ -66,6 +66,8 @@
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 #include <ags/audio/recall/ags_buffer_channel.h>
 #include <ags/audio/recall/ags_buffer_channel_run.h>
+#include <ags/audio/recall/ags_play_notation_audio.h>
+#include <ags/audio/recall/ags_play_notation_audio_run.h>
 
 #include <ags/X/ags_menu_bar.h>
 
@@ -91,6 +93,8 @@ void ags_matrix_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_matrix_get_xml_type(AgsPlugin *plugin);
 void ags_matrix_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_matrix_read_resolve_audio(AgsFileLookup *file_lookup,
+				   AgsMachine *machine);
 void ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix);
 xmlNode* ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
@@ -192,6 +196,8 @@ ags_matrix_class_init(AgsMatrixClass *matrix)
 void
 ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  AgsConnectableInterface *ags_matrix_connectable_parent_interface;
+
   ags_matrix_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_matrix_connect;
@@ -229,26 +235,29 @@ ags_matrix_init(AgsMatrix *matrix)
   audio = AGS_MACHINE(matrix)->audio;
   audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_HAS_NOTATION |
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_NOTATION_DEFAULT);
-  
+		   AGS_AUDIO_NOTATION_DEFAULT |
+		   AGS_AUDIO_HAS_NOTATION |
+		   AGS_AUDIO_PATTERN_MODE);
   //  audio->audio_channels = 1;
+  
   AGS_MACHINE(matrix)->input_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->input_line_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->output_line_type = G_TYPE_NONE;
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "set_audio_channels\0",
+  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels\0",
 			 G_CALLBACK(ags_matrix_set_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "set_pads\0",
+  g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
 			 G_CALLBACK(ags_matrix_set_pads), NULL);
 
   /*  */
-  //TODO:JK: uncomment me
-  AGS_MACHINE(matrix)->flags |= AGS_MACHINE_IS_SEQUENCER;
+  AGS_MACHINE(matrix)->flags |= (AGS_MACHINE_IS_SEQUENCER |
+				 AGS_MACHINE_REVERSE_NOTATION);
+  AGS_MACHINE(matrix)->mapping_flags |= AGS_MACHINE_MONO;
+  
   matrix->flags = 0;
 
   matrix->name = NULL;
@@ -257,6 +266,9 @@ ags_matrix_init(AgsMatrix *matrix)
   matrix->mapped_input_pad = 0;
   matrix->mapped_output_pad = 0;
 
+  ags_machine_popup_add_edit_options(matrix,
+				     (AGS_MACHINE_POPUP_COPY_PATTERN));
+  
   /* create widgets */
   frame = (GtkFrame *) (gtk_bin_get_child((GtkBin *) matrix));
 
@@ -526,7 +538,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 				    pads_old);
       }
     }else{
-      /* empty */
+      matrix->mapped_input_pad = pads;
     }
   }else{
     if(grow){
@@ -577,13 +589,11 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
 
-	if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
-	  ags_matrix_output_map_recall(matrix,
-				       pads_old);
-	}
+	ags_matrix_output_map_recall(matrix,
+				     pads_old);
       }
     }else{
-      /* empty */
+      matrix->mapped_output_pad = pads;
     }
   }
 }
@@ -591,6 +601,7 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 void
 ags_matrix_map_recall(AgsMachine *machine)
 {
+  AgsWindow *window;
   AgsMatrix *matrix;
 
   AgsAudio *audio;
@@ -605,6 +616,8 @@ ags_matrix_map_recall(AgsMachine *machine)
   AgsCopyPatternAudioRun *recall_copy_pattern_audio_run;
   AgsPlayNotationAudio  *play_notation;
   AgsCopyPatternChannel *copy_pattern_channel;
+  AgsPlayNotationAudio *recall_notation_audio;
+  AgsPlayNotationAudioRun *recall_notation_audio_run;
 
   GList *notation;
   GList *list;
@@ -618,8 +631,11 @@ ags_matrix_map_recall(AgsMachine *machine)
     return;
   }
 
-  audio = machine->audio;
+  window = gtk_widget_get_ancestor(machine,
+				   AGS_TYPE_WINDOW);
+
   matrix = AGS_MATRIX(machine);
+  audio = machine->audio;
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -710,10 +726,34 @@ ags_matrix_map_recall(AgsMachine *machine)
 	  
       channel = channel->next;
     }
-	
-    list = list->next;
   }
 
+  /* ags-play-notation */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-notation\0",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+  if(list != NULL){
+    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "delay-audio-run\0", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "count-beats-audio-run\0", play_count_beats_audio_run,
+		 NULL);
+  }
 
   /* depending on destination */
   ags_matrix_input_map_recall(matrix, 0);
@@ -763,7 +803,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   current = source;
 
   while(current != NULL){
-    /* ags-stream */
+    /* ags-play */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-play\0",
@@ -781,49 +821,6 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
   current = source;
 
   while(current != NULL){
-    /* ags-buffer */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-buffer\0",
-			      current->audio_channel, current->audio_channel + 1, 
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_RECALL |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
-    destination = ags_channel_nth(audio->output,
-				  current->audio_channel);
-
-    while(destination != NULL){
-      /* recall */
-      list = current->recall;
-
-      while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL)) != NULL){
-	buffer_channel = AGS_BUFFER_CHANNEL(list->data);
-
-	g_object_set(G_OBJECT(buffer_channel),
-		     "destination\0", destination,
-		     NULL);
-
-	list = list->next;
-      }
-
-      list = current->recall;
-    
-      while((list = ags_recall_find_type(list, AGS_TYPE_BUFFER_CHANNEL_RUN)) != NULL){
-	buffer_channel_run = AGS_BUFFER_CHANNEL_RUN(list->data);
-
-	g_object_set(G_OBJECT(buffer_channel_run),
-		     "destination\0", destination,
-		     NULL);
-
-	list = list->next;
-      }
-
-      destination = destination->next_pad;
-    }
-
     /* ags-stream */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -839,14 +836,14 @@ ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start)
     current = current->next_pad;
   }
 
-  matrix->mapped_input_pad = input_pad_start;
+  matrix->mapped_input_pad = audio->input_pads;
 }
 
 void
 ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *source;
+  AgsChannel *source, *input, *current;
 
   AgsDelayAudio *recall_delay_audio;
   AgsCountBeatsAudioRun *recall_count_beats_audio_run;
@@ -862,39 +859,43 @@ ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start)
   source = ags_channel_nth(audio->output,
 			   output_pad_start * audio->audio_channels);
 
-  if(source == NULL){
-    return;
-  }
-  
-  /* get some recalls */
-  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO);
+  /* remap for input */
+  input = audio->input;
 
-  if(list != NULL){
-    recall_delay_audio = AGS_DELAY_AUDIO(list->data);
-  }else{
-    recall_delay_audio = NULL;
-  }
+  while(input != NULL){
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer\0",
+			      0, audio->audio_channels, 
+			      input->pad, input->pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
 
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-  }else{
-    recall_count_beats_audio_run = NULL;
+    input = input->next_pad;
   }
 
-  /* ags-stream */
-  ags_recall_factory_create(audio,
-  			    NULL, NULL,
-			    "ags-stream\0",
-			    source->audio_channel, source->audio_channel + 1,
-			    output_pad_start, audio->output_pads,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  current = ags_channel_nth(audio->output,
+			    output_pad_start * audio->audio_channels);
 
-  matrix->mapped_output_pad = output_pad_start;
+  while(current != NULL){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream\0",
+			      current->audio_channel, current->audio_channel + 1,
+			      current->pad, current->pad + 1,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
+    current = current->next;
+  }
+
+  matrix->mapped_output_pad = audio->output_pads;
 }
 
 gchar*
@@ -925,6 +926,7 @@ void
 ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsMatrix *gobject;
+  AgsFileLookup *file_lookup;
   AgsFileLaunch *file_launch;
   GList *list;
 
@@ -939,15 +941,61 @@ ags_matrix_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference\0", gobject,
 				   NULL));
 
-  /*  */
-  file_launch = g_object_new(AGS_TYPE_FILE_LAUNCH,
-			     "node\0", node,
-			     "file\0", file,
-			     NULL);
+  /* lookup */
+  list = file->lookup;
+
+  while((list = ags_file_lookup_find_by_node(list,
+					     node->parent)) != NULL){
+    file_lookup = AGS_FILE_LOOKUP(list->data);
+    
+    if(g_signal_handler_find(list->data,
+			     G_SIGNAL_MATCH_FUNC,
+			     0,
+			     0,
+			     NULL,
+			     ags_file_read_machine_resolve_audio,
+			     NULL) != 0){
+      g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+			     G_CALLBACK(ags_matrix_read_resolve_audio), gobject);
+      
+      break;
+    }
+
+    list = list->next;
+  }
+
+  /* launch */
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       "file\0", file,
+					       NULL);
   g_signal_connect(G_OBJECT(file_launch), "start\0",
 		   G_CALLBACK(ags_matrix_launch_task), gobject);
   ags_file_add_launch(file,
-		      file_launch);
+		      (GObject *) file_launch);
+}
+
+void
+ags_matrix_read_resolve_audio(AgsFileLookup *file_lookup,
+				AgsMachine *machine)
+{
+  AgsMatrix *matrix;
+
+  matrix = AGS_MATRIX(machine);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels\0",
+			 G_CALLBACK(ags_matrix_set_audio_channels), matrix);
+
+  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads\0",
+			 G_CALLBACK(ags_matrix_set_pads), matrix);
+
+  if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
+    ags_matrix_output_map_recall(matrix, 0);
+    ags_matrix_input_map_recall(matrix, 0);
+  }else{
+    matrix->mapped_output_pad = machine->audio->output_pads;
+    matrix->mapped_input_pad = machine->audio->input_pads;
+  }
 }
 
 void
@@ -969,7 +1017,7 @@ ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix)
   if(!g_strcmp0(xmlGetProp(node,
 			   "loop\0"),
 		AGS_FILE_TRUE)){
-    gtk_toggle_button_set_active(matrix->loop_button,
+    gtk_toggle_button_set_active((GtkToggleButton *) matrix->loop_button,
 				 TRUE);
   }
 
@@ -1029,7 +1077,7 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "loop\0",
-	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(matrix->loop_button)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
+	     g_strdup_printf("%s\0", ((gtk_toggle_button_get_active((GtkToggleButton *) matrix->loop_button)) ? AGS_FILE_TRUE: AGS_FILE_FALSE)));
 
   xmlAddChild(parent,
 	      node);
@@ -1051,18 +1099,13 @@ AgsMatrix*
 ags_matrix_new(GObject *soundcard)
 {
   AgsMatrix *matrix;
-  GValue value = {0,};
 
   matrix = (AgsMatrix *) g_object_new(AGS_TYPE_MATRIX,
 				      NULL);
-
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(matrix)->audio),
-			  "soundcard\0", &value);
-    g_value_unset(&value);
-  }
-
+  
+  g_object_set(AGS_MACHINE(matrix)->audio,
+	       "soundcard\0", soundcard,
+	       NULL);
+  
   return(matrix);
 }

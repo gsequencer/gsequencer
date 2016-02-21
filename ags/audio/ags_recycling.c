@@ -87,7 +87,7 @@ static gpointer ags_recycling_parent_class = NULL;
 static guint recycling_signals[LAST_SIGNAL];
 
 GType
-ags_recycling_get_type (void)
+ags_recycling_get_type(void)
 {
   static GType ags_type_recycling = 0;
 
@@ -150,28 +150,11 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 
   /* properties */
   /**
-   * AgsRecycling:soundcard:
-   *
-   * The assigned #AgsSoundcard acting as default sink.
-   * 
-   * Since: 0.4.0
-   */
-  param_spec = g_param_spec_object("soundcard\0",
-				   "assigned soundcard\0",
-				   "The soundcard it is assigned with\0",
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
-				  param_spec);
-
-
-  /**
    * AgsRecycling:channel:
    *
    * The assigned #AgsChannel.
    * 
-   * Since: 0.4.3
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("channel\0",
 				   "assigned channel\0",
@@ -187,7 +170,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned #GObject acting as default sink.
    * 
-   * Since: 0.4.3
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("soundcard\0",
 				   "assigned soundcard\0",
@@ -196,22 +179,6 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,
-				  param_spec);
-
-  /**
-   * AgsRecycling:channel:
-   *
-   * The assigned #AgsChannel.
-   * 
-   * Since: 0.7.2
-   */
-  param_spec = g_param_spec_object("channel\0",
-				   "assigned channel\0",
-				   "The channel it is assigned with\0",
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CHANNEL,
 				  param_spec);
 
   /**
@@ -402,7 +369,7 @@ ags_recycling_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(recycling->channel == channel){
+      if(channel == (AgsChannel *) recycling->channel){
 	return;
       }
 
@@ -414,28 +381,7 @@ ags_recycling_set_property(GObject *gobject,
 	g_object_ref(channel);
       }
 
-      recycling->channel = channel;
-    }
-    break;
-  case PROP_PARENT:
-    {
-      AgsRecycling *recycling;
-
-      recycling = (AgsRecycling *) g_value_get_object(value);
-
-      if(recycling->parent == recycling){
-	return;
-      }
-
-      if(recycling->parent != NULL){
-	g_object_unref(recycling->parent);
-      }
-
-      if(recycling != NULL){
-	g_object_ref(recycling);
-      }
-
-      recycling->parent = recycling;
+      recycling->channel = (GObject *) channel;
     }
     break;
   case PROP_PARENT:
@@ -537,9 +483,7 @@ ags_recycling_get_property(GObject *gobject,
     g_value_set_object(value, recycling->soundcard);
     break;
   case PROP_CHANNEL:
-    {
-      g_value_set_object(value, recycling->channel);
-    }
+    g_value_set_object(value, recycling->channel);
     break;
   case PROP_PARENT:
     {
@@ -948,9 +892,10 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   GList *stream, *template_stream, *template_loop;
 
   guint frames_copied;
-  guint loop_start, loop_attack;
+  guint loop_start, loop_end, loop_attack;
   gboolean enter_loop, initial_loop;
-
+  guint i, j;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex;
 
@@ -987,6 +932,27 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   soundcard = AGS_SOUNDCARD(audio_signal->soundcard);
 
   audio_signal->recycling = (GObject *) recycling;
+
+  audio_signal->samplerate = template->samplerate;
+  audio_signal->buffer_size = template->buffer_size;
+  audio_signal->format = template->format;
+  audio_signal->word_size = template->word_size;
+
+  audio_signal->last_frame = (((guint)(delay *
+				       template->buffer_size) +
+			       attack +
+			       template->last_frame) %
+			      template->buffer_size);
+  audio_signal->loop_start = (((guint) (delay *
+					template->buffer_size) +
+			       attack +
+			       template->loop_start) %
+			      template->buffer_size);
+  audio_signal->loop_end = (((guint)(delay *
+				     template->buffer_size) +
+			     attack +
+			     template->loop_end) %
+			    template->buffer_size);
 
   /* resize */
   ags_audio_signal_stream_resize(audio_signal,
@@ -1026,13 +992,16 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   }
 
   /* the copy loops */
+  j = 0;
+  
   while(stream != NULL && template_stream != NULL && frames_copied < frame_count){
-    if(frames_copied + audio_signal->buffer_size < loop_start &&
+    if(!(enter_loop &&
+	 frames_copied + audio_signal->buffer_size > loop_start) &&
        frames_copied < frame_count){
       ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[attack]), 1,
 					     (short *) template_stream->data, 1,
 					     audio_signal->buffer_size - attack);
-
+	
       if(stream->next != NULL && attack != 0){
 	ags_audio_signal_copy_buffer_to_buffer((short *) stream->next->data, 1,
 					       &(((short *) template_stream->data)[audio_signal->buffer_size - attack]), 1,
@@ -1043,30 +1012,60 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     if(enter_loop &&
        ((frames_copied > loop_start || frames_copied + audio_signal->buffer_size > loop_start) ||
 	(frames_copied < frame_count))){
-      if(template_stream == NULL){
-	template_stream = template_loop;
-      }
+      for(i = 0; i < (guint) ceil(audio_signal->buffer_size / (loop_end - loop_start)); i++, j++){
+	if(template_stream == NULL){
+	  template_stream = template_loop;
+	}
 
-      if(initial_loop &&
-	 (loop_start % audio_signal->buffer_size) == 0){
-	loop_attack = 0;
-      }else{
-	loop_attack = loop_start % audio_signal->buffer_size;
-      }
+	initial_loop = FALSE;
 
-      initial_loop = FALSE;
-
-      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack]), 1,
-					     &(((short *) template_stream->data)[audio_signal->buffer_size - loop_attack]), 1,
-					     audio_signal->buffer_size - loop_attack);
-      
-      if(loop_attack != 0 && stream->next != NULL){
-	ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->next->data)[loop_attack]), 1,
-					       &(((short *) template_stream->data)[audio_signal->buffer_size - loop_attack]), 1,
-					       loop_attack);
+	if((loop_end - loop_start) < audio_signal->buffer_size){
+	  if(initial_loop &&
+	     (loop_start % audio_signal->buffer_size) == 0){
+	    loop_attack = 0;
+	  }else{
+	    loop_attack = (loop_start + j * (loop_end - loop_start)) % (loop_end - loop_start);
+	  }
+	
+	  if(loop_attack + i * (loop_end - loop_start) < audio_signal->buffer_size){
+	    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack + i * (loop_end - loop_start)]), 1,
+						   &(((short *) template_stream->data)[loop_start % audio_signal->buffer_size]), 1,
+						   loop_end - loop_start);
+	  }else{
+	    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack + i * (loop_end - loop_start)]), 1,
+						   &(((short *) template_stream->data)[loop_start % audio_signal->buffer_size]), 1,
+						   audio_signal->buffer_size - (loop_attack + i * (loop_end - loop_start)));
+	  }
+	}else{
+	  if(initial_loop){
+	    if((loop_start % audio_signal->buffer_size) == 0){
+	      loop_attack = 0;
+	    }else{
+	      loop_attack = (loop_start + audio_signal->buffer_size - (loop_start % audio_signal->buffer_size)) % audio_signal->buffer_size;
+	    }
+	  }else{
+	    loop_attack = (loop_start + j * (audio_signal->buffer_size - (loop_start % audio_signal->buffer_size)) + (j - 1) * (loop_start % audio_signal->buffer_size)) % audio_signal->buffer_size;
+	  }
+	  
+	  if(initial_loop){
+	    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack]), 1,
+						   (short *) template_stream->data, 1,
+						   audio_signal->buffer_size - loop_attack);
+	  }else{
+	    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[loop_attack]), 1,
+						   &(((short *) template_stream->data)[loop_start % audio_signal->buffer_size]), 1,
+						   loop_start - loop_end);
+	  }
+	  
+	  if(loop_attack != 0 && stream->next != NULL){
+	    ags_audio_signal_copy_buffer_to_buffer((short *) stream->next->data, 1,
+						   &(((short *) template_stream->data)[audio_signal->buffer_size - loop_attack]), 1,
+						   loop_attack);
+	  }
+	}
       }
     }
-
+    
     stream = stream->next;
     template_stream = template_stream->next;
     frames_copied += audio_signal->buffer_size;

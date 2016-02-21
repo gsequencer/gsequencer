@@ -23,6 +23,8 @@
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/thread/ags_iterator_thread.h>
 
+#include <ags/audio/thread/ags_channel_thread.h>
+
 /**
  * SECTION:ags_playback
  * @short_description: Outputting to soundcard context
@@ -106,7 +108,7 @@ void
 ags_playback_init(AgsPlayback *playback)
 {
   g_atomic_int_set(&(playback->flags),
-		   0);
+		   AGS_PLAYBACK_SUPER_THREADED_CHANNEL);
 
   /* super threaded channel */
   playback->channel_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));

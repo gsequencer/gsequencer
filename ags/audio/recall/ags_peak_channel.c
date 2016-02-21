@@ -22,7 +22,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
@@ -318,12 +317,14 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   AgsConfig *config;
   
   GList *audio_signal;
-  double *buffer;
+  signed short *buffer;
   double current_value;
   guint buffer_size;
   static const double scale_precision = 10.0;
   guint limit;
   guint i;
+  gchar *str;
+  
   GValue value = {0,};
 
   if(peak_channel == NULL){
@@ -344,12 +345,6 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
   recycling = source->first_recycling;
-
-  ags_soundcard_get_presets(soundcard,
-			    NULL,
-			    NULL,
-			    &buffer_size,
-			    NULL);
   
   /* initialize buffer */
   buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
@@ -391,7 +386,7 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   /* calculate average value */
   current_value = 0.0;
   
-  limit = buffer_size - 7;
+  limit = buffer_size - 8;
 
   for(i = 0; i < limit; i += 8){
     /* unrolled loop */

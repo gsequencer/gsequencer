@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/machine/ags_matrix_callbacks.h>
@@ -26,9 +27,6 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_playback_domain.h>
-#include <ags/audio/ags_playback.h>
-#include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
@@ -48,8 +46,6 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-
-#include <ags/widget/ags_led.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
@@ -83,7 +79,9 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
     if(GTK_TOGGLE_BUTTON(widget) != matrix->selected){
       AgsAudio *audio;
       AgsCopyPatternAudio *recall_copy_pattern_audio, *play_copy_pattern_audio;
+
       GList *list;
+      guint64 index1;
       GValue play_value = {0,};
       GValue recall_value = {0,};
 
@@ -98,7 +96,9 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       matrix->selected = (GtkToggleButton*) widget;
       gtk_widget_queue_draw(matrix->cell_pattern);
 
-      /* modify port */
+      /*  */
+      AGS_MACHINE(matrix)->bank_1 = 
+	index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
 
       /* recall */
       list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);
@@ -108,7 +108,7 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       }
 
       g_value_init(&recall_value, G_TYPE_UINT64);
-      g_value_set_uint64(&recall_value, ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1);
+      g_value_set_uint64(&recall_value, index1);
 
       ags_port_safe_write(recall_copy_pattern_audio->bank_index_1, &recall_value);
 
@@ -155,12 +155,6 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   
   /* find task thread */
   task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
-
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
 				     AGS_TYPE_TASK_THREAD);
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
@@ -214,6 +208,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   AgsCountBeatsAudio *play_count_beats_audio;
   AgsCountBeatsAudioRun *play_count_beats_audio_run;
+
   AgsToggleLed *toggle_led;
   
   AgsMutexManager *mutex_manager;
@@ -222,12 +217,8 @@ ags_matrix_tact_callback(AgsAudio *audio,
   
   AgsApplicationContext *application_context;
 
-  AgsThread *main_loop, *current;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-  
   GList *list;
+
   guint counter, active_led;
   gdouble active_led_old, active_led_new;
 
@@ -285,6 +276,11 @@ ags_matrix_tact_callback(AgsAudio *audio,
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
   }
 
+  if(play_count_beats_audio == NULL ||
+     play_count_beats_audio_run == NULL){
+    return;
+  }
+
   /* set optical feedback */
   active_led_new = play_count_beats_audio_run->sequencer_counter;
   matrix->cell_pattern->active_led = (guint) active_led_new;
@@ -307,6 +303,8 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(toggle_led));
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
@@ -338,28 +336,12 @@ ags_matrix_done_callback(AgsAudio *audio,
     list_start = 
       list = gtk_container_get_children(GTK_CONTAINER(matrix->cell_pattern->led));
 
-      /* get some recalls */
-      list = ags_recall_find_type(audio->play,
-				  AGS_TYPE_COUNT_BEATS_AUDIO);
-  
-      if(list != NULL){
-	play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-      }
-  
-      g_value_init(&value, G_TYPE_DOUBLE);
-      ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
-			 &value);
-      
-      active_led = g_value_get_double(&value) - 1.0;
-    }else{
-      active_led = matrix->active_led - 1;
+    while(list != NULL){
+      ags_led_unset_active(AGS_LED(list->data));
+	
+      list = list->next;
     }
 
-    /* unset led */
-    list = gtk_container_get_children(GTK_CONTAINER(matrix->led));
-    ags_led_unset_active(AGS_LED(g_list_nth(list,
-					    active_led)->data));
-
-    g_list_free(list);
+    g_list_free(list_start);
   }
 }

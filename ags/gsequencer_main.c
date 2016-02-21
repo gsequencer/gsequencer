@@ -42,6 +42,9 @@
 #include <ags/server/ags_server.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2ui_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
 
@@ -49,6 +52,11 @@
 #include <ags/X/ags_window.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
+
+#include <jack/jslist.h>
+#include <jack/jack.h>
+#include <jack/control.h>
+#include <stdbool.h>
 
 #include <libintl.h>
 #include <stdio.h>
@@ -86,7 +94,6 @@ struct sigevent ags_sev_timer;
 struct itimerspec its;
 
 AgsApplicationContext *application_context;
-AgsLadspaManager *ladspa_manager;
 
 void
 ags_signal_handler(int signr)
@@ -131,13 +138,23 @@ ags_signal_cleanup()
 int
 main(int argc, char **argv)
 {
+  AgsLadspaManager *ladspa_manager;
+  AgsDssiManager *dssi_manager;
+  AgsLv2Manager *lv2_manager;;
+  AgsLv2uiManager *lv2ui_manager;
+  
+  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
-  AgsApplicationContext *application_context;
+
+  AgsConfig *config;
+  
   GFile *autosave_file;
     
   gchar *filename, *autosave_filename;
+  gchar *str;
   gboolean single_thread = FALSE;
+  gboolean jack_enabled;
   guint i;
 
   struct passwd *pw;
@@ -150,6 +167,9 @@ main(int argc, char **argv)
   int result;
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
+
+  pthread_mutex_t *audio_loop_mutex;
+  pthread_mutex_t *application_mutex;
   
   //  mtrace();
   atexit(ags_signal_cleanup);
@@ -216,10 +236,31 @@ main(int argc, char **argv)
   /* parse gtkrc */
   uid = getuid();
   pw = getpwuid(uid);
+  
+  /**/
+  LIBXML_TEST_VERSION;
 
-  /* init gsequencer */
+  ao_initialize();
+
+  g_thread_init(NULL);
+  gdk_threads_enter();
   gtk_init(&argc, &argv);
+  ipatch_init();
 
+  /* load managers * /
+  ladspa_manager = ags_ladspa_manager_get_instance();
+  ags_ladspa_manager_load_default_directory();
+  
+  dssi_manager = ags_dssi_manager_get_instance();
+  ags_dssi_manager_load_default_directory();
+    
+  lv2_manager = ags_lv2_manager_get_instance();
+  ags_lv2_manager_load_default_directory();
+  
+  lv2ui_manager = ags_lv2ui_manager_get_instance();
+  ags_lv2ui_manager_load_default_directory();
+  */ 
+  /* init gsequencer */
   application_context = ags_xorg_application_context_new();
   application_context->argc = argc;
   application_context->argv = argv;
@@ -228,21 +269,26 @@ main(int argc, char **argv)
 			       pw->pw_dir,
 			       AGS_DEFAULT_DIRECTORY));
   
-  /**/
-  LIBXML_TEST_VERSION;
-
-  g_thread_init(NULL);
-  gdk_threads_init();
-
-  gtk_init(&argc, &argv);
-  ipatch_init();
-    
   audio_loop = application_context->main_loop;
   task_thread = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
-  ao_initialize();
+  config = application_context->config;
 
+  /* JACK */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "jack\0");
+  jack_enabled = (str != NULL && !g_ascii_strncasecmp(str, "enabled\0", 8)) ? TRUE: FALSE;
+
+  if(str != NULL){
+    free(str);
+  }
+  
+  if(jack_enabled){
+    jackctl_setup_signals(0);
+  }
+  
   /* parse command line parameter */
   filename = NULL;
 
@@ -290,21 +336,42 @@ main(int argc, char **argv)
     gui_thread = ags_thread_find_type(application_context->main_loop,
 				      AGS_TYPE_GUI_THREAD);
   }else{
+    GList *start_queue;
+    
     guint val;
 
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    pthread_mutex_lock(application_mutex);
+    
+    audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+						audio_loop);
+    
+    pthread_mutex_unlock(application_mutex);
+  
     /* wait for audio loop */
-    thread_pool->parent = audio_loop;
-    ags_thread_pool_start(thread_pool);
-
     task_thread = ags_thread_find_type(audio_loop,
 				       AGS_TYPE_TASK_THREAD);
+    thread_pool->parent = task_thread;
 
     gui_thread = ags_thread_find_type(audio_loop,
 				      AGS_TYPE_GUI_THREAD);
 
-    ags_thread_start(task_thread);
+    pthread_mutex_lock(audio_loop_mutex);
+    
+    start_queue = NULL;
+    start_queue = g_list_prepend(start_queue,
+				 task_thread);
+    start_queue = g_list_prepend(start_queue,
+				 gui_thread);
+    g_atomic_pointer_set(&(audio_loop->start_queue),
+			 start_queue);
+
+    pthread_mutex_unlock(audio_loop_mutex);
+    
     ags_thread_start(audio_loop);
-    ags_thread_start(gui_thread);
+    ags_thread_pool_start(thread_pool);
 
 #ifdef AGS_USE_TIMER
     /* Start the timer */
@@ -327,25 +394,20 @@ main(int argc, char **argv)
 
     /* wait for audio loop */
     pthread_mutex_lock(audio_loop->start_mutex);
-  
-    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags)))) != 0){
-      pthread_cond_wait(audio_loop->start_cond,
-			audio_loop->start_mutex);
-      val = g_atomic_int_get(&(AGS_THREAD(audio_loop)->flags));
-    }
-  
-    pthread_mutex_unlock(audio_loop->start_mutex);
 
-    /* wait for audio loop */
-    pthread_mutex_lock(gui_thread->start_mutex);
-  
-    while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags)))) != 0){
-      pthread_cond_wait(gui_thread->start_cond,
-			gui_thread->start_mutex);
-      val = g_atomic_int_get(&(AGS_THREAD(gui_thread)->flags));
+    if(g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
+	
+      g_atomic_int_set(&(audio_loop->start_wait),
+		       TRUE);
+      
+      while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
+	    g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
+	pthread_cond_wait(audio_loop->start_cond,
+			  audio_loop->start_mutex);
+      }
     }
-  
-    pthread_mutex_unlock(gui_thread->start_mutex);
+    
+    pthread_mutex_unlock(audio_loop->start_mutex);
   }
 
   if(!single_thread){
@@ -354,6 +416,25 @@ main(int argc, char **argv)
     pth_join(gui_thread->thread,
 	     NULL);
 #else
+    /* wait for audio loop */
+    pthread_mutex_lock(gui_thread->start_mutex);
+
+    if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+      
+      g_atomic_int_set(&(gui_thread->start_wait),
+		       TRUE);
+
+      while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
+	g_atomic_int_set(&(gui_thread->start_wait),
+			 TRUE);
+	
+	pthread_cond_wait(gui_thread->start_cond,
+			  gui_thread->start_mutex);
+      }
+    }
+    
+    pthread_mutex_unlock(gui_thread->start_mutex);
+
     pthread_join(*(gui_thread->thread),
 		 NULL);
 #endif
@@ -371,10 +452,11 @@ main(int argc, char **argv)
     ags_thread_start((AgsThread *) single_thread);
   }
     
+  gdk_threads_leave();
+
   /* free managers */
-  if(ladspa_manager != NULL){
-    g_object_unref(ags_ladspa_manager_get_instance());
-  }
+  ladspa_manager = ags_ladspa_manager_get_instance();
+  g_object_unref(ladspa_manager);
   
   /* delete autosave file */  
   autosave_filename = g_strdup_printf("%s/%s/%d-%s\0",

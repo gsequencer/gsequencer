@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2013 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_performance_preferences.h>
@@ -148,7 +149,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 		     GTK_WIDGET(performance_preferences->super_threaded),
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_set_sensitive(performance_preferences->super_threaded,
+  gtk_widget_set_sensitive((GtkWidget *) performance_preferences->super_threaded,
 			   FALSE);
 }
 
@@ -175,10 +176,8 @@ ags_performance_preferences_set_update(AgsApplicable *applicable, gboolean updat
 void
 ags_performance_preferences_apply(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
-  AgsPerformancePreferences *performance_preferences;
-  AgsApplicationContext *application_context;
+  AgsPerformancePreferences *performance_preferences; 
   AgsConfig *config;
   gchar *str;
   
@@ -188,12 +187,6 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 							   AGS_TYPE_PREFERENCES);
   config = ags_config_get_instance();
 
-  window = preferences->parent;
-
-  application_context = window->application_context;
-
-  config = application_context->config;
-  
   /* auto-sense */
   str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true\0": "false\0"));
   ags_config_set_value(config,
@@ -211,12 +204,12 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   AgsWindow *window;
   AgsPreferences *preferences;
   AgsPerformancePreferences *performance_preferences;
-  AgsApplicationContext *application_context;
   AgsConfig *config;
   gchar *str;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
+  /*  */
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);

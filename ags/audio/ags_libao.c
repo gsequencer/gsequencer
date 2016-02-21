@@ -233,7 +233,7 @@ ags_libao_class_init(AgsLibaoClass *libao)
 GQuark
 ags_libao_error_quark()
 {
-  return(g_quark_from_static_string("agsao-error-quark\0"));
+  return(g_quark_from_static_string("ags-libao-error-quark\0"));
 }
 
 void
@@ -275,8 +275,8 @@ ags_libao_init(AgsLibao *libao)
   libao->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
 
   /* delay and attack */
-  libao->delay = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
-				   sizeof(gdouble));
+  libao->delay = (gdouble *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
+				    sizeof(gdouble));
 
   libao->attack = (guint *) malloc((int) ceil(2.0 * AGS_NOTATION_TICS_PER_BEAT) *
 				   sizeof(guint));

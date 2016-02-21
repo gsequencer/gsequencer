@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/editor/ags_note_edit_callbacks.h>
@@ -35,6 +36,8 @@
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
 #include <ags/audio/recall/ags_play_channel_run.h>
+#include <ags/audio/recall/ags_delay_audio.h>
+#include <ags/audio/recall/ags_delay_audio_run.h>
 
 #include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_init_channel.h>
@@ -50,6 +53,7 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_dssi_bridge.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -142,10 +146,50 @@ gboolean
 ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNoteEdit *note_edit)
 {
   AgsEditor *editor;
+  guint width;
+  double zoom, zoom_old;
+  double tact_factor, zoom_factor;
+  double tact;
+  gdouble old_upper, new_upper;
+  gdouble position;
+  guint history;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
+  /* calculate zoom */
+  history = gtk_combo_box_get_active(editor->toolbar->zoom);
+
+  zoom = exp2((double) history - 2.0);
+  zoom_old = exp2((double) editor->toolbar->zoom_history - 2.0);
+
+  zoom_factor = 0.25;
+
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
+
+  editor->toolbar->zoom_history = history;
+
+  position = GTK_RANGE(note_edit->hscrollbar)->adjustment->value;
+  old_upper = GTK_RANGE(note_edit->hscrollbar)->adjustment->upper;
+  
+  note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
+  ags_note_edit_reset_horizontally(note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR |
+				   AGS_NOTE_EDIT_RESET_WIDTH);
+  note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);
+
+  new_upper = GTK_RANGE(note_edit->hscrollbar)->adjustment->upper;
+  
+  gtk_adjustment_set_value(GTK_RANGE(note_edit->hscrollbar)->adjustment,
+			   position / old_upper * new_upper);
+
+  /* reset adjustments */
+  width = widget->allocation.width;
+  gtk_adjustment_set_upper(GTK_RANGE(note_edit->hscrollbar)->adjustment,
+			   (gdouble) (note_edit->map_width - width));
+  gtk_adjustment_set_upper(note_edit->ruler->adjustment,
+			   (gdouble) (note_edit->map_width - width) / note_edit->control_current.control_width);
+  
   if(editor->selected_machine != NULL){
     AgsMachine *machine;
 
@@ -171,6 +215,9 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_draw_segment(note_edit, cr);
 	ags_note_edit_draw_notation(note_edit, cr);
+      }else if(AGS_IS_DSSI_BRIDGE(machine)){
+	ags_note_edit_draw_segment(note_edit, cr);
+	ags_note_edit_draw_notation(note_edit, cr);
       }
 
       if(editor->toolbar->selected_edit_mode == editor->toolbar->position){
@@ -180,6 +227,8 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
     }
+
+    ags_meter_paint(editor->current_meter);
   }
 
   return(TRUE);
@@ -189,13 +238,11 @@ gboolean
 ags_note_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNoteEdit *note_edit)
 {
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
-  ags_note_edit_reset_vertically(note_edit, (AGS_NOTE_EDIT_RESET_VSCROLLBAR |
-					     AGS_NOTE_EDIT_RESET_WIDTH));
+  ags_note_edit_reset_vertically(note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
 
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;
-  ags_note_edit_reset_horizontally(note_edit, (AGS_NOTE_EDIT_RESET_HSCROLLBAR |
-					       AGS_NOTE_EDIT_RESET_WIDTH));
+  ags_note_edit_reset_horizontally(note_edit, AGS_NOTE_EDIT_RESET_HSCROLLBAR);
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_HORIZONTALLY);  
 
   return(FALSE);
@@ -246,6 +293,8 @@ ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
+  gtk_widget_grab_focus(note_edit->drawing_area);
+  
   if(editor->selected_machine != NULL &&
      event->button == 1 &&
      (machine = editor->selected_machine) != NULL){
@@ -272,7 +321,7 @@ ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
 
     if((AGS_NOTE_EDIT_ADDING_NOTE & (note_edit->flags)) != 0 ||
        (AGS_NOTE_EDIT_POSITION_CURSOR & (note_edit->flags)) != 0){
-      tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+      tact = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
       
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
@@ -283,6 +332,8 @@ ags_note_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
       }else if(AGS_IS_SYNTH(machine)){
 	ags_note_edit_drawing_area_button_press_event_set_control();
       }else if(AGS_IS_FFPLAYER(machine)){
+	ags_note_edit_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_DSSI_BRIDGE(machine)){
 	ags_note_edit_drawing_area_button_press_event_set_control();
       }
     }
@@ -319,8 +370,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     
     guint note_x, note_y;
     guint note_offset_x1;
-    gint history;
-    gint selected_channel;
+    gint i;
 
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
@@ -378,21 +428,8 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	
 	continue;
       }
-      break;
-    case 1:
-      {
-	gint i;
-
-	i = 0;
-
-	while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
-							       i)) != -1){
-	  list_notation = g_list_nth(machine->audio->notation,
-				     selected_channel);
-
-	  note0 = ags_note_duplicate(note);
-
-	  ags_notation_add_note(AGS_NOTATION(list_notation->data), note0, FALSE);
+      
+      note0 = ags_note_duplicate(note);
 
       /* do it so */
       pthread_mutex_lock(audio_mutex);
@@ -405,7 +442,9 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
       i++;
     }
 
+#ifdef DEBUG
     fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+#endif
   }
   void ags_note_edit_drawing_area_button_release_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
@@ -477,7 +516,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 
     guint x, y;
     gint history;
-    gint selected_channel;
+    gint i;
 
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *application_mutex;
@@ -530,15 +569,6 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	
 	continue;
       }
-    }else if(history == 1){
-      gint i;
-
-      i = 0;
-
-      while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
-							     i)) != -1){
-	list_notation = g_list_nth(machine->audio->notation,
-				   selected_channel);
 
       /* do it so */
       pthread_mutex_lock(audio_mutex);
@@ -558,7 +588,9 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     AgsMutexManager *mutex_manager;
 
     GList *list_notation;
+
     guint x0, x1, y0, y1;
+    gint i;
 
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
@@ -632,12 +664,6 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	
 	continue;
       }
-    }else{
-      while(list_notation != NULL ){
-	ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
-					     x0, y0,
-					     x1, y1,
-					     TRUE);
 
       /* do it so */
       pthread_mutex_lock(audio_mutex);
@@ -647,7 +673,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 					   x1, y1,
 					   TRUE);
 
-      pthread_mutex_lock(audio_mutex);
+      pthread_mutex_unlock(audio_mutex);
 
       /* iterate */
       i++;
@@ -659,6 +685,8 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 						 AGS_TYPE_EDITOR);
 
   if(editor->selected_machine != NULL && event->button == 1){
+    AgsMutexManager *mutex_manager;
+
     cairo_t *cr;
 
     pthread_mutex_t *application_mutex;
@@ -695,7 +723,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+    tact = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
@@ -719,6 +747,8 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 	ags_note_edit_draw_position(note_edit, cr);
       }else if(AGS_IS_SYNTH(machine)){
 	ags_note_edit_draw_position(note_edit, cr);
+      }else if(AGS_IS_DSSI_BRIDGE(machine)){
+	ags_note_edit_draw_position(note_edit, cr);
       }
     }else if((AGS_NOTE_EDIT_ADDING_NOTE & (note_edit->flags)) != 0){
       note_edit->flags &= (~AGS_NOTE_EDIT_ADDING_NOTE);
@@ -726,32 +756,56 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
       ags_note_edit_draw_segment(note_edit, cr);
       ags_note_edit_draw_notation(note_edit, cr);
 
+      pthread_mutex_lock(audio_mutex);
+	  
       if(AGS_IS_PANEL(machine)){
       }else if(AGS_IS_MIXER(machine)){
       }else if(AGS_IS_DRUM(machine)){
 	ags_note_edit_drawing_area_button_release_event_set_control();
-	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_MATRIX(machine)){
 	ags_note_edit_drawing_area_button_release_event_set_control();
-	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_note_edit_drawing_area_button_release_event_set_control();
-	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_SYNTH(machine)){
 	ags_note_edit_drawing_area_button_release_event_set_control();
+      }else if(AGS_IS_DSSI_BRIDGE(machine)){
+	ags_note_edit_drawing_area_button_release_event_set_control();
+      }
+
+      pthread_mutex_unlock(audio_mutex);
+
+      if(AGS_IS_PANEL(machine)){
+      }else if(AGS_IS_MIXER(machine)){
+      }else if(AGS_IS_DRUM(machine)){
+	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_MATRIX(machine)){
+	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_FFPLAYER(machine)){
+	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_SYNTH(machine)){
+	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_DSSI_BRIDGE(machine)){
 	ags_note_edit_drawing_area_button_release_event_draw_control(cr);
       }
     }else if((AGS_NOTE_EDIT_DELETING_NOTE & (note_edit->flags)) != 0){
       note_edit->flags &= (~AGS_NOTE_EDIT_DELETING_NOTE);
 
+      pthread_mutex_lock(audio_mutex);
+      
       ags_note_edit_drawing_area_button_release_event_delete_point();
+
+      pthread_mutex_unlock(audio_mutex);
 
       ags_note_edit_draw_segment(note_edit, cr);
       ags_note_edit_draw_notation(note_edit, cr);
     }else if((AGS_NOTE_EDIT_SELECTING_NOTES & (note_edit->flags)) != 0){
       note_edit->flags &= (~AGS_NOTE_EDIT_SELECTING_NOTES);
 
+      pthread_mutex_lock(audio_mutex);
+
       ags_note_edit_drawing_area_button_release_event_select_region();
+
+      pthread_mutex_unlock(audio_mutex);
 
       ags_note_edit_draw_segment(note_edit, cr);
       ags_note_edit_draw_notation(note_edit, cr);
@@ -765,7 +819,7 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 }
 
 gboolean
-ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotion *event, AgsNoteEdit *note_edit)
+ags_note_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsNoteEdit *note_edit)
 {
   AgsMachine *machine;
   AgsEditor *editor;
@@ -804,7 +858,6 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
     fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n\0", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
 #endif
   }
-
   void ags_note_edit_drawing_area_motion_notify_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
 
@@ -864,7 +917,6 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
     cairo_rectangle(cr, (double) x, (double) y, (double) width, (double) height);
     cairo_fill(cr);
   }
-
   void ags_note_edit_drawing_area_motion_notify_event_draw_selection(cairo_t *cr){
     GtkAllocation allocation;
     guint x0_offset, x1_offset, y0_offset, y1_offset;
@@ -929,8 +981,10 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 
     /* get drawable size and offset */
     if(y0 < y0_viewport){
-      y0 = 0;
-      height = y1_offset - y0_viewport;
+      //      y0 = 0;
+      //      height = y1_offset - y0_viewport;
+      y0 -= y0_viewport;
+      height = y1 - y0;
     }else{
       y0 -= y0_viewport;
       height = y1 - y0;
@@ -975,7 +1029,7 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
     note_edit->control.x1_offset = (guint) round((double) note_edit->hscrollbar->scrollbar.range.adjustment->value);
     note_edit->control.y1_offset = (guint) round((double) note_edit->vscrollbar->scrollbar.range.adjustment->value);
 
-    tact = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
+    tact = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
 
     cr = gdk_cairo_create(widget->window);
     cairo_push_group(cr);
@@ -995,6 +1049,9 @@ ags_note_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMotio
 	ags_note_edit_drawing_area_motion_notify_event_set_control();
 	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
+	ags_note_edit_drawing_area_motion_notify_event_set_control();
+	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
+      }else if(AGS_IS_DSSI_BRIDGE(machine)){
 	ags_note_edit_drawing_area_motion_notify_event_set_control();
 	ags_note_edit_drawing_area_motion_notify_event_draw_control(cr);
       }
@@ -1018,9 +1075,20 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
   AgsEditor *editor;
 
   AgsMachine *machine;
+
+  gboolean retval;
   
-  if(event->keyval == GDK_KEY_Tab){
-    return(FALSE);
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
   }
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
@@ -1093,7 +1161,7 @@ ags_note_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event
     }
   }
 
-  return(TRUE);
+  return(retval);
 }
 
 gboolean
@@ -1101,7 +1169,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 {
   AgsEditor *editor;
   AgsMachine *machine;
-      
+
+  AgsAudio *audio;      
   AgsChannel *channel;
 
   AgsMutexManager *mutex_manager;
@@ -1110,9 +1179,11 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
   gint i;
   gboolean do_feedback;
+  gboolean retval;
   
   pthread_mutex_t *application_mutex;
-
+  pthread_mutex_t *audio_mutex;
+  
   auto void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel, AgsNote *note);
 
   void ags_note_edit_drawing_area_key_release_event_play_channel(AgsChannel *channel, AgsNote *note){
@@ -1170,6 +1241,14 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
     pthread_mutex_unlock(audio_mutex);
 
+    /* lookup soundcard mutex */
+    pthread_mutex_lock(application_mutex);
+
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) soundcard);
+
+    pthread_mutex_unlock(application_mutex);
+
     /* get application_context */
     pthread_mutex_lock(soundcard_mutex);
 
@@ -1216,17 +1295,38 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     ags_task_thread_append_tasks(task_thread, tasks);
   }
 
-  if(event->keyval == GDK_KEY_Tab){
-    return(FALSE);
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
   }
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
   machine = editor->selected_machine;
+  audio = machine->audio;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+        
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+    
+  pthread_mutex_unlock(application_mutex);
 
   do_feedback = FALSE;
-
+  
   switch(event->keyval){
   case GDK_KEY_Control_L:
     {
@@ -1284,12 +1384,16 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
-	  list_notation = g_list_nth(machine->audio->notation,
+	  pthread_mutex_lock(audio_mutex);
+	  
+	  list_notation = g_list_nth(audio->notation,
 				     i);
 
 	  if(list_notation == NULL){
 	    i++;
 	
+	    pthread_mutex_unlock(audio_mutex);
+	    
 	    continue;
 	  }
 
@@ -1297,9 +1401,12 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 					 note_edit->selected_x, note_edit->selected_y,
 					 FALSE);
 
-	  if(note->x[1] - note->x[0] - tact >= tact){
+	  if(note != NULL &&
+	     note->x[1] - note->x[0] - tact >= tact){
 	    note->x[1] -= tact;
 	  }
+
+	  pthread_mutex_unlock(audio_mutex);
 	  
 	  i++;
 	}
@@ -1340,20 +1447,29 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
 	while((i = ags_notebook_next_active_tab(editor->current_notebook,
 						i)) != -1){
-	  list_notation = g_list_nth(machine->audio->notation,
+	  pthread_mutex_lock(audio_mutex);
+
+	  list_notation = g_list_nth(audio->notation,
 				     i);
 
 	  if(list_notation == NULL){
 	    i++;
-	
+	    
+	    pthread_mutex_unlock(audio_mutex);
+	    
 	    continue;
 	  }
 
 	  note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
 					 note_edit->selected_x, note_edit->selected_y,
 					 FALSE);
-	  note->x[1] += tact;
-	
+
+	  if(note != NULL){
+	    note->x[1] += tact;
+	  }
+	  
+	  pthread_mutex_unlock(audio_mutex);
+	  
 	  i++;
 	}
       }
@@ -1415,12 +1531,16 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       
       while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					      i)) != -1){
-	list_notation = g_list_nth(machine->audio->notation,
+	pthread_mutex_lock(audio_mutex);
+
+	list_notation = g_list_nth(audio->notation,
 				   i);
 
 	if(list_notation == NULL){
 	  i++;
 	
+	   pthread_mutex_unlock(audio_mutex);
+	  
 	  continue;
 	}
       
@@ -1431,6 +1551,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 	
 	ags_notation_add_note(AGS_NOTATION(list_notation->data), note, FALSE);
 
+	pthread_mutex_unlock(audio_mutex);
+	
 	i++;
       }
 
@@ -1447,17 +1569,22 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
       while((i = ags_notebook_next_active_tab(editor->current_notebook,
 					      i)) != -1){
-	list_notation = g_list_nth(machine->audio->notation,
+	pthread_mutex_lock(audio_mutex);
+	
+	list_notation = g_list_nth(audio->notation,
 				   i);
 
 	if(list_notation == NULL){
 	  i++;
+
+	  pthread_mutex_unlock(audio_mutex);
 	
 	  continue;
 	}
 
 	ags_notation_remove_note_at_position(AGS_NOTATION(list_notation->data),
 					     note_edit->selected_x, note_edit->selected_y);
+	pthread_mutex_unlock(audio_mutex);
 	
 	i++;
       }
@@ -1468,27 +1595,12 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
   }
 
   if(do_feedback){
-    AgsAudio *audio;
+    AgsChannel *input;
     AgsNote *current_note;
 
+    guint input_pads;
     guint flags;
-    gboolean has_note;
     
-    pthread_mutex_t *audio_mutex;
-
-    audio = machine->audio;
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* lookup audio mutex */
-    pthread_mutex_lock(application_mutex);
-        
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
-    
-    pthread_mutex_unlock(application_mutex);
- 
     /* audible feedback */
     i = 0;
 
@@ -1509,21 +1621,21 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       }
 
       pthread_mutex_lock(audio_mutex);
-      
-      has_note = ((ags_notation_find_point(list_notation->data,
-					   note_edit->selected_x, note_edit->selected_y,
-					   FALSE) != NULL) ?
-		  TRUE:
-		  FALSE);
+
+      input = audio->input;
+      input_pads = audio->input_pads;
+      current_note = ags_notation_find_point(list_notation->data,
+					     note_edit->selected_x, note_edit->selected_y,
+					     FALSE);
 
       pthread_mutex_unlock(audio_mutex);
       
-      if(has_note){
-	channel = ags_channel_nth(machine->audio->input,
+      if(current_note != NULL){
+	channel = ags_channel_nth(input,
 				  i);
 
 	if((AGS_AUDIO_REVERSE_MAPPING & (flags)) != 0){
-	  channel = ags_channel_pad_nth(channel, machine->audio->input_pads - note_edit->selected_y - 1);
+	  channel = ags_channel_pad_nth(channel, input_pads - note_edit->selected_y - 1);
 	}else{
 	  channel = ags_channel_pad_nth(channel, note_edit->selected_y);
 	}
@@ -1536,7 +1648,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
     }
   }
 
-  return(TRUE);
+  return(retval);
 }
 
 void
@@ -1555,33 +1667,23 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
   AgsConfig *config;
   
   GList *recall, *tmp;
-
-  guint samplerate;
-  guint buffer_size;
-  gchar *str;
-
-  channel = AGS_INIT_CHANNEL(task)->channel;
-
-  config = ags_config_get_instance();
+  GList *delay_audio;
   
-  str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "buffer-size\0");
-  buffer_size = g_ascii_strtoull(str,
-				 NULL,
-				 10);
-  free(str);
-
-  str = ags_config_get_value(config,
-		       AGS_CONFIG_SOUNDCARD,
-		       "samplerate\0");
-  samplerate = g_ascii_strtoull(str,
-				NULL,
-				10);
-  free(str);
+  gchar *str;
+  gdouble notation_delay;
+  guint samplerate;
+  
+  GValue value = {0,};
+  
+  channel = AGS_INIT_CHANNEL(task)->channel;
 
   soundcard = channel->soundcard;
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    NULL,
+			    NULL);
   
   audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
   task_thread = ags_thread_find_type(audio_loop,
@@ -1604,9 +1706,24 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
   tmp = recall;
   recall = ags_recall_find_type(recall,
 				AGS_TYPE_PLAY_CHANNEL_RUN);
-  //TODO:JK: fix me
+  //FIXME:JK: below
   //    g_list_free(tmp);
 
+  /* read notation delay */
+  delay_audio = channel->recall;
+  delay_audio = ags_recall_find_type(delay_audio,
+				     AGS_TYPE_DELAY_AUDIO);
+  
+  if(delay_audio != NULL){
+    g_value_init(&value,
+		 G_TYPE_DOUBLE);
+    ags_port_safe_read(AGS_DELAY_AUDIO(delay_audio->data)->notation_delay,
+		       &value);
+    notation_delay = g_value_get_double(&value);
+  }else{
+    notation_delay = 1.0;
+  }
+  
   if(recall != NULL){
     AgsAudioSignal *audio_signal;
       
@@ -1620,7 +1737,7 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
       /* add audio signal */
       ags_recycling_create_audio_signal_with_frame_count(recycling,
 							 audio_signal,
-							 samplerate /  ((double) samplerate / (double) buffer_size) * (note->x[1] - note->x[0]),
+							 (note->x[1] - note->x[0]) * ((gdouble) samplerate / notation_delay),
 							 0.0, 0);
       audio_signal->stream_current = audio_signal->stream_beginning;
       ags_audio_signal_connect(audio_signal);
@@ -1639,10 +1756,17 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 void
 ags_note_edit_vscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
 {
-  if((AGS_NOTE_EDIT_RESETING_VERTICALLY & note_edit->flags) != 0){
+  AgsEditor *editor;
+
+  if((AGS_NOTE_EDIT_RESETING_VERTICALLY & (note_edit->flags)) != 0){
     return;
   }
 
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
+						 AGS_TYPE_EDITOR);
+
+  ags_meter_paint(editor->current_meter);
+  
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
   ags_note_edit_reset_vertically(note_edit, 0);
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);
@@ -1651,14 +1775,14 @@ ags_note_edit_vscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
 void
 ags_note_edit_hscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
 {
-  if((AGS_NOTE_EDIT_RESETING_HORIZONTALLY & note_edit->flags) != 0){
+  if((AGS_NOTE_EDIT_RESETING_HORIZONTALLY & (note_edit->flags)) != 0){
     return;
   }
 
   /* reset ruler */
   gtk_adjustment_set_value(note_edit->ruler->adjustment,
 			   GTK_RANGE(note_edit->hscrollbar)->adjustment->value / (double) note_edit->control_current.control_width);
-  gtk_widget_queue_draw(note_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
 
   /* update note edit */
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_HORIZONTALLY;

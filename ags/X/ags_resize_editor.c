@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_resize_editor.h>
@@ -258,7 +259,6 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   AgsWindow *window;
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
-
   AgsAudio *audio;
   AgsResizeAudio *resize_audio;
     
@@ -278,15 +278,6 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   
   machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(resize_editor),
 							      AGS_TYPE_MACHINE_EDITOR));
-
-  window = machine_editor->parent;
-
-  application_context = window->application_context;
-  
-  main_loop = application_context->main_loop;
-
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
 
   audio = machine_editor->machine->audio;
 
@@ -365,6 +356,11 @@ ags_resize_editor_reset(AgsApplicable *applicable)
   gtk_spin_button_set_value(resize_editor->input_pads,
 			    audio->input_pads);
 
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (machine_editor->machine->audio->flags)) == 0){
+    gtk_spin_button_set_range(resize_editor->output_pads,
+			      0.0, 1.0);
+  }
+  
   gtk_spin_button_set_value(resize_editor->output_pads,
 			    audio->output_pads);
 

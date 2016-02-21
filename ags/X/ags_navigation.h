@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_NAVIGATION_H__
@@ -40,6 +41,7 @@ typedef struct _AgsNavigationClass AgsNavigationClass;
 typedef enum{
   AGS_NAVIGATION_BLOCK_TACT   = 1,
   AGS_NAVIGATION_BLOCK_PLAY   = 1 << 1,
+  AGS_NAVIGATION_BLOCK_TIC    = 1 << 2,
 }AgsNavigationFlags;
 
 struct _AgsNavigation
@@ -76,6 +78,7 @@ struct _AgsNavigation
   GtkSpinButton *loop_right_tact;
 
   GtkCheckButton *scroll;
+  GtkCheckButton *exclude_sequencer;
 };
 
 struct _AgsNavigationClass
@@ -102,15 +105,15 @@ gchar* ags_navigation_absolute_tact_to_time_string(gdouble tact,
 						   gdouble delay_factor);
 
 void ags_navigation_update_time_string(double tact,
-				       gchar *time_string,
-				       gdouble bpm);
+				       gdouble bpm,
+				       gdouble delay_factor,
+				       gchar *time_string);
 
 void ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
 					  gboolean enabled);
 
 void ags_navigation_change_position(AgsNavigation *navigation,
-				    gdouble tact,
-				    gdouble bpm);
+				    gdouble tact);
 
 AgsNavigation* ags_navigation_new();
 

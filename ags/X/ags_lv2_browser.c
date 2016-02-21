@@ -162,15 +162,18 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   lv2_browser->path = NULL;
 
-  ags_lv2_manager_load_default_directory();
-  filenames =
-    filenames_start = ags_lv2_manager_get_filenames();
+  //  ags_lv2_manager_load_default_directory();
+  //  filenames =
+  //    filenames_start = ags_lv2_manager_get_filenames();
+  filenames = NULL;
 
-  while(*filenames != NULL){
-    gtk_combo_box_text_append_text(combo_box,
-				   *filenames);
-
-    filenames++;
+  if(filenames != NULL){
+    while(*filenames != NULL){
+      gtk_combo_box_text_append_text(combo_box,
+				     *filenames);
+      
+      filenames++;
+    }
   }
 
   //  free(filenames_start);
@@ -290,7 +293,19 @@ ags_lv2_browser_apply(AgsApplicable *applicable)
 void
 ags_lv2_browser_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsLv2Browser *lv2_browser;
+  GtkComboBoxText *filename;
+  GList *list;
+
+  lv2_browser = AGS_LV2_BROWSER(applicable);
+
+  list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
+
+  filename = GTK_COMBO_BOX(list->next->data);
+  g_list_free(list);
+
+  gtk_combo_box_set_active(filename,
+			   0);
 }
 
 /**

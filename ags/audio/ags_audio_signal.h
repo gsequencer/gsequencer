@@ -20,6 +20,7 @@
 #ifndef __AGS_AUDIO_SIGNAL_H__
 #define __AGS_AUDIO_SIGNAL_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_AUDIO_SIGNAL                (ags_audio_signal_get_type())
@@ -29,12 +30,6 @@
 #define AGS_IS_AUDIO_SIGNAL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_SIGNAL))
 #define AGS_AUDIO_SIGNAL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_AUDIO_SIGNAL, AgsAudioSignalClass))
 
-#define AGS_BUFFER_RAW(x) ((unsigned char *)(x))
-#define AGS_BUFFER_8_BIT_PCM(x) ((signed char *)(x))
-#define AGS_BUFFER_16_BIT_PCM(x) ((signed short *)(x))
-#define AGS_BUFFER_32_BIT_PCM(x) ((signed long int *)(x))
-#define AGS_BUFFER_64_BIT_PCM(x) ((signed long long int *)(x))
-
 typedef struct _AgsAudioSignal AgsAudioSignal;
 typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
 
@@ -43,18 +38,6 @@ typedef enum{
   AGS_AUDIO_SIGNAL_PLAY_DONE            = 1 << 1,
   AGS_AUDIO_SIGNAL_STANDALONE           = 1 << 2,
 }AgsAudioSignalFlags;
-
-typedef enum{
-  AGS_AUDIO_SIGNAL_FORMAT_NONINTERLEAVED_RAW   = 1,
-  AGS_AUDIO_SIGNAL_FORMAT_8_BIT_PCM            = 1 << 1,
-  AGS_AUDIO_SIGNAL_FORMAT_16_BIT_PCM           = 1 << 2,
-  AGS_AUDIO_SIGNAL_FORMAT_24_BIT_PCM           = 1 << 3,
-  AGS_AUDIO_SIGNAL_FORMAT_32_BIT_PCM           = 1 << 4,
-  AGS_AUDIO_SIGNAL_FORMAT_64_BIT_PCM           = 1 << 5,
-  AGS_AUDIO_SIGNAL_FORMAT_16_BIT_FLOAT         = 1 << 6,
-  AGS_AUDIO_SIGNAL_FORMAT_32_BIT_FLOAT         = 1 << 7,
-  AGS_AUDIO_SIGNAL_FORMAT_64_BIT_FLOAT         = 1 << 8,
-}AgsAudioSignalFormat;
 
 struct _AgsAudioSignal
 {
@@ -81,7 +64,7 @@ struct _AgsAudioSignal
   gdouble delay;
   guint attack;
 
-  guint lock_attack; // deprecated
+  guint lock_attack;
   
   GList *stream_beginning;
   GList *stream_current;

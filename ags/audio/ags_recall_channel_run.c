@@ -64,7 +64,7 @@ void ags_recall_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conne
 void ags_recall_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_channel_run_finalize(GObject *gobject);
 
-void ags_recall_channel_run_done(AgsRecall *recall);
+void ags_recall_channel_run_remove(AgsRecall *recall);
 AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
 					    AgsRecallID *recall_id,
 					    guint *n_params, GParameter *parameter);
@@ -286,7 +286,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
   recall = (AgsRecallClass *) recall_channel_run;
 
   recall->duplicate = ags_recall_channel_run_duplicate;
-  recall->done = ags_recall_channel_run_done;
+  recall->remove = ags_recall_channel_run_remove;
 
   /* AgsRecallChannelRunClass */
   recall_channel_run->run_order_changed = ags_recall_channel_run_real_run_order_changed;
@@ -314,6 +314,8 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 void
 ags_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  AgsConnectableInterface *ags_recall_channel_run_connectable_parent_interface;
+
   ags_recall_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_recall_channel_run_connect;
@@ -568,16 +570,15 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
   AgsRecallChannelRun *recall_channel_run;
   GObject *gobject;
 
-  /* AgsRecallChannelRun */
-  recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
-
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(recall_channel_run)->flags)) != 0){
+  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
     return;
   }
 
-  /* connect parent */
   ags_recall_channel_run_parent_connectable_interface->connect(connectable);
-  
+
+  /* AgsCopyChannelRun */
+  recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
+
   /* destination */
   if(recall_channel_run->destination != NULL){
     gobject = G_OBJECT(recall_channel_run->destination);
@@ -605,10 +606,6 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
   /* AgsRecallChannelRun */
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
 
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(recall_channel_run)->flags)) == 0){
-    return;
-  }
-  
   /* destination */
   if(recall_channel_run->destination != NULL){
     gobject = G_OBJECT(recall_channel_run->destination);
@@ -741,6 +738,10 @@ ags_recall_channel_run_unpack(AgsPackable *packable)
 void
 ags_recall_channel_run_connect_dynamic(AgsConnectable *connectable)
 {
+  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+    return;
+  }
+
   ags_recall_channel_run_parent_dynamic_connectable_interface->connect_dynamic(connectable);
 
   /* empty */
@@ -755,17 +756,15 @@ ags_recall_channel_run_disconnect_dynamic(AgsConnectable *connectable)
 }
 
 void
-ags_recall_channel_run_done(AgsRecall *recall)
+ags_recall_channel_run_remove(AgsRecall *recall)
 {
-  AgsRecallChannelRun *recall_channel_run;
-
-  recall_channel_run = AGS_RECALL_CHANNEL_RUN(recall);
-  
-  ags_channel_remove_recall(recall_channel_run->source,
-			    (GObject *) recall,
-			    ((recall->recall_id->recycling_context->parent == NULL) ? TRUE: FALSE));
-
-  AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->done(recall);
+  if(AGS_RECALL_CHANNEL_RUN(recall)->source != NULL){
+    ags_channel_remove_recall(AGS_RECALL_CHANNEL_RUN(recall)->source,
+			      recall,
+			      ((recall->recall_id->recycling_context->parent) ? TRUE: FALSE));
+  }
+ 
+  AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->remove(recall);
 }
 
 AgsRecall*
@@ -911,11 +910,11 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
 					"destination\0", destination_recycling,
 					NULL);
 
-	  ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
-
-	  if(destination_recycling != NULL){
-	    destination_recycling = destination_recycling->next;
-	  }
+	ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	
+	if(destination_recycling != NULL){
+	  destination_recycling = destination_recycling->next;
+	}
       }while(destination_recycling != end_destination_recycling);
 
       source_recycling = source_recycling->next;
@@ -943,13 +942,6 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     GObject *soundcard;
     AgsRecall *recall;
     AgsCancelRecall *cancel_recall;
-    AgsRecall *recall;
-    AgsThread *main_loop;
-    AgsTaskThread *task_thread;
-    GObject *soundcard;
-    AgsApplicationContext *application_context;
-
-    soundcard = AGS_SOUNDCARD(AGS_AUDIO(recall_channel_run->source->audio)->soundcard);
 
     soundcard = AGS_SOUNDCARD(AGS_AUDIO(recall_channel_run->source->audio)->soundcard);
     source_recycling = old_start_changed_region;
@@ -1016,10 +1008,6 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
     GObject *soundcard;
     AgsRecall *recall;
     AgsCancelRecall *cancel_recall;
-    AgsThread *main_loop;
-    AgsTaskThread *task_thread;
-    GObject *soundcard;
-    AgsApplicationContext *application_context;
 
     soundcard = AGS_SOUNDCARD(AGS_AUDIO(recall_channel_run->source->audio)->soundcard);
     destination_recycling = old_start_changed_region;
@@ -1031,12 +1019,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	if(AGS_RECALL_RECYCLING(list->data)->destination == destination_recycling){
 	  recall = AGS_RECALL(list->data);
 
-	  recall->flags |= AGS_RECALL_HIDE;
-	  cancel_recall = ags_cancel_recall_new(recall,
-						NULL);
-
-	  ags_task_thread_append_task(task_thread,
-				      (AgsTask *) cancel_recall);
+	  ags_recall_remove(recall);
 	}
 
 	list = list->next;

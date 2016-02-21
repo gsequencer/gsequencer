@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011, 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/editor/ags_pattern_edit.h>
@@ -25,6 +26,7 @@
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
 #include <ags/X/editor/ags_pattern_edit.h>
@@ -183,6 +185,8 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 {
   GtkAdjustment *adjustment;
 
+  pattern_edit->key_mask = 0;
+
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
 
   pattern_edit->ruler = ags_ruler_new();
@@ -193,24 +197,32 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 
   pattern_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_style((GtkWidget *) pattern_edit->drawing_area, pattern_edit_style);
-  gtk_widget_set_events (GTK_WIDGET (pattern_edit->drawing_area), GDK_EXPOSURE_MASK
-                         | GDK_LEAVE_NOTIFY_MASK
-                         | GDK_BUTTON_PRESS_MASK
-			 | GDK_BUTTON_RELEASE_MASK
-                         | GDK_POINTER_MOTION_MASK
-			 | GDK_POINTER_MOTION_HINT_MASK
-			 );
+  gtk_widget_set_events(GTK_WIDGET (pattern_edit->drawing_area), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK
+			| GDK_KEY_PRESS_MASK
+			| GDK_KEY_RELEASE_MASK
+			);
+  gtk_widget_set_can_focus(pattern_edit->drawing_area,
+			   TRUE);
 
-  gtk_table_attach(GTK_TABLE(pattern_edit), (GtkWidget *) pattern_edit->drawing_area,
-		   0, 1, 1, 2,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+  gtk_table_attach(GTK_TABLE(pattern_edit),
+		   (GtkWidget *) pattern_edit->drawing_area,
+		   0, 1,
+		   1, 2,
+		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
   pattern_edit->control.note = ags_note_new();
 
   pattern_edit->width = 0;
   pattern_edit->height = 0;
-  pattern_edit->map_width = AGS_PATTERN_EDIT_MAX_CONTROLS * 64;
+  pattern_edit->map_width = AGS_PATTERN_EDIT_MAX_CONTROLS * 16 * 64;
   pattern_edit->map_height = 78;
 
   pattern_edit->control_height = 14;
@@ -248,14 +260,14 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
   pattern_edit->selected_y = 0;
 
   /* GtkScrollbars */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 16.0, 1.0);
   pattern_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(pattern_edit), (GtkWidget *) pattern_edit->vscrollbar,
 		   1, 2, 1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) pattern_edit->control_current.control_width, 1.0);
   pattern_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(pattern_edit), (GtkWidget *) pattern_edit->hscrollbar,
 		   0, 1, 2, 3,
@@ -266,10 +278,21 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 void
 ags_pattern_edit_connect(AgsConnectable *connectable)
 {
+  AgsEditor *editor;
   AgsPatternEdit *pattern_edit;
 
   pattern_edit = AGS_PATTERN_EDIT(connectable);
 
+  editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
+						 AGS_TYPE_EDITOR);
+  
+  if(editor != NULL && editor->selected_machine != NULL){
+    g_signal_connect(editor->selected_machine->audio, "set-audio-channels\0",
+		     G_CALLBACK(ags_pattern_edit_set_audio_channels_callback), pattern_edit);
+    g_signal_connect(editor->selected_machine->audio, "set-pads\0",
+		     G_CALLBACK(ags_pattern_edit_set_pads_callback), pattern_edit);
+  }
+  
   g_signal_connect_after((GObject *) pattern_edit->drawing_area, "expose_event\0",
 			 G_CALLBACK (ags_pattern_edit_drawing_area_expose_event), (gpointer) pattern_edit);
 
@@ -284,6 +307,12 @@ ags_pattern_edit_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) pattern_edit->drawing_area, "motion_notify_event\0",
 		   G_CALLBACK (ags_pattern_edit_drawing_area_motion_notify_event), (gpointer) pattern_edit);
+  			
+  g_signal_connect((GObject *) pattern_edit->drawing_area, "key_press_event\0",
+		   G_CALLBACK(ags_pattern_edit_drawing_area_key_press_event), (gpointer) pattern_edit);
+
+  g_signal_connect((GObject *) pattern_edit->drawing_area, "key_release_event\0",
+		   G_CALLBACK(ags_pattern_edit_drawing_area_key_release_event), (gpointer) pattern_edit);
 
   g_signal_connect_after((GObject *) pattern_edit->vscrollbar, "value-changed\0",
 			 G_CALLBACK (ags_pattern_edit_vscrollbar_value_changed), (gpointer) pattern_edit);
@@ -578,7 +607,7 @@ ags_accessible_pattern_edit_get_localized_name(AtkAction *action,
  *
  * Set the map height in pixel.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_pattern_edit_set_map_height(AgsPatternEdit *pattern_edit, guint map_height)
@@ -601,7 +630,7 @@ ags_pattern_edit_set_map_height(AgsPatternEdit *pattern_edit, guint map_height)
  *
  * Reset @pattern_edit as configured vertically.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
@@ -629,7 +658,10 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
 	height = widget->allocation.height;
 	gtk_adjustment_set_upper(adjustment,
 				 (gdouble) (pattern_edit->map_height - height));
-	gtk_adjustment_set_value(adjustment, 0.0);
+
+	if(adjustment->value > adjustment->upper){
+	  gtk_adjustment_set_value(adjustment, adjustment->upper);
+	}
       }else{
 	height = pattern_edit->map_height;
 	
@@ -724,6 +756,8 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
       cairo_surface_mark_dirty(cairo_get_target(cr));
       cairo_destroy(cr);
     }
+
+    //    ags_meter_paint(editor->current_meter);
   }
 }
 
@@ -734,22 +768,27 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
  *
  * Reset @pattern_edit as configured horizontally.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
 {
+  AgsWindow *window;
   AgsEditor *editor;
   double tact_factor, zoom_factor;
   double tact;
+  gdouble value;
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
 
+  window = gtk_widget_get_ancestor(editor,
+				   AGS_TYPE_WINDOW);
+  
   zoom_factor = 0.25;
 
-  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(editor->toolbar->zoom));
-  tact = exp2((double) gtk_combo_box_get_active(editor->toolbar->zoom) - 4.0);
+  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom) - 2.0);
 
   if((AGS_PATTERN_EDIT_RESET_WIDTH & flags) != 0){
     pattern_edit->control_unit.control_width = (guint) (((double) pattern_edit->control_width * zoom_factor * tact));
@@ -758,93 +797,93 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
     pattern_edit->control_current.control_width = (pattern_edit->control_width * zoom_factor * tact_factor * tact);
 
     pattern_edit->map_width = (guint) ((double) pattern_edit->control_current.control_count * (double) pattern_edit->control_current.control_width);
+
     /* reset ruler */
     pattern_edit->ruler->factor = tact_factor;
     pattern_edit->ruler->precision = tact;
     pattern_edit->ruler->scale_precision = 1.0 / tact;
 
-    gtk_widget_queue_draw(pattern_edit->ruler);
+    gtk_widget_queue_draw((GtkWidget *) pattern_edit->ruler);
   }
 
-  if(editor->selected_machine != NULL){
-    cairo_t *cr;
-    gdouble value;
+  value = GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value;
 
-    value = GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value;
+  if((AGS_PATTERN_EDIT_RESET_HSCROLLBAR & flags) != 0){
+    GtkWidget *widget;
+    GtkAdjustment *adjustment;
+    guint width;
 
-    if((AGS_PATTERN_EDIT_RESET_HSCROLLBAR & flags) != 0){
-      GtkWidget *widget;
-      GtkAdjustment *adjustment;
-      guint width;
+    widget = GTK_WIDGET(pattern_edit->drawing_area);
+    adjustment = GTK_RANGE(pattern_edit->hscrollbar)->adjustment;
 
-      widget = GTK_WIDGET(pattern_edit->drawing_area);
-      adjustment = GTK_RANGE(pattern_edit->hscrollbar)->adjustment;
+    if(pattern_edit->map_width > widget->allocation.width){
+      width = widget->allocation.width;
+      //	gtk_adjustment_set_upper(adjustment, (double) (pattern_edit->map_width - width));
+      gtk_adjustment_set_upper(adjustment,
+			       (gdouble) (pattern_edit->map_width - width));
+      gtk_adjustment_set_upper(pattern_edit->ruler->adjustment,
+			       (gdouble) (pattern_edit->map_width - width) / pattern_edit->control_current.control_width);
 
-      if(pattern_edit->map_width > widget->allocation.width){
-	width = widget->allocation.width;
-	//	gtk_adjustment_set_upper(adjustment, (double) (pattern_edit->map_width - width));
-	gtk_adjustment_set_upper(adjustment,
-				 (gdouble) (pattern_edit->map_width - width));
-	gtk_adjustment_set_upper(pattern_edit->ruler->adjustment,
-				 (gdouble) (pattern_edit->map_width - width) / pattern_edit->control_current.control_width);
+      if(adjustment->value > adjustment->upper){
+	gtk_adjustment_set_value(adjustment, adjustment->upper);
 
-	if(adjustment->value > adjustment->upper){
-	  gtk_adjustment_set_value(adjustment, adjustment->upper);
-
-	  /* reset ruler */
-	  gtk_adjustment_set_value(pattern_edit->ruler->adjustment, pattern_edit->ruler->adjustment->upper);
-	  gtk_widget_queue_draw(pattern_edit->ruler);
-	}
-      }else{
-	width = pattern_edit->map_width;
-
-	gtk_adjustment_set_upper(adjustment, 0.0);
-	gtk_adjustment_set_value(adjustment, 0.0);
-	
 	/* reset ruler */
-	gtk_adjustment_set_upper(pattern_edit->ruler->adjustment, 0.0);
-	gtk_adjustment_set_value(pattern_edit->ruler->adjustment, 0.0);
-	gtk_widget_queue_draw(pattern_edit->ruler);
+	gtk_adjustment_set_value(pattern_edit->ruler->adjustment, pattern_edit->ruler->adjustment->upper);
+	gtk_widget_queue_draw((GtkWidget *) pattern_edit->ruler);
       }
-
-      pattern_edit->width = width;
-    }
-
-    /* reset AgsPatternEditControlCurrent */
-    if(pattern_edit->map_width > pattern_edit->width){
-      pattern_edit->control_current.x0 = ((guint) round((double) value)) % pattern_edit->control_current.control_width;
-
-      if(pattern_edit->control_current.x0 != 0){
-	pattern_edit->control_current.x0 = pattern_edit->control_current.control_width - pattern_edit->control_current.x0;
-      }
-
-      pattern_edit->control_current.x1 = (pattern_edit->width - pattern_edit->control_current.x0) % pattern_edit->control_current.control_width;
-
-      pattern_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(pattern_edit->control_current.control_width));
     }else{
-      pattern_edit->control_current.x0 = 0;
-      pattern_edit->control_current.x1 = 0;
-      pattern_edit->control_current.nth_x = 0;
+      width = pattern_edit->map_width;
+
+      gtk_adjustment_set_upper(adjustment, 0.0);
+      gtk_adjustment_set_value(adjustment, 0.0);
+	
+      /* reset ruler */
+      gtk_adjustment_set_upper(pattern_edit->ruler->adjustment, 0.0);
+      gtk_adjustment_set_value(pattern_edit->ruler->adjustment, 0.0);
+      gtk_widget_queue_draw((GtkWidget *) pattern_edit->ruler);
     }
 
-    /* reset AgsPatternEditControlUnit */
-    if(pattern_edit->map_width > pattern_edit->width){
-      pattern_edit->control_unit.x0 = ((guint)round((double) value)) % pattern_edit->control_unit.control_width;
+    pattern_edit->width = width;
+  }
 
-      if(pattern_edit->control_unit.x0 != 0)
-	pattern_edit->control_unit.x0 = pattern_edit->control_unit.control_width - pattern_edit->control_unit.x0;
-      
-      pattern_edit->control_unit.x1 = (pattern_edit->width - pattern_edit->control_unit.x0) % pattern_edit->control_unit.control_width;
-      
-      pattern_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (pattern_edit->control_unit.control_width));
-      pattern_edit->control_unit.stop_x = pattern_edit->control_unit.nth_x + (pattern_edit->width - pattern_edit->control_unit.x0 - pattern_edit->control_unit.x1) / pattern_edit->control_unit.control_width;
-    }else{
-      pattern_edit->control_unit.x0 = 0;
-      pattern_edit->control_unit.x1 = 0;
-      pattern_edit->control_unit.nth_x = 0;
+  /* reset AgsPatternEditControlCurrent */
+  if(pattern_edit->map_width > pattern_edit->width){
+    pattern_edit->control_current.x0 = ((guint) round((double) value)) % pattern_edit->control_current.control_width;
+
+    if(pattern_edit->control_current.x0 != 0){
+      pattern_edit->control_current.x0 = pattern_edit->control_current.control_width - pattern_edit->control_current.x0;
     }
 
-    /* refresh display */
+    pattern_edit->control_current.x1 = (pattern_edit->width - pattern_edit->control_current.x0) % pattern_edit->control_current.control_width;
+
+    pattern_edit->control_current.nth_x = (guint) ceil((double)(value) / (double)(pattern_edit->control_current.control_width));
+  }else{
+    pattern_edit->control_current.x0 = 0;
+    pattern_edit->control_current.x1 = 0;
+    pattern_edit->control_current.nth_x = 0;
+  }
+
+  /* reset AgsPatternEditControlUnit */
+  if(pattern_edit->map_width > pattern_edit->width){
+    pattern_edit->control_unit.x0 = ((guint)round((double) value)) % pattern_edit->control_unit.control_width;
+
+    if(pattern_edit->control_unit.x0 != 0)
+      pattern_edit->control_unit.x0 = pattern_edit->control_unit.control_width - pattern_edit->control_unit.x0;
+      
+    pattern_edit->control_unit.x1 = (pattern_edit->width - pattern_edit->control_unit.x0) % pattern_edit->control_unit.control_width;
+      
+    pattern_edit->control_unit.nth_x = (guint) ceil(round((double) value) / (double) (pattern_edit->control_unit.control_width));
+    pattern_edit->control_unit.stop_x = pattern_edit->control_unit.nth_x + (pattern_edit->width - pattern_edit->control_unit.x0 - pattern_edit->control_unit.x1) / pattern_edit->control_unit.control_width;
+  }else{
+    pattern_edit->control_unit.x0 = 0;
+    pattern_edit->control_unit.x1 = 0;
+    pattern_edit->control_unit.nth_x = 0;
+  }
+
+  /* refresh display */
+  if(editor->selected_machine != NULL && editor->current_edit_widget == pattern_edit){
+    cairo_t *cr;
+
     if(GTK_WIDGET_VISIBLE(editor)){
       gdouble position;
       
@@ -929,7 +968,7 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
  *
  * Draws horizontal and vertical lines.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
@@ -1047,7 +1086,7 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
  *
  * Draws the cursor.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
@@ -1135,7 +1174,7 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
  *
  * Draw the #AgsNotation of selected #AgsMachine on @pattern_edit.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
@@ -1146,7 +1185,11 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
   GtkStyle *pattern_edit_style;
   AgsNote *note;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list_notation, *list_note;
+
   guint x_offset;
   guint control_height;
   guint x, y, width, height;
@@ -1191,10 +1234,16 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
   i = 0;
 
-  while((selected_channel = ags_notebook_next_active_tab(editor->notebook,
+  while((selected_channel = ags_notebook_next_active_tab(editor->current_notebook,
 							 i)) != -1){
     list_notation = g_list_nth(machine->audio->notation,
 			       selected_channel);
+
+    if(list_notation == NULL){
+      i++;
+      continue;
+    }
+    
     list_note = AGS_NOTATION(list_notation->data)->notes;
 
     control_height = pattern_edit->control_height - 2 * pattern_edit->control_margin_y;
@@ -1432,6 +1481,8 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
 
     i++;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -1442,11 +1493,11 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
  *
  * Change visible x-position of @pattern_edit.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 void
 ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
-			  gdouble position)
+			     gdouble position)
 {
   GtkStyle *pattern_edit_style;
   
@@ -1458,7 +1509,7 @@ ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
   pattern_edit_style = gtk_widget_get_style(GTK_WIDGET(pattern_edit->drawing_area));
   
   y = 0.0;
-  x = (position) - (GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value * pattern_edit->control_current.control_width);
+  x = (position) - (GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value);
 
   height = (double) GTK_WIDGET(pattern_edit->drawing_area)->allocation.height;
   width = 3.0;
@@ -1480,7 +1531,7 @@ ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
  *
  * Create a new #AgsPatternEdit.
  *
- * Since: 0.4
+ * Since: 0.4.2
  */
 AgsPatternEdit*
 ags_pattern_edit_new()

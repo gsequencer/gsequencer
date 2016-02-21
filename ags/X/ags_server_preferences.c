@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2013 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_server_preferences.h>
@@ -153,7 +154,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->start,
+  gtk_widget_set_sensitive((GtkWidget *) server_preferences->start,
 			   FALSE);
 
   /* address */
@@ -175,7 +176,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->address,
+  gtk_widget_set_sensitive((GtkWidget *) server_preferences->address,
 			   FALSE);
 
   /* port */
@@ -197,7 +198,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->port,
+  gtk_widget_set_sensitive((GtkWidget *) server_preferences->port,
 			   FALSE);
 
   /* username */
@@ -219,7 +220,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->username,
+  gtk_widget_set_sensitive((GtkWidget *) server_preferences->username,
 			   FALSE);
 
   /* password */
@@ -242,7 +243,7 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 		   4, 5,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_set_sensitive(server_preferences->password,
+  gtk_widget_set_sensitive((GtkWidget *) server_preferences->password,
 			   FALSE);
 }
 

@@ -44,7 +44,9 @@ struct _AgsPluginBrowser
   GtkWidget *active_browser;
   
   GtkWidget *lv2_browser;
+  GtkWidget *dssi_browser;
   GtkWidget *ladspa_browser;
+  GtkWidget *vst_browser;
   
   GtkButton *apply;
   GtkButton *ok;

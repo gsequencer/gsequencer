@@ -61,8 +61,16 @@ struct _AgsJackClientClass
 
 GType ags_jack_client_get_type();
 
+GList* ags_jack_client_find(GList *jack_client,
+			    gchar *client_name);
+
 void ags_jack_client_open(AgsJackClient *jack_client,
 			  gchar *client_name);
+
+void ags_jack_client_add_port(AgsJackClient *jack_client,
+			      GObject *jack_port);
+void ags_jack_client_remove_port(AgsJackClient *jack_client,
+				 GObject *jack_port);
 
 AgsJackClient* ags_jack_client_new(GObject *jack_server);
 

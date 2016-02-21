@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2013 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/thread/ags_timestamp_thread.h>
@@ -103,8 +104,8 @@ ags_timestamp_thread_connectable_interface_init(AgsConnectableInterface *connect
 void
 ags_timestamp_thread_init(AgsTimestampThread *timestamp_thread)
 {
-  timestamp_thread->current_timestamp = ags_timestamp_new();
-  timestamp_thread->current_latency = ags_timestamp_new();
+  timestamp_thread->current_timestamp = (GObject *) ags_timestamp_new();
+  timestamp_thread->current_latency = (GObject *) ags_timestamp_new();
 }
 
 void
@@ -150,9 +151,10 @@ ags_timestamp_thread_run(AgsThread *thread)
   time_t timer;
 
   timestamp_thread = AGS_TIMESTAMP_THREAD(thread);
+  devout = AGS_DEVOUT(thread->devout);
 
-  //FIXME:JK: definitely wrong
-  duration = (AGS_THREAD_DEFAULT_JIFFIE *
+  duration = (devout->tic_counter /
+	      (devout->frequency / devout->buffer_size) *
 	      AGS_MICROSECONDS_PER_SECOND);
   
   timer = time(&(AGS_TIMESTAMP(timestamp_thread->current_timestamp)->timer.unix_time.time_val));

@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011, 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_PATTERN_EDIT_H__
@@ -48,6 +49,7 @@ typedef enum{
   AGS_PATTERN_EDIT_ADDING_NOTE            = 1 <<  3,
   AGS_PATTERN_EDIT_DELETING_NOTE          = 1 <<  4,
   AGS_PATTERN_EDIT_SELECTING_NOTES        = 1 <<  5,
+  AGS_PATTERN_EDIT_DRAW_FADER             = 1 <<  6,
 }AgsPatternEditFlags;
 
 typedef enum{
@@ -57,11 +59,18 @@ typedef enum{
   AGS_PATTERN_EDIT_RESET_HEIGHT       = 1 <<  3, // reserved
 }AgsPatternEditResetFlags;
 
+typedef enum{
+  AGS_PATTERN_EDIT_KEY_L_CONTROL       = 1,
+  AGS_PATTERN_EDIT_KEY_R_CONTROL       = 1 <<  1,
+}AgsPatternEditKeyMask;
+
 struct _AgsPatternEdit
 {
   GtkTable table;
 
   guint flags;
+
+  guint key_mask;
 
   AgsRuler *ruler;
   GtkDrawingArea *drawing_area;

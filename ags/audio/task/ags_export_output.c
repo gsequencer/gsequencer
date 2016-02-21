@@ -162,15 +162,7 @@ ags_export_output_launch(AgsTask *task)
   export_output = AGS_EXPORT_OUTPUT(task);
   soundcard = export_output->soundcard;
   export_thread = export_output->export_thread;
-
   filename = export_output->filename;
-
-  ags_soundcard_get_presets(soundcard,
-			    &dsp_channels,
-			    &samplerate,
-			    NULL,
-			    NULL);
-  
   tic = export_output->tic;
 
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),2
@@ -190,7 +182,7 @@ ags_export_output_launch(AgsTask *task)
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
 
-  g_message("export output");
+  g_message("export output\0");
 
   /* start export thread */
   export_thread->tic = tic;
@@ -198,7 +190,7 @@ ags_export_output_launch(AgsTask *task)
 	       "soundcard\0", soundcard,
 	       "audio-file\0", audio_file,
 	       NULL);
-  ags_thread_start(export_thread);
+  ags_thread_start((AgsThread *) export_thread);
 
   if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(export_thread)->flags)) == 0){
     /* wait thread */

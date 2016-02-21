@@ -286,8 +286,8 @@ ags_bulk_member_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_bulk_member_init(AgsBulkMember *bulk_member)
 {
-  GtkWidget *control;
-
+  AgsDial *dial;
+  
   g_signal_connect_after((GObject *) bulk_member, "parent_set\0",
 			 G_CALLBACK(ags_bulk_member_parent_set_callback), (gpointer) bulk_member);
 
@@ -295,11 +295,15 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 			AGS_BULK_MEMBER_APPLY_RECALL);
 
   bulk_member->widget_type = AGS_TYPE_DIAL;
-  control = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
-				       "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
-				       NULL);
+  dial = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
+				    "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
+				    NULL);
+  gtk_widget_set_size_request(dial,
+			      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
+			      2 * (dial->radius + dial->outline_strength + 1));
+  
   gtk_container_add(GTK_CONTAINER(bulk_member),
-		    control);
+		    dial);
 
   bulk_member->widget_label = NULL;
 
@@ -347,6 +351,16 @@ ags_bulk_member_set_property(GObject *gobject,
       bulk_member->widget_type = widget_type;
       new_child = (GtkWidget *) g_object_new(widget_type,
 					     NULL);
+
+      if(AGS_IS_DIAL(new_child)){
+	AgsDial *dial;
+	
+	dial = new_child;
+	
+	gtk_widget_set_size_request(dial,
+				    2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
+				    2 * (dial->radius + dial->outline_strength + 1));
+      }
 
       gtk_container_add(GTK_CONTAINER(bulk_member),
 			new_child);
@@ -593,17 +607,20 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
 {
   GtkWidget *child_widget;
 
-  if(g_type_is_a(bulk_member->widget_type, GTK_TYPE_BUTTON) ||
-     bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
+  if(g_type_is_a(bulk_member->widget_type, GTK_TYPE_BUTTON)){
     child_widget = gtk_bin_get_child(GTK_BIN(bulk_member));
 
     g_object_set(G_OBJECT(child_widget),
 		 "label\0", label,
 		 NULL);
   }else{
-    GtkLabel *label;
-
-    //TODO:JK: implement me
+    gtk_frame_set_label_widget(bulk_member,
+			       g_object_new(GTK_TYPE_LABEL,
+					    "wrap\0", TRUE,
+					    "wrap-mode\0", PANGO_WRAP_CHAR,
+					    "use-markup\0", TRUE,
+					    "label", g_strdup_printf("<small>%s</small>", label),
+					    NULL));
   }
 
 

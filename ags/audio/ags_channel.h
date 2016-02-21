@@ -20,7 +20,6 @@
 #ifndef __AGS_CHANNEL_H__
 #define __AGS_CHANNEL_H__
 
-#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall_id.h>
@@ -80,8 +79,8 @@ struct _AgsChannel
 
   // GObject *recycling_context; // contains child recycling
   GList *recall_id; // there may be several recall's running
-  
   GList *container;
+
   GList *recall;
   GList *play;
 
@@ -91,6 +90,7 @@ struct _AgsChannel
   AgsRecycling *last_recycling;
 
   GList *pattern;
+  AgsNotation *notation;
 
   GObject *line_widget;
   gpointer file_data;
@@ -119,6 +119,8 @@ struct _AgsChannelClass
 GType ags_channel_get_type();
 
 GQuark ags_channel_error_quark();
+
+AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);
 
 AgsChannel* ags_channel_first(AgsChannel *channel);
 AgsChannel* ags_channel_last(AgsChannel *channel);

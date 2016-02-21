@@ -57,9 +57,6 @@ void ags_file_read_channel_resolve_link(AgsFileLookup *file_lookup,
 void ags_file_write_channel_resolve_link(AgsFileLookup *file_lookup,
 					 AgsChannel *channel);
 
-void ags_file_read_file_link_launch(AgsFileLaunch *file_launch,
-				    AgsFileLink *file_link);
-
 void ags_file_read_recall_container_resolve_value(AgsFileLookup *file_lookup,
 						  AgsRecallContainer *recall_container);
 

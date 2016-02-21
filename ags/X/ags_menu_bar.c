@@ -1,25 +1,41 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_bar_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
+
+#include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_lv2_manager.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <ladspa.h>
+#include <lv2.h>
+#include <dssi.h>
 
 void ags_menu_bar_class_init(AgsMenuBarClass *menu_bar);
 void ags_menu_bar_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -127,9 +143,6 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("export\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("import midi\0"));
-  gtk_menu_shell_append((GtkMenuShell*) menu_bar->file, (GtkWidget*) item);
-
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->file,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
@@ -152,34 +165,47 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_from_stock(GTK_STOCK_ADD, accel_group);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
-  /* add */
   menu_bar->add = (GtkMenu *) gtk_menu_new();
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) menu_bar->add);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Panel\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Panel\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Mixer\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Mixer\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Drum\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Drum\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Matrix\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Matrix\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Synth\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Synth\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("FPlayer\0");
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("FPlayer\0"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("bridge\0");
+  /* bridge */
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("LADSPA\0"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("DSSI\0"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Lv2\0"));
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
+  /* edit */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(g_strdup("Automation\0"));
+  gtk_widget_set_sensitive(item,
+			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
+  /*  */
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
 			(GtkWidget*) gtk_separator_menu_item_new());
 
@@ -201,8 +227,8 @@ void
 ags_menu_bar_connect(AgsConnectable *connectable)
 {
   AgsMenuBar *menu_bar;
-  GList *list0, *list1, *list2, *list3, *list4;
-  GList *list1_start, *list2_start, *list3_start, *list4_start;
+  GList *list0, *list1, *list2, *list3;
+  GList *list1_start, *list2_start, *list3_start;
 
   menu_bar = AGS_MENU_BAR(connectable);
 
@@ -218,28 +244,24 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1_start = 
     list1 = gtk_container_get_children ((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_open_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_open_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_save_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_save_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_save_as_callback), menu_bar);
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_save_as_callback), menu_bar);
   list1 = list1->next->next;
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_export_callback), menu_bar);
-  list1 = list1->next;
-
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_import_midi_callback), menu_bar);
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_export_callback), menu_bar);
   list1 = list1->next->next;
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_quit_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_quit_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
 
@@ -248,97 +270,89 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1_start = 
     list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_add_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_add_callback), (gpointer) menu_bar);
 
-  /* add */
   list2_start = 
     list2 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list1->data));
   list1 = list1->next;
 
-  g_signal_connect(G_OBJECT(list2->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_add_panel_callback), (gpointer) menu_bar);
+  /* machines */
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_add_panel_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect(G_OBJECT(list2->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_add_mixer_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_add_mixer_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect(G_OBJECT(list2->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_add_drum_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_add_drum_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect(G_OBJECT(list2->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_add_matrix_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_add_matrix_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect(G_OBJECT(list2->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_add_synth_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_add_synth_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  g_signal_connect(G_OBJECT(list2->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_add_ffplayer_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list2->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_add_ffplayer_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
-  /* bridge */
+  /* ladspa */
   list3_start = 
     list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
   list2 = list2->next;
 
-  g_signal_connect(G_OBJECT(list3->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_add_replicator_bridge_callback), (gpointer) menu_bar);
-  list3 = list3->next;
-
-  //TODO:JK: midi input
-  list3 = list3->next;
-
-  //TODO:JK: midi output
-  list3 = list3->next;
-
-  /* ladspa */
-  list4_start = 
-    list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
-  list3 = list3->next;
-
-  while(list4 != NULL){
-    g_signal_connect(G_OBJECT(list4->data), "activate\0",
+  while(list3 != NULL){
+    g_signal_connect(G_OBJECT(list3->data), "activate\0",
 		     G_CALLBACK(ags_menu_bar_add_ladspa_bridge_callback), (gpointer) menu_bar);
     
-    list4 = list4->next;
+    list3 = list3->next;
   }
+  
+  g_list_free(list3_start);
+  
+  /* dssi */
+  list3_start = 
+    list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
+  list2 = list2->next;
 
-  g_list_free(list4_start);
+  while(list3 != NULL){
+    g_signal_connect(G_OBJECT(list3->data), "activate\0",
+		     G_CALLBACK(ags_menu_bar_add_dssi_bridge_callback), (gpointer) menu_bar);
 
+    list3 = list3->next;
+  }
+  
+  g_list_free(list3_start);
+  
   /* lv2 */
-  list4_start = 
-    list4 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list3->data));
-  list3 = list3->next;
-
-  while(list4 != NULL){
-    g_signal_connect(G_OBJECT(list4->data), "activate\0",
+  list3_start = 
+    list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
+  list2 = list2->next;
+  
+  while(list3 != NULL){
+    g_signal_connect(G_OBJECT(list3->data), "activate\0",
 		     G_CALLBACK(ags_menu_bar_add_lv2_bridge_callback), (gpointer) menu_bar);
     
-    list4 = list4->next;
+    list3 = list3->next;
   }
-
-  g_list_free(list4_start);
-
   
   g_list_free(list3_start);
   g_list_free(list2_start);
 
+  /* automation and preferences */
   g_signal_connect (G_OBJECT (list1->data), "activate\0",
                     G_CALLBACK (ags_menu_bar_automation_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_automation_window_callback), (gpointer) menu_bar);
-  list1 = list1->next;
-  list1 = list1->next;
-
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_preferences_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_preferences_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
 
@@ -347,8 +361,8 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list1_start = 
     list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
-  g_signal_connect(G_OBJECT(list1->data), "activate\0",
-		   G_CALLBACK(ags_menu_bar_about_callback), (gpointer) menu_bar);
+  g_signal_connect (G_OBJECT (list1->data), "activate\0",
+                    G_CALLBACK (ags_menu_bar_about_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
 }
@@ -371,25 +385,6 @@ ags_menu_bar_show(GtkWidget *widget)
   gtk_widget_show_all(widget);
 }
 
-/**
- * ags_menu_bar_new:
- *
- * Creates an #AgsMenuBar
- *
- * Returns: a new #AgsMenuBar
- *
- * Since: 0.3
- */
-AgsMenuBar*
-ags_menu_bar_new()
-{
-  AgsMenuBar *menu_bar;
-
-  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR,
-					 NULL);
-
-  return(menu_bar);
-}
 
 GtkMenu*
 ags_zoom_menu_new()
@@ -512,151 +507,6 @@ ags_tact_menu_new()
 }
 
 /**
- * ags_ladspa_menu_new:
- *
- * Creates an #GtkMenu to select LADSPA plugin.
- *
- * Returns: a new #GtkMenu
- *
- * Since: 0.4.3
- */
-GtkMenu*
-ags_ladspa_menu_new()
-{
-  GtkMenu *menu;
-  GtkMenuItem *item;
-
-  AgsLadspaManager *ladspa_manager;
-  AgsLadspaPlugin *ladspa_plugin;
-  
-  gchar **filename, **filename_start;
-  
-  void *plugin_so;
-  LADSPA_Descriptor_Function ladspa_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
-
-  menu = (GtkMenu *) gtk_menu_new();
-
-  /* retrieve LADSPA filenames */
-  ags_ladspa_manager_load_default_directory();
-  filename =
-    filename_start = ags_ladspa_manager_get_filenames();
-
-  while(*filename != NULL){
-    ags_ladspa_manager_load_file(*filename);
-    ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(*filename);
-  
-    plugin_so = ladspa_plugin->plugin_so;
-
-    if(plugin_so){
-      ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							     "ladspa_descriptor\0");
-
-      if(dlerror() == NULL && ladspa_descriptor){
-	unsigned long index;
-
-	/* We've successfully found a ladspa_descriptor function. Now load name and uuid member. */
-	for(index = 0; (plugin_descriptor = ladspa_descriptor(index)) != NULL; index++){
-	  item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup_printf("%s:%lu\0",
-									      plugin_descriptor->Name,
-									      plugin_descriptor->UniqueID));
-	  g_object_set_data_full(item,
-				 AGS_MENU_BAR_LADSPA_FILENAME_KEY,
-				 g_strdup(*filename),
-				 (GDestroyNotify) g_free);
-	  g_object_set_data_full(item,
-				 AGS_MENU_BAR_LADSPA_EFFECT_KEY,
-				 g_strdup(plugin_descriptor->Name),
-				 (GDestroyNotify) g_free);
-
-	  gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
-	}
-      }
-    }
-
-    filename++;
-  }
-
-  //  g_strfreev(filename_start);
-  
-  return(menu);
-}
-
-/**
- * ags_lv2_menu_new:
- *
- * Creates an #GtkMenu to select lv2 plugin.
- *
- * Returns: a new #GtkMenu
- *
- * Since: 0.4.3
- */
-GtkMenu*
-ags_lv2_menu_new()
-{
-  GtkMenu *menu;
-  GtkMenuItem *item;
-
-  AgsLv2Manager *lv2_manager;
-  AgsLv2Plugin *lv2_plugin;
-
-  GList *list;
-
-  gchar *str;
-  gchar *plugin_name;
-  gchar **filename, **filename_start;
-  
-  menu = (GtkMenu *) gtk_menu_new();
-
-  /* retrieve LV2 filenames */
-  ags_lv2_manager_load_default_directory();
-  ags_lv2ui_manager_load_default_directory();
-  filename =
-    filename_start = ags_lv2_manager_get_filenames();
-
-  while(*filename != NULL){
-    g_message(*filename);
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(*filename);
-
-    list = ags_turtle_find_xpath(lv2_plugin->turtle,
-				 "//rdf-triple/rdf-verb[@do=\"doap:name\"]//rdf-value[1]\0");
-
-    /* We've successfully found a lv2_descriptor function. Now load name and uuid member. */
-    while(list != NULL){
-      str = xmlGetProp(((xmlNode *) list->data)->parent->parent->parent,
-		       "subject\0");
-
-      if(str != NULL){
-	/* instantiate and load turtle */      
-	item = (GtkMenuItem *) gtk_menu_item_new_with_label(g_strdup(xmlGetProp(list->data,
-										"value\0")));
-	g_object_set_data_full(item,
-			       AGS_MENU_BAR_LV2_FILENAME_KEY,
-			       g_strdup(*filename),
-			       (GDestroyNotify) g_free);
-
-	g_message(str);
-	g_object_set_data_full(item,
-			       AGS_MENU_BAR_LV2_URI_KEY,
-			       g_strndup(&(str[1]),
-					 strlen(str) - 2),
-			       (GDestroyNotify) g_free);
-      
-	gtk_menu_shell_append((GtkMenuShell *) menu, (GtkWidget *) item);
-      }
-      
-      list = list->next;
-    }
-
-    filename++;
-  }
-
-  //  g_strfreev(filename_start);
-  
-  return(menu);
-}
-
-/**
  * ags_zoom_combo_box_new:
  *
  * Creates an #GtkComboBox to select zoom.
@@ -670,12 +520,12 @@ ags_zoom_combo_box_new()
 {
   GtkComboBoxText *combo_box;
 
-  combo_box = gtk_combo_box_text_new();
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(combo_box,
-				 "16:1\0");
-  gtk_combo_box_text_append_text(combo_box,
-				 "8:1\0");
+  //  gtk_combo_box_text_append_text(combo_box,
+  //				 "16:1\0");
+  //  gtk_combo_box_text_append_text(combo_box,
+  //				 "8:1\0");
   gtk_combo_box_text_append_text(combo_box,
 				 "4:1\0");
   gtk_combo_box_text_append_text(combo_box,
@@ -691,7 +541,7 @@ ags_zoom_combo_box_new()
   gtk_combo_box_text_append_text(combo_box,
 				 "1:16\0");
 
-  return(combo_box);
+  return((GtkComboBox *) combo_box);
 }
 
 /**
@@ -708,7 +558,7 @@ ags_tact_combo_box_new()
 {
   GtkComboBoxText *combo_box;
 
-  combo_box = gtk_combo_box_text_new();
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
 
   gtk_combo_box_text_append_text(combo_box,
 				 "16/1\0");
@@ -729,5 +579,206 @@ ags_tact_combo_box_new()
   gtk_combo_box_text_append_text(combo_box,
 				 "1/16\0");
 
-  return(combo_box);
+  return((GtkComboBox *) combo_box);
+}
+
+GtkMenu*
+ags_ladspa_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkImageMenuItem *item;
+
+  AgsLadspaManager *ladspa_manager;
+  
+  GList *list;
+
+  gchar *effect_name;
+
+  void *plugin_so;
+  LADSPA_Descriptor_Function ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  unsigned long index;
+
+  menu = (GtkMenu *) gtk_menu_new();
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  list = ladspa_manager->ladspa_plugin;
+
+  while(list != NULL){
+    plugin_so = AGS_LADSPA_PLUGIN(list->data)->plugin_so;
+    
+    if(plugin_so){
+      ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							     "ladspa_descriptor\0");
+
+      if(dlerror() == NULL && ladspa_descriptor){
+	for(index = 0; ; index++){	  
+	  plugin_descriptor = ladspa_descriptor(index);
+	  
+	  if(plugin_descriptor == NULL){
+	    break;
+	  }
+	  
+	  effect_name = plugin_descriptor->Name;
+	  
+	  item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strdup(effect_name));
+	  g_object_set_data(item,
+			    AGS_MENU_ITEM_FILENAME_KEY, AGS_LADSPA_PLUGIN(list->data)->filename);
+	  g_object_set_data(item,
+			    AGS_MENU_ITEM_EFFECT_KEY, effect_name);
+	  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
+	}
+      }
+    }
+
+    list = list->next;
+  }
+
+  return(menu);
+}
+
+GtkMenu*
+ags_dssi_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkImageMenuItem *item;
+
+  AgsDssiManager *dssi_manager;
+  
+  GList *list;
+
+  gchar *effect_name;
+
+  void *plugin_so;
+  DSSI_Descriptor_Function dssi_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
+  unsigned long index;
+
+  menu = (GtkMenu *) gtk_menu_new();
+  dssi_manager = ags_dssi_manager_get_instance();
+
+  list = dssi_manager->dssi_plugin;
+
+  while(list != NULL){
+    plugin_so = AGS_DSSI_PLUGIN(list->data)->plugin_so;
+    
+    if(plugin_so){
+      dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
+							 "dssi_descriptor\0");
+
+      if(dlerror() == NULL && dssi_descriptor){
+	for(index = 0; ; index++){
+	  
+	  plugin_descriptor = dssi_descriptor(index);
+	  
+	  if(plugin_descriptor == NULL){
+	    break;
+	  }
+	  
+	  effect_name = plugin_descriptor->LADSPA_Plugin->Name;
+	  
+	  item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strdup(effect_name));
+	  g_object_set_data(item,
+			    AGS_MENU_ITEM_FILENAME_KEY, AGS_DSSI_PLUGIN(list->data)->filename);
+	  g_object_set_data(item,
+			    AGS_MENU_ITEM_EFFECT_KEY, effect_name);
+	  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
+	}
+      }
+    }
+
+    list = list->next;
+  }
+  
+  return(menu);
+}
+
+GtkMenu*
+ags_lv2_bridge_menu_new()
+{
+  GtkMenu *menu;
+  GtkImageMenuItem *item;
+
+  AgsLv2Manager *lv2_manager;
+  
+  AgsTurtle *turtle;
+
+  xmlNode *node;
+  
+  GList *list;
+  GList *effect_list;
+
+  gchar *effect_name;
+  
+  menu = (GtkMenu *) gtk_menu_new();
+
+  lv2_manager = ags_lv2_manager_get_instance();
+
+  list = lv2_manager->lv2_plugin;
+
+  while(list != NULL){
+    turtle = AGS_LV2_PLUGIN(list->data)->turtle;
+    
+    if(turtle != NULL){
+      effect_list = ags_turtle_find_xpath(turtle,
+					  "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0");
+
+      while(effect_list != NULL){
+	node = effect_list->data;
+	
+	if(node == NULL){
+	  effect_list = effect_list->next;
+	  
+	  continue;
+	}
+	  
+	effect_name = xmlNodeGetContent(node);
+
+	if(strlen(effect_name) < 2){
+	  effect_list = effect_list->next;
+	  
+	  continue;
+	}
+	
+	//	g_message("%s\0", effect_name);
+	
+	item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strndup(effect_name + 1,
+									   strlen(effect_name) - 2));
+	g_object_set_data(item,
+			  AGS_MENU_ITEM_FILENAME_KEY, AGS_LV2_PLUGIN(list->data)->filename);
+	g_object_set_data(item,
+			  AGS_MENU_ITEM_EFFECT_KEY, effect_name);
+	gtk_menu_shell_append((GtkMenuShell *) menu,
+			      (GtkWidget *) item);
+
+	break;
+	
+	effect_list = effect_list->next;
+      }
+    }
+
+    list = list->next;
+  }
+
+  return(menu);
+}
+
+/**
+ * ags_menu_bar_new:
+ *
+ * Creates an #AgsMenuBar
+ *
+ * Returns: a new #AgsMenuBar
+ *
+ * Since: 0.3
+ */
+AgsMenuBar*
+ags_menu_bar_new()
+{
+  AgsMenuBar *menu_bar;
+
+  menu_bar = (AgsMenuBar *) g_object_new(AGS_TYPE_MENU_BAR,
+					 NULL);
+
+  return(menu_bar);
 }

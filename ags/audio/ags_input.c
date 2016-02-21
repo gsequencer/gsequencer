@@ -167,6 +167,10 @@ ags_input_set_property(GObject *gobject,
 
       file_link = (AgsFileLink *) g_value_get_object(value);
 
+      if(input->file_link == file_link){
+	return;
+      }
+      
       if(input->file_link != NULL){
 	g_object_unref(G_OBJECT(input->file_link));
       }
@@ -175,7 +179,7 @@ ags_input_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(file_link));
       }
 
-      input->file_link = file_link;
+      input->file_link = (GObject *) file_link;
     }
     break;
   default:

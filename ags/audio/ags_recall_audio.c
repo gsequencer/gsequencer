@@ -148,7 +148,7 @@ ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_audio;
-
+  
   recall->duplicate = ags_recall_audio_duplicate;
 }
 

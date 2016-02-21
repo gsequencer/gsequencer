@@ -34,10 +34,37 @@
 
 #define AGS_TURTLE_DEFAULT_ENCODING "UTF-8\0"
 
-#define AGS_TURTLE_STRING_LITERAL_QUOTE "\"\0"
-#define AGS_TURTLE_STRING_LITERAL_SINGLE_QUOTE "'\0"
-#define AGS_TURTLE_STRING_LITERAL_LONG_QUOTE "\"\"\"\0"
-#define AGS_TURTLE_STRING_LITERAL_LONG_SINGLE_QUOTE "'''\0"
+#define AGS_TURTLE_DEFAULT_VERSION "0.7.3\0"
+
+#define AGS_TURTLE_UTF8_RANGE_0 "([A-Za-z])"
+#define AGS_TURTLE_UTF8_RANGE_1 "(\xC3[\x80-\x96])"
+#define AGS_TURTLE_UTF8_RANGE_2 "(0xC3[\x98-\xB6])"
+#define AGS_TURTLE_UTF8_RANGE_3 "((\xC3[\xB8-\xBF])|([\xC3-\xCA][\x80-\xBF])|(\xCB[\x80-\xBF]))"
+#define AGS_TURTLE_UTF8_RANGE_4 "(\xCD[\xB0-\xBD])"
+#define AGS_TURTLE_UTF8_RANGE_5 "((\xCD[\xBF-\xDF])|([\xCE-\xDF][\x80-\xBF])|([\xE0-\xE1][\x80\xBF][\x80-\xBF]))"
+#define AGS_TURTLE_UTF8_RANGE_6 "(\xE2\x80[\x8C-\x8D])"
+#define AGS_TURTLE_UTF8_RANGE_7 "((\xE2\x81[\xB0-\xBF])|(\xE2[\x81-\x85][\x80-\xBF])|(\xE2\x86[\x80-\x8F]))"
+#define AGS_TURTLE_UTF8_RANGE_8 "((\xE2[\xB0-\xBE][\x80-\xBF])(\xE2\xBF[\x80-\xAF]))"
+#define AGS_TURTLE_UTF8_RANGE_9 "((\xE3[\x80-\xBF][\x81-\xBF])|([\xE4-\xEC][\x80-\x9F][\x80-\xBF]))"
+#define AGS_TURTLE_UTF8_RANGE_10 "((\xEF[\xA4-\xB6][\x80-\xBF])|(\xEF\xB7[\x80-\x8F]))"
+#define AGS_TURTLE_UTF8_RANGE_11 "((\xEF\xB7[\xB0-\xBF])|(\xEF[\xB8-\xBE][\x80-\xBF])|(\xEF\xBF[\x80-\xBD]))"
+#define AGS_TURTLE_UTF8_RANGE_12 "(([\xF0-\xF3][\x90-\xAF][\x80-\xBF][\x80-\xBF]))"
+
+#define AGS_TURTLE_UTF8_RANGE_ALL "(" AGS_TURTLE_UTF8_RANGE_0 "|" \
+  AGS_TURTLE_UTF8_RANGE_1 "|" \
+  AGS_TURTLE_UTF8_RANGE_2 "|" \
+  AGS_TURTLE_UTF8_RANGE_3 "|" \
+  AGS_TURTLE_UTF8_RANGE_4 "|" \
+  AGS_TURTLE_UTF8_RANGE_5 "|" \
+  AGS_TURTLE_UTF8_RANGE_6 "|" \
+  AGS_TURTLE_UTF8_RANGE_7 "|" \
+  AGS_TURTLE_UTF8_RANGE_8 "|" \
+  AGS_TURTLE_UTF8_RANGE_9 "|" \
+  AGS_TURTLE_UTF8_RANGE_10 "|" \
+  AGS_TURTLE_UTF8_RANGE_11 "|" \
+  AGS_TURTLE_UTF8_RANGE_12 ")"
+
+#define AGS_TURLTE_UTF8_RANGE_ALL_PATTERN "^" AGS_TURTLE_UTF8_RANGE_ALL
 
 typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
@@ -57,8 +84,6 @@ struct _AgsTurtle
   guint flags;
   
   gchar *filename;
-
-  GList *parser_context;
   
   xmlDoc *doc;
 };
@@ -68,24 +93,78 @@ struct _AgsTurtleClass
   GObjectClass object;
 };
 
-struct _AgsTurtleParserContext
-{
-  gchar *subject_delimiter;
-  gchar *verb_delimiter;
-  gchar *value_delimiter;
-  
-  xmlNode *statement_node;
-};
-
 GType ags_turtle_get_type(void);
 
-AgsTurtleParserContext* ags_turtle_parser_context_alloc();
-void ags_turtle_parser_context_free(AgsTurtleParserContext *parser_context);
+/* iri, pname, label and langtag */
+gchar* ags_turtle_read_iriref(gchar *offset,
+			      gchar *end_ptr);
+gchar* ags_turtle_read_pname_ns(gchar *offset,
+				gchar *end_ptr);
+gchar* ags_turtle_read_pname_ln(gchar *offset,
+				gchar *end_ptr);
+gchar* ags_turtle_read_blank_node_label(gchar *offset,
+					gchar *end_ptr);
+gchar* ags_turtle_read_langtag(gchar *offset,
+			       gchar *end_ptr);
 
+/* numbers */
+gchar* ags_turtle_read_boolean(gchar *offset,
+			       gchar *end_ptr);
+gchar* ags_turtle_read_integer(gchar *offset,
+			       gchar *end_ptr);
+gchar* ags_turtle_read_decimal(gchar *offset,
+			       gchar *end_ptr);
+gchar* ags_turtle_read_double(gchar *offset,
+			      gchar *end_ptr);
+gchar* ags_turtle_read_exponent(gchar *offset,
+				gchar *end_ptr);
+
+/* literals */
+gchar* ags_turtle_read_string(gchar *offset,
+			      gchar *end_ptr);
+
+gchar* ags_turtle_read_string_literal_quote(gchar *offset,
+					    gchar *end_ptr);
+gchar* ags_turtle_read_string_literal_single_quote(gchar *offset,
+						   gchar *end_ptr);
+gchar* ags_turtle_read_string_literal_long_quote(gchar *offset,
+						 gchar *end_ptr);
+gchar* ags_turtle_read_string_literal_long_single_quote(gchar *offset,
+							gchar *end_ptr);
+
+/* character ranges might return multi-byte */
+gchar* ags_turtle_read_uchar(gchar *offset,
+			     gchar *end_ptr);
+gchar* ags_turtle_read_echar(gchar *offset,
+			     gchar *end_ptr);
+gchar* ags_turtle_read_ws(gchar *offset,
+			  gchar *end_ptr);
+gchar* ags_turtle_read_anon(gchar *offset,
+			    gchar *end_ptr);
+gchar* ags_turtle_read_pn_chars_base(gchar *offset,
+				     gchar *end_ptr);
+gchar* ags_turtle_read_pn_chars_u(gchar *offset,
+				  gchar *end_ptr);
+gchar* ags_turtle_read_pn_chars(gchar *offset,
+				gchar *end_ptr);
+gchar* ags_turtle_read_pn_prefix(gchar *offset,
+				 gchar *end_ptr);
+gchar* ags_turtle_read_pn_local(gchar *offset,
+				gchar *end_ptr);
+gchar* ags_turtle_read_plx(gchar *offset,
+			   gchar *end_ptr);
+gchar* ags_turtle_read_percent(gchar *offset,
+			       gchar *end_ptr);
+gchar* ags_turtle_read_hex(gchar *offset,
+			   gchar *end_ptr);
+gchar* ags_turtle_read_pn_local_esc(gchar *offset,
+				    gchar *end_ptr);
+
+/* XML related */
 GList* ags_turtle_find_xpath(AgsTurtle *turtle,
 			     gchar *xpath);
-void ags_turtle_load(AgsTurtle *turtle,
-		     GError **error);
+xmlDoc* ags_turtle_load(AgsTurtle *turtle,
+			GError **error);
 
 AgsTurtle* ags_turtle_new(gchar *filename);
 

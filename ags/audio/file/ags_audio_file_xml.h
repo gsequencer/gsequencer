@@ -205,11 +205,4 @@ xmlNode* ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, gchar *em
 void ags_file_read_embedded_audio_list(AgsFile *file, xmlNode *node, GList **embedded_audio);
 xmlNode* ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedded_audio);
 
-/* file link */
-void ags_file_read_file_link(AgsFile *file, xmlNode *node, AgsFileLink **file_link);
-xmlNode* ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link);
-
-void ags_file_read_file_link_list(AgsFile *file, xmlNode *node, GList **file_link);
-xmlNode* ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link);
-
 #endif /*__AGS_AUDIO_FILE_XML_H__*/

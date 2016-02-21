@@ -20,7 +20,10 @@
 #ifndef __AGS_CHANGE_INDICATOR_H__
 #define __AGS_CHANGE_INDICATOR_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
+#include <gtk/gtk.h>
 
 #include <ags/thread/ags_task.h>
 

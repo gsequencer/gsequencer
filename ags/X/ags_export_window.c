@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_export_window.h>
@@ -24,9 +25,6 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_notation.h>
-
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_navigation.h>
 
 #include <stdlib.h>
 
@@ -176,14 +174,9 @@ ags_export_window_init(AgsExportWindow *export_window)
   GtkHBox *hbox;
   GtkTable *table;
   GtkLabel *label;
-  gchar *str;
-  gdouble bpm;
 
   export_window->flags = 0;
 
-  export_window->parent = NULL;
-  export_window->soundcard = NULL;
-  
   g_object_set(export_window,
 	       "title\0", "export to audio data\0",
 	       NULL);
@@ -193,11 +186,19 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_container_add(GTK_CONTAINER(export_window),
 		    GTK_WIDGET(vbox));
 
-  export_window->live_export = gtk_check_button_new_with_label("live export\0");
-  gtk_toggle_button_set_active(export_window->live_export,
+  export_window->live_export = (GtkCheckButton *) gtk_check_button_new_with_label("live export\0");
+  gtk_toggle_button_set_active((GtkToggleButton *) export_window->live_export,
 			       TRUE);
   gtk_box_pack_start(GTK_BOX(vbox),
 		     GTK_WIDGET(export_window->live_export),
+		     FALSE, FALSE,
+		     0);
+
+  export_window->exclude_sequencer = (GtkCheckButton *) gtk_check_button_new_with_label("exclude sequencers\0");
+  gtk_toggle_button_set_active((GtkToggleButton *) export_window->exclude_sequencer,
+			       TRUE);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     GTK_WIDGET(export_window->exclude_sequencer),
 		     FALSE, FALSE,
 		     0);
 
@@ -229,7 +230,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  export_window->filename = gtk_entry_new();
+  export_window->filename = (GtkEntry *) gtk_entry_new();
   gtk_entry_set_text(export_window->filename,
 		     "out.wav\0");
   gtk_box_pack_start(GTK_BOX(hbox),
@@ -237,7 +238,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		     TRUE, TRUE,
 		     0);
 
-  export_window->file_chooser_button = gtk_button_new_with_label("open\0");
+  export_window->file_chooser_button = (GtkButton *) gtk_button_new_with_label("open\0");
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(export_window->file_chooser_button),
 		     TRUE, TRUE,
@@ -261,7 +262,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   //TODO:JK: uncomment me
   //  gtk_combo_box_text_append_text(export_window->mode,
   //				 "time\0");
-  gtk_combo_box_set_active(export_window->mode,
+  gtk_combo_box_set_active((GtkComboBox *) export_window->mode,
 			   0);
   gtk_table_attach(table,
 		   GTK_WIDGET(export_window->mode),
@@ -282,7 +283,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);
 
-  export_window->tact = gtk_spin_button_new_with_range(0.0, AGS_NOTATION_DEFAULT_LENGTH, 0.25);
+  export_window->tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_DEFAULT_LENGTH, 0.25);
   gtk_spin_button_set_digits(export_window->tact,
 			     2);
   gtk_table_attach(table,
@@ -335,7 +336,7 @@ ags_export_window_init(AgsExportWindow *export_window)
   export_window->output_format = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_combo_box_text_append_text(export_window->output_format,
 				 "WAV\0");
-  gtk_combo_box_set_active(export_window->output_format,
+  gtk_combo_box_set_active((GtkComboBox *) export_window->output_format,
 			   0);
   gtk_table_attach(table,
 		   GTK_WIDGET(export_window->output_format),
@@ -493,8 +494,7 @@ ags_export_window_new()
 {
   AgsExportWindow *export_window;
 
-  export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
-						   NULL);
+  export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW, NULL);
 
   return(export_window);
 }

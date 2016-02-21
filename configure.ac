@@ -2,32 +2,16 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.7.2],[jkraehemann-guest@users.alioth.debian.org])
-AM_INIT_AUTOMAKE([foreign])
+AC_INIT([gsequencer],[0.7.5],[jkraehemann-guest@users.alioth.debian.org])
+AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR(m4)
 
 # Checks for programs.
-AC_PROG_CXX
-AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_RANLIB
-AM_PROG_CC_STDC
-AC_C_CONST
-AC_LIBTOOL_WIN32_DLL
-AM_PROG_LIBTOOL
-
-# check for gtk-doc
-m4_ifdef([GTK_DOC_CHECK], [
-GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
-],[
-AM_CONDITIONAL([ENABLE_GTK_DOC], false)
-])
 
 # libtool
 LT_PREREQ([2.4.2])
@@ -36,8 +20,10 @@ AC_SUBST([LIBTOOL_DEPS])
 AC_ENABLE_SHARED
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lgmp':
-AC_CHECK_LIB([gmp], [main])
+# FIXME: Replace `main' with a function in `-lX11':
+AC_CHECK_LIB([X11], [main])
+# FIXME: Replace `main' with a function in `-ldl':
+AC_CHECK_LIB([dl], [main])
 # FIXME: Replace `main' with a function in `-lm':
 AC_CHECK_LIB([m], [main])
 # FIXME: Replace `main' with a function in `-lrt':
@@ -45,12 +31,19 @@ AC_CHECK_LIB([rt], [main])
 
 # Checks for header files.
 AC_PATH_X
-AC_CHECK_HEADERS([fcntl.h libintl.h netinet/in.h stdint.h stdlib.h string.h sys/ioctl.h sys/socket.h sys/time.h unistd.h])
+AC_FUNC_ALLOCA
+AC_CHECK_HEADERS([argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_HEADER_STDBOOL
+AC_C_INLINE
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_UID_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT8_T
+AC_CHECK_TYPES([ptrdiff_t])
 
 PKG_CHECK_MODULES([UUID], [uuid >= 1.0.2])
 AC_SUBST(UUID_CFLAGS)
@@ -117,9 +110,20 @@ AC_SUBST(GTK_LIBS)
 #AC_SUBST(XMLRPC_SERVER_ABYSS_LIBS)$
 
 # Checks for library functions.
+# AM_GNU_GETTEXT
 AC_FUNC_MALLOC
+AC_FUNC_MMAP
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([atexit clock_gettime floor memset socket sqrt strchr strtol strtoul])
+AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor getcwd localeconv mblen mbrlen memchr mempcpy memset munmap nl_langinfo setlocale socket sqrt stpcpy strcasecmp strchr strcspn strdup strstr strtol strtoul])
+
+# check for gtk-doc
+m4_ifdef([GTK_DOC_CHECK], [
+GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC], false)
+])
+
+AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
+AC_CONFIG_FILES([Makefile docs/reference/ags/Makefile])
 
 AC_OUTPUT
-

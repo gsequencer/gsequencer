@@ -66,12 +66,6 @@ ags_synth_triangle(GObject *soundcard, signed short *buffer, guint offset, guint
 {
   guint samplerate;
   guint i;
-  
-  ags_soundcard_get_presets(soundcard,
-			    NULL,
-			    &samplerate,
-			    NULL,
-			    NULL);
 
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
@@ -92,12 +86,6 @@ ags_synth_square(GObject *soundcard, signed short *buffer, guint offset, guint f
 {
   guint samplerate;
   guint i;
-  
-  ags_soundcard_get_presets(soundcard,
-			    NULL,
-			    &samplerate,
-			    NULL,
-			    NULL);
 
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,

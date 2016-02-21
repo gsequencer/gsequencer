@@ -33,6 +33,15 @@ void ags_soundcard_class_init(AgsSoundcardInterface *interface);
  * The #AgsSoundcard interface gives you a unique access to audio devices.
  */
 
+
+enum {
+  TIC,
+  OFFSET_CHANGED,
+  LAST_SIGNAL,
+};
+
+static guint soundcard_signals[LAST_SIGNAL];
+
 GType
 ags_soundcard_get_type()
 {
@@ -65,13 +74,14 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    * The ::tic signal is emitted every tic of the soundcard. This notifies
    * about a newly played buffer.
    */
-  g_signal_new("tic\0",
-	       G_TYPE_FROM_INTERFACE(interface),
-	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsSoundcardInterface, tic),
-	       NULL, NULL,
-	       g_cclosure_marshal_VOID__VOID,
-	       G_TYPE_NONE, 0);
+  soundcard_signals[TIC] =
+    g_signal_new("tic\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsSoundcardInterface, tic),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 
   /**
    * AgsSoundcard::offset-changed:
@@ -81,14 +91,15 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    * The ::offset-changed signal notifies about changed position within
    * notation.
    */
-  g_signal_new("offset-changed\0",
-	       G_TYPE_FROM_INTERFACE(interface),
-	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsSoundcardInterface, offset_changed),
-	       NULL, NULL,
-	       g_cclosure_marshal_VOID__UINT,
-	       G_TYPE_NONE, 1,
-	       G_TYPE_UINT);
+  soundcard_signals[OFFSET_CHANGED] =
+    g_signal_new("offset-changed\0",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsSoundcardInterface, offset_changed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__UINT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT);
 }
 
 /**
@@ -520,12 +531,7 @@ ags_soundcard_stop(AgsSoundcard *soundcard)
 void
 ags_soundcard_tic(AgsSoundcard *soundcard)
 {
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->tic);
-  soundcard_interface->tic(soundcard);
+  g_signal_emit(soundcard, soundcard_signals[TIC], 0);
 }
 
 /**
@@ -540,13 +546,7 @@ void
 ags_soundcard_offset_changed(AgsSoundcard *soundcard,
 			     guint note_offset)
 {
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->offset_changed);
-  soundcard_interface->offset_changed(soundcard,
-				      note_offset);
+  g_signal_emit(soundcard, soundcard_signals[OFFSET_CHANGED], 0);
 }
 
 /**

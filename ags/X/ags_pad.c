@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_pad.h>
@@ -71,6 +72,8 @@ gchar* ags_pad_get_version(AgsPlugin *plugin);
 void ags_pad_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_pad_get_build_id(AgsPlugin *plugin);
 void ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
+void ags_pad_destroy(GtkObject *object);
+void ags_pad_show(GtkWidget *widget);
 
 void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
@@ -301,8 +304,8 @@ ags_pad_init(AgsPad *pad)
 
   pad->name = NULL;
 
-  pad->version = AGS_PAD_DEFAULT_VERSION;
-  pad->build_id = AGS_PAD_DEFAULT_BUILD_ID;
+  pad->version = AGS_VERSION;
+  pad->build_id = AGS_BUILD_ID;
 
   pad->cols = 2;
 
@@ -393,7 +396,17 @@ ags_pad_connect(AgsConnectable *connectable)
     }
   }else{
     pad->flags &= (~AGS_PAD_PREMAPPED_RECALL);
+
+    ags_pad_find_port(pad);
   }
+
+  /* GtkObject */
+  g_signal_connect((GObject *) pad, "destroy\0",
+		   G_CALLBACK(ags_pad_destroy_callback), (gpointer) pad);
+
+  /* GtkWidget */
+  g_signal_connect((GObject *) pad, "show\0",
+		   G_CALLBACK(ags_pad_show_callback), (gpointer) pad);
 
   /* GtkButton */
   g_signal_connect_after((GObject *) pad->group, "clicked\0",
@@ -454,6 +467,20 @@ ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
   pad = AGS_PAD(plugin);
 
   pad->build_id = build_id;
+}
+
+void
+ags_pad_destroy(GtkObject *object)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_pad_show(GtkWidget *widget)
+{
+  AgsPad *pad;
+
+  pad = AGS_PAD(widget);
 }
 
 void
@@ -590,7 +617,11 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 					"pad\0", pad,
 					"channel\0", channel,
 					NULL);
-	channel->line_widget = (GtkWidget *) line;
+
+	if(channel != NULL){
+	  channel->line_widget = (GtkWidget *) line;
+	}
+
 	ags_expander_set_add(pad->expander_set,
 			     (GtkWidget *) line,
 			     j, i / pad->cols,
@@ -610,7 +641,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     GList *list, *list_start;
 
     list_start =
-      list = g_list_nth(gtk_container_get_children(GTK_CONTAINER(pad->expander_set)),
+      list = g_list_nth(g_list_reverse(gtk_container_get_children(GTK_CONTAINER(pad->expander_set))),
 			audio_channels);
     
     while(list != NULL){

@@ -217,6 +217,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   AgsCopyChannel *copy_channel;
   AgsCopyAudioSignal *copy_audio_signal;
   AgsAudioSignal *source, *destination;
+  //  AgsAttack *attack;
   GList *stream_source, *stream_destination;
   gboolean muted;
   GValue value = {0,};
@@ -295,7 +296,6 @@ ags_copy_audio_signal_duplicate(AgsRecall *recall,
  * @destination: the destination #AgsAudioSignal
  * @source: the source #AgsAudioSignal
  * @soundcard: the #GObject defaulting to
- * @attack: the attack
  *
  * Creates an #AgsCopyAudioSignal
  *
@@ -306,8 +306,7 @@ ags_copy_audio_signal_duplicate(AgsRecall *recall,
 AgsCopyAudioSignal*
 ags_copy_audio_signal_new(AgsAudioSignal *destination,
 			  AgsAudioSignal *source,
-			  GObject *soundcard,
-			  AgsAttack *attack)
+			  GObject *soundcard)
 {
   AgsCopyAudioSignal *copy_audio_signal;
 
@@ -315,7 +314,6 @@ ags_copy_audio_signal_new(AgsAudioSignal *destination,
 							  "destination\0", destination,
 							  "source\0", source,
 							  "soundcard\0", soundcard,
-							  "attack\0", attack,
 							  NULL);
 
   return(copy_audio_signal);

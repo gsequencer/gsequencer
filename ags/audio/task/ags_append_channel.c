@@ -157,27 +157,30 @@ ags_append_channel_finalize(GObject *gobject)
 void
 ags_append_channel_launch(AgsTask *task)
 {
-  AgsApplicationContext *application_context;
-  AgsServer *server;
+  AgsChannel *channel;
+  
   AgsAppendChannel *append_channel;
+
   AgsAudioLoop *audio_loop;
 
-  GList *list;
+  AgsServer *server;
 
   AgsConfig *config;
+
+  GList *start_queue;
   
   gchar *str0, *str1;
   
   append_channel = AGS_APPEND_CHANNEL(task);
 
   audio_loop = AGS_AUDIO_LOOP(append_channel->audio_loop);
+  channel = append_channel->channel;
 
-  application_context = AGS_APPLICATION_CONTEXT(audio_loop->application_context);
-  
   /* append to AgsDevout */
   ags_audio_loop_add_channel(audio_loop,
-			     append_channel->channel);
-
+			    channel);
+  start_queue = NULL;
+  
   /**/
   config = ags_config_get_instance();
   
@@ -196,24 +199,41 @@ ags_append_channel_launch(AgsTask *task)
     if(!g_ascii_strncasecmp(str1,
 			    "channel\0",
 			    8)){
-      if(AGS_PLAYBACK(channel->playback)->channel_thread[0]->parent == NULL &&
-	 (AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) != 0){
-	ags_thread_add_child_extended(audio_loop,
-				      AGS_PLAYBACK(channel->playback)->channel_thread[0],
-				      TRUE, TRUE);
-	ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(channel->playback)->channel_thread[0]));
+      if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) != 0){
+	start_queue = g_list_prepend(start_queue,
+				     AGS_PLAYBACK(channel->playback)->channel_thread[0]);
+	
+	if(AGS_PLAYBACK(channel->playback)->channel_thread[0]->parent == NULL){
+	  ags_thread_add_child_extended(audio_loop,
+					AGS_PLAYBACK(channel->playback)->channel_thread[0],
+					TRUE, TRUE);
+	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(channel->playback)->channel_thread[0]));
+	}
       }
     }
+  }
 
   free(str0);
   free(str1);
-  
-  /* add to server registry */
-  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
 
-  if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_channel->channel));
+  /* start queue */
+  if(start_queue != NULL){
+    if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
+      g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			   g_list_concat(start_queue,
+					 g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
+    }else{
+      g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			   start_queue);
+    }
   }
+
+  /* add to server registry */
+  //  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
+
+  //  if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
+  //    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_channel->channel));
+  //  }
 }
 
 /**

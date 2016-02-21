@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2005-2011 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "ags_ruler.h"
@@ -141,7 +142,7 @@ ags_ruler_init(AgsRuler *ruler)
   ruler->precision = 1.0;
   ruler->scale_precision = 1.0;
 
-  gtk_widget_set_size_request(ruler,
+  gtk_widget_set_size_request((GtkWidget *) ruler,
 			      20,
 			      24);
 }
@@ -175,7 +176,7 @@ ags_ruler_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(adjustment));
       }
 
-      ruler->adjustment = (GObject *) adjustment;
+      ruler->adjustment = adjustment;
     }
     break;
   default:
@@ -211,7 +212,7 @@ ags_ruler_map(GtkWidget *widget)
     GTK_WIDGET_CLASS (ags_ruler_parent_class)->map(widget);
     
     gdk_window_show(widget->window);
-    ags_ruler_draw(widget);
+    ags_ruler_draw((AgsRuler *) widget);
   }
 }
 
@@ -311,6 +312,9 @@ void
 ags_ruler_draw(AgsRuler *ruler)
 {
   GtkWidget *widget;
+
+  PangoLayout *layout;
+  PangoFontDescription *desc;
   cairo_t *cr;
   
   gchar *str;
@@ -321,14 +325,17 @@ ags_ruler_draw(AgsRuler *ruler)
   guint i, j, j_set;
   guint z;
   gboolean omit_scales;
-
+  
   widget = GTK_WIDGET(ruler);
 
   cr = gdk_cairo_create(widget->window);
-
-  cairo_select_font_face(cr, "Georgia\0",
-			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  cairo_set_font_size(cr, (gdouble) ruler->font_size);
+  
+  cairo_surface_flush(cairo_get_target(cr));
+  cairo_push_group(cr);
+  
+  //  cairo_select_font_face(cr, "Georgia\0",
+  //			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  //  cairo_set_font_size(cr, (gdouble) ruler->font_size);
 
   /* draw ruler and scale */
   zoom_factor = 0.25;
@@ -409,11 +416,13 @@ ags_ruler_draw(AgsRuler *ruler)
     pango_layout_set_font_description(layout, desc);
     pango_font_description_free(desc);
 
-    str = g_strdup_printf("%.2f\0",
-			  (ceil(offset) + z) * ruler->scale_precision);
+    pango_cairo_update_layout(cr, layout);
+    pango_cairo_show_layout(cr, layout);
+    //    cairo_show_text(cr,
+    //		    str);
 
-    cairo_show_text(cr,
-		    str);
+    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+    g_object_unref(layout);
     g_free(str);
 
 
@@ -443,6 +452,10 @@ ags_ruler_draw(AgsRuler *ruler)
     }
   }
 
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+
+  cairo_surface_mark_dirty(cairo_get_target(cr));
   cairo_destroy(cr);
 }
 
