@@ -47,6 +47,4 @@ void ags_effect_bulk_set_pads_callback(AgsAudio *audio,
 				       guint pads_old,
 				       AgsEffectBulk *effect_bulk);
 
-void ags_effect_bulk_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer);
-
 #endif /*__AGS_EFFECT_BULK_CALLBACKS_H__*/

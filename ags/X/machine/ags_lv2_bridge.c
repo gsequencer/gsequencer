@@ -25,10 +25,20 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2ui_manager.h>
+
 #include <ags/audio/ags_input.h>
 
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 void ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge);
 void ags_lv2_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -63,8 +73,13 @@ void ags_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
 enum{
   PROP_0,
   PROP_FILENAME,
+  PROP_EFFECT,
   PROP_URI,
   PROP_INDEX,
+  PROP_HAS_MIDI,
+  PROP_HAS_GUI,
+  PROP_GUI_FILENAME,
+  PROP_GUI_URI,
 };
 
 static gpointer ags_lv2_bridge_parent_class = NULL;
@@ -135,7 +150,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
   /**
    * AgsRecallLv2:filename:
    *
-   * The plugins filename.
+   * The plugin's filename.
    * 
    * Since: 0.4.3
    */
@@ -146,6 +161,22 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
+				  param_spec);
+  
+  /**
+   * AgsRecallLv2:effect:
+   *
+   * The effect's name.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_string("effect\0",
+				    "the effect\0",
+				    "The effect's string representation\0",
+				    NULL,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EFFECT,
 				  param_spec);
 
   /**
@@ -181,6 +212,72 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
   g_object_class_install_property(gobject,
 				  PROP_INDEX,
 				  param_spec);
+
+  /**
+   * AgsRecallLv2:has-midi:
+   *
+   * If has-midi is set to %TRUE appropriate flag is set
+   * to audio in order to become a sequencer.
+   * 
+   * Since: 0.7.6
+   */
+  param_spec =  g_param_spec_boolean("has-midi\0",
+				     "has-midi\0",
+				     "If effect has-midi\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_HAS_MIDI,
+				  param_spec);
+
+  /**
+   * AgsRecallLv2:has-gui:
+   *
+   * If has-gui is set to %TRUE 128 inputs are allocated and appropriate flag is set
+   * to audio in order to become a sequencer.
+   * 
+   * Since: 0.7.6
+   */
+  param_spec =  g_param_spec_boolean("has-gui\0",
+				     "has-gui\0",
+				     "If effect has-gui\0",
+				     FALSE,
+				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_HAS_GUI,
+				  param_spec);
+
+  /**
+   * AgsRecallLv2:gui-filename:
+   *
+   * The plugin's GUI filename.
+   * 
+   * Since: 0.7.6
+   */
+  param_spec =  g_param_spec_string("gui-filename\0",
+				    "the GUI object file\0",
+				    "The filename as string of GUI object file\0",
+				    NULL,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_GUI_FILENAME,
+				  param_spec);
+
+  /**
+   * AgsRecallLv2:gui-uri:
+   *
+   * The GUI's uri name.
+   * 
+   * Since: 0.4.3
+   */
+  param_spec =  g_param_spec_string("gui-uri\0",
+				    "the gui-uri\0",
+				    "The gui-uri's string representation\0",
+				    NULL,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_GUI_URI,
+				  param_spec);
 }
 
 void
@@ -215,6 +312,7 @@ void
 ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 {
   GtkTable *table;
+  GtkImageMenuItem *item;
 
   AgsAudio *audio;
 
@@ -232,8 +330,11 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   lv2_bridge->mapped_input = 0;
   
   lv2_bridge->filename = NULL;
+  lv2_bridge->effect = NULL;
   lv2_bridge->uri = NULL;
   lv2_bridge->uri_index = 0;
+
+  lv2_bridge->has_midi = FALSE;
 
   AGS_MACHINE(lv2_bridge)->bridge = ags_effect_bridge_new(audio);
   gtk_container_add(gtk_bin_get_child(lv2_bridge),
@@ -256,6 +357,28 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  lv2_bridge->has_gui = FALSE;
+  lv2_bridge->gui_filename = NULL;
+  lv2_bridge->gui_uri = NULL;
+  
+  lv2_bridge->lv2_gui = NULL;
+
+  /* lv2 menu */
+  item = gtk_image_menu_item_new_with_label("Lv2\0");
+  gtk_menu_shell_append(AGS_MACHINE(lv2_bridge)->popup,
+			item);
+  gtk_widget_show(item);
+  
+  lv2_bridge->lv2_menu = gtk_menu_new();
+  gtk_menu_item_set_submenu(item,
+			    lv2_bridge->lv2_menu);
+
+  item = gtk_image_menu_item_new_with_label("show GUI\0");
+  gtk_menu_shell_append(lv2_bridge->lv2_menu,
+			item);
+
+  gtk_widget_show_all(lv2_bridge->lv2_menu);
 }
 
 void
@@ -284,6 +407,23 @@ ags_lv2_bridge_set_property(GObject *gobject,
       }
 
       lv2_bridge->filename = g_strdup(filename);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      gchar *effect;
+      
+      effect = g_value_get_string(value);
+
+      if(effect == lv2_bridge->effect){
+	return;
+      }
+
+      if(lv2_bridge->effect != NULL){
+	g_free(lv2_bridge->effect);
+      }
+
+      lv2_bridge->effect = g_strdup(effect);
     }
     break;
   case PROP_URI:
@@ -316,6 +456,143 @@ ags_lv2_bridge_set_property(GObject *gobject,
       lv2_bridge->uri_index = uri_index;
     }
     break;
+  case PROP_HAS_MIDI:
+    {
+      gboolean has_midi;
+
+      has_midi = g_value_get_boolean(value);
+
+      if(lv2_bridge->has_midi == has_midi){
+	return;
+      }
+
+      lv2_bridge->has_midi = has_midi;
+    }
+    break;
+  case PROP_HAS_GUI:
+    {
+      GtkWindow *window;
+      gboolean has_gui;
+
+      has_gui = g_value_get_boolean(value);
+
+      if(lv2_bridge->has_gui == has_gui){
+	return;
+      }
+
+      lv2_bridge->has_gui = has_gui;
+
+      if(has_gui){
+	lv2_bridge->lv2_gui = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	g_signal_connect(G_OBJECT(lv2_bridge->lv2_gui), "delete-event\0",
+			 G_CALLBACK(ags_lv2_bridge_delete_event_callback), lv2_bridge);
+      }else{
+	gtk_widget_destroy(lv2_bridge->lv2_gui);
+	lv2_bridge->lv2_gui = NULL;
+      }
+    }
+    break;
+  case PROP_GUI_FILENAME:
+    {
+      GtkWindow *window;
+      
+      gchar *gui_filename;
+
+      gui_filename = g_value_get_string(value);
+
+      if(lv2_bridge->gui_filename == gui_filename){
+	return;
+      }
+
+      if(lv2_bridge->gui_filename != NULL){
+	gtk_widget_destroy(gtk_bin_get_child((GtkBin *) lv2_bridge->lv2_gui));
+	free(lv2_bridge->gui_filename);
+      }
+
+      lv2_bridge->gui_filename = g_strdup(gui_filename);
+
+      /* load GUI */
+      if(gui_filename != NULL &&
+	 lv2_bridge->lv2_gui != NULL){
+	GtkWidget *widget;
+	AgsLv2uiPlugin *lv2ui_plugin;
+
+	gchar *uri;
+	
+	LV2UI_DescriptorFunction lv2ui_descriptor;
+	LV2UI_Descriptor *ui_descriptor;
+	
+	uint32_t ui_index;
+
+	static const LV2_Feature **feature = {
+	  NULL,
+	};
+
+	lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(gui_filename);
+
+	if(lv2ui_plugin->plugin_so == NULL){
+	  lv2ui_plugin->plugin_so = dlopen(lv2ui_plugin->filename,
+					   RTLD_NOW);
+	}
+
+	if(lv2ui_plugin->plugin_so){
+	  lv2ui_descriptor = (LV2UI_Descriptor *) dlsym(lv2ui_plugin->plugin_so,
+							"lv2ui_descriptor\0");
+	  
+	  if(dlerror() == NULL && lv2ui_descriptor){
+	    ui_index = ags_lv2ui_manager_uri_index(gui_filename,
+						   lv2_bridge->gui_uri);
+
+	    if(ui_index != -1){
+	      GtkAlignment *alignment;
+
+	      g_message("ui-index %d\0", ui_index);
+	      ui_descriptor = lv2ui_descriptor(ui_index);
+
+	      alignment = gtk_alignment_new(0.5, 0.5, 1.0, 1.0);
+	      gtk_container_add(lv2_bridge->lv2_gui,
+				alignment);
+	      gtk_widget_show(alignment);
+	      
+	      /* instantiate and pack ui */
+	      widget = NULL;
+	      lv2_bridge->ui_handle = ui_descriptor->instantiate(ui_descriptor,
+								 lv2_bridge->uri,
+								 gui_filename, // might be relative
+								 ags_lv2_bridge_lv2ui_write_function,
+								 lv2_bridge->lv2_gui,
+								 &widget,
+								 feature);
+	      lv2_bridge->ui_widget = widget;
+	      gtk_container_add(alignment,
+				widget);
+	      
+	      // gtk_container_add(lv2_bridge->lv2_gui,
+	      //		widget);
+	      // gtk_widget_show(widget);
+	    }
+	  }
+	}
+      }
+    }
+    break;
+  case PROP_GUI_URI:
+    {
+      gchar *gui_uri;
+      
+      gui_uri = g_value_get_string(value);
+
+      if(gui_uri == lv2_bridge->gui_uri){
+	return;
+      }
+
+      if(lv2_bridge->gui_uri != NULL){
+	g_free(lv2_bridge->gui_uri);
+      }
+
+      lv2_bridge->gui_uri = g_strdup(gui_uri);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -338,6 +615,11 @@ ags_lv2_bridge_get_property(GObject *gobject,
       g_value_set_string(value, lv2_bridge->filename);
     }
     break;
+  case PROP_EFFECT:
+    {
+      g_value_set_string(value, lv2_bridge->effect);
+    }
+    break;
   case PROP_URI:
     {
       g_value_set_string(value, lv2_bridge->uri);
@@ -346,6 +628,26 @@ ags_lv2_bridge_get_property(GObject *gobject,
   case PROP_INDEX:
     {
       g_value_set_ulong(value, lv2_bridge->uri_index);
+    }
+    break;
+  case PROP_HAS_MIDI:
+    {
+      g_value_set_boolean(value, lv2_bridge->has_midi);
+    }
+    break;
+  case PROP_HAS_GUI:
+    {
+      g_value_set_boolean(value, lv2_bridge->has_gui);
+    }
+    break;
+  case PROP_GUI_FILENAME:
+    {
+      g_value_set_string(value, lv2_bridge->gui_filename);
+    }
+    break;
+  case PROP_GUI_URI:
+    {
+      g_value_set_string(value, lv2_bridge->gui_uri);
     }
     break;
   default:
@@ -359,6 +661,8 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
 {
   AgsLv2Bridge *lv2_bridge;
 
+  GList *list;
+  
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
   }
@@ -366,6 +670,12 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
   ags_lv2_bridge_parent_connectable_interface->connect(connectable);
 
   lv2_bridge = AGS_LV2_BRIDGE(connectable);
+
+  /* menu */
+  list = gtk_container_get_children(lv2_bridge->lv2_menu);
+
+  g_signal_connect(G_OBJECT(list->data), "activate\0",
+		   G_CALLBACK(ags_lv2_bridge_show_gui_callback), lv2_bridge);
 }
 
 void
@@ -407,10 +717,85 @@ ags_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
 }
 
 void
+ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge)
+{
+}
+
+void
+ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
+{
+  AgsLv2Plugin *lv2_plugin;
+  AgsLv2uiPlugin *lv2ui_plugin;
+
+  GList *gtkui_list;
+  GList *binary_list;
+
+  gchar *str;
+  gchar *plugin_path;
+  gchar *filename;
+  gchar *gui_uri;
+  
+  /* check if works with Gtk+ */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename);
+
+  gtkui_list = ags_turtle_find_xpath(lv2_plugin->turtle,
+				     "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':GtkUI') + 1) = ':GtkUI']\0");
+
+  if(gtkui_list == NULL){
+    return;
+  }
+  
+  /* read ui binary from turtle */
+  binary_list = ags_turtle_find_xpath(lv2_plugin->turtle,
+				      "//rdf-triple//rdf-verb//rdf-pname-ln[text()='uiext:binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref\0");
+
+  if(binary_list == NULL){
+    return;
+  }
+
+  str = xmlNodeGetContent(binary_list->data);
+
+  if(strlen(str) < 2){
+    return;
+  }
+
+  plugin_path = g_strndup(lv2_bridge->filename,
+			  rindex(lv2_bridge->filename, '/') - lv2_bridge->filename);
+  
+  str = g_strndup(&(str[1]),
+		  strlen(str) - 2);
+  filename = g_strdup_printf("%s/%s\0",
+			     plugin_path,
+			     str);
+  free(str);
+
+  g_message("plugin path - %s\0", plugin_path);
+
+  gui_uri = ags_lv2ui_manager_find_uri(filename,
+				       lv2_bridge->effect);
+
+  /* apply ui */
+  g_object_set(lv2_bridge,
+	       "has-gui\0", TRUE,
+	       "gui-uri\0", gui_uri,
+	       "gui-filename\0", filename,
+	       NULL);
+}
+
+void
 ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 {
   GList *list;
 
+  gchar *uri;
+
+  uri = ags_lv2_manager_find_uri(lv2_bridge->filename,
+				 lv2_bridge->effect);
+  g_object_set(lv2_bridge,
+	       "uri\0", uri,
+	       NULL);
+  
+  /* clear effect bulk */
   list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
   
   while(list != NULL){
@@ -418,18 +803,22 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
     
     list = list->next;
   }
-  
+
+  /* add new controls */
   ags_effect_bulk_add_effect(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
 			     NULL,
 			     lv2_bridge->filename,
-			     lv2_bridge->uri);
+			     lv2_bridge->effect);
+
+  ags_lv2_bridge_load_midi(lv2_bridge);
+  ags_lv2_bridge_load_gui(lv2_bridge);
 }
 
 /**
  * ags_lv2_bridge_new:
  * @soundcard: the assigned soundcard.
- * @filename: the ui.so
- * @uri: the uri's URI
+ * @filename: the plugin.so
+ * @effect: the effect
  *
  * Creates an #AgsLv2Bridge
  *
@@ -440,7 +829,7 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 AgsLv2Bridge*
 ags_lv2_bridge_new(GObject *soundcard,
 		   gchar *filename,
-		   gchar *uri)
+		   gchar *effect)
 {
   AgsLv2Bridge *lv2_bridge;
   GValue value = {0,};
@@ -458,7 +847,7 @@ ags_lv2_bridge_new(GObject *soundcard,
 
   g_object_set(lv2_bridge,
 	       "filename\0", filename,
-	       "uri\0", uri,
+	       "effect\0", effect,
 	       NULL);
   
   return(lv2_bridge);

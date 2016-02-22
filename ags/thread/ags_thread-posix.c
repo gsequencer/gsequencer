@@ -1928,7 +1928,8 @@ ags_thread_real_clock(AgsThread *thread)
   gdouble main_loop_delay;
   gdouble delay_per_hertz;
   guint steps;
-
+  gboolean async_queue_running;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex, *main_loop_mutex;
   pthread_cond_t *run_cond;
@@ -1983,7 +1984,9 @@ ags_thread_real_clock(AgsThread *thread)
 	pthread_cond_wait(thread->cond,
 			  thread->mutex);
       }
-      
+
+      async_queue_running = ((AGS_THREAD_RUNNING & (g_atomic_int_get(&(async_queue->flags)))) != 0) ? TRUE: FALSE;
+
       pthread_mutex_unlock(thread->mutex);
     }else{
       /* async-queue */
@@ -1996,6 +1999,9 @@ ags_thread_real_clock(AgsThread *thread)
 
       /* thread tree */
       ags_thread_set_sync_all(main_loop, thread->current_tic);
+
+      async_queue_running = ((AGS_THREAD_RUNNING & (g_atomic_int_get(&(async_queue->flags)))) != 0) ? TRUE: FALSE;
+
       pthread_mutex_unlock(thread->mutex);
       pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
@@ -2008,7 +2014,7 @@ ags_thread_real_clock(AgsThread *thread)
   void ags_thread_clock_wait_async(){
       /* async-queue */
     if(!AGS_IS_ASYNC_QUEUE(thread)){
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(async_queue->flags)))) != 0){
+      if(async_queue_running){
 	pthread_mutex_lock(run_mutex);
 	
 	//	g_message("blocked\0");
