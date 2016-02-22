@@ -544,21 +544,32 @@ ags_lv2_bridge_set_property(GObject *gobject,
 						   lv2_bridge->gui_uri);
 
 	    if(ui_index != -1){
+	      GtkVBox *vbox;
 	      GtkAlignment *alignment;
+
+	      gchar *bundle_path;
 
 	      g_message("ui-index %d\0", ui_index);
 	      ui_descriptor = lv2ui_descriptor(ui_index);
 
-	      alignment = gtk_alignment_new(0.5, 0.5, 1.0, 1.0);
+	      vbox = (GtkVBox *) gtk_vbox_new(FALSE,
+					      0);
 	      gtk_container_add(lv2_bridge->lv2_gui,
-				alignment);
-	      gtk_widget_show(alignment);
+				vbox);
+	      
+	      alignment = gtk_alignment_new(0.5, 0.5, 1.0, 1.0);
+	      gtk_box_pack_start(GTK_BOX(vbox),
+				 alignment,
+				 TRUE, TRUE,
+				 0);
 	      
 	      /* instantiate and pack ui */
+	      bundle_path = g_strndup(gui_filename,
+				      rindex(gui_filename, '/') - gui_filename);
 	      widget = NULL;
 	      lv2_bridge->ui_handle = ui_descriptor->instantiate(ui_descriptor,
 								 lv2_bridge->uri,
-								 gui_filename, // might be relative
+								 bundle_path, // might be relative
 								 ags_lv2_bridge_lv2ui_write_function,
 								 lv2_bridge->lv2_gui,
 								 &widget,
@@ -567,6 +578,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
 	      gtk_container_add(alignment,
 				widget);
 	      
+	      gtk_widget_show_all(vbox);
 	      // gtk_container_add(lv2_bridge->lv2_gui,
 	      //		widget);
 	      // gtk_widget_show(widget);
