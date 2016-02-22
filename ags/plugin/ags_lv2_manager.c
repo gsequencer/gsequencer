@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/plugin/ags_lv2_manager.h>
@@ -412,10 +413,10 @@ ags_lv2_manager_load_default_directory()
 
       xmlDoc *doc;
 
-      FILE *out;
+      //      FILE *out;
 
-      xmlChar *buffer;
-      int size;
+      //      xmlChar *buffer;
+      //      int size;
       
       GList *ttl_list, *binary_list;
 
@@ -500,15 +501,14 @@ ags_lv2_manager_load_default_directory()
 
 	/* persist XML */
 	//NOTE:JK: no need for it
-	/*
-	xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
+	//	xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
 
-	out = fopen(g_strdup_printf("%s/%s.xml\0", plugin_path, turtle_path), "w+\0");
+	//	out = fopen(g_strdup_printf("%s/%s.xml\0", plugin_path, turtle_path), "w+\0");
 	
-	fwrite(buffer, size, sizeof(xmlChar), out);
-	fflush(out);
-	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
-	*/
+	//	fwrite(buffer, size, sizeof(xmlChar), out);
+	//	fflush(out);
+	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
+
 	
 	ttl_list = ttl_list->next;
 	binary_list = binary_list->next;
@@ -604,6 +604,10 @@ ags_lv2_manager_find_uri(gchar *filename,
   
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+
+  if(lv2_plugin == NULL){
+    return(NULL);
+  }
   
   str = g_strdup_printf("//rdf-triple//rdf-subject[ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':Plugin') + 1) = ':Plugin'] and ancestor::*[self::rdf-triple][1]//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name']]/following-sibling::*//rdf-string[text()='%s']]/rdf-iri",
 			effect);

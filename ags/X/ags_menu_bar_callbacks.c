@@ -800,8 +800,8 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   application_context = window->application_context;
 
   lv2_bridge = ags_lv2_bridge_new(G_OBJECT(window->soundcard),
-					filename,
-					effect);
+				  filename,
+				  effect);
     
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
