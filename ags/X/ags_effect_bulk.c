@@ -112,10 +112,6 @@ GList* ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      GList *control_type_name,
 				      gchar *filename,
 				      gchar *effect);
-GList* ags_effect_bulk_add_lv2ui_effect(AgsEffectBulk *effect_bulk,
-					GList *control_type_name,
-					gchar *filename,
-					gchar *effect);
 GList* ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
 				       GList *control_type_name,
 				       gchar *filename,
