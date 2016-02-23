@@ -247,19 +247,13 @@ main(int argc, char **argv)
   gtk_init(&argc, &argv);
   ipatch_init();
 
-  /* load managers * /
+  /* load managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
-  ags_ladspa_manager_load_default_directory();
-  
   dssi_manager = ags_dssi_manager_get_instance();
-  ags_dssi_manager_load_default_directory();
-    
   lv2_manager = ags_lv2_manager_get_instance();
-  ags_lv2_manager_load_default_directory();
-  
+
   lv2ui_manager = ags_lv2ui_manager_get_instance();
-  ags_lv2ui_manager_load_default_directory();
-  */ 
+  
   /* init gsequencer */
   application_context = ags_xorg_application_context_new();
   application_context->argc = argc;
@@ -370,8 +364,8 @@ main(int argc, char **argv)
 
     pthread_mutex_unlock(audio_loop_mutex);
     
-    ags_thread_start(audio_loop);
     ags_thread_pool_start(thread_pool);
+    ags_thread_start(audio_loop);
 
 #ifdef AGS_USE_TIMER
     /* Start the timer */

@@ -2510,9 +2510,6 @@ ags_turtle_load(AgsTurtle *turtle,
       start_ptr = look_ahead;
       look_ahead++;
 
-      end_ptr = index(look_ahead,
-		      ')');
-
       /* create node */
       node = xmlNewNode(NULL,
 			"rdf-collection");
@@ -2526,7 +2523,10 @@ ags_turtle_load(AgsTurtle *turtle,
 	xmlAddChild(node,
 		    object_node);
       }
-      
+
+      end_ptr = index(look_ahead,
+		      ')');
+
       *iter = end_ptr + 1;
     }
 
@@ -2607,9 +2607,6 @@ ags_turtle_load(AgsTurtle *turtle,
       start_ptr = look_ahead;
       look_ahead++;
       
-      end_ptr = index(look_ahead,
-		      ']');
-
       predicate_object_list_node = ags_turtle_load_read_predicate_object_list(&look_ahead);
 
       if(predicate_object_list_node != NULL){
@@ -2622,6 +2619,9 @@ ags_turtle_load(AgsTurtle *turtle,
 
 	xmlAddChild(node,
 		    predicate_object_list_node);
+
+	end_ptr = index(look_ahead,
+			']');
 	
 	*iter = end_ptr + 1;
       }

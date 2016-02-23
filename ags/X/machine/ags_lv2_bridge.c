@@ -549,7 +549,6 @@ ags_lv2_bridge_set_property(GObject *gobject,
 
 	      gchar *bundle_path;
 
-	      g_message("ui-index %d\0", ui_index);
 	      ui_descriptor = lv2ui_descriptor(ui_index);
 
 	      vbox = (GtkVBox *) gtk_vbox_new(FALSE,
@@ -569,7 +568,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
 	      widget = NULL;
 	      lv2_bridge->ui_handle = ui_descriptor->instantiate(ui_descriptor,
 								 lv2_bridge->uri,
-								 bundle_path, // might be relative
+								 bundle_path,
 								 ags_lv2_bridge_lv2ui_write_function,
 								 lv2_bridge->lv2_gui,
 								 &widget,
@@ -579,9 +578,6 @@ ags_lv2_bridge_set_property(GObject *gobject,
 				widget);
 	      
 	      gtk_widget_show_all(vbox);
-	      // gtk_container_add(lv2_bridge->lv2_gui,
-	      //		widget);
-	      // gtk_widget_show(widget);
 	    }
 	  }
 	}
@@ -731,6 +727,28 @@ ags_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
 void
 ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge)
 {
+  AgsLv2Plugin *lv2_plugin;
+
+  GList *instrument_list;
+
+  gchar *str;
+  
+  /* check if works with Gtk+ */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename);
+
+  if(lv2_plugin == NULL){
+    return;
+  }
+
+  str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InstrumentPlugin') + 1) = ':InstrumentPlugin']",
+			lv2_bridge->effect);
+
+  instrument_list = ags_turtle_find_xpath(lv2_plugin->turtle,
+					  str);
+
+  if(instrument_list == NULL){
+    return;
+  }
 }
 
 void
@@ -749,6 +767,10 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
   
   /* check if works with Gtk+ */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename);
+
+  if(lv2_plugin == NULL){
+    return;
+  }
 
   gtkui_list = ags_turtle_find_xpath(lv2_plugin->turtle,
 				     "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':GtkUI') + 1) = ':GtkUI']\0");
