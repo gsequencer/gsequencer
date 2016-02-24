@@ -21,12 +21,7 @@
 
 #include <ags/object/ags_marshal.h>
 
-#include <dlfcn.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <ags/plugin/ags_base_plugin.h>
 
 #include <ladspa.h>
 
@@ -194,6 +189,7 @@ ags_ladspa_manager_get_filenames()
 /**
  * ags_ladspa_manager_find_ladspa_plugin:
  * @filename: the filename of the plugin
+ * @effect: the effect's name
  *
  * Lookup filename in loaded plugins.
  *
@@ -202,7 +198,7 @@ ags_ladspa_manager_get_filenames()
  * Since: 0.4
  */
 AgsLadspaPlugin*
-ags_ladspa_manager_find_ladspa_plugin(gchar *filename)
+ags_ladspa_manager_find_ladspa_plugin(gchar *filename, gchar *effect)
 {
   AgsLadspaManager *ladspa_manager;
   AgsLadspaPlugin *ladspa_plugin;
@@ -214,8 +210,11 @@ ags_ladspa_manager_find_ladspa_plugin(gchar *filename)
 
   while(list != NULL){
     ladspa_plugin = AGS_LADSPA_PLUGIN(list->data);
-    if(!g_strcmp0(ladspa_plugin->filename,
-		  filename)){
+    
+    if(!g_strcmp0(AGS_BASE_PLUGIN(ladspa_plugin)->filename,
+		  filename) &&
+       !g_strcmp0(AGS_BASE_PLUGIN(ladspa_plugin)->effect,
+		  effect)){
       return(ladspa_plugin);
     }
 
@@ -238,8 +237,15 @@ ags_ladspa_manager_load_file(gchar *filename)
 {
   AgsLadspaManager *ladspa_manager;
   AgsLadspaPlugin *ladspa_plugin;
+  
   gchar *path;
+  gchar *effect;
 
+  void *plugin_so;
+  LADSPA_DescriptorFunction ladspa_descriptor;
+  LADSPA_Descriptor *plugin_descriptor;
+  unsigned long i;
+  
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   ladspa_manager = ags_ladspa_manager_get_instance();
@@ -250,20 +256,32 @@ ags_ladspa_manager_load_file(gchar *filename)
 			 ags_ladspa_default_path,
 			 filename);
 
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
-  g_message("loading: %s\0", filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(path);
+
+  g_message("ags_ladspa_manager.c loading - %s\0", path);
 
   if(ladspa_plugin == NULL){
-    ladspa_plugin = ags_ladspa_plugin_alloc();
-    ladspa_plugin->filename = g_strdup(filename);
-    ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
-						   ladspa_plugin);
-
-    ladspa_plugin->plugin_so = dlopen(path,
-				      RTLD_NOW);
-
-    if(ladspa_plugin->plugin_so){
+    plugin_so = dlopen(path,
+		       RTLD_NOW);
+	
+    if(plugin_so){
+      g_warning("ags_ladspa_manager.c - failed to load static object file\0");
+      
       dlerror();
+    }
+
+    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							   "ladspa_descriptor\0");
+    
+    if(dlerror() == NULL && ladspa_descriptor){
+      for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
+	ladspa_plugin = ags_ladspa_plugin_new(path,
+					      plugin_descriptor->Name,
+					      i);
+	ags_base_plugin_load(ladspa_plugin);
+	ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
+						       ladspa_plugin);
+      }
     }
   }
 
@@ -328,8 +346,8 @@ ags_ladspa_manager_effect_index(gchar *filename,
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
 
-  long effect_index;
-  long i;
+  unsigned long effect_index;
+  unsigned long i;
 
   if(filename == NULL ||
      effect == NULL){

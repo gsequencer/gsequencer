@@ -2212,7 +2212,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 
   /* load plugin */
   ags_ladspa_manager_load_file(filename);
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
 
   effect_index = ags_ladspa_manager_effect_index(filename,
 						 effect);
@@ -2420,7 +2420,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 
   /* load plugin */
   ags_dssi_manager_load_file(filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
 
   effect_index = ags_dssi_manager_effect_index(filename,
 					       effect);
@@ -2632,7 +2632,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   uint32_t effect_index;
 
   /* find plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
   uri = ags_lv2_manager_find_uri(filename,
 				 effect);
@@ -2837,7 +2837,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
   GList *port;
 
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
   port = NULL;
   
   if(ladspa_plugin != NULL){
@@ -2847,7 +2847,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
   }
 
   if(ladspa_plugin == NULL){
-    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
     
     if(dssi_plugin != NULL){
       port = ags_channel_add_dssi_effect(channel,
@@ -2858,7 +2858,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
   
   if(ladspa_plugin == NULL &&
      dssi_plugin == NULL){
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
     
     if(lv2_plugin != NULL){
       port = ags_channel_add_lv2_effect(channel,

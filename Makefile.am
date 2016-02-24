@@ -465,10 +465,14 @@ deprecated_libags_plugin_h_sources =
 
 libags_plugin_h_sources = \
 	$(deprecated_libags_plugin_h_sources) \
+	ags/plugin/ags_base_plugin.h \
 	ags/plugin/ags_dssi_manager.h \
+	ags/plugin/ags_dssi_plugin.h \
 	ags/plugin/ags_ladspa_manager.h \
+	ags/plugin/ags_ladspa_plugin.h \
 	ags/plugin/ags_plugin_factory.h \
 	ags/plugin/ags_lv2_manager.h \
+	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2ui_manager.h \
 	ags/plugin/ags_plugin_stock.h
 
@@ -476,9 +480,13 @@ deprecated_libags_plugin_c_sources =
 
 libags_plugin_c_sources = \
 	$(deprecated_libags_plugin_c_sources) \
+	ags/plugin/ags_base_plugin.c \
 	ags/plugin/ags_dssi_manager.c \
+	ags/plugin/ags_dssi_plugin.c \
 	ags/plugin/ags_ladspa_manager.c \
+	ags/plugin/ags_ladspa_plugin.c \
 	ags/plugin/ags_lv2_manager.c \
+	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2ui_manager.c \
 	ags/plugin/ags_plugin_factory.c
 

@@ -19,6 +19,15 @@
 
 #include <ags/plugin/ags_dssi_plugin.h>
 
+#include <ags/object/ags_marshal.h>
+
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 void ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin);
 void ags_dssi_plugin_init (AgsDssiPlugin *dssi_plugin);
 void ags_dssi_plugin_set_property(GObject *gobject,
@@ -40,7 +49,16 @@ void ags_dssi_plugin_activate(AgsBasePlugin *base_plugin,
 			      gpointer plugin_handle);
 void ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
 				gpointer plugin_handle);
+void ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
+			 gpointer plugin_handle,
+			 snd_seq_event_t *seq_event,
+			 guint frame_count);
 void ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin);
+
+void ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
+					 gpointer dssi_handle,
+					 guint bank_index,
+					 guint program_index);
 
 /**
  * SECTION:ags_dssi_plugin
@@ -57,7 +75,13 @@ enum{
   PROP_PROGRAM,
 };
 
+enum{
+  CHANGE_PROGRAM,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_dssi_plugin_parent_class = NULL;
+static guint dssi_plugin_signals[LAST_SIGNAL];
 
 GType
 ags_dssi_plugin_get_type (void)
@@ -89,6 +113,8 @@ ags_dssi_plugin_get_type (void)
 void
 ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
 {
+  AgsBasePluginClass *base_plugin;
+
   GObjectClass *gobject;
   GParamSpec *param_spec;
   
@@ -101,12 +127,65 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
   gobject->get_property = ags_dssi_plugin_get_property;
 
   gobject->finalize = ags_dssi_plugin_finalize;
+
+  /* properties */
+  /**
+   * AgsBasePlugin:program:
+   *
+   * The assigned program.
+   * 
+   * Since: 0.7.6
+   */
+  param_spec = g_param_spec_string("program\0",
+				   "program of the plugin\0",
+				   "The program this plugin is located in\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PROGRAM,
+				  param_spec);
+
+  /* AgsBasePluginClass */
+  base_plugin = (AgsBasePluginClass *) dssi_plugin;
+
+  base_plugin->instantiate = ags_dssi_plugin_instantiate;
+
+  base_plugin->connect_port = ags_dssi_plugin_connect_port;
+
+  base_plugin->activate = ags_dssi_plugin_activate;
+  base_plugin->deactivate = ags_dssi_plugin_deactivate;
+
+  base_plugin->run = ags_dssi_plugin_run;
+
+  base_plugin->load_plugin = ags_dssi_plugin_load_plugin;
+
+  /* AgsDssiPluginClass */
+  dssi_plugin->change_program = ags_dssi_plugin_real_change_program;
+  
+  /**
+   * AgsDssiPlugin::change-program:
+   * @dssi_plugin: the plugin to change-program
+   *
+   * The ::change-program signal creates a new instance of plugin.
+   */
+  dssi_plugin_signals[CHANGE_PROGRAM] =
+    g_signal_new("change-program\0",
+		 G_TYPE_FROM_CLASS (dssi_plugin),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsDssiPluginClass, change_program),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__POINTER_UINT_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
 }
 
 void
 ags_dssi_plugin_init(AgsDssiPlugin *dssi_plugin)
 {
-  dssi_plugin->flags = 0;
+  dssi_plugin->program = NULL;
 }
 
 void
@@ -201,8 +280,43 @@ ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
 }
 
 void
+ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
+		    gpointer plugin_handle,
+		    snd_seq_event_t *seq_event,
+		    guint frame_count)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
+  //TODO:JK: implement me
+}
+
+void
+ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
+				    gpointer dssi_handle,
+				    guint bank_index,
+				    guint program_index)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
+			       gpointer dssi_handle,
+			       guint bank_index,
+			       guint program_index)
+{
+  g_return_if_fail(AGS_IS_DSSI_PLUGIN(dssi_plugin));
+  g_object_ref(G_OBJECT(dssi_plugin));
+  g_signal_emit(G_OBJECT(dssi_plugin),
+		dssi_plugin_signals[CHANGE_PROGRAM], 0,
+		dssi_handle,
+		bank_index,
+		program_index);
+  g_object_unref(G_OBJECT(dssi_plugin));
 }
 
 /**
