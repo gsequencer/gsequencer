@@ -24,7 +24,6 @@
 #include <glib-object.h>
 
 #include <ags/plugin/ags_base_plugin.h>
-#include <ags/lib/ags_turtle.h>
 
 #include <ladspa.h>
 
@@ -35,12 +34,16 @@
 #define AGS_IS_LADSPA_PLUGIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LADSPA_PLUGIN))
 #define AGS_LADSPA_PLUGIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LADSPA_PLUGIN, AgsLadspaPluginClass))
 
+#define AGS_LADSPA_PLUGIN_DESCRIPTOR(ptr) ((LADSPA_Descriptor *)(ptr))
+
 typedef struct _AgsLadspaPlugin AgsLadspaPlugin;
 typedef struct _AgsLadspaPluginClass AgsLadspaPluginClass;
 
 struct _AgsLadspaPlugin
 {
   AgsBasePlugin base_plugin;
+
+  gchar *unique_id;
 };
 
 struct _AgsLadspaPluginClass

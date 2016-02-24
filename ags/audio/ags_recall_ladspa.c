@@ -588,14 +588,15 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   AgsPort *current;
   GList *port;
   gchar *path;
-  unsigned long port_count;
-  unsigned long i;
 
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_PortRangeHintDescriptor hint_descriptor;
+
+  unsigned long port_count;
+  unsigned long i;
 
   ags_ladspa_manager_load_file(recall_ladspa->filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename);

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <alsa/seq_event.h>
+
 #define AGS_TYPE_BASE_PLUGIN                (ags_base_plugin_get_type())
 #define AGS_BASE_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BASE_PLUGIN, AgsBasePlugin))
 #define AGS_BASE_PLUGIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_BASE_PLUGIN, AgsBasePluginClass))
@@ -39,14 +41,16 @@ typedef enum{
 }AgsBasePluginFlags;
 
 typedef enum{
-  AGS_PORT_DESCRIPTOR_DATA     = 1,
-  AGS_PORT_DESCRIPTOR_AUDIO    = 1 <<  1,
-  AGS_PORT_DESCRIPTOR_CONTROL  = 1 <<  2,
-  AGS_PORT_DESCRIPTOR_MIDI     = 1 <<  3,
-  AGS_PORT_DESCRIPTOR_EVENT    = 1 <<  4,
-  AGS_PORT_DESCRIPTOR_OUTPUT   = 1 <<  5,
-  AGS_PORT_DESCRIPTOR_INPUT    = 1 <<  6,
-  AGS_PORT_DESCRIPTOR_TOGGLED  = 1 <<  7,
+  AGS_PORT_DESCRIPTOR_DATA         = 1,
+  AGS_PORT_DESCRIPTOR_AUDIO        = 1 <<  1,
+  AGS_PORT_DESCRIPTOR_CONTROL      = 1 <<  2,
+  AGS_PORT_DESCRIPTOR_MIDI         = 1 <<  3,
+  AGS_PORT_DESCRIPTOR_EVENT        = 1 <<  4,
+  AGS_PORT_DESCRIPTOR_OUTPUT       = 1 <<  5,
+  AGS_PORT_DESCRIPTOR_INPUT        = 1 <<  6,
+  AGS_PORT_DESCRIPTOR_TOGGLED      = 1 <<  7,
+  AGS_PORT_DESCRIPTOR_LOGARITHMIC  = 1 <<  8,
+  AGS_PORT_DESCRIPTOR_INTEGER      = 1 <<  9,
 }AgsPortDescriptorFlags;
 
 struct _AgsBasePlugin
@@ -80,6 +84,11 @@ struct _AgsBasePluginClass
   
   void (*activate)(AgsBasePlugin *base_plugin, gpointer plugin_handle);
   void (*deactivate)(AgsBasePlugin *base_plugin, gpointer plugin_handle);
+
+  void (*run)(AgsBasePlugin *base_plugin,
+	      gpointer plugin_handle,
+	      snd_seq_event_t *seq_event,
+	      guint frame_count);
   
   void (*load_plugin)(AgsBasePlugin *base_plugin);
 };
@@ -117,6 +126,11 @@ void ags_base_plugin_connect_port(AgsBasePlugin *base_plugin, gpointer plugin_ha
 
 void ags_base_plugin_activate(AgsBasePlugin *base_plugin, gpointer plugin_handle);
 void ags_base_plugin_deactivate(AgsBasePlugin *base_plugin, gpointer plugin_handle);
+
+void ags_base_plugin_run(AgsBasePlugin *base_plugin,
+			 gpointer plugin_handle,
+			 snd_seq_event_t *seq_event,
+			 guint frame_count);
 
 void ags_base_plugin_load_plugin(AgsBasePlugin *base_plugin);
 

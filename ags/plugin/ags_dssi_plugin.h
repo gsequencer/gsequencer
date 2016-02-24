@@ -24,7 +24,6 @@
 #include <glib-object.h>
 
 #include <ags/plugin/ags_base_plugin.h>
-#include <ags/lib/ags_turtle.h>
 
 #include <dssi.h>
 
@@ -48,9 +47,19 @@ struct _AgsDssiPlugin
 struct _AgsDssiPluginClass
 {
   AgsBasePluginClass base_plugin;
+
+  void (*change_program)(AgsDssiPlugin *dssi_plugin,
+			 gpointer dssi_handle,
+			 guint bank_index,
+			 guint program_index);
 };
 
 GType ags_dssi_plugin_get_type(void);
+
+void ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
+				    gpointer dssi_handle,
+				    guint bank_index,
+				    guint program_index);
 
 AgsDssiPlugin* ags_dssi_plugin_new(gchar *filename, gchar *effect, guint effect_index);
 

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/plugin/ags_dssi_plugin.h>
+
 #define AGS_TYPE_DSSI_MANAGER                (ags_dssi_manager_get_type())
 #define AGS_DSSI_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DSSI_MANAGER, AgsDssiManager))
 #define AGS_DSSI_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_DSSI_MANAGER, AgsDssiManagerClass))
@@ -30,15 +32,8 @@
 #define AGS_IS_DSSI_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DSSI_MANAGER))
 #define AGS_DSSI_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_DSSI_MANAGER, AgsDssiManagerClass))
 
-#define AGS_DSSI_PLUGIN(ptr) ((AgsDssiPlugin *)(ptr))
-
 typedef struct _AgsDssiManager AgsDssiManager;
 typedef struct _AgsDssiManagerClass AgsDssiManagerClass;
-typedef struct _AgsDssiPlugin AgsDssiPlugin;
-
-typedef enum{
-  AGS_DSSI_PLUGIN_IS_LOADED    = 1,
-}AgsDssiPluginFlags;
 
 struct _AgsDssiManager
 {
@@ -52,21 +47,10 @@ struct _AgsDssiManagerClass
   GObjectClass object;
 };
 
-struct _AgsDssiPlugin
-{
-  guint flags;
-
-  gchar *filename;
-  void *plugin_so;
-};
-
 GType ags_dssi_manager_get_type(void);
 
-AgsDssiPlugin* ags_dssi_plugin_alloc();
-void ags_dssi_plugin_free(AgsDssiPlugin *dssi_plugin);
-
 gchar** ags_dssi_manager_get_filenames();
-AgsDssiPlugin* ags_dssi_manager_find_dssi_plugin(gchar *filename);
+AgsDssiPlugin* ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect);
 
 void ags_dssi_manager_load_file(gchar *filename);
 void ags_dssi_manager_load_default_directory();

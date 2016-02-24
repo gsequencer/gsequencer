@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_turtle.h>
+#include <ags/plugin/ags_lv2_plugin.h>
 
 #include <lv2.h>
 
@@ -37,17 +37,10 @@
 #define AGS_IS_LV2_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_MANAGER))
 #define AGS_LV2_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_MANAGER, AgsLv2ManagerClass))
 
-#define AGS_LV2_PLUGIN(ptr) ((AgsLv2Plugin *)(ptr))
-
 #define AGS_LV2_MANAGER_DEFAULT_LOCALE "en-gb\0"
 
 typedef struct _AgsLv2Manager AgsLv2Manager;
 typedef struct _AgsLv2ManagerClass AgsLv2ManagerClass;
-typedef struct _AgsLv2Plugin AgsLv2Plugin;
-
-typedef enum{
-  AGS_LV2_PLUGIN_IS_LOADED    = 1,
-}AgsLv2PluginFlags;
 
 struct _AgsLv2Manager
 {
@@ -63,23 +56,11 @@ struct _AgsLv2ManagerClass
   GObjectClass object;
 };
 
-struct _AgsLv2Plugin
-{
-  guint flags;
-
-  AgsTurtle *turtle;
-
-  gchar *filename;
-  void *plugin_so;
-};
-
 GType ags_lv2_manager_get_type(void);
 
-AgsLv2Plugin* ags_lv2_plugin_alloc();
-void ags_lv2_plugin_free(AgsLv2Plugin *lv2_plugin);
-
 gchar** ags_lv2_manager_get_filenames();
-AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(gchar *filename);
+AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(gchar *filename,
+					      gchar *effect);
 
 void ags_lv2_manager_load_file(AgsTurtle *turtle,
 			       gchar *filename);

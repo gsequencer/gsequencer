@@ -116,48 +116,6 @@ ags_dssi_manager_finalize(GObject *gobject)
 }
 
 /**
- * ags_dssi_plugin_alloc:
- * 
- * Alloc the #AgsDssiPlugin-struct
- *
- * Returns: the #AgsDssiPlugin-struct
- *
- * Since: 0.7.0
- */
-AgsDssiPlugin*
-ags_dssi_plugin_alloc()
-{
-  AgsDssiPlugin *dssi_plugin;
-
-  dssi_plugin = (AgsDssiPlugin *) malloc(sizeof(AgsDssiPlugin));
-
-  dssi_plugin->flags = 0;
-  dssi_plugin->filename = NULL;
-  dssi_plugin->plugin_so = NULL;
-
-  return(dssi_plugin);
-}
-
-/**
- * ags_dssi_plugin_free:
- * @dssi_plugin: the #AgsDssiPlugin-struct
- * 
- * Free the #AgsDssiPlugin-struct
- *
- * Since: 0.7.0
- */
-void
-ags_dssi_plugin_free(AgsDssiPlugin *dssi_plugin)
-{
-  if(dssi_plugin->plugin_so != NULL){
-    dlclose(dssi_plugin->plugin_so);
-  }
-
-  free(dssi_plugin->filename);
-  free(dssi_plugin);
-}
-
-/**
  * ags_dssi_manager_get_filenames:
  * 
  * Retrieve all filenames
@@ -194,6 +152,7 @@ ags_dssi_manager_get_filenames()
 /**
  * ags_dssi_manager_find_dssi_plugin:
  * @filename: the filename of the plugin
+ * @effect: the effect's name
  *
  * Lookup filename in loaded plugins.
  *
@@ -202,7 +161,7 @@ ags_dssi_manager_get_filenames()
  * Since: 0.7.0
  */
 AgsDssiPlugin*
-ags_dssi_manager_find_dssi_plugin(gchar *filename)
+ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect)
 {
   AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
@@ -214,8 +173,11 @@ ags_dssi_manager_find_dssi_plugin(gchar *filename)
 
   while(list != NULL){
     dssi_plugin = AGS_DSSI_PLUGIN(list->data);
-    if(!g_strcmp0(dssi_plugin->filename,
-		  filename)){
+    
+    if(!g_strcmp0(AGS_BASE_PLUGIN(dssi_plugin)->filename,
+		  filename) &&
+       !g_strcmp0(AGS_BASE_PLUGIN(dssi_plugin)->effect,
+		  effect)){
       return(dssi_plugin);
     }
 

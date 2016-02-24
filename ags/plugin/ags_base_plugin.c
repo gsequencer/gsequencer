@@ -48,6 +48,7 @@ enum{
   CONNECT_PORT,
   ACTIVATE,
   DEACTIVATE,
+  RUN,
   LOAD_PLUGIN,
   LAST_SIGNAL,
 };
@@ -150,7 +151,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 				 "effect-index of the plugin\0",
 				 "The effect-index this plugin is assigned with\0",
 				 0,
-				 G_MANUINT,
+				 G_MAXUINT,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -180,6 +181,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   
   base_plugin->activate = NULL;
   base_plugin->deactivate = NULL;
+
+  base_plugin->run = NULL;
 
   base_plugin->load_plugin = NULL;
   
@@ -228,7 +231,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, activate),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER,
+		 g_cclosure_marshal_VOID__POINTER,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_POINTER);
 
@@ -244,9 +247,27 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, deactivate),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER,
+		 g_cclosure_marshal_VOID__POINTER,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_POINTER);
+
+  /**
+   * AgsBasePlugin::run:
+   * @base_plugin: the plugin to run
+   *
+   * The ::run signal creates a new instance of plugin.
+   */
+  base_plugin_signals[RUN] =
+    g_signal_new("run\0",
+		 G_TYPE_FROM_CLASS (base_plugin),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsBasePluginClass, run),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__POINTER_POINTER_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 
   /**
    * AgsBasePlugin::load_plugin:
@@ -260,7 +281,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, load_plugin),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__VOID,
+		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 }
 
@@ -402,6 +423,15 @@ ags_base_plugin_finalize(GObject *gobject)
   base_plugin = AGS_BASE_PLUGIN(gobject);
 }
 
+/**
+ * ags_port_descriptor_alloc:
+ * 
+ * Alloc the #AgsPortDescriptor-struct
+ *
+ * Returns: the #AgsPortDescriptor-struct
+ *
+ * Since: 0.7.6
+ */
 AgsPortDescriptor*
 ags_port_descriptor_alloc()
 {
@@ -432,6 +462,14 @@ ags_port_descriptor_alloc()
   return(port_descriptor);
 }
 
+/**
+ * ags_port_descriptor_free:
+ * @port_descriptor: the #AgsPortDescriptor-struct
+ * 
+ * Free the #AgsPortDescriptor-struct
+ *
+ * Since: 0.7.6
+ */
 void
 ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
 {
@@ -547,6 +585,32 @@ ags_base_plugin_deactivate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
 		plugin_handle);
   g_object_unref(G_OBJECT(base_plugin));
 }
+
+/**
+ * ags_base_plugin_run:
+ * @base_plugin: the #AgsBasePlugin
+ * @plugin_handle: the plugin instance handle
+ *
+ * Deactivat a plugin instance
+ *
+ * Since: 0.7.6
+ */
+void
+ags_base_plugin_run(AgsBasePlugin *base_plugin,
+		    gpointer plugin_handle,
+		    snd_seq_event_t *seq_event,
+		    guint frame_count)
+{
+  g_return_if_fail(AGS_IS_BASE_PLUGIN(base_plugin));
+  g_object_ref(G_OBJECT(base_plugin));
+  g_signal_emit(G_OBJECT(base_plugin),
+		base_plugin_signals[RUN], 0,
+		plugin_handle,
+		seq_event,
+		frame_count);
+  g_object_unref(G_OBJECT(base_plugin));
+}
+
 
 /**
  * ags_base_plugin_load_plugin:

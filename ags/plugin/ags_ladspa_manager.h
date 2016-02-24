@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/plugin/ags_ladspa_plugin.h>
+
 #define AGS_TYPE_LADSPA_MANAGER                (ags_ladspa_manager_get_type())
 #define AGS_LADSPA_MANAGER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LADSPA_MANAGER, AgsLadspaManager))
 #define AGS_LADSPA_MANAGER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LADSPA_MANAGER, AgsLadspaManagerClass))
@@ -30,15 +32,8 @@
 #define AGS_IS_LADSPA_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LADSPA_MANAGER))
 #define AGS_LADSPA_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LADSPA_MANAGER, AgsLadspaManagerClass))
 
-#define AGS_LADSPA_PLUGIN(ptr) ((AgsLadspaPlugin *)(ptr))
-
 typedef struct _AgsLadspaManager AgsLadspaManager;
 typedef struct _AgsLadspaManagerClass AgsLadspaManagerClass;
-typedef struct _AgsLadspaPlugin AgsLadspaPlugin;
-
-typedef enum{
-  AGS_LADSPA_PLUGIN_IS_LOADED    = 1,
-}AgsLadspaPluginFlags;
 
 struct _AgsLadspaManager
 {
@@ -52,21 +47,10 @@ struct _AgsLadspaManagerClass
   GObjectClass object;
 };
 
-struct _AgsLadspaPlugin
-{
-  guint flags;
-
-  gchar *filename;
-  void *plugin_so;
-};
-
 GType ags_ladspa_manager_get_type(void);
 
-AgsLadspaPlugin* ags_ladspa_plugin_alloc();
-void ags_ladspa_plugin_free(AgsLadspaPlugin *ladspa_plugin);
-
 gchar** ags_ladspa_manager_get_filenames();
-AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin(gchar *filename);
+AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin(gchar *filename, gchar *effect);
 
 void ags_ladspa_manager_load_file(gchar *filename);
 void ags_ladspa_manager_load_default_directory();

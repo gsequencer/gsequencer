@@ -196,56 +196,6 @@ ags_lv2_manager_finalize(GObject *gobject)
 }
 
 /**
- * ags_lv2_plugin_alloc:
- * 
- * Alloc the #AgsLv2Plugin-struct
- *
- * Returns: the #AgsLv2Plugin-struct
- *
- * Since: 0.4.3
- */
-AgsLv2Plugin*
-ags_lv2_plugin_alloc()
-{
-  AgsLv2Plugin *lv2_plugin;
-
-  lv2_plugin = (AgsLv2Plugin *) malloc(sizeof(AgsLv2Plugin));
-
-  lv2_plugin->flags = 0;
-
-  lv2_plugin->turtle = NULL;
-
-  lv2_plugin->filename = NULL;
-  lv2_plugin->plugin_so = NULL;
-
-  return(lv2_plugin);
-}
-
-/**
- * ags_lv2_plugin_free:
- * @lv2_plugin: the #AgsLv2Plugin-struct
- * 
- * Free the #AgsLv2Plugin-struct
- *
- * Since: 0.4.3
- */
-void
-ags_lv2_plugin_free(AgsLv2Plugin *lv2_plugin)
-{
-  if(lv2_plugin->plugin_so != NULL){
-    dlclose(lv2_plugin->plugin_so);
-  }
-
-  free(lv2_plugin->filename);
-
-  if(lv2_plugin->turtle != NULL){
-    g_object_unref(lv2_plugin->turtle);
-  }
-  
-  free(lv2_plugin);
-}
-
-/**
  * ags_lv2_manager_get_filenames:
  * 
  * Retrieve all filenames
@@ -282,6 +232,7 @@ ags_lv2_manager_get_filenames()
 /**
  * ags_lv2_manager_find_lv2_plugin:
  * @filename: the filename of the plugin
+ * @effect: the effect's name
  *
  * Lookup filename in loaded plugins.
  *
@@ -290,7 +241,7 @@ ags_lv2_manager_get_filenames()
  * Since: 0.4.3
  */
 AgsLv2Plugin*
-ags_lv2_manager_find_lv2_plugin(gchar *filename)
+ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
 {
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
@@ -302,8 +253,10 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename)
 
   while(list != NULL){
     lv2_plugin = AGS_LV2_PLUGIN(list->data);
-    if(!g_strcmp0(lv2_plugin->filename,
-		  filename)){
+    if(!g_strcmp0(AGS_BASE_PLUGIN(lv2_plugin)->filename,
+		  filename) &&
+       !g_strcmp0(AGS_BASE_PLUGIN(lv2_plugin)->effect,
+		  effect)){
       return(lv2_plugin);
     }
 

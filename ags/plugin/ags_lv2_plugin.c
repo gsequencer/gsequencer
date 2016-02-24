@@ -19,6 +19,13 @@
 
 #include <ags/plugin/ags_lv2_plugin.h>
 
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 void ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin);
 void ags_lv2_plugin_init (AgsLv2Plugin *lv2_plugin);
 void ags_lv2_plugin_set_property(GObject *gobject,
@@ -40,6 +47,10 @@ void ags_lv2_plugin_activate(AgsBasePlugin *base_plugin,
 			     gpointer plugin_handle);
 void ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
 			       gpointer plugin_handle);
+void ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
+			gpointer plugin_handle,
+			snd_seq_event_t *seq_event,
+			guint frame_count);
 void ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
 /**
@@ -90,6 +101,8 @@ ags_lv2_plugin_get_type (void)
 void
 ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 {
+  AgsBasePluginClass *base_plugin;
+
   GObjectClass *gobject;
   GParamSpec *param_spec;
   
@@ -102,6 +115,20 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
   gobject->get_property = ags_lv2_plugin_get_property;
 
   gobject->finalize = ags_lv2_plugin_finalize;
+
+  /* AgsBasePluginClass */
+  base_plugin = (AgsBasePluginClass *) lv2_plugin;
+
+  base_plugin->instantiate = ags_lv2_plugin_instantiate;
+
+  base_plugin->connect_port = ags_lv2_plugin_connect_port;
+
+  base_plugin->activate = ags_lv2_plugin_activate;
+  base_plugin->deactivate = ags_lv2_plugin_deactivate;
+
+  base_plugin->run = ags_lv2_plugin_run;
+
+  base_plugin->load_plugin = ags_lv2_plugin_load_plugin;
 }
 
 void
@@ -226,8 +253,18 @@ ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
 }
 
 void
+ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
+		   gpointer plugin_handle,
+		   snd_seq_event_t *seq_event,
+		   guint frame_count)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
+  //TODO:JK: implement me
 }
 
 /**
