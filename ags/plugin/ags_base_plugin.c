@@ -267,6 +267,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 void
 ags_base_plugin_init(AgsBasePlugin *base_plugin)
 {
+  base_plugin->flags = 0;
+  
   base_plugin->filename = NULL;
   base_plugin->effect = NULL;
 

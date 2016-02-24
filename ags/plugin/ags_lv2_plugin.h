@@ -50,16 +50,6 @@ struct _AgsLv2Plugin
   
   gchar *uri;
 
-  GList *output_port;
-  GList *input_port;
-  
-  GList *control_port;
-
-  GList *midi_port;
-  GList *event_port;
-
-  GObject *lv2ui_plugin;
-
   AgsTurtle *turtle;
 };
 
@@ -70,6 +60,6 @@ struct _AgsLv2PluginClass
 
 GType ags_lv2_plugin_get_type(void);
 
-AgsLv2Plugin* ags_lv2_plugin_new(gchar *filename, gchar *effect);
+AgsLv2Plugin* ags_lv2_plugin_new(gchar *filename, gchar *effect, guint effect_index);
 
 #endif /*__AGS_LV2_PLUGIN_H__*/
