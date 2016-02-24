@@ -47,7 +47,7 @@ struct _AgsPort
   gchar *specifier;
 
   gchar *control_port;
-
+  
   gboolean port_value_is_pointer;
   GType port_value_type;
 

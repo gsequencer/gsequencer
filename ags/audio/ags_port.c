@@ -338,7 +338,7 @@ ags_port_init(AgsPort *port)
   port->specifier = NULL;
 
   port->control_port = NULL;
-
+  
   port->port_value_is_pointer = FALSE;
   port->port_value_type = G_TYPE_DOUBLE;
 
