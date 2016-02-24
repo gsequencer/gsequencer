@@ -53,6 +53,8 @@ struct _AgsBasePlugin
 {
   GObject object;
 
+  guint flags;
+  
   gchar *filename;
   gchar *effect;
 
