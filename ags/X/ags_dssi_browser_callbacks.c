@@ -38,9 +38,14 @@ ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 {
   GtkComboBoxText *filename, *effect;
 
+  AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
-  GList *list;
 
+  GList *list;
+  GList *base_plugin;
+
+  gchar *str;
+  
   void *plugin_so;
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
@@ -52,27 +57,18 @@ ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
 
   gtk_list_store_clear(GTK_LIST_STORE(effect));
 
-  ags_dssi_manager_load_file(gtk_combo_box_text_get_active_text(filename));
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(gtk_combo_box_text_get_active_text(filename));
+  dssi_manager = ags_dssi_manager_get_instance();
+  base_plugin = dssi_manager->dssi_plugin;
+
+  str = gtk_combo_box_text_get_active_text(filename);
   
-  plugin_so = dssi_plugin->plugin_so;
-
-  if(plugin_so){
-    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						       "dssi_descriptor\0");
-
-    if(dlerror() == NULL && dssi_descriptor){
-      unsigned long plugin_index;
-
-      /* We've successfully found a dssi_descriptor function. Now load name and uuid member. */
-
-      for(plugin_index = 0; (plugin_descriptor = dssi_descriptor(plugin_index)) != NULL; plugin_index++){
-	gtk_combo_box_text_append_text(effect,
-				       g_strdup_printf("%s:%lu\0", plugin_descriptor->LADSPA_Plugin->Name, plugin_descriptor->LADSPA_Plugin->UniqueID));
-      }
-    }
+  while((base_plugin = ags_base_plugin_find_filename(base_plugin, str)) != NULL){
+    gtk_combo_box_text_append_text(effect,
+				   g_strdup_printf("%s\0", AGS_BASE_PLUGIN(base_plugin->data)->effect));
+    
+    base_plugin = base_plugin->next;
   }
-
+  
   gtk_combo_box_set_active(effect,
   			   0);
 }
@@ -111,9 +107,10 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
     list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->description));
 
   ags_dssi_manager_load_file(gtk_combo_box_text_get_active_text(filename));
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(gtk_combo_box_text_get_active_text(filename));
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(gtk_combo_box_text_get_active_text(filename),
+						  gtk_combo_box_text_get_active_text(effect));
   
-  plugin_so = dssi_plugin->plugin_so;
+  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   plugin_index = (unsigned long) gtk_combo_box_get_active(effect);
 

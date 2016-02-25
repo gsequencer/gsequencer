@@ -2236,30 +2236,9 @@ ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar
 		 recall_id->recycling_context == recall->recall_id->recycling_context) ||
 		(recall_id == NULL &&
 		 recall->recall_id == NULL)) &&
-	       !g_strcmp0(AGS_RECALL_LV2(recall)->filename, filename)){
-	AgsLv2Plugin *lv2_plugin;
-	GList *uri_node;
-	
-	gchar *uri;
-	gchar *str;
-      
-	lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
-	str = g_strdup_printf("/rdf-turtle/rdf-list/rdf-triple/rdf-verb[@do=\"doap:name\"]\0");
-	uri_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					 str);
-	free(str);
-  
-	str = xmlGetProp(((xmlNode *) uri_node->data)->parent,
-			 "subject\0");
-	uri = g_strndup(&(str[1]),
-			strlen(str) - 2);
-	free(uri);
-
-	if(!g_strcmp0(AGS_RECALL_LV2(recall)->uri, uri)){
-	  list = g_list_prepend(list,
-				recall);
-	  return(list);
-	}
+	       !g_strcmp0(AGS_RECALL_LV2(recall)->filename, filename) &&
+	       !g_strcmp0(AGS_RECALL_LV2(recall)->effect, effect)){
+	return(list);
       }
     }
   

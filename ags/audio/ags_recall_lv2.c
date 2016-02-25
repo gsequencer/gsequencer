@@ -464,19 +464,13 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
   
   ags_lv2_manager_load_file(recall_lv2->turtle,
 			    recall_lv2->filename);
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
 
   port = NULL;
 
   effect = recall_lv2->effect;
   
-  if(lv2_plugin->plugin_so == NULL){
-    plugin_so =
-      lv2_plugin->plugin_so = dlopen(lv2_plugin->filename,
-				     RTLD_NOW);
-  }else{
-    plugin_so = lv2_plugin->plugin_so;
-  }
+  plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
   
   if(plugin_so != NULL){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
@@ -790,15 +784,8 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   /*  */
   ags_lv2_manager_load_file(recall_lv2->turtle,
 			    recall_lv2->filename);
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename);
-
-  if(lv2_plugin->plugin_so == NULL){
-    plugin_so =
-      lv2_plugin->plugin_so = dlopen(lv2_plugin->filename,
-				     RTLD_NOW);
-  }else{
-    plugin_so = lv2_plugin->plugin_so;
-  }
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
+  plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
   
   if(plugin_so != NULL){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
@@ -845,19 +832,12 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 
   ags_lv2_manager_load_file(recall_lv2->turtle,
 			    recall_lv2->filename);
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
 
   port = NULL;
 
   effect = recall_lv2->effect;
-  
-  if(lv2_plugin->plugin_so == NULL){
-    plugin_so =
-      lv2_plugin->plugin_so = dlopen(lv2_plugin->filename,
-				     RTLD_NOW);
-  }else{
-    plugin_so = lv2_plugin->plugin_so;
-  }
+  plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
   
   if(plugin_so != NULL){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,

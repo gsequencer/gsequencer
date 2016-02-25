@@ -23,6 +23,13 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <ladspa.h>
 
 void ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager);
@@ -107,49 +114,7 @@ ags_ladspa_manager_finalize(GObject *gobject)
   ladspa_plugin = ladspa_manager->ladspa_plugin;
 
   g_list_free_full(ladspa_plugin,
-		   (GDestroyNotify) ags_ladspa_plugin_free);
-}
-
-/**
- * ags_ladspa_plugin_alloc:
- * 
- * Alloc the #AgsLadspaPlugin-struct
- *
- * Returns: the #AgsLadspaPlugin-struct
- *
- * Since: 0.4
- */
-AgsLadspaPlugin*
-ags_ladspa_plugin_alloc()
-{
-  AgsLadspaPlugin *ladspa_plugin;
-
-  ladspa_plugin = (AgsLadspaPlugin *) malloc(sizeof(AgsLadspaPlugin));
-
-  ladspa_plugin->flags = 0;
-  ladspa_plugin->filename = NULL;
-  ladspa_plugin->plugin_so = NULL;
-
-  return(ladspa_plugin);
-}
-
-/**
- * ags_ladspa_plugin_free:
- * @ladspa_plugin: the #AgsLadspaPlugin-struct
- * 
- * Free the #AgsLadspaPlugin-struct
- *
- * Since: 0.4
- */
-void
-ags_ladspa_plugin_free(AgsLadspaPlugin *ladspa_plugin)
-{
-  if(ladspa_plugin->plugin_so != NULL){
-    dlclose(ladspa_plugin->plugin_so);
-  }
-
-  free(ladspa_plugin->filename);
-  free(ladspa_plugin);
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -167,21 +132,30 @@ ags_ladspa_manager_get_filenames()
   AgsLadspaManager *ladspa_manager;
   GList *ladspa_plugin;
   gchar **filenames;
-  guint length;
   guint i;
 
   ladspa_manager = ags_ladspa_manager_get_instance();
-  length = g_list_length(ladspa_manager->ladspa_plugin);
 
   ladspa_plugin = ladspa_manager->ladspa_plugin;
-  filenames = (gchar **) malloc((length + 1) * sizeof(gchar *));
-
-  for(i = 0; i < length; i++){
-    filenames[i] = AGS_LADSPA_PLUGIN(ladspa_plugin->data)->filename;
+  filenames = NULL;
+  
+  for(i = 0; ladspa_plugin != NULL; i++){
+    if(filenames == NULL){
+      filenames = (gchar **) malloc(2 * sizeof(gchar *));
+      filenames[i] = AGS_BASE_PLUGIN(ladspa_plugin->data)->filename;
+      filenames[i + 1] = NULL;
+    }else{
+      if(!g_strv_contains(filenames,
+			  AGS_BASE_PLUGIN(ladspa_plugin->data)->filename)){
+	filenames = (gchar **) realloc(filenames,
+				       (i + 2) * sizeof(gchar *));
+	filenames[i] = AGS_BASE_PLUGIN(ladspa_plugin->data)->filename;
+	filenames[i + 1] = NULL;
+      }
+    }
+    
     ladspa_plugin = ladspa_plugin->next;
   }
-
-  filenames[i] = NULL;
 
   return(filenames);
 }
@@ -242,7 +216,7 @@ ags_ladspa_manager_load_file(gchar *filename)
   gchar *effect;
 
   void *plugin_so;
-  LADSPA_DescriptorFunction ladspa_descriptor;
+  LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
   unsigned long i;
   
@@ -256,32 +230,28 @@ ags_ladspa_manager_load_file(gchar *filename)
 			 ags_ladspa_default_path,
 			 filename);
 
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(path);
-
   g_message("ags_ladspa_manager.c loading - %s\0", path);
 
-  if(ladspa_plugin == NULL){
-    plugin_so = dlopen(path,
-		       RTLD_NOW);
+  plugin_so = dlopen(path,
+		     RTLD_NOW);
 	
-    if(plugin_so){
-      g_warning("ags_ladspa_manager.c - failed to load static object file\0");
+  if(plugin_so){
+    g_warning("ags_ladspa_manager.c - failed to load static object file\0");
       
-      dlerror();
-    }
+    dlerror();
+  }
 
-    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor\0");
+  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+							 "ladspa_descriptor\0");
     
-    if(dlerror() == NULL && ladspa_descriptor){
-      for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
-	ladspa_plugin = ags_ladspa_plugin_new(path,
-					      plugin_descriptor->Name,
-					      i);
-	ags_base_plugin_load(ladspa_plugin);
-	ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
-						       ladspa_plugin);
-      }
+  if(dlerror() == NULL && ladspa_descriptor){
+    for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
+      ladspa_plugin = ags_ladspa_plugin_new(path,
+					    plugin_descriptor->Name,
+					    i);
+      ags_base_plugin_load(ladspa_plugin);
+      ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
+						     ladspa_plugin);
     }
   }
 
@@ -356,13 +326,13 @@ ags_ladspa_manager_effect_index(gchar *filename,
   
   /* load plugin */
   ags_ladspa_manager_load_file(filename);
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
 
   if(ladspa_plugin == NULL){
     return(-1);
   }
   
-  plugin_so = ladspa_plugin->plugin_so;
+  plugin_so = AGS_BASE_PLUGIN(ladspa_plugin)->plugin_so;
 
   effect_index = -1;
 

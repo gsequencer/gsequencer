@@ -372,9 +372,9 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
   recall_dssi = AGS_RECALL_DSSI(plugin);
 
   ags_dssi_manager_load_file(recall_dssi->filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
   
-  plugin_so = dssi_plugin->plugin_so;
+  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   if(plugin_so){
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
@@ -559,9 +559,9 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
 
   /*  */
   ags_dssi_manager_load_file(recall_dssi->filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
   
-  plugin_so = dssi_plugin->plugin_so;
+  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   if(plugin_so){
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
@@ -601,10 +601,10 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   LADSPA_PortRangeHintDescriptor hint_descriptor;
 
   ags_dssi_manager_load_file(recall_dssi->filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
   port = NULL;
   
-  plugin_so = dssi_plugin->plugin_so;
+  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   if(plugin_so){
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,

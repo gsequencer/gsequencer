@@ -112,7 +112,7 @@ ags_dssi_manager_finalize(GObject *gobject)
   dssi_plugin = dssi_manager->dssi_plugin;
 
   g_list_free_full(dssi_plugin,
-		   (GDestroyNotify) ags_dssi_plugin_free);
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -130,21 +130,30 @@ ags_dssi_manager_get_filenames()
   AgsDssiManager *dssi_manager;
   GList *dssi_plugin;
   gchar **filenames;
-  guint length;
   guint i;
 
   dssi_manager = ags_dssi_manager_get_instance();
-  length = g_list_length(dssi_manager->dssi_plugin);
 
   dssi_plugin = dssi_manager->dssi_plugin;
-  filenames = (gchar **) malloc((length + 1) * sizeof(gchar *));
-
-  for(i = 0; i < length; i++){
-    filenames[i] = AGS_DSSI_PLUGIN(dssi_plugin->data)->filename;
+  filenames = NULL;
+  
+  for(i = 0; dssi_plugin != NULL; i++){
+    if(filenames == NULL){
+      filenames = (gchar **) malloc(2 * sizeof(gchar *));
+      filenames[i] = AGS_BASE_PLUGIN(dssi_plugin->data)->filename;
+      filenames[i + 1] = NULL;
+    }else{
+      if(!g_strv_contains(filenames,
+			  AGS_BASE_PLUGIN(dssi_plugin->data)->filename)){
+	filenames = (gchar **) realloc(filenames,
+				       (i + 2) * sizeof(gchar *));
+	filenames[i] = AGS_BASE_PLUGIN(dssi_plugin->data)->filename;
+	filenames[i + 1] = NULL;
+      }
+    }
+    
     dssi_plugin = dssi_plugin->next;
   }
-
-  filenames[i] = NULL;
 
   return(filenames);
 }
@@ -200,7 +209,14 @@ ags_dssi_manager_load_file(gchar *filename)
 {
   AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
+
   gchar *path;
+  gchar *effect;
+
+  void *plugin_so;
+  DSSI_Descriptor_Function dssi_descriptor;
+  DSSI_Descriptor *plugin_descriptor;
+  unsigned long i;
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -212,20 +228,28 @@ ags_dssi_manager_load_file(gchar *filename)
 			 ags_dssi_default_path,
 			 filename);
 
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
-  g_message("loading: %s\0", filename);
+  g_message("ags_dssi_manager.c loading - %s\0", path);
 
-  if(dssi_plugin == NULL){
-    dssi_plugin = ags_dssi_plugin_alloc();
-    dssi_plugin->filename = g_strdup(filename);
-    dssi_manager->dssi_plugin = g_list_prepend(dssi_manager->dssi_plugin,
-					       dssi_plugin);
+  plugin_so = dlopen(path,
+		     RTLD_NOW);
+	
+  if(plugin_so){
+    g_warning("ags_dssi_manager.c - failed to load static object file\0");
+      
+    dlerror();
+  }
 
-    dssi_plugin->plugin_so = dlopen(path,
-				    RTLD_NOW);
-
-    if(dssi_plugin->plugin_so){
-      dlerror();
+  dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
+						     "dssi_descriptor\0");
+    
+  if(dlerror() == NULL && dssi_descriptor){
+    for(i = 0; (plugin_descriptor = dssi_descriptor(i)) != NULL; i++){
+      dssi_plugin = ags_dssi_plugin_new(path,
+					plugin_descriptor->LADSPA_Plugin->Name,
+					i);
+      ags_base_plugin_load(dssi_plugin);
+      dssi_manager->dssi_plugin = g_list_prepend(dssi_manager->dssi_plugin,
+						 dssi_plugin);
     }
   }
 
@@ -300,13 +324,13 @@ ags_dssi_manager_effect_index(gchar *filename,
   
   /* load plugin */
   ags_dssi_manager_load_file(filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
 
   if(dssi_plugin == NULL){
     return(-1);
   }
   
-  plugin_so = dssi_plugin->plugin_so;
+  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   effect_index = -1;
 

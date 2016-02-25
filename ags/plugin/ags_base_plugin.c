@@ -189,6 +189,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   /**
    * AgsBasePlugin::instantiate:
    * @base_plugin: the plugin to instantiate
+   * @samplerate: the samplerate
    *
    * The ::instantiate signal creates a new instance of plugin.
    */
@@ -198,8 +199,9 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, instantiate),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
-		 G_TYPE_POINTER, 0);
+		 g_cclosure_user_marshal_POINTER__UINT,
+		 G_TYPE_POINTER, 1,
+		 G_TYPE_UINT);
 
   /**
    * AgsBasePlugin::connect-port:
@@ -448,7 +450,8 @@ ags_port_descriptor_alloc()
 
   port_descriptor->scale_steps = 8;
   port_descriptor->scale_points = NULL;
-
+  port_descriptor->scale_value = NULL;
+  
   port_descriptor->lower_value = g_new0(GValue,
 					1);
   port_descriptor->upper_value = g_new0(GValue,
@@ -493,6 +496,21 @@ ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
   free(port_descriptor);
 }
 
+GList*
+ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
+{
+  while(base_plugin != NULL){
+    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->filename,
+			   filename)){
+      return(base_plugin);
+    }
+
+    base_plugin = base_plugin->next;
+  }
+
+  return(NULL);
+}
+
 void
 ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin)
 {
@@ -502,6 +520,7 @@ ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin)
 /**
  * ags_base_plugin_instantiate:
  * @base_plugin: the #AgsBasePlugin
+ * @samplerate: the samplerate
  *
  * Instantiate the plugin
  *
@@ -510,7 +529,8 @@ ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin)
  * Since: 0.7.6
  */
 gpointer
-ags_base_plugin_instantiate(AgsBasePlugin *base_plugin)
+ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
+			    guint samplerate)
 {
   gpointer retval;
   
@@ -518,6 +538,7 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin)
   g_object_ref(G_OBJECT(base_plugin));
   g_signal_emit(G_OBJECT(base_plugin),
 		base_plugin_signals[INSTANTIATE], 0,
+		samplerate,
 		&retval);
   g_object_unref(G_OBJECT(base_plugin));
 
