@@ -20,6 +20,8 @@
 #include <ags/plugin/ags_dssi_plugin.h>
 
 #include <ags/object/ags_marshal.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -40,7 +42,8 @@ void ags_dssi_plugin_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_dssi_plugin_finalize(GObject *gobject);
 
-gpointer ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin);
+gpointer ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
+				     guint samplerate);
 void ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
 				  gpointer plugin_handle,
 				  guint port_index,
@@ -56,7 +59,7 @@ void ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
 void ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
 void ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
-					 gpointer dssi_handle,
+					 gpointer ladspa_handle,
 					 guint bank_index,
 					 guint program_index);
 
@@ -72,6 +75,7 @@ void ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
 
 enum{
   PROP_0,
+  PROP_UNIQUE_ID,
   PROP_PROGRAM,
 };
 
@@ -130,6 +134,22 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
 
   /* properties */
   /**
+   * AgsDssiPlugin:unique-id:
+   *
+   * The assigned unique-id.
+   * 
+   * Since: 0.7.6
+   */
+  param_spec = g_param_spec_string("unique-id\0",
+				   "unique-id of the plugin\0",
+				   "The unique-id this plugin is assigned with\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UNIQUE_ID,
+				  param_spec);
+
+  /**
    * AgsBasePlugin:program:
    *
    * The assigned program.
@@ -185,6 +205,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
 void
 ags_dssi_plugin_init(AgsDssiPlugin *dssi_plugin)
 {
+  dssi_plugin->unique_id = NULL;
   dssi_plugin->program = NULL;
 }
 
@@ -199,6 +220,23 @@ ags_dssi_plugin_set_property(GObject *gobject,
   dssi_plugin = AGS_DSSI_PLUGIN(gobject);
 
   switch(prop_id){
+  case PROP_UNIQUE_ID:
+    {
+      gchar *unique_id;
+
+      unique_id = (gchar *) g_value_get_string(value);
+
+      if(dssi_plugin->unique_id == unique_id){
+	return;
+      }
+      
+      if(dssi_plugin->unique_id != NULL){
+	g_free(dssi_plugin->unique_id);
+      }
+
+      dssi_plugin->unique_id = g_strdup(unique_id);
+    }
+    break;
   case PROP_PROGRAM:
     {
       gchar *program;
@@ -233,6 +271,9 @@ ags_dssi_plugin_get_property(GObject *gobject,
   dssi_plugin = AGS_DSSI_PLUGIN(gobject);
 
   switch(prop_id){
+  case PROP_UNIQUE_ID:
+    g_value_set_string(value, dssi_plugin->unique_id);
+    break;
   case PROP_PROGRAM:
     g_value_set_string(value, dssi_plugin->program);
     break;
@@ -251,9 +292,11 @@ ags_dssi_plugin_finalize(GObject *gobject)
 }
 
 gpointer
-ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin)
+ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
+			    guint samplerate)
 {
-  //TODO:JK: implement me
+  AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->instantiate(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin,
+											 (unsigned long) samplerate);
 }
 
 void
@@ -262,21 +305,27 @@ ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
 			     guint port_index,
 			     gpointer data_location)
 {
-  //TODO:JK: implement me
+  AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->connect_port((LADSPA_Handle) plugin_handle,
+											  (unsigned long) port_index,
+											  (LADSPA_Data *) data_location);
 }
 
 void
 ags_dssi_plugin_activate(AgsBasePlugin *base_plugin,
 			 gpointer plugin_handle)
 {
-  //TODO:JK: implement me
+  if(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->activate != NULL){
+    AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->activate((LADSPA_Handle) plugin_handle);
+  }
 }
 
 void
 ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
 			   gpointer plugin_handle)
 {
-  //TODO:JK: implement me
+  if(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->deactivate != NULL){
+    AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->deactivate((LADSPA_Handle) plugin_handle);
+  }
 }
 
 void
@@ -285,27 +334,246 @@ ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
 		    snd_seq_event_t *seq_event,
 		    guint frame_count)
 {
-  //TODO:JK: implement me
+  if(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run_synth != NULL){
+    AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run_synth((LADSPA_Handle) plugin_handle,
+									  frame_count,
+									  seq_event,
+									  (unsigned long) 1);
+  }else{
+    AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->run((LADSPA_Handle) plugin_handle,
+										   (unsigned long) frame_count);
+  }
 }
 
 void
 ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
-  //TODO:JK: implement me
+  AgsConfig *config;
+  
+  AgsPortDescriptor *port;
+  GList *list;
+
+  gchar *str;
+  
+  guint samplerate;
+  
+  DSSI_Descriptor_Function dssi_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
+  LADSPA_PortRangeHint *range_hint;
+  LADSPA_PortRangeHintDescriptor hint_descriptor;
+
+  unsigned long effect_index;
+  unsigned long port_count;
+  unsigned long i;
+
+  config = ags_config_get_instance();
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+
+  if(str != NULL){
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    
+    free(str);
+  }else{
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
+  base_plugin->plugin_so = dlopen(base_plugin->filename,
+				  RTLD_NOW);
+  
+  if(base_plugin->plugin_so){
+    g_warning("ags_dssi_plugin.c - failed to load static object file\0");
+    
+    dlerror();
+  }
+
+  dssi_descriptor = (DSSI_Descriptor_Function) dlsym(base_plugin->plugin_so,
+						     "dssi_descriptor\0");
+  
+  if(dlerror() == NULL && dssi_descriptor){
+    effect_index = base_plugin->effect_index;
+    base_plugin->plugin_descriptor = dssi_descriptor(effect_index);
+
+    if(base_plugin->plugin_descriptor != NULL){
+      g_object_set(base_plugin,
+		   "unique-id\0", AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->UniqueID,
+		   NULL);
+      
+      port_count = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortCount;
+      port_descriptor = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortDescriptors;
+
+      for(i = 0; i < port_count; i++){
+	/* allocate port descriptor */
+	port = ags_port_descriptor_alloc();
+
+	/* set flags */
+	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
+	  port->flags |= AGS_PORT_DESCRIPTOR_INPUT;
+	}else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	  port->flags |= AGS_PORT_DESCRIPTOR_OUTPUT;
+	}
+	
+	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	  port->flags |= AGS_PORT_DESCRIPTOR_CONTROL;
+	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
+	  port->flags |= AGS_PORT_DESCRIPTOR_AUDIO;
+	}
+
+	/* set index and name */
+	port->port_index = i;
+	port->port_name = g_strdup(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortNames[i]);
+
+	range_hint = &(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortRangeHints[i]);
+	hint_descriptor = range_hint->HintDescriptor;
+
+	if(hint_descriptor != NULL){
+	  if(LADSPA_IS_HINT_TOGGLED(hint_descriptor)){
+	    /* is toggled */
+	    port->flags |= AGS_PORT_DESCRIPTOR_TOGGLED;
+
+	    /* set default */
+	    if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
+	      g_value_init(port->default_value,
+			   G_TYPE_BOOLEAN);
+	      g_value_set_boolean(port->default_value,
+				  FALSE);
+	    }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
+	      g_value_init(port->default_value,
+			   G_TYPE_BOOLEAN);
+	      g_value_set_boolean(port->default_value,
+				  TRUE);
+	    }
+	  }else{
+	    /* set lower */
+	    g_value_init(port->lower_value,
+			 G_TYPE_FLOAT);
+	    g_value_set_float(port->lower_value,
+			      range_hint->LowerBound);
+	    
+	    /* set upper */
+	    g_value_init(port->upper_value,
+			 G_TYPE_FLOAT);
+	    g_value_set_float(port->upper_value,
+			      range_hint->UpperBound);
+
+	    /* bounds */
+	    if(LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)){
+	      if(LADSPA_IS_HINT_SAMPLERATE(hint_descriptor)){
+		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
+				AGS_PORT_DESCRIPTOR_BOUNDED_BELOW);
+		g_value_set_float(port->lower_value,
+				  samplerate * range_hint->LowerBound);
+	      }
+	    }
+
+	    if(LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)){
+	      if(LADSPA_IS_HINT_SAMPLERATE(hint_descriptor)){
+		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
+				AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE);
+		g_value_set_float(port->upper_value,
+				  samplerate * range_hint->UpperBound);
+	      }
+	    }
+
+	    /* integer */
+	    if(LADSPA_IS_HINT_INTEGER(hint_descriptor)){
+	      port->flags |= AGS_PORT_DESCRIPTOR_INTEGER;
+	    }
+
+	    /* logarithmic */
+	    if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
+	      port->flags |= AGS_PORT_DESCRIPTOR_LOGARITHMIC;
+	    }
+
+	    /* set default value */
+	    if(LADSPA_IS_HINT_DEFAULT_MINIMUM(hint_descriptor)){
+	      g_value_init(port->default_value,
+			   G_TYPE_FLOAT);
+	      g_value_set_float(port->default_value,
+				range_hint->LowerBound);
+	    }else if(LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor)){
+	      float default_value;
+
+	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
+		default_value = exp(log(range_hint->LowerBound) * 0.75 +
+				    log(range_hint->UpperBound) * 0.25);
+	      }else{
+		default_value = 0.75 * range_hint->LowerBound + 0.25 * range_hint->UpperBound;
+	      }
+	      
+	      g_value_init(port->default_value,
+			   G_TYPE_FLOAT);
+	      g_value_set_float(port->default_value,
+				default_value);
+	    }else if(LADSPA_IS_HINT_DEFAULT_MIDDLE(hint_descriptor)){
+	      float default_value;
+
+	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
+		default_value = exp(log(range_hint->LowerBound) * 0.55 +
+				    log(range_hint->UpperBound) * 0.55);
+	      }else{
+		default_value = (0.5 * range_hint->LowerBound) + (0.5 * range_hint->UpperBound);
+	      }
+	      
+	      g_value_init(port->default_value,
+			   G_TYPE_FLOAT);
+	      g_value_set_float(port->default_value,
+				default_value);
+	    }else if(LADSPA_IS_HINT_DEFAULT_HIGH(hint_descriptor)){
+	      float default_value;
+
+	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
+		default_value = exp(log(range_hint->LowerBound) * 0.25 +
+				    log(range_hint->UpperBound) * 0.75);
+	      }else{
+		default_value = 0.25 * range_hint->LowerBound + 0.75 * range_hint->UpperBound;
+	      }
+
+	      g_value_init(port->default_value,
+			   G_TYPE_FLOAT);
+	      g_value_set_float(port->default_value,
+				default_value);
+	    }else if(LADSPA_IS_HINT_DEFAULT_MAXIMUM(hint_descriptor)){
+	      g_value_init(port->default_value,
+			   G_TYPE_FLOAT);
+	      g_value_set_float(port->default_value,
+				range_hint->UpperBound);
+	    }else if(LADSPA_IS_HINT_DEFAULT_100(hint_descriptor)){
+	      g_value_init(port->default_value,
+			   G_TYPE_FLOAT);
+	      g_value_set_float(port->default_value,
+				100.0);
+	    }else if(LADSPA_IS_HINT_DEFAULT_440(hint_descriptor)){
+	      g_value_init(port->default_value,
+			   G_TYPE_FLOAT);
+	      g_value_set_float(port->default_value,
+				440.0);
+	    }
+	  }
+	}
+      }      
+    }
+  }
 }
 
 void
 ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
-				    gpointer dssi_handle,
+				    gpointer ladspa_handle,
 				    guint bank_index,
 				    guint program_index)
 {
-  //TODO:JK: implement me
+  AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->select_program((void *) ladspa_handle,
+											      (unsigned long) bank_index,
+											      (unsigned long) program_index);
 }
 
 void
 ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
-			       gpointer dssi_handle,
+			       gpointer ladspa_handle,
 			       guint bank_index,
 			       guint program_index)
 {
@@ -313,7 +581,7 @@ ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
   g_object_ref(G_OBJECT(dssi_plugin));
   g_signal_emit(G_OBJECT(dssi_plugin),
 		dssi_plugin_signals[CHANGE_PROGRAM], 0,
-		dssi_handle,
+		ladspa_handle,
 		bank_index,
 		program_index);
   g_object_unref(G_OBJECT(dssi_plugin));

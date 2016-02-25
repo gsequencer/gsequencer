@@ -19,6 +19,7 @@
 
 #include <ags/plugin/ags_ladspa_plugin.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <dlfcn.h>
@@ -29,6 +30,8 @@
 #include <unistd.h>
 
 #include <math.h>
+
+#include <ladspa.h>
 
 void ags_ladspa_plugin_class_init(AgsLadspaPluginClass *ladspa_plugin);
 void ags_ladspa_plugin_init (AgsLadspaPlugin *ladspa_plugin);
@@ -42,7 +45,8 @@ void ags_ladspa_plugin_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_ladspa_plugin_finalize(GObject *gobject);
 
-gpointer ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin);
+gpointer ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
+				       guint samplerate);
 void ags_ladspa_plugin_connect_port(AgsBasePlugin *base_plugin,
 				    gpointer plugin_handle,
 				    guint port_index,
@@ -220,9 +224,15 @@ ags_ladspa_plugin_finalize(GObject *gobject)
 }
 
 gpointer
-ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin)
+ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
+			      guint samplerate)
 {
-  //TODO:JK: implement me
+  gpointer ladspa_handle;
+  
+  ladspa_handle = (gpointer) AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->instantiate(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor),
+												       (unsigned long) samplerate);
+
+  return(ladspa_handle);
 }
 
 void
@@ -231,21 +241,27 @@ ags_ladspa_plugin_connect_port(AgsBasePlugin *base_plugin,
 			       guint port_index,
 			       gpointer data_location)
 {
-  //TODO:JK: implement me
+  AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->connect_port((LADSPA_Handle) plugin_handle,
+									     (unsigned long) port_index,
+									     (LADSPA_Data *) data_location);
 }
 
 void
 ags_ladspa_plugin_activate(AgsBasePlugin *base_plugin,
 			   gpointer plugin_handle)
 {
-  //TODO:JK: implement me
+  if(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate != NULL){
+    AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate((LADSPA_Handle) plugin_handle);
+  }
 }
 
 void
 ags_ladspa_plugin_deactivate(AgsBasePlugin *base_plugin,
 			     gpointer plugin_handle)
 {
-  //TODO:JK: implement me
+  if(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate != NULL){
+    AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate((LADSPA_Handle) plugin_handle);
+  }
 }
 
 void
@@ -254,7 +270,8 @@ ags_ladspa_plugin_run(AgsBasePlugin *base_plugin,
 		      snd_seq_event_t *seq_event,
 		      guint frame_count)
 {
-  //TODO:JK: implement me
+  AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run((LADSPA_Handle) plugin_handle,
+								    (unsigned long) frame_count);
 }
 
 void
@@ -262,15 +279,16 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
   AgsConfig *config;
   
-  AgsPortDescriptor *port_descriptor;
+  AgsPortDescriptor *port;
   GList *list;
 
   gchar *str;
   
   guint samplerate;
   
-  LADSPA_DescriptorFunction ladspa_descriptor;
+  LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
+  LADSPA_PortRangeHint *range_hint;
   LADSPA_PortRangeHintDescriptor hint_descriptor;
 
   unsigned long effect_index;
@@ -302,7 +320,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
     dlerror();
   }
 
-  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
+  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(base_plugin->plugin_so,
 							 "ladspa_descriptor\0");
   
   if(dlerror() == NULL && ladspa_descriptor){
@@ -319,144 +337,149 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       for(i = 0; i < port_count; i++){
 	/* allocate port descriptor */
-	port_descriptor = ags_port_descriptor_alloc();
+	port = ags_port_descriptor_alloc();
 
 	/* set flags */
 	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
-	  port_descriptor->flags |= AGS_PORT_DESCRIPTOR_INPUT;
+	  port->flags |= AGS_PORT_DESCRIPTOR_INPUT;
 	}else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	  port_descriptor->flags |= AGS_PORT_DESCRIPTOR_OUTPUT;
+	  port->flags |= AGS_PORT_DESCRIPTOR_OUTPUT;
 	}
 	
 	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
-	  port_descriptor->flags |= AGS_PORT_DESCRIPTOR_CONTROL;
+	  port->flags |= AGS_PORT_DESCRIPTOR_CONTROL;
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
-	  port_descriptor->flags |= AGS_PORT_DESCRIPTOR_AUDIO;
+	  port->flags |= AGS_PORT_DESCRIPTOR_AUDIO;
 	}
 
 	/* set index and name */
-	port_descripotr->port_index = i;
-	port_descriptor->port_name = g_strdup(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortNames[i]);
-	
-	hint_descriptor = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortRangeHints[i].HintDescriptor;
+	port->port_index = i;
+	port->port_name = g_strdup(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortNames[i]);
+
+	range_hint = &(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortRangeHints[i]);
+	hint_descriptor =  range_hint->HintDescriptor;
 
 	if(hint_descriptor != NULL){
 	  if(LADSPA_IS_HINT_TOGGLED(hint_descriptor)){
 	    /* is toggled */
-	    port_descriptor->flags |= AGS_PORT_DESCRIPTOR_TOGGLED;
+	    port->flags |= AGS_PORT_DESCRIPTOR_TOGGLED;
 
 	    /* set default */
-	    if(LADSPA_HINT_DEFAULT_0(hint_descriptor)){
-	      g_value_init(port_descriptor->default_value,
+	    if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
+	      g_value_init(port->default_value,
 			   G_TYPE_BOOLEAN);
-	      g_value_set_boolean(port_descriptor->default_value,
+	      g_value_set_boolean(port->default_value,
 				  FALSE);
-	    }else if(LADSPA_HINT_DEFAULT_1(hint_descriptor)){
-	      g_value_init(port_descriptor->default_value,
+	    }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
+	      g_value_init(port->default_value,
 			   G_TYPE_BOOLEAN);
-	      g_value_set_boolean(port_descriptor->default_value,
+	      g_value_set_boolean(port->default_value,
 				  TRUE);
 	    }
 	  }else{
 	    /* set lower */
-	    g_value_init(port_descriptor->lower_value,
+	    g_value_init(port->lower_value,
 			 G_TYPE_FLOAT);
-	    g_value_set_float(port_descriptor->lower_value,
-			      hint_descriptor.LowerBound);
+	    g_value_set_float(port->lower_value,
+			      range_hint->LowerBound);
 	    
 	    /* set upper */
-	    g_value_init(port_descriptor->upper_value,
+	    g_value_init(port->upper_value,
 			 G_TYPE_FLOAT);
-	    g_value_set_float(port_descriptor->upper_value,
-			      hint_descriptor.UpperBound);
+	    g_value_set_float(port->upper_value,
+			      range_hint->UpperBound);
 
 	    /* bounds */
-	    if(LADSPA_HINT_BOUNDED_BELOW(hint_descriptor)){
-	      if(LADSPA_HINT_SAMPLERATE(hint_descriptor)){
-		g_value_set_float(port_descriptor->lower_value,
-				  samplerate * hint_descriptor.LowerBound);
+	    if(LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)){
+	      if(LADSPA_IS_HINT_SAMPLERATE(hint_descriptor)){
+		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
+				AGS_PORT_DESCRIPTOR_BOUNDED_BELOW);
+		g_value_set_float(port->lower_value,
+				  samplerate * range_hint->LowerBound);
 	      }
 	    }
 
-	    if(LADSPA_HINT_BOUNDED_ABOVE(hint_descriptor)){
-	      if(LADSPA_HINT_SAMPLERATE(hint_descriptor)){
-		g_value_set_float(port_descriptor->upper_value,
-				  samplerate * hint_descriptor.UpperBound);
+	    if(LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)){
+	      if(LADSPA_IS_HINT_SAMPLERATE(hint_descriptor)){
+		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
+				AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE);
+		g_value_set_float(port->upper_value,
+				  samplerate * range_hint->UpperBound);
 	      }
 	    }
 
 	    /* integer */
-	    if(LADSPA_HINT_INTEGER(hint_descriptor)){
-	      port_descriptor->flags |= AGS_PORT_DESCRIPTOR_INTEGER;
+	    if(LADSPA_IS_HINT_INTEGER(hint_descriptor)){
+	      port->flags |= AGS_PORT_DESCRIPTOR_INTEGER;
 	    }
 
 	    /* logarithmic */
-	    if(LADSPA_HINT_LOGARITHMIC(hint_descriptor)){
-	      port_descriptor->flags |= AGS_PORT_DESCRIPTOR_LOGARITHMIC;
+	    if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
+	      port->flags |= AGS_PORT_DESCRIPTOR_LOGARITHMIC;
 	    }
 
 	    /* set default value */
-	    if(LADSPA_HINT_DEFAULT_MINIMUM(hint_descriptor)){
-	      g_value_init(port_descriptor->default_value,
+	    if(LADSPA_IS_HINT_DEFAULT_MINIMUM(hint_descriptor)){
+	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);
-	      g_value_set_float(port_descriptor->default_value,
-				hint_descriptor.LowerBound);
-	    }else if(LADSPA_HINT_DEFAULT_LOW(hint_descriptor)){
+	      g_value_set_float(port->default_value,
+				range_hint->LowerBound);
+	    }else if(LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor)){
 	      float default_value;
 
-	      if(LADSPA_HINT_LOGARITHMIC(hint_descriptor)){
-		default_value = exp(log(hint_descriptor.LowerBound) * 0.75 +
-				    log(hint_descriptor.UpperBound) * 0.25);
+	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
+		default_value = exp(log(range_hint->LowerBound) * 0.75 +
+				    log(range_hint->UpperBound) * 0.25);
 	      }else{
-		default_value = 0.75 * hint_descriptor.LowerBound + 0.25 * hint_descriptor.UpperBound;
+		default_value = 0.75 * range_hint->LowerBound + 0.25 * range_hint->UpperBound;
 	      }
 	      
-	      g_value_init(port_descriptor->default_value,
+	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);
-	      g_value_set_float(port_descriptor->default_value,
+	      g_value_set_float(port->default_value,
 				default_value);
-	    }else if(LADSPA_HINT_DEFAULT_MIDDLE(hint_descriptor)){
+	    }else if(LADSPA_IS_HINT_DEFAULT_MIDDLE(hint_descriptor)){
 	      float default_value;
 
-	      if(LADSPA_HINT_LOGARITHMIC(hint_descriptor)){
-		default_value = exp(log(hint_descriptor.LowerBound) * 0.55 +
-				    log(hint_descriptor.UpperBound) * 0.55);
+	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
+		default_value = exp(log(range_hint->LowerBound) * 0.55 +
+				    log(range_hint->UpperBound) * 0.55);
 	      }else{
-		default_value = (0.5 * hint_descriptor.LowerBound) + (0.5 * hint_descriptor.UpperBound);
+		default_value = (0.5 * range_hint->LowerBound) + (0.5 * range_hint->UpperBound);
 	      }
 	      
-	      g_value_init(port_descriptor->default_value,
+	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);
-	      g_value_set_float(port_descriptor->default_value,
-				hint_descriptor.UpperBound);
-	    }else if(LADSPA_HINT_DEFAULT_HIGH(hint_descriptor)){
+	      g_value_set_float(port->default_value,
+				default_value);
+	    }else if(LADSPA_IS_HINT_DEFAULT_HIGH(hint_descriptor)){
 	      float default_value;
 
-	      if(LADSPA_HINT_LOGARITHMIC(hint_descriptor)){
-		default_value = exp(log(hint_descriptor.LowerBound) * 0.25 +
-				    log(hint_descriptor.UpperBound) * 0.75);
+	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
+		default_value = exp(log(range_hint->LowerBound) * 0.25 +
+				    log(range_hint->UpperBound) * 0.75);
 	      }else{
-		default_value = 0.25 * hint_descriptor.LowerBound + 0.75 * hint_descriptor.UpperBound;
+		default_value = 0.25 * range_hint->LowerBound + 0.75 * range_hint->UpperBound;
 	      }
 
-	      g_value_init(port_descriptor->default_value,
+	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);
-	      g_value_set_float(port_descriptor->default_value,
-				hint_descriptor.UpperBound);
-	    }else if(LADSPA_HINT_DEFAULT_MAXIMUM(hint_descriptor)){
-	      g_value_init(port_descriptor->default_value,
+	      g_value_set_float(port->default_value,
+				default_value);
+	    }else if(LADSPA_IS_HINT_DEFAULT_MAXIMUM(hint_descriptor)){
+	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);
-	      g_value_set_float(port_descriptor->default_value,
-				hint_descriptor.UpperBound);
-	    }else if(LADSPA_HINT_DEFAULT_100(hint_descriptor)){
-	      g_value_init(port_descriptor->default_value,
+	      g_value_set_float(port->default_value,
+				range_hint->UpperBound);
+	    }else if(LADSPA_IS_HINT_DEFAULT_100(hint_descriptor)){
+	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);
-	      g_value_set_float(port_descriptor->default_value,
+	      g_value_set_float(port->default_value,
 				100.0);
-	    }else if(LADSPA_HINT_DEFAULT_440(hint_descriptor)){
-	      g_value_init(port_descriptor->default_value,
+	    }else if(LADSPA_IS_HINT_DEFAULT_440(hint_descriptor)){
+	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);
-	      g_value_set_float(port_descriptor->default_value,
+	      g_value_set_float(port->default_value,
 				440.0);
 	    }
 	  }

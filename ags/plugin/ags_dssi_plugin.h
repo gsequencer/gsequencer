@@ -34,6 +34,8 @@
 #define AGS_IS_DSSI_PLUGIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DSSI_PLUGIN))
 #define AGS_DSSI_PLUGIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_DSSI_PLUGIN, AgsDssiPluginClass))
 
+#define AGS_DSSI_PLUGIN_DESCRIPTOR(ptr) ((DSSI_Descriptor *)(ptr))
+
 typedef struct _AgsDssiPlugin AgsDssiPlugin;
 typedef struct _AgsDssiPluginClass AgsDssiPluginClass;
 
@@ -41,6 +43,8 @@ struct _AgsDssiPlugin
 {
   AgsBasePlugin base_plugin;
 
+  gchar *unique_id;
+  
   gchar *program;
 };
 
@@ -49,7 +53,7 @@ struct _AgsDssiPluginClass
   AgsBasePluginClass base_plugin;
 
   void (*change_program)(AgsDssiPlugin *dssi_plugin,
-			 gpointer dssi_handle,
+			 gpointer ladspa_handle,
 			 guint bank_index,
 			 guint program_index);
 };
@@ -57,7 +61,7 @@ struct _AgsDssiPluginClass
 GType ags_dssi_plugin_get_type(void);
 
 void ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
-				    gpointer dssi_handle,
+				    gpointer ladspa_handle,
 				    guint bank_index,
 				    guint program_index);
 

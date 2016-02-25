@@ -192,7 +192,7 @@ ags_lv2_manager_finalize(GObject *gobject)
   lv2_plugin = lv2_manager->lv2_plugin;
 
   g_list_free_full(lv2_plugin,
-		   ags_lv2_plugin_free);
+		   g_object_unref);
 }
 
 /**
@@ -210,21 +210,30 @@ ags_lv2_manager_get_filenames()
   AgsLv2Manager *lv2_manager;
   GList *lv2_plugin;
   gchar **filenames;
-  guint length;
   guint i;
 
   lv2_manager = ags_lv2_manager_get_instance();
-  length = g_list_length(lv2_manager->lv2_plugin);
 
   lv2_plugin = lv2_manager->lv2_plugin;
-  filenames = (gchar **) malloc((length + 1) * sizeof(gchar *));
-
-  for(i = 0; i < length; i++){
-    filenames[i] = AGS_LV2_PLUGIN(lv2_plugin->data)->filename;
+  filenames = NULL;
+  
+  for(i = 0; lv2_plugin != NULL; i++){
+    if(filenames == NULL){
+      filenames = (gchar **) malloc(2 * sizeof(gchar *));
+      filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;
+      filenames[i + 1] = NULL;
+    }else{
+      if(!g_strv_contains(filenames,
+			  AGS_BASE_PLUGIN(lv2_plugin->data)->filename)){
+	filenames = (gchar **) realloc(filenames,
+				       (i + 2) * sizeof(gchar *));
+	filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;
+	filenames[i + 1] = NULL;
+      }
+    }
+    
     lv2_plugin = lv2_plugin->next;
   }
-
-  filenames[i] = NULL;
 
   return(filenames);
 }
@@ -281,9 +290,26 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
-  gchar *turtle_path;
-
+  xmlNode *node;
+  
+  GList *effect_list;
+  GList *uri_list;
+  
+  gchar *str;
+  gchar *path;
+  gchar *xpath;
+  gchar *effect;
+  gchar *uri;
+  
+  guint effect_index;
+  
   GError *error;
+
+  void *plugin_so;
+  LV2_Descriptor_Function lv2_descriptor;
+  LV2_Descriptor *plugin_descriptor;
+
+  uint32_t i;
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -297,20 +323,175 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
   /* load plugin */
   pthread_mutex_lock(&(mutex));
 
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
-  g_message("loading: %s\0", filename);
+  path = g_strdup_printf("%s/%s\0",
+			 ags_lv2_default_path,
+			 filename);
+  g_message("ags_lv2_manager.c loading - %s\0", path);
 
-  if(lv2_plugin == NULL){
-    lv2_plugin = ags_lv2_plugin_alloc();
+  xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0";
+  effect_list = ags_turtle_find_xpath(turtle,
+				      xpath);
 
-    /* set turtle */
-    lv2_plugin->turtle = turtle;
-
-    /* set filename and plugin file */
-    lv2_plugin->filename = g_strdup(filename);
+  while(effect_list != NULL){
+    /* read effect name */
+    node = effect_list->data;
     
-    lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
-					     lv2_plugin);
+    if(node == NULL){
+      effect_list = effect_list->next;
+	  
+      continue;
+    }
+	  
+    str = xmlNodeGetContent(node);
+
+    if(strlen(str) < 2){
+      effect_list = effect_list->next;
+	  
+      continue;
+    }
+
+    effect = g_strndup(str + 1,
+		       strlen(str) - 2);
+
+    /* find URI */
+    xpath = "//rdf-triple//rdf-subject[ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':Plugin') + 1) = ':Plugin'] and ancestor::*[self::rdf-triple][1]//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name']]/following-sibling::*//rdf-string[text()='\"%s\"']]/rdf-iri";
+    xpath = g_strdup_printf(xpath,
+			    effect);
+    uri_list = ags_turtle_find_xpath(turtle,
+				     xpath);
+    free(xpath);
+    
+    uri = NULL;
+  
+    if(uri_list != NULL){
+      xmlNode *child;
+
+      child = ((xmlNode *) uri_list->data)->children;
+
+      while(child != NULL){
+	if(child->type == XML_ELEMENT_NODE){
+	  if(!g_ascii_strncasecmp(child->name,
+				  "rdf-iriref\0",
+				  11)){
+	    uri = xmlNodeGetContent(child);
+
+	    if(strlen(uri) > 2){
+	      uri = g_strndup(uri + 1,
+			      strlen(uri) - 2);
+	    }
+
+	    break;
+	  }else if(!g_ascii_strncasecmp(child->name,
+					"rdf-prefixed-name\0",
+					18)){
+	    xmlNode *pname_node;
+
+	    gchar *pname;
+	  
+	    pname_node = child->children;
+	    pname = NULL;
+	  
+	    while(pname_node != NULL){
+	      if(pname_node->type == XML_ELEMENT_NODE){
+		if(!g_ascii_strncasecmp(pname_node->name,
+					"rdf-pname-ln\0",
+					11)){
+		  pname = xmlNodeGetContent(pname_node);
+		
+		  break;
+		}
+	      }
+
+	      pname_node = pname_node->next;
+	    }
+
+	    if(pname != NULL){
+	      gchar *suffix, *prefix;
+	      gchar *offset;
+
+	      offset = index(pname, ':');
+
+	      if(offset != NULL){
+		GList *prefix_node;
+	      
+		offset++;
+		suffix = g_strndup(offset,
+				   strlen(pname) - (offset - pname));
+		prefix = g_strndup(pname,
+				   offset - pname);
+
+		str = g_strdup_printf("//rdf-pname-ns[text()='%s']/following-sibling::rdf-iriref",
+				      prefix);
+		prefix_node = ags_turtle_find_xpath(lv2_plugin->turtle,
+						    str);
+		free(str);
+
+		if(prefix_node != NULL){
+		  gchar *iriref;
+
+		  iriref = xmlNodeGetContent(prefix_node->data);
+
+		  if(iriref != NULL){
+		    if(strlen(iriref) > 2){
+		      gchar *tmp;
+		    
+		      tmp = g_strndup(iriref + 1,
+				      strlen(iriref) - 2);
+		      uri = g_strdup_printf("%s/%s\0",
+					    tmp,
+					    suffix);
+
+		      free(tmp);
+		    }
+		  
+		    free(iriref);
+		  }
+		}
+	      }
+	    }
+	  
+	    break;
+	  }
+	}
+
+	child = child->next;
+      }
+    }
+
+    /* get uri index and append plugin */
+    plugin_so = dlopen(path,
+		       RTLD_NOW);
+  
+    if(plugin_so){
+      g_warning("ags_lv2_manager.c - failed to load static object file\0");
+    
+      dlerror();
+    }
+
+    lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
+						     "lv2_descriptor\0");
+  
+    if(dlerror() == NULL && lv2_descriptor){
+      for(i = 0; (plugin_descriptor = lv2_descriptor(i)) != NULL; i++){
+	if(!strncmp(plugin_descriptor->URI,
+		    uri,
+		    strlen(uri))){
+	  lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
+				    "turtle\0", turtle,
+				    "filename\0", path,
+				    "effect\0", effect,
+				    "uri\0", uri,
+				    "effect-index\0", i,
+				    NULL);
+	  lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
+						   lv2_plugin);
+
+	  break;
+	}
+      }  
+    }
+    
+    effect_list = effect_list->next;
   }
 
   pthread_mutex_unlock(&(mutex));
@@ -444,7 +625,7 @@ ags_lv2_manager_load_default_directory()
 	str = g_strndup(&(str[1]),
 			strlen(str) - 2);
 	filename = g_strdup_printf("%s/%s\0",
-				   plugin_path,
+				   path,
 				   str);
 	free(str);
 	
@@ -488,7 +669,9 @@ ags_lv2_manager_uri_index(gchar *filename,
 			  gchar *uri)
 {
   AgsLv2Plugin *lv2_plugin;
-    
+
+  gchar *effect; //FIXME:JK: 
+  
   void *plugin_so;
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
@@ -502,15 +685,10 @@ ags_lv2_manager_uri_index(gchar *filename,
   }
   
   /* load plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  effect = NULL;
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
-  if(lv2_plugin->plugin_so == NULL){
-    plugin_so =
-      lv2_plugin->plugin_so = dlopen(lv2_plugin->filename,
-				     RTLD_NOW);
-  }else{
-    plugin_so = lv2_plugin->plugin_so;
-  }
+  plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
   
   uri_index = G_MAXULONG;
 
@@ -556,7 +734,7 @@ ags_lv2_manager_find_uri(gchar *filename,
   gchar *str;
   
   /* load plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
   if(lv2_plugin == NULL){
     return(NULL);

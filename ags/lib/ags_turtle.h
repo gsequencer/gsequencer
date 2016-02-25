@@ -163,6 +163,10 @@ gchar* ags_turtle_read_pn_local_esc(gchar *offset,
 /* XML related */
 GList* ags_turtle_find_xpath(AgsTurtle *turtle,
 			     gchar *xpath);
+GList* ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
+					       gchar *xpath,
+					       xmlNode *context_node);
+
 xmlDoc* ags_turtle_load(AgsTurtle *turtle,
 			GError **error);
 

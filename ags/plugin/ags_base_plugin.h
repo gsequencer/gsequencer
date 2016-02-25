@@ -41,16 +41,20 @@ typedef enum{
 }AgsBasePluginFlags;
 
 typedef enum{
-  AGS_PORT_DESCRIPTOR_DATA         = 1,
-  AGS_PORT_DESCRIPTOR_AUDIO        = 1 <<  1,
-  AGS_PORT_DESCRIPTOR_CONTROL      = 1 <<  2,
-  AGS_PORT_DESCRIPTOR_MIDI         = 1 <<  3,
-  AGS_PORT_DESCRIPTOR_EVENT        = 1 <<  4,
-  AGS_PORT_DESCRIPTOR_OUTPUT       = 1 <<  5,
-  AGS_PORT_DESCRIPTOR_INPUT        = 1 <<  6,
-  AGS_PORT_DESCRIPTOR_TOGGLED      = 1 <<  7,
-  AGS_PORT_DESCRIPTOR_LOGARITHMIC  = 1 <<  8,
-  AGS_PORT_DESCRIPTOR_INTEGER      = 1 <<  9,
+  AGS_PORT_DESCRIPTOR_ATOM            = 1,
+  AGS_PORT_DESCRIPTOR_AUDIO           = 1 <<  1,
+  AGS_PORT_DESCRIPTOR_CONTROL         = 1 <<  2,
+  AGS_PORT_DESCRIPTOR_MIDI            = 1 <<  3,
+  AGS_PORT_DESCRIPTOR_EVENT           = 1 <<  4,
+  AGS_PORT_DESCRIPTOR_OUTPUT          = 1 <<  5,
+  AGS_PORT_DESCRIPTOR_INPUT           = 1 <<  6,
+  AGS_PORT_DESCRIPTOR_TOGGLED         = 1 <<  7,
+  AGS_PORT_DESCRIPTOR_ENUMERATION     = 1 <<  8,
+  AGS_PORT_DESCRIPTOR_LOGARITHMIC     = 1 <<  9,
+  AGS_PORT_DESCRIPTOR_INTEGER         = 1 << 10,
+  AGS_PORT_DESCRIPTOR_SAMPLERATE      = 1 << 11,
+  AGS_PORT_DESCRIPTOR_BOUNDED_BELOW   = 1 << 12,
+  AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE   = 1 << 13,
 }AgsPortDescriptorFlags;
 
 struct _AgsBasePlugin
@@ -78,7 +82,8 @@ struct _AgsBasePluginClass
 {
   GObjectClass object;
 
-  gpointer (*instantiate)(AgsBasePlugin *base_plugin);
+  gpointer (*instantiate)(AgsBasePlugin *base_plugin,
+			  guint samplerate);
 
   void (*connect_port)(AgsBasePlugin *base_plugin, gpointer plugin_handle, guint port_index, gpointer data_location);
   
@@ -104,6 +109,7 @@ struct _AgsPortDescriptor
 
   guint scale_steps;
   gchar **scale_points;
+  float *scale_value;
   
   GValue *lower_value;
   GValue *upper_value;
@@ -118,9 +124,12 @@ GType ags_base_plugin_get_type(void);
 AgsPortDescriptor* ags_port_descriptor_alloc();
 void ags_port_descriptor_free(AgsPortDescriptor *port_descriptor);
 
+GList* ags_base_plugin_find_filename(GList *base_plugin, gchar *filename);
+
 void ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin);
 
-gpointer ags_base_plugin_instantiate(AgsBasePlugin *base_plugin);
+gpointer ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
+				     guint samplerate);
 
 void ags_base_plugin_connect_port(AgsBasePlugin *base_plugin, gpointer plugin_handle, guint port_index, gpointer data_location);
 
