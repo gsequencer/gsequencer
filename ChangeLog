@@ -1,8 +1,18 @@
+ags (0.7.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Lv2 XPath and thus refactored code
+	* implemented ags_base_plugin.c, ags_ladpsa_plugin.c, ags_dssi_plugin.c and ags_lv2_plugin.c to reduce over-head
+	* implemented contextual XPath lookup in ags_turtle.c
+	* refactored ags_recall_ladspa{,_run}.c, ags_recall_dssi{,_run}.c and ags_recall_lv2{,_run}.c to use the new plugins API
+	* refactored ags_effect_bulk.c, ags_effect_line.c and ags_line.c to use the new plugins API
+	* added ags_string_util.c
+
 ags (0.7.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed DSSI support
-	
+
 ags (0.7.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
