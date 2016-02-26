@@ -1629,8 +1629,7 @@ ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
   guint i;
   
   xpath_context = xmlXPathNewContext(turtle->doc);
-  xmlXPathSetContextNode(context_node,
-			 xpath_context);
+  xpath_context->node = context_node;
   xpath_object = xmlXPathEval((xmlChar *) xpath,
 			      xpath_context);
   
@@ -1647,7 +1646,9 @@ ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
     }
   }
 
-  list = g_list_reverse(list);
+  if(list != NULL){
+    list = g_list_reverse(list);
+  }
   
   return(list);
 }

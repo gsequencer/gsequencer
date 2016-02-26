@@ -2211,11 +2211,9 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   long effect_index;
 
   /* load plugin */
-  ags_ladspa_manager_load_file(filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
 
-  effect_index = ags_ladspa_manager_effect_index(filename,
-						 effect);
+  effect_index = AGS_BASE_PLUGIN(ladspa_plugin)->effect_index;
 
   /* ladspa play */
   recall_container = ags_recall_container_new();
@@ -2419,11 +2417,9 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
   long effect_index;
 
   /* load plugin */
-  ags_dssi_manager_load_file(filename);
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
 
-  effect_index = ags_dssi_manager_effect_index(filename,
-					       effect);
+  effect_index = AGS_BASE_PLUGIN(dssi_plugin)->effect_index;
 
   /* dssi play */
   recall_container = ags_recall_container_new();
@@ -2634,11 +2630,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   /* find plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
-  uri = ags_lv2_manager_find_uri(filename,
-				 effect);
-  
-  effect_index = ags_lv2_manager_uri_index(filename,
-					   uri);
+  effect_index = AGS_BASE_PLUGIN(lv2_plugin);
+  uri = lv2_plugin->uri;
   
   /* lv2 play */
   recall_container = ags_recall_container_new();

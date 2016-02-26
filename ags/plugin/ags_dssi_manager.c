@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_marshal.h>
 
+#include <ags/plugin/ags_base_plugin.h>
+
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -233,7 +235,7 @@ ags_dssi_manager_load_file(gchar *filename)
   plugin_so = dlopen(path,
 		     RTLD_NOW);
 	
-  if(plugin_so){
+  if(plugin_so == NULL){
     g_warning("ags_dssi_manager.c - failed to load static object file\0");
       
     dlerror();
@@ -247,7 +249,7 @@ ags_dssi_manager_load_file(gchar *filename)
       dssi_plugin = ags_dssi_plugin_new(path,
 					plugin_descriptor->LADSPA_Plugin->Name,
 					i);
-      ags_base_plugin_load(dssi_plugin);
+      ags_base_plugin_load_plugin(dssi_plugin);
       dssi_manager->dssi_plugin = g_list_prepend(dssi_manager->dssi_plugin,
 						 dssi_plugin);
     }
@@ -291,66 +293,6 @@ ags_dssi_manager_load_default_directory()
       ags_dssi_manager_load_file(filename);
     }
   }
-}
-
-/**
- * ags_dssi_manager_effect_index:
- * @filename: the plugin.so filename
- * @effect: the effect's name within plugin
- *
- * Retrieve the effect's index within @filename
- *
- * Returns: the index, G_MAXULONG if not found
- *
- * Since: 0.7.0
- */
-long
-ags_dssi_manager_effect_index(gchar *filename,
-			      gchar *effect)
-{
-  AgsDssiPlugin *dssi_plugin;
-
-  void *plugin_so;
-  DSSI_Descriptor_Function dssi_descriptor;
-  DSSI_Descriptor *plugin_descriptor;
-
-  unsigned long effect_index;
-  unsigned long i;
-
-  if(filename == NULL ||
-     effect == NULL){
-    return(G_MAXULONG);
-  }
-  
-  /* load plugin */
-  ags_dssi_manager_load_file(filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
-
-  if(dssi_plugin == NULL){
-    return(-1);
-  }
-  
-  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
-
-  effect_index = -1;
-
-  if(plugin_so){
-    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						       "dssi_descriptor\0");
-    
-    if(dlerror() == NULL && dssi_descriptor){
-      for(i = 0; (plugin_descriptor = dssi_descriptor(i)) != NULL; i++){
-	if(!strncmp(plugin_descriptor->LADSPA_Plugin->Name,
-		    effect,
-		    strlen(effect))){
-	  effect_index = i;
-	  break;
-	}
-      }
-    }
-  }
-  
-  return(effect_index);
 }
 
 /**

@@ -235,7 +235,7 @@ ags_ladspa_manager_load_file(gchar *filename)
   plugin_so = dlopen(path,
 		     RTLD_NOW);
 	
-  if(plugin_so){
+  if(plugin_so == NULL){
     g_warning("ags_ladspa_manager.c - failed to load static object file\0");
       
     dlerror();
@@ -249,7 +249,7 @@ ags_ladspa_manager_load_file(gchar *filename)
       ladspa_plugin = ags_ladspa_plugin_new(path,
 					    plugin_descriptor->Name,
 					    i);
-      ags_base_plugin_load(ladspa_plugin);
+      ags_base_plugin_load_plugin(ladspa_plugin);
       ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
 						     ladspa_plugin);
     }
@@ -293,66 +293,6 @@ ags_ladspa_manager_load_default_directory()
       ags_ladspa_manager_load_file(filename);
     }
   }
-}
-
-/**
- * ags_ladspa_manager_effect_index:
- * @filename: the plugin.so filename
- * @effect: the effect's name within plugin
- *
- * Retrieve the effect's index within @filename
- *
- * Returns: the index, G_MAXULONG if not found
- *
- * Since: 0.4
- */
-long
-ags_ladspa_manager_effect_index(gchar *filename,
-				gchar *effect)
-{
-  AgsLadspaPlugin *ladspa_plugin;
-
-  void *plugin_so;
-  LADSPA_Descriptor_Function ladspa_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
-
-  unsigned long effect_index;
-  unsigned long i;
-
-  if(filename == NULL ||
-     effect == NULL){
-    return(G_MAXULONG);
-  }
-  
-  /* load plugin */
-  ags_ladspa_manager_load_file(filename);
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
-
-  if(ladspa_plugin == NULL){
-    return(-1);
-  }
-  
-  plugin_so = AGS_BASE_PLUGIN(ladspa_plugin)->plugin_so;
-
-  effect_index = -1;
-
-  if(plugin_so){
-    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor\0");
-    
-    if(dlerror() == NULL && ladspa_descriptor){
-      for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
-	if(!strncmp(plugin_descriptor->Name,
-		    effect,
-		    strlen(effect))){
-	  effect_index = i;
-	  break;
-	}
-      }
-    }
-  }
-  
-  return(effect_index);
 }
 
 /**

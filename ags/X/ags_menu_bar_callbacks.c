@@ -31,6 +31,7 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_plugin.h>
 
 #include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_input.h>
@@ -791,10 +792,7 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   AgsLv2Plugin *lv2_plugin;
 
-  GList *instrument_list;
-
   gchar *filename, *effect;
-  gchar *str;
   
   pthread_mutex_t *application_mutex;
     
@@ -813,15 +811,10 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
   
-  str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InstrumentPlugin') + 1) = ':InstrumentPlugin']",
-			effect);
-
-  instrument_list = ags_turtle_find_xpath(lv2_plugin->turtle,
-					  str);
-
-  if(instrument_list != NULL){
+  if(lv2_plugin != NULL &&
+     (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
     AGS_MACHINE(lv2_bridge)->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 					      AGS_AUDIO_INPUT_HAS_RECYCLING |
 					      AGS_AUDIO_SYNC |
@@ -856,10 +849,12 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   lv2_bridge->machine.audio->audio_channels = 2;
 
   /*  */
-  if(instrument_list == NULL){
-    ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_INPUT, 1);
-  }else{
-    ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_INPUT, 128);
+  if(lv2_plugin != NULL){
+    if((AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) == 0){
+      ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_INPUT, 1);
+    }else{
+      ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_INPUT, 128);
+    }
   }
   
   ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);

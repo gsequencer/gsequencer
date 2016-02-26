@@ -17,26 +17,12 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_COMPLEX__
-#define __AGS_COMPLEX__
+#ifndef __AGS_STRING_UTIL__
+#define __AGS_STRING_UTIL__
 
 #include <glib.h>
 #include <glib-object.h>
 
-#include <complex.h>
+gchar* ags_string_util_escape_single_quote(gchar *str);
 
-#define AGS_TYPE_COMPLEX                (ags_complex_get_type())
-
-typedef long double AgsComplex[2];
-
-GType ags_complex_get_type(void);
-
-AgsComplex* ags_complex_alloc();
-
-gpointer ags_complex_copy(AgsComplex *ptr);
-void ags_complex_free(AgsComplex *ptr);
-
-complex ags_complex_get(AgsComplex *ptr);
-void ags_complex_set(AgsComplex *ptr, complex z);
-
-#endif /*__AGS_COMPLEX__*/
+#endif /*__AGS_STRING_UTIL__*/

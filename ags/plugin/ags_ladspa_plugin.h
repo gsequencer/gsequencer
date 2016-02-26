@@ -43,7 +43,7 @@ struct _AgsLadspaPlugin
 {
   AgsBasePlugin base_plugin;
 
-  gchar *unique_id;
+  guint unique_id;
 };
 
 struct _AgsLadspaPluginClass

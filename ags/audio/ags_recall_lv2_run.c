@@ -327,80 +327,58 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 {
   AgsRecallLv2 *recall_lv2;
   AgsPort *current;
-
+  
   AgsLv2Plugin *lv2_plugin;
-
+  
   GList *port;
-  GList *port_name_node, *port_name_node_start, *port_index_node;
+  GList *port_descriptor;
 
   gchar *specifier;
-  gchar *str;
-  gchar *port_name;
+  
   uint32_t port_count;
-  uint32_t port_index;
-  uint32_t i, j;
-
-  LV2_Descriptor *plugin_descriptor;
+  uint32_t i, j, j_stop;
 
   recall_lv2 = AGS_RECALL_LV2(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(recall_lv2_run)->parent->parent)->recall_channel);
 
-  str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::rdf-verb[1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and ancestor::rdf-object-list/preceding-sibling::rdf-verb[1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']]",
-			recall_lv2->effect);
-  port_name_node_start = ags_turtle_find_xpath(lv2_plugin->turtle,
-					       str);
-  free(str);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
 
-  /* connect control port */
-  port_count = g_list_length(port_name_node);
+  if(recall_lv2->input_lines < recall_lv2->output_lines){
+    j_stop = recall_lv2->output_lines;
+  }else{
+    j_stop = recall_lv2->input_lines;
+  }
 
-  /* connect audio ports */
-  for(j = 0; j < recall_lv2->input_lines; j++){
-    
-    port_name_node = port_name_node_start;
-    
-    for(i = 0; i < port_count; i++){
-      float *port_data;
+  if(port_descriptor != NULL){
+    port_count = g_list_length(port_descriptor);
 
-      port_name = xmlNodeGetContent((xmlNode *) port_name_node->data);
+    for(j = 0; j < j_stop; j++){
+      port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
       
-      /* port index */
-      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0",
-			    recall_lv2->effect,
-			    port_name);
-      port_index_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					      str);
-      free(str);
+      for(i = 0; port_descriptor != NULL; i++){
+	if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  port = AGS_RECALL(recall_lv2)->port;
+	  current = NULL;
+	  
+	  specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+	    
+	  while(port != NULL){
+	    if(!g_strcmp0(specifier,
+			  AGS_PORT(port->data)->specifier)){
+	      current = port->data;
+	      break;
+	    }
 
-      /* find port */
-      current = NULL;
-      port = AGS_RECALL(recall_lv2)->port;
-
-      specifier = port_name;
-      
-      while(port != NULL){
-	if(!g_strcmp0(specifier,
-		      AGS_PORT(port->data)->specifier)){
-	  current = port->data;
-	  break;
+	    port = port->next;
+	  }
+	  
+	  recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[j],
+						      (uint32_t) AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
+						      (float *) &(current->port_value.ags_port_float));
 	}
 
-	port = port->next;
+	port_descriptor = port_descriptor->next;
       }
-
-      /* connect port */
-      if(current != NULL){
-	port_data = &(current->port_value.ags_port_float);
-	port_index = g_ascii_strtoull(xmlNodeGetContent((xmlNode *) port_index_node->data),
-				      NULL,
-				      10);
-	recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[j],
-						    port_index,
-						    port_data);
-      }
-      
-      port_name_node = port_name_node->next;
     }
-
   }
 }
 

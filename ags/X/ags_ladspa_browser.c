@@ -23,6 +23,7 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_ladspa_plugin.h>
 
 #include <ags/object/ags_applicable.h>
 
@@ -359,32 +360,7 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 
   g_list_free(list_start);
 
-  /* update description */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->description));
-
-  ags_ladspa_manager_load_file(gtk_combo_box_text_get_active_text(filename));
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename));
-  
-  plugin_so = ladspa_plugin->plugin_so;
-
-  effect_name = NULL;
-  
-  index = (unsigned long) gtk_combo_box_get_active(effect);
-  
-  if(index != -1 &&
-     plugin_so){
-    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor\0");
-
-    if(dlerror() == NULL && ladspa_descriptor){
-      plugin_descriptor = ladspa_descriptor(index);
-
-      effect_name = plugin_descriptor->Name;
-    }
-  }
-
-  return(effect_name);
+  return(gtk_combo_box_text_get_active_text(effect));
 }
 
 /**

@@ -900,17 +900,16 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
   g_message("ags_dssi_bridge.c - load %s %s\0",dssi_bridge->filename, dssi_bridge->effect);
  
   /* load plugin */
-  ags_dssi_manager_load_file(dssi_bridge->filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_bridge->filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_bridge->filename,
+						  dssi_bridge->effect);
 
-  plugin_so = dssi_plugin->plugin_so;
+  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   /*  */
   gtk_list_store_clear(gtk_combo_box_get_model(dssi_bridge->program));
   
   /*  */
-  effect_index = ags_dssi_manager_effect_index(dssi_bridge->filename,
-					       dssi_bridge->effect);
+  effect_index = AGS_BASE_PLUGIN(dssi_plugin)->effect_index;
 
   /* load ports */
   model = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_UINT, G_TYPE_UINT);

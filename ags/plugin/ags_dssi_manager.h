@@ -55,9 +55,6 @@ AgsDssiPlugin* ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect)
 void ags_dssi_manager_load_file(gchar *filename);
 void ags_dssi_manager_load_default_directory();
 
-long ags_dssi_manager_effect_index(gchar *filename,
-				   gchar *effect);
-
 /*  */
 AgsDssiManager* ags_dssi_manager_get_instance();
 
