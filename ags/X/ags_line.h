@@ -37,6 +37,7 @@
 
 #define AGS_LINE_DEFAULT_VERSION "0.7.0\0"
 #define AGS_LINE_DEFAULT_BUILD_ID "CEST 31-10-2015 19:49\0"
+#define AGS_LINE_COLUMNS_COUNT (2)
 
 typedef struct _AgsLine AgsLine;
 typedef struct _AgsLineClass AgsLineClass;

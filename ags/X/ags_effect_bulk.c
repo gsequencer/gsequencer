@@ -26,9 +26,11 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_ladspa_plugin.h>
 #include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2ui_manager.h>
+#include <ags/plugin/ags_lv2_plugin.h>
 
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
@@ -685,10 +687,11 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLadspa *recall_ladspa;
-  AgsLadspaPlugin *ladspa_plugin;
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
 
+  AgsLadspaPlugin *ladspa_plugin;
+  
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
@@ -697,19 +700,15 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   GList *port, *recall_port;
   GList *list, *list_start;
   GList *task;
+  GList *port_descriptor;
+
   guint pads, audio_channels;
   gdouble step;
+  guint port_count;
   guint x, y;
   guint i, j;
-
-  void *plugin_so;
-  LADSPA_Descriptor_Function ladspa_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
-  LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_Data lower_bound, upper_bound;
-  unsigned long effect_index;
-  unsigned long k;
-
+  guint k;
+  
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
 				      ags_effect_bulk_plugin_alloc(filename,
 								   effect));
@@ -737,16 +736,10 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   }
 
   /*  */
-  effect_index = ags_ladspa_manager_effect_index(filename,
-						 effect);
-
   task = NULL;
   
   /* load plugin */
-  ags_ladspa_manager_load_file(filename);
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
-
-  plugin_so = ladspa_plugin->plugin_so;
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
 
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -762,7 +755,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
 					    effect,
-					    effect_index);
+					    AGS_BASE_PLUGIN(ladspa_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_ladspa),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -805,7 +798,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
 					    effect,
-					    effect_index);
+					    AGS_BASE_PLUGIN(ladspa_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_ladspa),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -858,109 +851,104 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   }
   
   /* load ports */
-  if(effect_index != -1 &&
-     plugin_so){
-    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor\0");
+  port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
 
-    if(dlerror() == NULL && ladspa_descriptor){
-      plugin_descriptor = ladspa_descriptor(effect_index);
+  port_count = g_list_length(port_descriptor);
+  k = 0;
 
-      port_descriptor = plugin_descriptor->PortDescriptors;
-
-      for(k = 0; k < plugin_descriptor->PortCount; k++){
-	if((LADSPA_IS_PORT_CONTROL(port_descriptor[k]) && 
-	    (LADSPA_IS_PORT_INPUT(port_descriptor[k]) ||
-	     LADSPA_IS_PORT_OUTPUT(port_descriptor[k])))){
-	  GtkWidget *child_widget;
-	  
-	  GType widget_type;
-
-	  if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
-	    x = 0;
-	    y++;
-	    gtk_table_resize(effect_bulk->table,
+  while(port_descriptor != NULL){
+    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      GtkWidget *child_widget;
+      
+      GType widget_type;
+      
+      if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
+	x = 0;
+	y++;
+	gtk_table_resize(effect_bulk->table,
 			     y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
-	  }
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+      }else{
+	widget_type = AGS_TYPE_DIAL;
+      }
 
-	  if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->PortRangeHints[k].HintDescriptor)){
-	    widget_type = GTK_TYPE_TOGGLE_BUTTON;
-	  }else{
-	    widget_type = AGS_TYPE_DIAL;
-	  }
+      /* add bulk member */
+      bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-type\0", widget_type,
+						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name\0", g_strdup_printf("ladspa-%lu\0", ladspa_plugin->unique_id),
+						   "filename\0", filename,
+						   "effect\0", effect,
+						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
+						   "control-port\0", g_strdup_printf("%d/%d\0",
+										     k,
+										     port_count),
+						   NULL);
+      child_widget = ags_bulk_member_get_widget(bulk_member);
 
-	  /* add bulk member */
-	  bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						       "widget-type\0", widget_type,
-						       "widget-label\0", plugin_descriptor->PortNames[k],
-						       "plugin-name\0", g_strdup_printf("ladspa-%lu\0", plugin_descriptor->UniqueID),
-						       "filename\0", filename,
-						       "effect\0", effect,
-						       "specifier\0", g_strdup(plugin_descriptor->PortNames[k]),
-						       "control-port\0", g_strdup_printf("%d/%d\0",
-											 k,
-											 plugin_descriptor->PortCount),
-						       NULL);
-	  child_widget = ags_bulk_member_get_widget(bulk_member);
+      if(AGS_IS_DIAL(child_widget)){
+	AgsDial *dial;
+	GtkAdjustment *adjustment;
+	float lower_bound, upper_bound;
+	
+	dial = child_widget;
 
-	  if(AGS_IS_DIAL(child_widget)){
-	    AgsDial *dial;
-	    GtkAdjustment *adjustment;
+	/* add controls of ports and apply range  */
+	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
 
-	    dial = child_widget;
+	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	g_object_set(dial,
+		     "adjustment", adjustment,
+		     NULL);
 
-	    /* add controls of ports and apply range  */
-	    lower_bound = plugin_descriptor->PortRangeHints[k].LowerBound;
-	    upper_bound = plugin_descriptor->PortRangeHints[k].UpperBound;
+	if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else if(upper_bound < 0.0 && lower_bound < 0.0){
+	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else{
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}
 
-	    adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-	    g_object_set(dial,
-			 "adjustment", adjustment,
-			 NULL);
-
-	    if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	    }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	      step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	    }else{
-	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	    }
-
-	    gtk_adjustment_set_step_increment(adjustment,
-					      step);
-	    gtk_adjustment_set_lower(adjustment,
-				     lower_bound);
-	    gtk_adjustment_set_upper(adjustment,
-				     upper_bound);
-	    gtk_adjustment_set_value(adjustment,
-				     lower_bound);
-	  }
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_lower(adjustment,
+				 lower_bound);
+	gtk_adjustment_set_upper(adjustment,
+				 upper_bound);
+	gtk_adjustment_set_value(adjustment,
+				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+      }
 
 #ifdef AGS_DEBUG
-	  g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
+      g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
 #endif
 	  
-	  /* create task */
-	  add_bulk_member = ags_add_bulk_member_new(effect_bulk,
-						    bulk_member,
-						    x, y,
-						    1, 1);
-	  task = g_list_prepend(task,
-				add_bulk_member);
+      /* create task */
+      add_bulk_member = ags_add_bulk_member_new(effect_bulk,
+						bulk_member,
+						x, y,
+						1, 1);
+      task = g_list_prepend(task,
+			    add_bulk_member);
 
-	  /* update ports */
-	  update_bulk_member = ags_update_bulk_member_new(effect_bulk,
-							  bulk_member,
-							  pads,
-							  0,
-							  TRUE);
-	  task = g_list_prepend(task,
-				update_bulk_member);
+      /* update ports */
+      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+						      bulk_member,
+						      pads,
+						      0,
+						      TRUE);
+      task = g_list_prepend(task,
+			    update_bulk_member);
 
-	  x++;
-	}
-      }
+      x++;
     }
+
+    port_descriptor = port_descriptor->next;
+    k++;
   }
 
   /* launch tasks */
@@ -987,10 +975,11 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallDssi *recall_dssi;
-  AgsDssiPlugin *dssi_plugin;
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
 
+  AgsDssiPlugin *dssi_plugin;
+  
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
@@ -999,19 +988,15 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   GList *port, *recall_port;
   GList *list, *list_start;
   GList *task;
+  GList *port_descriptor;
+
   guint pads, audio_channels;
   gdouble step;
+  guint port_count;
   guint x, y;
   guint i, j;
-
-  void *plugin_so;
-  DSSI_Descriptor_Function dssi_descriptor;
-  DSSI_Descriptor *plugin_descriptor;
-  LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_Data lower_bound, upper_bound;
-  unsigned long effect_index;
-  unsigned long k;
-
+  guint k;
+  
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
 				      ags_effect_bulk_plugin_alloc(filename,
 								   effect));
@@ -1039,16 +1024,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   }
 
   /*  */
-  effect_index = ags_dssi_manager_effect_index(filename,
-					       effect);
-
   task = NULL;
   
   /* load plugin */
-  ags_dssi_manager_load_file(filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
-
-  plugin_so = dssi_plugin->plugin_so;
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
 
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -1064,7 +1043,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       recall_dssi = ags_recall_dssi_new(current,
 					filename,
 					effect,
-					effect_index);
+					AGS_BASE_PLUGIN(dssi_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_dssi),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1113,7 +1092,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       recall_dssi = ags_recall_dssi_new(current,
 					filename,
 					effect,
-					effect_index);
+					AGS_BASE_PLUGIN(dssi_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_dssi),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1172,109 +1151,105 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   }
   
   /* load ports */
-  if(effect_index != -1 &&
-     plugin_so){
-    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						       "dssi_descriptor\0");
+  port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
 
-    if(dlerror() == NULL && dssi_descriptor){
-      plugin_descriptor = dssi_descriptor(effect_index);
-
-      port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
-
-      for(k = 0; k < plugin_descriptor->LADSPA_Plugin->PortCount; k++){
-	if((LADSPA_IS_PORT_CONTROL(port_descriptor[k]) && 
-	    (LADSPA_IS_PORT_INPUT(port_descriptor[k]) ||
-	     LADSPA_IS_PORT_OUTPUT(port_descriptor[k])))){
-	  GtkWidget *child_widget;
+  port_count = g_list_length(port_descriptor);
+  k = 0;
+  
+  while(port_descriptor != NULL){
+    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      GtkWidget *child_widget;
 	  
-	  GType widget_type;
+      GType widget_type;
 
-	  if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
-	    x = 0;
-	    y++;
-	    gtk_table_resize(effect_bulk->table,
-			     y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
-	  }
+      if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
+	x = 0;
+	y++;
+	gtk_table_resize(effect_bulk->table,
+			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
+      }
 
-	  if(LADSPA_IS_HINT_TOGGLED(plugin_descriptor->LADSPA_Plugin->PortRangeHints[k].HintDescriptor)){
-	    widget_type = GTK_TYPE_TOGGLE_BUTTON;
-	  }else{
-	    widget_type = AGS_TYPE_DIAL;
-	  }
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+      }else{
+	widget_type = AGS_TYPE_DIAL;
+      }
 
-	  /* add bulk member */
-	  bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						       "widget-type\0", widget_type,
-						       "widget-label\0", plugin_descriptor->LADSPA_Plugin->PortNames[k],
-						       "plugin-name\0", g_strdup_printf("ladspa-%lu\0", plugin_descriptor->LADSPA_Plugin->UniqueID),
-						       "filename\0", filename,
-						       "effect\0", effect,
-						       "specifier\0", g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[k]),
-						       "control-port\0", g_strdup_printf("%d/%d\0",
-											 k,
-											 plugin_descriptor->LADSPA_Plugin->PortCount),
-						       NULL);
-	  child_widget = ags_bulk_member_get_widget(bulk_member);
+      /* add bulk member */
+      bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-type\0", widget_type,
+						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name\0", g_strdup_printf("dssi-%lu\0", dssi_plugin->unique_id),
+						   "filename\0", filename,
+						   "effect\0", effect,
+						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
+						   "control-port\0", g_strdup_printf("%d/%d\0",
+										     k,
+										     port_count),
+						   NULL);
+      child_widget = ags_bulk_member_get_widget(bulk_member);
 
-	  if(AGS_IS_DIAL(child_widget)){
-	    AgsDial *dial;
-	    GtkAdjustment *adjustment;
+      if(AGS_IS_DIAL(child_widget)){
+	AgsDial *dial;
+	GtkAdjustment *adjustment;
 
-	    dial = child_widget;
+	float lower_bound, upper_bound;
+	
+	dial = child_widget;
 
-	    /* add controls of ports and apply range  */
-	    lower_bound = plugin_descriptor->LADSPA_Plugin->PortRangeHints[k].LowerBound;
-	    upper_bound = plugin_descriptor->LADSPA_Plugin->PortRangeHints[k].UpperBound;
+	/* add controls of ports and apply range  */
+	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
 
-	    adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-	    g_object_set(dial,
-			 "adjustment", adjustment,
-			 NULL);
+	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	g_object_set(dial,
+		     "adjustment", adjustment,
+		     NULL);
 
-	    if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	    }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	      step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	    }else{
-	      step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	    }
+	if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else if(upper_bound < 0.0 && lower_bound < 0.0){
+	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else{
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}
 
-	    gtk_adjustment_set_step_increment(adjustment,
-					      step);
-	    gtk_adjustment_set_lower(adjustment,
-				     lower_bound);
-	    gtk_adjustment_set_upper(adjustment,
-				     upper_bound);
-	    gtk_adjustment_set_value(adjustment,
-				     lower_bound);
-	  }
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_lower(adjustment,
+				 lower_bound);
+	gtk_adjustment_set_upper(adjustment,
+				 upper_bound);
+	gtk_adjustment_set_value(adjustment,
+				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+      }
 
 #ifdef AGS_DEBUG
-	  g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
+      g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
 #endif
 	  
-	  /* create task */
-	  add_bulk_member = ags_add_bulk_member_new(effect_bulk,
-						    bulk_member,
-						    x, y,
-						    1, 1);
-	  task = g_list_prepend(task,
-				add_bulk_member);
+      /* create task */
+      add_bulk_member = ags_add_bulk_member_new(effect_bulk,
+						bulk_member,
+						x, y,
+						1, 1);
+      task = g_list_prepend(task,
+			    add_bulk_member);
 
-	  /* update ports */
-	  update_bulk_member = ags_update_bulk_member_new(effect_bulk,
-							  bulk_member,
-							  pads,
-							  0,
-							  TRUE);
-	  task = g_list_prepend(task,
-				update_bulk_member);
+      /* update ports */
+      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+						      bulk_member,
+						      pads,
+						      0,
+						      TRUE);
+      task = g_list_prepend(task,
+			    update_bulk_member);
 
-	  x++;
-	}
-      }
+      x++;
     }
+
+    port_descriptor = port_descriptor->next;    
+    k++;
   }
 
   /* launch tasks */
@@ -1301,10 +1276,11 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
   AgsRecallLv2 *recall_lv2;
-  AgsLv2Plugin *lv2_plugin;
   AgsAddRecallContainer *add_recall_container;
   AgsAddRecall *add_recall;
 
+  AgsLv2Plugin *lv2_plugin;
+  
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
@@ -1315,18 +1291,19 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   GList *port, *recall_port;
   GList *list, *list_start;
   GList *task;
-  GList *port_name_node, *output_port_node, *input_port_node, *port_property_node, *port_max_node, *port_min_node, *port_default_node;
+  GList *port_descriptor;
 
   gchar *uri;
   gchar *port_name;
   gchar *str;
+
   gdouble step;
   guint pads, audio_channels;
+  guint port_count;
   guint x, y;
   guint i, j;
   guint k;
-
-  uint32_t *uri_index;
+  
   float lower_bound, upper_bound, default_bound;
 
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
@@ -1355,18 +1332,11 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
     pads = effect_bulk->audio->input_pads;
   }
 
-  /* read uri */
-  uri = ags_lv2_manager_find_uri(filename,
-				 effect);
-  
-  /* uri index */
-  uri_index = ags_lv2_manager_uri_index(filename,
-					uri);
-  
+  /*  */  
   task = NULL;
   
   /* load plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -1383,8 +1353,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
-				      uri,
-				      uri_index);
+				      lv2_plugin->uri,
+				      AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_lv2),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1434,8 +1404,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
-				      uri,
-				      uri_index);
+				      lv2_plugin->uri,
+				      AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_lv2),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
@@ -1493,208 +1463,106 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
     list = list->next;
   }
 
-  /* find ports */
-  g_message("%s\0", effect);
-  
-  str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::rdf-verb[1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and ancestor::rdf-object-list/preceding-sibling::rdf-verb[1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']]",
-			effect);
-  port_name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					 str);
-  free(str);
-  
   /* load ports */
+  port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+
+  port_count = g_list_length(port_descriptor);
   k = 0;
+  
+  while(port_descriptor != NULL){
+    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      GtkWidget *child_widget;
+	  
+      GType widget_type;
 
-  while(port_name_node != NULL){
-    GtkWidget *child_widget;
-    
-    GType widget_type;
+      if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
+	x = 0;
+	y++;
+	gtk_table_resize(effect_bulk->table,
+			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
+      }
 
-    port_name = xmlNodeGetContent((xmlNode *) port_name_node->data);
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+      }else{
+	widget_type = AGS_TYPE_DIAL;
+      }
 
-    g_message("ags_effect_bulk.c - %s\0", port_name);
+      /* add bulk member */
+      bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-type\0", widget_type,
+						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name\0", g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri),
+						   "filename\0", filename,
+						   "effect\0", effect,
+						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
+						   "control-port\0", g_strdup_printf("%d/%d\0",
+										     k,
+										     port_count),
+						   NULL);
+      child_widget = ags_bulk_member_get_widget(bulk_member);
 
-    str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort' and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			  effect,
-			  port_name);
-    output_port_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					     str);
-    free(str);
-    
-    str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort' and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			  effect,
-			  port_name);
-    input_port_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    str);
-    free(str);
-    
-    /*  */
-    if(output_port_node != NULL){
-      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':portProperty') + 1) = ':portProperty'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			    effect,
-			    port_name);
-      port_property_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-						 str);
-      free(str);
-      
-      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':minimum') + 1) = ':minimum'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			    effect,
-			    port_name);
-      port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    str);
-      free(str);
-      
-      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':maximum') + 1) = ':maximum'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			    effect,
-			    port_name);
-      port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    str);
-      free(str);
-    
-      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':default') + 1) = ':default'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			    effect,
-			    port_name);
-      port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-						str);
-      free(str);
-    }else if(input_port_node != NULL){
-      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-pname-ln[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':portProperty') + 1) = ':portProperty'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			    effect,
-			    port_name);
-      port_property_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-						 str);
-      free(str);
+      if(AGS_IS_DIAL(child_widget)){
+	AgsDial *dial;
+	GtkAdjustment *adjustment;
 
-      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':minimum') + 1) = ':minimum'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			    effect,
-			    port_name);
-      port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    str);
-      free(str);
-    
-      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':maximum') + 1) = ':maximum'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			    effect,
-			    port_name);
-      port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    str);
-      free(str);
-    
-      str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/following-sibling::*//rdf-object-list//rdf-string[text()='%s']/ancestor::*[self::rdf-object][2]//rdf-numeric[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':default') + 1) = ':default'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort'] and ancestor::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']]\0",
-			    effect,
-			    port_name);
-      port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-						str);
-      free(str);
-    }else{
-      port_name_node = port_name_node->next;
-
-      continue;
-    }
-    
-
-    /* */
-    if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
-      x = 0;
-      y++;
-      gtk_table_resize(effect_bulk->table,
-		       y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
-    }
-
-    if(port_property_node != NULL &&
-       !g_ascii_strncasecmp("lv2:toggled\0",
-			    xmlNodeGetContent(port_property_node->data),
-			    12)){
-      widget_type = GTK_TYPE_TOGGLE_BUTTON;
-    }else{
-      widget_type = AGS_TYPE_DIAL;
-    }
-    
-    /* add bulk member */
-    bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						 "widget-type\0", widget_type,
-						 "widget-label\0", port_name,
-						 "plugin-name\0", g_strdup_printf("lv2-%s\0", uri),
-						 "filename\0", filename,
-						 "effect\0", effect,
-						 "specifier\0", g_strdup(port_name),
-						 "control-port\0", g_strdup_printf("%d/%d\0",
-										   k,
-										   g_list_length(port_name_node)),
-						 NULL);
-    child_widget = ags_bulk_member_get_widget(bulk_member);
-
-    if(AGS_IS_DIAL(child_widget)){
-      AgsDial *dial;
-
-      dial = AGS_DIAL(child_widget);
+	float lower_bound, upper_bound;
 	
-      /* add controls of ports and apply range  */
-      if(port_min_node != NULL){
-	lower_bound = (float) g_ascii_strtod(xmlNodeGetContent((xmlNode *) port_min_node->data),
-					     NULL);
-      }else{
-	lower_bound = 0.0;
+	dial = child_widget;
+
+	/* add controls of ports and apply range  */
+	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
+
+	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	g_object_set(dial,
+		     "adjustment", adjustment,
+		     NULL);
+
+	if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else if(upper_bound < 0.0 && lower_bound < 0.0){
+	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else{
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}
+
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_lower(adjustment,
+				 lower_bound);
+	gtk_adjustment_set_upper(adjustment,
+				 upper_bound);
+	gtk_adjustment_set_value(adjustment,
+				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
       }
 
-      if(port_max_node != NULL){
-	upper_bound = (float) g_ascii_strtod(xmlNodeGetContent((xmlNode *) port_max_node->data),
-					     NULL);
-      }else{
-	upper_bound = 0.0;
-      }
+#ifdef AGS_DEBUG
+      g_message("lv2 bounds: %f %f\0", lower_bound, upper_bound);
+#endif
+	  
+      /* create task */
+      add_bulk_member = ags_add_bulk_member_new(effect_bulk,
+						bulk_member,
+						x, y,
+						1, 1);
+      task = g_list_prepend(task,
+			    add_bulk_member);
 
-      if(port_default_node != NULL){
-	default_bound = (float) g_ascii_strtod(xmlNodeGetContent((xmlNode *) port_default_node->data),
-					       NULL);
-      }else{
-	default_bound = 0.0;
-      }
-      
-      adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-      g_object_set(dial,
-		   "adjustment", adjustment,
-		   NULL);
+      /* update ports */
+      update_bulk_member = ags_update_bulk_member_new(effect_bulk,
+						      bulk_member,
+						      pads,
+						      0,
+						      TRUE);
+      task = g_list_prepend(task,
+			    update_bulk_member);
 
-      if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-      }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
-      }else{
-	step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-      }
-
-      gtk_adjustment_set_step_increment(adjustment,
-					step);
-      gtk_adjustment_set_lower(adjustment,
-			       lower_bound);
-      gtk_adjustment_set_upper(adjustment,
-			       upper_bound);
-      gtk_adjustment_set_value(adjustment,
-			       default_bound);
-
-      g_message("%f %f\0", lower_bound, upper_bound);
+      x++;
     }
-      
-    /* create task */
-    add_bulk_member = ags_add_bulk_member_new(effect_bulk,
-					      bulk_member,
-					      x, y,
-					      1, 1);
-    task = g_list_prepend(task,
-			  add_bulk_member);
 
-    /* update ports */
-    update_bulk_member = ags_update_bulk_member_new(effect_bulk,
-						    bulk_member,
-						    pads,
-						    0,
-						    TRUE);
-    task = g_list_prepend(task,
-			  update_bulk_member);
-      
-    x++;
+    port_descriptor = port_descriptor->next;    
     k++;
-    port_name_node = port_name_node->next;
   }
 
   /* launch tasks */
@@ -1718,7 +1586,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   GList *port;
 
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
   port = NULL;
   
   if(ladspa_plugin != NULL){
@@ -1729,7 +1597,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   }
 
   if(ladspa_plugin == NULL){
-    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
 
     if(dssi_plugin != NULL){
       port = ags_effect_bulk_add_dssi_effect(effect_bulk,
@@ -1744,7 +1612,7 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
     GList *ui_node;
     gchar *str;
     
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
     if(lv2_plugin != NULL){
       port = ags_effect_bulk_add_lv2_effect(effect_bulk,

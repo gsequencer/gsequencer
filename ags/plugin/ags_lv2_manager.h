@@ -66,12 +66,6 @@ void ags_lv2_manager_load_file(AgsTurtle *turtle,
 			       gchar *filename);
 void ags_lv2_manager_load_default_directory();
 
-uint32_t ags_lv2_manager_uri_index(gchar *filename,
-				   gchar *uri);
-
-gchar* ags_lv2_manager_find_uri(gchar *filename,
-				gchar *effect);
-
 /*  */
 AgsLv2Manager* ags_lv2_manager_get_instance();
 

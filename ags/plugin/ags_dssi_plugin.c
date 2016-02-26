@@ -140,11 +140,13 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_string("unique-id\0",
-				   "unique-id of the plugin\0",
-				   "The unique-id this plugin is assigned with\0",
-				   NULL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("unique-id\0",
+				 "unique-id of the plugin\0",
+				 "The unique-id this plugin is assigned with\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_UNIQUE_ID,
 				  param_spec);
@@ -222,19 +224,7 @@ ags_dssi_plugin_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_UNIQUE_ID:
     {
-      gchar *unique_id;
-
-      unique_id = (gchar *) g_value_get_string(value);
-
-      if(dssi_plugin->unique_id == unique_id){
-	return;
-      }
-      
-      if(dssi_plugin->unique_id != NULL){
-	g_free(dssi_plugin->unique_id);
-      }
-
-      dssi_plugin->unique_id = g_strdup(unique_id);
+      dssi_plugin->unique_id = g_value_get_uint(value);
     }
     break;
   case PROP_PROGRAM:
@@ -351,7 +341,8 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   AgsConfig *config;
   
   AgsPortDescriptor *port;
-  GList *list;
+
+  GList *port_list;
 
   gchar *str;
   
@@ -385,10 +376,12 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   base_plugin->plugin_so = dlopen(base_plugin->filename,
 				  RTLD_NOW);
   
-  if(base_plugin->plugin_so){
+  if(base_plugin->plugin_so == NULL){
     g_warning("ags_dssi_plugin.c - failed to load static object file\0");
     
     dlerror();
+
+    return;
   }
 
   dssi_descriptor = (DSSI_Descriptor_Function) dlsym(base_plugin->plugin_so,
@@ -406,10 +399,14 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
       port_count = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortCount;
       port_descriptor = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortDescriptors;
 
+      port_list = NULL;
+      
       for(i = 0; i < port_count; i++){
 	/* allocate port descriptor */
 	port = ags_port_descriptor_alloc();
-
+	port_list = g_list_prepend(port_list,
+				   port);
+	
 	/* set flags */
 	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
 	  port->flags |= AGS_PORT_DESCRIPTOR_INPUT;
@@ -462,7 +459,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	    /* bounds */
 	    if(LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)){
-	      if(LADSPA_IS_HINT_SAMPLERATE(hint_descriptor)){
+	      if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
 		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
 				AGS_PORT_DESCRIPTOR_BOUNDED_BELOW);
 		g_value_set_float(port->lower_value,
@@ -471,7 +468,7 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    }
 
 	    if(LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)){
-	      if(LADSPA_IS_HINT_SAMPLERATE(hint_descriptor)){
+	      if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
 		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
 				AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE);
 		g_value_set_float(port->upper_value,
@@ -555,7 +552,9 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    }
 	  }
 	}
-      }      
+      }
+
+      base_plugin->port = g_list_reverse(port_list);
     }
   }
 }

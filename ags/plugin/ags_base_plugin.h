@@ -32,6 +32,8 @@
 #define AGS_IS_BASE_PLUGIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_BASE_PLUGIN))
 #define AGS_BASE_PLUGIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_BASE_PLUGIN, AgsBasePluginClass))
 
+#define AGS_PORT_DESCRIPTOR(ptr) ((AgsPortDescriptor *)(ptr))
+
 typedef struct _AgsBasePlugin AgsBasePlugin;
 typedef struct _AgsBasePluginClass AgsBasePluginClass;
 typedef struct _AgsPortDescriptor AgsPortDescriptor;
@@ -72,8 +74,8 @@ struct _AgsBasePlugin
   
   guint effect_index;
   void *plugin_so;
-  gpointer plugin_descriptor;
-  gpointer plugin_handle;
+  void *plugin_descriptor;
+  void *plugin_handle;
 
   GObject *ui_plugin;
 };

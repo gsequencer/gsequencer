@@ -20,6 +20,8 @@
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge_callbacks.h>
 
+#include <ags/lib/ags_string_util.h>
+
 #include <ags/object/ags_connectable.h>
 
 #include <ags/object/ags_marshal.h>
@@ -732,16 +734,19 @@ ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge)
   GList *instrument_list;
 
   gchar *str;
+  gchar *escaped_effect;
   
   /* check if works with Gtk+ */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename,
+					       lv2_bridge->effect);
 
   if(lv2_plugin == NULL){
     return;
   }
 
-  str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InstrumentPlugin') + 1) = ':InstrumentPlugin']",
-			lv2_bridge->effect);
+  escaped_effect = ags_string_util_escape_single_quote(lv2_bridge->effect);
+  str = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='%s']]/ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InstrumentPlugin') + 1) = ':InstrumentPlugin']\0",
+			escaped_effect);
 
   instrument_list = ags_turtle_find_xpath(lv2_plugin->turtle,
 					  str);
@@ -766,7 +771,8 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
   gchar *gui_uri;
   
   /* check if works with Gtk+ */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename,
+					       lv2_bridge->effect);
 
   if(lv2_plugin == NULL){
     return;
@@ -819,14 +825,21 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
 void
 ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 {
+  AgsLv2Plugin *lv2_plugin;
+  
   GList *list;
 
   gchar *uri;
 
-  uri = ags_lv2_manager_find_uri(lv2_bridge->filename,
-				 lv2_bridge->effect);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename,
+					       lv2_bridge->effect);
+
+  if(lv2_plugin == NULL){
+    return;
+  }
+  
   g_object_set(lv2_bridge,
-	       "uri\0", uri,
+	       "uri\0", lv2_plugin->uri,
 	       NULL);
   
   /* clear effect bulk */

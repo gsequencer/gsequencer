@@ -30,6 +30,7 @@
 #include <unistd.h>
 
 #include <math.h>
+#include <string.h>
 
 #include <ladspa.h>
 
@@ -131,11 +132,13 @@ ags_ladspa_plugin_class_init(AgsLadspaPluginClass *ladspa_plugin)
    * 
    * Since: 0.7.6
    */
-  param_spec = g_param_spec_string("unique-id\0",
-				   "unique-id of the plugin\0",
-				   "The unique-id this plugin is assigned with\0",
-				   NULL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("unique-id\0",
+				 "unique-id of the plugin\0",
+				 "The unique-id this plugin is assigned with\0",
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_UNIQUE_ID,
 				  param_spec);
@@ -174,19 +177,7 @@ ags_ladspa_plugin_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_UNIQUE_ID:
     {
-      gchar *unique_id;
-
-      unique_id = (gchar *) g_value_get_string(value);
-
-      if(ladspa_plugin->unique_id == unique_id){
-	return;
-      }
-      
-      if(ladspa_plugin->unique_id != NULL){
-	g_free(ladspa_plugin->unique_id);
-      }
-
-      ladspa_plugin->unique_id = g_strdup(unique_id);
+      ladspa_plugin->unique_id = g_value_get_uint(value);
     }
     break;
   default:
@@ -280,7 +271,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   AgsConfig *config;
   
   AgsPortDescriptor *port;
-  GList *list;
+  GList *port_list;
 
   gchar *str;
   
@@ -314,18 +305,20 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   base_plugin->plugin_so = dlopen(base_plugin->filename,
 				  RTLD_NOW);
   
-  if(base_plugin->plugin_so){
+  if(base_plugin->plugin_so == NULL){
     g_warning("ags_ladspa_plugin.c - failed to load static object file\0");
     
     dlerror();
+
+    return;
   }
 
-  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(base_plugin->plugin_so,
+  ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym((void *) base_plugin->plugin_so,
 							 "ladspa_descriptor\0");
   
   if(dlerror() == NULL && ladspa_descriptor){
     effect_index = base_plugin->effect_index;
-    base_plugin->plugin_descriptor = ladspa_descriptor(effect_index);
+    base_plugin->plugin_descriptor = ladspa_descriptor((unsigned long) effect_index);
 
     if(base_plugin->plugin_descriptor != NULL){
       g_object_set(base_plugin,
@@ -335,10 +328,14 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
       port_count = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortCount;
       port_descriptor = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortDescriptors;
 
+      port_list = NULL;
+      
       for(i = 0; i < port_count; i++){
 	/* allocate port descriptor */
 	port = ags_port_descriptor_alloc();
-
+	port_list = g_list_prepend(port_list,
+				   port);
+	
 	/* set flags */
 	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
 	  port->flags |= AGS_PORT_DESCRIPTOR_INPUT;
@@ -391,7 +388,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	    /* bounds */
 	    if(LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)){
-	      if(LADSPA_IS_HINT_SAMPLERATE(hint_descriptor)){
+	      if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
 		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
 				AGS_PORT_DESCRIPTOR_BOUNDED_BELOW);
 		g_value_set_float(port->lower_value,
@@ -400,7 +397,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    }
 
 	    if(LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)){
-	      if(LADSPA_IS_HINT_SAMPLERATE(hint_descriptor)){
+	      if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
 		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
 				AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE);
 		g_value_set_float(port->upper_value,
@@ -484,7 +481,9 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    }
 	  }
 	}
-      }      
+      }
+
+      base_plugin->port = g_list_reverse(port_list);
     }
   }
 }
