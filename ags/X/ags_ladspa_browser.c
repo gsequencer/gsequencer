@@ -175,7 +175,7 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
     filenames++;
   }
 
-  //  free(filenames_start);
+  free(filenames_start);
 
   label = (GtkLabel *) gtk_label_new("effect: \0");
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),

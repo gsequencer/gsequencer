@@ -644,7 +644,7 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
-		    "ags-application-context\0");
+		    "ags-main\0");
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,

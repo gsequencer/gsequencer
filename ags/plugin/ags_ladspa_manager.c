@@ -139,11 +139,13 @@ ags_ladspa_manager_get_filenames()
   ladspa_plugin = ladspa_manager->ladspa_plugin;
   filenames = NULL;
   
-  for(i = 0; ladspa_plugin != NULL; i++){
+  for(i = 0; ladspa_plugin != NULL;){
     if(filenames == NULL){
       filenames = (gchar **) malloc(2 * sizeof(gchar *));
       filenames[i] = AGS_BASE_PLUGIN(ladspa_plugin->data)->filename;
       filenames[i + 1] = NULL;
+
+      i++;
     }else{
       if(!g_strv_contains(filenames,
 			  AGS_BASE_PLUGIN(ladspa_plugin->data)->filename)){
@@ -151,6 +153,8 @@ ags_ladspa_manager_get_filenames()
 				       (i + 2) * sizeof(gchar *));
 	filenames[i] = AGS_BASE_PLUGIN(ladspa_plugin->data)->filename;
 	filenames[i + 1] = NULL;
+
+	i++;
       }
     }
     

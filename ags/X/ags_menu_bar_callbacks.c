@@ -128,16 +128,21 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsFile *file;
+  
+  GError *error;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
 
   //TODO:JK: revise me
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", window->application_context,
-				  "filename\0", g_strdup(window->name),
+				  "application-context\0", window->application_context,
+				  "filename\0", window->name,
 				  NULL);
+
+  error = NULL;
   ags_file_rw_open(file,
-		   TRUE);
+		   TRUE,
+		   &error);
   ags_file_write(file);
   ags_file_close(file);
   g_object_unref(G_OBJECT(file));
@@ -198,7 +203,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->application_context,
+				    "application-context\0", window->application_context,
 				    "filename\0", filename,
 				    NULL);
 
@@ -257,8 +262,8 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     //TODO:JK: revise me
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->application_context,
-				    "filename\0", g_strdup(window->name),
+				    "application-context\0", window->application_context,
+				    "filename\0", window->name,
 				    NULL);
 
     ags_file_write(file);

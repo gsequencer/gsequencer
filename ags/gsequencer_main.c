@@ -319,11 +319,33 @@ main(int argc, char **argv)
   if(filename != NULL){
     AgsFile *file;
 
+    GError *error;
+    
     file = g_object_new(AGS_TYPE_FILE,
 			"application-context\0", application_context,
 			"filename\0", filename,
 			NULL);
-    ags_file_open(file);
+    error = NULL;
+    ags_file_open(file,
+		  &error);
+
+    if(error != NULL){
+      GtkDialog *dialog;
+      
+      g_warning("could not parse file %s\n", file->filename);
+      
+      dialog = gtk_message_dialog_new(NULL,
+				      0,
+				      GTK_MESSAGE_WARNING,
+				      GTK_BUTTONS_OK,
+				    "Failed to open '%s'\0",
+				      file->filename);
+      gtk_widget_show_all(dialog);
+      g_signal_connect(dialog, "response\0",
+		       G_CALLBACK(gtk_main_quit), NULL);
+      gtk_main();
+    }
+    
     ags_file_read(file);
     ags_file_close(file);
     

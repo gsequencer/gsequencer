@@ -58,11 +58,14 @@ void ags_file_get_property(GObject *gobject,
 			   GParamSpec *param_spec);
 void ags_file_finalize(GObject *gobject);
 
-void ags_file_real_open(AgsFile *file);
+void ags_file_real_open(AgsFile *file,
+			GError **error);
 void ags_file_real_open_from_data(AgsFile *file,
-				  gchar *data, guint length);
+				  gchar *data, guint length,
+				  GError **error);
 void ags_file_real_rw_open(AgsFile *file,
-			   gboolean create);
+			   gboolean create,
+			   GError **error);
 
 void ags_file_real_write(AgsFile *file);
 void ags_file_real_write_concurrent(AgsFile *file);
@@ -264,6 +267,7 @@ ags_file_class_init(AgsFileClass *file)
   /**
    * AgsFile::open:
    * @file: the #AgsFile
+   * @error: a #GError-struct pointer to return error
    * 
    * Open @file with appropriate filename.
    *
@@ -275,14 +279,16 @@ ags_file_class_init(AgsFileClass *file)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileClass, open),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
 
   /**
    * AgsFile::open-from-data:
    * @file: the #AgsFile
    * @buffer: the buffer containing the file
    * @length: the buffer length
+   * @error: a #GError-struct pointer to return error
    * 
    * Open @file from a buffer containing the file.
    *
@@ -294,13 +300,17 @@ ags_file_class_init(AgsFileClass *file)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileClass, open_from_data),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_UINT,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_user_marshal_VOID__STRING_UINT_POINTER,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_STRING,
+		 G_TYPE_UINT,
+		 G_TYPE_POINTER);
 
   /**
    * AgsFile::open-from-data:
    * @file: the #AgsFile
    * @create: if %TRUE the file will be created if not exists
+   * @error: a #GError-struct pointer to return error
    * 
    * Open @file in read-write mode.
    *
@@ -312,8 +322,10 @@ ags_file_class_init(AgsFileClass *file)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFileClass, rw_open),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__BOOLEAN,
-		 G_TYPE_NONE, 0);
+		 g_cclosure_user_marshal_VOID__BOOLEAN_POINTER,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_BOOLEAN,
+		 G_TYPE_POINTER);
 
   /**
    * AgsFile::write:
@@ -410,6 +422,12 @@ ags_file_class_init(AgsFileClass *file)
 		 G_TYPE_NONE, 0);
 }
 
+GQuark
+ags_file_error_quark()
+{
+  return(g_quark_from_static_string("ags-file-error-quark\0"));
+}
+
 void
 ags_file_init(AgsFile *file)
 {
@@ -467,6 +485,10 @@ ags_file_set_property(GObject *gobject,
 	return;
       }
 
+      if(file->filename != NULL){
+	g_free(file->filename);
+      }
+      
       file->filename = g_strdup(filename);
     }
     break;
@@ -824,7 +846,8 @@ ags_file_add_launch(AgsFile *file, GObject *file_launch)
 }
 
 void
-ags_file_real_open(AgsFile *file)
+ags_file_real_open(AgsFile *file,
+		   GError **error)
 {
   if(file == NULL){
     return;
@@ -834,31 +857,19 @@ ags_file_real_open(AgsFile *file)
   file->doc = xmlReadFile(file->filename, NULL, 0);
 
   if(file->doc == NULL){
-    //TODO:JK: move code
-    /*
-    GtkDialog *dialog;
-    
-    g_warning("could not parse file %s\n", file->filename);
+    g_warning("ags_file.c - failed to read XML document %s\0", file->filename);
 
-    dialog = gtk_message_dialog_new(NULL,
-				    0,
-				    GTK_MESSAGE_WARNING,
-				    GTK_BUTTONS_OK,
-				    "Failed to open '%s'\0",
-				    file->filename);
-    gtk_widget_show_all(dialog);
-    g_signal_connect(dialog, "response\0",
-		     G_CALLBACK(gtk_main_quit), NULL);
-    gtk_main();
-    */
-
-    g_warning("ags_file.c - failed to read XML documen %s\0", file->filename);
-
-    exit(-1);
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_FILE_ERROR,
+		  AGS_FILE_ERROR_PARSER_FAILURE,
+		  "unable to parse document: %s\n\0",
+		  file->filename);
+    }
+  }else{
+    /*Get the root element node */
+    file->root_node = xmlDocGetRootElement(file->doc);
   }
-
-  /*Get the root element node */
-  file->root_node = xmlDocGetRootElement(file->doc);
 }
 
 /**
@@ -870,19 +881,22 @@ ags_file_real_open(AgsFile *file)
  * Since: 0.4.0 
  */
 void
-ags_file_open(AgsFile *file)
+ags_file_open(AgsFile *file,
+	      GError **error)
 {
   g_return_if_fail(AGS_IS_FILE(file));
 
   g_object_ref(G_OBJECT(file));
   g_signal_emit(G_OBJECT(file),
-		file_signals[OPEN], 0);
+		file_signals[OPEN], 0,
+		error);
   g_object_unref(G_OBJECT(file));
 }
 
 void
 ags_file_real_open_from_data(AgsFile *file,
-			     gchar *data, guint length)
+			     gchar *data, guint length,
+			     GError **error)
 {
   if(file == NULL){
     return;
@@ -890,32 +904,20 @@ ags_file_real_open_from_data(AgsFile *file,
 
   file->doc = xmlReadMemory(data, length, file->filename, NULL, 0);
 
-  if(file->doc == NULL) {
-    //TODO:JK: move code
-    /*
-    GtkDialog *dialog;
-    
-    g_warning("could not parse file %s\n", file->filename);
+  if(file->doc == NULL){
+    g_warning("ags_file.c - failed to read XML document %s\0", file->filename);
 
-    dialog = gtk_message_dialog_new(NULL,
-				    0,
-				    GTK_MESSAGE_WARNING,
-				    GTK_BUTTONS_OK,
-				    "Failed to open '%s'\0",
-				    file->filename);
-    gtk_widget_show_all(dialog);
-    g_signal_connect(dialog, "response\0",
-		     G_CALLBACK(gtk_main_quit), NULL);
-    gtk_main();
-    */
-    
-    g_warning("ags_file.c - failed to read XML documen %s\0", file->filename);
-
-    exit(-1);
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_FILE_ERROR,
+		  AGS_FILE_ERROR_PARSER_FAILURE,
+		  "unable to parse document from data: %s\n\0",
+		  file->filename);
+    }
+  }else{
+    /*Get the root element node */
+    file->root_node = xmlDocGetRootElement(file->doc);
   }
-
-  /*Get the root element node */
-  file->root_node = xmlDocGetRootElement(file->doc);
 }
 
 /**
@@ -930,20 +932,23 @@ ags_file_real_open_from_data(AgsFile *file,
  */
 void
 ags_file_open_from_data(AgsFile *file,
-			gchar *data, guint length)
+			gchar *data, guint length,
+			GError **error)
 {
   g_return_if_fail(AGS_IS_FILE(file));
 
   g_object_ref(G_OBJECT(file));
   g_signal_emit(G_OBJECT(file),
 		file_signals[OPEN_FROM_DATA], 0,
-		data, length);
+		data, length,
+		error);
   g_object_unref(G_OBJECT(file));
 }
 
 void
 ags_file_real_rw_open(AgsFile *file,
-		      gboolean create)
+		      gboolean create,
+		      GError **error)
 {
   if(file == NULL){
     return;
@@ -967,14 +972,16 @@ ags_file_real_rw_open(AgsFile *file,
  */
 void
 ags_file_rw_open(AgsFile *file,
-		 gboolean create)
+		 gboolean create,
+		 GError **error)
 {
   g_return_if_fail(AGS_IS_FILE(file));
 
   g_object_ref(G_OBJECT(file));
   g_signal_emit(G_OBJECT(file),
 		file_signals[RW_OPEN], 0,
-		create);
+		create,
+		error);
   g_object_unref(G_OBJECT(file));
 }
 
@@ -991,6 +998,8 @@ void
 ags_file_open_filename(AgsFile *file,
 		       gchar *filename)
 {
+  GError *error;
+  
   if(file == NULL){
     return;
   }
@@ -999,10 +1008,12 @@ ags_file_open_filename(AgsFile *file,
     ags_file_close(file);
   }
 
+  error = NULL;
   g_object_set(file,
 	       "filename\0", filename,
 	       NULL);
-  ags_file_open(file);
+  ags_file_open(file,
+		&error);
 }
 
 /**
@@ -1253,7 +1264,7 @@ ags_file_real_read(AgsFile *file)
   
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("ags-application-context\0",
+      if(!xmlStrncmp("ags-main\0",
 		     child->name,
 		     9)){
 	ags_file_read_application_context(file,

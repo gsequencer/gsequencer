@@ -1,3 +1,10 @@
+ags (0.7.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed XML IO
+	* implemented ags_route_lv2_audio.c and ags_route_lv2_audio_run.c
+	* TODO extended XML IO to serialize AgsLadspaBridge, AgsDssiBridge and AgLv2Bridge
+
 ags (0.7.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

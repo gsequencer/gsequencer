@@ -39,6 +39,9 @@ struct _AgsRouteLv2Audio
 {
   AgsRecallAudio recall_audio;
 
+  AgsPort *has_atom_port;
+  AgsPort *has_event_port;
+  
   AgsPort *notation_input;
   AgsPort *sequencer_input;
 };

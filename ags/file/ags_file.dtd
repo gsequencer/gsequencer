@@ -189,6 +189,7 @@
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
 	  log-file         NMTOKEN    #IMPLIED
+	  context          CDATA      #IMPLIED
 	  >
 
 <!-- thread -->

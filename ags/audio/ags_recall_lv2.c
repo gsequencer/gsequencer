@@ -263,6 +263,8 @@ ags_recall_lv2_init(AgsRecallLv2 *recall_lv2)
   AGS_RECALL(recall_lv2)->xml_type = "ags-recall-lv2\0";
   AGS_RECALL(recall_lv2)->port = NULL;
 
+  recall_lv2->flags = 0;
+  
   recall_lv2->turtle = NULL;
 
   recall_lv2->filename = NULL;
@@ -277,6 +279,9 @@ ags_recall_lv2_init(AgsRecallLv2 *recall_lv2)
 
   recall_lv2->output_port = NULL;
   recall_lv2->output_lines = 0;
+
+  recall_lv2->event_port = 0;
+  recall_lv2->atom_port = 0;
 }
 
 void
@@ -679,6 +684,18 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     port_count = g_list_length(port_descriptor);
     
     for(i = 0; i < port_count; i++){
+      if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if((AGS_PORT_DESCRIPTOR_EVENT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  recall_lv2->flags |= AGS_RECALL_LV2_HAS_EVENT_PORT;
+	  recall_lv2->event_port = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
+	}
+      
+	if((AGS_PORT_DESCRIPTOR_ATOM & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  recall_lv2->flags |= AGS_RECALL_LV2_HAS_ATOM_PORT;
+	  recall_lv2->atom_port = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
+	}
+      }
+      
       if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	gchar *plugin_name;
 	gchar *specifier;
@@ -706,22 +723,22 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_lv2->input_port == NULL){
 	    recall_lv2->input_port = (unsigned long *) malloc(sizeof(unsigned long));
-	    recall_lv2->input_port[0] = i;
+	    recall_lv2->input_port[0] = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
 	  }else{
 	    recall_lv2->input_port = (unsigned long *) realloc(recall_lv2->input_port,
 								  (recall_lv2->input_lines + 1) * sizeof(unsigned long));
-	    recall_lv2->input_port[recall_lv2->input_lines] = i;
+	    recall_lv2->input_port[recall_lv2->input_lines] = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
 	  }
 	  
 	  recall_lv2->input_lines += 1;
 	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_lv2->output_port == NULL){
 	    recall_lv2->output_port = (unsigned long *) malloc(sizeof(unsigned long));
-	    recall_lv2->output_port[0] = i;
+	    recall_lv2->output_port[0] = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
 	  }else{
 	    recall_lv2->output_port = (unsigned long *) realloc(recall_lv2->output_port,
 								   (recall_lv2->output_lines + 1) * sizeof(unsigned long));
-	    recall_lv2->output_port[recall_lv2->output_lines] = i;
+	    recall_lv2->output_port[recall_lv2->output_lines] = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
 	  }
 	  
 	  recall_lv2->output_lines += 1;
@@ -733,7 +750,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     
     AGS_RECALL(recall_lv2)->port = g_list_reverse(port);
   }
-
+  
   return(AGS_RECALL(recall_lv2)->port);
 }
 

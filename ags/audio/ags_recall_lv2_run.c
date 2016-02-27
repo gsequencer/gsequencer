@@ -150,6 +150,16 @@ ags_recall_lv2_run_init(AgsRecallLv2Run *recall_lv2_run)
 {
   recall_lv2_run->input = NULL;
   recall_lv2_run->output = NULL;
+
+  recall_lv2_run->event_port = NULL;
+  recall_lv2_run->atom_port = NULL;
+  
+  recall_lv2_run->delta_time = 0;
+  
+  recall_lv2_run->event_buffer = NULL;
+  recall_lv2_run->event_count = NULL;
+  
+  recall_lv2_run->note = NULL;
 }
 
 void
@@ -190,7 +200,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   gchar *path;
   double samplerate;
   uint32_t buffer_size;
-  uint32_t i;
+  uint32_t i, i_stop;
   static const LV2_Feature **feature = {
     NULL,
   };
@@ -221,14 +231,18 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   recall_lv2_run->lv2_handle = (LV2_Handle *) malloc(recall_lv2->input_lines *
 						     sizeof(LV2_Handle));
 
-  for(i = 0; i < recall_lv2->input_lines; i++){
+  if(recall_lv2->input_lines < recall_lv2->output_lines){
+    i_stop = recall_lv2->output_lines;
+  }else{
+    i_stop = recall_lv2->input_lines;
+  }
+  
+  for(i = 0; i < i_stop; i++){
     /* instantiate lv2 */
     recall_lv2_run->lv2_handle[i] = (LV2_Handle *) recall_lv2->plugin_descriptor->instantiate(recall_lv2->plugin_descriptor,
 											      samplerate,
 											      path,
 											      feature);
-    recall_lv2->plugin_descriptor->activate(recall_lv2_run->lv2_handle[i]);
-
 #ifdef AGS_DEBUG
     g_message("instantiate LV2 handle\0");
 #endif
@@ -249,6 +263,29 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
 						recall_lv2->output_port[i],
 						recall_lv2_run->output);
+  }
+
+  /* connect event port */
+  if((AGS_RECALL_LV2_HAS_EVENT_PORT & (recall_lv2->flags)) != 0){
+    recall_lv2_run->event_port = ags_lv2_plugin_alloc_event_buffer(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
+
+    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
+						recall_lv2->event_port,
+						recall_lv2_run->event_port);
+  }
+  
+  /* connect atom port */
+  if((AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
+    recall_lv2_run->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
+    
+    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
+						recall_lv2->atom_port,
+						recall_lv2_run->atom_port);
+  }
+  
+  /* activate */
+  for(i = 0; i < i_stop; i++){
+    recall_lv2->plugin_descriptor->activate(recall_lv2_run->lv2_handle[i]);
   }
 }
 
