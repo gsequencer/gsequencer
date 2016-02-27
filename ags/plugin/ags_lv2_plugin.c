@@ -338,9 +338,10 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
   
   AgsPortDescriptor *port;
 
+  GList *instrument_list;
   GList *port_list;
   GList *port_descriptor_list;
-
+  
   gchar *escaped_effect;
   gchar *xpath;
   gchar *uri;
@@ -371,10 +372,26 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     xmlNode *port_node;
     xmlNode *current;
 
-    GList *list;
+    GList *list, *list_start;
+
+    escaped_effect = ags_string_util_escape_single_quote(base_plugin->effect);
+
+    /* check if is synthesizer */
+    xpath = g_strdup_printf("//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InstrumentPlugin') + 1) = ':InstrumentPlugin']\0",
+			    escaped_effect);
+    
+    instrument_list = ags_turtle_find_xpath(lv2_plugin->turtle,
+					    xpath);
+
+    free(xpath);
+
+    if(instrument_list != NULL){
+      lv2_plugin->flags |= AGS_LV2_PLUGIN_IS_SYNTHESIZER;
+
+      g_list_free(instrument_list);
+    }
     
     /* load ports */
-    escaped_effect = ags_string_util_escape_single_quote(base_plugin->effect);
     xpath = "//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple]//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object\0";
     xpath = g_strdup_printf(xpath,
 			    escaped_effect);
@@ -400,6 +417,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_CONTROL;
+
+	g_list_free(list);
       }
 
       /* load flags - output */
@@ -411,6 +430,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_OUTPUT;
+
+	g_list_free(list);
       }
 
       /* load flags - input */
@@ -422,6 +443,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_INPUT;
+
+	g_list_free(list);
       }
 
       /* load flags - audio */
@@ -433,6 +456,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_AUDIO;
+	
+	g_list_free(list);
       }
 
       /* load flags - event */
@@ -444,6 +469,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_EVENT;
+
+	g_list_free(list);
       }
 
       /* load flags - atom */
@@ -455,6 +482,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_ATOM;
+	
+	g_list_free(list);
       }
 
       /* load index */
@@ -469,14 +498,17 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	port->port_index = g_ascii_strtoull(xmlNodeGetContent(current),
 					    NULL,
 					    10);
+
+	g_list_free(list);
       }
 
       /* properties */
       xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':portProperty') + 1) = ':portProperty']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln\0";
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
-						     xpath,
-						     port_node);
-
+      list_start =
+	list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+						       xpath,
+						       port_node);
+      
       while(list != NULL){
 	current = (xmlNode *) list->data;
 	
@@ -489,6 +521,10 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	}
 
 	list = list->next;
+      }
+
+      if(list_start != NULL){
+	g_list_free(list_start);
       }
       
       /* load name */
@@ -507,6 +543,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	  port->port_name = g_strndup(str + 1,
 				      strlen(str) - 2);
 	}
+
+	g_list_free(list);
       }
       
       /* load symbol */
@@ -525,14 +563,17 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	  port->port_symbol = g_strndup(str + 1,
 					strlen(str) - 2);
 	}
+
+	g_list_free(list);
       }
 
       /* load scale points and value */
       xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':scalePoint') + 1) = ':scalePoint']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string\0";
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
-						     xpath,
-						     port_node);
-
+      list_start = 
+	list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+						       xpath,
+						       port_node);
+      
       port->scale_steps = g_list_length(list);
       
       port->scale_points = malloc(port->scale_steps * sizeof(gchar *));
@@ -552,11 +593,16 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	list = list->next;
       }
 
+      if(list_start != NULL){
+	g_list_free(list_start);
+      }
+      
       xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':scalePoint') + 1) = ':scalePoint']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0";
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
-						     xpath,
-						     port_node);
-
+      list_start = 
+	list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+						       xpath,
+						       port_node);
+      
       for(i = 0; list != NULL; i++){
 	gchar *str;
 	
@@ -567,6 +613,10 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 					      NULL);
 	
 	list = list->next;
+      }
+
+      if(list_start != NULL){
+	g_list_free(list_start);
       }
 
       /* minimum */
@@ -583,6 +633,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	g_value_set_float(port->lower_value,
 			  g_ascii_strtod(xmlNodeGetContent(current),
 					 NULL));
+
+	g_list_free(list);
       }
 
       /* maximum */
@@ -599,6 +651,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	g_value_set_float(port->upper_value,
 			  g_ascii_strtod(xmlNodeGetContent(current),
 					 NULL));
+
+	g_list_free(list);
       }
 
       /* default */
@@ -615,9 +669,15 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	g_value_set_float(port->default_value,
 			  g_ascii_strtod(xmlNodeGetContent(current),
 					 NULL));
+
+	g_list_free(list);
       }
       
       port_list = port_list->next;
+    }
+
+    if(port_list != NULL){
+      g_list_free(port_list);
     }
 
     base_plugin->port = g_list_reverse(port_descriptor_list);

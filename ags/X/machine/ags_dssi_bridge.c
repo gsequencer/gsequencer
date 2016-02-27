@@ -32,6 +32,7 @@
 #include <ags/thread/ags_thread-posix.h>
 
 #include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_dssi_plugin.h>
 
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall_factory.h>
