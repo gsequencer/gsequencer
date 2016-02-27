@@ -722,6 +722,19 @@ ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
   return(buffer);
 }
 
+/**
+ * ags_lv2_plugin_event_buffer_append_midi:
+ * @event_buffer: the event buffer
+ * @buffer_size: the event buffer size
+ * @events: the events to write
+ * @event_count: the number of events to write
+ *
+ * Append MIDI data to event buffer.
+ *
+ * Returns: %TRUE on success otherwise %FALSE
+ *
+ * Since: 0.7.7
+ */
 gboolean
 ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 					guint buffer_size,
@@ -769,15 +782,15 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
     
     offset += (8 + sizeof(LV2_Event_Buffer));
   }
-
-  if(offset >= event_buffer + buffer_size){
-    return(FALSE);
-  }
   
   /* append midi */
   success = TRUE;
 
   for(i = 0; i < event_count; i++){
+    if(offset >= event_buffer + buffer_size){
+      return(FALSE);
+    }
+
     /* decode midi sequencer event */
     if((count = snd_midi_event_decode(midi_event,
 				      midi_buffer,
@@ -805,6 +818,15 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
   return(success);
 }
 
+/**
+ * ags_lv2_plugin_clear_event_buffer:
+ * @event_buffer: the event buffer
+ * @buffer_size: size of @event_buffer
+ *
+ * Clear the event buffer.
+ *
+ * Since: 0.7.7 
+ */
 void
 ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 				  guint buffer_size)
@@ -910,6 +932,19 @@ ags_lv2_plugin_concat_atom_sequence(void *sequence0, ...)
   return(sequence);
 }
 
+/**
+ * ags_lv2_plugin_atom_sequence_append_midi:
+ * @atom_sequence: the atom sequence
+ * @sequence_size: the atom sequence size
+ * @events: the events to write
+ * @event_count: the number of events to write
+ *
+ * Append MIDI data to atom sequence.
+ *
+ * Returns: %TRUE on success otherwise %FALSE
+ *
+ * Since: 0.7.7
+ */
 gboolean
 ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 					 guint sequence_size,
@@ -950,15 +985,15 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
     
     offset += (8 + sizeof(LV2_Atom_Sequence));
   }
-
-  if(offset >= atom_sequence + sequence_size){
-    return(FALSE);
-  }
   
   /* append midi */
   success = TRUE;
 
   for(i = 0; i < event_count; i++){
+    if(offset >= atom_sequence + sequence_size){
+      return(FALSE);
+    }
+  
     /* decode midi sequencer event */
     if((count = snd_midi_event_decode(midi_event,
 				      midi_buffer,
@@ -982,6 +1017,15 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
   return(success);
 }
 
+/**
+ * ags_lv2_plugin_clear_atom_sequence:
+ * @atom_sequence: the atom sequence
+ * @sequence_size: size of @atom_sequence
+ *
+ * Clear the atom sequence.
+ *
+ * Since: 0.7.7 
+ */
 void
 ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
 				   guint sequence_size)
