@@ -21,6 +21,8 @@
 
 #include <ags/lib/ags_string_util.h>
 
+#include <stdarg.h>
+
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -613,6 +615,246 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     base_plugin->port = g_list_reverse(port_descriptor_list);
   }
+}
+
+/**
+ * ags_lv2_plugin_alloc_event_buffer:
+ * @buffer_size: the allocated size
+ *
+ * Allocates a LV2_Event_Buffer
+ * 
+ * Returns: the new event buffer
+ * 
+ * Since: 0.7.7
+ */
+void*
+ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
+{
+  void *event_buffer, *iter;
+  
+  guint buffer_count;
+  guint padded_buffer_size;
+  
+  buffer_count = (guint) ceil(buffer_size / G_MAXUINT16);
+
+  if(buffer_count == 1){
+    if(buffer_size < 8){
+      padded_buffer_size = 8;
+    }else{
+      padded_buffer_size = buffer_size;
+    }
+    
+    event_buffer = (void *) malloc(padded_buffer_size + sizeof(LV2_Event));
+
+    memset(event_buffer, 0, buffer_size + sizeof(LV2_Event));
+    AGS_LV2_EVENT_BUFFER(event_buffer)->size = buffer_size;
+  }else{
+    guint i;
+
+    if(buffer_size % G_MAXUINT16 < 8){
+      padded_buffer_size = 8;
+    }else{
+      padded_buffer_size = buffer_size % G_MAXUINT16;
+    }
+
+    iter = 
+      event_buffer = (void *) malloc(((buffer_count - 1) * G_MAXUINT16 * sizeof(LV2_Event))  + (padded_buffer_size) + sizeof(LV2_Event));
+    memset(event_buffer, 0, ((buffer_count - 1) * G_MAXUINT16 * sizeof(LV2_Event))  + (buffer_size % G_MAXUINT16) + sizeof(LV2_Event));
+
+    for(i = 1; i < buffer_count; i++){
+      AGS_LV2_EVENT_BUFFER(iter)->size = G_MAXUINT16;
+
+      iter += (G_MAXUINT16 + sizeof(LV2_Event));
+    }
+
+    AGS_LV2_EVENT_BUFFER(iter)->size = buffer_size % G_MAXUINT16;
+  }
+
+  return(event_buffer);
+}
+
+/**
+ * ags_lv2_plugin_concat_event_buffer:
+ * @buffer0: the first buffer
+ * @...: %NULL terminated variadict arguments
+ *
+ * Concats the event buffers.
+ * 
+ * Returns: The newly allocated event buffer
+ * 
+ * Since: 0.7.7
+ */
+void*
+ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
+{
+  void *buffer;
+  void *current;
+  
+  va_list ap;
+
+  guint buffer_length, prev_length;
+
+  buffer_length = AGS_LV2_EVENT_BUFFER(buffer0)->size + sizeof(LV2_Event);
+
+  buffer = (void *) malloc(buffer_length);
+  memcpy(buffer, buffer0, buffer_length);
+  
+  va_start(ap, buffer0);
+
+  while((current = va_arg(ap, void *)) != NULL){
+    prev_length = buffer_length;
+    buffer_length += (AGS_LV2_EVENT_BUFFER(current)->size + sizeof(LV2_Event));
+    
+    buffer = (void *) realloc(buffer,
+			      buffer_length);
+    memcpy(buffer + prev_length, current, buffer_length - prev_length);
+  }
+
+  va_end(ap);
+
+  return(buffer);
+}
+
+gboolean
+ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
+					guint buffer_size,
+					snd_seq_event_t *events,
+					guint event_count)
+{
+  gboolean success;
+
+  success = FALSE;
+
+  //TODO:JK: implement me
+  
+  return(success);
+}
+
+void
+ags_lv2_plugin_clear_event_buffer(void *event_buffer,
+				  guint buffer_size)
+{
+  void *offset;
+
+  guint padded_buffer_size;
+
+  while(offset < event_buffer + buffer_size){
+    if(AGS_LV2_EVENT_BUFFER(offset)->size < 8){
+      padded_buffer_size = 8;
+    }else{
+      padded_buffer_size = AGS_LV2_EVENT_BUFFER(offset)->size;
+    }
+    
+    memset(offset + sizeof(LV2_Event), 0, padded_buffer_size);
+
+    offset += (padded_buffer_size + sizeof(LV2_Event));
+  }
+}
+
+/**
+ * ags_lv2_plugin_alloc_atom_sequence:
+ * @sequence_size: the requested size
+ *
+ * Allocates a LV2_Atom_Sequence
+ * 
+ * Returns: the new atom sequence
+ * 
+ * Since: 0.7.7
+ */
+void*
+ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
+{
+  void *atom_sequence, *current;
+  
+  guint padded_sequence_size;
+  guint sequence_count;
+  guint i;
+  
+  sequence_count = ceil(sequence_size / 8.0);
+  padded_sequence_size = (guint) 8 * sequence_count;
+
+  current = 
+    atom_sequence = (void *) malloc(padded_sequence_size + sequence_count * sizeof(LV2_Atom_Sequence));
+
+  for(i = 0; i < sequence_count; i++){
+    AGS_LV2_ATOM_SEQUENCE(current)->atom.size = 0;
+    AGS_LV2_ATOM_SEQUENCE(current)->atom.type = 0;
+    
+    AGS_LV2_ATOM_SEQUENCE(current)->body.unit = 0;
+    AGS_LV2_ATOM_SEQUENCE(current)->body.pad = 64;
+    
+    current += (8 + sizeof(LV2_Atom_Sequence));
+  }
+  
+  return(atom_sequence);
+}
+
+/**
+ * ags_lv2_plugin_concat_atom_sequence:
+ * @sequence0: the fist atom sequence
+ * @...: %NULL terminated variadict argument list
+ *
+ * Concats LV2_Atom_Sequence
+ * 
+ * Returns: the newly allocated atom sequence
+ * 
+ * Since: 0.7.7
+ */
+void*
+ags_lv2_plugin_concat_atom_sequence(void *sequence0, ...)
+{
+  void *sequence;
+  void *current;
+  
+  va_list ap;
+
+  guint sequence_length, prev_length;
+  guint i;
+
+  sequence_length = 8 + sizeof(LV2_Atom_Sequence);
+
+  sequence = (void *) malloc(sequence_length);
+  memcpy(sequence, sequence0, sequence_length);
+  
+  va_start(ap, sequence0);
+  i = 1;
+  
+  while((current = va_arg(ap, void *)) != NULL){
+    prev_length = sequence_length;
+    sequence_length += ((i + 1) * 8 + sizeof(LV2_Event));
+    
+    sequence = (void *) realloc(sequence,
+				sequence_length);
+    memcpy(sequence + prev_length, current, sequence_length - prev_length);
+
+    i++;
+  }
+
+  va_end(ap);
+
+  return(sequence);
+}
+
+gboolean
+ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
+					 guint sequence_size,
+					 snd_seq_event_t *events,
+					 guint event_count)
+{
+  gboolean success;
+
+  success = FALSE;
+
+  //TODO:JK: implement me
+  
+  return(success);
+}
+
+void
+ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
+				   guint sequence_size)
+{
+  //TODO:JK: implement me
 }
 
 /**

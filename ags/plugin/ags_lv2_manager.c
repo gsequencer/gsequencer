@@ -223,11 +223,13 @@ ags_lv2_manager_get_filenames()
   lv2_plugin = lv2_manager->lv2_plugin;
   filenames = NULL;
   
-  for(i = 0; lv2_plugin != NULL; i++){
+  for(i = 0; lv2_plugin != NULL;){
     if(filenames == NULL){
       filenames = (gchar **) malloc(2 * sizeof(gchar *));
       filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;
       filenames[i + 1] = NULL;
+
+      i++;
     }else{
       if(!g_strv_contains(filenames,
 			  AGS_BASE_PLUGIN(lv2_plugin->data)->filename)){
@@ -235,6 +237,8 @@ ags_lv2_manager_get_filenames()
 				       (i + 2) * sizeof(gchar *));
 	filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;
 	filenames[i + 1] = NULL;
+
+	i++;
       }
     }
     

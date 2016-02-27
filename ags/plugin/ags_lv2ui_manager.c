@@ -19,6 +19,8 @@
 
 #include <ags/plugin/ags_lv2ui_manager.h>
 
+#include <ags/lib/ags_string_util.h>
+
 #include <ags/object/ags_marshal.h>
 
 #include <dlfcn.h>
@@ -496,6 +498,7 @@ ags_lv2ui_manager_find_uri(gchar *filename,
   
   GList *uri_node;
 
+  gchar *escaped_effect;
   gchar *uri;
   gchar *str;
   
@@ -505,9 +508,10 @@ ags_lv2ui_manager_find_uri(gchar *filename,
   if(lv2ui_plugin == NULL){
     return(NULL);
   }
-  
-  str = g_strdup_printf("//rdf-triple//rdf-subject[ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':Plugin') + 1) = ':Plugin'] and ancestor::*[self::rdf-triple][1]//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name']]/following-sibling::*//rdf-string[text()='%s']]/ancestor::*[self::rdf-triple][1]//rdf-pname-ln[text()='uiext:ui']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iri",
-			effect);
+
+  escaped_effect = ags_string_util_escape_single_quote(effect);
+  str = g_strdup_printf("//rdf-triple//rdf-subject[ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':Plugin') + 1) = ':Plugin'] and ancestor::*[self::rdf-triple][1]//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name']]/following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple][1]//rdf-pname-ln[text()='uiext:ui']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iri",
+			escaped_effect);
   uri_node = ags_turtle_find_xpath(lv2ui_plugin->turtle,
 				   str);
   free(str);

@@ -27,6 +27,8 @@
 #include <ags/lib/ags_turtle.h>
 
 #include <lv2.h>
+#include <lv2/lv2plug.in/ns/ext/event/event.h>
+#include <lv2/lv2plug.in/ns/ext/atom/atom.h>
 
 #define AGS_TYPE_LV2_PLUGIN                (ags_lv2_plugin_get_type())
 #define AGS_LV2_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_PLUGIN, AgsLv2Plugin))
@@ -36,6 +38,11 @@
 #define AGS_LV2_PLUGIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_PLUGIN, AgsLv2PluginClass))
 
 #define AGS_LV2_PLUGIN_DESCRIPTOR(ptr) ((LV2_Descriptor *)(ptr))
+  
+#define AGS_LV2_EVENT_BUFFER(ptr) ((LV2_Event *)(ptr))
+#define AGS_LV2_EVENT_BUFFER_DATA(ptr) ((void *)(ptr + sizeof(LV2_Event)))
+
+#define AGS_LV2_ATOM_SEQUENCE(ptr) ((LV2_Atom_Sequence *)(ptr))
 
 typedef struct _AgsLv2Plugin AgsLv2Plugin;
 typedef struct _AgsLv2PluginClass AgsLv2PluginClass;
@@ -62,8 +69,25 @@ struct _AgsLv2PluginClass
 
 GType ags_lv2_plugin_get_type(void);
 
-gchar* ags_lv2_plugin_find_uri(AgsLv2Plugin *lv2_plugin,
-			       gchar *effect);
+void* ags_lv2_plugin_alloc_event_buffer(guint buffer_size);
+void* ags_lv2_plugin_concat_event_buffer(void *buffer0, ...);
+
+gboolean ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
+						 guint length,
+						 snd_seq_event_t *events,
+						 guint event_count);
+void ags_lv2_plugin_clear_event_buffer(void *event_buffer,
+				       guint buffer_size);
+
+void* ags_lv2_plugin_alloc_atom_sequence(guint sequence_size);
+void* ags_lv2_plugin_concat_atom_sequence(void *sequence0, ...);
+
+gboolean ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
+						  guint sequence_size,
+						  snd_seq_event_t *events,
+						  guint event_count);
+void ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
+					guint sequence_size);
 
 AgsLv2Plugin* ags_lv2_plugin_new(AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, guint effect_index);
 
