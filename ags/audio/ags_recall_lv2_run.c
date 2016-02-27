@@ -25,6 +25,7 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_uri_map_manager.h>
 
 #include <ags/audio/ags_port.h>
 
@@ -34,6 +35,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
 
 void ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run_class);
 void ags_recall_lv2_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -201,7 +204,14 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   double samplerate;
   uint32_t buffer_size;
   uint32_t i, i_stop;
-  static const LV2_Feature **feature = {
+
+  LV2_URI_Map_Callback_Data uri_map_manager = ags_lv2_uri_map_manager_get_instance();
+  LV2_URI_Map_Feature uri_map_feature = {
+    uri_map_manager,
+    ags_lv2_uri_map_manager_uri_to_id,
+  };
+  LV2_Feature **feature = {
+    { LV2_URI_MAP_URI, uri_map_feature },
     NULL,
   };
   
