@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <stdarg.h>
+
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/lib/ags_turtle.h>
 

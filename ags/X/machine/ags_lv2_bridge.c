@@ -572,7 +572,7 @@ ags_lv2_bridge_set_property(GObject *gobject,
 								 lv2_bridge->uri,
 								 bundle_path,
 								 ags_lv2_bridge_lv2ui_write_function,
-								 lv2_bridge->lv2_gui,
+								 lv2_bridge,
 								 &widget,
 								 feature);
 	      lv2_bridge->ui_widget = widget;
