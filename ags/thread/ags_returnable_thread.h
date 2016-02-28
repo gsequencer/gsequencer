@@ -46,6 +46,7 @@ typedef void (*AgsReturnableThreadCallback)(AgsReturnableThread *returnable_thre
 typedef enum{
   AGS_RETURNABLE_THREAD_IN_USE              = 1,
   AGS_RETURNABLE_THREAD_RESET               = 1 << 1,
+  AGS_RETURNABLE_THREAD_RUN_ONCE            = 1 << 2,
 }AgsReturnableThreadFlags;
 
 struct _AgsReturnableThread

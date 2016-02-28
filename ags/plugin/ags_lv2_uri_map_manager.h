@@ -53,12 +53,12 @@ struct _AgsLv2UriMapManagerClass
 GType ags_lv2_uri_map_manager_get_type(void);
 
 gboolean ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
-					gchar *uri, uint32_t id);
+					gchar *uri, GValue *id);
 gboolean ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
 					gchar *uri);
 
-uint32_t ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
-					gchar *uri);
+GValue* ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
+				       gchar *uri);
 
 void ags_lv2_uri_map_manager_load_default(AgsLv2UriMapManager *lv2_uri_map_manager);
 

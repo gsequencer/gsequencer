@@ -155,7 +155,7 @@ ags_lv2_uri_map_manager_destroy_data(gpointer data)
  */
 gboolean
 ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
-			       gchar *uri, uint32_t id)
+			       gchar *uri, GValue *id)
 {
   return(g_hash_table_insert(lv2_uri_map_manager->uri_map,
 			     uri, id));
@@ -176,13 +176,15 @@ gboolean
 ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
 			       gchar *uri)
 {
-  uint32_t id;
+  GValue *id;
 
   id = g_hash_table_lookup(lv2_uri_map_manager->uri_map,
 			   uri);
 
-  g_hash_table_remove(lv2_uri_map_manager->uri_map,
-		      uri);
+  if(id != NULL){
+    g_hash_table_remove(lv2_uri_map_manager->uri_map,
+			uri);
+  }
   
   return(TRUE);
 }
@@ -198,12 +200,11 @@ ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
  *
  * Since: 0.7.7
  */
-uint32_t
+GValue*
 ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
 			       gchar *uri)
 {
   GValue *value;
-  uint32_t id;
 
   value = (GValue *) g_hash_table_lookup(lv2_uri_map_manager->uri_map,
 					 uri);
@@ -223,7 +224,7 @@ ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
     lv2_uri_map_manager->id_counter++;
   }
   
-  return(id);
+  return(value);
 }
 
 void
@@ -233,13 +234,12 @@ ags_lv2_uri_map_manager_load_default(AgsLv2UriMapManager *lv2_uri_map_manager)
   gchar **str;
   
   static const gchar **default_uri = {
-    //insert here default loaded uris
     NULL,
   };
 
   str = default_uri;
 
-  while(*str != NULL){
+  while(str[0] != NULL){
     value = g_new0(GValue,
 		   1);
     g_value_init(value,
@@ -261,8 +261,14 @@ ags_lv2_uri_map_manager_uri_to_id(LV2_URI_Map_Callback_Data callback_data,
 				  char *map,
 				  char *uri)
 {
-  return(ags_lv2_uri_map_manager_lookup((AgsLv2UriMapManager *) callback_data,
-					uri));
+  GValue *value;
+  uint32_t id;
+  
+  value = ags_lv2_uri_map_manager_lookup(ags_lv2_uri_map_manager_get_instance(),
+					 uri);
+  id = g_value_get_ulong(value);
+  
+  return(id);
 }
 
 /**
@@ -280,7 +286,7 @@ ags_lv2_uri_map_manager_get_instance()
   if(ags_lv2_uri_map_manager == NULL){
     ags_lv2_uri_map_manager = ags_lv2_uri_map_manager_new();
     
-    ags_lv2_uri_map_manager_load_default(ags_lv2_uri_map_manager);
+    //    ags_lv2_uri_map_manager_load_default(ags_lv2_uri_map_manager);
   }
 
   return(ags_lv2_uri_map_manager);
