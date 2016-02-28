@@ -52,20 +52,6 @@ struct _AgsLv2UriMapManagerClass
 
 GType ags_lv2_uri_map_manager_get_type(void);
 
-gboolean ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
-					gchar *uri, GValue *id);
-gboolean ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
-					gchar *uri);
-
-GValue* ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
-				       gchar *uri);
-
-void ags_lv2_uri_map_manager_load_default(AgsLv2UriMapManager *lv2_uri_map_manager);
-
-uint32_t ags_lv2_uri_map_manager_uri_to_id(LV2_URI_Map_Callback_Data callback_data,
-					   char *map,
-					   char *uri);
-
 AgsLv2UriMapManager* ags_lv2_uri_map_manager_get_instance();
 AgsLv2UriMapManager* ags_lv2_uri_map_manager_new();
 

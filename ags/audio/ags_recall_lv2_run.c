@@ -26,6 +26,9 @@
 
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
+#include <ags/plugin/ags_lv2_log_manager.h>
+#include <ags/plugin/ags_lv2_worker_manager.h>
+#include <ags/plugin/ags_lv2_worker.h>
 
 #include <ags/audio/ags_port.h>
 
@@ -205,13 +208,29 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   uint32_t buffer_size;
   uint32_t i, i_stop;
 
-  LV2_URI_Map_Callback_Data uri_map_manager = ags_lv2_uri_map_manager_get_instance();
+  LV2_URI_Map_Callback_Data uri_map_manager = NULL;
   LV2_URI_Map_Feature uri_map_feature = {
     uri_map_manager,
     ags_lv2_uri_map_manager_uri_to_id,
   };
+  
+  LV2_Worker_Schedule_Handle worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
+  LV2_Worker_Schedule worker_schedule = {
+    worker_handle,
+    ags_lv2_worker_schedule_work,
+  };
+
+  LV2_Log_Handle log_handle = NULL;
+  LV2_Log_Log log = {
+    log_handle,
+    ags_lv2_log_manager_printf,
+    ags_lv2_log_manager_vprintf,
+  };
+  
   LV2_Feature **feature = {
-    { LV2_URI_MAP_URI, uri_map_feature },
+    { LV2_URI_MAP_URI, &uri_map_feature },
+    { LV2_WORKER__schedule, &worker_schedule },
+    { LV2_LOG__log, &log },
     NULL,
   };
   
@@ -231,22 +250,22 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   samplerate = audio_signal->samplerate;
   buffer_size = audio_signal->buffer_size;
 
-  recall_lv2_run->input = (float *) malloc(recall_lv2->input_lines *
-					   buffer_size *
-					   sizeof(float));
-  recall_lv2_run->output = (float *) malloc(recall_lv2->output_lines *
-					    buffer_size *
-					    sizeof(float));
-
-  recall_lv2_run->lv2_handle = (LV2_Handle *) malloc(recall_lv2->input_lines *
-						     sizeof(LV2_Handle));
-
   if(recall_lv2->input_lines < recall_lv2->output_lines){
     i_stop = recall_lv2->output_lines;
   }else{
     i_stop = recall_lv2->input_lines;
   }
   
+  recall_lv2_run->input = (float *) malloc(i_stop *
+					   buffer_size *
+					   sizeof(float));
+  recall_lv2_run->output = (float *) malloc(i_stop *
+					    buffer_size *
+					    sizeof(float));
+
+  recall_lv2_run->lv2_handle = (LV2_Handle *) malloc(i_stop *
+						     sizeof(LV2_Handle));
+
   for(i = 0; i < i_stop; i++){
     /* instantiate lv2 */
     recall_lv2_run->lv2_handle[i] = (LV2_Handle *) recall_lv2->plugin_descriptor->instantiate(recall_lv2->plugin_descriptor,
@@ -263,13 +282,13 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   /* can't be done in ags_recall_lv2_run_run_init_inter since possebility of overlapping buffers */
   /* connect audio port */
-  for(i = 0; i < recall_lv2->input_lines; i++){
+  for(i = 0; i < i_stop; i++){
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
 						recall_lv2->input_port[i],
 						recall_lv2_run->input);
   }
 
-  for(i = 0; i < recall_lv2->output_lines; i++){
+  for(i = 0; i < i_stop; i++){
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
 						recall_lv2->output_port[i],
 						recall_lv2_run->output);
@@ -278,19 +297,23 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   /* connect event port */
   if((AGS_RECALL_LV2_HAS_EVENT_PORT & (recall_lv2->flags)) != 0){
     recall_lv2_run->event_port = ags_lv2_plugin_alloc_event_buffer(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
-
-    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
-						recall_lv2->event_port,
-						recall_lv2_run->event_port);
+      
+    for(i = 0; i < i_stop; i++){
+      recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
+						  recall_lv2->event_port,
+						  recall_lv2_run->event_port);
+    }
   }
   
   /* connect atom port */
   if((AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
     recall_lv2_run->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
     
-    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
-						recall_lv2->atom_port,
-						recall_lv2_run->atom_port);
+    for(i = 0; i < i_stop; i++){
+      recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
+						  recall_lv2->atom_port,
+						  recall_lv2_run->atom_port);
+    }
   }
   
   /* activate */
