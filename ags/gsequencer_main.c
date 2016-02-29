@@ -44,6 +44,7 @@
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_worker_manager.h>
 #include <ags/plugin/ags_lv2ui_manager.h>
 
 #include <ags/audio/ags_sound_provider.h>
@@ -142,6 +143,7 @@ main(int argc, char **argv)
   AgsDssiManager *dssi_manager;
   AgsLv2Manager *lv2_manager;;
   AgsLv2uiManager *lv2ui_manager;
+  AgsLv2WorkerManager *worker_manager;
   
   AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *gui_thread, *task_thread;
@@ -249,9 +251,12 @@ main(int argc, char **argv)
 
   /* load managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
-  dssi_manager = ags_dssi_manager_get_instance();
-  lv2_manager = ags_lv2_manager_get_instance();
 
+  dssi_manager = ags_dssi_manager_get_instance();
+
+  lv2_manager = ags_lv2_manager_get_instance();
+  worker_manager = ags_lv2_worker_manager_get_instance();
+  
   lv2ui_manager = ags_lv2ui_manager_get_instance();
   
   /* init gsequencer */
@@ -269,6 +274,8 @@ main(int argc, char **argv)
 
   config = application_context->config;
 
+  worker_manager->thread_pool = thread_pool;
+  
   /* JACK */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,

@@ -65,7 +65,7 @@ ags_lv2_worker_get_type()
       NULL, /* interface_data */
     };
     
-    ags_type_lv2_worker = g_type_register_static(AGS_TYPE_THREAD,
+    ags_type_lv2_worker = g_type_register_static(G_TYPE_OBJECT,
 						 "AgsLv2Worker\0",
 						 &ags_lv2_worker_info,
 						 0);
@@ -129,9 +129,12 @@ ags_lv2_worker_finalize(GObject *gobject)
 }
 
 void
-ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, AgsLv2Worker *lv2_worker)
+ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, gpointer data)
 {
+  AgsLv2Worker *lv2_worker;
   GList *response_data;
+
+  lv2_worker = g_atomic_pointer_get(&(returnable_thread->safe_data));
 
   if((AGS_LV2_WORKER_RUN & (g_atomic_int_get(&(lv2_worker->flags)))) != 0){
     /* work */

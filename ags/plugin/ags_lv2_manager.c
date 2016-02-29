@@ -267,6 +267,11 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
   
   GList *list;
 
+  if(filename == NULL ||
+     effect == NULL){
+    return(NULL);
+  }
+  
   lv2_manager = ags_lv2_manager_get_instance();
   list = lv2_manager->lv2_plugin;
   
@@ -338,7 +343,6 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
   path = g_strdup_printf("%s/%s\0",
 			 ags_lv2_default_path,
 			 filename);
-  g_message("ags_lv2_manager.c loading - %s\0", path);
 
   xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0";
   effect_list = ags_turtle_find_xpath(turtle,
@@ -364,10 +368,10 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 
     effect = g_strndup(str + 1,
 		       strlen(str) - 2);
-
+    
     /* find URI */
     escaped_effect = ags_string_util_escape_single_quote(effect);
-    xpath = "//rdf-triple//rdf-subject[ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':Plugin') + 1) = ':Plugin'] and ancestor::*[self::rdf-triple][1]//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name']]/following-sibling::*//rdf-string[text()='\"%s\"']]/rdf-iri\0";
+    xpath = "//rdf-triple//rdf-string[text()='\"%s\"']/ancestor::*[self::rdf-triple][1]/rdf-subject/rdf-iri\0";
     
     xpath = g_strdup_printf(xpath,
 			    escaped_effect);
@@ -491,8 +495,24 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
   
     if(dlerror() == NULL && lv2_descriptor){
       for(i = 0; (plugin_descriptor = lv2_descriptor(i)) != NULL; i++){
-	if(!g_ascii_strcasecmp(plugin_descriptor->URI,
+	if(path != NULL &&
+	   effect != NULL &&
+	   uri != NULL &&
+	   !g_ascii_strcasecmp(plugin_descriptor->URI,
 			       uri)){
+	  /* check if already added */
+	  lv2_plugin = ags_lv2_manager_find_lv2_plugin(path,
+						       effect);
+
+	  if(lv2_plugin != NULL){
+	    break;
+	  }
+
+	  g_message("ags_lv2_manager.c loading - %s::%s as %s\0",
+		    path,
+		    turtle->filename,
+		    effect);
+
 	  lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
 				    "turtle\0", turtle,
 				    "filename\0", path,
@@ -581,12 +601,7 @@ ags_lv2_manager_load_default_directory()
 
       /* read binary from turtle */
       binary_list = ags_turtle_find_xpath(manifest,
-					  "//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]/following-sibling::rdf-object-list//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0");
-
-      
-      /* read turtle from manifest */
-      ttl_list = ags_turtle_find_xpath(manifest,
-				       "//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]/following-sibling::rdf-object-list//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0");
+					  "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0");
 
       /* persist XML */
       //NOTE:JK: no need for it
@@ -599,14 +614,39 @@ ags_lv2_manager_load_default_directory()
       //      fflush(out);
             
       /* load */
-      while(ttl_list != NULL &&
-	    binary_list != NULL){
+      while(binary_list != NULL){
+	/* read filename of binary */
+	str = xmlNodeGetContent((xmlNode *) binary_list->data);
+
+	if(str == NULL){
+	  binary_list = binary_list->next;
+	  continue;
+	}
+	
+	str = g_strndup(&(str[1]),
+			strlen(str) - 2);
+	filename = g_strdup_printf("%s/%s\0",
+				   path,
+				   str);
+	free(str);
+
+	/* read turtle from manifest */
+	ttl_list = ags_turtle_find_xpath_with_context_node(manifest,
+							   "./ancestor::*[self::rdf-triple][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0",
+							   (xmlNode *) binary_list->data);
+
+	if(ttl_list == NULL){
+	  binary_list = binary_list->next;
+
+	  continue;
+	}
+	
 	/* read filename */
 	turtle_path = xmlNodeGetContent((xmlNode *) ttl_list->data);
 
 	if(turtle_path == NULL){
-	  ttl_list = ttl_list->next;
 	  binary_list = binary_list->next;
+	  
 	  continue;
 	}
 	
@@ -616,8 +656,8 @@ ags_lv2_manager_load_default_directory()
 	if(!g_ascii_strncasecmp(turtle_path,
 				"http://\0",
 				7)){
-	  ttl_list = ttl_list->next;
 	  binary_list = binary_list->next;
+	  
 	  continue;
 	}
 
@@ -630,22 +670,6 @@ ags_lv2_manager_load_default_directory()
 	ags_turtle_load(turtle,
 			NULL);
 
-	/* read filename of binary */
-	str = xmlNodeGetContent((xmlNode *) binary_list->data);
-
-	if(str == NULL){
-	  ttl_list = ttl_list->next;
-	  binary_list = binary_list->next;
-	  continue;
-	}
-	
-	str = g_strndup(&(str[1]),
-			strlen(str) - 2);
-	filename = g_strdup_printf("%s/%s\0",
-				   path,
-				   str);
-	free(str);
-	
 	/* load specified plugin */
 	ags_lv2_manager_load_file(turtle,
 				  filename);
@@ -661,7 +685,6 @@ ags_lv2_manager_load_default_directory()
 	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
 
 	
-	ttl_list = ttl_list->next;
 	binary_list = binary_list->next;
       }
 

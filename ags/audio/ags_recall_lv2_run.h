@@ -44,7 +44,8 @@ struct _AgsRecallLv2Run
   AgsRecallAudioSignal recall_audio_signal;
 
   LV2_Handle *lv2_handle;
-
+  LV2_Feature **feature;
+  
   float *input;
   float *output;
 

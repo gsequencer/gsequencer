@@ -388,7 +388,9 @@ ags_thread_pool_creation_thread(void *ptr)
 	running_thread_next = running_thread->next;
 	returnable_thread = running_thread->data;
 
-	if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) == 0){
+	if(returnable_thread != NULL &&
+	   AGS_IS_RETURNABLE_THREAD(returnable_thread) &&
+	   (AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) == 0){
 	  /* remove from thread-pool */
 	  tmp_list = g_atomic_pointer_get(&(thread_pool->running_thread));
 	  g_atomic_pointer_set(&(thread_pool->running_thread),

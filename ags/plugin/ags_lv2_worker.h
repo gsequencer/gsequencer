@@ -92,7 +92,7 @@ LV2_Worker_Status ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle
 					       uint32_t size,
 					       const void* data);
 
-void ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, AgsLv2Worker *lv2_worker);
+void ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, gpointer data);
 
 AgsLv2Worker* ags_lv2_worker_new();
 
