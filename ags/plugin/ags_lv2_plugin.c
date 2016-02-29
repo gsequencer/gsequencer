@@ -720,7 +720,7 @@ ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
 {
   void *event_buffer;
   
-  guint padded_buffer_size;
+  uint32_t padded_buffer_size;
 
   if(buffer_size > G_MAXUINT16){
     return(NULL);
@@ -732,10 +732,18 @@ ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
     padded_buffer_size = buffer_size;
   }
     
-  event_buffer = (void *) malloc(padded_buffer_size + sizeof(LV2_Event));
+  event_buffer = (void *) malloc(padded_buffer_size + sizeof(LV2_Event_Buffer));
+  memset(event_buffer, 0, padded_buffer_size + sizeof(LV2_Event_Buffer));
 
-  memset(event_buffer, 0, buffer_size + sizeof(LV2_Event));
-  AGS_LV2_EVENT_BUFFER(event_buffer)->size = buffer_size;
+  AGS_LV2_EVENT_BUFFER(event_buffer)->data = event_buffer + sizeof(LV2_Event_Buffer);
+
+  AGS_LV2_EVENT_BUFFER(event_buffer)->header_size = sizeof(LV2_Event_Buffer);
+
+  AGS_LV2_EVENT_BUFFER(event_buffer)->stamp_type = 0;
+  AGS_LV2_EVENT_BUFFER(event_buffer)->capacity = padded_buffer_size;
+
+  AGS_LV2_EVENT_BUFFER(event_buffer)->event_count = 0;
+  AGS_LV2_EVENT_BUFFER(event_buffer)->size = 0;
 
   return(event_buffer);
 }
@@ -761,7 +769,7 @@ ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
 
   guint buffer_length, prev_length;
 
-  buffer_length = AGS_LV2_EVENT_BUFFER(buffer0)->size + sizeof(LV2_Event);
+  buffer_length = AGS_LV2_EVENT_BUFFER(buffer0)->capacity + sizeof(LV2_Event_Buffer);
 
   buffer = (void *) malloc(buffer_length);
   memcpy(buffer, buffer0, buffer_length);
@@ -770,7 +778,7 @@ ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
 
   while((current = va_arg(ap, void*)) != NULL){
     prev_length = buffer_length;
-    buffer_length += (AGS_LV2_EVENT_BUFFER(current)->size + sizeof(LV2_Event));
+    buffer_length += (AGS_LV2_EVENT_BUFFER(current)->capacity + sizeof(LV2_Event_Buffer));
     
     buffer = (void *) realloc(buffer,
 			      buffer_length);
@@ -827,52 +835,47 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
   }
 
   /* find offset */
-  offset = event_buffer;
-  
-  while(offset < event_buffer + buffer_size){
-    if(AGS_LV2_EVENT_BUFFER(offset)->type == 0){
-      break;
-    }
-
-    if(AGS_LV2_EVENT_BUFFER(offset)->size < 8){
-      padded_buffer_size = 8;
-    }else{
-      padded_buffer_size = AGS_LV2_EVENT_BUFFER(offset)->size;
-    }
-    
-    offset += (8 + sizeof(LV2_Event_Buffer));
-  }
+  offset = AGS_LV2_EVENT_BUFFER(event_buffer)->data;
+  offset += AGS_LV2_EVENT_BUFFER(event_buffer)->size;
   
   /* append midi */
   success = TRUE;
 
   for(i = 0; i < event_count; i++){
-    if(offset >= event_buffer + buffer_size){
+    if(offset >= AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size){
       return(FALSE);
     }
 
     /* decode midi sequencer event */
-    if((count = snd_midi_event_decode(midi_event,
-				      midi_buffer,
-				      8,
-				      &(events[i]))) <= AGS_LV2_EVENT_BUFFER(offset)->size){
-      AGS_LV2_EVENT_BUFFER(offset)->type = ags_lv2_uri_map_manager_lookup(uri_map_manager,
-									  LV2_MIDI__MidiEvent);
-      
-      memcpy(offset + sizeof(LV2_Event_Buffer), midi_buffer, count * sizeof(unsigned char));
-      
-      if(AGS_LV2_EVENT_BUFFER(offset)->size < 8){
-	padded_buffer_size = 8;
-      }else{
-	padded_buffer_size = AGS_LV2_EVENT_BUFFER(offset)->size;
-      }
-      
-      offset += (padded_buffer_size + sizeof(LV2_Event));
+    count = snd_midi_event_decode(midi_event,
+				  midi_buffer,
+				  8,
+				  &(events[i]));
+    
+    if(count < 8){
+      padded_buffer_size = 8;
     }else{
-      success = FALSE;
-
-      break;
+      padded_buffer_size = count;
     }
+    
+    if(AGS_LV2_EVENT_BUFFER(event_buffer)->size + padded_buffer_size >= buffer_size){
+      return(FALSE);
+    }
+    
+    AGS_LV2_EVENT_BUFFER(event_buffer)->size += (padded_buffer_size + sizeof(LV2_Event));
+    AGS_LV2_EVENT_BUFFER(event_buffer)->event_count += 1;
+    
+    AGS_LV2_EVENT(offset)->frames = 0;
+    AGS_LV2_EVENT(offset)->subframes = 0;
+    AGS_LV2_EVENT(offset)->type = ags_lv2_uri_map_manager_uri_to_id(NULL,
+								    LV2_EVENT_URI,
+								    LV2_MIDI__MidiEvent);
+    AGS_LV2_EVENT(offset)->size = count;
+      
+    memcpy(offset + sizeof(LV2_Event), midi_buffer, count * sizeof(unsigned char));
+    g_message("copied MIDI\0");
+      
+    offset += (padded_buffer_size + sizeof(LV2_Event));
   }
   
   return(success);
@@ -895,17 +898,13 @@ ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 
   guint padded_buffer_size;
 
-  while(offset < event_buffer + buffer_size){
-    if(AGS_LV2_EVENT_BUFFER(offset)->size < 8){
-      padded_buffer_size = 8;
-    }else{
-      padded_buffer_size = AGS_LV2_EVENT_BUFFER(offset)->size;
-    }
-    
-    memset(offset + sizeof(LV2_Event), 0, padded_buffer_size);
-
-    offset += (padded_buffer_size + sizeof(LV2_Event));
+  if(buffer_size < 8){
+    padded_buffer_size = 8;
+  }else{
+    padded_buffer_size = buffer_size;
   }
+  
+  memset(offset + sizeof(LV2_Event_Buffer), 0, padded_buffer_size);
 }
 
 /**

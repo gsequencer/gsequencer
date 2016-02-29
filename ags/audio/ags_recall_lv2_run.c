@@ -25,6 +25,7 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_event_manager.h>
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
 #include <ags/plugin/ags_lv2_log_manager.h>
 #include <ags/plugin/ags_lv2_worker_manager.h>
@@ -42,6 +43,7 @@
 #include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
 #include <lv2/lv2plug.in/ns/ext/worker/worker.h>
 #include <lv2/lv2plug.in/ns/ext/log/log.h>
+#include <lv2/lv2plug.in/ns/ext/event/event.h>
 
 void ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run_class);
 void ags_recall_lv2_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -222,25 +224,15 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   uint32_t buffer_size;
   uint32_t i, i_stop;
 
-  LV2_URI_Map_Callback_Data uri_map_manager = NULL;
-  LV2_URI_Map_Feature uri_map_feature = {
-    uri_map_manager,
-    ags_lv2_uri_map_manager_uri_to_id,
-  };
+  LV2_URI_Map_Feature *uri_map_feature;
   
   LV2_Worker_Schedule_Handle worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
-  LV2_Worker_Schedule worker_schedule = {
-    worker_handle,
-    ags_lv2_worker_schedule_work,
-  };
+  LV2_Worker_Schedule *worker_schedule;
 
-  LV2_Log_Handle log_handle = NULL;
-  LV2_Log_Log log = {
-    log_handle,
-    ags_lv2_log_manager_printf,
-    ags_lv2_log_manager_vprintf,
-  };
-  
+  LV2_Log_Log *log_feature;
+
+  LV2_Event_Feature *event_feature;
+
   LV2_Feature **feature;
   
   /* call parent */
@@ -254,21 +246,49 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   /**/
   recall_lv2_run->feature = 
-    feature = (LV2_Feature **) malloc(4 * sizeof(LV2_Feature *));
+    feature = (LV2_Feature **) malloc(5 * sizeof(LV2_Feature *));
 
+  /* URI map feature */
+  uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
+  uri_map_feature->callback_data = NULL;
+  uri_map_feature->uri_to_id = ags_lv2_uri_map_manager_uri_to_id;
+  
   feature[0] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
   feature[0]->URI = LV2_URI_MAP_URI;
-  feature[0]->data = &uri_map_feature;
+  feature[0]->data = uri_map_feature;
+
+  /* worker feature */
+  worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
+  worker_schedule->handle = worker_handle;
+  worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
   
   feature[1] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
   feature[1]->URI = LV2_WORKER__schedule;
-  feature[1]->data = &worker_schedule;
+  feature[1]->data = worker_schedule;
+
+  /* log feature */
+  log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
+  
+  log_feature->handle = NULL;
+  log_feature->printf = ags_lv2_log_manager_printf;
+  log_feature->vprintf = ags_lv2_log_manager_vprintf;
 
   feature[2] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
   feature[2]->URI = LV2_LOG__log;
-  feature[2]->data = &log;
+  feature[2]->data = log_feature;
 
-  feature[3] = NULL;
+  /* event feature */
+  event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
+  
+  event_feature->callback_data = NULL;
+  event_feature->lv2_event_ref = ags_lv2_event_manager_lv2_event_ref;
+  event_feature->lv2_event_unref = ags_lv2_event_manager_lv2_event_unref;
+  
+  feature[3] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[3]->URI = LV2_EVENT_URI;
+  feature[3]->data = event_feature;
+
+  feature[4] = NULL;
 
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
@@ -333,7 +353,6 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						recall_lv2->event_port,
 						recall_lv2_run->event_port);
-
   }
   
   /* connect atom port */
@@ -344,7 +363,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						recall_lv2->atom_port,
-						recall_lv2_run->atom_port);    
+						recall_lv2_run->atom_port);   
   }
 
   /* activate */
@@ -377,9 +396,14 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
 
-  memset(recall_lv2_run->output, 0, recall_lv2->output_lines * buffer_size * sizeof(float));
-  memset(recall_lv2_run->input, 0, recall_lv2->input_lines * buffer_size * sizeof(float));
+  if(recall_lv2_run->output != NULL){
+    memset(recall_lv2_run->output, 0, recall_lv2->output_lines * buffer_size * sizeof(float));
+  }
 
+  if(recall_lv2_run->input != NULL){
+    memset(recall_lv2_run->input, 0, recall_lv2->input_lines * buffer_size * sizeof(float));
+  }
+  
   if(audio_signal->stream_current == NULL){
     for(i = 0; i < recall_lv2->input_lines; i++){
       /* deactivate */
@@ -505,3 +529,4 @@ ags_recall_lv2_run_new(AgsAudioSignal *audio_signal)
 
   return(recall_lv2_run);
 }
+

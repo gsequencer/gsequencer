@@ -41,8 +41,9 @@
 
 #define AGS_LV2_PLUGIN_DESCRIPTOR(ptr) ((LV2_Descriptor *)(ptr))
   
-#define AGS_LV2_EVENT_BUFFER(ptr) ((LV2_Event *)(ptr))
-#define AGS_LV2_EVENT_BUFFER_DATA(ptr) ((void *)(ptr + sizeof(LV2_Event)))
+#define AGS_LV2_EVENT_BUFFER(ptr) ((LV2_Event_Buffer *)(ptr))
+#define AGS_LV2_EVENT(ptr) ((LV2_Event *)(ptr))
+#define AGS_LV2_EVENT_DATA(ptr) ((void *)(ptr + sizeof(LV2_Event)))
 
 #define AGS_LV2_ATOM_SEQUENCE(ptr) ((LV2_Atom_Sequence *)(ptr))
 

@@ -1,0 +1,4 @@
+uint32_t ags_lv2_event_manager_lv2_event_ref(LV2_Event_Callback_Data callback_data,
+					     LV2_Event *event);
+uint32_t ags_lv2_event_manager_lv2_event_unref(LV2_Event_Callback_Data callback_data,
+					       LV2_Event *event);

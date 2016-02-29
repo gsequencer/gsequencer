@@ -48,8 +48,6 @@ void ags_route_lv2_audio_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_HAS_ATOM_PORT,
-  PROP_HAS_EVENT_PORT,
   PROP_NOTATION_INPUT,
   PROP_SEQUENCER_INPUT,
 };
@@ -58,16 +56,12 @@ static gpointer ags_route_lv2_audio_parent_class = NULL;
 
 static const gchar *ags_route_lv2_audio_plugin_name = "ags-count-beats\0";
 static const gchar *ags_route_lv2_audio_specifier[] = {
-  "./has-atom-port[]\0",
-  "./has-event-port[]\0",
   "./notation-input[0]\0",
   "./sequencer-input[0]\0",
 };
 static const gchar *ags_route_lv2_audio_control_port[] = {
-  "1/4\0",
-  "2/4\0",
-  "3/4\0",
-  "4/4\0",
+  "1/2\0",
+  "2/2\0",
 };
 
 GType
@@ -130,38 +124,6 @@ ags_route_lv2_audio_class_init(AgsRouteLv2AudioClass *route_lv2_audio)
 
   /* properties */
   /**
-   * AgsRouteLv2Audio:has-atom-port:
-   *
-   * If enabled input is taken of #AgsNotation.
-   * 
-   * Since: 0.7.7
-   */
-  param_spec = g_param_spec_object("has-atom-port\0",
-				   "route notation input by atom port\0",
-				   "Route notation as input by atom port to the LV2 recall.\0",
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_HAS_ATOM_PORT,
-				  param_spec);
-
-  /**
-   * AgsRouteLv2Audio:has-event-port:
-   *
-   * If enabled input is taken of #AgsNotation.
-   * 
-   * Since: 0.7.7
-   */
-  param_spec = g_param_spec_object("has-event-port\0",
-				   "route notation input by event port\0",
-				   "Route notation as input by event port to the LV2 recall.\0",
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_HAS_EVENT_PORT,
-				  param_spec);
-
-  /**
    * AgsRouteLv2Audio:notation-input:
    *
    * If enabled input is taken of #AgsNotation.
@@ -205,36 +167,6 @@ ags_route_lv2_audio_init(AgsRouteLv2Audio *route_lv2_audio)
   AGS_RECALL(route_lv2_audio)->xml_type = "ags-count-beats-audio\0";
 
   port = NULL;
-
-  /* has atom port */
-  route_lv2_audio->has_atom_port = g_object_new(AGS_TYPE_PORT,
-						"plugin-name\0", ags_route_lv2_audio_plugin_name,
-						"specifier\0", ags_route_lv2_audio_specifier[0],
-						"control-port\0", ags_route_lv2_audio_control_port[0],
-						"port-value-is-pointer\0", FALSE,
-						"port-value-type\0", G_TYPE_BOOLEAN,
-						"port-value-size\0", sizeof(gboolean),
-						"port-value-length", 1,
-						NULL);
-
-  route_lv2_audio->has_atom_port->port_value.ags_port_boolean = FALSE;
-
-  port = g_list_prepend(port, route_lv2_audio->has_atom_port);
-
-  /* notation input */
-  route_lv2_audio->has_event_port = g_object_new(AGS_TYPE_PORT,
-						 "plugin-name\0", ags_route_lv2_audio_plugin_name,
-						 "specifier\0", ags_route_lv2_audio_specifier[1],
-						 "control-port\0", ags_route_lv2_audio_control_port[1],
-						 "port-value-is-pointer\0", FALSE,
-						 "port-value-type\0", G_TYPE_BOOLEAN,
-						 "port-value-size\0", sizeof(gboolean),
-						 "port-value-length", 1,
-						 NULL);
-
-  route_lv2_audio->has_event_port->port_value.ags_port_boolean = FALSE;
-
-  port = g_list_prepend(port, route_lv2_audio->has_event_port);
 
   /* notation input */
   route_lv2_audio->notation_input = g_object_new(AGS_TYPE_PORT,
@@ -281,48 +213,6 @@ ags_route_lv2_audio_set_property(GObject *gobject,
   route_lv2_audio = AGS_ROUTE_LV2_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_HAS_ATOM_PORT:
-    {
-      AgsPort *port;
-
-      port = (AgsPort *) g_value_get_object(value);
-
-      if(port == route_lv2_audio->has_atom_port){
-	return;
-      }
-
-      if(route_lv2_audio->has_atom_port != NULL){
-	g_object_unref(G_OBJECT(route_lv2_audio->has_atom_port));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      route_lv2_audio->has_atom_port = port;
-    }
-    break;
-  case PROP_HAS_EVENT_PORT:
-    {
-      AgsPort *port;
-
-      port = (AgsPort *) g_value_get_object(value);
-
-      if(port == route_lv2_audio->has_event_port){
-	return;
-      }
-
-      if(route_lv2_audio->has_event_port != NULL){
-	g_object_unref(G_OBJECT(route_lv2_audio->has_event_port));
-      }
-      
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      route_lv2_audio->has_event_port = port;
-    }
-    break;
   case PROP_NOTATION_INPUT:
     {
       AgsPort *port;
@@ -382,16 +272,6 @@ ags_route_lv2_audio_get_property(GObject *gobject,
   route_lv2 = AGS_ROUTE_LV2_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_HAS_ATOM_PORT:
-    {
-      g_value_set_object(value, route_lv2->has_atom_port);
-    }
-    break;
-  case PROP_HAS_EVENT_PORT:
-    {
-      g_value_set_object(value, route_lv2->has_event_port);
-    }
-    break;
   case PROP_NOTATION_INPUT:
     {
       g_value_set_object(value, route_lv2->notation_input);
@@ -413,18 +293,6 @@ ags_route_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./has-atom-port[0]\0",
-		17)){
-      g_object_set(G_OBJECT(plugin),
-		   "has-atom-port\0", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./has-event-port[0]\0",
-		18)){
-      g_object_set(G_OBJECT(plugin),
-		   "has-event-port\0", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
 		"./notation-input[0]\0",
 		18)){
       g_object_set(G_OBJECT(plugin),
@@ -448,14 +316,6 @@ ags_route_lv2_audio_finalize(GObject *gobject)
   AgsRouteLv2Audio *route_lv2_audio;
 
   route_lv2_audio = AGS_ROUTE_LV2_AUDIO(gobject);
-
-  if(route_lv2_audio->has_atom_port != NULL){
-    g_object_unref(G_OBJECT(route_lv2_audio->has_atom_port));
-  }
-  
-  if(route_lv2_audio->has_event_port != NULL){
-    g_object_unref(G_OBJECT(route_lv2_audio->has_event_port));
-  }
 
   if(route_lv2_audio->notation_input != NULL){
     g_object_unref(G_OBJECT(route_lv2_audio->notation_input));
