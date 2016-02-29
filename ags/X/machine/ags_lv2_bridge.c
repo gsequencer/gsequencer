@@ -961,15 +961,15 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
   list = ags_recall_find_type(audio->recall, AGS_TYPE_ROUTE_LV2_AUDIO_RUN);
 
   if(list != NULL){
-    recall_notation_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(list->data);
+    recall_route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(list->data);
 
     /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
+    g_object_set(G_OBJECT(recall_route_lv2_audio_run),
 		 "delay-audio-run\0", play_delay_audio_run,
 		 NULL);
 
     /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
+    g_object_set(G_OBJECT(recall_route_lv2_audio_run),
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
   }

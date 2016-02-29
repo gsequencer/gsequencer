@@ -1,3 +1,13 @@
+ags (0.7.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed lv2 event buffer functions
+	* fixed wrong property mapping in ags_recall_lv2.c
+	* implemented ags_lv2_uri_map_manager.c
+	* implemented ags_lv2_log_manager.c
+	* implemented ags_lv2_worker_manager.c
+	* TODO:JK: implemented XML IO of ags_effect_bridge.c and related
+
 ags (0.7.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -239,6 +239,8 @@ ags_route_lv2_audio_run_class_init(AgsRouteLv2AudioRunClass *route_lv2_audio_run
 
   recall->resolve_dependencies = ags_route_lv2_audio_run_resolve_dependencies;
   recall->duplicate = ags_route_lv2_audio_run_duplicate;
+  recall->run_pre = ags_route_lv2_audio_run_run_pre;
+  recall->run_post = ags_route_lv2_audio_run_run_post;
 }
 
 void
@@ -254,6 +256,10 @@ ags_route_lv2_audio_run_init(AgsRouteLv2AudioRun *route_lv2_audio_run)
   route_lv2_audio_run->count_beats_audio_run = NULL;
 
   route_lv2_audio_run->notation = NULL;
+  route_lv2_audio_run->sequencer = NULL;
+
+  route_lv2_audio_run->feed_midi = NULL;
+  route_lv2_audio_run->delta_time = 0;
 }
 
 void
@@ -693,8 +699,6 @@ ags_route_lv2_audio_run_run_pre(AgsRecall *recall)
   guint start_frame, end_frame;
 
   GValue value = {0,};
-  GValue has_event_port = {0,};
-  GValue has_atom_port = {0,};
 
   route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(recall);
   route_lv2_audio = AGS_ROUTE_LV2_AUDIO(AGS_RECALL_AUDIO_RUN(route_lv2_audio_run)->recall_audio);
@@ -729,13 +733,6 @@ ags_route_lv2_audio_run_run_pre(AgsRecall *recall)
   free(str);
 
   pthread_mutex_unlock(application_mutex);
-
-  /* get midi type */
-  g_value_init(&has_atom_port, G_TYPE_BOOLEAN);
-  g_value_init(&has_event_port, G_TYPE_BOOLEAN);
-
-  ags_port_safe_read(route_lv2_audio->has_event_port, &has_event_port);
-  ags_port_safe_read(route_lv2_audio->has_atom_port, &has_atom_port);
   
   /* get notation delay */
   g_value_init(&value, G_TYPE_DOUBLE);
@@ -817,6 +814,7 @@ ags_route_lv2_audio_run_run_pre(AgsRecall *recall)
       channel_dummy = NULL;
       
       if(list_recall != NULL){
+	recall_lv2 = list_recall->data;
 	channel_dummy = AGS_RECALL_CONTAINER(AGS_RECALL(list_recall->data)->container)->recall_channel_run;
       }
 
@@ -832,7 +830,7 @@ ags_route_lv2_audio_run_run_pre(AgsRecall *recall)
 	    while(lv2 != NULL){
 	      recall_lv2_run = AGS_RECALL_LV2_RUN(lv2->data);
 
-	      if(note->x[0] == count_beats_audio_run->notation_counter - 1){
+	      if(note->x[0] == count_beats_audio_run->notation_counter - 1){		
 		if(recall_lv2_run->event_buffer == NULL){
 		  /* key on */
 		  seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
@@ -856,13 +854,13 @@ ags_route_lv2_audio_run_run_pre(AgsRecall *recall)
 		  recall_lv2_run->event_count[1] = 0;
 
 		  /* write to port */
-		  if(g_value_get_boolean(&has_atom_port)){
+		  if((AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
 		    ags_lv2_plugin_atom_sequence_append_midi(recall_lv2_run->atom_port,
 							     AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT,
 							     seq_event,
 							     1);
-		  }else if(g_value_get_boolean(&has_event_port)){
-		    ags_lv2_plugin_event_buffer_append_midi(recall_lv2_run->atom_port,
+		  }else if((AGS_RECALL_LV2_HAS_EVENT_PORT & (recall_lv2->flags)) != 0){
+		    ags_lv2_plugin_event_buffer_append_midi(recall_lv2_run->event_port,
 							    AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT,
 							    seq_event,
 							    1);
@@ -931,8 +929,6 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
   pthread_mutex_t *application_mutex;
 
   GValue value = {0,};
-  GValue has_event_port = {0,};
-  GValue has_atom_port = {0,};
 
   route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(recall);
   route_lv2_audio = AGS_ROUTE_LV2_AUDIO(AGS_RECALL_AUDIO_RUN(route_lv2_audio_run)->recall_audio);
@@ -986,13 +982,6 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
   
   route_lv2_audio_run->delta_time = x / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
 
-  /* get midi type */
-  g_value_init(&has_atom_port, G_TYPE_BOOLEAN);
-  g_value_init(&has_event_port, G_TYPE_BOOLEAN);
-
-  ags_port_safe_read(route_lv2_audio->has_event_port, &has_event_port);
-  ags_port_safe_read(route_lv2_audio->has_atom_port, &has_atom_port);
-
   /* clear the port */
   /* feed MIDI to AgsRecallLv2Run */
   list_note_start = 
@@ -1043,6 +1032,7 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
       channel_dummy = NULL;
       
       if(list_recall != NULL){
+	recall_lv2 = list_recall->data;
 	channel_dummy = AGS_RECALL_CONTAINER(AGS_RECALL(list_recall->data)->container)->recall_channel_run;
       }
 
@@ -1058,12 +1048,12 @@ ags_route_lv2_audio_run_run_post(AgsRecall *recall)
 	    while(lv2 != NULL){
 	      recall_lv2_run = AGS_RECALL_LV2_RUN(lv2->data);
 
-	      if(g_value_get_boolean(&has_atom_port)){
-		ags_lv2_plugin_clear_atom_sequence(recall_lv2_run->atom_port,
-						   AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
-	      }else if(g_value_get_boolean(&has_event_port)){
-		ags_lv2_plugin_clear_event_buffer(recall_lv2_run->atom_port,
-						  AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
+	      if( (AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
+		//		ags_lv2_plugin_clear_atom_sequence(recall_lv2_run->atom_port,
+		//				   AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
+	      }else if((AGS_RECALL_LV2_HAS_EVENT_PORT & (recall_lv2->flags)) != 0){
+		//		ags_lv2_plugin_clear_event_buffer(recall_lv2_run->atom_port,
+		//				  AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
 	      }
 
 	      lv2 = lv2->next;
