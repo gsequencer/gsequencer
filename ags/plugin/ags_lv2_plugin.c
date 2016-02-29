@@ -347,6 +347,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
   gchar *uri;
 
   guint i;
+  gboolean found_port;
   
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
@@ -403,8 +404,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     while(port_list != NULL){
       port = ags_port_descriptor_alloc();
-      port_descriptor_list = g_list_prepend(port_descriptor_list,
-					    port);
+      found_port = FALSE;
       
       port_node = (xmlNode *) port_list->data;
 
@@ -417,6 +417,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_CONTROL;
+	found_port = TRUE;
 
 	g_list_free(list);
       }
@@ -430,6 +431,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_OUTPUT;
+	found_port = TRUE;
 
 	g_list_free(list);
       }
@@ -443,6 +445,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_INPUT;
+	found_port = TRUE;
 
 	g_list_free(list);
       }
@@ -456,6 +459,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_AUDIO;
+	found_port = TRUE;
 	
 	g_list_free(list);
       }
@@ -469,6 +473,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_EVENT;
+	found_port = TRUE;
 
 	g_list_free(list);
       }
@@ -482,6 +487,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
       if(list != NULL){
 	port->flags |= AGS_PORT_DESCRIPTOR_ATOM;
+	found_port = TRUE;
 	
 	g_list_free(list);
       }
@@ -500,8 +506,23 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 					    10);
 
 	g_list_free(list);
+      }else{
+	found_port = FALSE;
+	
+	g_warning("gs_lv2_plugin.c - no port index found\0");
       }
+      
+      if(!found_port){
+	free(port);
+	
+	port_list = port_list->next;
 
+	continue;
+      }else{
+	port_descriptor_list = g_list_prepend(port_descriptor_list,
+					      port);
+      }
+      
       /* properties */
       xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':portProperty') + 1) = ':portProperty']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln\0";
       list_start =
@@ -697,45 +718,24 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 void*
 ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
 {
-  void *event_buffer, *iter;
+  void *event_buffer;
   
-  guint buffer_count;
   guint padded_buffer_size;
-  
-  buffer_count = (guint) ceil(buffer_size / G_MAXUINT16);
 
-  if(buffer_count == 1){
-    if(buffer_size < 8){
-      padded_buffer_size = 8;
-    }else{
-      padded_buffer_size = buffer_size;
-    }
-    
-    event_buffer = (void *) malloc(padded_buffer_size + sizeof(LV2_Event));
-
-    memset(event_buffer, 0, buffer_size + sizeof(LV2_Event));
-    AGS_LV2_EVENT_BUFFER(event_buffer)->size = buffer_size;
-  }else{
-    guint i;
-
-    if(buffer_size % G_MAXUINT16 < 8){
-      padded_buffer_size = 8;
-    }else{
-      padded_buffer_size = buffer_size % G_MAXUINT16;
-    }
-
-    iter = 
-      event_buffer = (void *) malloc(((buffer_count - 1) * G_MAXUINT16 * sizeof(LV2_Event))  + (padded_buffer_size) + sizeof(LV2_Event));
-    memset(event_buffer, 0, ((buffer_count - 1) * G_MAXUINT16 * sizeof(LV2_Event))  + (buffer_size % G_MAXUINT16) + sizeof(LV2_Event));
-
-    for(i = 1; i < buffer_count; i++){
-      AGS_LV2_EVENT_BUFFER(iter)->size = G_MAXUINT16;
-
-      iter += (G_MAXUINT16 + sizeof(LV2_Event));
-    }
-
-    AGS_LV2_EVENT_BUFFER(iter)->size = buffer_size % G_MAXUINT16;
+  if(buffer_size > G_MAXUINT16){
+    return(NULL);
   }
+  
+  if(buffer_size < 8){
+    padded_buffer_size = 8;
+  }else{
+    padded_buffer_size = buffer_size;
+  }
+    
+  event_buffer = (void *) malloc(padded_buffer_size + sizeof(LV2_Event));
+
+  memset(event_buffer, 0, buffer_size + sizeof(LV2_Event));
+  AGS_LV2_EVENT_BUFFER(event_buffer)->size = buffer_size;
 
   return(event_buffer);
 }

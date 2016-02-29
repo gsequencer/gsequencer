@@ -40,6 +40,8 @@
 #include <unistd.h>
 
 #include <lv2/lv2plug.in/ns/ext/uri-map/uri-map.h>
+#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
+#include <lv2/lv2plug.in/ns/ext/log/log.h>
 
 void ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run_class);
 void ags_recall_lv2_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -154,6 +156,8 @@ ags_recall_lv2_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_lv2_run_init(AgsRecallLv2Run *recall_lv2_run)
 {
+  recall_lv2_run->feature = NULL;
+  
   recall_lv2_run->input = NULL;
   recall_lv2_run->output = NULL;
 
@@ -189,6 +193,16 @@ ags_recall_lv2_run_finalize(GObject *gobject)
 
   recall_lv2_run = AGS_RECALL_LV2_RUN(gobject);
 
+  if(recall_lv2_run->feature != NULL){
+    guint i;
+
+    for(i = 0; recall_lv2_run->feature[i] != NULL; i++){
+      free(recall_lv2_run->feature[i]);
+    }
+    
+    free(recall_lv2_run->feature);
+  }
+  
   free(recall_lv2_run->output);
   free(recall_lv2_run->input);
 
@@ -227,12 +241,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     ags_lv2_log_manager_vprintf,
   };
   
-  LV2_Feature **feature = {
-    { LV2_URI_MAP_URI, &uri_map_feature },
-    { LV2_WORKER__schedule, &worker_schedule },
-    { LV2_LOG__log, &log },
-    NULL,
-  };
+  LV2_Feature **feature;
   
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_init_pre(recall);
@@ -242,7 +251,25 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   path = g_strndup(recall_lv2->filename,
 		   rindex(recall_lv2->filename, '/') - recall_lv2->filename + 1);
+
+  /**/
+  recall_lv2_run->feature = 
+    feature = (LV2_Feature **) malloc(4 * sizeof(LV2_Feature *));
+
+  feature[0] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[0]->URI = LV2_URI_MAP_URI;
+  feature[0]->data = &uri_map_feature;
   
+  feature[1] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[1]->URI = LV2_WORKER__schedule;
+  feature[1]->data = &worker_schedule;
+
+  feature[2] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[2]->URI = LV2_LOG__log;
+  feature[2]->data = &log;
+
+  feature[3] = NULL;
+
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
   
@@ -256,40 +283,43 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     i_stop = recall_lv2->input_lines;
   }
   
-  recall_lv2_run->input = (float *) malloc(i_stop *
+  recall_lv2_run->input = (float *) malloc(recall_lv2->input_lines *
 					   buffer_size *
 					   sizeof(float));
-  recall_lv2_run->output = (float *) malloc(i_stop *
+  recall_lv2_run->output = (float *) malloc(recall_lv2->output_lines *
 					    buffer_size *
 					    sizeof(float));
 
-  recall_lv2_run->lv2_handle = (LV2_Handle *) malloc(i_stop *
-						     sizeof(LV2_Handle));
+  recall_lv2_run->lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
 
-  for(i = 0; i < i_stop; i++){
-    /* instantiate lv2 */
-    recall_lv2_run->lv2_handle[i] = (LV2_Handle *) recall_lv2->plugin_descriptor->instantiate(recall_lv2->plugin_descriptor,
-											      samplerate,
-											      path,
-											      feature);
+  
+  /* instantiate lv2 */
+  recall_lv2_run->lv2_handle[0] = (LV2_Handle) recall_lv2->plugin_descriptor->instantiate(recall_lv2->plugin_descriptor,
+											  samplerate,
+											  path,
+											  feature);
+  AGS_LV2_WORKER(worker_handle)->handle = recall_lv2_run->lv2_handle[0];
+  
 #ifdef AGS_DEBUG
-    g_message("instantiate LV2 handle\0");
+  g_message("instantiate LV2 handle\0");
 #endif
-
-  }
 
   ags_recall_lv2_run_load_ports(recall_lv2_run);
 
   /* can't be done in ags_recall_lv2_run_run_init_inter since possebility of overlapping buffers */
   /* connect audio port */
-  for(i = 0; i < i_stop; i++){
-    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
+  for(i = 0; i < recall_lv2->input_lines; i++){
+    g_message("connect port: %d\0", recall_lv2->input_port[i]);
+    
+    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						recall_lv2->input_port[i],
 						recall_lv2_run->input);
   }
 
-  for(i = 0; i < i_stop; i++){
-    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
+  for(i = 0; i < recall_lv2->output_lines; i++){
+    g_message("connect port: %d\0", recall_lv2->output_port[i]);
+
+    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						recall_lv2->output_port[i],
 						recall_lv2_run->output);
   }
@@ -297,28 +327,29 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   /* connect event port */
   if((AGS_RECALL_LV2_HAS_EVENT_PORT & (recall_lv2->flags)) != 0){
     recall_lv2_run->event_port = ags_lv2_plugin_alloc_event_buffer(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
-      
-    for(i = 0; i < i_stop; i++){
-      recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
-						  recall_lv2->event_port,
-						  recall_lv2_run->event_port);
-    }
+
+    g_message("connect port: %d\0", recall_lv2->event_port);
+    
+    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
+						recall_lv2->event_port,
+						recall_lv2_run->event_port);
+
   }
   
   /* connect atom port */
   if((AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
     recall_lv2_run->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
+
+    g_message("connect port: %d\0", recall_lv2->atom_port);
     
-    for(i = 0; i < i_stop; i++){
-      recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[i],
-						  recall_lv2->atom_port,
-						  recall_lv2_run->atom_port);
-    }
+    recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
+						recall_lv2->atom_port,
+						recall_lv2_run->atom_port);    
   }
-  
+
   /* activate */
-  for(i = 0; i < i_stop; i++){
-    recall_lv2->plugin_descriptor->activate(recall_lv2_run->lv2_handle[i]);
+  if(recall_lv2->plugin_descriptor->activate != NULL){
+    recall_lv2->plugin_descriptor->activate(recall_lv2_run->lv2_handle[0]);
   }
 }
 
@@ -360,28 +391,31 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
     ags_recall_done(recall);
     return;
   }
-  
-  ags_recall_lv2_short_to_float(audio_signal->stream_current->data,
-				recall_lv2_run->input,
-				audio_signal->buffer_size, recall_lv2->input_lines);
 
+  if(recall_lv2_run->input != NULL){
+    ags_recall_lv2_short_to_float(audio_signal->stream_current->data,
+				  recall_lv2_run->input,
+				  audio_signal->buffer_size, recall_lv2->input_lines);
+  }
+  
   /* process data */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
 
   buffer_size = audio_signal->buffer_size;
 
-  for(i = 0; i < recall_lv2->input_lines; i++){
-    recall_lv2->plugin_descriptor->run(recall_lv2_run->lv2_handle[i],
-				       buffer_size);
-  }
+  recall_lv2->plugin_descriptor->run(recall_lv2_run->lv2_handle[0],
+				     buffer_size);
 
   /* copy data */
-  memset((signed short *) audio_signal->stream_current->data,
-	 0,
-	 buffer_size * sizeof(signed short));
-  ags_recall_lv2_float_to_short(recall_lv2_run->output,
-				audio_signal->stream_current->data,
-				audio_signal->buffer_size, recall_lv2->output_lines);
+  if(recall_lv2_run->output != NULL){
+    memset((signed short *) audio_signal->stream_current->data,
+	   0,
+	   buffer_size * sizeof(signed short));
+    
+    ags_recall_lv2_float_to_short(recall_lv2_run->output,
+				  audio_signal->stream_current->data,
+				  audio_signal->buffer_size, recall_lv2->output_lines);
+  }
 }
 
 /**
@@ -418,36 +452,34 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
     j_stop = recall_lv2->input_lines;
   }
 
-  if(port_descriptor != NULL){
+  if(AGS_BASE_PLUGIN(lv2_plugin)->port != NULL){
+    port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
     port_count = g_list_length(port_descriptor);
 
-    for(j = 0; j < j_stop; j++){
-      port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
-      
-      for(i = 0; port_descriptor != NULL; i++){
-	if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  port = AGS_RECALL(recall_lv2)->port;
-	  current = NULL;
+    for(i = 0; port_descriptor != NULL; i++){
+      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	port = AGS_RECALL(recall_lv2)->port;
+	current = NULL;
 	  
-	  specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 	    
-	  while(port != NULL){
-	    if(!g_strcmp0(specifier,
-			  AGS_PORT(port->data)->specifier)){
-	      current = port->data;
-	      break;
-	    }
-
-	    port = port->next;
+	while(port != NULL){
+	  if(!g_strcmp0(specifier,
+			AGS_PORT(port->data)->specifier)){
+	    current = port->data;
+	    break;
 	  }
-	  
-	  recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[j],
-						      (uint32_t) AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
-						      (float *) &(current->port_value.ags_port_float));
+
+	  port = port->next;
 	}
 
-	port_descriptor = port_descriptor->next;
+	g_message("connect port: %d\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
+	recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
+						    (uint32_t) AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
+						    (float *) &(current->port_value.ags_port_float));
       }
+
+      port_descriptor = port_descriptor->next;
     }
   }
 }

@@ -105,8 +105,13 @@ ags_lv2_worker_manager_connectable_interface_init(AgsConnectableInterface *conne
 }
 
 void
-ags_lv2_worker_manager_init(AgsLv2WorkerManager *lv2_worker_manager)
+ags_lv2_worker_manager_init(AgsLv2WorkerManager *worker_manager)
 {
+  worker_manager->thread_pool = NULL;
+
+  g_atomic_pointer_set(&(worker_manager->worker),
+		       NULL);
+  
   /* empty */
 }
 

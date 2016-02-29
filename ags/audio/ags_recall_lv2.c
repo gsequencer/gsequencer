@@ -196,7 +196,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
 				    NULL,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_URI,
+				  PROP_EFFECT,
 				  param_spec);
 
   /**
@@ -468,8 +468,15 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	gchar *plugin_name;
 	gchar *specifier;
 	
-	plugin_name = g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri);
 	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+
+	if(specifier == NULL){
+	  port_descriptor = port_descriptor->next;
+	  
+	  continue;
+	}
+	
+	plugin_name = g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri);
 	
 	list = port;
 	current = NULL;
@@ -676,7 +683,8 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   unsigned long i;
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
-
+  g_message("ports from ttl: %s\0", lv2_plugin->turtle->filename);
+  
   port = NULL;
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
   
@@ -684,6 +692,8 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     port_count = g_list_length(port_descriptor);
     
     for(i = 0; i < port_count; i++){
+      g_message("Lv2 plugin port-index: %d\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
+      
       if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if((AGS_PORT_DESCRIPTOR_EVENT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  recall_lv2->flags |= AGS_RECALL_LV2_HAS_EVENT_PORT;
@@ -696,12 +706,21 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	}
       }
       
-      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0 &&
+	 ((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0 ||
+	  (AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0)){
 	gchar *plugin_name;
 	gchar *specifier;
+
+	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+
+	if(specifier == NULL){
+	  port_descriptor = port_descriptor->next;
+	  
+	  continue;
+	}
 	
 	plugin_name = g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri);
-	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 
 	current = g_object_new(AGS_TYPE_PORT,
 			       "plugin-name\0", plugin_name,
@@ -715,7 +734,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	
 	current->port_value.ags_port_float = (float) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
 
-	g_message("connecting port: %d/%d\0", i, port_count);
+	g_message("connecting port: %s %d/%d\0", specifier, i, port_count);
 
 	port = g_list_prepend(port,
 			      current);
