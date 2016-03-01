@@ -58,6 +58,8 @@ void ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge
 void ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 					GType channel_type,
 					guint new_size, guint old_size);
+void ags_effect_bridge_real_map_recall(AgsEffectBridge *effect_bridge);
+GList* ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge);
 
 /**
  * SECTION:ags_effect_bridge
@@ -73,6 +75,8 @@ void ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 enum{
   RESIZE_AUDIO_CHANNELS,
   RESIZE_PADS,
+  MAP_RECALL,
+  FIND_PORT,
   LAST_SIGNAL,
 };
 
@@ -164,6 +168,8 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
   /* AgsEffectBridgeClass */
   effect_bridge->resize_pads = ags_effect_bridge_real_resize_pads;
   effect_bridge->resize_audio_channels = ags_effect_bridge_real_resize_audio_channels;
+  effect_bridge->map_recall = ags_effect_bridge_real_map_recall;
+  effect_bridge->find_port = ags_effect_bridge_real_find_port;
 
   /* signals */
   /**
@@ -209,6 +215,37 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
 		 G_TYPE_ULONG,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
+
+  /**
+   * AgsEffectBridge::map-recall:
+   * @effect_bridge: the #AgsEffectBridge
+   *
+   * The ::map-recall should be used to add the effect_bridge's default recall.
+   */
+  effect_bridge_signals[MAP_RECALL] =
+    g_signal_new("map-recall\0",
+                 G_TYPE_FROM_CLASS (effect_bridge),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsEffectBridgeClass, map_recall),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__UINT,
+                 G_TYPE_NONE, 0);
+
+  /**
+   * AgsEffectBridge::find-port:
+   * @effect_bridge: the #AgsEffectBridge to resize
+   * Returns: a #GList with associated ports
+   *
+   * The ::find-port as recall should be mapped
+   */
+  effect_bridge_signals[FIND_PORT] =
+    g_signal_new("find-port\0",
+		 G_TYPE_FROM_CLASS(effect_bridge),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBridgeClass, find_port),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -292,11 +329,6 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(effect_bridge->audio != NULL){
 	GList *effect_pad;
-
-	g_signal_handler_disconnect(effect_bridge->audio,
-				    effect_bridge->set_audio_channels_handler);
-	g_signal_handler_disconnect(effect_bridge->audio,
-				    effect_bridge->set_pads_handler);
 	
 	g_object_unref(effect_bridge->audio);
 	
@@ -328,11 +360,11 @@ ags_effect_bridge_set_property(GObject *gobject,
 	g_object_ref(audio);
 
 	if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
-	  effect_bridge->set_audio_channels_handler = g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
-									     G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
+	  g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
+				 G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
 	  
-	  effect_bridge->set_pads_handler = g_signal_connect_after(G_OBJECT(audio), "set-pads\0",
-								   G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
+	  g_signal_connect_after(G_OBJECT(audio), "set-pads\0",
+				 G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
 	}
 
 	/* set channel and resize for AgsOutput */
@@ -527,11 +559,11 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
   }
 
   /* AgsAudio */
-  effect_bridge->set_audio_channels_handler = g_signal_connect_after(G_OBJECT(effect_bridge->audio), "set-audio-channels\0",
-								     G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
+  g_signal_connect_after(G_OBJECT(effect_bridge->audio), "set-audio-channels\0",
+			 G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
   
-  effect_bridge->set_pads_handler = g_signal_connect_after(G_OBJECT(effect_bridge->audio), "set-pads\0",
-							   G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
+  g_signal_connect_after(G_OBJECT(effect_bridge->audio), "set-pads\0",
+			 G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
 }
 
 void
@@ -540,11 +572,6 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
   AgsEffectBridge *effect_bridge;
 
   effect_bridge = AGS_EFFECT_BRIDGE(connectable);
-  
-  g_signal_handler_disconnect(effect_bridge->audio,
-			      effect_bridge->set_audio_channels_handler);
-  g_signal_handler_disconnect(effect_bridge->audio,
-			      effect_bridge->set_pads_handler);
 }
 
 gchar*
@@ -632,6 +659,16 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
   }
 }
 
+/**
+ * ags_effect_bridge_resize_audio_channels:
+ * @effect_bridge: the #AgsEffectBridge
+ * @new_size: new allocation
+ * @old_size: old allocation
+ *
+ * Resize audio channel allocation.
+ *
+ * Since: 0.4.3
+ */
 void
 ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
 					guint new_size,
@@ -646,7 +683,6 @@ ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
 		old_size);
   g_object_unref((GObject *) effect_bridge);
 }
-
 
 void
 ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
@@ -748,6 +784,17 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
   }
 }
 
+/**
+ * ags_effect_bridge_resize_pads:
+ * @effect_bridge: the #AgsEffectBridge
+ * @channel_type: the channel #GType
+ * @new_size: new allocation
+ * @old_size: old allocation
+ *
+ * Resize pad allocation.
+ *
+ * Since: 0.4.3
+ */
 void
 ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
 			      GType channel_type,
@@ -763,6 +810,141 @@ ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
 		new_size,
 		old_size);
   g_object_unref((GObject *) effect_bridge);
+}
+
+void
+ags_effect_bridge_real_map_recall(AgsEffectBridge *effect_bridge)
+{
+  if((AGS_EFFECT_BRIDGE_MAPPED_RECALL & (effect_bridge->flags)) != 0){
+    return;
+  }
+
+  effect_bridge->flags |= AGS_EFFECT_BRIDGE_MAPPED_RECALL;
+
+  ags_effect_bridge_find_port(effect_bridge);
+}
+
+/**
+ * ags_effect_bridge_map_recall:
+ * @effect_bridge: the #AgsEffectBridge to add its default recall.
+ *
+ * You may want the @effect_bridge to add its default recall.
+ */
+void
+ags_effect_bridge_map_recall(AgsEffectBridge *effect_bridge)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+
+  g_object_ref((GObject *) effect_bridge);
+  g_signal_emit((GObject *) effect_bridge,
+		effect_bridge_signals[MAP_RECALL], 0);
+  g_object_unref((GObject *) effect_bridge);
+}
+
+GList*
+ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
+{
+  GList *bulk;
+  GList *effect_pad, *effect_pad_start;
+  
+  GList *port, *tmp_port;
+
+  port = NULL;
+
+  /* find output ports */
+  if(effect_bridge->output != NULL){
+    effect_pad_start = 
+      effect_pad = gtk_container_get_children(effect_bridge->output);
+
+    while(effect_pad != NULL){
+      tmp_port = ags_effect_pad_find_port(AGS_EFFECT_PAD(effect_pad->data));
+      
+      if(port != NULL){
+	port = g_list_concat(port,
+			     tmp_port);
+      }else{
+	port = tmp_port;
+      }
+
+      effect_pad = effect_pad->next;
+    }
+
+    g_list_free(effect_pad_start);
+  }
+
+  /* find input ports */
+  if(effect_bridge->input != NULL){
+    effect_pad_start = 
+      effect_pad = gtk_container_get_children(effect_bridge->input);
+
+    while(effect_pad != NULL){
+      tmp_port = ags_effect_pad_find_port(AGS_EFFECT_PAD(effect_pad->data));
+      
+      if(port != NULL){
+	port = g_list_concat(port,
+			     tmp_port);
+      }else{
+	port = tmp_port;
+      }
+
+      effect_pad = effect_pad->next;
+    }
+    
+    g_list_free(effect_pad_start);
+  }
+
+  /* find output bulk ports */
+  if(effect_bridge->bulk_output != NULL){
+    tmp_port = ags_effect_bulk_find_port(effect_bridge->bulk_output);
+
+    if(port != NULL){
+      port = g_list_concat(port,
+			   tmp_port);
+    }else{
+      port = tmp_port;
+    }
+  }
+
+  /* find input bulk ports */
+  if(effect_bridge->bulk_output != NULL){
+    tmp_port = ags_effect_bulk_find_port(effect_bridge->bulk_output);
+
+    if(port != NULL){
+      port = g_list_concat(port,
+			   tmp_port);
+    }else{
+      port = tmp_port;
+    }
+  }
+  
+  return(port);
+}
+
+/**
+ * ags_effect_bridge_find_port:
+ * @effect_bridge: the #AgsEffectBridge
+ * Returns: an #GList containing all related #AgsPort
+ *
+ * Lookup ports of associated recalls.
+ *
+ * Since: 0.7.8
+ */
+GList*
+ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
+{
+  GList *list;
+
+  list = NULL;
+  g_return_val_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge),
+		       NULL);
+
+  g_object_ref((GObject *) effect_bridge);
+  g_signal_emit((GObject *) effect_bridge,
+		effect_bridge_signals[FIND_PORT], 0,
+		&list);
+  g_object_unref((GObject *) effect_bridge);
+
+  return(list);
 }
 
 /**

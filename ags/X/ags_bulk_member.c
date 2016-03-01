@@ -21,6 +21,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_marshal.h>
 
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
@@ -55,6 +56,7 @@ void ags_bulk_member_finalize(GObject *gobject);
 
 void ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				      gpointer port_data);
+GList* ags_bulk_member_real_find_port(AgsBulkMember *bulk_member);
 
 /**
  * SECTION:ags_bulk_member
@@ -70,6 +72,7 @@ void ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
 enum{
   CHANGE_PORT,
+  FIND_PORT,
   LAST_SIGNAL,
 };
 
@@ -256,6 +259,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 
   /* AgsBulkMember */
   bulk_member->change_port = ags_bulk_member_real_change_port;
+  bulk_member->find_port = ags_bulk_member_real_find_port;
 
   /* signals */
   /**
@@ -274,6 +278,22 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 		 g_cclosure_marshal_VOID__POINTER,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_POINTER);
+
+  /**
+   * AgsBulkMember::find-port:
+   * @bulk_member: the #AgsBulkMember to resize
+   * Returns: a #GList with associated ports
+   *
+   * The ::find-port as recall should be mapped
+   */
+  bulk_member_signals[FIND_PORT] =
+    g_signal_new("find-port\0",
+		 G_TYPE_FROM_CLASS(bulk_member),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsBulkMemberClass, find_port),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -763,23 +783,19 @@ ags_bulk_member_change_port(AgsBulkMember *bulk_member,
   g_object_unref((GObject *) bulk_member);
 }
 
-/**
- * ags_bulk_member_find_port:
- * @bulk_member: an #AgsBulkMember
- *
- * Lookup ports of assigned recall.
- *
- * Since: 0.4.3
- */
-void
-ags_bulk_member_find_port(AgsBulkMember *bulk_member)
+GList*
+ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 {
   GtkWidget *effect_bulk;
+
   AgsAudio *audio;
   AgsChannel *channel;
   AgsPort *audio_port, *channel_port;
   AgsPort *recall_audio_port, *recall_channel_port;
+
   GList *recall;
+  GList *port;
+  
   gchar *specifier;
 
   auto AgsPort* ags_bulk_member_find_specifier(GList *recall);
@@ -788,6 +804,12 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
     GList *port;
     
     while(recall != NULL){
+      if((AGS_RECALL_BULK_MODE & (AGS_RECALL(recall->data)->flags)) == 0){
+	recall = recall->next;
+
+	continue;
+      }
+      
       port = AGS_RECALL(recall->data)->port;
 
 #ifdef AGS_DEBUG
@@ -830,6 +852,8 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
   
   recall_audio_port = NULL;
   recall_channel_port = NULL;
+
+  port = NULL;
   
   /* search channels */
   channel = NULL;
@@ -847,17 +871,19 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
     recall = channel->recall;
     recall_channel_port = ags_bulk_member_find_specifier(recall);
 
-    if(channel_port != NULL){
+    if(channel_port != NULL ||
+       recall_channel_port != NULL){
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
 					      ags_bulk_port_alloc(channel_port,
 								  recall_channel_port));
     }
-
+    
     channel = channel->next;
   }
-  
+
   /* search audio */
-  if(channel_port == NULL){
+  if(channel_port == NULL &&
+     recall_channel_port == NULL){
     recall = audio->play;
     audio_port = ags_bulk_member_find_specifier(recall);
 
@@ -865,15 +891,45 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
     recall_audio_port = ags_bulk_member_find_specifier(recall);
 
     if(audio_port != NULL){
-      g_object_set(G_OBJECT(bulk_member),
-		   "port\0", audio_port,
-		   NULL);
-
-      g_object_set(G_OBJECT(bulk_member),
-		   "recall-port\0", recall_audio_port,
-		   NULL);
+      bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
+					      audio_port);
+    }
+    
+    if(recall_audio_port != NULL){
+      bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
+					      recall_audio_port);
     }
   }
+
+  return(g_list_copy(bulk_member->bulk_port));
+}
+
+/**
+ * ags_bulk_member_find_port:
+ * @bulk_member: an #AgsBulkMember
+ *
+ * Lookup ports of assigned recalls.
+ *
+ * Returns: an #GList containing all related #AgsPort
+ *
+ * Since: 0.7.8
+ */
+GList*
+ags_bulk_member_find_port(AgsBulkMember *bulk_member)
+{
+  GList *list;
+
+  list = NULL;
+  g_return_val_if_fail(AGS_IS_BULK_MEMBER(bulk_member),
+		       NULL);
+
+  g_object_ref((GObject *) bulk_member);
+  g_signal_emit((GObject *) bulk_member,
+		bulk_member_signals[FIND_PORT], 0,
+		&list);
+  g_object_unref((GObject *) bulk_member);
+
+  return(list);
 }
 
 /**

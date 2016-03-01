@@ -6,7 +6,12 @@ ags (0.7.8)
 	* implemented ags_lv2_uri_map_manager.c
 	* implemented ags_lv2_log_manager.c
 	* implemented ags_lv2_worker_manager.c
+	* implemented ags_lv2_event_manager.c
+	* implemented ::find-port in ags_machine.c, ags_pad.c ags_line.c, ags_line_member.c, ags_effect_bridge.c, ags_effect_bulk.c, ags_bulk_member.c, ags_effect_pad.c and ags_effect_line.c
+	* refactored ags_machine_set_audio_channels() to ags_machine_set_audio_channels_callback() and added ags_machine_resize_audio_channels() in order to have a straight forward API
+	* refactored ags_machine_set_pads() to ags_machine_set_pads_callback() and added ags_machine_resize_pads() in order to have a straight forward API
 	* TODO:JK: implemented XML IO of ags_effect_bridge.c and related
+	* TODO:JK: fix return value of XML output functions
 
 ags (0.7.7)
 

@@ -36,6 +36,9 @@
 
 #define AGS_BULK_PORT(ptr) ((AgsBulkPort *)(ptr))
 
+#define AGS_BULK_MEMBER_DEFAULT_VERSION "0.7.8\0"
+#define AGS_BULK_MEMBER_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
+
 typedef struct _AgsBulkMember AgsBulkMember;
 typedef struct _AgsBulkMemberClass AgsBulkMemberClass;
 typedef struct _AgsBulkPort AgsBulkPort;
@@ -53,6 +56,13 @@ struct _AgsBulkMember
 
   guint flags;
 
+  gchar *name;
+  
+  gchar *version;
+  gchar *build_id;
+
+  GList *handler;
+  
   GType widget_type;
   gchar *widget_label;
 
@@ -75,6 +85,8 @@ struct _AgsBulkMemberClass
 
   void (*change_port)(AgsBulkMember *bulk_member,
 		      gpointer port_data);
+
+  GList* (*find_port)(AgsBulkMember *bulk_member);
 };
 
 struct _AgsBulkPort
@@ -100,7 +112,7 @@ void ags_bulk_member_set_label(AgsBulkMember *bulk_member,
 void ags_bulk_member_change_port(AgsBulkMember *bulk_member,
 				 gpointer port_data);
 
-void ags_bulk_member_find_port(AgsBulkMember *bulk_member);
+GList* ags_bulk_member_find_port(AgsBulkMember *bulk_member);
 
 AgsBulkMember* ags_bulk_member_new();
 

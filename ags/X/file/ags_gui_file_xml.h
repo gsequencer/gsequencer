@@ -40,6 +40,11 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_member.h>
+#include <ags/X/ags_effect_bridge.h>
+#include <ags/X/ags_effect_bulk.h>
+#include <ags/X/ags_bulk_member.h>
+#include <ags/X/ags_effect_pad.h>
+#include <ags/X/ags_effect_line.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_machine_editor.h>
@@ -87,11 +92,11 @@ xmlNode* ags_file_write_machine_counter_list(AgsFile *file, xmlNode *parent, GLi
 void ags_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine);
 xmlNode* ags_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine);
 
-void ags_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine);
-xmlNode* ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine);
-
 void ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 					 AgsMachine *machine);
+
+void ags_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine);
+xmlNode* ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine);
 
 /* AgsPad */
 void ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad);
@@ -119,6 +124,44 @@ xmlNode* ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMembe
 
 void ags_file_read_line_member_list(AgsFile *file, xmlNode *node, GList **line_member);
 xmlNode* ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_member);
+
+/* AgsEffectBridge */
+void ags_file_read_effect_bridge(AgsFile *file, xmlNode *node, AgsEffectBridge **effect_bridge);
+xmlNode* ags_file_write_effect_bridge(AgsFile *file, xmlNode *parent, AgsEffectBridge *effect_bridge);
+
+void ags_file_read_effect_bridge_resolve_audio(AgsFileLookup *file_lookup,
+					       AgsEffectBridge *effect_bridge);
+
+void ags_file_read_effect_bridge_list(AgsFile *file, xmlNode *node, GList **effect_bridge);
+xmlNode* ags_file_write_effect_bridge_list(AgsFile *file, xmlNode *parent, GList *effect_bridge);
+
+/* AgsEffectBulk */
+void ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_bulk);
+xmlNode* ags_file_write_effect_bulk(AgsFile *file, xmlNode *parent, AgsEffectBulk *effect_bulk);
+
+void ags_file_read_effect_bulk_list(AgsFile *file, xmlNode *node, GList **effect_bulk);
+xmlNode* ags_file_write_effect_bulk_list(AgsFile *file, xmlNode *parent, GList *effect_bulk);
+
+/* AgsBulkMember */
+void ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_member);
+xmlNode* ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_member);
+
+void ags_file_read_bulk_member_list(AgsFile *file, xmlNode *node, GList **bulk_member);
+xmlNode* ags_file_write_bulk_member_list(AgsFile *file, xmlNode *parent, GList *bulk_member);
+
+/* AgsEffectPad */
+void ags_file_read_effect_pad(AgsFile *file, xmlNode *node, AgsEffectPad **effect_pad);
+xmlNode* ags_file_write_effect_pad(AgsFile *file, xmlNode *parent, AgsEffectPad *effect_pad);
+
+void ags_file_read_effect_pad_list(AgsFile *file, xmlNode *node, GList **effect_pad);
+xmlNode* ags_file_write_effect_pad_list(AgsFile *file, xmlNode *parent, GList *effect_pad);
+
+/* AgsEffectLine */
+void ags_file_read_effect_line(AgsFile *file, xmlNode *node, AgsEffectLine **effect_line);
+xmlNode* ags_file_write_effect_line(AgsFile *file, xmlNode *parent, AgsEffectLine *effect_line);
+
+void ags_file_read_effect_line_list(AgsFile *file, xmlNode *node, GList **effect_line);
+xmlNode* ags_file_write_effect_line_list(AgsFile *file, xmlNode *parent, GList *effect_line);
 
 /* GtkDialog */
 void ags_file_read_dialog(AgsFile *file, xmlNode *node, GtkDialog **dialog);

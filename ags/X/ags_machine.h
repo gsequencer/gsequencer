@@ -33,8 +33,8 @@
 #define AGS_IS_MACHINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MACHINE))
 #define AGS_MACHINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MACHINE, AgsMachineClass))
 
-#define AGS_MACHINE_DEFAULT_VERSION "0.7.0\0"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 30-10-2015 02:37\0"
+#define AGS_MACHINE_DEFAULT_VERSION "0.7.8\0"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineClass AgsMachineClass;
@@ -126,29 +126,32 @@ struct _AgsMachineClass
 {
   GtkHandleBoxClass handle_box;
 
+  void (*resize_audio_channels)(AgsMachine *machine,
+				guint new_size, guint old_size);
+  void (*resize_pads)(AgsMachine *machine,
+		      GType channel_type,
+		      guint new_size, guint old_size);
+  
   void (*map_recall)(AgsMachine *machine);
   GList* (*find_port)(AgsMachine *machine);
 };
 
 GType ags_machine_get_type(void);
 
-
-void ags_machine_set_audio_channels(AgsAudio *audio,
-				    guint audio_channels, guint audio_channels_old,
-				    AgsMachine *machine);
-void ags_machine_set_pads(AgsAudio *audio, GType type,
-			  guint pads, guint pads_old,
-			  AgsMachine *machine);
-
-void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
+void ags_machine_resize_audio_channels(AgsMachine *machine,
+				       guint new_size, guint old_size);
+void ags_machine_resize_pads(AgsMachine *machine,
+			     GType channel_type,
+			     guint new_size, guint old_size);
 
 void ags_machine_map_recall(AgsMachine *machine);
+GList* ags_machine_find_port(AgsMachine *machine);
+
+void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 
 GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
-
-GList* ags_machine_find_port(AgsMachine *machine);
 
 void ags_machine_set_run(AgsMachine *machine,
 			 gboolean run);

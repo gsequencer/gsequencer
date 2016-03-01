@@ -1101,15 +1101,8 @@ ags_line_map_recall(AgsLine *line,
 GList*
 ags_line_real_find_port(AgsLine *line)
 {
-  AgsChannel *channel, *next_pad;
-
-  AgsMutexManager *mutex_manager;
-  
-  GList *list, *tmp;
+  GList *port, *tmp_port;
   GList *line_member, *line_member_start;
-
-  pthread_mutex_t *application_mutex;  
-  pthread_mutex_t *channel_mutex;
 
   if(line == NULL || line->expander == NULL){
     return(NULL);
@@ -1118,79 +1111,37 @@ ags_line_real_find_port(AgsLine *line)
   line_member_start = 
     line_member = gtk_container_get_children(GTK_CONTAINER(line->expander->table));
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  while(line_member != NULL){
-    if(AGS_IS_LINE_MEMBER(line_member->data)){
-      ags_line_member_find_port(AGS_LINE_MEMBER(line_member->data));
-    }
+  port = NULL;
 
-    line_member = line_member->next;
-  }
+  if(line_member != NULL){
+    while(line_member != NULL){
+      if(AGS_IS_LINE_MEMBER(line_member->data)){
+	tmp_port = ags_line_member_find_port(AGS_LINE_MEMBER(line_member->data));
 
-  if(line_member_start != NULL){
-    g_list_free(line_member_start);
-  }
-  
-  channel = line->channel;
-  list = NULL;
-  
-  if(channel != NULL){
-    /* get mutex manager */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* find ports */
-    pthread_mutex_lock(channel_mutex);
-
-    next_pad = channel->next_pad;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    while(channel != next_pad){
-      /* lookup channel mutex */
-      pthread_mutex_lock(application_mutex);
-      
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) channel);
-      
-      pthread_mutex_unlock(application_mutex);
-
-      /* do it so */
-      if(list == NULL){
-	list = ags_channel_find_port(channel);
-      }else{
-	tmp = ags_channel_find_port(channel);
-	
-	if(tmp != NULL){
-	  list = g_list_concat(list,
-			       tmp);
+	if(port != NULL){
+	  port = g_list_concat(port,
+			       tmp_port);
+	}else{
+	  port = tmp_port;
 	}
       }
-      
-      /* iterate */
-      pthread_mutex_lock(channel_mutex);
 
-      channel = channel->next;
-
-      pthread_mutex_unlock(channel_mutex);
+      line_member = line_member->next;
     }
-  }
+
+    g_list_free(line_member_start);
+  }  
   
-  return(list);
+  return(port);
 }
 
 /**
  * ags_line_find_port:
  * @line: an #AgsLine
- * Returns: an #GList containing all related #AgsPort
  *
  * Lookup ports of assigned recalls.
+ *
+ * Returns: an #GList containing all related #AgsPort
  *
  * Since: 0.4
  */
