@@ -127,6 +127,8 @@ void ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 void ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 				      guint new_size,
 				      guint old_size);
+void ags_effect_bulk_real_map_recall(AgsEffectBulk *effect_bulk);
+GList* ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk);
 
 /**
  * SECTION:ags_effect_bulk
@@ -144,6 +146,8 @@ enum{
   REMOVE_EFFECT,
   RESIZE_AUDIO_CHANNELS,
   RESIZE_PADS,
+  MAP_RECALL,
+  FIND_PORT,
   LAST_SIGNAL,
 };
 
@@ -263,6 +267,9 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
   effect_bulk->resize_audio_channels = ags_effect_bulk_real_resize_audio_channels;
   effect_bulk->resize_pads = ags_effect_bulk_real_resize_pads;
 
+  effect_bulk->map_recall = ags_effect_bulk_real_map_recall;
+  effect_bulk->find_port = ags_effect_bulk_real_find_port;
+
   /* signals */
   /**
    * AgsEffectBulk::add-effect:
@@ -337,6 +344,37 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
 		 g_cclosure_user_marshal_VOID__UINT_UINT,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT, G_TYPE_UINT);
+
+  /**
+   * AgsEffectBulk::map-recall:
+   * @effect_bulk: the #AgsEffectBulk
+   *
+   * The ::map-recall should be used to add the effect_bulk's default recall.
+   */
+  effect_bulk_signals[MAP_RECALL] =
+    g_signal_new("map-recall\0",
+                 G_TYPE_FROM_CLASS (effect_bulk),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsEffectBulkClass, map_recall),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__UINT,
+                 G_TYPE_NONE, 0);
+
+  /**
+   * AgsEffectBulk::find-port:
+   * @effect_bulk: the #AgsEffectBulk to resize
+   * Returns: a #GList with associated ports
+   *
+   * The ::find-port as recall should be mapped
+   */
+  effect_bulk_signals[FIND_PORT] =
+    g_signal_new("find-port\0",
+		 G_TYPE_FROM_CLASS(effect_bulk),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBulkClass, find_port),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -458,10 +496,7 @@ ags_effect_bulk_set_property(GObject *gobject,
 
       if(effect_bulk->audio != NULL){
 	if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
-	  g_signal_handler_disconnect(effect_bulk->audio,
-				      effect_bulk->set_audio_channels_handler);
-	  g_signal_handler_disconnect(effect_bulk->audio,
-				      effect_bulk->set_pads_handler);
+	  //TODO:JK: implement me
 	}
 
 	if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
@@ -485,11 +520,11 @@ ags_effect_bulk_set_property(GObject *gobject,
 
       if(audio != NULL){
       	if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
-	  effect_bulk->set_audio_channels_handler = g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
-									   G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
+	  g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
+				 G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
 
-	  effect_bulk->set_pads_handler = g_signal_connect_after(effect_bulk->audio, "set-pads\0",
-								 G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
+	  g_signal_connect_after(effect_bulk->audio, "set-pads\0",
+				 G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
 	  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
 	    ags_effect_bulk_resize_pads(effect_bulk,
 					audio->output_pads,
@@ -569,11 +604,11 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback), effect_bulk);
 
   if(effect_bulk->audio != NULL){
-    effect_bulk->set_audio_channels_handler = g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
-								     G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
+    g_signal_connect_after(effect_bulk->audio, "set-audio-channels\0",
+			   G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
 
-    effect_bulk->set_pads_handler = g_signal_connect_after(effect_bulk->audio, "set-pads\0",
-							   G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
+    g_signal_connect_after(effect_bulk->audio, "set-pads\0",
+			   G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
   }
 }
 
@@ -1942,6 +1977,95 @@ ags_effect_bulk_resize_pads(AgsEffectBulk *effect_bulk,
 		new_size,
 		old_size);
   g_object_unref((GObject *) effect_bulk);
+}
+
+void
+ags_effect_bulk_real_map_recall(AgsEffectBulk *effect_bulk)
+{
+  if((AGS_EFFECT_BULK_MAPPED_RECALL & (effect_bulk->flags)) != 0){
+    return;
+  }
+
+  effect_bulk->flags |= AGS_EFFECT_BULK_MAPPED_RECALL;
+
+  ags_effect_bulk_find_port(effect_bulk);
+}
+
+/**
+ * ags_effect_bulk_map_recall:
+ * @effect_bulk: the #AgsEffectBulk to add its default recall.
+ *
+ * You may want the @effect_bulk to add its default recall.
+ */
+void
+ags_effect_bulk_map_recall(AgsEffectBulk *effect_bulk)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BULK(effect_bulk));
+
+  g_object_ref((GObject *) effect_bulk);
+  g_signal_emit((GObject *) effect_bulk,
+		effect_bulk_signals[MAP_RECALL], 0);
+  g_object_unref((GObject *) effect_bulk);
+}
+
+GList*
+ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk)
+{
+  GList *bulk_member, *bulk_member_start;
+  
+  GList *port, *tmp_port;
+
+  port = NULL;
+
+  /* find output ports */
+  bulk_member_start = 
+    bulk_member = gtk_container_get_children(effect_bulk->table);
+
+  if(bulk_member != NULL){
+    while(bulk_member != NULL){
+      tmp_port = ags_bulk_member_find_port(AGS_BULK_MEMBER(bulk_member->data));
+      
+      if(port != NULL){
+	port = g_list_concat(port,
+			     tmp_port);
+      }else{
+	port = tmp_port;
+      }
+
+      bulk_member = bulk_member->next;
+    }
+
+    g_list_free(bulk_member_start);
+  }
+  
+  return(port);
+}
+
+/**
+ * ags_effect_bulk_find_port:
+ * @effect_bulk: the #AgsEffectBulk
+ * Returns: an #GList containing all related #AgsPort
+ *
+ * Lookup ports of associated recalls.
+ *
+ * Since: 0.7.8
+ */
+GList*
+ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
+{
+  GList *list;
+
+  list = NULL;
+  g_return_val_if_fail(AGS_IS_EFFECT_BULK(effect_bulk),
+		       NULL);
+
+  g_object_ref((GObject *) effect_bulk);
+  g_signal_emit((GObject *) effect_bulk,
+		effect_bulk_signals[FIND_PORT], 0,
+		&list);
+  g_object_unref((GObject *) effect_bulk);
+
+  return(list);
 }
 
 /**

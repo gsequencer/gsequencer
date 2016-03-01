@@ -53,6 +53,13 @@ void ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMac
 void ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine);
 
 /* audio */
+void ags_machine_set_audio_channels_callback(AgsAudio *audio,
+					     guint audio_channels, guint audio_channels_old,
+					     AgsMachine *machine);
+void ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
+				   guint pads, guint pads_old,
+				   AgsMachine *machine);
+
 void ags_machine_tact_callback(AgsAudio *audio,
 			       AgsRecallID *recall_id,
 			       AgsMachine *machine);

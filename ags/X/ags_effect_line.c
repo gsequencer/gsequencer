@@ -86,6 +86,8 @@ GList* ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 				       gchar *effect);
 void ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 					guint nth);
+void ags_effect_line_real_map_recall(AgsEffectLine *effect_line);
+GList* ags_effect_line_real_find_port(AgsEffectLine *effect_line);
 
 /**
  * SECTION:ags_effect_line
@@ -101,6 +103,8 @@ void ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 enum{
   ADD_EFFECT,
   REMOVE_EFFECT,
+  MAP_RECALL,
+  FIND_PORT,
   LAST_SIGNAL,
 };
 
@@ -192,7 +196,9 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
   /* AgsEffectLineClass */
   effect_line->add_effect = ags_effect_line_real_add_effect;
   effect_line->remove_effect = ags_effect_line_real_remove_effect;
-  
+  effect_line->map_recall = ags_effect_line_real_map_recall;
+  effect_line->find_port = ags_effect_line_real_find_port;
+
   /* signals */
   /**
    * AgsEffectLine::add-effect:
@@ -228,6 +234,37 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
+
+  /**
+   * AgsEffectLine::map-recall:
+   * @effect_line: the #AgsEffectLine
+   *
+   * The ::map-recall should be used to add the effect_line's default recall.
+   */
+  effect_line_signals[MAP_RECALL] =
+    g_signal_new("map-recall\0",
+                 G_TYPE_FROM_CLASS (effect_line),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsEffectLineClass, map_recall),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__UINT,
+                 G_TYPE_NONE, 0);
+
+  /**
+   * AgsEffectLine::find-port:
+   * @effect_line: the #AgsEffectLine to resize
+   * Returns: a #GList with associated ports
+   *
+   * The ::find-port as recall should be mapped
+   */
+  effect_line_signals[FIND_PORT] =
+    g_signal_new("find-port\0",
+		 G_TYPE_FROM_CLASS(effect_line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectLineClass, find_port),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -847,6 +884,99 @@ ags_effect_line_remove_effect(AgsEffectLine *effect_line,
 		effect_line_signals[REMOVE_EFFECT], 0,
 		nth);
   g_object_unref((GObject *) effect_line);
+}
+
+void
+ags_effect_line_real_map_recall(AgsEffectLine *effect_line)
+{
+  if((AGS_EFFECT_LINE_MAPPED_RECALL & (effect_line->flags)) != 0){
+    return;
+  }
+
+  effect_line->flags |= AGS_EFFECT_LINE_MAPPED_RECALL;
+
+  ags_effect_line_find_port(effect_line);
+}
+
+/**
+ * ags_effect_line_map_recall:
+ * @effect_line: the #AgsEffectLine to add its default recall.
+ *
+ * You may want the @effect_line to add its default recall.
+ */
+void
+ags_effect_line_map_recall(AgsEffectLine *effect_line)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit((GObject *) effect_line,
+		effect_line_signals[MAP_RECALL], 0);
+  g_object_unref((GObject *) effect_line);
+}
+
+GList*
+ags_effect_line_real_find_port(AgsEffectLine *effect_line)
+{
+  GList *port, *tmp_port;
+  GList *line_member, *line_member_start;
+
+  if(effect_line == NULL || effect_line->table == NULL){
+    return(NULL);
+  }
+
+  line_member_start = 
+    line_member = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
+  
+  port = NULL;
+
+  if(line_member != NULL){
+    while(line_member != NULL){
+      if(AGS_IS_LINE_MEMBER(line_member->data)){
+	tmp_port = ags_line_member_find_port(AGS_LINE_MEMBER(line_member->data));
+
+	if(port != NULL){
+	  port = g_list_concat(port,
+			       tmp_port);
+	}else{
+	  port = tmp_port;
+	}
+      }
+
+      line_member = line_member->next;
+    }
+
+    g_list_free(line_member_start);
+  }  
+  
+  return(port);
+}
+
+/**
+ * ags_effect_line_find_port:
+ * @effect_line: the #AgsEffectLine
+ * Returns: an #GList containing all related #AgsPort
+ *
+ * Lookup ports of associated recalls.
+ *
+ * Since: 0.7.8
+ */
+GList*
+ags_effect_line_find_port(AgsEffectLine *effect_line)
+{
+  GList *list;
+
+  list = NULL;
+  g_return_val_if_fail(AGS_IS_EFFECT_LINE(effect_line),
+		       NULL);
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit((GObject *) effect_line,
+		effect_line_signals[FIND_PORT], 0,
+		&list);
+  g_object_unref((GObject *) effect_line);
+
+  return(list);
 }
 
 /**

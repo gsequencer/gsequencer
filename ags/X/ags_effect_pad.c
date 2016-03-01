@@ -50,6 +50,8 @@ void ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id);
 
 void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 				      guint audio_channels, guint audio_channels_old);
+void ags_effect_pad_real_map_recall(AgsEffectPad *effect_pad);
+GList* ags_effect_pad_real_find_port(AgsEffectPad *effect_pad);
 
 /**
  * SECTION:ags_effect_pad
@@ -64,6 +66,8 @@ void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 
 enum{
   RESIZE_LINES,
+  MAP_RECALL,
+  FIND_PORT,
   LAST_SIGNAL,
 };
 
@@ -155,6 +159,12 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
 				  PROP_CHANNEL,
 				  param_spec);
 
+
+  /* AgsEffectPadClass */
+  effect_pad->map_recall = ags_effect_pad_real_map_recall;
+  effect_pad->find_port = ags_effect_pad_real_find_port;
+
+  /* signals */
   /**
    * AgsPad::resize-lines:
    * @pad: the #AgsPad to resize
@@ -173,6 +183,37 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
 		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_ULONG, G_TYPE_UINT, G_TYPE_UINT);
+
+  /**
+   * AgsEffectPad::map-recall:
+   * @effect_pad: the #AgsEffectPad
+   *
+   * The ::map-recall should be used to add the effect_pad's default recall.
+   */
+  effect_pad_signals[MAP_RECALL] =
+    g_signal_new("map-recall\0",
+                 G_TYPE_FROM_CLASS (effect_pad),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsEffectPadClass, map_recall),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__UINT,
+                 G_TYPE_NONE, 0);
+
+  /**
+   * AgsEffectPad::find-port:
+   * @effect_pad: the #AgsEffectPad to resize
+   * Returns: a #GList with associated ports
+   *
+   * The ::find-port as recall should be mapped
+   */
+  effect_pad_signals[FIND_PORT] =
+    g_signal_new("find-port\0",
+		 G_TYPE_FROM_CLASS(effect_pad),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectPadClass, find_port),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -430,6 +471,95 @@ ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 		line_type,
 		audio_channels, audio_channels_old);
   g_object_unref((GObject *) effect_pad);
+}
+
+void
+ags_effect_pad_real_map_recall(AgsEffectPad *effect_pad)
+{
+  if((AGS_EFFECT_PAD_MAPPED_RECALL & (effect_pad->flags)) != 0){
+    return;
+  }
+
+  effect_pad->flags |= AGS_EFFECT_PAD_MAPPED_RECALL;
+
+  ags_effect_pad_find_port(effect_pad);
+}
+
+/**
+ * ags_effect_pad_map_recall:
+ * @effect_pad: the #AgsEffectPad to add its default recall.
+ *
+ * You may want the @effect_pad to add its default recall.
+ */
+void
+ags_effect_pad_map_recall(AgsEffectPad *effect_pad)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+
+  g_object_ref((GObject *) effect_pad);
+  g_signal_emit((GObject *) effect_pad,
+		effect_pad_signals[MAP_RECALL], 0);
+  g_object_unref((GObject *) effect_pad);
+}
+
+GList*
+ags_effect_pad_real_find_port(AgsEffectPad *effect_pad)
+{
+  GList *effect_line, *effect_line_start;
+  
+  GList *port, *tmp_port;
+
+  port = NULL;
+
+  /* find output ports */
+  if(effect_pad->table != NULL){
+    effect_line_start = 
+      effect_line = gtk_container_get_children(effect_pad->table);
+
+    while(effect_line != NULL){
+      tmp_port = ags_effect_line_find_port(AGS_EFFECT_LINE(effect_line->data));
+      
+      if(port != NULL){
+	port = g_list_concat(port,
+			     tmp_port);
+      }else{
+	port = tmp_port;
+      }
+
+      effect_line = effect_line->next;
+    }
+
+    g_list_free(effect_line_start);
+  }
+
+  return(port);
+}
+
+/**
+ * ags_effect_pad_find_port:
+ * @effect_pad: the #AgsEffectPad
+ * Returns: an #GList containing all related #AgsPort
+ *
+ * Lookup ports of associated recalls.
+ *
+ * Since: 0.7.8
+ */
+GList*
+ags_effect_pad_find_port(AgsEffectPad *effect_pad)
+{
+  GList *list;
+
+  list = NULL;
+  g_return_val_if_fail(AGS_IS_EFFECT_PAD(effect_pad),
+		       NULL);
+
+  g_object_ref((GObject *) effect_pad);
+  g_signal_emit((GObject *) effect_pad,
+		effect_pad_signals[FIND_PORT], 0,
+		&list);
+  g_object_unref((GObject *) effect_pad);
+
+  return(list);
 }
 
 /**

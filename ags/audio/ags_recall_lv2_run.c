@@ -199,6 +199,7 @@ ags_recall_lv2_run_finalize(GObject *gobject)
     guint i;
 
     for(i = 0; recall_lv2_run->feature[i] != NULL; i++){
+      free(recall_lv2_run->feature[i]->data);
       free(recall_lv2_run->feature[i]);
     }
     

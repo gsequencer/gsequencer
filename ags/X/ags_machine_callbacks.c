@@ -520,6 +520,25 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
 }
 
 void
+ags_machine_set_audio_channels_callback(AgsAudio *audio,
+					guint audio_channels, guint audio_channels_old,
+					AgsMachine *machine)
+{
+  ags_machine_resize_audio_channels(machine,
+				    audio_channels, audio_channels_old);
+}
+
+void
+ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
+			      guint pads, guint pads_old,
+			      AgsMachine *machine)
+{
+  ags_machine_resize_pads(machine,
+			  channel_type,
+			  pads, pads_old);
+}
+
+void
 ags_machine_tact_callback(AgsAudio *audio,
 			  AgsRecallID *recall_id,
 			  AgsMachine *machine)
