@@ -80,15 +80,15 @@ struct _AgsMachine
 {
   GtkHandleBox handle_box;
 
-  char *name;
-
-  gchar *version;
-  gchar *build_id;
-
   guint flags;
   guint file_input_flags;
   guint mapping_flags;
   guint connection_flags;
+
+  char *name;
+
+  gchar *version;
+  gchar *build_id;
   
   guint bank_0;
   guint bank_1;

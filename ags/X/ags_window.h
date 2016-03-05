@@ -59,11 +59,11 @@ struct _AgsWindow
 
   guint flags;
 
+  char *name;
+
   GObject *application_context;
 
   GObject *soundcard;
-
-  char *name;
 
   AgsMenuBar *menu_bar;
 
@@ -76,6 +76,8 @@ struct _AgsWindow
   AgsEditor *editor;
   AgsNavigation *navigation;
 
+  GList *dialog;
+  
   AgsAutomationWindow *automation_window;
 
   AgsExportWindow *export_window;
@@ -96,6 +98,9 @@ struct _AgsMachineCounter
   gchar *build_id;
 
   GType machine_type;
+  gchar *filename;
+  gchar *effect;
+  
   guint counter;
 };
 

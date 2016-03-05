@@ -63,7 +63,7 @@ static GList* ags_window_standard_machine_counter();
 enum{
   PROP_0,
   PROP_SOUNDCARD,
-  PROP_MAIN,
+  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_window_parent_class = NULL;
@@ -137,7 +137,7 @@ ags_window_class_init(AgsWindowClass *window)
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
 
@@ -218,8 +218,10 @@ ags_window_init(AgsWindow *window)
 		     (GtkWidget *) window->navigation,
 		     FALSE, FALSE, 0);
 
+  window->dialog = NULL;
+
   window->automation_window = ags_automation_window_new(window);
-  
+
   window->export_window = ags_export_window_new();
   window->import_window = NULL;
   
@@ -265,7 +267,7 @@ ags_window_set_property(GObject *gobject,
 		   NULL);
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
       AgsApplicationContext *application_context;
 
@@ -309,7 +311,7 @@ ags_window_get_property(GObject *gobject,
   case PROP_SOUNDCARD:
     g_value_set_object(value, window->soundcard);
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     g_value_set_object(value, window->application_context);
     break;
   default:
@@ -514,6 +516,8 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
   machine_counter->build_id = build_id;
 
   machine_counter->machine_type = machine_type;
+  machine_counter->filename = NULL;
+  machine_counter->effect = NULL;
   machine_counter->counter = initial_value;
 
   return(machine_counter);

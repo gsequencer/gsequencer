@@ -71,11 +71,7 @@ struct _AgsAutomation
   AgsFunction *source_function;
   
   GList *acceleration;
-
-  gdouble start_loop;
-  gdouble end_loop;
-  gdouble offset;
-
+  
   GList *selection;
 
   GObject *port;

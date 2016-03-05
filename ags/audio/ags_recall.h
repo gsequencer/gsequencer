@@ -84,9 +84,6 @@ struct _AgsRecall
 
   guint flags;
 
-  GObject *soundcard;
-  GObject *container; // see AgsRecallContainer
-
   gchar *version;
   gchar *build_id;
 
@@ -94,6 +91,9 @@ struct _AgsRecall
   gchar *name;
 
   gchar *xml_type;
+
+  GObject *soundcard;
+  GObject *container; // see AgsRecallContainer
 
   GList *dependencies;
 

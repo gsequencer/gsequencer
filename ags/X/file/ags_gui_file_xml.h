@@ -142,6 +142,9 @@ xmlNode* ags_file_write_effect_bulk(AgsFile *file, xmlNode *parent, AgsEffectBul
 void ags_file_read_effect_bulk_list(AgsFile *file, xmlNode *node, GList **effect_bulk);
 xmlNode* ags_file_write_effect_bulk_list(AgsFile *file, xmlNode *parent, GList *effect_bulk);
 
+void ags_file_read_effect_bulk_resolve_audio(AgsFileLookup *file_lookup,
+					     AgsEffectBulk *effect_bulk);
+
 /* AgsBulkMember */
 void ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_member);
 xmlNode* ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_member);

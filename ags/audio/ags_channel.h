@@ -90,7 +90,6 @@ struct _AgsChannel
   AgsRecycling *last_recycling;
 
   GList *pattern;
-  AgsNotation *notation;
 
   GObject *line_widget;
   gpointer file_data;

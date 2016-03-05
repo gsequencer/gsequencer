@@ -56,8 +56,6 @@ struct _AgsBulkMember
 
   guint flags;
 
-  gchar *name;
-  
   gchar *version;
   gchar *build_id;
 
