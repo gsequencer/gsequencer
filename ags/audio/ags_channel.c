@@ -671,7 +671,6 @@ ags_channel_init(AgsChannel *channel)
   channel->last_recycling = NULL;
 
   channel->pattern = NULL;
-  channel->notation = NULL;
 
   channel->line_widget = NULL;
   channel->file_data = NULL;
@@ -1060,10 +1059,6 @@ ags_channel_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
-
-  if(channel->notation != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(channel->notation));
-  }
 }
 
 void
@@ -1139,11 +1134,6 @@ ags_channel_finalize(GObject *gobject)
 
   g_list_free_full(channel->pattern,
 		   g_object_unref);
-
-  /* AgsNotation */
-  if(channel->notation != NULL){
-    g_object_unref(channel->notation);
-  }
   
   /* call parent class */
   G_OBJECT_CLASS(ags_channel_parent_class)->finalize(gobject);

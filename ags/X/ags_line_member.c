@@ -345,7 +345,7 @@ ags_line_member_init(AgsLineMember *line_member)
 
   line_member->flags = (AGS_LINE_MEMBER_RESET_BY_ATOMIC |
 			AGS_LINE_MEMBER_APPLY_RECALL);
-
+  
   line_member->widget_type = AGS_TYPE_DIAL;
   dial = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
 				       "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
