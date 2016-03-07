@@ -100,6 +100,13 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
   gobject->finalize = ags_file_lookup_finalize;
 
   /* properties */
+  /**
+   * AgsFile:file:
+   *
+   * The assigned #AgsFile to resolve.
+   *
+   * Since: 0.4.2
+   */
   param_spec = g_param_spec_object("file\0",
 				   "assigned file\0",
 				   "The file it is assigned with\0",
@@ -109,6 +116,13 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
 				  PROP_FILE,
 				  param_spec);
 
+  /**
+   * AgsFile:node:
+   *
+   * The assigned #xmlNode to resolve.
+   *
+   * Since: 0.4.2
+   */
   param_spec = g_param_spec_pointer("node\0",
 				    "assigned node\0",
 				    "The node it is assigned with\0",
@@ -117,6 +131,13 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
 				  PROP_NODE,
 				  param_spec);
 
+  /**
+   * AgsFile:reference:
+   *
+   * The assigned #gpointer to resolve.
+   *
+   * Since: 0.4.2
+   */
   param_spec = g_param_spec_pointer("reference\0",
 				    "assigned reference\0",
 				    "The reference it is assigned with\0",
@@ -128,6 +149,15 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
   /* AgsFileLookupClass */
   file_lookup->resolve = NULL;
 
+  /**
+   * AgsFile::resolve:
+   * @file_lookup: the #AgsFileLookup
+   * 
+   * Resolve @file_lookup either for reading or writing XPath and retrieving
+   * appropriate UUID.
+   *
+   * Since: 0.4.2
+   */
   file_lookup_signals[RESOLVE] =
     g_signal_new("resolve\0",
 		 G_TYPE_FROM_CLASS(file_lookup),
@@ -241,6 +271,14 @@ ags_file_lookup_finalize(GObject *gobject)
   }
 }
 
+/**
+ * ags_file_lookup_resolve:
+ * @file_lookup: the #AgsFileLookup
+ *
+ * The ::resolve signal. 
+ *
+ * Since: 0.4.2
+ */
 void
 ags_file_lookup_resolve(AgsFileLookup *file_lookup)
 {
@@ -252,11 +290,44 @@ ags_file_lookup_resolve(AgsFileLookup *file_lookup)
   g_object_unref((GObject *) file_lookup);
 }
 
+/**
+ * ags_file_lookup_find_by_node:
+ * @file_lookup: the #GList containing #AgsFileLookup
+ * @node: a #xmlNode
+ *
+ * Find #AgsFileLookup by #xmlNode
+ *
+ * Returns: The list containing #AgsFileLookup if found otherwise %NULL
+ *
+ * Since: 0.4.2
+ */
 GList*
 ags_file_lookup_find_by_node(GList *file_lookup,
 			     xmlNode *node)
 {
   while(file_lookup != NULL && AGS_FILE_LOOKUP(file_lookup->data)->node != node){
+    file_lookup = file_lookup->next;
+  }
+
+  return(file_lookup);
+}
+
+/**
+ * ags_file_lookup_find_by_node:
+ * @file_lookup: the #GList containing #AgsFileLookup
+ * @ref: a #gpointer
+ *
+ * Find #AgsFileLookup by @ref
+ *
+ * Returns: The list containing #AgsFileLookup if found otherwise %NULL
+ *
+ * Since: 0.7.8
+ */
+GList*
+ags_file_lookup_find_by_reference(GList *file_lookup,
+				  gpointer ref)
+{
+  while(file_lookup != NULL && AGS_FILE_LOOKUP(file_lookup->data)->ref != ref){
     file_lookup = file_lookup->next;
   }
 

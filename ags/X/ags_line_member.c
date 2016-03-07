@@ -359,6 +359,9 @@ ags_line_member_init(AgsLineMember *line_member)
 
   line_member->widget_label = NULL;
 
+  line_member->filename = NULL;
+  line_member->effect = NULL;
+
   line_member->plugin_name = NULL;
   line_member->specifier = NULL;
 

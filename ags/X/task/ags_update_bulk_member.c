@@ -160,6 +160,7 @@ ags_update_bulk_member_launch(AgsTask *task)
   AgsChannel *current;
   
   AgsBulkPort *bulk_port;
+  AgsBulkPort *recall_bulk_port;
 
   GList *list, *list_next;
   GList *recall, *play;
@@ -237,15 +238,23 @@ ags_update_bulk_member_launch(AgsTask *task)
 	      recall_port = AGS_RECALL(recall->data)->port;
 
 	      while(port != NULL){
-		bulk_port = ags_bulk_port_alloc(port->data,
-						recall_port->data);
+		bulk_port = ags_bulk_port_alloc(port->data);
+		recall_bulk_port = ags_bulk_port_alloc(recall_port->data);
+		
 		if(k != 0){
 		  update_bulk_member->bulk_member->bulk_port = g_list_insert(update_bulk_member->bulk_member->bulk_port,
 									     bulk_port,
 									     k);
+
+		  update_bulk_member->bulk_member->recall_bulk_port = g_list_insert(update_bulk_member->bulk_member->recall_bulk_port,
+										    recall_bulk_port,
+										    k);
 		}else{
 		  update_bulk_member->bulk_member->bulk_port = g_list_prepend(update_bulk_member->bulk_member->bulk_port,
 									      bulk_port);
+
+		  update_bulk_member->bulk_member->recall_bulk_port = g_list_prepend(update_bulk_member->bulk_member->recall_bulk_port,
+										     recall_bulk_port);
 		}
 		
 		k++;
@@ -266,15 +275,21 @@ ags_update_bulk_member_launch(AgsTask *task)
 	      recall_port = AGS_RECALL(recall->data)->port;
 
 	      while(port != NULL){
-		bulk_port = ags_bulk_port_alloc(port->data,
-						recall_port->data);
+		bulk_port = ags_bulk_port_alloc(port->data);
+		recall_bulk_port = ags_bulk_port_alloc(recall_port->data);
+
 		if(k != 0){
 		  update_bulk_member->bulk_member->bulk_port = g_list_insert(update_bulk_member->bulk_member->bulk_port,
 									     bulk_port,
 									     k);
+		  update_bulk_member->bulk_member->recall_bulk_port = g_list_insert(update_bulk_member->bulk_member->recall_bulk_port,
+										    recall_bulk_port,
+										    k);
 		}else{
 		  update_bulk_member->bulk_member->bulk_port = g_list_prepend(update_bulk_member->bulk_member->bulk_port,
 									      bulk_port);
+		  update_bulk_member->bulk_member->recall_bulk_port = g_list_prepend(update_bulk_member->bulk_member->recall_bulk_port,
+										     recall_bulk_port);
 		}
 		
 		k++;

@@ -86,6 +86,8 @@ enum{
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
   PROP_TASK_TYPE,
+  PROP_BULK_PORT,
+  PROP_RECALL_BULK_PORT,
 };
 
 static gpointer ags_bulk_member_parent_class = NULL;
@@ -336,6 +338,7 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   bulk_member->control_port = NULL;
 
   bulk_member->bulk_port = NULL;
+  bulk_member->recall_bulk_port = NULL;
 
   bulk_member->task_type = G_TYPE_NONE;
 }
@@ -596,8 +599,7 @@ ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
 }
 
 AgsBulkPort*
-ags_bulk_port_alloc(AgsPort *port,
-		    AgsPort *recall_port)
+ags_bulk_port_alloc(AgsPort *port)
 {
   AgsBulkPort *bulk_port;
 
@@ -607,10 +609,6 @@ ags_bulk_port_alloc(AgsPort *port,
   bulk_port->port_data = &(port->port_value);
   bulk_port->active = FALSE;
   
-  bulk_port->recall_port = recall_port;
-  bulk_port->recall_port_data = &(port->port_value);
-  bulk_port->active = FALSE;
-
   return(bulk_port);
 }
 
@@ -657,23 +655,13 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
-  
-  window = gtk_widget_get_ancestor(bulk_member,
-				   AGS_TYPE_WINDOW);
-  
-  application_context = window->application_context;
 
-  main_loop = application_context->main_loop;
+  auto void ags_bulk_member_real_change_port_iter(GList *list);
 
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
-  
-  if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
+  void ags_bulk_member_real_change_port_iter(GList *list){
     AgsPort *port;
-    GList *list;
-    GValue value = {0,};
 
-    list = bulk_member->bulk_port;
+    GValue value = {0,};
 
     while(list != NULL){
       port = AGS_BULK_PORT(list->data)->port;
@@ -732,15 +720,30 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 	}
       }
 
-      ags_port_safe_write(bulk_member->bulk_port,
+      ags_port_safe_write(port,
 			  &value);
 
-      if((AGS_BULK_MEMBER_APPLY_RECALL & (bulk_member->flags)) != 0){
-	ags_port_safe_write(AGS_BULK_PORT(list->data)->recall_port,
-			    &value);
-      }
-
       list = list->next;
+    }
+  }
+    
+  window = gtk_widget_get_ancestor(bulk_member,
+				   AGS_TYPE_WINDOW);
+  
+  application_context = window->application_context;
+
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
+  if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
+    GList *list;
+
+    ags_bulk_member_real_change_port_iter(bulk_member->bulk_port);
+
+    if((AGS_BULK_MEMBER_APPLY_RECALL & (bulk_member->flags)) != 0){
+      ags_bulk_member_real_change_port_iter(bulk_member->recall_bulk_port);
     }
   }
 
@@ -874,8 +877,10 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
     if(channel_port != NULL ||
        recall_channel_port != NULL){
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
-					      ags_bulk_port_alloc(channel_port,
-								  recall_channel_port));
+					      ags_bulk_port_alloc(channel_port));
+
+      bulk_member->bulk_port = g_list_prepend(bulk_member->recall_bulk_port,
+					      ags_bulk_port_alloc(recall_channel_port));
     }
     
     channel = channel->next;
@@ -892,12 +897,12 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 
     if(audio_port != NULL){
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
-					      audio_port);
+					      ags_bulk_port_alloc(audio_port));
     }
     
     if(recall_audio_port != NULL){
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
-					      recall_audio_port);
+					      ags_bulk_port_alloc(recall_audio_port));
     }
   }
 

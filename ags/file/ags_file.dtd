@@ -636,7 +636,7 @@
 	  value                NMTOKEN    #IMPLIED
 	  >
 
-<!ELEMENT ags-window (ags-menu-bar?, ags-machine-counter-list?, ags-machine-list?, ags-editor?, ags-navigation?, ags-dialog-list?, ags-machine-editor-list?)>
+<!ELEMENT ags-window (ags-menu-bar?, ags-machine-counter-list?, ags-machine-list?, ags-editor?, ags-navigation?, ags-automation-window, ags-dialog-list?, ags-machine-editor-list?)>
 <!ATTLIST ags-window
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
@@ -660,8 +660,8 @@
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
 	  machine-type     CDATA      #REQUIRED
-	  filename         CDATA      "(null)"
-	  effect           CDATA      "(null)"
+	  filename         CDATA      #IMPLIED
+	  effect           CDATA      #IMPLIED
 	  counter          CDATA      #REQUIRED
 	  >
 
@@ -701,8 +701,9 @@
 	  flags            PCDATA     #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
-	  rows             NMTOKEN    #REQUIRED
-	  cols             NMTOKEN    #REQUIRED
+	  channel          IDREF      #REQUIRED
+	  rows             NMTOKEN    #IMPLIED
+	  cols             NMTOKEN    #IMPLIED
 	  group            CDATA      "true"
 	  mute             CDATA      "false"
 	  solo             CDATA      "false"
@@ -741,6 +742,10 @@
 	  flags                PCDATA     #REQUIRED
 	  widget-type          CDATA      "AgsDial"
 	  label                CDATA      #IMPLIED
+	  filename             CDATA      #IMPLIED
+	  effect               CDATA      #IMPLIED
+	  plugin-name          CDATA      #IMPLIED
+	  specifier            CDATA      #IMPLIED
 	  port                 CDATA      #REQUIRED
 	  recall-port          CDATA      #IMPLIED
 	  task-type            CDATA      #REQUIRED
@@ -762,22 +767,36 @@
 	  inverted             CDATA      #IMPLIED
 	  >
 
-<!ELEMENT ags-effect-bridge (ags-effect-bulk?, ags-effect-bulk?, ags-effect-pad?, ags-effect-pad?)>
+<!ELEMENT ags-effect-bridge-list (ags-effect-bridge*)>
+<!ATTLIST ags-effect-bridge-list
+	  id                   ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-effect-bridge (ags-effect-bulk?, ags-effect-bulk?, ags-effect-pad-list?, ags-effect-pad-list?)>
 <!ATTLIST ags-effect-bridge
 	  id                ID         #REQUIRED
 	  flags             PCDATA     #REQUIRED
 	  name              CDATA      #REQUIRED
 	  version           CDATA      #REQUIRED
 	  build-id          CDATA      #REQUIRED
+	  audio             IDREF      #REQUIRED
 	  bulk-output-type  CDATA      #REQUIRED
 	  bulk-input-type   CDATA      #REQUIRED
 	  output-pad-type   CDATA      #REQUIRED
+	  output-line-type  CDATA      #REQUIRED
 	  input-pad-type    CDATA      #REQUIRED
+	  input-line-type   CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-effect-bulk-list (ags-effect-bulk*)>
+<!ATTLIST ags-effect-bulk-list
+	  id                   ID         #REQUIRED
 	  >
 
 <!ELEMENT ags-effect-bulk (ags-bulk-member-list?)>
 <!ATTLIST ags-effect-bulk
 	  id                ID         #REQUIRED
+	  scope             CDATA      #REQUIRED
 	  flags             PCDATA     #REQUIRED
 	  name              CDATA      #REQUIRED
 	  version           CDATA      #REQUIRED
@@ -797,8 +816,10 @@
 	  flags                PCDATA     #REQUIRED
 	  widget-type          CDATA      "AgsDial"
 	  label                CDATA      #IMPLIED
-	  filename             CDATA      "(null)"
-	  effect               CDATA      "(null)"
+	  filename             CDATA      #IMPLIED
+	  effect               CDATA      #IMPLIED
+	  plugin-name          CDATA      #IMPLIED
+	  specifier            CDATA      #IMPLIED
 	  task-type            CDATA      #REQUIRED
 	  left-attach          NMTOKEN    #REQUIRED
 	  rigth-attach         NMTOKEN    #REQUIRED
@@ -830,9 +851,10 @@
 	  flags            PCDATA     #REQUIRED
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
+	  channel          IDREF      #REQUIRED
 	  name             CDATA      #REQUIRED
-	  rows             NMTOKEN    #REQUIRED
-	  cols             NMTOKEN    #REQUIRED
+	  rows             NMTOKEN    #IMPLIED
+	  cols             NMTOKEN    #IMPLIED
 	  group            CDATA      "true"
 	  mute             CDATA      "false"
 	  solo             CDATA      "false"
@@ -1016,6 +1038,78 @@
 	  effect           CDATA      #IMPLIED
 	  >
 
+<!-- windows -->
+<!ELEMENT ags-automation-window-list (ags-automation-window*)>
+<!ATTLIST ags-automation-window-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-automation-window (ags-automation-edit)>
+<!ATTLIST ags-automation-window
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  >
+
+<!ELEMENT ags-automation-editor-list (ags-automation-editor*)>
+<!ATTLIST ags-automation-editor-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-automation-editor (ags-automation-toolbar, ags-machine-selector?, ags-automation-edit-list)>
+<!ATTLIST ags-automation-editor
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-automation-edit-list (ags-automation-edit*)>
+<!ATTLIST ags-automation-edit-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-automation-edit (ags-automation-area-list*)>
+<!ATTLIST ags-automation-edit
+	  id               ID         #REQUIRED
+	  domain           CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-automation-area-list (ags-automation-area*)>
+<!ATTLIST ags-automation-area-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-automation-area (ags-automation-edit)>
+<!ATTLIST ags-automation-area
+	  id                 ID         #REQUIRED
+	  y                  NMTOKEN    #REQUIRED
+	  height             NMTOKEN    #REQUIRED
+	  audio              IDREF      #REQUIRED
+	  channel-type       CDATA      #IMPLIED
+	  control-specifier  CDATA      #IMPLIED
+	  control-name       CDATA      #IMPLIED
+	  >
+
+<!ELEMENT ags-export-window-list (ags-export-window*)>
+<!ATTLIST ags-export-window-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-export-window (ags-export-edit)>
+<!ATTLIST ags-export-window
+	  id               ID         #REQUIRED
+	  filename         CDATA      #REQUIRED
+	  >
+
+<!ELEMENT ags-import-window-list (ags-import-window*)>
+<!ATTLIST ags-import-window-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-import-window (ags-import-edit)>
+<!ATTLIST ags-import-window
+	  id               ID         #REQUIRED
+	  >
+
 <!-- dialogs -->
 <!ELEMENT ags-dialog-list (ags-dialog*)>
 <!ATTLIST ags-dialog-list
@@ -1088,7 +1182,7 @@
 	  >
 
 <!-- editor -->
-<!ELEMENT ags-editor (ags-toolbar, ags-notebook)>
+<!ELEMENT ags-editor (ags-toolbar, ags-machine-selector?, ags-notebook)>
 <!ATTLIST ags-editor
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED

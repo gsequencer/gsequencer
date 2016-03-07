@@ -58,6 +58,8 @@ GType ags_file_lookup_get_type(void);
 
 GList* ags_file_lookup_find_by_node(GList *file_lookup,
 				    xmlNode *node);
+GList* ags_file_lookup_find_by_reference(GList *file_lookup,
+					 gpointer ref);
 
 void ags_file_lookup_resolve(AgsFileLookup *lookup);
 
