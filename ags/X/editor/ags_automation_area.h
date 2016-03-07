@@ -51,6 +51,8 @@ struct _AgsAutomationArea
 
   AgsAudio *audio;
   GType channel_type;
+  gchar *control_specifier;
+
   gchar *control_name;
 };
 

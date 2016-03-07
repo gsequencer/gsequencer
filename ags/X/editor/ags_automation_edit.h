@@ -66,6 +66,8 @@ struct _AgsAutomationEdit
 
   guint flags;
 
+  GType scope;
+  
   guint map_width;
   guint map_height;
 

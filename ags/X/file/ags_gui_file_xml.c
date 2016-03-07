@@ -37,6 +37,7 @@
 #include <ags/file/ags_file_launch.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
@@ -87,10 +88,15 @@ void ags_file_write_effect_bridge_resolve_audio(AgsFileLookup *file_lookup,
 
 void ags_file_write_effect_bulk_resolve_audio(AgsFileLookup *file_lookup,
 					      AgsEffectBulk *effect_bulk);
+
 void ags_file_read_bulk_member_resolve_port(AgsFileLookup *file_lookup,
 					    AgsBulkMember *bulk_member);
-void ags_file_write_bulk_member_resolve_port(AgsFileLookup *file_lookup,
-					     AgsBulkMember *bulk_member);
+
+void ags_file_read_effect_pad_resolve_channel(AgsFileLookup *file_lookup,
+					      AgsPad *pad);
+
+void ags_file_read_effect_line_resolve_channel(AgsFileLookup *file_lookup,
+					       AgsLine *line);
 
 void ags_file_read_editor_resolve_parameter(AgsFileLookup *file_lookup,
 					    AgsEditor *editor);
@@ -1014,10 +1020,13 @@ void
 ags_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
 {
   AgsPad *gobject;
+  
   AgsFileLookup *file_lookup;
-  GType pad_type;
+
   xmlNode *child;
 
+  GType pad_type;
+  
   if(*pad == NULL){
     pad_type = g_type_from_name(xmlGetProp(node,
 					   AGS_FILE_TYPE_PROP));
@@ -1241,8 +1250,9 @@ ags_file_read_pad_resolve_channel(AgsFileLookup *file_lookup,
 xmlNode*
 ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
 {
-  AgsFileLookup *file_lookup;
   AgsExpanderSetChild *expander_set_child;
+
+  AgsFileLookup *file_lookup;
 
   xmlNode *node, *child;
   xmlNode *line_node;
@@ -1412,9 +1422,12 @@ void
 ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 {
   AgsLine *gobject;
+
   AgsFileLookup *file_lookup;
-  GType line_type;
+
   xmlNode *child;
+
+  GType line_type;
 
   if(*line == NULL){
     line_type = g_type_from_name(xmlGetProp(node,
@@ -1686,8 +1699,9 @@ ags_file_read_line_resolve_channel(AgsFileLookup *file_lookup,
 xmlNode*
 ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
 {
-  AgsFileLookup *file_lookup;
   AgsExpanderChild *expander_child;
+
+  AgsFileLookup *file_lookup;
 
   xmlNode *node, *child;
   xmlNode *line_member_node;
@@ -2150,8 +2164,10 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 {
   AgsFileLookup *file_lookup;
   GtkWidget *child_widget;
+
   GtkAdjustment *adjustment;
   xmlNode *node;
+
   gchar *id;
   gchar *label;
   
@@ -2195,7 +2211,7 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 
   if(line_member->task_type != G_TYPE_NONE){
     xmlNewProp(node,
-	       AGS_FILE_FLAGS_PROP,
+	       AGS_FILE_TYPE_PROP,
 	       g_strdup_printf("%s\0", g_type_name(line_member->task_type)));
   }
 
@@ -2410,18 +2426,14 @@ void
 ags_file_read_effect_bridge(AgsFile *file, xmlNode *node, AgsEffectBridge **effect_bridge)
 {
   AgsEffectBridge *gobject;
+
   AgsFileLookup *file_lookup;
+
   GType effect_bridge_type;
+
   xmlNode *child;
-  static gboolean effect_bridge_type_is_registered = FALSE;
-
+  
   if(*effect_bridge == NULL){
-    if(!effect_bridge_type_is_registered){
-      ags_xorg_application_context_register_types();
-
-      effect_bridge_type_is_registered = TRUE;
-    }
-
     effect_bridge_type = g_type_from_name(xmlGetProp(node,
 						     AGS_FILE_TYPE_PROP));
 
@@ -2441,17 +2453,21 @@ ags_file_read_effect_bridge(AgsFile *file, xmlNode *node, AgsEffectBridge **effe
 				   "reference\0", gobject,
 				   NULL));
 
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  gobject->flags |= AGS_EFFECT_BRIDGE_PREMAPPED_RECALL;
+  gobject->flags &= (~AGS_EFFECT_BRIDGE_CONNECTED);
+
+  gobject->name = g_strdup(xmlGetProp(node,
+				      AGS_FILE_NAME_PROP));
+
   gobject->version = g_strdup(xmlGetProp(node,
 					 AGS_FILE_VERSION_PROP));
 
   gobject->build_id = g_strdup(xmlGetProp(node,
 					  AGS_FILE_BUILD_ID_PROP));
-
-  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
-					    NULL,
-					    16);
-  gobject->flags |= AGS_EFFECT_BRIDGE_PREMAPPED_RECALL;
-  gobject->flags &= (~AGS_EFFECT_BRIDGE_CONNECTED);
 
   /* audio */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
@@ -2463,6 +2479,24 @@ ags_file_read_effect_bridge(AgsFile *file, xmlNode *node, AgsEffectBridge **effe
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
 		   G_CALLBACK(ags_file_read_effect_bridge_resolve_audio), gobject);
 
+  /* bulk */
+  gobject->bulk_output_type = g_type_from_name(xmlGetProp(node,
+							  "bulk-output-type\0"));
+  
+  gobject->bulk_input_type = g_type_from_name(xmlGetProp(node,
+							 "bulk-input-type\0"));
+
+  /* pad and line */
+  gobject->output_pad_type = g_type_from_name(xmlGetProp(node,
+							 "output-pad-type\0"));
+  gobject->output_line_type = g_type_from_name(xmlGetProp(node,
+							  "output-line-type\0"));
+  
+  gobject->input_pad_type = g_type_from_name(xmlGetProp(node,
+							"input-pad-type\0"));
+  gobject->input_line_type = g_type_from_name(xmlGetProp(node,
+							 "input-line-type\0"));
+  
   /* child elements */
   child = node->children;
 
@@ -2567,7 +2601,15 @@ ags_file_write_effect_bridge(AgsFile *file, xmlNode *parent, AgsEffectBridge *ef
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", effect_bridge,
 				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", (effect_bridge->flags)));
   
+  xmlNewProp(node,
+	     AGS_FILE_NAME_PROP,
+	     effect_bridge->name);
+
   xmlNewProp(node,
 	     AGS_FILE_TYPE_PROP,
 	     G_OBJECT_TYPE_NAME(effect_bridge));
@@ -2580,17 +2622,6 @@ ags_file_write_effect_bridge(AgsFile *file, xmlNode *parent, AgsEffectBridge *ef
 	     AGS_FILE_BUILD_ID_PROP,
 	     effect_bridge->build_id);
 
-  xmlNewProp(node,
-	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", (effect_bridge->flags)));
-
-  xmlNewProp(node,
-	     AGS_FILE_NAME_PROP,
-	     effect_bridge->name);
-
-  xmlAddChild(parent,
-	      node);  
-
   /* audio */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
@@ -2600,6 +2631,36 @@ ags_file_write_effect_bridge(AgsFile *file, xmlNode *parent, AgsEffectBridge *ef
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
 		   G_CALLBACK(ags_file_write_effect_bridge_resolve_audio), effect_bridge);
+
+  /* bulk */
+  xmlNewProp(node,
+	     "bulk-output-type\0",
+	     g_strdup_printf("%s\0", g_type_name(effect_bridge->bulk_output_type)));
+
+  xmlNewProp(node,
+	     "bulk-input-type\0",
+	     g_strdup_printf("%s\0", g_type_name(effect_bridge->bulk_input_type)));
+
+  /* pad and list */
+  xmlNewProp(node,
+	     "output-pad-type\0",
+	     g_strdup_printf("%s\0", g_type_name(effect_bridge->output_pad_type)));
+
+  xmlNewProp(node,
+	     "output-line-type\0",
+	     g_strdup_printf("%s\0", g_type_name(effect_bridge->output_line_type)));
+
+  xmlNewProp(node,
+	     "input-pad-type\0",
+	     g_strdup_printf("%s\0", g_type_name(effect_bridge->input_pad_type)));
+
+  xmlNewProp(node,
+	     "input-line-type\0",
+	     g_strdup_printf("%s\0", g_type_name(effect_bridge->input_line_type)));
+
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);  
 
   /* child elements */
   ags_plugin_write(file,
@@ -2798,6 +2859,7 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
   AgsFileLookup *file_lookup;
 
   GType effect_bulk_type;
+  
   xmlNode *child;
 
   if(*effect_bulk == NULL){
@@ -2820,18 +2882,23 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
 				   "reference\0", gobject,
 				   NULL));
 
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+
+  gobject->flags |= AGS_EFFECT_BULK_PREMAPPED_RECALL;
+  gobject->flags &= (~AGS_EFFECT_BULK_CONNECTED);
+
   gobject->version = g_strdup(xmlGetProp(node,
 					 AGS_FILE_VERSION_PROP));
 
   gobject->build_id = g_strdup(xmlGetProp(node,
 					  AGS_FILE_BUILD_ID_PROP));
-
-  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
-					    NULL,
-					    16);
-  gobject->flags |= AGS_EFFECT_BULK_PREMAPPED_RECALL;
-  gobject->flags &= (~AGS_EFFECT_BULK_CONNECTED);
-
+  
+  /* scope */
+  gobject->channel_type = g_type_from_name(xmlGetProp(node,
+						      "channel-type"));
+  
   /* audio */
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file\0", file,
@@ -2892,10 +2959,14 @@ ags_file_write_effect_bulk(AgsFile *file, xmlNode *parent, AgsEffectBulk *effect
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", effect_bulk,
 				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", (effect_bulk->flags)));
   
   xmlNewProp(node,
-	     AGS_FILE_TYPE_PROP,
-	     G_OBJECT_TYPE_NAME(effect_bulk));
+	     AGS_FILE_NAME_PROP,
+	     effect_bulk->name);
 
   xmlNewProp(node,
 	     AGS_FILE_VERSION_PROP,
@@ -2905,14 +2976,22 @@ ags_file_write_effect_bulk(AgsFile *file, xmlNode *parent, AgsEffectBulk *effect
 	     AGS_FILE_BUILD_ID_PROP,
 	     effect_bulk->build_id);
 
-  xmlNewProp(node,
-	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", (effect_bulk->flags)));
+  /* scope */
+  if(g_type_is_a(effect_bulk->channel_type,
+		 AGS_TYPE_OUTPUT)){
+    xmlNewProp(node,
+	       AGS_FILE_SCOPE_PROP,
+	       "output\0");
+  }else{
+    xmlNewProp(node,
+	       AGS_FILE_SCOPE_PROP,
+	       "input\0");
+  }
 
   xmlNewProp(node,
-	     AGS_FILE_NAME_PROP,
-	     effect_bulk->name);
-
+	     "channel-type\0",
+	     g_type_name(effect_bulk->channel_type));
+  
   xmlAddChild(parent,
 	      node);  
 
@@ -3080,20 +3159,6 @@ ags_file_write_effect_bulk_resolve_audio(AgsFileLookup *file_lookup,
 }
 
 void
-ags_file_read_bulk_member_resolve_port(AgsFileLookup *file_lookup,
-				       AgsBulkMember *bulk_member)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_file_write_bulk_member_resolve_port(AgsFileLookup *file_lookup,
-					AgsBulkMember *bulk_member)
-{
-  //TODO:JK: implement me
-}
-
-void
 ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_member)
 {
   AgsBulkMember *gobject;
@@ -3153,6 +3218,26 @@ ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_mem
 		 "widget-label\0", label,
 		 NULL);
   }
+
+  /* filename */
+  g_object_set(G_OBJECT(gobject),
+	       "filename\0", (gchar *) xmlGetProp(node, "filename\0"),
+	       NULL);
+
+  /* effect */
+  g_object_set(G_OBJECT(gobject),
+	       "effect\0", (gchar *) xmlGetProp(node, "effect\0"),
+	       NULL);
+
+  /* plugin-name */
+  g_object_set(G_OBJECT(gobject),
+	       "plugin-name\0", (gchar *) xmlGetProp(node, "plugin-name\0"),
+	       NULL);
+
+  /* specifier */
+  g_object_set(G_OBJECT(gobject),
+	       "specifier\0", (gchar *) xmlGetProp(node, "specifier\0"),
+	       NULL);
 
   /* size */
   width = (guint) g_ascii_strtoull(xmlGetProp(node, "width\0"),
@@ -3283,12 +3368,275 @@ ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_mem
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
 			 G_CALLBACK(ags_file_read_bulk_member_resolve_port), gobject);
+  
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    "ags-parameter\0")){
+	AgsFileLookup *file_lookup;
+	
+	GParameter *parameter;
+
+	gint n_params;
+	guint i;
+
+	parameter = NULL;
+	n_params = 0;
+	
+	ags_file_util_read_parameter(file,
+				     child, NULL,
+				     &parameter, &n_params, NULL);
+
+	for(i = 0; i < n_params; i++){
+	  file_lookup = ags_file_lookup_find_by_reference(file->lookup,
+							  &(parameter[i].value));
+	  g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
+				 G_CALLBACK(ags_file_read_bulk_member_resolve_port), gobject);
+	}
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
 ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_member)
 {
-  //TODO:JK: implement me
+  GtkWidget *child_widget;
+
+  GtkAdjustment *adjustment;
+
+  xmlNode *node;
+  GParameter *parameter;
+  GList *list;
+  
+  gchar *id;
+  gchar *label;
+
+  guint i, i_stop;
+  
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-line-member\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", bulk_member,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", bulk_member->flags));
+
+  xmlNewProp(node,
+	     "widget-type\0",
+	     g_strdup_printf("%s\0", g_type_name(bulk_member->widget_type)));
+
+  child_widget = gtk_bin_get_child(GTK_BIN(bulk_member));
+  
+  label = NULL;
+  g_object_get(G_OBJECT(child_widget),
+	       "label\0", &label,
+	       NULL);
+
+  if(label != NULL){
+    xmlNewProp(node,
+	       "label\0",
+	       g_strdup_printf("%s\0", label));
+  }
+
+  xmlNewProp(node,
+	     "filename\0",
+	     g_strdup_printf("%s\0", g_type_name(bulk_member->filename)));
+
+  xmlNewProp(node,
+	     "effect\0",
+	     g_strdup_printf("%s\0", g_type_name(bulk_member->effect)));
+
+  xmlNewProp(node,
+	     "plugin-name\0",
+	     g_strdup_printf("%s\0", g_type_name(bulk_member->plugin_name)));
+
+  xmlNewProp(node,
+	     "specifier\0",
+	     g_strdup_printf("%s\0", g_type_name(bulk_member->specifier)));
+
+  if(bulk_member->task_type != G_TYPE_NONE){
+    xmlNewProp(node,
+	       AGS_FILE_TYPE_PROP,
+	       g_strdup_printf("%s\0", g_type_name(bulk_member->task_type)));
+  }
+
+  /*  */
+  if(GTK_IS_MISC(child_widget)){
+    gfloat xalign, yalign;
+    gint xpad, ypad;
+    
+    gtk_misc_get_alignment(GTK_MISC(child_widget),
+			   &xalign, &yalign);
+    xmlNewProp(node,
+	       "xalign\0",
+	       g_strdup_printf("%d\0", xalign));
+    xmlNewProp(node,
+	       "yalign\0",
+	       g_strdup_printf("%d\0", yalign));
+    
+    gtk_misc_get_padding(GTK_MISC(child_widget),
+			 &xpad, &ypad);
+    xmlNewProp(node,
+	       "xpad\0",
+	       g_strdup_printf("%d\0", xpad));
+    xmlNewProp(node,
+	       "ypad\0",
+	       g_strdup_printf("%d\0", ypad));
+    
+  }
+
+  /*  */
+  adjustment = NULL;
+
+  /*  */
+  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+    xmlNewProp(node,
+	       "value\0",
+	       g_strdup_printf("%s\0", ((gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(child_widget))) ?
+					AGS_FILE_TRUE:
+					AGS_FILE_FALSE)));
+  }else if(AGS_IS_DIAL(child_widget)){
+    adjustment = AGS_DIAL(child_widget)->adjustment;
+
+    //TODO:JK: improve dial widget work-around
+    
+  }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+    adjustment = GTK_SPIN_BUTTON(child_widget)->adjustment;
+  }else if(GTK_IS_RANGE(child_widget)){
+    adjustment = GTK_RANGE(child_widget)->adjustment;
+
+    xmlNewProp(node,
+	       "inverted\0",
+	       g_strdup_printf("%s\0", (gtk_range_get_inverted(GTK_RANGE(child_widget)) ?
+					AGS_FILE_TRUE :
+					AGS_FILE_FALSE)));
+  }else if(AGS_IS_INDICATOR(child_widget)){
+    adjustment = AGS_INDICATOR(child_widget)->adjustment;
+  }
+
+  if(adjustment != NULL){
+    gdouble upper, lower;
+    gdouble page, step;
+    gdouble value;
+
+    xmlNewProp(node,
+	       "upper\0",
+	       g_strdup_printf("%.8f\0", adjustment->upper));
+    xmlNewProp(node,
+	       "lower\0",
+	       g_strdup_printf("%.8f\0", adjustment->lower));
+    
+    xmlNewProp(node,
+	       "page\0",
+	       g_strdup_printf("%.8f\0", adjustment->page_size));
+    xmlNewProp(node,
+	       "step\0",
+	       g_strdup_printf("%.8f\0", adjustment->step_increment));
+    
+    xmlNewProp(node,
+	       "value\0",
+	       g_strdup_printf("%.8f\0", adjustment->value));
+  }
+
+  /* bulk port */
+  list = bulk_member->bulk_port;
+  i_stop = g_list_length(list);
+
+  parameter = (GParameter *) g_new(GParameter,
+				   i_stop);
+  
+  for(i = 0; i < i_stop; i++){
+    parameter[i].name = "bulk-port\0";
+    
+    memset(&(parameter[i].value), 0, sizeof(GValue));
+    g_value_init(&(parameter[i].value),
+		 G_TYPE_OBJECT);
+    g_value_set_object(&(parameter[i].value),
+		       list->data);
+
+    list = list->next;
+  }
+
+  ags_file_util_write_parameter(file,
+				node,
+				ags_id_generator_create_uuid(),
+				parameter, i_stop);
+  
+  /* bulk port */
+  list = bulk_member->recall_bulk_port;
+  i_stop = g_list_length(list);
+
+  parameter = (GParameter *) g_new(GParameter,
+				   i_stop);
+  
+  for(i = 0; i < i_stop; i++){
+    parameter[i].name = "recall-bulk-port\0";
+    
+    memset(&(parameter[i].value), 0, sizeof(GValue));
+    g_value_init(&(parameter[i].value),
+		 G_TYPE_OBJECT);
+    g_value_set_object(&(parameter[i].value),
+		       list->data);
+
+    list = list->next;
+  }
+  
+  ags_file_util_write_parameter(file,
+				node,
+				ags_id_generator_create_uuid(),
+				parameter, i_stop);
+  
+  xmlAddChild(parent,
+	      node);
+}
+
+void
+ags_file_read_bulk_member_resolve_port(AgsFileLookup *file_lookup,
+				       AgsBulkMember *bulk_member)
+{
+  AgsFileIdRef *id_ref;
+
+  xmlXPathContext *xpath_context;
+  xmlXPathObject *xpath_object;
+
+  gchar *xpath;
+  gchar *str;
+  
+  xpath = (gchar *) xmlGetProp(file_lookup->node,
+			       "link\0");
+  g_message("ags_file_read_bulk_member_resolve_port - xpath = %s\0", xpath);
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_xpath(file_lookup->file, xpath);
+
+  if(!g_ascii_strncasecmp(xmlGetProp(file_lookup->node->parent,
+				     AGS_FILE_NAME_PROP),
+			  "bulk-port\0",
+			  10)){
+    g_object_set(G_OBJECT(bulk_member),
+		 "bulk-port\0", (AgsAudio *) id_ref->ref,
+		 NULL);
+  }else{
+    g_object_set(G_OBJECT(bulk_member),
+		 "recall-bulk-port\0", (AgsAudio *) id_ref->ref,
+		 NULL);
+  }
 }
 
 void
@@ -3380,13 +3728,331 @@ ags_file_write_bulk_member_list(AgsFile *file, xmlNode *parent, GList *bulk_memb
 void
 ags_file_read_effect_pad(AgsFile *file, xmlNode *node, AgsEffectPad **effect_pad)
 {
-  //TODO:JK: implement me
+  AgsEffectPad *gobject;
+  
+  AgsFileLookup *file_lookup;
+
+  xmlNode *child;
+
+  GType effect_pad_type;
+  
+  if(*effect_pad == NULL){
+    effect_pad_type = g_type_from_name(xmlGetProp(node,
+						  AGS_FILE_TYPE_PROP));
+    
+    gobject = (AgsEffectPad *) g_object_new(effect_pad_type,
+					    NULL);
+    *effect_pad = gobject;
+  }else{
+    gobject = *effect_pad;
+  }
+
+  if(gobject == NULL)
+    return;
+  
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+  gobject->flags &= (~AGS_EFFECT_PAD_CONNECTED);
+
+  gobject->version = g_strdup(xmlGetProp(node,
+					 AGS_FILE_VERSION_PROP));
+
+  gobject->build_id = g_strdup(xmlGetProp(node,
+					  AGS_FILE_BUILD_ID_PROP));
+
+  /* channel */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_effect_pad_resolve_channel), gobject);
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(gobject)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(gobject));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-line-list\0",
+			   13)){
+	xmlNode *line_node;
+	GList *start, *list;
+
+	list = NULL;
+
+	ags_file_read_line_list(file,
+				child,
+				&list);
+	start = list;
+
+	/* add line to effect_pad */
+	line_node = child->children;
+
+	while(line_node != NULL){
+	  if(line_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(line_node->name,
+			   "ags-line\0",
+			   8)){
+	      guint x0, x1;
+	      guint y0, y1;
+
+	      g_object_set(G_OBJECT(list->data),
+			   "effect-pad\0", gobject,
+			   NULL);
+
+	      x0 = g_ascii_strtoull(xmlGetProp(line_node,
+					       "left-attach\0"),
+				    NULL,
+				    10);
+
+	      y0 = g_ascii_strtoull(xmlGetProp(line_node,
+					       "top-attach\0"),
+				    NULL,
+				    10);
+
+	      x1 = g_ascii_strtoull(xmlGetProp(line_node,
+					       "right-attach\0"),
+				    NULL,
+				    10);
+
+	      y1 = g_ascii_strtoull(xmlGetProp(line_node,
+					       "bottom-attach\0"),
+				    NULL,
+				    10);
+
+	      gtk_table_attach(gobject->table,
+			       GTK_WIDGET(list->data),
+			       x0, x1,
+			       y0, y1,
+			       GTK_FILL, GTK_FILL,
+			       0, 0);	      
+	      
+
+	      list = list->next;
+	    }
+	  }
+
+	  line_node = line_node->next;
+	}
+
+	g_list_free(start);
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
 ags_file_write_effect_pad(AgsFile *file, xmlNode *parent, AgsEffectPad *effect_pad)
 {
-  //TODO:JK: implement me
+  AgsFileLookup *file_lookup;
+
+  xmlNode *node, *child;
+  xmlNode *effect_line_node;
+
+  GList *effect_line, *effect_line_start;
+
+  gchar *id;
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-effect-pad\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", effect_pad,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_TYPE_PROP,
+	     G_OBJECT_TYPE_NAME(effect_pad));
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     effect_pad->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     effect_pad->build_id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", ((~AGS_EFFECT_PAD_CONNECTED) & (effect_pad->flags))));
+
+  xmlAddChild(parent,
+	      node);
+
+  /* child elements */
+  ags_plugin_write(file,
+  		   node,
+  		   AGS_PLUGIN(effect_pad));
+
+  effect_line_start = 
+    effect_line = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+
+  child = ags_file_write_effect_line_list(file,
+					  node,
+					  effect_line);
+
+  effect_line_node = child->children;
+
+  while(effect_line != NULL){
+    guint x0, x1;
+    guint y0, y1;
+
+    gtk_container_child_get(effect_pad->table, effect_line->data,
+			    "left-attach", &x0,
+			    "right-attach", &x1,
+			    "top-attach", &y0,
+			    "bottom-attach", &y1,
+			    NULL);    
+
+    xmlNewProp(effect_line_node,
+	       "left-attach\0",
+	       g_strdup_printf("%d\0", x0));
+
+    xmlNewProp(effect_line_node,
+	       "top-attach\0",
+	       g_strdup_printf("%d\0", y0));
+
+    xmlNewProp(effect_line_node,
+	       "right-attach\0",
+	       g_strdup_printf("%d\0", x1));
+
+    xmlNewProp(effect_line_node,
+	       "bottom-attach\0",
+	       g_strdup_printf("%d\0", y1));
+    
+    effect_line = effect_line->next;
+    effect_line_node = effect_line_node->next;
+  }
+
+  g_list_free(effect_line_start);
+}
+
+void
+ags_file_read_effect_pad_resolve_channel(AgsFileLookup *file_lookup,
+					 AgsPad *pad)
+{
+  AgsFile *file;
+  AgsEffectBridge *effect_bridge;
+  AgsFileIdRef *id_ref;
+  xmlNode *node, *audio_node, *channel_node;
+  xmlXPathContext *xpath_context;
+  xmlXPathObject *xpath_object;
+  GList *list;
+  xmlChar *xpath;
+  guint position;
+  guint nth, audio_channel;
+  guint i, j;
+  gboolean is_output;
+  
+  file = file_lookup->file;
+
+  effect_bridge = (AgsEffectBridge *) gtk_widget_get_ancestor(GTK_WIDGET(pad),
+							      AGS_TYPE_EFFECT_BRIDGE);
+
+  if(effect_bridge->output != NULL){
+    list = gtk_container_get_children(effect_bridge->output);
+
+    if(list != NULL &&
+       g_list_find(list,
+		   pad) != NULL){
+      is_output = TRUE;
+    }else{
+      is_output = FALSE;
+    }
+  }else{
+    is_output = FALSE;
+  }
+
+  node = file_lookup->node;
+
+  /* retrieve position */
+  xpath_context = xmlXPathNewContext(file->doc);
+  //  xmlXPathSetContextNode(node->parent,
+  //			 xpath_context);
+  xpath_context->node = node->parent;
+
+  xpath_object = xmlXPathEval("./ags-pad\0",
+			      xpath_context);
+
+  for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != node && i < xpath_object->nodesetval->nodeMax; i++){
+    if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+      j++;
+    }
+  }
+  nth = j;
+
+  /*  */
+  position = nth * effect_bridge->audio->audio_channels;
+
+  /*  */
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, effect_bridge->audio);
+  audio_node = NULL;
+
+  if(id_ref != NULL){
+    audio_node = id_ref->node;
+  }
+
+  /*  */
+  xpath = g_strdup_printf("(./ags-channel-list/ags-channel)/%s\0",
+			  (is_output ? "ags-output\0": "ags-input\0"));
+
+  xpath_context = xmlXPathNewContext(file->doc);
+  xpath_context->node = audio_node;
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  /*  */
+  if(xpath_object != NULL && xpath_object->nodesetval != NULL){
+    AgsFileIdRef *file_id_ref;
+    xmlNode *channel_node;
+
+    for(i = 0, j = 0; j < position && i < xpath_object->nodesetval->nodeMax; i++){
+      if(xpath_object->nodesetval->nodeTab[i] != NULL && xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+	j++;
+      }
+    }
+
+    channel_node = xpath_object->nodesetval->nodeTab[i];
+
+    file_id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file,
+								channel_node);
+    g_object_set(G_OBJECT(pad),
+		 "channel\0", AGS_CHANNEL(file_id_ref->ref),
+		 NULL);
+  }else{
+    g_message("no xpath match: %s\0",
+	      xpath);
+  }
 }
 
 void
@@ -3478,13 +4144,400 @@ ags_file_write_effect_pad_list(AgsFile *file, xmlNode *parent, GList *effect_pad
 void
 ags_file_read_effect_line(AgsFile *file, xmlNode *node, AgsEffectLine **effect_line)
 {
-  //TODO:JK: implement me
+  AgsEffectLine *gobject;
+
+  AgsFileLookup *file_lookup;
+
+  xmlNode *child;
+
+  GType effect_line_type;
+
+  if(*effect_line == NULL){
+    effect_line_type = g_type_from_name(xmlGetProp(node,
+						   AGS_FILE_TYPE_PROP));
+    
+    gobject = (AgsEffectLine *) g_object_new(effect_line_type,
+					     NULL);
+    *effect_line = gobject;
+  }else{
+    gobject = *effect_line;
+  }
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
+				   "reference\0", gobject,
+				   NULL));
+
+  gobject->version = g_strdup(xmlGetProp(node,
+					 AGS_FILE_VERSION_PROP));
+
+  gobject->build_id = g_strdup(xmlGetProp(node,
+					  AGS_FILE_BUILD_ID_PROP));
+
+  gobject->flags = (guint) g_ascii_strtoull(xmlGetProp(node, AGS_FILE_FLAGS_PROP),
+					    NULL,
+					    16);
+  gobject->flags |= AGS_EFFECT_LINE_PREMAPPED_RECALL;
+  gobject->flags &= (~AGS_EFFECT_LINE_CONNECTED);
+
+  /* channel */
+  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
+					       "file\0", file,
+					       "node\0", node,
+					       "reference\0", gobject,
+					       NULL);
+  ags_file_add_lookup(file, (GObject *) file_lookup);
+  g_signal_connect(G_OBJECT(file_lookup), "resolve\0",
+		   G_CALLBACK(ags_file_read_effect_line_resolve_channel), gobject);
+
+  /* child elements */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrcmp(child->name,
+		    ags_plugin_get_xml_type(AGS_PLUGIN(gobject)))){
+	ags_plugin_read(file,
+			child,
+			AGS_PLUGIN(gobject));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-line-member-list\0",
+			   20)){
+	xmlNode *line_member_node;
+	GList *start, *list;
+
+	list = NULL;
+
+	ags_file_read_line_member_list(file,
+				       child,
+				       &list);
+	start = list;
+	
+	/* remove default line members */
+	gtk_widget_destroy(GTK_WIDGET(gobject->table));
+
+	gobject->table = gtk_table_new(1, 1,
+				       FALSE);
+	gtk_table_set_row_spacings(gobject->table,
+				   2);
+	gtk_table_set_col_spacings(gobject->table,
+				   2);
+	gtk_box_pack_start(GTK_BOX(gobject),
+			   GTK_WIDGET(gobject->table),
+			   TRUE, TRUE,
+			   0);
+
+	/* add line member to line */
+	line_member_node = child->children;
+
+	while(line_member_node != NULL){
+	  if(line_member_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(child->name,
+			   "ags-line-member\0",
+			   15)){
+	      guint x0, x1;
+	      guint y0, y1;
+	      guint control_width, control_height;
+
+	      /* pack */
+	      x0 = g_ascii_strtoull(xmlGetProp(line_member_node,
+					       "left-attach\0"),
+				    NULL,
+				    10);
+
+	      y0 = g_ascii_strtoull(xmlGetProp(line_member_node,
+					       "top-attach\0"),
+				    NULL,
+				    10);
+
+	      x1 = g_ascii_strtoull(xmlGetProp(line_member_node,
+					       "right-attach\0"),
+				    NULL,
+				    10);
+
+	      y1 = g_ascii_strtoull(xmlGetProp(line_member_node,
+					       "bottom-attach\0"),
+				    NULL,
+				    10);
+
+	      gtk_table_attach(gobject->table,
+			       GTK_WIDGET(list->data),
+			       x0, x1,
+			       y0, y1,
+			       GTK_FILL, GTK_FILL,
+			       0, 0);	      
+
+	      /* set size request */
+	      control_width = g_ascii_strtoull(xmlGetProp(line_member_node,
+							  "width\0"),
+					       NULL,
+					       10);
+
+	      control_height = g_ascii_strtoull(xmlGetProp(line_member_node,
+							   "height\0"),
+						NULL,
+						10);
+
+	      gtk_widget_set_size_request(GTK_WIDGET(list->data),
+					  control_width, control_height);
+	      
+	      /* iterate */
+	      list = list->next;
+	    }
+	  }
+	  
+	  line_member_node = line_member_node->next;
+	}
+
+	g_list_free(start);
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 xmlNode*
 ags_file_write_effect_line(AgsFile *file, xmlNode *parent, AgsEffectLine *effect_line)
 {
-  //TODO:JK: implement me
+  AgsFileLookup *file_lookup;
+
+  xmlNode *node, *child;
+  xmlNode *line_member_node;
+
+  GList *line_child;
+  GList *line_member, *line_member_start;
+
+  gchar *id;
+  guint control_width, control_height;
+
+  id = ags_id_generator_create_uuid();
+  
+  node = xmlNewNode(NULL,
+		    "ags-effect-line\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "main\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", effect_line,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_TYPE_PROP,
+	     G_OBJECT_TYPE_NAME(effect_line));
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     effect_line->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     effect_line->build_id);
+
+  xmlNewProp(node,
+	     AGS_FILE_FLAGS_PROP,
+	     g_strdup_printf("%x\0", ((~AGS_EFFECT_LINE_CONNECTED)&(effect_line->flags))));
+
+  xmlAddChild(parent,
+	      node);
+
+  /* child elements */
+  ags_plugin_write(file,
+  		   node,
+  		   AGS_PLUGIN(effect_line));
+
+  line_member_start = 
+    line_member = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
+
+  child = ags_file_write_line_member_list(file,
+					  node,
+					  line_member);
+
+  line_member_node = child->children;
+
+  while(line_member != NULL){
+    if(AGS_IS_LINE_MEMBER(line_member->data)){
+      GList *list;
+      guint x0, x1;
+      guint y0, y1;
+      
+      list = gtk_container_get_children(effect_line->table);
+      line_child = g_list_find(list,
+			       line_member->data)->data;
+      g_list_free(list);
+
+      gtk_container_child_get(effect_line->table, line_child,
+			      "left-attach", &x0,
+			      "right-attach", &x1,
+			      "top-attach", &y0,
+			      "bottom-attach", &y1,
+			      NULL);
+      
+      xmlNewProp(line_member_node,
+		 "left-attach\0",
+		 g_strdup_printf("%d\0", x0));
+
+      xmlNewProp(line_member_node,
+		 "top-attach\0",
+		 g_strdup_printf("%d\0", y0));
+
+      xmlNewProp(line_member_node,
+		 "right-attach\0",
+		 g_strdup_printf("%d\0", x1));
+
+      xmlNewProp(line_member_node,
+		 "bottom-attach\0",
+		 g_strdup_printf("%d\0", y1));
+
+      gtk_widget_get_size_request(GTK_BIN(line_child->data)->child,
+				  &control_width, &control_height);
+
+      xmlNewProp(line_member_node,
+		 "width\0",
+		 g_strdup_printf("%d\0", control_width));
+
+      xmlNewProp(line_member_node,
+		 "height\0",
+		 g_strdup_printf("%d\0", control_height));
+
+      line_member_node = line_member_node->next;
+    }
+
+    line_member = line_member->next;
+  }
+
+  g_list_free(line_member_start);
+}
+
+void
+ags_file_read_effect_line_resolve_channel(AgsFileLookup *file_lookup,
+					  AgsLine *line)
+{
+  AgsFile *file;
+  AgsEffectBridge *effect_bridge;
+  AgsFileIdRef *id_ref;
+  xmlNode *pad_node, *node, *audio_node, *channel_node;
+  xmlXPathContext *xpath_context;
+  xmlXPathObject *xpath_object;
+  GList *list;
+  xmlChar *xpath;
+  guint position;
+  guint pad, audio_channel;
+  guint i, j;
+  gboolean is_output;
+
+  file = file_lookup->file;
+
+  effect_bridge = (AgsEffectBridge *) gtk_widget_get_ancestor(GTK_WIDGET(line),
+							      AGS_TYPE_EFFECT_BRIDGE);
+
+  if(effect_bridge->output != NULL){
+    AgsPad *pad;
+
+    pad = (AgsPad *) gtk_widget_get_ancestor((GtkWidget *) line,
+					     AGS_TYPE_PAD);
+    list = gtk_container_get_children(effect_bridge->output);
+
+    if(list != NULL &&
+       g_list_find(list,
+		   pad) != NULL){
+      is_output = TRUE;
+    }else{
+      is_output = FALSE;
+    }
+  }else{
+    is_output = FALSE;
+  }
+
+  node = file_lookup->node;
+  pad_node = node->parent->parent;
+
+  /* retrieve position - pad */
+  xpath_context = xmlXPathNewContext(file->doc);
+  //  xmlXPathSetContextNode(node->parent->parent->parent,
+  //			 xpath_context);
+  xpath_context->node = pad_node->parent;
+
+  xpath_object = xmlXPathEval("./ags-pad\0",
+			      xpath_context);
+
+  for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != pad_node && i < xpath_object->nodesetval->nodeMax; i++){
+    if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+      j++;
+    }
+  }
+  pad = j;
+
+  /* retrieve position - line */
+  xpath_context = xmlXPathNewContext(file->doc);
+  //  xmlXPathSetContextNode(node->parent,
+  //			 xpath_context);
+  xpath_context->node = node->parent;
+
+  xpath_object = xmlXPathEval("./ags-line\0",
+			      xpath_context);
+
+  for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != node && i < xpath_object->nodesetval->nodeMax; i++){
+    if(xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+      j++;
+    }
+  }
+
+  audio_channel = j;
+
+  /*  */
+  position = pad * effect_bridge->audio->audio_channels + (effect_bridge->audio->audio_channels - audio_channel - 1);
+
+  /*  */
+  id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_reference(file_lookup->file, effect_bridge->audio);
+  audio_node = NULL;
+
+  if(id_ref != NULL){
+    audio_node = id_ref->node;
+  }
+
+  /*  */
+  xpath = g_strdup_printf("(./ags-channel-list/ags-channel)/%s\0",
+			  ((is_output) ? "ags-output\0": "ags-input\0"));
+
+  xpath_context = xmlXPathNewContext(file->doc);
+  xpath_context->node = audio_node;
+  xpath_object = xmlXPathEval(xpath,
+			      xpath_context);
+
+  /*  */
+  if(xpath_object != NULL && xpath_object->nodesetval != NULL){
+    AgsFileIdRef *file_id_ref;
+    xmlNode *channel_node;
+
+    for(i = 0, j = 0; j < position && i < xpath_object->nodesetval->nodeMax; i++){
+      if(xpath_object->nodesetval->nodeTab[i] != NULL && xpath_object->nodesetval->nodeTab[i]->type == XML_ELEMENT_NODE){
+	j++;
+      }
+    }
+
+    channel_node = xpath_object->nodesetval->nodeTab[i];
+
+    file_id_ref = (AgsFileIdRef *) ags_file_find_id_ref_by_node(file,
+								channel_node);
+
+    g_object_set(G_OBJECT(line),
+		 "channel\0", AGS_CHANNEL(file_id_ref->ref),
+		 NULL);
+  }else{
+    g_message("no xpath match: %s\0",
+	      xpath);
+  }
 }
 
 void

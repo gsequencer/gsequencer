@@ -105,6 +105,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   GtkAdjustment *adjustment;
 
   automation_edit->flags = 0;
+
+  automation_edit->scope = G_TYPE_NONE;
   
   automation_edit->map_width = AGS_AUTOMATION_EDIT_MAX_CONTROLS;
   automation_edit->map_height = 0;

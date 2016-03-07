@@ -73,6 +73,7 @@ struct _AgsBulkMember
   gchar *control_port;
 
   GList *bulk_port;
+  GList *recall_bulk_port;
   
   GType task_type;
 };
@@ -92,16 +93,11 @@ struct _AgsBulkPort
   AgsPort *port;
   gpointer port_data;
   gboolean active;
-
-  AgsPort *recall_port;
-  gpointer recall_port_data;
-  gboolean recall_active;
 };
 
 GType ags_bulk_member_get_type(void);
 
-AgsBulkPort* ags_bulk_port_alloc(AgsPort *port,
-				 AgsPort *recall_port);
+AgsBulkPort* ags_bulk_port_alloc(AgsPort *port);
 
 GtkWidget* ags_bulk_member_get_widget(AgsBulkMember *bulk_member);
 void ags_bulk_member_set_label(AgsBulkMember *bulk_member,
