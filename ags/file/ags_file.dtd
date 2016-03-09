@@ -1058,7 +1058,7 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-automation-editor (ags-automation-toolbar, ags-machine-selector?, ags-automation-edit-list)>
+<!ELEMENT ags-automation-editor (ags-automation-toolbar, ags-machine-selector?, ags-automation-edit, ags-automation-edit, ags-automation-edit)>
 <!ATTLIST ags-automation-editor
 	  id               ID         #REQUIRED
 	  version          CDATA      #REQUIRED
@@ -1073,7 +1073,25 @@
 <!ELEMENT ags-automation-edit (ags-automation-area-list*)>
 <!ATTLIST ags-automation-edit
 	  id               ID         #REQUIRED
-	  domain           CDATA      #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  scope            CDATA      #REQUIRED
+	  map-width        NMTOKEN    #REQUIRED
+	  map-height       NMTOKEN    #REQUIRED
+	  edit-x           NMTOKEN    #REQUIRED
+	  edit-y           NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-automation-toolbar-list (ags-automation-toolbar*)>
+<!ATTLIST ags-automation-toolbar-list
+	  id               ID         #REQUIRED
+	  >
+
+<!ELEMENT ags-automation-toolbar (ags-automation-area-list*)>
+<!ATTLIST ags-automation-toolbar
+	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
+	  edit-mode        CDATA      "edit"
+	  zoom             CDATA      "1:4"
 	  >
 
 <!ELEMENT ags-automation-area-list (ags-automation-area*)>
@@ -1084,11 +1102,14 @@
 <!ELEMENT ags-automation-area (ags-automation-edit)>
 <!ATTLIST ags-automation-area
 	  id                 ID         #REQUIRED
+	  flags              PCDATA     #REQUIRED
 	  y                  NMTOKEN    #REQUIRED
 	  height             NMTOKEN    #REQUIRED
 	  audio              IDREF      #REQUIRED
 	  channel-type       CDATA      #IMPLIED
-	  control-specifier  CDATA      #IMPLIED
+	  filename           CDATA      #IMPLIED
+	  effect             CDATA      #IMPLIED
+	  control-specifier  CDATA      #REQUIRED
 	  control-name       CDATA      #IMPLIED
 	  >
 
