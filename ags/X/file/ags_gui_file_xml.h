@@ -224,4 +224,39 @@ xmlNode* ags_file_write_notebook_tab(AgsFile *file, xmlNode *parent, AgsNotebook
 void ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigation);
 xmlNode* ags_file_write_navigation(AgsFile *file, xmlNode *parent, AgsNavigation *navigation);
 
+/* AgsAutomationWindow */
+void ags_file_read_automation_window(AgsFile *file, xmlNode *node, AgsAutomationWindow **automation_window);
+xmlNode* ags_file_write_automation_window(AgsFile *file, xmlNode *parent, AgsAutomationWindow *automation_window);
+
+void ags_file_read_automation_window_list(AgsFile *file, xmlNode *node, GList **automation_window_list);
+xmlNode* ags_file_write_automation_window_list(AgsFile *file, xmlNode *parent, GList *automation_window_list);
+
+/* AgsAutomationEditor */
+void ags_file_read_automation_editor(AgsFile *file, xmlNode *node, AgsAutomationEditor **automation_editor);
+xmlNode* ags_file_write_automation_editor(AgsFile *file, xmlNode *parent, AgsAutomationEditor *automation_editor);
+
+void ags_file_read_automation_editor_list(AgsFile *file, xmlNode *node, GList **automation_editor_list);
+xmlNode* ags_file_write_automation_editor_list(AgsFile *file, xmlNode *parent, GList *automation_editor_list);
+
+/* AgsAutomationToolbar */
+void ags_file_read_automation_toolbar(AgsFile *file, xmlNode *node, AgsAutomationToolbar **automation_toolbar);
+xmlNode* ags_file_write_automation_toolbar(AgsFile *file, xmlNode *parent, AgsAutomationToolbar *automation_toolbar);
+
+void ags_file_read_automation_toolbar_list(AgsFile *file, xmlNode *node, GList **automation_toolbar_list);
+xmlNode* ags_file_write_automation_toolbar_list(AgsFile *file, xmlNode *parent, GList *automation_toolbar_list);
+
+/* AgsAutomationEdit */
+void ags_file_read_automation_edit(AgsFile *file, xmlNode *node, AgsAutomationEdit **automation_edit);
+xmlNode* ags_file_write_automation_edit(AgsFile *file, xmlNode *parent, AgsAutomationEdit *automation_edit);
+
+void ags_file_read_automation_edit_list(AgsFile *file, xmlNode *node, GList **automation_edit_list);
+xmlNode* ags_file_write_automation_edit_list(AgsFile *file, xmlNode *parent, GList *automation_edit_list);
+
+/* AgsAutomationArea */
+void ags_file_read_automation_area(AgsFile *file, xmlNode *node, AgsAutomationArea **automation_area);
+xmlNode* ags_file_write_automation_area(AgsFile *file, xmlNode *parent, AgsAutomationArea *automation_area);
+
+void ags_file_read_automation_area_list(AgsFile *file, xmlNode *node, GList **automation_area_list);
+xmlNode* ags_file_write_automation_area_list(AgsFile *file, xmlNode *parent, GList *automation_area_list);
+
 #endif /*__AGS_FILE_GUI_H__*/

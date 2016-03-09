@@ -140,6 +140,8 @@ ags_automation_window_init(AgsAutomationWindow *automation_window)
 	       "title\0", "edit automation\0",
 	       NULL);
 
+  automation_window->flags = 0;
+  
   automation_window->automation_editor = ags_automation_editor_new();
   gtk_container_add(automation_window,
 		    automation_window->automation_editor);		    

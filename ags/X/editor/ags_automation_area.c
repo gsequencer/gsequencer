@@ -137,6 +137,8 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
 void
 ags_automation_area_init(AgsAutomationArea *automation_area)
 {
+  automation_area->flags = 0;
+  
   automation_area->y = 0;
   automation_area->height = AGS_AUTOMATION_AREA_DEFAULT_HEIGHT;
 
