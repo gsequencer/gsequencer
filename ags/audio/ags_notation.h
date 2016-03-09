@@ -79,8 +79,8 @@ struct _AgsNotation
 
   GList *notes;
   
-  gdouble start_loop;
-  gdouble end_loop;
+  gdouble loop_start;
+  gdouble loop_end;
   gdouble offset;
 
   GList *selection;

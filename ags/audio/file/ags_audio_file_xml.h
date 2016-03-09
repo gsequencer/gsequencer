@@ -44,6 +44,8 @@
 #include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
+#include <ags/audio/ags_automation.h>
+#include <ags/audio/ags_acceleration.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_port.h>
@@ -183,6 +185,19 @@ xmlNode* ags_file_write_note(AgsFile *file, xmlNode *parent, AgsNote *note);
 
 void ags_file_read_note_list(AgsFile *file, xmlNode *node, GList **note);
 xmlNode* ags_file_write_note_list(AgsFile *file, xmlNode *parent, GList *note);
+
+/* AgsAutomation */
+void ags_file_read_automation(AgsFile *file, xmlNode *node, AgsAutomation **automation);
+xmlNode* ags_file_write_automation(AgsFile *file, xmlNode *parent, AgsAutomation *automation);
+
+void ags_file_read_automation_list(AgsFile *file, xmlNode *node, GList **automation);
+xmlNode* ags_file_write_automation_list(AgsFile *file, xmlNode *parent, GList *automation);
+
+void ags_file_read_acceleration(AgsFile *file, xmlNode *node, AgsAcceleration **acceleration);
+xmlNode* ags_file_write_acceleration(AgsFile *file, xmlNode *parent, AgsAcceleration *acceleration);
+
+void ags_file_read_acceleration_list(AgsFile *file, xmlNode *node, GList **acceleration);
+xmlNode* ags_file_write_acceleration_list(AgsFile *file, xmlNode *parent, GList *acceleration);
 
 /* AgsTask */
 void ags_file_read_task(AgsFile *file, xmlNode *node, AgsTask **task);

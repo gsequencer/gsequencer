@@ -390,6 +390,10 @@ ags_automation_init(AgsAutomation *automation)
   ags_automation_add_acceleration(automation,
 				  acceleration,
 				  FALSE);
+
+  automation->loop_start = 0.0;
+  automation->loop_end = 0.0;
+  automation->offset = 0.0;
   
   automation->selection = NULL;
 

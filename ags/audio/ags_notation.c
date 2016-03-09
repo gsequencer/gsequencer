@@ -303,8 +303,8 @@ ags_notation_init(AgsNotation *notation)
 
   notation->notes = NULL;
 
-  notation->start_loop = 0.0;
-  notation->end_loop = 0.0;
+  notation->loop_start = 0.0;
+  notation->loop_end = 0.0;
   notation->offset = 0.0;
 
   notation->selection = NULL;
