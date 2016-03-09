@@ -498,6 +498,7 @@
 <!ELEMENT ags-automation (ags-timestamp?, ags-translate?, ags-acceleration-list)>
 <!ATTLIST ags-automation
 	  id               ID         #REQUIRED
+	  flags            PCDATA     #REQUIRED
 	  audio            IDREF      "./ancestor::*[self::ags-audio][1]"
 	  line             NMTOKEN    #REQUIRED
 	  channel-type     CDATA      #REQUIRED
@@ -507,6 +508,8 @@
 	  lower            NMTOKEN    #REQUIRED
 	  default-value    NMTOKEN    #REQUIRED
 	  port             IDREF      #REQUIRED
+	  loop-start       NMTOKEN    #IMPLIED
+	  loop-end         NMTOKEN    #IMPLIED
 	  >
 
 <!ELEMENT ags-acceleration-list (ags-acceleration*)>
