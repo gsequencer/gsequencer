@@ -259,6 +259,55 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 				  PROP_CONTROL_PORT,
 				  param_spec);
 
+  /**
+   * AgsBulkMember:bulk-port:
+   *
+   * The playback bulk port to be added.
+   * 
+   * Since: 0.7.8
+   */
+  param_spec = g_param_spec_object("bulk-port\0",
+				   "a bulk port\0",
+				   "The bulk port to add\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BULK_PORT,
+				  param_spec);
+
+  /**
+   * AgsBulkMember:recall-bulk-port:
+   *
+   * The recall bulk port to be added.
+   * 
+   * Since: 0.7.8
+   */
+  param_spec = g_param_spec_object("recall-bulk-port\0",
+				   "a recall bulk port\0",
+				   "The bulk port to add\0",
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_BULK_PORT,
+				  param_spec);
+
+  /**
+   * AgsBulkMember:task-type:
+   *
+   * The task type to apply the ports.
+   * 
+   * Since: 0.7.8
+   */
+  param_spec = g_param_spec_ulong("task-type\0",
+				  "task type to apply\0",
+				  "The task type to apply the ports\0",
+				  0, G_MAXULONG, 
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TASK_TYPE,
+				  param_spec);
+
   /* AgsBulkMember */
   bulk_member->change_port = ags_bulk_member_real_change_port;
   bulk_member->find_port = ags_bulk_member_real_find_port;
@@ -469,6 +518,40 @@ ags_bulk_member_set_property(GObject *gobject,
       bulk_member->control_port = g_strdup(control_port);
     }
     break;
+  case PROP_BULK_PORT:
+    {
+      AgsPort *port;
+      AgsBulkPort *bulk_port;
+      
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(ags_bulk_port_find(bulk_member->bulk_port, port) != NULL){
+	return;
+      }
+
+      g_object_ref(port);
+      bulk_port = ags_bulk_port_alloc(port);
+      bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
+					      bulk_port);
+    }
+    break;
+  case PROP_RECALL_BULK_PORT:
+    {
+      AgsPort *port;
+      AgsBulkPort *bulk_port;
+      
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(ags_bulk_port_find(bulk_member->recall_bulk_port, port) != NULL){
+	return;
+      }
+
+      g_object_ref(port);
+      bulk_port = ags_bulk_port_alloc(port);
+      bulk_member->recall_bulk_port = g_list_prepend(bulk_member->recall_bulk_port,
+						     bulk_port);
+    }
+    break;
   case PROP_TASK_TYPE:
     {
       GType type;
@@ -598,6 +681,16 @@ ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
   return(gtk_bin_get_child(bulk_member));
 }
 
+/**
+ * ags_bulk_port_alloc:
+ * @port: the #AgsPort to set
+ * 
+ * Allocate #AgsBulkPort-struct.
+ *
+ * Returns: the newly allocated #AgsBulkPort-struct
+ *
+ * Since: 0.7.8
+ */
 AgsBulkPort*
 ags_bulk_port_alloc(AgsPort *port)
 {
@@ -610,6 +703,31 @@ ags_bulk_port_alloc(AgsPort *port)
   bulk_port->active = FALSE;
   
   return(bulk_port);
+}
+
+/**
+ * ags_bulk_port_find:
+ * @list: the #GList-struct to search
+ * @port: the #AgsPort to find
+ * 
+ * Find port within @list.
+ *
+ * Returns: the #GList-struct containing port if found otherwise %NULL
+ *
+ * Since: 0.7.8
+ */
+GList*
+ags_bulk_port_find(GList *list, AgsPort *port)
+{
+  while(list != NULL){
+    if(AGS_BULK_PORT(list->data)->port == port){
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  return(list);
 }
 
 /**

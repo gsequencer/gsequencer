@@ -98,6 +98,7 @@ struct _AgsBulkPort
 GType ags_bulk_member_get_type(void);
 
 AgsBulkPort* ags_bulk_port_alloc(AgsPort *port);
+GList* ags_bulk_port_find(GList *list, AgsPort *port);
 
 GtkWidget* ags_bulk_member_get_widget(AgsBulkMember *bulk_member);
 void ags_bulk_member_set_label(AgsBulkMember *bulk_member,

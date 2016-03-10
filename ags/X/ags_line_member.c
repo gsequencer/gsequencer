@@ -289,6 +289,23 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_RECALL_PORT_DATA,
 				  param_spec);
 
+  /**
+   * AgsLineMember:task-type:
+   *
+   * The task type to apply the port.
+   * 
+   * Since: 0.7.8
+   */
+  param_spec = g_param_spec_ulong("task-type\0",
+				  "task type to apply\0",
+				  "The task type to apply the port\0",
+				  0, G_MAXULONG, 
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TASK_TYPE,
+				  param_spec);
+
   /* AgsLineMember */
   line_member->change_port = ags_line_member_real_change_port;
   line_member->find_port = ags_line_member_real_find_port;
