@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_conversion.h>
 
+#include <ags/object/ags_marshal.h>
+
 /**
  * SECTION:ags_conversion
  * @short_description: Conversion of values
@@ -161,6 +163,97 @@ ags_conversion_init(AgsConversion *conversion)
   conversion->description = NULL;
 }
 
+
+void
+ags_conversion_set_property(GObject *gobject,
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsConversion *conversion;
+
+  conversion = AGS_CONVERSION(gobject);
+
+  switch(prop_id){
+  case PROP_NAME:
+    {
+      gchar *name;
+
+      name = (gchar *) g_value_get_string(value);
+
+      if(conversion->name == name){
+	return;
+      }
+      
+      if(conversion->name != NULL){
+	g_free(conversion->name);
+      }
+
+      conversion->name = g_strdup(name);
+    }
+    break;
+  case PROP_DESCRIPTION:
+    {
+      gchar *description;
+
+      description = (gchar *) g_value_get_string(value);
+
+      if(conversion->description == description){
+	return;
+      }
+      
+      if(conversion->description != NULL){
+	g_free(conversion->description);
+      }
+
+      conversion->description = g_strdup(description);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_conversion_get_property(GObject *gobject,
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsConversion *conversion;
+
+  conversion = AGS_CONVERSION(gobject);
+
+  switch(prop_id){
+  case PROP_NAME:
+    g_value_set_string(value, conversion->name);
+    break;
+  case PROP_DESCRIPTION:
+    g_value_set_string(value, conversion->description);
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_conversion_finalize(GObject *gobject)
+{
+  AgsConversion *conversion;
+  
+  conversion = AGS_CONVERSION(gobject);
+
+  if(conversion->name != NULL){
+    g_free(conversion->name);
+  }
+
+  if(conversion->description != NULL){
+    g_free(conversion->description);
+  }
+}
+
 gdouble
 ags_conversion_convert(AgsConversion *conversion,
 		       gdouble value)
@@ -172,7 +265,7 @@ ags_conversion_convert(AgsConversion *conversion,
   g_object_ref((GObject *) conversion);
   g_signal_emit(G_OBJECT(conversion),
 		conversion_signals[CONVERT], 0,
-		value
+		value,
 		&retval);
   g_object_unref((GObject *) conversion);
 
