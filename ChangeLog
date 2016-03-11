@@ -13,7 +13,6 @@ ags (0.7.8)
 	* implemented XML IO of ags_effect_bridge.c and related
 	* implemented XML IO of ags_automation_window.c and related
 	* added AgsConversion prototype
-	* TODO:JK: fix return value of XML output functions
 
 ags (0.7.7)
 
