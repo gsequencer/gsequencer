@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = . docs/reference/ags
+# SUBDIRS = . docs/reference/ags
 
 AM_CPPFLAGS = -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -D_FORTIFY_SOURCE=2
 
@@ -35,6 +35,8 @@ appdata_DATA = gsequencer.desktop
 
 EXTRA_DIST += gsequencer.desktop.in
 CLEANFILES += $(appdata_DATA)
+
+EXTRA_DIST += docs/reference/ags
 
 otherincludedir = $(includedir)/ags
 nobase_include_HEADERS = $(libags_la_HEADERS) $(libags_thread_la_HEADERS) $(libags_server_la_HEADERS) $(libags_audio_la_HEADERS) $(libags_gui_la_HEADERS)
@@ -1350,3 +1352,4 @@ uninstall-hook:
 
 clean-local:
 	rm -rf html
+	rm -f docs/reference/ags/Makefile
