@@ -43,9 +43,6 @@ void ags_conversion_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_conversion_finalize(GObject *gobject);
 
-gdouble ags_conversion_real_convert(AgsConversion *conversion,
-				    gdouble value);
-
 enum{
   CONVERT,
   LAST_SIGNAL,
@@ -138,7 +135,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
 
 
   /* AgsConversionClass */
-  conversion->convert = ags_conversion_real_convert;
+  conversion->convert = NULL;
   
   /* signals */
   /**
@@ -166,121 +163,6 @@ ags_conversion_init(AgsConversion *conversion)
   conversion->description = NULL;
 }
 
-void
-ags_conversion_set_property(GObject *gobject,
-			  guint prop_id,
-			  const GValue *value,
-			  GParamSpec *param_spec)
-{
-  AgsConversion *conversion;
-
-  conversion = AGS_CONVERSION(gobject);
-
-  switch(prop_id){
-  case PROP_NAME:
-    {
-      gchar *name;
-
-      name = (gchar *) g_value_get_string(value);
-
-      if(conversion->name == name){
-	return;
-      }
-      
-      if(conversion->name != NULL){
-	g_free(conversion->name);
-      }
-
-      conversion->name = g_strdup(name);
-    }
-    break;
-  case PROP_DESCRIPTION:
-    {
-      gchar *description;
-
-      description = (gchar *) g_value_get_string(value);
-
-      if(conversion->description == description){
-	return;
-      }
-      
-      if(conversion->description != NULL){
-	g_free(conversion->description);
-      }
-
-      conversion->description = g_strdup(description);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_conversion_get_property(GObject *gobject,
-			  guint prop_id,
-			  GValue *value,
-			  GParamSpec *param_spec)
-{
-  AgsConversion *conversion;
-
-  conversion = AGS_CONVERSION(gobject);
-
-  switch(prop_id){
-  case PROP_NAME:
-    g_value_set_string(value, conversion->name);
-    break;
-  case PROP_DESCRIPTION:
-    g_value_set_string(value, conversion->description);
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_conversion_finalize(GObject *gobject)
-{
-  AgsConversion *conversion;
-  
-  conversion = AGS_CONVERSION(gobject);
-
-  if(conversion->name != NULL){
-    g_free(conversion->name);
-  }
-
-  if(conversion->description != NULL){
-    g_free(conversion->description);
-  }
-}
-
-gdouble
-ags_conversion_real_convert(AgsConversion *conversion,
-			    gdouble value)
-{
-  return(value);
-}
-
-gdouble
-ags_conversion_convert(AgsConversion *conversion,
-		       gdouble value)
-{
-  gdouble retval;
-  
-  g_return_if_fail(AGS_IS_CONVERSION(conversion));
-
-  g_object_ref((GObject *) conversion);
-  g_signal_emit(G_OBJECT(conversion),
-		conversion_signals[CONVERT], 0,
-		value,
-		&retval);
-  g_object_unref((GObject *) conversion);
-
-  return(retval);
-}
-
 /**
  * ags_conversion_new:
  *
@@ -288,7 +170,7 @@ ags_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 0.7.8
+ * Since: 0.7.2
  */
 AgsConversion*
 ags_conversion_new()
