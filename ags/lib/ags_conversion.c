@@ -43,6 +43,9 @@ void ags_conversion_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_conversion_finalize(GObject *gobject);
 
+gdouble ags_conversion_real_convert(AgsConversion *conversion,
+				    gdouble value);
+
 enum{
   CONVERT,
   LAST_SIGNAL,
@@ -135,7 +138,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
 
 
   /* AgsConversionClass */
-  conversion->convert = NULL;
+  conversion->convert = ags_conversion_real_convert;
   
   /* signals */
   /**
@@ -162,7 +165,6 @@ ags_conversion_init(AgsConversion *conversion)
   conversion->name = NULL;
   conversion->description = NULL;
 }
-
 
 void
 ags_conversion_set_property(GObject *gobject,
@@ -255,6 +257,13 @@ ags_conversion_finalize(GObject *gobject)
 }
 
 gdouble
+ags_conversion_real_convert(AgsConversion *conversion,
+			    gdouble value)
+{
+  return(value);
+}
+
+gdouble
 ags_conversion_convert(AgsConversion *conversion,
 		       gdouble value)
 {
@@ -279,7 +288,7 @@ ags_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 0.7.2
+ * Since: 0.7.8
  */
 AgsConversion*
 ags_conversion_new()

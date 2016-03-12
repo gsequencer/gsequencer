@@ -392,7 +392,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
 				AGS_PORT_DESCRIPTOR_BOUNDED_BELOW);
 		g_value_set_float(port->lower_value,
-				  samplerate * range_hint->LowerBound);
+				  range_hint->LowerBound); //NOTE:JK: is going to be translated samplerate * 
 	      }
 	    }
 
@@ -401,7 +401,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
 				AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE);
 		g_value_set_float(port->upper_value,
-				  samplerate * range_hint->UpperBound);
+				  range_hint->UpperBound); //NOTE:JK: is going to be translated samplerate * 
 	      }
 	    }
 
@@ -439,8 +439,8 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	      float default_value;
 
 	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
-		default_value = exp(log(range_hint->LowerBound) * 0.55 +
-				    log(range_hint->UpperBound) * 0.55);
+		default_value = exp(log(range_hint->LowerBound) * 0.5 +
+				    log(range_hint->UpperBound) * 0.5);
 	      }else{
 		default_value = (0.5 * range_hint->LowerBound) + (0.5 * range_hint->UpperBound);
 	      }
