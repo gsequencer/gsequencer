@@ -17,67 +17,50 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/lib/ags_conversion.h>
+#include <ags/plugin/ags_ladspa_conversion.h>
 
-#include <ags/object/ags_marshal.h>
+#include <ags/object/ags_soundcard.h>
 
 /**
- * SECTION:ags_conversion
+ * SECTION:ags_ladspa_conversion
  * @short_description: Conversion of values
- * @title: AgsConversion
+ * @title: AgsLadspaConversion
  * @section_id:
- * @include: ags/lib/ags_conversion.h
+ * @include: ags/lib/ags_ladspa_conversion.h
  *
- * The #AgsConversion converts values.
+ * The #AgsLadspaConversion converts values.
  */
 
-void ags_conversion_class_init(AgsConversionClass *conversion);
-void ags_conversion_init (AgsConversion *conversion);
-void ags_conversion_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
-void ags_conversion_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
-void ags_conversion_finalize(GObject *gobject);
+void ags_ladspa_conversion_class_init(AgsLadspaConversionClass *conversion);
+void ags_ladspa_conversion_init (AgsLadspaConversion *conversion);
+void ags_ladspa_conversion_finalize(GObject *gobject);
 
-enum{
-  CONVERT,
-  LAST_SIGNAL,
-};
+gdouble ags_ladspa_conversion_convert(AgsConversion *conversion,
+				      gdouble value);
 
-enum{
-  PROP_0,
-  PROP_NAME,
-  PROP_DESCRIPTION,
-};
-
-static gpointer ags_conversion_parent_class = NULL;
-static guint conversion_signals[LAST_SIGNAL];
+static gpointer ags_ladspa_conversion_parent_class = NULL;
 
 GType
-ags_conversion_get_type(void)
+ags_ladspa_conversion_get_type(void)
 {
   static GType ags_type_conversion = 0;
 
   if(!ags_type_conversion){
-    static const GTypeInfo ags_conversion_info = {
-      sizeof (AgsConversionClass),
+    static const GTypeInfo ags_ladspa_conversion_info = {
+      sizeof (AgsLadspaConversionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_conversion_class_init,
+      (GClassInitFunc) ags_ladspa_conversion_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsConversion),
+      sizeof (AgsLadspaConversion),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_conversion_init,
+      (GInstanceInitFunc) ags_ladspa_conversion_init,
     };
 
     ags_type_conversion = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsConversion\0",
-						 &ags_conversion_info,
+						 "AgsLadspaConversion\0",
+						 &ags_ladspa_conversion_info,
 						 0);
   }
 
@@ -85,97 +68,101 @@ ags_conversion_get_type(void)
 }
 
 void
-ags_conversion_class_init(AgsConversionClass *conversion)
+ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
 {
+  AgsConversionClass *conversion;
   GObjectClass *gobject;
   GParamSpec *param_spec;
   
-  ags_conversion_parent_class = g_type_class_peek_parent(conversion);
+  ags_ladspa_conversion_parent_class = g_type_class_peek_parent(conversion);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) conversion;
+  gobject = (GObjectClass *) ladspa_conversion;
   
-  gobject->set_property = ags_conversion_set_property;
-  gobject->get_property = ags_conversion_get_property;
-
-  gobject->finalize = ags_conversion_finalize;
-  
-  /* properties */
-  /**
-   * AgsConversion:name:
-   *
-   * The name of the conversion.
-   * 
-   * Since: 0.7.8
-   */
-  param_spec = g_param_spec_string("name\0",
-				   "name of conversion\0",
-				   "The name of the conversion\0",
-				   NULL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NAME,
-				  param_spec);
-
-  /**
-   * AgsConversion:description:
-   *
-   * The description of the conversion.
-   * 
-   * Since: 0.7.8
-   */
-  param_spec = g_param_spec_string("description\0",
-				   "description of conversion\0",
-				   "The description of the conversion\0",
-				   NULL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DESCRIPTION,
-				  param_spec);
-
+  gobject->finalize = ags_ladspa_conversion_finalize;
 
   /* AgsConversionClass */
-  conversion->convert = NULL;
-  
-  /* signals */
-  /**
-   * AgsConversion::convert:
-   * @conversion: the #AgsConversion to modify
-   * @value: the value to convert
-   *
-   * The ::convert signal notifies about converted value.
-   */
-  conversion_signals[CONVERT] =
-    g_signal_new("convert\0",
-		 G_TYPE_FROM_CLASS(conversion),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsConversionClass, convert),
-		 NULL, NULL,
-		 g_cclosure_user_marshal_DOUBLE__DOUBLE,
-		 G_TYPE_DOUBLE, 1,
-		 G_TYPE_DOUBLE);
+  conversion = (AgsLadspaConversion *) ladspa_conversion;
+    
+  conversion->convert = ags_ladspa_conversion_convert;
 }
 
 void
-ags_conversion_init(AgsConversion *conversion)
+ags_ladspa_conversion_init(AgsLadspaConversion *ladspa_conversion)
 {
-  conversion->name = NULL;
-  conversion->description = NULL;
+  AgsConfig *config;
+
+  gchar *str;
+  
+  ladspa_conversion->flags = 0;
+
+  config = ags_config_get_instance();
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+
+  if(str != NULL){
+    ladspa_conversion->samplerate = g_ascii_strtoull(str,
+						     NULL,
+						     10);
+    
+    free(str);
+  }else{
+    ladspa_conversion->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+}
+
+gdouble
+ags_ladspa_conversion_convert(AgsConversion *conversion,
+			      gdouble value)
+{
+  AgsLadspaConversion *ladspa_conversion;
+
+  ladspa_conversion = AGS_LADSPA_CONVERSION(conversion);
+  
+  if((AGS_LADSPA_CONVERSION_SAMPLERATE & (ladspa_conversion->flags)) != 0){
+    if((AGS_LADSPA_CONVERSION_BOUNDED_BELOW & (ladspa_conversion->flags)) != 0){
+      if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){
+	value = exp(log(value));
+      }
+
+      if(value < 0.0){
+	value *= ladspa_conversion->samplerate;
+      }
+    }else if((AGS_LADSPA_CONVERSION_BOUNDED_ABOVE & (ladspa_conversion->flags)) != 0){
+      if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){ 
+	value = exp(log(value));
+      }
+      
+      if(value >= 0.0){
+	value *= ladspa_conversion->samplerate;
+      }
+    }else{
+      if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){ 
+	if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){
+	  value = exp(log(value));
+	}
+      }
+    }
+  }
+  
+  return(value);
 }
 
 /**
- * ags_conversion_new:
+ * ags_ladspa_conversion_new:
  *
- * Instantiate a new #AgsConversion.
+ * Instantiate a new #AgsLadspaConversion.
  *
  * Returns: the new instance
  *
- * Since: 0.7.2
+ * Since: 0.7.8
  */
-AgsConversion*
-ags_conversion_new()
+AgsLadspaConversion*
+ags_ladspa_conversion_new()
 {
-  AgsConversion *conversion;
+  AgsLadspaConversion *conversion;
   
   conversion = g_object_new(AGS_TYPE_CONVERSION,
 			    NULL);

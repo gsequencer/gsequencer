@@ -350,13 +350,12 @@ ags_audio_preferences_enable_jack_callback(GtkCheckButton *check_button,
 			     TRUE);
     gtk_widget_set_sensitive(audio_preferences->stop_jack,
 			     TRUE);
-
-    jslist == NULL;
-    //    jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
+    
+    jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
 
     while(jslist != NULL){
-      //      gtk_combo_box_text_append_text(audio_preferences->jack_driver,
-      //			     jackctl_driver_get_name(jslist->data));
+      gtk_combo_box_text_append_text(audio_preferences->jack_driver,
+				     jackctl_driver_get_name(jslist->data));
 
       jslist = jslist->next;
     }
@@ -423,22 +422,21 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
   driver = NULL;
   
   driver_name = gtk_combo_box_text_get_active_text(audio_preferences->jack_driver);
-
-  jslist = NULL;
-  //  jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
+  
+  jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
 
   while(jslist != NULL){
-    //    if(!g_ascii_strcasecmp(driver_name,
-    //			   jackctl_driver_get_name(jslist->data))){
-    //      driver = jslist->data;
+    if(!g_ascii_strcasecmp(driver_name,
+			   jackctl_driver_get_name(jslist->data))){
+      driver = jslist->data;
 
-    //      break;
-    //    }
+      break;
+    }
   }
 
   /* start server */
   if(jack_server != NULL){
-    //    jackctl_server_start(jack_server->jackctl);
+    jackctl_server_start(jack_server->jackctl);
   }
 }
 
@@ -484,6 +482,6 @@ ags_audio_preferences_stop_jack_callback(GtkButton *button,
   pthread_mutex_unlock(application_mutex);
 
   if(jack_server != NULL){
-    //    jackctl_server_stop(jack_server->jackctl);
+    jackctl_server_stop(jack_server->jackctl);
   }
 }

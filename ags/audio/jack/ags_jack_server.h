@@ -55,7 +55,7 @@ struct _AgsJackServer
   GObject *application_context;
 
   gchar *url;
-  jackctl_server_t *jackctl;
+  //  jackctl_server_t *jackctl;
   
   guint *port;
   guint port_count;

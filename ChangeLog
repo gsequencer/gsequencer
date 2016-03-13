@@ -1,3 +1,11 @@
+ags (0.7.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented conversion objects AgsLadspaConversion and AgsLv2Conversion
+	* implemended lv2 feature AgsLv2UridManager
+	* improved AgsLadspaPlugin, AgsDssiPlugin and AgsLv2Plugin to relay on conversion objects
+	*
+
 ags (0.7.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

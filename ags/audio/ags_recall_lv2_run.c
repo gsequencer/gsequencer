@@ -30,6 +30,7 @@
 #include <ags/plugin/ags_lv2_log_manager.h>
 #include <ags/plugin/ags_lv2_worker_manager.h>
 #include <ags/plugin/ags_lv2_worker.h>
+#include <ags/plugin/ags_lv2_urid_manager.h>
 
 #include <ags/audio/ags_port.h>
 
@@ -234,6 +235,9 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   LV2_Event_Feature *event_feature;
 
+  LV2_URID_Map *urid_map;
+  LV2_URID_Unmap *urid_unmap;
+
   LV2_Feature **feature;
   
   /* call parent */
@@ -247,7 +251,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   /**/
   recall_lv2_run->feature = 
-    feature = (LV2_Feature **) malloc(5 * sizeof(LV2_Feature *));
+    feature = (LV2_Feature **) malloc(7 * sizeof(LV2_Feature *));
 
   /* URI map feature */
   uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
@@ -288,8 +292,26 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   feature[3] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
   feature[3]->URI = LV2_EVENT_URI;
   feature[3]->data = event_feature;
+  
+  /* URID map feature */
+  urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
+  urid_map->handle = NULL;
+  urid_map->map = ags_lv2_urid_manager_map;
+  
+  feature[4] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[4]->URI = LV2_URID_MAP_URI;
+  feature[4]->data = urid_map;
 
-  feature[4] = NULL;
+  /* URID unmap feature */
+  urid_unmap = (LV2_URID_Unmap *) malloc(sizeof(LV2_URID_Unmap));
+  urid_unmap->handle = NULL;
+  urid_unmap->unmap = ags_lv2_urid_manager_unmap;
+  
+  feature[5] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  feature[5]->URI = LV2_URID_UNMAP_URI;
+  feature[5]->data = urid_unmap;
+
+  feature[6] = NULL;
 
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->source;
