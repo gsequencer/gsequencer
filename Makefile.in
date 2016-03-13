@@ -389,13 +389,16 @@ am__objects_13 = $(am__objects_1) \
 	ags/plugin/libags_audio_la-ags_base_plugin.lo \
 	ags/plugin/libags_audio_la-ags_dssi_manager.lo \
 	ags/plugin/libags_audio_la-ags_dssi_plugin.lo \
+	ags/plugin/libags_audio_la-ags_ladspa_conversion.lo \
 	ags/plugin/libags_audio_la-ags_ladspa_manager.lo \
 	ags/plugin/libags_audio_la-ags_ladspa_plugin.lo \
+	ags/plugin/libags_audio_la-ags_lv2_conversion.lo \
 	ags/plugin/libags_audio_la-ags_lv2_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_plugin.lo \
 	ags/plugin/libags_audio_la-ags_lv2_log_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_event_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo \
+	ags/plugin/libags_audio_la-ags_lv2_urid_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_worker_manager.lo \
 	ags/plugin/libags_audio_la-ags_lv2_worker.lo \
 	ags/plugin/libags_audio_la-ags_lv2ui_manager.lo \
@@ -871,6 +874,7 @@ LIBXML2_LIBS = @LIBXML2_LIBS@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -1397,14 +1401,17 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_base_plugin.h \
 	ags/plugin/ags_dssi_manager.h \
 	ags/plugin/ags_dssi_plugin.h \
+	ags/plugin/ags_ladspa_conversion.h \
 	ags/plugin/ags_ladspa_manager.h \
 	ags/plugin/ags_ladspa_plugin.h \
 	ags/plugin/ags_plugin_factory.h \
+	ags/plugin/ags_lv2_conversion.h \
 	ags/plugin/ags_lv2_manager.h \
 	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2_event_manager.h \
 	ags/plugin/ags_lv2_log_manager.h \
 	ags/plugin/ags_lv2_uri_map_manager.h \
+	ags/plugin/ags_lv2_urid_manager.h \
 	ags/plugin/ags_lv2_worker_manager.h \
 	ags/plugin/ags_lv2_worker.h \
 	ags/plugin/ags_lv2ui_manager.h \
@@ -1416,13 +1423,16 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_base_plugin.c \
 	ags/plugin/ags_dssi_manager.c \
 	ags/plugin/ags_dssi_plugin.c \
+	ags/plugin/ags_ladspa_conversion.c \
 	ags/plugin/ags_ladspa_manager.c \
 	ags/plugin/ags_ladspa_plugin.c \
+	ags/plugin/ags_lv2_conversion.c \
 	ags/plugin/ags_lv2_manager.c \
 	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2_log_manager.c \
 	ags/plugin/ags_lv2_event_manager.c \
 	ags/plugin/ags_lv2_uri_map_manager.c \
+	ags/plugin/ags_lv2_urid_manager.c \
 	ags/plugin/ags_lv2_worker_manager.c \
 	ags/plugin/ags_lv2_worker.c \
 	ags/plugin/ags_lv2ui_manager.c \
@@ -2957,10 +2967,16 @@ ags/plugin/libags_audio_la-ags_dssi_manager.lo:  \
 ags/plugin/libags_audio_la-ags_dssi_plugin.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
+ags/plugin/libags_audio_la-ags_ladspa_conversion.lo:  \
+	ags/plugin/$(am__dirstamp) \
+	ags/plugin/$(DEPDIR)/$(am__dirstamp)
 ags/plugin/libags_audio_la-ags_ladspa_manager.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
 ags/plugin/libags_audio_la-ags_ladspa_plugin.lo:  \
+	ags/plugin/$(am__dirstamp) \
+	ags/plugin/$(DEPDIR)/$(am__dirstamp)
+ags/plugin/libags_audio_la-ags_lv2_conversion.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
 ags/plugin/libags_audio_la-ags_lv2_manager.lo:  \
@@ -2976,6 +2992,9 @@ ags/plugin/libags_audio_la-ags_lv2_event_manager.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
 ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo:  \
+	ags/plugin/$(am__dirstamp) \
+	ags/plugin/$(DEPDIR)/$(am__dirstamp)
+ags/plugin/libags_audio_la-ags_lv2_urid_manager.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
 ags/plugin/libags_audio_la-ags_lv2_worker_manager.lo:  \
@@ -4145,13 +4164,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_base_plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_dssi_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_dssi_plugin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_ladspa_conversion.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_ladspa_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_ladspa_plugin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_conversion.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_event_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_log_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_worker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_worker_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2ui_manager.Plo@am__quote@
@@ -5733,6 +5755,13 @@ ags/plugin/libags_audio_la-ags_dssi_plugin.lo: ags/plugin/ags_dssi_plugin.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_dssi_plugin.lo `test -f 'ags/plugin/ags_dssi_plugin.c' || echo '$(srcdir)/'`ags/plugin/ags_dssi_plugin.c
 
+ags/plugin/libags_audio_la-ags_ladspa_conversion.lo: ags/plugin/ags_ladspa_conversion.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_ladspa_conversion.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_ladspa_conversion.Tpo -c -o ags/plugin/libags_audio_la-ags_ladspa_conversion.lo `test -f 'ags/plugin/ags_ladspa_conversion.c' || echo '$(srcdir)/'`ags/plugin/ags_ladspa_conversion.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/plugin/$(DEPDIR)/libags_audio_la-ags_ladspa_conversion.Tpo ags/plugin/$(DEPDIR)/libags_audio_la-ags_ladspa_conversion.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_ladspa_conversion.c' object='ags/plugin/libags_audio_la-ags_ladspa_conversion.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_ladspa_conversion.lo `test -f 'ags/plugin/ags_ladspa_conversion.c' || echo '$(srcdir)/'`ags/plugin/ags_ladspa_conversion.c
+
 ags/plugin/libags_audio_la-ags_ladspa_manager.lo: ags/plugin/ags_ladspa_manager.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_ladspa_manager.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_ladspa_manager.Tpo -c -o ags/plugin/libags_audio_la-ags_ladspa_manager.lo `test -f 'ags/plugin/ags_ladspa_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_ladspa_manager.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/plugin/$(DEPDIR)/libags_audio_la-ags_ladspa_manager.Tpo ags/plugin/$(DEPDIR)/libags_audio_la-ags_ladspa_manager.Plo
@@ -5746,6 +5775,13 @@ ags/plugin/libags_audio_la-ags_ladspa_plugin.lo: ags/plugin/ags_ladspa_plugin.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_ladspa_plugin.c' object='ags/plugin/libags_audio_la-ags_ladspa_plugin.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_ladspa_plugin.lo `test -f 'ags/plugin/ags_ladspa_plugin.c' || echo '$(srcdir)/'`ags/plugin/ags_ladspa_plugin.c
+
+ags/plugin/libags_audio_la-ags_lv2_conversion.lo: ags/plugin/ags_lv2_conversion.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_conversion.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_conversion.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_conversion.lo `test -f 'ags/plugin/ags_lv2_conversion.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_conversion.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_conversion.Tpo ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_conversion.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_lv2_conversion.c' object='ags/plugin/libags_audio_la-ags_lv2_conversion.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_lv2_conversion.lo `test -f 'ags/plugin/ags_lv2_conversion.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_conversion.c
 
 ags/plugin/libags_audio_la-ags_lv2_manager.lo: ags/plugin/ags_lv2_manager.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_manager.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_manager.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_manager.lo `test -f 'ags/plugin/ags_lv2_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_manager.c
@@ -5781,6 +5817,13 @@ ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo: ags/plugin/ags_lv2_uri_ma
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_lv2_uri_map_manager.c' object='ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_lv2_uri_map_manager.lo `test -f 'ags/plugin/ags_lv2_uri_map_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_uri_map_manager.c
+
+ags/plugin/libags_audio_la-ags_lv2_urid_manager.lo: ags/plugin/ags_lv2_urid_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_urid_manager.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_urid_manager.lo `test -f 'ags/plugin/ags_lv2_urid_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_urid_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Tpo ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_lv2_urid_manager.c' object='ags/plugin/libags_audio_la-ags_lv2_urid_manager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_lv2_urid_manager.lo `test -f 'ags/plugin/ags_lv2_urid_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_urid_manager.c
 
 ags/plugin/libags_audio_la-ags_lv2_worker_manager.lo: ags/plugin/ags_lv2_worker_manager.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_worker_manager.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_worker_manager.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_worker_manager.lo `test -f 'ags/plugin/ags_lv2_worker_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_worker_manager.c

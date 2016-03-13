@@ -539,6 +539,12 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	}else if(g_str_has_suffix(xmlNodeGetContent(current),
 				  ":enumeration\0")){
 	  port->flags |= AGS_PORT_DESCRIPTOR_ENUMERATION;
+	}else if(g_str_has_suffix(xmlNodeGetContent(current),
+				  ":logarithmic\0")){
+	  port->flags |= AGS_PORT_DESCRIPTOR_LOGARITHMIC;
+	}else if(g_str_has_suffix(xmlNodeGetContent(current),
+				  ":integer\0")){
+	  port->flags |= AGS_PORT_DESCRIPTOR_INTEGER;
 	}
 
 	list = list->next;

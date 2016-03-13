@@ -17,9 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/lib/ags_ladspa_conversion.h>
+#include <ags/plugin/ags_ladspa_conversion.h>
 
-#include <ags/object/ags_marshal.h>
+#include <ags/object/ags_soundcard.h>
 
 /**
  * SECTION:ags_ladspa_conversion
@@ -39,7 +39,6 @@ gdouble ags_ladspa_conversion_convert(AgsConversion *conversion,
 				      gdouble value);
 
 static gpointer ags_ladspa_conversion_parent_class = NULL;
-static guint conversion_signals[LAST_SIGNAL];
 
 GType
 ags_ladspa_conversion_get_type(void)
@@ -69,7 +68,7 @@ ags_ladspa_conversion_get_type(void)
 }
 
 void
-ags_ladspa_conversion_class_init(AgsLadspaConversionClass *conversion)
+ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
 {
   AgsConversionClass *conversion;
   GObjectClass *gobject;
@@ -78,7 +77,7 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *conversion)
   ags_ladspa_conversion_parent_class = g_type_class_peek_parent(conversion);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) conversion;
+  gobject = (GObjectClass *) ladspa_conversion;
   
   gobject->finalize = ags_ladspa_conversion_finalize;
 
@@ -89,11 +88,13 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *conversion)
 }
 
 void
-ags_ladspa_conversion_init(AgsLadspaConversion *conversion)
+ags_ladspa_conversion_init(AgsLadspaConversion *ladspa_conversion)
 {
   AgsConfig *config;
 
-  conversion->flags = 0;
+  gchar *str;
+  
+  ladspa_conversion->flags = 0;
 
   config = ags_config_get_instance();
 
@@ -102,14 +103,20 @@ ags_ladspa_conversion_init(AgsLadspaConversion *conversion)
 			     "samplerate\0");
 
   if(str != NULL){
-    conversion->samplerate = g_ascii_strtoull(str,
-					      NULL,
-					      10);
+    ladspa_conversion->samplerate = g_ascii_strtoull(str,
+						     NULL,
+						     10);
     
     free(str);
   }else{
-    conversion->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    ladspa_conversion->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   }
+}
+
+void
+ags_ladspa_conversion_finalize(GObject *gobject)
+{
+  /* empty */
 }
 
 gdouble
@@ -119,29 +126,21 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
   AgsLadspaConversion *ladspa_conversion;
 
   ladspa_conversion = AGS_LADSPA_CONVERSION(conversion);
-  
-  if((AGS_LADSPA_CONVERSION_SAMPLERATE & (conversion->flags)) != 0){
-    if((AGS_LADSPA_CONVERSION_BOUNDED_BELOW & (conversion->flags)) != 0){
-      if((AGS_LADSPA_CONVERSION_LOGARIGHTMIC & (conversion->flags)) != 0){
-	value = exp(log(value));
-      }
 
+  if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){
+    value = exp(log(value));
+  }
+
+  if((AGS_LADSPA_CONVERSION_SAMPLERATE & (ladspa_conversion->flags)) != 0){
+    if((AGS_LADSPA_CONVERSION_BOUNDED_BELOW & (ladspa_conversion->flags)) != 0){
       if(value < 0.0){
 	value *= ladspa_conversion->samplerate;
       }
-    }else if((AGS_LADSPA_CONVERSION_BOUNDED_ABOVE & (conversion->flags)) != 0){
-      if((AGS_LADSPA_CONVERSION_LOGARIGHTMIC & (conversion->flags)) != 0){ 
-	value = exp(log(value));
-      }
-      
+    }
+
+    if((AGS_LADSPA_CONVERSION_BOUNDED_ABOVE & (ladspa_conversion->flags)) != 0){
       if(value >= 0.0){
 	value *= ladspa_conversion->samplerate;
-      }
-    }else{
-      if((AGS_LADSPA_CONVERSION_LOGARIGHTMIC & (conversion->flags)) != 0){ 
-	if((AGS_LADSPA_CONVERSION_LOGARIGHTMIC & (conversion->flags)) != 0){
-	  value = exp(log(value));
-	}
       }
     }
   }
@@ -156,7 +155,7 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 0.7.8
+ * Since: 0.7.9
  */
 AgsLadspaConversion*
 ags_ladspa_conversion_new()

@@ -56,7 +56,7 @@
 
 #include <jack/jslist.h>
 #include <jack/jack.h>
-#include <jack/control.h>
+//#include <jack/control.h>
 #include <stdbool.h>
 
 #include <libintl.h>
@@ -287,7 +287,7 @@ main(int argc, char **argv)
   }
   
   if(jack_enabled){
-    jackctl_setup_signals(0);
+    //    jackctl_setup_signals(0);
   }
   
   /* parse command line parameter */

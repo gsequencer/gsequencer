@@ -392,7 +392,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
 				AGS_PORT_DESCRIPTOR_BOUNDED_BELOW);
 		g_value_set_float(port->lower_value,
-				  range_hint->LowerBound); //NOTE:JK: is going to be translated samplerate * 
+				  range_hint->LowerBound);
 	      }
 	    }
 
@@ -401,7 +401,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 		port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
 				AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE);
 		g_value_set_float(port->upper_value,
-				  range_hint->UpperBound); //NOTE:JK: is going to be translated samplerate * 
+				  range_hint->UpperBound);
 	      }
 	    }
 
@@ -424,12 +424,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    }else if(LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor)){
 	      float default_value;
 
-	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
-		default_value = exp(log(range_hint->LowerBound) * 0.75 +
-				    log(range_hint->UpperBound) * 0.25);
-	      }else{
-		default_value = 0.75 * range_hint->LowerBound + 0.25 * range_hint->UpperBound;
-	      }
+	      default_value = 0.75 * range_hint->LowerBound + 0.25 * range_hint->UpperBound;
 	      
 	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);
@@ -438,12 +433,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    }else if(LADSPA_IS_HINT_DEFAULT_MIDDLE(hint_descriptor)){
 	      float default_value;
 
-	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
-		default_value = exp(log(range_hint->LowerBound) * 0.5 +
-				    log(range_hint->UpperBound) * 0.5);
-	      }else{
-		default_value = (0.5 * range_hint->LowerBound) + (0.5 * range_hint->UpperBound);
-	      }
+	      default_value = (0.5 * range_hint->LowerBound) + (0.5 * range_hint->UpperBound);
 	      
 	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);
@@ -452,12 +442,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    }else if(LADSPA_IS_HINT_DEFAULT_HIGH(hint_descriptor)){
 	      float default_value;
 
-	      if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
-		default_value = exp(log(range_hint->LowerBound) * 0.25 +
-				    log(range_hint->UpperBound) * 0.75);
-	      }else{
-		default_value = 0.25 * range_hint->LowerBound + 0.75 * range_hint->UpperBound;
-	      }
+	      default_value = 0.25 * range_hint->LowerBound + 0.75 * range_hint->UpperBound;
 
 	      g_value_init(port->default_value,
 			   G_TYPE_FLOAT);

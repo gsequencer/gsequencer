@@ -474,14 +474,17 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_base_plugin.h \
 	ags/plugin/ags_dssi_manager.h \
 	ags/plugin/ags_dssi_plugin.h \
+	ags/plugin/ags_ladspa_conversion.h \
 	ags/plugin/ags_ladspa_manager.h \
 	ags/plugin/ags_ladspa_plugin.h \
 	ags/plugin/ags_plugin_factory.h \
+	ags/plugin/ags_lv2_conversion.h \
 	ags/plugin/ags_lv2_manager.h \
 	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2_event_manager.h \
 	ags/plugin/ags_lv2_log_manager.h \
 	ags/plugin/ags_lv2_uri_map_manager.h \
+	ags/plugin/ags_lv2_urid_manager.h \
 	ags/plugin/ags_lv2_worker_manager.h \
 	ags/plugin/ags_lv2_worker.h \
 	ags/plugin/ags_lv2ui_manager.h \
@@ -494,13 +497,16 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_base_plugin.c \
 	ags/plugin/ags_dssi_manager.c \
 	ags/plugin/ags_dssi_plugin.c \
+	ags/plugin/ags_ladspa_conversion.c \
 	ags/plugin/ags_ladspa_manager.c \
 	ags/plugin/ags_ladspa_plugin.c \
+	ags/plugin/ags_lv2_conversion.c \
 	ags/plugin/ags_lv2_manager.c \
 	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2_log_manager.c \
 	ags/plugin/ags_lv2_event_manager.c \
 	ags/plugin/ags_lv2_uri_map_manager.c \
+	ags/plugin/ags_lv2_urid_manager.c \
 	ags/plugin/ags_lv2_worker_manager.c \
 	ags/plugin/ags_lv2_worker.c \
 	ags/plugin/ags_lv2ui_manager.c \
