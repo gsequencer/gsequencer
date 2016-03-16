@@ -27,6 +27,8 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/plugin/ags_lv2_conversion.h>
+
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
@@ -492,6 +494,9 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	}
 	
 	current->port_value.ags_port_float = (float) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+	ags_recall_lv2_load_conversion(recall_lv2,
+				       current,
+				       port_descriptor->data);
 	    
 	g_message("connecting port: %d/%d\0", i, port_count);      
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -733,6 +738,9 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 			       NULL);
 	
 	current->port_value.ags_port_float = (float) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+	ags_recall_lv2_load_conversion(recall_lv2,
+				       current,
+				       port_descriptor->data);
 
 	g_message("connecting port: %s %d/%d\0", specifier, i, port_count);
 
@@ -771,6 +779,44 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   }
   
   return(AGS_RECALL(recall_lv2)->port);
+}
+
+/**
+ * ags_recall_lv2_load_conversion:
+ * @recall_lv2: the #AgsRecallLv2
+ * @port: an #AgsPort
+ * @port_descriptor: the #AgsPortDescriptor-struct
+ * 
+ * Loads conversion object by using @port_descriptor and sets in on @port.
+ * 
+ * Since: 0.7.9
+ */
+void
+ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
+			       GObject *port,
+			       gpointer port_descriptor)
+{
+  AgsLv2Conversion *lv2_conversion;
+
+  if(recall_lv2 == NULL ||
+     port == NULL ||
+     port_descriptor == NULL){
+    return;
+  }
+
+  lv2_conversion = NULL;
+  
+  if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
+    if(lv2_conversion == NULL){
+      lv2_conversion = ags_lv2_conversion_new();
+    }
+    
+    lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
+  }
+
+  g_object_set(port,
+	       "conversion\0", lv2_conversion,
+	       NULL);
 }
 
 /**

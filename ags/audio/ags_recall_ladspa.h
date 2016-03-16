@@ -64,6 +64,9 @@ struct _AgsRecallLadspaClass
 GType ags_recall_ladspa_get_type();
 
 GList* ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa);
+void ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
+				       GObject *port,
+				       gpointer port_descriptor);
 
 void ags_recall_ladspa_short_to_float(signed short *buffer,
 				      LADSPA_Data *destination,

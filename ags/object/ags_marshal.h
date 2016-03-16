@@ -278,13 +278,13 @@ extern void g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT (GClosure     *closur
                                                             gpointer      invocation_hint,
                                                             gpointer      marshal_data);
 
-/* DOUBLE:DOUBLE (ags_marshallers.list:35) */
-extern void g_cclosure_user_marshal_DOUBLE__DOUBLE (GClosure     *closure,
-                                                    GValue       *return_value,
-                                                    guint         n_param_values,
-                                                    const GValue *param_values,
-                                                    gpointer      invocation_hint,
-                                                    gpointer      marshal_data);
+/* DOUBLE:DOUBLE,BOOLEAN (ags_marshallers.list:35) */
+extern void g_cclosure_user_marshal_DOUBLE__DOUBLE_BOOLEAN (GClosure     *closure,
+                                                            GValue       *return_value,
+                                                            guint         n_param_values,
+                                                            const GValue *param_values,
+                                                            gpointer      invocation_hint,
+                                                            gpointer      marshal_data);
 
 /* STRING:STRING,STRING (ags_marshallers.list:36) */
 extern void g_cclosure_user_marshal_STRING__STRING_STRING (GClosure     *closure,

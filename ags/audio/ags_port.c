@@ -69,6 +69,7 @@ enum{
   PROP_PORT_VALUE_TYPE,
   PROP_PORT_VALUE_SIZE,
   PROP_PORT_VALUE_LENGTH,
+  PROP_CONVERSION,
   PROP_PORT_VALUE,
 };
 
@@ -243,6 +244,22 @@ ags_port_class_init(AgsPortClass *port)
   g_object_class_install_property(gobject,
 				  PROP_PORT_VALUE_LENGTH,
 				  param_spec);
+  
+  /**
+   * AgsPort:conversion:
+   *
+   * The port's conversion object.
+   * 
+   * Since: 0.7.9
+   */
+  param_spec = g_param_spec_object("conversion\0",
+				   "conversion converts values\0",
+				   "The conversion is able to translate values\0",
+				   AGS_TYPE_CONVERSION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONVERSION,
+				  param_spec);
 
   /* AgsPortClass */
   port->safe_read = ags_port_real_safe_read;
@@ -350,6 +367,8 @@ ags_port_init(AgsPort *port)
 
   port->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(port->mutex, &mutexattr);
+
+  port->conversion = NULL;
 }
 
 void
@@ -434,6 +453,27 @@ ags_port_set_property(GObject *gobject,
       port->port_value_length = g_value_get_uint(value);
     }
     break;
+  case PROP_CONVERSION:
+    {
+      AgsConversion *conversion;
+      
+      conversion = g_value_get_object(value);
+
+      if(conversion == port->conversion){
+	return;
+      }
+
+      if(port->conversion != NULL){
+	g_object_unref(port->conversion);
+      }
+
+      if(conversion != NULL){
+	g_object_ref(conversion);
+      }
+
+      port->conversion = conversion;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -471,6 +511,9 @@ ags_port_get_property(GObject *gobject,
     break;
   case PROP_PORT_VALUE_LENGTH:
     g_value_set_uint(value, port->port_value_length);
+    break;
+  case PROP_CONVERSION:
+    g_value_set_object(value, port->conversion);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

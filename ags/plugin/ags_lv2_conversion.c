@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_soundcard.h>
 
+#include <math.h>
+
 /**
  * SECTION:ags_lv2_conversion
  * @short_description: Conversion of values
@@ -36,7 +38,8 @@ void ags_lv2_conversion_init (AgsLv2Conversion *conversion);
 void ags_lv2_conversion_finalize(GObject *gobject);
 
 gdouble ags_lv2_conversion_convert(AgsConversion *conversion,
-				   gdouble value);
+				   gdouble value,
+				   gboolean reverse);
 
 static gpointer ags_lv2_conversion_parent_class = NULL;
 
@@ -105,14 +108,21 @@ ags_lv2_conversion_finalize(GObject *gobject)
 
 gdouble
 ags_lv2_conversion_convert(AgsConversion *conversion,
-			   gdouble value)
+			   gdouble value,
+			   gboolean reverse)
 {
   AgsLv2Conversion *lv2_conversion;
 
   lv2_conversion = AGS_LV2_CONVERSION(conversion);
 
-  if((AGS_LV2_CONVERSION_LOGARITHMIC & (lv2_conversion->flags)) != 0){
-    value = exp(log(value));
+  if(!reverse){
+    if((AGS_LV2_CONVERSION_LOGARITHMIC & (lv2_conversion->flags)) != 0){
+      value = exp(log(value));
+    }
+  }else{
+    if((AGS_LV2_CONVERSION_LOGARITHMIC & (lv2_conversion->flags)) != 0){
+      value = exp(log(value) * (1.0 / M_E));
+    }
   }
   
   return(value);
