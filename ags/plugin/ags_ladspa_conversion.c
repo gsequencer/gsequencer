@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_soundcard.h>
 
+#include <math.h>
+
 /**
  * SECTION:ags_ladspa_conversion
  * @short_description: Conversion of values
@@ -36,7 +38,8 @@ void ags_ladspa_conversion_init (AgsLadspaConversion *conversion);
 void ags_ladspa_conversion_finalize(GObject *gobject);
 
 gdouble ags_ladspa_conversion_convert(AgsConversion *conversion,
-				      gdouble value);
+				      gdouble value,
+				      gboolean reverse);
 
 static gpointer ags_ladspa_conversion_parent_class = NULL;
 
@@ -121,26 +124,47 @@ ags_ladspa_conversion_finalize(GObject *gobject)
 
 gdouble
 ags_ladspa_conversion_convert(AgsConversion *conversion,
-			      gdouble value)
+			      gdouble value,
+			      gboolean reverse)
 {
   AgsLadspaConversion *ladspa_conversion;
 
   ladspa_conversion = AGS_LADSPA_CONVERSION(conversion);
 
-  if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){
-    value = exp(log(value));
-  }
-
-  if((AGS_LADSPA_CONVERSION_SAMPLERATE & (ladspa_conversion->flags)) != 0){
-    if((AGS_LADSPA_CONVERSION_BOUNDED_BELOW & (ladspa_conversion->flags)) != 0){
-      if(value < 0.0){
-	value *= ladspa_conversion->samplerate;
-      }
+  if(!reverse){
+    if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){
+      value = exp(log(value));
     }
 
-    if((AGS_LADSPA_CONVERSION_BOUNDED_ABOVE & (ladspa_conversion->flags)) != 0){
-      if(value >= 0.0){
-	value *= ladspa_conversion->samplerate;
+    if((AGS_LADSPA_CONVERSION_SAMPLERATE & (ladspa_conversion->flags)) != 0){
+      if((AGS_LADSPA_CONVERSION_BOUNDED_BELOW & (ladspa_conversion->flags)) != 0){
+	if(value < 0.0){
+	  value *= ladspa_conversion->samplerate;
+	}
+      }
+
+      if((AGS_LADSPA_CONVERSION_BOUNDED_ABOVE & (ladspa_conversion->flags)) != 0){
+	if(value >= 0.0){
+	  value *= ladspa_conversion->samplerate;
+	}
+      }
+    }
+  }else{
+    if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){
+      value = exp(log(value) * (1.0 / M_E));
+    }
+
+    if((AGS_LADSPA_CONVERSION_SAMPLERATE & (ladspa_conversion->flags)) != 0){
+      if((AGS_LADSPA_CONVERSION_BOUNDED_BELOW & (ladspa_conversion->flags)) != 0){
+	if(value < 0.0){
+	  value /= ladspa_conversion->samplerate;
+	}
+      }
+
+      if((AGS_LADSPA_CONVERSION_BOUNDED_ABOVE & (ladspa_conversion->flags)) != 0){
+	if(value >= 0.0){
+	  value /= ladspa_conversion->samplerate;
+	}
       }
     }
   }

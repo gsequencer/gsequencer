@@ -1389,25 +1389,26 @@ g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT (GClosure     *closure,
   g_value_set_boolean (return_value, v_return);
 }
 
-/* DOUBLE:DOUBLE (ags_marshallers.list:35) */
+/* DOUBLE:DOUBLE,BOOLEAN (ags_marshallers.list:35) */
 void
-g_cclosure_user_marshal_DOUBLE__DOUBLE (GClosure     *closure,
-                                        GValue       *return_value G_GNUC_UNUSED,
-                                        guint         n_param_values,
-                                        const GValue *param_values,
-                                        gpointer      invocation_hint G_GNUC_UNUSED,
-                                        gpointer      marshal_data)
+g_cclosure_user_marshal_DOUBLE__DOUBLE_BOOLEAN (GClosure     *closure,
+                                                GValue       *return_value G_GNUC_UNUSED,
+                                                guint         n_param_values,
+                                                const GValue *param_values,
+                                                gpointer      invocation_hint G_GNUC_UNUSED,
+                                                gpointer      marshal_data)
 {
-  typedef gdouble (*GMarshalFunc_DOUBLE__DOUBLE) (gpointer     data1,
-                                                  gdouble      arg_1,
-                                                  gpointer     data2);
-  GMarshalFunc_DOUBLE__DOUBLE callback;
+  typedef gdouble (*GMarshalFunc_DOUBLE__DOUBLE_BOOLEAN) (gpointer     data1,
+                                                          gdouble      arg_1,
+                                                          gboolean     arg_2,
+                                                          gpointer     data2);
+  GMarshalFunc_DOUBLE__DOUBLE_BOOLEAN callback;
   GCClosure *cc = (GCClosure*) closure;
   gpointer data1, data2;
   gdouble v_return;
 
   g_return_if_fail (return_value != NULL);
-  g_return_if_fail (n_param_values == 2);
+  g_return_if_fail (n_param_values == 3);
 
   if (G_CCLOSURE_SWAP_DATA (closure))
     {
@@ -1419,10 +1420,11 @@ g_cclosure_user_marshal_DOUBLE__DOUBLE (GClosure     *closure,
       data1 = g_value_peek_pointer (param_values + 0);
       data2 = closure->data;
     }
-  callback = (GMarshalFunc_DOUBLE__DOUBLE) (marshal_data ? marshal_data : cc->callback);
+  callback = (GMarshalFunc_DOUBLE__DOUBLE_BOOLEAN) (marshal_data ? marshal_data : cc->callback);
 
   v_return = callback (data1,
                        g_marshal_value_peek_double (param_values + 1),
+                       g_marshal_value_peek_boolean (param_values + 2),
                        data2);
 
   g_value_set_double (return_value, v_return);

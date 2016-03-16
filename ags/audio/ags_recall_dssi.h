@@ -67,6 +67,9 @@ struct _AgsRecallDssiClass
 GType ags_recall_dssi_get_type();
 
 GList* ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi);
+void ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
+				     GObject *port,
+				     gpointer port_descriptor);
 
 void ags_recall_dssi_short_to_float(signed short *buffer,
 				    LADSPA_Data *destination,

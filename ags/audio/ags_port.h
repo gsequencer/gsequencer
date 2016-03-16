@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/lib/ags_complex.h>
+#include <ags/lib/ags_conversion.h>
 
 #include <pthread.h>
 
@@ -56,6 +57,8 @@ struct _AgsPort
 
   pthread_mutex_t *mutex;
 
+  AgsConversion *conversion;
+  
   union _AgsPortValue{
     gboolean ags_port_boolean;
     gint64 ags_port_int;

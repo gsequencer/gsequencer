@@ -46,13 +46,15 @@ struct _AgsConversionClass
   GObjectClass gobject;
 
   gdouble (*convert)(AgsConversion *conversion,
-		     gdouble value);
+		     gdouble value,
+		     gboolean reverse);
 };
 
 GType ags_conversion_get_type(void);
 
 gdouble ags_conversion_convert(AgsConversion *conversion,
-			       gdouble value);
+			       gdouble value,
+			       gboolean reverse);
 
 AgsConversion* ags_conversion_new();
 
