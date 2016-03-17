@@ -722,8 +722,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   }
 
   if(waiting){
-    //FIXME:JK: is this really safe?
-    //    pthread_mutex_lock(thread->mutex);
+    pthread_mutex_lock(thread->mutex);
 
     if(broadcast){
       pthread_cond_broadcast(thread->cond);
@@ -731,7 +730,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
       pthread_cond_signal(thread->cond);
     }
 
-    //    pthread_mutex_unlock(thread->mutex);
+    pthread_mutex_unlock(thread->mutex);
   }
 }
 
@@ -1993,6 +1992,8 @@ ags_thread_clock(AgsThread *thread)
 				 ags_thread_current_tic)){
       //      ags_thread_hangcheck(main_loop);
       pthread_mutex_unlock(&ags_application_mutex);
+
+      pthread_mutex_lock(thread->mutex);
     
       while(!ags_thread_is_current_ready(thread,
 					 ags_thread_current_tic)){
@@ -2002,6 +2003,8 @@ ags_thread_clock(AgsThread *thread)
 
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), ags_thread_current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+
+      pthread_mutex_unlock(thread->mutex);
     }else{
       /* async-queue */
       if(async_queue != NULL){
@@ -2013,10 +2016,11 @@ ags_thread_clock(AgsThread *thread)
       
       /* thread tree */
       ags_thread_set_sync_all(main_loop, ags_thread_current_tic);
-      pthread_mutex_unlock(&ags_application_mutex);
 
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), ags_thread_current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
+
+      pthread_mutex_unlock(&ags_application_mutex);
     }
   }
   
@@ -2182,12 +2186,8 @@ ags_thread_clock(AgsThread *thread)
   /* sync */  
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
     /* run in hierarchy */
-    pthread_mutex_lock(thread->mutex);
-    
     ags_thread_clock_sync(thread);
     
-    pthread_mutex_unlock(thread->mutex);
-
     ags_thread_clock_wait_async();
   
     /* increment delay counter and set run per cycle */
