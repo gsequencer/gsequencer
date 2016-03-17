@@ -232,6 +232,11 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
 gboolean
 ags_note_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNoteEdit *note_edit)
 {
+  /* reset ruler */
+  gtk_adjustment_set_value(note_edit->ruler->adjustment,
+			   GTK_RANGE(note_edit->hscrollbar)->adjustment->value / (double) note_edit->control_current.control_width);
+  gtk_widget_queue_draw((GtkWidget *) note_edit->ruler);
+
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
   ags_note_edit_reset_vertically(note_edit, AGS_NOTE_EDIT_RESET_VSCROLLBAR);
   note_edit->flags &= (~AGS_NOTE_EDIT_RESETING_VERTICALLY);

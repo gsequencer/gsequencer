@@ -229,6 +229,11 @@ ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *ev
 gboolean
 ags_pattern_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsPatternEdit *pattern_edit)
 {
+  /* reset ruler */
+  gtk_adjustment_set_value(pattern_edit->ruler->adjustment,
+			   GTK_RANGE(pattern_edit->hscrollbar)->adjustment->value / (double) pattern_edit->control_current.control_width);
+  gtk_widget_queue_draw(pattern_edit->ruler);
+
   pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_VERTICALLY;
   ags_pattern_edit_reset_vertically(pattern_edit, AGS_PATTERN_EDIT_RESET_VSCROLLBAR);
   pattern_edit->flags &= (~AGS_PATTERN_EDIT_RESETING_VERTICALLY);
