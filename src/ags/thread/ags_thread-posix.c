@@ -1010,14 +1010,10 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
 			      gboolean no_start, gboolean no_wait)
 {
   AgsThread *toplevel;
-
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   
   if(thread == NULL || child == NULL){
     return;
   }
-
-  pthread_mutex_lock(&mutex);
 
   toplevel = ags_thread_get_toplevel(thread);
 
@@ -1072,8 +1068,6 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
       }
     }
   }
-
-  pthread_mutex_unlock(&mutex);
 }
 
 /**
@@ -1965,7 +1959,8 @@ ags_thread_clock(AgsThread *thread)
       next_tic = 2;
     }
 
-    pthread_mutex_lock(&ags_application_mutex);
+    pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+    pthread_mutex_lock(thread->mutex);
 
     switch(ags_thread_current_tic){
     case 0:
@@ -1991,10 +1986,8 @@ ags_thread_clock(AgsThread *thread)
     if(!ags_thread_is_tree_ready(thread,
 				 ags_thread_current_tic)){
       //      ags_thread_hangcheck(main_loop);
-      pthread_mutex_unlock(&ags_application_mutex);
+      pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
-      pthread_mutex_lock(thread->mutex);
-    
       while(!ags_thread_is_current_ready(thread,
 					 ags_thread_current_tic)){
 	pthread_cond_wait(thread->cond,
@@ -2017,10 +2010,11 @@ ags_thread_clock(AgsThread *thread)
       /* thread tree */
       ags_thread_set_sync_all(main_loop, ags_thread_current_tic);
 
+      pthread_mutex_unlock(thread->mutex);
+      pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+
       ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), ags_thread_current_tic);
       ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
-
-      pthread_mutex_unlock(&ags_application_mutex);
     }
   }
   
@@ -2566,6 +2560,8 @@ ags_thread_loop(void *ptr)
     g_object_unref(thread);
   }
 
+  pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+  
   if(ags_thread_is_tree_ready(main_loop,
 			      ags_thread_current_tic)){
 
@@ -2574,7 +2570,9 @@ ags_thread_loop(void *ptr)
     ags_main_loop_set_last_sync(AGS_MAIN_LOOP(main_loop), ags_thread_current_tic);
     ags_main_loop_set_tic(AGS_MAIN_LOOP(main_loop), next_tic);
   }
-
+  
+  pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+  
 #ifdef AGS_DEBUG
   g_message("thread finished\0");
 #endif  
