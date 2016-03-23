@@ -5,7 +5,7 @@ ags (0.7.9)
 	* implemended lv2 feature AgsLv2UridManager
 	* improved AgsLadspaPlugin, AgsDssiPlugin and AgsLv2Plugin to relay on conversion objects
 	* removed JACK server functions because of duplicated symbols
-	* 
+	* fixed integer support of plugins in ags_line_member.c and ags_bulk_member.c
 
 ags (0.7.8)
 

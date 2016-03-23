@@ -1163,7 +1163,8 @@ ags_turtle_read_pn_chars_base(gchar *offset,
 
   static const size_t max_matches = 1;
 
-  if(offset >= end_ptr){
+  if(offset == NULL ||
+     offset >= end_ptr){
     return(NULL);
   }
   
@@ -1285,7 +1286,8 @@ ags_turtle_read_pn_prefix(gchar *offset,
 
   gboolean last_is_point;
 
-  if(offset >= end_ptr){
+  if(offset == NULL ||
+     offset >= end_ptr){
     return(NULL);
   }
     
