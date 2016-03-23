@@ -64,7 +64,7 @@
   AGS_TURTLE_UTF8_RANGE_11 "|" \
   AGS_TURTLE_UTF8_RANGE_12 ")"
 
-#define AGS_TURLTE_UTF8_RANGE_ALL_PATTERN "^" AGS_TURTLE_UTF8_RANGE_ALL
+#define AGS_TURLTE_UTF8_RANGE_ALL_PATTERN "^" AGS_TURTLE_UTF8_RANGE_ALL "*"
 
 typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
