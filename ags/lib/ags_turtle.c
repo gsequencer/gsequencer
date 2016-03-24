@@ -24,9 +24,12 @@
 #include <string.h>
 
 #include <sys/types.h>
+#include <regex.h>
+
+#include <pthread.h>
+
 #include <sys/stat.h>
 #include <unistd.h>
-#include <regex.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -896,7 +899,7 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
     ret = regcomp(&string_literal_long_double_quote_regex, string_literal_long_double_quote_pattern, REG_EXTENDED);
 
     if(ret != 0){
-      g_warning("fAIL\0");
+      g_warning("fail\0");
     }
   }
 
@@ -1149,7 +1152,7 @@ gchar*
 ags_turtle_read_pn_chars_base(gchar *offset,
 			      gchar *end_ptr)
 {
-  regmatch_t match_arr[1];
+  regmatch_t *match_arr;
     
   gchar *str;
   
@@ -1157,9 +1160,7 @@ ags_turtle_read_pn_chars_base(gchar *offset,
     
   static gboolean regex_compiled = FALSE;
 
-  static const gchar *chars_base_pattern = AGS_TURLTE_UTF8_RANGE_ALL_PATTERN;
-  // "^([A-Za-z]|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u02FF]|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\U00010000-\U000EFFFF]";
-  // "^([A-Za-z]|[&#192;-&#214;]|[&#216;-&#246;]|[&#248;-&#767;]|[&#880;-&#893;]|[&#895;-&#8191;]|[&#8204;-&#8205;]|[&#8304;-&#8591;]|[&#12289;-&#55295;]|[&#63744;-&#64975;]|[&#65008;-&#65533;]|[&#65536;-&#983039;])\0";
+  char *chars_base_pattern;
 
   static const size_t max_matches = 1;
 
@@ -1167,13 +1168,17 @@ ags_turtle_read_pn_chars_base(gchar *offset,
      offset >= end_ptr){
     return(NULL);
   }
-  
+
+  match_arr = (regmatch_t *) malloc(sizeof(regmatch_t));
   str = NULL;
 
   if(!regex_compiled){
     regex_compiled = TRUE;
+    chars_base_pattern = g_strdup(AGS_TURLTE_UTF8_RANGE_ALL_PATTERN);
     
-    regcomp(&chars_base_regex, chars_base_pattern, REG_EXTENDED);
+    if(regcomp(&chars_base_regex, chars_base_pattern, REG_EXTENDED)){
+      g_warning("failed to compile regex: %s\0", chars_base_pattern);
+    }
   }
 
   if(regexec(&chars_base_regex, offset, max_matches, match_arr, 0) == 0){

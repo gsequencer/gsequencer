@@ -29,7 +29,7 @@
   AGS_TURTLE_UTF8_RANGE_11 "|" \
   AGS_TURTLE_UTF8_RANGE_12 ")"
 
-#define AGS_TURLTE_UTF8_RANGE_ALL_PATTERN "^" AGS_TURTLE_UTF8_RANGE_ALL "*"
+#define AGS_TURLTE_UTF8_RANGE_ALL_PATTERN "^" AGS_TURTLE_UTF8_RANGE_ALL
 
 static const char *test_string = "@prefix : <http://lv2plug.in/ns/lv2core#> .\0";
 

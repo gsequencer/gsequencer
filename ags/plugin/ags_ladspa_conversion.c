@@ -46,9 +46,9 @@ static gpointer ags_ladspa_conversion_parent_class = NULL;
 GType
 ags_ladspa_conversion_get_type(void)
 {
-  static GType ags_type_conversion = 0;
+  static GType ags_type_ladspa_conversion = 0;
 
-  if(!ags_type_conversion){
+  if(!ags_type_ladspa_conversion){
     static const GTypeInfo ags_ladspa_conversion_info = {
       sizeof (AgsLadspaConversionClass),
       NULL, /* base_init */
@@ -61,13 +61,13 @@ ags_ladspa_conversion_get_type(void)
       (GInstanceInitFunc) ags_ladspa_conversion_init,
     };
 
-    ags_type_conversion = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsLadspaConversion\0",
-						 &ags_ladspa_conversion_info,
-						 0);
+    ags_type_ladspa_conversion = g_type_register_static(AGS_TYPE_CONVERSION,
+							"AgsLadspaConversion\0",
+							&ags_ladspa_conversion_info,
+							0);
   }
 
-  return (ags_type_conversion);
+  return(ags_type_ladspa_conversion);
 }
 
 void

@@ -697,7 +697,29 @@ ags_notation_add_note(AgsNotation *notation,
 		      gboolean use_selection_list)
 {
   GList *list, *list_new;
-  
+
+  auto gint ags_notation_add_note_compare_function(gpointer a, gpointer b);
+
+  gint ags_notation_add_note_compare_function(gpointer a, gpointer b){
+    if(AGS_NOTE(a)->x[0] == AGS_NOTE(b)->x[0]){
+      if(AGS_NOTE(a)->y == AGS_NOTE(b)->y){
+	return(0);
+      }
+
+      if(AGS_NOTE(a)->y < AGS_NOTE(b)->y){
+	return(-1);
+      }else{
+	return(1);
+      }
+    }
+
+    if(AGS_NOTE(a)->x[0] < AGS_NOTE(b)->x[0]){
+      return(-1);
+    }else{
+      return(1);
+    }
+  }
+
   if(note == NULL){
     return;
   }
@@ -705,83 +727,13 @@ ags_notation_add_note(AgsNotation *notation,
   g_object_ref(note);
   
   if(use_selection_list){
-    list = notation->selection;
+    notation->selection = g_list_insert_sorted(notation->selection,
+					       note,
+					       (GCompareFunc) ags_notation_add_note_compare_function);
   }else{
-    list = notation->notes;
-  }
-  
-  if(list == NULL){
-    list_new = g_list_alloc();
-    list_new->data = (gpointer) note;
-
-    if(use_selection_list){
-      notation->selection = list_new;
-    }else{
-      notation->notes = list_new;
-    }
-    
-    return;
-  }
-
-  while(list->next != NULL){
-    if((AGS_NOTE(list->data))->x[0] >= note->x[0]){
-      while(list->next != NULL){
-	if((AGS_NOTE(list->data))->x[0] > note->x[0] ||
-	   (AGS_NOTE(list->data))->y >= note->y){
-	  list_new = (GList *) g_list_alloc();
-	  list_new->data = (gpointer) note;
-
-	  list_new->prev = list->prev;
-	  list_new->next = list;
-
-	  list->prev = list_new;
-    
-	  if(list->prev != NULL){
-	    list_new->prev->next = list_new;
-	  }else{        
-	    if(use_selection_list){
-	      notation->selection = list_new;
-	    }else{
-	      notation->notes = list_new;
-	    }
-	  }
-
-	  return;
-	}
-
-	list = list->next;
-      }
-
-      break;
-    }
-
-    list = list->next;
-  }
-
-  if((AGS_NOTE(list->data))->x[0] >= note->x[0]){
-    list_new = (GList *) g_list_alloc();
-    list_new->data = (gpointer) note;
-
-    list_new->prev = list->prev;
-    list_new->next = list;
-
-    list->prev = list_new;
-    
-    if(list->prev != NULL){
-      list_new->prev->next = list_new;
-    }else{        
-      if(use_selection_list){
-	notation->selection = list_new;
-      }else{
-	notation->notes = list_new;
-      }
-    }
-  }else{
-    list_new = g_list_alloc();
-    list_new->data = (gpointer) note;
-    
-    list_new->prev = list;
-    list->next = list_new;
+    notation->notes = g_list_insert_sorted(notation->notes,
+					   note,
+					   (GCompareFunc) ags_notation_add_note_compare_function);
   }
 }
 
@@ -1385,7 +1337,8 @@ ags_notation_cut_selection(AgsNotation *notation)
     selection_next = selection->next;
     
     if(notes->prev == NULL){
-      notation->notes = g_list_remove_link(notes, notes);
+      notation->notes = g_list_remove_link(notation->notes,
+					   notes);
       notes = notation->notes;
     }else{
       GList *next_note;

@@ -156,7 +156,8 @@ am__objects_2 = $(am__objects_1) ags/lib/libags_la-ags_complex.lo \
 	ags/lib/libags_la-ags_function.lo \
 	ags/lib/libags_la-ags_parameter.lo \
 	ags/lib/libags_la-ags_string_util.lo \
-	ags/lib/libags_la-ags_turtle.lo
+	ags/lib/libags_la-ags_turtle.lo \
+	ags/lib/libags_la-ags_turtle_manager.lo
 am__objects_3 = $(am__objects_1) \
 	ags/util/libags_la-ags_id_generator.lo
 am__objects_4 = $(am__objects_1) \
@@ -1085,7 +1086,8 @@ libags_h_sources = \
 	ags/lib/ags_function.h \
 	ags/lib/ags_parameter.h \
 	ags/lib/ags_string_util.h \
-	ags/lib/ags_turtle.h
+	ags/lib/ags_turtle.h \
+	ags/lib/ags_turtle_manager.h
 
 deprecated_libags_c_sources = 
 libags_c_sources = \
@@ -1095,7 +1097,8 @@ libags_c_sources = \
 	ags/lib/ags_function.c \
 	ags/lib/ags_parameter.c \
 	ags/lib/ags_string_util.c \
-	ags/lib/ags_turtle.c
+	ags/lib/ags_turtle.c \
+	ags/lib/ags_turtle_manager.c
 
 deprecated_libags_util_h_sources = 
 
@@ -2327,6 +2330,8 @@ ags/lib/libags_la-ags_parameter.lo: ags/lib/$(am__dirstamp) \
 ags/lib/libags_la-ags_string_util.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/lib/libags_la-ags_turtle.lo: ags/lib/$(am__dirstamp) \
+	ags/lib/$(DEPDIR)/$(am__dirstamp)
+ags/lib/libags_la-ags_turtle_manager.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/util/$(am__dirstamp):
 	@$(MKDIR_P) ags/util
@@ -4140,6 +4145,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_parameter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_string_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_turtle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_turtle_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_applicable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_async_queue.Plo@am__quote@
@@ -4284,6 +4290,13 @@ ags/lib/libags_la-ags_turtle.lo: ags/lib/ags_turtle.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/lib/ags_turtle.c' object='ags/lib/libags_la-ags_turtle.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_turtle.lo `test -f 'ags/lib/ags_turtle.c' || echo '$(srcdir)/'`ags/lib/ags_turtle.c
+
+ags/lib/libags_la-ags_turtle_manager.lo: ags/lib/ags_turtle_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/lib/libags_la-ags_turtle_manager.lo -MD -MP -MF ags/lib/$(DEPDIR)/libags_la-ags_turtle_manager.Tpo -c -o ags/lib/libags_la-ags_turtle_manager.lo `test -f 'ags/lib/ags_turtle_manager.c' || echo '$(srcdir)/'`ags/lib/ags_turtle_manager.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/lib/$(DEPDIR)/libags_la-ags_turtle_manager.Tpo ags/lib/$(DEPDIR)/libags_la-ags_turtle_manager.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/lib/ags_turtle_manager.c' object='ags/lib/libags_la-ags_turtle_manager.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_turtle_manager.lo `test -f 'ags/lib/ags_turtle_manager.c' || echo '$(srcdir)/'`ags/lib/ags_turtle_manager.c
 
 ags/util/libags_la-ags_id_generator.lo: ags/util/ags_id_generator.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/util/libags_la-ags_id_generator.lo -MD -MP -MF ags/util/$(DEPDIR)/libags_la-ags_id_generator.Tpo -c -o ags/util/libags_la-ags_id_generator.lo `test -f 'ags/util/ags_id_generator.c' || echo '$(srcdir)/'`ags/util/ags_id_generator.c

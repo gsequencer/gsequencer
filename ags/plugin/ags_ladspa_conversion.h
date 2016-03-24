@@ -44,7 +44,7 @@ typedef enum{
 
 struct _AgsLadspaConversion
 {
-  AgsConversion gobject;
+  AgsConversion conversion;
 
   guint flags;
 
@@ -53,7 +53,7 @@ struct _AgsLadspaConversion
 
 struct _AgsLadspaConversionClass
 {
-  AgsConversionClass gobject;
+  AgsConversionClass conversion;
 };
 
 GType ags_ladspa_conversion_get_type(void);

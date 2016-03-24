@@ -20,6 +20,7 @@
 #include <ags/plugin/ags_lv2_manager.h>
 
 #include <ags/lib/ags_string_util.h>
+#include <ags/lib/ags_turtle_manager.h>
 
 #include <ags/object/ags_marshal.h>
 
@@ -593,6 +594,8 @@ ags_lv2_manager_load_default_directory()
       GList *ttl_list, *binary_list;
 
       gchar *turtle_path, *filename;
+
+      gboolean turtle_loaded;
       
       manifest = ags_turtle_new(g_strdup_printf("%s/manifest.ttl\0",
 						plugin_path));
@@ -664,12 +667,17 @@ ags_lv2_manager_load_default_directory()
 	/* load turtle doc */
 	g_message(turtle_path);
 
-	turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
-						plugin_path,
-						turtle_path));
-	ags_turtle_load(turtle,
-			NULL);
-
+	if((turtle = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
+					     turtle_path)) == NULL){
+	  turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
+						  plugin_path,
+						  turtle_path));
+	  ags_turtle_load(turtle,
+			  NULL);
+	  ags_turtle_manager_add(ags_turtle_manager_get_instance(),
+				 turtle);
+	}
+	
 	/* load specified plugin */
 	ags_lv2_manager_load_file(turtle,
 				  filename);

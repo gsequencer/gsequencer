@@ -20,7 +20,6 @@
 #ifndef __AGS_MAIN_H__
 #define __AGS_MAIN_H__
 
-#define _GNU_SOURCE
 #define ALSA_PCM_NEW_HW_PARAMS_API
 
 #define AGS_DEFAULT_DIRECTORY ".gsequencer\0"
