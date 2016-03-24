@@ -148,7 +148,8 @@ libags_h_sources = \
 	ags/lib/ags_function.h \
 	ags/lib/ags_parameter.h \
 	ags/lib/ags_string_util.h \
-	ags/lib/ags_turtle.h
+	ags/lib/ags_turtle.h \
+	ags/lib/ags_turtle_manager.h
 
 deprecated_libags_c_sources =
 
@@ -159,7 +160,8 @@ libags_c_sources = \
 	ags/lib/ags_function.c \
 	ags/lib/ags_parameter.c \
 	ags/lib/ags_string_util.c \
-	ags/lib/ags_turtle.c
+	ags/lib/ags_turtle.c \
+	ags/lib/ags_turtle_manager.c
 
 deprecated_libags_util_h_sources =
 

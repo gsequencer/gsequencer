@@ -1017,6 +1017,26 @@ ags_devout_disconnect(AgsConnectable *connectable)
 void
 ags_devout_switch_buffer_flag(AgsDevout *devout)
 {
+  AgsApplicationContext *application_context;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+  
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(devout));
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* switch buffer flag */
+  pthread_mutex_lock(mutex);
+
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     devout->flags &= (~AGS_DEVOUT_BUFFER0);
     devout->flags |= AGS_DEVOUT_BUFFER1;
@@ -1030,6 +1050,8 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
     devout->flags &= (~AGS_DEVOUT_BUFFER3);
     devout->flags |= AGS_DEVOUT_BUFFER0;
   }
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
@@ -1767,6 +1789,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     //      g_message("ags_devout_play 3\0");
   }
 
+  pthread_mutex_unlock(mutex);
+
   /* tic */
   ags_soundcard_tic(soundcard);
 
@@ -1774,8 +1798,6 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   ags_devout_switch_buffer_flag(devout);
 
   snd_pcm_prepare(devout->out.alsa.handle);
-
-  pthread_mutex_unlock(mutex);
 }
 
 void

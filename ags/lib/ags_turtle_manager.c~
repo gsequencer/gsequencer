@@ -17,10 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_turtle_manager.h>
 
 #include <ags/lib/ags_string_util.h>
-#include <ags/lib/ags_turtle_manager.h>
 
 #include <ags/object/ags_marshal.h>
 
@@ -35,26 +34,26 @@
 
 #include <stdio.h>
 
-void ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager);
-void ags_lv2_manager_init (AgsLv2Manager *lv2_manager);
-void ags_lv2_manager_set_property(GObject *gobject,
+void ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager);
+void ags_turtle_manager_init (AgsTurtleManager *turtle_manager);
+void ags_turtle_manager_set_property(GObject *gobject,
 				  guint prop_id,
 				  const GValue *value,
 				  GParamSpec *param_spec);
-void ags_lv2_manager_get_property(GObject *gobject,
+void ags_turtle_manager_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
-void ags_lv2_manager_finalize(GObject *gobject);
+void ags_turtle_manager_finalize(GObject *gobject);
 
 /**
- * SECTION:ags_lv2_manager
- * @short_description: Singleton pattern to organize LV2
- * @title: AgsLv2Manager
+ * SECTION:ags_turtle_manager
+ * @short_description: Singleton pattern to organize TURTLE
+ * @title: AgsTurtleManager
  * @section_id:
- * @include: ags/object/ags_lv2_manager.h
+ * @include: ags/object/ags_turtle_manager.h
  *
- * The #AgsLv2Manager loads/unloads LV2 plugins.
+ * The #AgsTurtleManager loads/unloads TURTLE plugins.
  */
 
 enum{
@@ -62,65 +61,65 @@ enum{
   PROP_LOCALE,
 };
 
-static gpointer ags_lv2_manager_parent_class = NULL;
+static gpointer ags_turtle_manager_parent_class = NULL;
 
-AgsLv2Manager *ags_lv2_manager = NULL;
-static const gchar *ags_lv2_default_path = "/usr/lib/lv2\0";
+AgsTurtleManager *ags_turtle_manager = NULL;
+static const gchar *ags_turtle_default_path = "/usr/lib/turtle\0";
 
 GType
-ags_lv2_manager_get_type (void)
+ags_turtle_manager_get_type (void)
 {
-  static GType ags_type_lv2_manager = 0;
+  static GType ags_type_turtle_manager = 0;
 
-  if(!ags_type_lv2_manager){
-    static const GTypeInfo ags_lv2_manager_info = {
-      sizeof (AgsLv2ManagerClass),
+  if(!ags_type_turtle_manager){
+    static const GTypeInfo ags_turtle_manager_info = {
+      sizeof (AgsTurtleManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_lv2_manager_class_init,
+      (GClassInitFunc) ags_turtle_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsLv2Manager),
+      sizeof (AgsTurtleManager),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_lv2_manager_init,
+      (GInstanceInitFunc) ags_turtle_manager_init,
     };
 
-    ags_type_lv2_manager = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsLv2Manager\0",
-						  &ags_lv2_manager_info,
+    ags_type_turtle_manager = g_type_register_static(G_TYPE_OBJECT,
+						  "AgsTurtleManager\0",
+						  &ags_turtle_manager_info,
 						  0);
   }
 
-  return (ags_type_lv2_manager);
+  return (ags_type_turtle_manager);
 }
 
 void
-ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager)
+ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager)
 {
   GObjectClass *gobject;
   GParamSpec *param_spec;
   
-  ags_lv2_manager_parent_class = g_type_class_peek_parent(lv2_manager);
+  ags_turtle_manager_parent_class = g_type_class_peek_parent(turtle_manager);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) lv2_manager;
+  gobject = (GObjectClass *) turtle_manager;
 
-  gobject->set_property = ags_lv2_manager_set_property;
-  gobject->get_property = ags_lv2_manager_get_property;
+  gobject->set_property = ags_turtle_manager_set_property;
+  gobject->get_property = ags_turtle_manager_get_property;
 
-  gobject->finalize = ags_lv2_manager_finalize;
+  gobject->finalize = ags_turtle_manager_finalize;
 
   /* properties */
   /**
-   * AgsLv2Manager:locale:
+   * AgsTurtleManager:locale:
    *
    * The assigned locale.
    * 
    * Since: 0.4.3
    */
   param_spec = g_param_spec_string("locale\0",
-				   "locale of lv2 manager\0",
-				   "The locale this lv2 manager is assigned to\0",
+				   "locale of turtle manager\0",
+				   "The locale this turtle manager is assigned to\0",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -129,20 +128,20 @@ ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager)
 }
 
 void
-ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
+ags_turtle_manager_init(AgsTurtleManager *turtle_manager)
 {
-  lv2_manager->lv2_plugin = NULL;
+  turtle_manager->turtle_plugin = NULL;
 }
 
 void
-ags_lv2_manager_set_property(GObject *gobject,
+ags_turtle_manager_set_property(GObject *gobject,
 			     guint prop_id,
 			     const GValue *value,
 			     GParamSpec *param_spec)
 {
-  AgsLv2Manager *lv2_manager;
+  AgsTurtleManager *turtle_manager;
 
-  lv2_manager = AGS_LV2_MANAGER(gobject);
+  turtle_manager = AGS_TURTLE_MANAGER(gobject);
 
   switch(prop_id){
   case PROP_LOCALE:
@@ -151,15 +150,15 @@ ags_lv2_manager_set_property(GObject *gobject,
 
       locale = (gchar *) g_value_get_string(value);
 
-      if(lv2_manager->locale == locale){
+      if(turtle_manager->locale == locale){
 	return;
       }
       
-      if(lv2_manager->locale != NULL){
-	g_free(lv2_manager->locale);
+      if(turtle_manager->locale != NULL){
+	g_free(turtle_manager->locale);
       }
 
-      lv2_manager->locale = g_strdup(locale);
+      turtle_manager->locale = g_strdup(locale);
     }
     break;
   default:
@@ -169,18 +168,18 @@ ags_lv2_manager_set_property(GObject *gobject,
 }
 
 void
-ags_lv2_manager_get_property(GObject *gobject,
+ags_turtle_manager_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec)
 {
-  AgsLv2Manager *lv2_manager;
+  AgsTurtleManager *turtle_manager;
 
-  lv2_manager = AGS_LV2_MANAGER(gobject);
+  turtle_manager = AGS_TURTLE_MANAGER(gobject);
 
   switch(prop_id){
   case PROP_LOCALE:
-    g_value_set_string(value, lv2_manager->locale);
+    g_value_set_string(value, turtle_manager->locale);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -189,21 +188,21 @@ ags_lv2_manager_get_property(GObject *gobject,
 }
 
 void
-ags_lv2_manager_finalize(GObject *gobject)
+ags_turtle_manager_finalize(GObject *gobject)
 {
-  AgsLv2Manager *lv2_manager;
-  GList *lv2_plugin;
+  AgsTurtleManager *turtle_manager;
+  GList *turtle_plugin;
 
-  lv2_manager = AGS_LV2_MANAGER(gobject);
+  turtle_manager = AGS_TURTLE_MANAGER(gobject);
 
-  lv2_plugin = lv2_manager->lv2_plugin;
+  turtle_plugin = turtle_manager->turtle_plugin;
 
-  g_list_free_full(lv2_plugin,
+  g_list_free_full(turtle_plugin,
 		   g_object_unref);
 }
 
 /**
- * ags_lv2_manager_get_filenames:
+ * ags_turtle_manager_get_filenames:
  * 
  * Retrieve all filenames
  *
@@ -212,59 +211,59 @@ ags_lv2_manager_finalize(GObject *gobject)
  * Since: 0.4.3
  */
 gchar**
-ags_lv2_manager_get_filenames()
+ags_turtle_manager_get_filenames()
 {
-  AgsLv2Manager *lv2_manager;
-  GList *lv2_plugin;
+  AgsTurtleManager *turtle_manager;
+  GList *turtle_plugin;
   gchar **filenames;
   guint i;
 
-  lv2_manager = ags_lv2_manager_get_instance();
+  turtle_manager = ags_turtle_manager_get_instance();
 
-  lv2_plugin = lv2_manager->lv2_plugin;
+  turtle_plugin = turtle_manager->turtle_plugin;
   filenames = NULL;
   
-  for(i = 0; lv2_plugin != NULL;){
+  for(i = 0; turtle_plugin != NULL;){
     if(filenames == NULL){
       filenames = (gchar **) malloc(2 * sizeof(gchar *));
-      filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;
+      filenames[i] = AGS_BASE_PLUGIN(turtle_plugin->data)->filename;
       filenames[i + 1] = NULL;
 
       i++;
     }else{
       if(!g_strv_contains(filenames,
-			  AGS_BASE_PLUGIN(lv2_plugin->data)->filename)){
+			  AGS_BASE_PLUGIN(turtle_plugin->data)->filename)){
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
-	filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;
+	filenames[i] = AGS_BASE_PLUGIN(turtle_plugin->data)->filename;
 	filenames[i + 1] = NULL;
 
 	i++;
       }
     }
     
-    lv2_plugin = lv2_plugin->next;
+    turtle_plugin = turtle_plugin->next;
   }
 
   return(filenames);
 }
 
 /**
- * ags_lv2_manager_find_lv2_plugin:
+ * ags_turtle_manager_find_turtle_plugin:
  * @filename: the filename of the plugin
  * @effect: the effect's name
  *
  * Lookup filename in loaded plugins.
  *
- * Returns: the #AgsLv2Plugin-struct
+ * Returns: the #AgsTurtlePlugin-struct
  *
  * Since: 0.4.3
  */
-AgsLv2Plugin*
-ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
+AgsTurtlePlugin*
+ags_turtle_manager_find_turtle_plugin(gchar *filename, gchar *effect)
 {
-  AgsLv2Manager *lv2_manager;
-  AgsLv2Plugin *lv2_plugin;
+  AgsTurtleManager *turtle_manager;
+  AgsTurtlePlugin *turtle_plugin;
   
   GList *list;
 
@@ -273,17 +272,17 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
     return(NULL);
   }
   
-  lv2_manager = ags_lv2_manager_get_instance();
-  list = lv2_manager->lv2_plugin;
+  turtle_manager = ags_turtle_manager_get_instance();
+  list = turtle_manager->turtle_plugin;
   
   while(list != NULL){
-    lv2_plugin = AGS_LV2_PLUGIN(list->data);
+    turtle_plugin = AGS_TURTLE_PLUGIN(list->data);
     
-    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2_plugin)->filename,
+    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(turtle_plugin)->filename,
 			   filename) &&
-       !g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2_plugin)->effect,
+       !g_ascii_strcasecmp(AGS_BASE_PLUGIN(turtle_plugin)->effect,
 			   effect)){
-      return(lv2_plugin);
+      return(turtle_plugin);
     }
 
     list = list->next;
@@ -293,7 +292,7 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
 }
 
 /**
- * ags_lv2_manager_load_file:
+ * ags_turtle_manager_load_file:
  * @filename: the filename of the plugin
  *
  * Load @filename specified plugin.
@@ -301,11 +300,11 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
  * Since: 0.4.3
  */
 void
-ags_lv2_manager_load_file(AgsTurtle *turtle,
+ags_turtle_manager_load_file(AgsTurtle *turtle,
 			  gchar *filename)
 {
-  AgsLv2Manager *lv2_manager;
-  AgsLv2Plugin *lv2_plugin;
+  AgsTurtleManager *turtle_manager;
+  AgsTurtlePlugin *turtle_plugin;
 
   xmlNode *node;
   
@@ -324,8 +323,8 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
   GError *error;
 
   void *plugin_so;
-  LV2_Descriptor_Function lv2_descriptor;
-  LV2_Descriptor *plugin_descriptor;
+  TURTLE_Descriptor_Function turtle_descriptor;
+  TURTLE_Descriptor *plugin_descriptor;
 
   uint32_t i;
 
@@ -336,13 +335,13 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
     return;
   }
 
-  lv2_manager = ags_lv2_manager_get_instance();
+  turtle_manager = ags_turtle_manager_get_instance();
   
   /* load plugin */
   pthread_mutex_lock(&(mutex));
 
   path = g_strdup_printf("%s/%s\0",
-			 ags_lv2_default_path,
+			 ags_turtle_default_path,
 			 filename);
 
   xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0";
@@ -482,7 +481,7 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 		       RTLD_NOW);
   
     if(plugin_so == NULL){
-      g_warning("ags_lv2_manager.c - failed to load static object file\0");
+      g_warning("ags_turtle_manager.c - failed to load static object file\0");
     
       dlerror();
 
@@ -491,39 +490,39 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
       continue;
     }
 
-    lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
-						     "lv2_descriptor\0");
+    turtle_descriptor = (TURTLE_Descriptor_Function) dlsym(plugin_so,
+						     "turtle_descriptor\0");
   
-    if(dlerror() == NULL && lv2_descriptor){
-      for(i = 0; (plugin_descriptor = lv2_descriptor(i)) != NULL; i++){
+    if(dlerror() == NULL && turtle_descriptor){
+      for(i = 0; (plugin_descriptor = turtle_descriptor(i)) != NULL; i++){
 	if(path != NULL &&
 	   effect != NULL &&
 	   uri != NULL &&
 	   !g_ascii_strcasecmp(plugin_descriptor->URI,
 			       uri)){
 	  /* check if already added */
-	  lv2_plugin = ags_lv2_manager_find_lv2_plugin(path,
+	  turtle_plugin = ags_turtle_manager_find_turtle_plugin(path,
 						       effect);
 
-	  if(lv2_plugin != NULL){
+	  if(turtle_plugin != NULL){
 	    break;
 	  }
 
-	  g_message("ags_lv2_manager.c loading - %s::%s as %s\0",
+	  g_message("ags_turtle_manager.c loading - %s::%s as %s\0",
 		    path,
 		    turtle->filename,
 		    effect);
 
-	  lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
+	  turtle_plugin = g_object_new(AGS_TYPE_TURTLE_PLUGIN,
 				    "turtle\0", turtle,
 				    "filename\0", path,
 				    "effect\0", effect,
 				    "uri\0", uri,
 				    "effect-index\0", i,
 				    NULL);
-	  ags_base_plugin_load_plugin(lv2_plugin);
-	  lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
-						   lv2_plugin);
+	  ags_base_plugin_load_plugin(turtle_plugin);
+	  turtle_manager->turtle_plugin = g_list_prepend(turtle_manager->turtle_plugin,
+						   turtle_plugin);
 
 	  break;
 	}
@@ -537,16 +536,16 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 }
 
 /**
- * ags_lv2_manager_load_default_directory:
+ * ags_turtle_manager_load_default_directory:
  * 
  * Loads all available plugins.
  *
  * Since: 0.4.3
  */
 void
-ags_lv2_manager_load_default_directory()
+ags_turtle_manager_load_default_directory()
 {
-  AgsLv2Manager *lv2_manager;
+  AgsTurtleManager *turtle_manager;
 
   GDir *dir;
 
@@ -555,10 +554,10 @@ ags_lv2_manager_load_default_directory()
 
   GError *error;
 
-  lv2_manager = ags_lv2_manager_get_instance();
+  turtle_manager = ags_turtle_manager_get_instance();
 
   error = NULL;
-  dir = g_dir_open(ags_lv2_default_path,
+  dir = g_dir_open(ags_turtle_default_path,
 		   0,
 		   &error);
 
@@ -577,7 +576,7 @@ ags_lv2_manager_load_default_directory()
     }
     
     plugin_path = g_strdup_printf("%s/%s\0",
-				  ags_lv2_default_path,
+				  ags_turtle_default_path,
 				  path);
 
     if(g_file_test(plugin_path,
@@ -594,8 +593,6 @@ ags_lv2_manager_load_default_directory()
       GList *ttl_list, *binary_list;
 
       gchar *turtle_path, *filename;
-
-      gboolean turtle_loaded;
       
       manifest = ags_turtle_new(g_strdup_printf("%s/manifest.ttl\0",
 						plugin_path));
@@ -667,19 +664,14 @@ ags_lv2_manager_load_default_directory()
 	/* load turtle doc */
 	g_message(turtle_path);
 
-	if((turtle = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
-					     turtle_path)) == NULL){
-	  turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
-						  plugin_path,
-						  turtle_path));
-	  ags_turtle_load(turtle,
-			  NULL);
-	  ags_turtle_manager_add(ags_turtle_manager_get_instance(),
-				 turtle);
-	}
-	
+	turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
+						plugin_path,
+						turtle_path));
+	ags_turtle_load(turtle,
+			NULL);
+
 	/* load specified plugin */
-	ags_lv2_manager_load_file(turtle,
+	ags_turtle_manager_load_file(turtle,
 				  filename);
 
 	/* persist XML */
@@ -702,52 +694,51 @@ ags_lv2_manager_load_default_directory()
 }
 
 /**
- * ags_lv2_manager_get_instance:
+ * ags_turtle_manager_get_instance:
  *
  * Get instance.
  *
- * Returns: the #AgsLv2Manager
+ * Returns: the #AgsTurtleManager
  *
  * Since: 0.4.3
  */
-AgsLv2Manager*
-ags_lv2_manager_get_instance()
+AgsTurtleManager*
+ags_turtle_manager_get_instance()
 {
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
   pthread_mutex_lock(&(mutex));
 
-  if(ags_lv2_manager == NULL){
-    ags_lv2_manager = ags_lv2_manager_new(AGS_LV2_MANAGER_DEFAULT_LOCALE);
+  if(ags_turtle_manager == NULL){
+    ags_turtle_manager = ags_turtle_manager_new(AGS_TURTLE_MANAGER_DEFAULT_LOCALE);
 
     pthread_mutex_unlock(&(mutex));
 
-    ags_lv2_manager_load_default_directory();
+    ags_turtle_manager_load_default_directory();
   }else{
     pthread_mutex_unlock(&(mutex));
   }
 
-  return(ags_lv2_manager);
+  return(ags_turtle_manager);
 }
 
 /**
- * ags_lv2_manager_new:
- * @locale: the default locale
+ * ags_turtle_manager_new:
  *
- * Creates an #AgsLv2Manager
+ * Creates an #AgsTurtleManager
  *
- * Returns: a new #AgsLv2Manager
+ * Returns: a new #AgsTurtleManager
  *
  * Since: 0.4.3
  */
-AgsLv2Manager*
-ags_lv2_manager_new(gchar *locale)
+AgsTurtleManager*
+ags_turtle_manager_new()
 {
-  AgsLv2Manager *lv2_manager;
+  AgsTurtleManager *turtle_manager;
 
-  lv2_manager = (AgsLv2Manager *) g_object_new(AGS_TYPE_LV2_MANAGER,
+  turtle_manager = (AgsTurtleManager *) g_object_new(AGS_TYPE_TURTLE_MANAGER,
 					       "locale\0", locale,
 					       NULL);
 
-  return(lv2_manager);
+  return(turtle_manager);
 }

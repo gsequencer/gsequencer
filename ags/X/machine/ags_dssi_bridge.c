@@ -210,13 +210,13 @@ ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge)
    * 
    * Since: 0.4.3
    */
-  param_spec =  g_param_spec_ulong("index\0",
-				   "index of effect\0",
-				   "The numerical index of effect\0",
-				   0,
-				   65535,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_uint("index\0",
+				  "index of effect\0",
+				  "The numerical index of effect\0",
+				  0,
+				  65535,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_INDEX,
 				  param_spec);
@@ -395,7 +395,7 @@ ags_dssi_bridge_set_property(GObject *gobject,
     {
       unsigned long *effect_index;
       
-      effect_index = g_value_get_ulong(value);
+      effect_index = (unsigned long) g_value_get_uint(value);
 
       if(effect_index == dssi_bridge->effect_index){
 	return;
@@ -433,7 +433,7 @@ ags_dssi_bridge_get_property(GObject *gobject,
     break;
   case PROP_INDEX:
     {
-      g_value_set_ulong(value, dssi_bridge->effect_index);
+      g_value_set_uint(value, (guint) dssi_bridge->effect_index);
     }
     break;
   default:

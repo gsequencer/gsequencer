@@ -1202,22 +1202,25 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
     AgsAudioThread *audio_thread;
 
     thread = playback_domain->audio_thread[1];
-    audio_thread = (AgsAudioThread *) thread;
-    
-    do_sequencer = TRUE;
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
-      /* wakeup wait */
-      pthread_mutex_lock(audio_thread->wakeup_mutex);
+    if(thread != NULL){
+      audio_thread = (AgsAudioThread *) thread;
+    
+      do_sequencer = TRUE;
+
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
+	/* wakeup wait */
+	pthread_mutex_lock(audio_thread->wakeup_mutex);
       
-      g_atomic_int_and(&(audio_thread->flags),
-		       (~AGS_AUDIO_THREAD_WAIT));
+	g_atomic_int_and(&(audio_thread->flags),
+			 (~AGS_AUDIO_THREAD_WAIT));
       
-      if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
-	pthread_cond_signal(audio_thread->wakeup_cond);
+	if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
+	  pthread_cond_signal(audio_thread->wakeup_cond);
+	}
+      
+	pthread_mutex_unlock(audio_thread->wakeup_mutex);
       }
-      
-      pthread_mutex_unlock(audio_thread->wakeup_mutex);
     }
   }
 
@@ -1227,22 +1230,25 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
     AgsAudioThread *audio_thread;
 
     thread = playback_domain->audio_thread[2];
-    audio_thread = (AgsAudioThread *) thread;
 
-    do_notation = TRUE;
+    if(thread != NULL){
+      audio_thread = (AgsAudioThread *) thread;
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
-      /* wakeup wait */
-      pthread_mutex_lock(audio_thread->wakeup_mutex);
+      do_notation = TRUE;
+
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
+	/* wakeup wait */
+	pthread_mutex_lock(audio_thread->wakeup_mutex);
 	  
-      g_atomic_int_and(&(audio_thread->flags),
-		       (~AGS_AUDIO_THREAD_WAIT));
+	g_atomic_int_and(&(audio_thread->flags),
+			 (~AGS_AUDIO_THREAD_WAIT));
 	  
-      if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
-	pthread_cond_signal(audio_thread->wakeup_cond);
+	if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
+	  pthread_cond_signal(audio_thread->wakeup_cond);
+	}
+	  
+	pthread_mutex_unlock(audio_thread->wakeup_mutex);
       }
-	  
-      pthread_mutex_unlock(audio_thread->wakeup_mutex);
     }
   }
 }
@@ -1302,30 +1308,33 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
     AgsAudioThread *audio_thread;
 
     audio_thread = AGS_AUDIO_THREAD(playback_domain->audio_thread[2]);
-    do_notation = TRUE;
 
-    pthread_mutex_lock(audio_thread->done_mutex);
+    if(audio_thread != NULL){
+      do_notation = TRUE;
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) != 0){
+      pthread_mutex_lock(audio_thread->done_mutex);
 
-      if((AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) != 0){
 
-	g_atomic_int_and(&(audio_thread->flags),
-			 (~AGS_AUDIO_THREAD_DONE_SYNC));
+	if((AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
+
+	  g_atomic_int_and(&(audio_thread->flags),
+			   (~AGS_AUDIO_THREAD_DONE_SYNC));
 	
-	while((AGS_AUDIO_THREAD_DONE_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) == 0 &&
-	      (AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
-	  pthread_cond_wait(audio_thread->done_cond,
-			    audio_thread->done_mutex);
+	  while((AGS_AUDIO_THREAD_DONE_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) == 0 &&
+		(AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
+	    pthread_cond_wait(audio_thread->done_cond,
+			      audio_thread->done_mutex);
+	  }
 	}
       }
-    }
       
-    g_atomic_int_or(&(audio_thread->flags),
-		    (AGS_AUDIO_THREAD_WAIT_SYNC |
-		     AGS_AUDIO_THREAD_DONE_SYNC));
+      g_atomic_int_or(&(audio_thread->flags),
+		      (AGS_AUDIO_THREAD_WAIT_SYNC |
+		       AGS_AUDIO_THREAD_DONE_SYNC));
     
-    pthread_mutex_unlock(audio_thread->done_mutex);
+      pthread_mutex_unlock(audio_thread->done_mutex);
+    }
   }
 
   /* check if flags are still valid */
