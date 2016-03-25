@@ -20,6 +20,8 @@
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge_callbacks.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_connectable.h>
@@ -573,11 +575,11 @@ ags_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "filename\0",
-	     dssi_bridge->filename);
+	     g_strdup(dssi_bridge->filename));
 
   xmlNewProp(node,
 	     "effect\0",
-	     dssi_bridge->effect);
+	     g_strdup(dssi_bridge->effect));
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
