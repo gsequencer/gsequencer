@@ -1,3 +1,9 @@
+ags (0.7.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed XML IO
+	* implemented read and write functions of AgsLadspaBridge, AgsDssiBridge and AgsLv2Bridge
+
 ags (0.7.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -7,6 +13,7 @@ ags (0.7.9)
 	* removed JACK server functions because of duplicated symbols
 	* fixed integer support of plugins in ags_line_member.c and ags_bulk_member.c
 	* fixed editing notation especially ags_notation_add_note() that was broken
+
 ags (0.7.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

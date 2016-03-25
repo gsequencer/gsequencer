@@ -259,7 +259,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 			     AGS_PREFERENCES_DEFAULT_FILENAME);
     
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context),
+				  "application-context\0", AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context),
 				  "filename\0", filename,
 				  NULL);
   ags_file_write(file);

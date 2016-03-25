@@ -59,6 +59,8 @@ struct _AgsLadspaBridge
   gchar *version;
   gchar *build_id;
 
+  gchar *xml_type;
+  
   guint mapped_output;
   guint mapped_input;
 

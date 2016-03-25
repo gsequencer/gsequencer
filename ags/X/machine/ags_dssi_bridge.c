@@ -28,6 +28,11 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_seekable.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_launch.h>
+
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_thread-posix.h>
 
@@ -77,6 +82,11 @@ gchar* ags_dssi_bridge_get_version(AgsPlugin *plugin);
 void ags_dssi_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_dssi_bridge_get_build_id(AgsPlugin *plugin);
 void ags_dssi_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
+gchar* ags_dssi_bridge_get_xml_type(AgsPlugin *plugin);
+void ags_dssi_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_dssi_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsDssiBridge *dssi_bridge);
+xmlNode* ags_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_dssi_bridge_set_audio_channels(AgsAudio *audio,
 					guint audio_channels, guint audio_channels_old,
@@ -247,11 +257,11 @@ ags_dssi_bridge_plugin_interface_init(AgsPluginInterface *plugin)
   plugin->set_version = ags_dssi_bridge_set_version;
   plugin->get_build_id = ags_dssi_bridge_get_build_id;
   plugin->set_build_id = ags_dssi_bridge_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
+  plugin->get_xml_type = ags_dssi_bridge_get_xml_type;
+  plugin->set_xml_type = ags_dssi_bridge_set_xml_type;
+  plugin->read = ags_dssi_bridge_read;
+  plugin->write = ags_dssi_bridge_write;
   plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
   plugin->set_ports = NULL;
 }
 
@@ -288,6 +298,8 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 
   dssi_bridge->version = AGS_DSSI_BRIDGE_DEFAULT_VERSION;
   dssi_bridge->build_id = AGS_DSSI_BRIDGE_DEFAULT_BUILD_ID;
+
+  dssi_bridge->xml_type = "ags-dssi-bridge\0";
   
   dssi_bridge->mapped_output_pad = 0;
   dssi_bridge->mapped_input_pad = 0;
@@ -495,6 +507,91 @@ ags_dssi_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
   dssi_bridge = AGS_DSSI_BRIDGE(plugin);
 
   dssi_bridge->build_id = build_id;
+}
+
+gchar*
+ags_dssi_bridge_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_DSSI_BRIDGE(plugin)->xml_type);
+}
+
+void
+ags_dssi_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_DSSI_BRIDGE(plugin)->xml_type = xml_type;
+}
+
+void
+ags_dssi_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsDssiBridge *gobject;
+  AgsFileLaunch *file_launch;
+
+  gobject = AGS_DSSI_BRIDGE(plugin);
+
+  g_object_set(gobject,
+	       "filename\0", xmlGetProp(node,
+					"filename\0"),
+	       "effect\0", xmlGetProp(node,
+				      "effect\0"),
+	       NULL);
+
+  /* launch */
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_dssi_bridge_launch_task), gobject);
+  ags_file_add_launch(file,
+		      G_OBJECT(file_launch));
+}
+
+void
+ags_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsDssiBridge *dssi_bridge)
+{
+  ags_dssi_bridge_load(dssi_bridge);
+}
+
+xmlNode*
+ags_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsDssiBridge *dssi_bridge;
+
+  xmlNode *node;
+
+  gchar *id;
+  
+  dssi_bridge = AGS_DSSI_BRIDGE(plugin);
+
+  id = ags_id_generator_create_uuid();
+    
+  node = xmlNewNode(NULL,
+		    "ags-dssi-bridge\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     "filename\0",
+	     dssi_bridge->filename);
+
+  xmlNewProp(node,
+	     "effect\0",
+	     dssi_bridge->effect);
+  
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", dssi_bridge,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
 }
 
 void

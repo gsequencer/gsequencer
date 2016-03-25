@@ -458,7 +458,7 @@ ags_recall_dssi_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -502,7 +502,7 @@ ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -545,7 +545,6 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
   DSSI_Descriptor *plugin_descriptor;
 
   /*  */
-  ags_dssi_manager_load_file(recall_dssi->filename);
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
   
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;

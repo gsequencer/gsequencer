@@ -632,7 +632,7 @@ ags_drum_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -770,7 +770,7 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

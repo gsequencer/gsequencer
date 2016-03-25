@@ -22,6 +22,11 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_launch.h>
+
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
@@ -48,6 +53,11 @@ gchar* ags_ladspa_bridge_get_version(AgsPlugin *plugin);
 void ags_ladspa_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_ladspa_bridge_get_build_id(AgsPlugin *plugin);
 void ags_ladspa_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
+gchar* ags_ladspa_bridge_get_xml_type(AgsPlugin *plugin);
+void ags_ladspa_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_ladspa_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_ladspa_bridge_launch_task(AgsFileLaunch *file_launch, AgsLadspaBridge *ladspa_bridge);
+xmlNode* ags_ladspa_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 /**
  * SECTION:ags_ladspa_bridge
@@ -203,11 +213,11 @@ ags_ladspa_bridge_plugin_interface_init(AgsPluginInterface *plugin)
   plugin->set_version = ags_ladspa_bridge_set_version;
   plugin->get_build_id = ags_ladspa_bridge_get_build_id;
   plugin->set_build_id = ags_ladspa_bridge_set_build_id;
-  plugin->get_xml_type = NULL;
-  plugin->set_xml_type = NULL;
+  plugin->get_xml_type = ags_ladspa_bridge_get_xml_type;
+  plugin->set_xml_type = ags_ladspa_bridge_set_xml_type;
+  plugin->read = ags_ladspa_bridge_read;
+  plugin->write = ags_ladspa_bridge_write;
   plugin->get_ports = NULL;
-  plugin->read = NULL;
-  plugin->write = NULL;
   plugin->set_ports = NULL;
 }
 
@@ -227,6 +237,8 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 
   ladspa_bridge->version = AGS_LADSPA_BRIDGE_DEFAULT_VERSION;
   ladspa_bridge->build_id = AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID;
+
+  ladspa_bridge->xml_type = "ags-ladspa-bridge\0";
   
   ladspa_bridge->mapped_output = 0;
   ladspa_bridge->mapped_input = 0;
@@ -404,6 +416,92 @@ ags_ladspa_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
   ladspa_bridge = AGS_LADSPA_BRIDGE(plugin);
 
   ladspa_bridge->build_id = build_id;
+}
+
+
+gchar*
+ags_ladspa_bridge_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_LADSPA_BRIDGE(plugin)->xml_type);
+}
+
+void
+ags_ladspa_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_LADSPA_BRIDGE(plugin)->xml_type = xml_type;
+}
+
+void
+ags_ladspa_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsLadspaBridge *gobject;
+  AgsFileLaunch *file_launch;
+
+  gobject = AGS_LADSPA_BRIDGE(plugin);
+
+  g_object_set(gobject,
+	       "filename\0", xmlGetProp(node,
+					"filename\0"),
+	       "effect\0", xmlGetProp(node,
+				      "effect\0"),
+	       NULL);
+
+  /* launch */
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_ladspa_bridge_launch_task), gobject);
+  ags_file_add_launch(file,
+		      G_OBJECT(file_launch));
+}
+
+void
+ags_ladspa_bridge_launch_task(AgsFileLaunch *file_launch, AgsLadspaBridge *ladspa_bridge)
+{
+  ags_ladspa_bridge_load(ladspa_bridge);
+}
+
+xmlNode*
+ags_ladspa_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsLadspaBridge *ladspa_bridge;
+
+  xmlNode *node;
+
+  gchar *id;
+  
+  ladspa_bridge = AGS_LADSPA_BRIDGE(plugin);
+
+  id = ags_id_generator_create_uuid();
+    
+  node = xmlNewNode(NULL,
+		    "ags-ladspa-bridge\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     "filename\0",
+	     ladspa_bridge->filename);
+
+  xmlNewProp(node,
+	     "effect\0",
+	     ladspa_bridge->effect);
+  
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", ladspa_bridge,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
 }
 
 void

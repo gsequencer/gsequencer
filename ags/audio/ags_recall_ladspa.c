@@ -456,7 +456,7 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -500,7 +500,7 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -543,7 +543,6 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   LADSPA_Descriptor *plugin_descriptor;
 
   /*  */
-  ags_ladspa_manager_load_file(recall_ladspa->filename);
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(recall_ladspa->filename, recall_ladspa->effect);
   
   plugin_so = AGS_BASE_PLUGIN(ladspa_plugin)->plugin_so;

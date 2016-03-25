@@ -537,6 +537,7 @@ ags_effect_bulk_set_property(GObject *gobject,
 	}
       }
     }
+    break;
   case PROP_CHANNEL_TYPE:
     {
       GType channel_type;
