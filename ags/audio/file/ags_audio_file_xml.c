@@ -1587,7 +1587,7 @@ ags_file_read_recall(AgsFile *file, xmlNode *node, AgsRecall **recall)
 
     type_name = (gchar *) xmlGetProp(node,
 				     (xmlChar *) AGS_FILE_TYPE_PROP);
-
+    g_message("type name : %s\0", type_name);
     type = g_type_from_name(type_name);
 
     gobject = g_object_new(type,

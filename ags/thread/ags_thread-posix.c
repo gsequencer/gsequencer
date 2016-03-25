@@ -2116,7 +2116,11 @@ ags_thread_real_clock(AgsThread *thread)
       if(time_now.tv_sec > thread->computing_time->tv_sec){
 	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
       }else{
-	time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
+	if(time_now.tv_nsec > thread->computing_time->tv_nsec){
+	  time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
+	}else{
+	  time_spent = 0;
+	}
       }
 
       if(thread->tic_delay < thread->delay){	
@@ -2130,7 +2134,11 @@ ags_thread_real_clock(AgsThread *thread)
 	cycle_unit = time_left / (thread->delay - thread->tic_delay);
 	  
 	if(time_limit - time_spent < cycle_unit){
-	  timed_sleep.tv_nsec = time_limit - time_spent;
+	  if(time_limit > time_spent){
+	    timed_sleep.tv_nsec = time_limit - time_spent;
+	  }else{
+	    timed_sleep.tv_nsec = 0;
+	  }
 	}else{
 	  if(cycle_unit < delay_per_hertz * time_unit){
 	    timed_sleep.tv_nsec = cycle_unit;
@@ -2143,7 +2151,7 @@ ags_thread_real_clock(AgsThread *thread)
 	  //	  timed_sleep.tv_nsec = delay_per_hertz * time_unit - time_spent;
 	}
       }
-      
+
       nanosleep(&timed_sleep, NULL);
     }
 #endif

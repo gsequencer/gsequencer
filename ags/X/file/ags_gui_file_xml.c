@@ -2689,19 +2689,12 @@ ags_file_write_effect_bridge(AgsFile *file, xmlNode *parent, AgsEffectBridge *ef
 					   node,
 					   list);
     g_list_free(list);
-    
-    xmlNewProp(child,
-	       AGS_FILE_SCOPE_PROP,
-	       "output\0");
   }
 
   if(effect_bridge->bulk_input != NULL){
     child = ags_file_write_effect_bulk(file,
 				       node,
 				       effect_bridge->bulk_input);
-    xmlNewProp(child,
-	       AGS_FILE_SCOPE_PROP,
-	       "input\0");
   }
   
   if(effect_bridge->input != NULL){
@@ -3170,8 +3163,6 @@ ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_mem
   GtkAdjustment *adjustment;
   GtkWidget *child_widget;
 
-  AgsFileLookup *file_lookup;
-
   xmlNode *child;
 
   xmlChar *prop, *content;
@@ -3363,17 +3354,7 @@ ags_file_read_bulk_member(AgsFile *file, xmlNode *node, AgsBulkMember **bulk_mem
   if((task_type = xmlGetProp(node, "task-type\0")) != NULL){
     gobject->task_type = g_type_from_name(task_type);
   }
-  
-  /* port */
-  file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
-					       "file\0", file,
-					       "node\0", node,
-					       "reference\0", gobject,
-					       NULL);
-  ags_file_add_lookup(file, (GObject *) file_lookup);
-  g_signal_connect_after(G_OBJECT(file_lookup), "resolve\0",
-			 G_CALLBACK(ags_file_read_bulk_member_resolve_port), gobject);
-  
+    
   child = node->children;
 
   while(child != NULL){
@@ -3421,12 +3402,13 @@ ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_m
   gchar *id;
   gchar *label;
 
+  guint width, height;
   guint i, i_stop;
   
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-line-member\0");
+		    "ags-bulk-member\0");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -3463,20 +3445,32 @@ ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_m
 
   xmlNewProp(node,
 	     "filename\0",
-	     g_strdup_printf("%s\0", g_type_name(bulk_member->filename)));
+	     g_strdup_printf("%s\0", bulk_member->filename));
 
   xmlNewProp(node,
 	     "effect\0",
-	     g_strdup_printf("%s\0", g_type_name(bulk_member->effect)));
+	     g_strdup_printf("%s\0", bulk_member->effect));
 
   xmlNewProp(node,
 	     "plugin-name\0",
-	     g_strdup_printf("%s\0", g_type_name(bulk_member->plugin_name)));
+	     g_strdup_printf("%s\0", bulk_member->plugin_name));
 
   xmlNewProp(node,
 	     "specifier\0",
-	     g_strdup_printf("%s\0", g_type_name(bulk_member->specifier)));
+	     g_strdup_printf("%s\0", bulk_member->specifier));
 
+  gtk_widget_get_size_request(child_widget,
+			      &width, &height);
+  
+  xmlNewProp(node,
+	     "width\0",
+	     g_strdup_printf("%d\0", width));
+  
+  xmlNewProp(node,
+	     "height\0",
+	     g_strdup_printf("%d\0", height));
+
+  
   if(bulk_member->task_type != G_TYPE_NONE){
     xmlNewProp(node,
 	       AGS_FILE_TYPE_PROP,

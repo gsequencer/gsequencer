@@ -61,6 +61,8 @@ struct _AgsDssiBridge
   gchar *version;
   gchar *build_id;
 
+  gchar *xml_type;
+  
   guint mapped_output_pad;
   guint mapped_input_pad;
 

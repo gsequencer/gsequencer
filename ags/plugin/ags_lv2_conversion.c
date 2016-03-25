@@ -46,9 +46,9 @@ static gpointer ags_lv2_conversion_parent_class = NULL;
 GType
 ags_lv2_conversion_get_type(void)
 {
-  static GType ags_type_conversion = 0;
+  static GType ags_type_lv2_conversion = 0;
 
-  if(!ags_type_conversion){
+  if(!ags_type_lv2_conversion){
     static const GTypeInfo ags_lv2_conversion_info = {
       sizeof (AgsLv2ConversionClass),
       NULL, /* base_init */
@@ -61,13 +61,13 @@ ags_lv2_conversion_get_type(void)
       (GInstanceInitFunc) ags_lv2_conversion_init,
     };
 
-    ags_type_conversion = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsLv2Conversion\0",
-						 &ags_lv2_conversion_info,
-						 0);
+    ags_type_lv2_conversion = g_type_register_static(AGS_TYPE_CONVERSION,
+						     "AgsLv2Conversion\0",
+						     &ags_lv2_conversion_info,
+						     0);
   }
 
-  return (ags_type_conversion);
+  return(ags_type_lv2_conversion);
 }
 
 void

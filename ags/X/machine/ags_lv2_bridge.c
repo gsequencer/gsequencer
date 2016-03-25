@@ -30,6 +30,11 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_seekable.h>
 
+#include <ags/file/ags_file.h>
+#include <ags/file/ags_file_stock.h>
+#include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_launch.h>
+
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_thread-posix.h>
 
@@ -80,6 +85,11 @@ gchar* ags_lv2_bridge_get_version(AgsPlugin *plugin);
 void ags_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_lv2_bridge_get_build_id(AgsPlugin *plugin);
 void ags_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id);
+gchar* ags_lv2_bridge_get_xml_type(AgsPlugin *plugin);
+void ags_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+void ags_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
+void ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge);
+xmlNode* ags_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
 				       guint audio_channels, guint audio_channels_old,
@@ -368,6 +378,8 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   lv2_bridge->version = AGS_LV2_BRIDGE_DEFAULT_VERSION;
   lv2_bridge->build_id = AGS_LV2_BRIDGE_DEFAULT_BUILD_ID;
+
+  lv2_bridge->xml_type = "ags-lv2-bridge\0";
   
   lv2_bridge->mapped_output_pad = 0;
   lv2_bridge->mapped_input_pad = 0;
@@ -766,6 +778,93 @@ ags_lv2_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
 
   lv2_bridge->build_id = build_id;
 }
+
+
+gchar*
+ags_lv2_bridge_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_LV2_BRIDGE(plugin)->xml_type);
+}
+
+void
+ags_lv2_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_LV2_BRIDGE(plugin)->xml_type = xml_type;
+}
+
+void
+ags_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
+{
+  AgsLv2Bridge *gobject;
+  AgsFileLaunch *file_launch;
+
+  gobject = AGS_LV2_BRIDGE(plugin);
+
+  g_object_set(gobject,
+	       "filename\0", xmlGetProp(node,
+					"filename\0"),
+	       "effect\0", xmlGetProp(node,
+				      "effect\0"),
+	       NULL);
+
+  /* launch */
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_lv2_bridge_launch_task), gobject);
+  ags_file_add_launch(file,
+		      G_OBJECT(file_launch));
+}
+
+void
+ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge)
+{
+  ags_lv2_bridge_load(lv2_bridge);
+}
+
+xmlNode*
+ags_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
+{
+  AgsLv2Bridge *lv2_bridge;
+
+  xmlNode *node;
+
+  gchar *id;
+  
+  lv2_bridge = AGS_LV2_BRIDGE(plugin);
+
+  id = ags_id_generator_create_uuid();
+    
+  node = xmlNewNode(NULL,
+		    "ags-lv2-bridge\0");
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     "filename\0",
+	     lv2_bridge->filename);
+
+  xmlNewProp(node,
+	     "effect\0",
+	     lv2_bridge->effect);
+  
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", lv2_bridge,
+				   NULL));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
+
 void
 ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old,

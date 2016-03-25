@@ -351,6 +351,8 @@ main(int argc, char **argv)
       g_signal_connect(dialog, "response\0",
 		       G_CALLBACK(gtk_main_quit), NULL);
       gtk_main();
+
+      return(0);
     }
     
     ags_file_read(file);

@@ -243,6 +243,10 @@ ags_dssi_manager_load_file(gchar *filename)
     g_warning("ags_dssi_manager.c - failed to load static object file\0");
       
     dlerror();
+
+    pthread_mutex_unlock(&(mutex));
+    
+    return;
   }
 
   dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,

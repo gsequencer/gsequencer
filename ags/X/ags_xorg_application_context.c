@@ -19,6 +19,8 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_config.h>
@@ -38,6 +40,8 @@
 
 #include <ags/audio/jack/ags_jack_midiin.h>
 #include <ags/audio/jack/ags_jack_server.h>
+
+#include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
 
@@ -191,6 +195,9 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
   
   application_context->load_config = ags_xorg_application_context_load_config;
   application_context->register_types = ags_xorg_application_context_register_types;
+
+  application_context->write = ags_xorg_application_context_write;
+  application_context->read = ags_xorg_application_context_read;
 }
 
 void
@@ -545,6 +552,69 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
 {
   ags_gui_thread_get_type();
 
+  /*  */
+  ags_audio_loop_get_type();
+  ags_soundcard_thread_get_type();
+  ags_export_thread_get_type();
+  ags_record_thread_get_type();
+  ags_iterator_thread_get_type();
+  ags_recycling_thread_get_type();
+
+  /* register recalls */
+  ags_recall_channel_run_dummy_get_type();
+
+  ags_play_audio_get_type();
+  ags_play_channel_get_type();
+  ags_play_channel_run_get_type();
+  ags_play_channel_run_master_get_type();
+
+  ags_stream_channel_get_type();
+  ags_stream_channel_run_get_type();
+
+  ags_loop_channel_get_type();
+  ags_loop_channel_run_get_type();
+
+  ags_copy_channel_get_type();
+  ags_copy_channel_run_get_type();
+
+  ags_volume_channel_get_type();
+  ags_volume_channel_run_get_type();
+
+  ags_peak_channel_get_type();
+  ags_peak_channel_run_get_type();
+
+  ags_recall_ladspa_get_type();
+  ags_recall_ladspa_run_get_type();
+
+  ags_recall_dssi_get_type();
+  ags_recall_dssi_run_get_type();
+
+  ags_recall_lv2_get_type();
+  ags_recall_lv2_run_get_type();
+
+  ags_delay_audio_get_type();
+  ags_delay_audio_run_get_type();
+
+  ags_count_beats_audio_get_type();
+  ags_count_beats_audio_run_get_type();
+
+  ags_copy_pattern_audio_get_type();
+  ags_copy_pattern_audio_run_get_type();
+  ags_copy_pattern_channel_get_type();
+  ags_copy_pattern_channel_run_get_type();
+
+  ags_buffer_channel_get_type();
+  ags_buffer_channel_run_get_type();
+
+  ags_play_notation_audio_get_type();
+  ags_play_notation_audio_run_get_type();
+
+  ags_route_dssi_audio_get_type();
+  ags_route_dssi_audio_run_get_type();
+
+  ags_route_lv2_audio_get_type();
+  ags_route_lv2_audio_run_get_type();
+  
   /* gui */
   //TODO:JK: move me
   ags_dial_get_type();
@@ -571,14 +641,28 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_synth_input_line_get_type();
 
   ags_ffplayer_get_type();
+
+  ags_ladspa_bridge_get_type();
+  ags_lv2_bridge_get_type();
+  ags_dssi_bridge_get_type();
 }
 
 void
 ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context)
 {
   AgsXorgApplicationContext *gobject;
-  GList *list;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsThread *audio_loop, *task_thread, *gui_thread;
+  
   xmlNode *child;
+
+  GList *list;
+  GList *start_queue;
+
+  pthread_mutex_t *audio_loop_mutex;
+  pthread_mutex_t *application_mutex;
 
   if(*application_context == NULL){
     gobject = g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
@@ -589,11 +673,20 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
     gobject = (AgsApplicationContext *) *application_context;
   }
 
-  file->application_context = gobject;
-
   g_object_set(G_OBJECT(file),
 	       "application-context\0", gobject,
 	       NULL);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+  pthread_mutex_lock(application_mutex);
+    
+  audio_loop = AGS_APPLICATION_CONTEXT(gobject)->main_loop;
+  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      audio_loop);
+    
+  pthread_mutex_unlock(application_mutex);
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -623,16 +716,54 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-window\0",
-			   child->name,
-			   11)){
+		     child->name,
+		     11)){
 	ags_file_read_window(file,
 			     child,
 			     &(gobject->window));
+      }else if(!xmlStrncmp("ags-soundcard-list\0",
+			   child->name,
+			   19)){
+	if(gobject->soundcard != NULL){
+	  g_list_free_full(gobject->soundcard,
+			   g_object_unref);
+
+	  gobject->soundcard = NULL;
+	}
+	
+	ags_file_read_soundcard_list(file,
+				     child,
+				     &(gobject->soundcard));
       }
     }
 
     child = child->next;
   }
+
+  gtk_widget_show_all(gobject->window);
+
+  /* wait for audio loop */  
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
+  gobject->thread_pool->parent = task_thread;
+
+  gui_thread = ags_thread_find_type(audio_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  pthread_mutex_lock(audio_loop_mutex);
+    
+  start_queue = NULL;
+  start_queue = g_list_prepend(start_queue,
+			       task_thread);
+  start_queue = g_list_prepend(start_queue,
+			       gui_thread);
+  g_atomic_pointer_set(&(audio_loop->start_queue),
+		       start_queue);
+
+  pthread_mutex_unlock(audio_loop_mutex);
+
+  ags_thread_pool_start(gobject->thread_pool);
+  ags_thread_start(audio_loop);
 }
 
 xmlNode*
@@ -640,7 +771,7 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
 {
   xmlNode *node, *child;
   gchar *id;
-
+  
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
@@ -679,6 +810,10 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
   xmlAddChild(parent,
 	      node);
 
+  ags_file_write_soundcard_list(file,
+				node,
+				AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard);
+  
   ags_file_write_window(file,
 			node,
 			AGS_XORG_APPLICATION_CONTEXT(application_context)->window);

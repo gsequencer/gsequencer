@@ -1396,15 +1396,17 @@ ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **applic
 
   context = xmlGetProp(node,
 		       "context\0");
-  
+
+  AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->register_types(file->application_context);
   AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->read(file,
-								    node,
-								    application_context);
+								     node,
+								     application_context);
 }
 
 void
 ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject *application_context)
 {
+  AGS_APPLICATION_CONTEXT_GET_CLASS(file->application_context)->register_types(file->application_context);
   AGS_APPLICATION_CONTEXT_GET_CLASS(application_context)->write(file,
 								parent,
 								application_context);
