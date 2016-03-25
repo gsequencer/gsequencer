@@ -2920,13 +2920,80 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
       }else if(!xmlStrncmp(child->name,
 			   "ags-bulk-member-list\0",
 			   21)){
-	GList *bulk_member, *list;
+	xmlNode *bulk_member_node;
+	
+	GList *bulk_member, *list, *list_start;
 
 	bulk_member = NULL;
 
 	ags_file_read_bulk_member_list(file,
 				       child,
-				       &bulk_member);	
+				       &bulk_member);
+	list_start = bulk_member;
+	
+	/* add bulk member to effect bulk */
+	bulk_member_node = child->children;
+
+	while(bulk_member_node != NULL){
+	  if(bulk_member_node->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(child->name,
+			   "ags-line-member\0",
+			   15)){
+	      guint x0, y0;
+	      guint x1, y1;
+	      guint control_width, control_height;
+
+	      /* pack */
+	      x0 = g_ascii_strtoull(xmlGetProp(bulk_member_node,
+					       "left-attach\0"),
+				    NULL,
+				    10);
+
+	      y0 = g_ascii_strtoull(xmlGetProp(bulk_member_node,
+					       "top-attach\0"),
+				    NULL,
+				    10);
+
+	      x1 = g_ascii_strtoull(xmlGetProp(bulk_member_node,
+					       "right-attach\0"),
+				    NULL,
+				    10);
+
+	      y1 = g_ascii_strtoull(xmlGetProp(bulk_member_node,
+					       "bottom-attach\0"),
+				    NULL,
+				    10);
+
+	      gtk_table_attach(gobject->table,
+			       GTK_WIDGET(bulk_member->data),
+			       x0, y0,
+			       x1, y1,
+			       GTK_FILL, GTK_FILL,
+			       0, 0);
+
+	      /* set size request */
+	      control_width = g_ascii_strtoull(xmlGetProp(bulk_member_node,
+							  "width\0"),
+					       NULL,
+					       10);
+
+	      control_height = g_ascii_strtoull(xmlGetProp(bulk_member_node,
+							   "height\0"),
+						NULL,
+						10);
+
+	      gtk_widget_set_size_request(GTK_WIDGET(list->data),
+					  control_width, control_height);
+	      
+	      /* iterate */
+	      bulk_member = bulk_member->next;
+	    }
+	  }
+	  
+	  bulk_member_node = bulk_member_node->next;
+	}
+
+	g_list_free(list_start);
       }
     }
     
@@ -3403,6 +3470,8 @@ ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_m
   gchar *label;
 
   guint width, height;
+  guint left_attach, right_attach;
+  guint top_attach, bottom_attach;
   guint i, i_stop;
   
   id = ags_id_generator_create_uuid();
@@ -3470,6 +3539,29 @@ ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_m
 	     "height\0",
 	     g_strdup_printf("%d\0", height));
 
+  gtk_container_child_get(GTK_WIDGET(bulk_member)->parent,
+			  bulk_member,
+			  "left-attach\0", &left_attach,
+			  "right-attach\0", &right_attach,
+			  "top-attach\0", &top_attach,
+			  "bottom-attach\0", &bottom_attach,
+			  NULL);
+
+  xmlNewProp(node,
+	     "left-attach\0",
+	     g_strdup_printf("%d\0", left_attach));
+
+  xmlNewProp(node,
+	     "right-attach\0",
+	     g_strdup_printf("%d\0", right_attach));
+
+  xmlNewProp(node,
+	     "top-attach\0",
+	     g_strdup_printf("%d\0", top_attach));
+
+  xmlNewProp(node,
+	     "bottom-attach\0",
+	     g_strdup_printf("%d\0", bottom_attach));
   
   if(bulk_member->task_type != G_TYPE_NONE){
     xmlNewProp(node,
