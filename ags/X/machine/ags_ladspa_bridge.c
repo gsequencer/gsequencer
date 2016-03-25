@@ -20,6 +20,8 @@
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_ladspa_bridge_callbacks.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_connectable.h>
 
 #include <ags/file/ags_file.h>

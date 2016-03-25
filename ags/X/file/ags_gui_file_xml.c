@@ -2922,14 +2922,14 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
 			   21)){
 	xmlNode *bulk_member_node;
 	
-	GList *bulk_member, *list, *list_start;
+	GList *bulk_member, *bulk_member_start;
 
 	bulk_member = NULL;
 
 	ags_file_read_bulk_member_list(file,
 				       child,
 				       &bulk_member);
-	list_start = bulk_member;
+	bulk_member_start = bulk_member;
 	
 	/* add bulk member to effect bulk */
 	bulk_member_node = child->children;
@@ -2937,7 +2937,7 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
 	while(bulk_member_node != NULL){
 	  if(bulk_member_node->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(child->name,
-			   "ags-line-member\0",
+			   "ags-bulk-member\0",
 			   15)){
 	      guint x0, y0;
 	      guint x1, y1;
@@ -2966,8 +2966,8 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
 
 	      gtk_table_attach(gobject->table,
 			       GTK_WIDGET(bulk_member->data),
-			       x0, y0,
-			       x1, y1,
+			       x0, x1,
+			       y0, y1,
 			       GTK_FILL, GTK_FILL,
 			       0, 0);
 
@@ -2982,7 +2982,7 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
 						NULL,
 						10);
 
-	      gtk_widget_set_size_request(GTK_WIDGET(list->data),
+	      gtk_widget_set_size_request(GTK_WIDGET(bulk_member->data),
 					  control_width, control_height);
 	      
 	      /* iterate */
@@ -2993,7 +2993,7 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
 	  bulk_member_node = bulk_member_node->next;
 	}
 
-	g_list_free(list_start);
+	g_list_free(bulk_member_start);
       }
     }
     

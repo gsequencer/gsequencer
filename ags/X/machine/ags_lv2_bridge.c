@@ -20,6 +20,8 @@
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge_callbacks.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/lib/ags_string_util.h>
 
 #include <ags/object/ags_application_context.h>
