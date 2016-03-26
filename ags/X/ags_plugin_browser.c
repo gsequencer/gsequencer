@@ -164,8 +164,6 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "Lv2\0");
   gtk_combo_box_text_append_text(plugin_browser->plugin_type,
-				 "DSSI\0");
-  gtk_combo_box_text_append_text(plugin_browser->plugin_type,
 				 "LADSPA\0");
 
   plugin_browser->active_browser = NULL;
@@ -176,12 +174,8 @@ ags_plugin_browser_init(AgsPluginBrowser *plugin_browser)
 		     FALSE, FALSE,
 		     0);
 
-  plugin_browser->dssi_browser = ags_dssi_browser_new();
-  gtk_box_pack_start(vbox,
-		     plugin_browser->dssi_browser,
-		     FALSE, FALSE,
-		     0);
-
+  plugin_browser->dssi_browser = NULL;
+  
   plugin_browser->ladspa_browser = ags_ladspa_browser_new();
   gtk_box_pack_start(vbox,
 		     plugin_browser->ladspa_browser,
@@ -227,7 +221,6 @@ ags_plugin_browser_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback), plugin_browser);
   
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->lv2_browser));
-  ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->dssi_browser));
   ags_connectable_connect(AGS_CONNECTABLE(plugin_browser->ladspa_browser));
 
   /* AgsPluginBrowser buttons */
@@ -291,8 +284,6 @@ ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
 {
   if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
     return(ags_lv2_browser_get_plugin_filename(plugin_browser->lv2_browser));
-  }else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
-    return(ags_dssi_browser_get_plugin_filename(plugin_browser->dssi_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
     return(ags_ladspa_browser_get_plugin_filename(plugin_browser->ladspa_browser));
   }else{
@@ -314,8 +305,6 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
 {
   if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
     return(ags_lv2_browser_get_plugin_effect(plugin_browser->lv2_browser));
-  }else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
-    return(ags_dssi_browser_get_plugin_effect(plugin_browser->dssi_browser));
   }else if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
     return(ags_ladspa_browser_get_plugin_effect(plugin_browser->ladspa_browser));
   }else{

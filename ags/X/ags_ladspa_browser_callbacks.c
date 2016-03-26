@@ -98,11 +98,14 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename),
 							gtk_combo_box_text_get_active_text(effect));
-  
-  plugin_so = AGS_BASE_PLUGIN(ladspa_plugin)->plugin_so;
-  plugin_index = (unsigned long) AGS_BASE_PLUGIN(ladspa_plugin)->effect_index;
 
-  if(plugin_index != -1 &&
+  if(ladspa_plugin != NULL){
+    plugin_so = AGS_BASE_PLUGIN(ladspa_plugin)->plugin_so;
+    plugin_index = (unsigned long) AGS_BASE_PLUGIN(ladspa_plugin)->effect_index;
+  }
+  
+  if(ladspa_plugin != NULL &&
+     plugin_index != -1 &&
      plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor\0");

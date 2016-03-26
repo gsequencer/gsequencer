@@ -492,11 +492,14 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	  
 	  list = list->next;
 	}
-	
-	current->port_value.ags_port_float = (float) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+
 	ags_recall_lv2_load_conversion(recall_lv2,
 				       current,
 				       port_descriptor->data);
+	
+	current->port_value.ags_port_float = (float) ags_conversion_convert(current->conversion,
+									    g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
+									    FALSE);
 	    
 	g_message("connecting port: %d/%d\0", i, port_count);      
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -736,11 +739,14 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 			       "port-value-is-pointer\0", FALSE,
 			       "port-value-type\0", G_TYPE_FLOAT,
 			       NULL);
-	
-	current->port_value.ags_port_float = (float) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+
 	ags_recall_lv2_load_conversion(recall_lv2,
 				       current,
 				       port_descriptor->data);
+
+	current->port_value.ags_port_float = (float) ags_conversion_convert(current->conversion,
+									    g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
+									    FALSE);
 
 	g_message("connecting port: %s %d/%d\0", specifier, i, port_count);
 

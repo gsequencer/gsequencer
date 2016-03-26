@@ -40,10 +40,16 @@
 typedef struct _AgsPort AgsPort;
 typedef struct _AgsPortClass AgsPortClass;
 
+typedef enum{
+  AGS_PORT_CONVERT_ALWAYS   =  1,
+};
+
 struct _AgsPort
 {
   GObject object;
 
+  guint flags;
+  
   gchar *plugin_name;
   gchar *specifier;
 
