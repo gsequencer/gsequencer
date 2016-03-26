@@ -63,6 +63,11 @@ struct _AgsLv2Plugin
   gchar *uri;
 
   AgsTurtle *turtle;
+
+  gchar *doap_name;
+  gchar *foaf_name;
+  gchar *foaf_homepage;
+  gchar *foaf_mbox;
 };
 
 struct _AgsLv2PluginClass

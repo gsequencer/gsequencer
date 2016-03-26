@@ -75,6 +75,9 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   GList *list, *list_start;
   GList *child, *child_start;
 
+  gchar *str;
+  guint y;
+
   /* retrieve filename and uri */
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
@@ -90,24 +93,101 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(gtk_combo_box_text_get_active_text(filename),
 					       gtk_combo_box_text_get_active_text(effect));
-  
-  if(FALSE){
-    //TODO:JK: implement me
+
+  if(lv2_plugin != NULL){
+    GList *port_descriptor;
+    
+    /* update ui - empty */
+    label = GTK_LABEL(list->data);
+    gtk_label_set_text(label,
+		       g_strdup_printf("Name: %s\0",
+				       lv2_plugin->foaf_name));
+
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    gtk_label_set_text(label,
+		       g_strdup_printf("Homepage: %s\0",
+				       lv2_plugin->foaf_homepage));
+
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    gtk_label_set_text(label,
+		       g_strdup_printf("M-Box: %s\0",
+				       lv2_plugin->foaf_mbox));
+
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    gtk_label_set_text(label,
+		       "Ports: \0");
+
+    list = list->next;
+    table = GTK_TABLE(list->data);
+
+    /* update ui - port information */
+    child_start = 
+      child = gtk_container_get_children(GTK_CONTAINER(table));
+    
+    while(child != NULL){
+      gtk_widget_destroy(GTK_WIDGET(child->data));
+      
+      child = child->next;
+    }
+    
+    g_list_free(child_start);
+
+    port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+
+    y = 0;
+    
+    while(port_descriptor != NULL){
+      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0){
+	port_descriptor = port_descriptor->next;
+	
+	continue;
+      }
+      
+      str = g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name);
+
+      label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+					"xalign\0", 0.0,
+					"label\0", str,
+					NULL);
+      gtk_table_attach_defaults(table,
+				GTK_WIDGET(label),
+				0, 1,
+				y, y + 1);
+      
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0){
+	gtk_table_attach_defaults(table,
+				  GTK_WIDGET(ags_lv2_browser_combo_box_boolean_controls_new()),
+				  1, 2,
+				  y, y + 1);
+      }else{
+	gtk_table_attach_defaults(table,
+				  GTK_WIDGET(ags_lv2_browser_combo_box_controls_new()),
+				  1, 2,
+				  y, y + 1);
+      }
+	
+      y++;
+      
+      port_descriptor = port_descriptor->next;
+    }
   }else{
     /* update ui - empty */
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Label: \0");
+		       "Name: \0");
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "Project: \0");
+		       "Homepage: \0");
 
     list = list->next;
     label = GTK_LABEL(list->data);
     gtk_label_set_text(label,
-		       "License: \0");
+		       "M-Box: \0");
 
     list = list->next;
     label = GTK_LABEL(list->data);

@@ -351,6 +351,8 @@ ags_port_init(AgsPort *port)
 {
   pthread_mutexattr_t mutexattr;
 
+  port->flags = AGS_PORT_CONVERT_ALWAYS;
+  
   port->plugin_name = NULL;
   port->specifier = NULL;
 
@@ -368,7 +370,7 @@ ags_port_init(AgsPort *port)
   port->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(port->mutex, &mutexattr);
 
-  port->conversion = NULL;
+  port->conversion = ags_conversion_new();
 }
 
 void
@@ -555,9 +557,29 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_UINT64){
       g_value_set_uint64(value, port->port_value.ags_port_uint);
     }else if(port->port_value_type == G_TYPE_FLOAT){
-      g_value_set_float(value, port->port_value.ags_port_float);
+      gfloat new_value;
+      
+      if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0){
+        new_value = (gfloat) ags_conversion_convert(port->conversion,
+						    (double) port->port_value.ags_port_float,
+						    TRUE);
+      }else{
+	new_value = port->port_value.ags_port_float;
+      }
+      
+      g_value_set_float(value, new_value);
     }else if(port->port_value_type == G_TYPE_DOUBLE){
-      g_value_set_double(value, port->port_value.ags_port_double);
+      gdouble new_value;
+      
+      if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0){
+        new_value = ags_conversion_convert(port->conversion,
+					   port->port_value.ags_port_double,
+					   TRUE);
+      }else{
+	new_value = port->port_value.ags_port_double;
+      }
+      
+      g_value_set_double(value, new_value);
     }
   }else{
     if(port->port_value_type == G_TYPE_POINTER){
@@ -632,9 +654,21 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_UINT64){
       port->port_value.ags_port_uint = g_value_get_uint64(value);
     }else if(port->port_value_type == G_TYPE_FLOAT){
-      port->port_value.ags_port_float = (gfloat) g_value_get_float(value);
+      if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0){
+	port->port_value.ags_port_float = (gfloat) ags_conversion_convert(port->conversion,
+									  (double) g_value_get_float(value),
+									  FALSE);
+      }else{
+	port->port_value.ags_port_float = (gfloat) g_value_get_float(value);
+      }
     }else if(port->port_value_type == G_TYPE_DOUBLE){
-      port->port_value.ags_port_double = g_value_get_double(value);
+      if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0){
+	port->port_value.ags_port_double = ags_conversion_convert(port->conversion,
+								  g_value_get_double(value),
+								  FALSE);
+      }else{
+	port->port_value.ags_port_double = g_value_get_double(value);
+      }
     }else if(port->port_value_type == G_TYPE_POINTER){
       port->port_value.ags_port_pointer = g_value_get_pointer(value);
     }else if(port->port_value_type == G_TYPE_OBJECT){
