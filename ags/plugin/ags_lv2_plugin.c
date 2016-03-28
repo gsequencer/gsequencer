@@ -984,18 +984,21 @@ void*
 ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
 {
   LV2_Atom_Sequence *aseq;
+  LV2_Atom_Event *aev;
 
   aseq = (LV2_Atom_Sequence *) malloc(sizeof(LV2_Atom_Sequence) + sequence_size);
 
   aseq->atom.size = 0;
   aseq->atom.type = ags_lv2_urid_manager_map(NULL,
-					     LV2_ATOM_URI);
+					     LV2_MIDI__MidiEvent);
 
   aseq->body.unit = ags_lv2_urid_manager_map(NULL,
-					     LV2_MIDI_URI);
+					     LV2_MIDI__MidiEvent);
   aseq->body.pad = 0;
-  
-  memset(((void *) aseq) + sizeof(LV2_Atom_Sequence), 0, sequence_size);
+
+  aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+  aev->body.size = 0;  
+  aev->body.type = 0;
   
   return(aseq);
 }
@@ -1046,7 +1049,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
   }
 
   /* find offset */
-  aev =(LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+  aev = (LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
   
   while(aev < atom_sequence + sequence_size){
     if(aev->body.size == 0){
@@ -1054,7 +1057,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
     }
     
     size = aev->body.size;
-    aev = ((size + 7) & (~7));
+    aev += ((size + 7) & (~7));
   }
   
   /* append midi */

@@ -776,6 +776,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
 		       line_member,
 		       x, y,
 		       1, 1);
+      ags_connectable_connect(AGS_CONNECTABLE(line_member));
+      gtk_widget_show_all(line_member);
       
       port = port->next;
       x++;
@@ -923,8 +925,7 @@ ags_line_add_lv2_effect(AgsLine *line,
       ags_expander_add(line->expander,
 		       line_member,
 		       x, y,
-		       1, 1);
-      
+		       1, 1);      
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all(line_member);
 

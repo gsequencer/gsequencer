@@ -356,6 +356,11 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	range_hint = &(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->PortRangeHints[i]);
 	hint_descriptor =  range_hint->HintDescriptor;
 
+	g_value_init(port->default_value,
+		     G_TYPE_FLOAT);
+	g_value_set_float(port->default_value,
+			  0.0);
+	
 	if(hint_descriptor != NULL){
 	  if(LADSPA_IS_HINT_TOGGLED(hint_descriptor)){
 	    /* is toggled */
@@ -363,13 +368,9 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	    /* set default */
 	    if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
-	      g_value_init(port->default_value,
-			   G_TYPE_FLOAT);
 	      g_value_set_float(port->default_value,
 				0.0);
 	    }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
-	      g_value_init(port->default_value,
-			   G_TYPE_FLOAT);
 	      g_value_set_float(port->default_value,
 				1.0);
 	    }
@@ -386,6 +387,10 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    g_value_set_float(port->upper_value,
 			      range_hint->UpperBound);
 
+	    /* set default */
+	    g_value_set_float(port->default_value,
+			      range_hint->LowerBound);
+	
 	    /* bounds */
 	    if(LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)){
 	      if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
@@ -417,8 +422,6 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	    /* set default value */
 	    if(LADSPA_IS_HINT_DEFAULT_MINIMUM(hint_descriptor)){
-	      g_value_init(port->default_value,
-			   G_TYPE_FLOAT);
 	      g_value_set_float(port->default_value,
 				range_hint->LowerBound);
 	    }else if(LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor)){
@@ -426,8 +429,6 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	      default_value = 0.75 * range_hint->LowerBound + 0.25 * range_hint->UpperBound;
 	      
-	      g_value_init(port->default_value,
-			   G_TYPE_FLOAT);
 	      g_value_set_float(port->default_value,
 				default_value);
 	    }else if(LADSPA_IS_HINT_DEFAULT_MIDDLE(hint_descriptor)){
@@ -435,8 +436,6 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	      default_value = (0.5 * range_hint->LowerBound) + (0.5 * range_hint->UpperBound);
 	      
-	      g_value_init(port->default_value,
-			   G_TYPE_FLOAT);
 	      g_value_set_float(port->default_value,
 				default_value);
 	    }else if(LADSPA_IS_HINT_DEFAULT_HIGH(hint_descriptor)){
@@ -444,23 +443,15 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	      default_value = 0.25 * range_hint->LowerBound + 0.75 * range_hint->UpperBound;
 
-	      g_value_init(port->default_value,
-			   G_TYPE_FLOAT);
 	      g_value_set_float(port->default_value,
 				default_value);
 	    }else if(LADSPA_IS_HINT_DEFAULT_MAXIMUM(hint_descriptor)){
-	      g_value_init(port->default_value,
-			   G_TYPE_FLOAT);
 	      g_value_set_float(port->default_value,
 				range_hint->UpperBound);
 	    }else if(LADSPA_IS_HINT_DEFAULT_100(hint_descriptor)){
-	      g_value_init(port->default_value,
-			   G_TYPE_FLOAT);
 	      g_value_set_float(port->default_value,
 				100.0);
 	    }else if(LADSPA_IS_HINT_DEFAULT_440(hint_descriptor)){
-	      g_value_init(port->default_value,
-			   G_TYPE_FLOAT);
 	      g_value_set_float(port->default_value,
 				440.0);
 	    }

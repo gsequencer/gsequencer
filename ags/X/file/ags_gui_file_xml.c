@@ -1522,7 +1522,6 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 			   15)){
 	      guint x, y;
 	      guint width, height;
-	      guint control_width, control_height;
 
 	      /* pack */
 	      x = g_ascii_strtoull(xmlGetProp(line_member_node,
@@ -1549,20 +1548,6 @@ ags_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
 			       GTK_WIDGET(list->data),
 			       x, y,
 			       width, height);	      
-
-	      /* set size request */
-	      control_width = g_ascii_strtoull(xmlGetProp(line_member_node,
-							  "width\0"),
-					       NULL,
-					       10);
-
-	      control_height = g_ascii_strtoull(xmlGetProp(line_member_node,
-							   "height\0"),
-						NULL,
-						10);
-
-	      gtk_widget_set_size_request(GTK_WIDGET(list->data),
-					  control_width, control_height);
 	      
 	      /* iterate */
 	      list = list->next;
@@ -1714,7 +1699,6 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
   GList *line_member, *line_member_start;
 
   gchar *id;
-  guint control_width, control_height;
 
   id = ags_id_generator_create_uuid();
   
@@ -1786,17 +1770,6 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
       xmlNewProp(line_member_node,
 		 "bottom-attach\0",
 		 g_strdup_printf("%d\0", expander_child->y + expander_child->height));
-
-      gtk_widget_get_size_request(GTK_BIN(expander_child->child)->child,
-				  &control_width, &control_height);
-
-      xmlNewProp(line_member_node,
-		 "width\0",
-		 g_strdup_printf("%d\0", control_width));
-
-      xmlNewProp(line_member_node,
-		 "height\0",
-		 g_strdup_printf("%d\0", control_height));
 
       line_member_node = line_member_node->next;
     }
@@ -2175,6 +2148,8 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 
   gchar *id;
   gchar *label;
+
+  guint control_width, control_height;
   
   id = ags_id_generator_create_uuid();
   
@@ -2204,8 +2179,8 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
   child_widget = gtk_bin_get_child(GTK_BIN(line_member));
   
   label = NULL;
-  g_object_get(G_OBJECT(child_widget),
-	       "label\0", &label,
+  g_object_get(G_OBJECT(line_member),
+	       "widget-label\0", &label,
 	       NULL);
 
   if(label != NULL){
@@ -2214,6 +2189,17 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 	       g_strdup_printf("%s\0", label));
   }
 
+  gtk_widget_get_size_request(child_widget,
+			      &control_width, &control_height);
+
+  xmlNewProp(node,
+	     "width\0",
+	     g_strdup_printf("%d\0", control_width));
+  
+  xmlNewProp(node,
+	     "height\0",
+	     g_strdup_printf("%d\0", control_height));
+  
   if(line_member->task_type != G_TYPE_NONE){
     xmlNewProp(node,
 	       AGS_FILE_TYPE_PROP,
@@ -2541,7 +2527,7 @@ ags_file_read_effect_bridge(AgsFile *file, xmlNode *node, AgsEffectBridge **effe
 	if(!xmlStrncmp(xmlGetProp(child,
 				  AGS_FILE_SCOPE_PROP),
 		       "output\0",
-		       6)){
+		       7)){
 	  if(!GTK_IS_BOX(gobject->output)){
 	    ags_container_add_all(gobject->output,
 				  effect_pad);
@@ -2941,7 +2927,6 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
 			   15)){
 	      guint x0, y0;
 	      guint x1, y1;
-	      guint control_width, control_height;
 
 	      /* pack */
 	      x0 = g_ascii_strtoull(xmlGetProp(bulk_member_node,
@@ -2971,20 +2956,6 @@ ags_file_read_effect_bulk(AgsFile *file, xmlNode *node, AgsEffectBulk **effect_b
 			       GTK_FILL, GTK_FILL,
 			       0, 0);
 
-	      /* set size request */
-	      control_width = g_ascii_strtoull(xmlGetProp(bulk_member_node,
-							  "width\0"),
-					       NULL,
-					       10);
-
-	      control_height = g_ascii_strtoull(xmlGetProp(bulk_member_node,
-							   "height\0"),
-						NULL,
-						10);
-
-	      gtk_widget_set_size_request(GTK_WIDGET(bulk_member->data),
-					  control_width, control_height);
-	      
 	      /* iterate */
 	      bulk_member = bulk_member->next;
 	    }
@@ -3838,8 +3809,9 @@ ags_file_read_effect_pad(AgsFile *file, xmlNode *node, AgsEffectPad **effect_pad
     gobject = *effect_pad;
   }
 
-  if(gobject == NULL)
+  if(gobject == NULL){
     return;
+  }
   
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -3876,32 +3848,33 @@ ags_file_read_effect_pad(AgsFile *file, xmlNode *node, AgsEffectPad **effect_pad
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrcmp(child->name,
+      if(ags_plugin_get_xml_type(AGS_PLUGIN(gobject)) != NULL &&
+	 !xmlStrcmp(child->name,
 		    ags_plugin_get_xml_type(AGS_PLUGIN(gobject)))){
 	ags_plugin_read(file,
 			child,
 			AGS_PLUGIN(gobject));
       }else if(!xmlStrncmp(child->name,
-			   "ags-line-list\0",
-			   13)){
+			   "ags-effect-line-list\0",
+			   20)){
 	xmlNode *line_node;
 	GList *start, *list;
 
 	list = NULL;
 
-	ags_file_read_line_list(file,
-				child,
-				&list);
+	ags_file_read_effect_line_list(file,
+				       child,
+				       &list);
 	start = list;
 
 	/* add line to effect_pad */
 	line_node = child->children;
 
-	while(line_node != NULL){
+	while(line_node != NULL && list != NULL){
 	  if(line_node->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(line_node->name,
-			   "ags-line\0",
-			   8)){
+			   "ags-effect-line\0",
+			   15)){
 	      guint x0, x1;
 	      guint y0, y1;
 
@@ -4092,7 +4065,7 @@ ags_file_read_effect_pad_resolve_channel(AgsFileLookup *file_lookup,
   //			 xpath_context);
   xpath_context->node = node->parent;
 
-  xpath_object = xmlXPathEval("./ags-pad\0",
+  xpath_object = xmlXPathEval("./ags-effect-pad\0",
 			      xpath_context);
 
   for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != node && i < xpath_object->nodesetval->nodeMax; i++){
@@ -4332,7 +4305,6 @@ ags_file_read_effect_line(AgsFile *file, xmlNode *node, AgsEffectLine **effect_l
 			   15)){
 	      guint x0, x1;
 	      guint y0, y1;
-	      guint control_width, control_height;
 
 	      /* pack */
 	      x0 = g_ascii_strtoull(xmlGetProp(line_member_node,
@@ -4361,20 +4333,6 @@ ags_file_read_effect_line(AgsFile *file, xmlNode *node, AgsEffectLine **effect_l
 			       y0, y1,
 			       GTK_FILL, GTK_FILL,
 			       0, 0);	      
-
-	      /* set size request */
-	      control_width = g_ascii_strtoull(xmlGetProp(line_member_node,
-							  "width\0"),
-					       NULL,
-					       10);
-
-	      control_height = g_ascii_strtoull(xmlGetProp(line_member_node,
-							   "height\0"),
-						NULL,
-						10);
-
-	      gtk_widget_set_size_request(GTK_WIDGET(list->data),
-					  control_width, control_height);
 	      
 	      /* iterate */
 	      list = list->next;
@@ -4404,7 +4362,6 @@ ags_file_write_effect_line(AgsFile *file, xmlNode *parent, AgsEffectLine *effect
   GList *line_member, *line_member_start;
 
   gchar *id;
-  guint control_width, control_height;
 
   id = ags_id_generator_create_uuid();
   
@@ -4490,17 +4447,6 @@ ags_file_write_effect_line(AgsFile *file, xmlNode *parent, AgsEffectLine *effect
 		 "bottom-attach\0",
 		 g_strdup_printf("%d\0", y1));
 
-      gtk_widget_get_size_request(GTK_BIN(line_child->data)->child,
-				  &control_width, &control_height);
-
-      xmlNewProp(line_member_node,
-		 "width\0",
-		 g_strdup_printf("%d\0", control_width));
-
-      xmlNewProp(line_member_node,
-		 "height\0",
-		 g_strdup_printf("%d\0", control_height));
-
       line_member_node = line_member_node->next;
     }
 
@@ -4559,7 +4505,7 @@ ags_file_read_effect_line_resolve_channel(AgsFileLookup *file_lookup,
   //			 xpath_context);
   xpath_context->node = pad_node->parent;
 
-  xpath_object = xmlXPathEval("./ags-pad\0",
+  xpath_object = xmlXPathEval("./ags-effect-pad\0",
 			      xpath_context);
 
   for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != pad_node && i < xpath_object->nodesetval->nodeMax; i++){
@@ -4575,7 +4521,7 @@ ags_file_read_effect_line_resolve_channel(AgsFileLookup *file_lookup,
   //			 xpath_context);
   xpath_context->node = node->parent;
 
-  xpath_object = xmlXPathEval("./ags-line\0",
+  xpath_object = xmlXPathEval("./ags-effect-line\0",
 			      xpath_context);
 
   for(i = 0, j = 0; xpath_object->nodesetval->nodeTab[i] != node && i < xpath_object->nodesetval->nodeMax; i++){
