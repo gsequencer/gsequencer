@@ -45,6 +45,7 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
@@ -1479,8 +1480,13 @@ ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list, *list_next;
 
-  ags_recall_automate(recall);
+  /* lock ports */
+  ags_recall_lock_port(recall);
   
+  /* run automation*/
+  ags_recall_automate(recall);
+
+  /* run */
   list = recall->children;
 
   while(list != NULL){
@@ -1496,6 +1502,9 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
     list = list_next;
   }
+
+  /* unlock ports */
+  ags_recall_unlock_port(recall);
 }
 
 /**
@@ -1522,6 +1531,10 @@ ags_recall_real_run_inter(AgsRecall *recall)
 {
   GList *list, *list_next;
 
+  /* lock port */
+  ags_recall_lock_port(recall);
+
+  /* run */
   list = recall->children;
 
   while(list != NULL){
@@ -1537,6 +1550,9 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
     list = list_next;
   }
+
+  /* unlock port */
+  ags_recall_unlock_port(recall);
 }
 
 /**
@@ -1563,6 +1579,10 @@ ags_recall_real_run_post(AgsRecall *recall)
 {
   GList *list, *list_next;
 
+  /* lock port */
+  ags_recall_lock_port(recall);
+
+  /* run */
   list = recall->children;
 
   while(list != NULL){
@@ -1582,6 +1602,9 @@ ags_recall_real_run_post(AgsRecall *recall)
   if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0){
     recall->flags &= (~AGS_RECALL_INITIAL_RUN);
   }
+
+  /* unlock port */
+  ags_recall_unlock_port(recall);
 }
 
 /**
@@ -2675,6 +2698,58 @@ ags_recall_child_done(AgsRecall *child,
   
   ags_recall_remove_child(parent,
 			  child);
+}
+
+/**
+ * ags_recall_lock_port:
+ * @recall: the #AgsRecall
+ *
+ * Unlocks the ports.
+ *
+ * Since: 0.7.10
+ */
+void
+ags_recall_lock_port(AgsRecall *recall)
+{
+  GList *port;
+
+  if(recall == NULL){
+    return;
+  }
+  
+  port = recall->port;
+
+  while(port != NULL){
+    pthread_mutex_lock(AGS_PORT(port->data)->mutex);
+
+    port = port->next;
+  }
+}
+
+/**
+ * ags_recall_unlock_port:
+ * @recall: the #AgsRecall
+ *
+ * Unlocks the ports.
+ *
+ * Since: 0.7.10
+ */
+void
+ags_recall_unlock_port(AgsRecall *recall)
+{
+  GList *port;
+
+  if(recall == NULL){
+    return;
+  }
+  
+  port = recall->port;
+
+  while(port != NULL){
+    pthread_mutex_unlock(AGS_PORT(port->data)->mutex);
+
+    port = port->next;
+  }
 }
 
 /**

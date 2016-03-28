@@ -160,6 +160,7 @@ ags_add_line_member_launch(AgsTask *task)
 		     add_line_member->line_member,
 		     add_line_member->x, add_line_member->y,
 		     add_line_member->width, add_line_member->height);
+    ags_connectable_connect(AGS_CONNECTABLE(add_line_member->line_member));
   }else if(AGS_IS_EFFECT_LINE(add_line_member->line)){
     gtk_table_attach(AGS_EFFECT_LINE(add_line_member->line)->table,
 		     add_line_member->line_member,
@@ -167,6 +168,7 @@ ags_add_line_member_launch(AgsTask *task)
 		     add_line_member->y, add_line_member->y + add_line_member->height,
 		     GTK_FILL, GTK_FILL,
 		     0, 0);
+    ags_connectable_connect(AGS_CONNECTABLE(add_line_member->line_member));
     gtk_widget_show_all(AGS_EFFECT_LINE(add_line_member->line)->table);
   }else{
     g_warning("ags_add_line_member.c - unknow line type");

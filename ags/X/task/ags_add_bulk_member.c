@@ -166,6 +166,7 @@ ags_add_bulk_member_launch(AgsTask *task)
 		   add_bulk_member->y, add_bulk_member->y + add_bulk_member->height,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+  ags_connectable_connect(AGS_CONNECTABLE(add_bulk_member->bulk_member));
   gtk_widget_show_all(AGS_EFFECT_BULK(add_bulk_member->effect_bulk)->table);
 
   /* find ports */

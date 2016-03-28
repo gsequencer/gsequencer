@@ -813,16 +813,13 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
   lv2_conversion = NULL;
   
   if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(lv2_conversion == NULL){
-      lv2_conversion = ags_lv2_conversion_new();
-    }
+    lv2_conversion = ags_lv2_conversion_new();
+    g_object_set(port,
+		 "conversion\0", lv2_conversion,
+		 NULL);
     
     lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
   }
-
-  g_object_set(port,
-	       "conversion\0", lv2_conversion,
-	       NULL);
 }
 
 /**

@@ -25,11 +25,11 @@
 
 #include <ags/lib/ags_conversion.h>
 
-#define AGS_TYPE_CONVERSION                (ags_lv2_conversion_get_type())
+#define AGS_TYPE_LV2_CONVERSION                (ags_lv2_conversion_get_type())
 #define AGS_LV2_CONVERSION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONVERSION, AgsLv2Conversion))
 #define AGS_LV2_CONVERSION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CONVERSION, AgsLv2ConversionClass))
-#define AGS_IS_CONVERSION(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CONVERSION))
-#define AGS_IS_CONVERSION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONVERSION))
+#define AGS_IS_LV2_CONVERSION(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CONVERSION))
+#define AGS_IS_LV2_CONVERSION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONVERSION))
 #define AGS_LV2_CONVERSION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_CONVERSION, AgsLv2ConversionClass))
 
 typedef struct _AgsLv2Conversion AgsLv2Conversion;

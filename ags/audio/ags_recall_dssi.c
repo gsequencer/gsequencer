@@ -685,20 +685,24 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
   
   if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
     ladspa_conversion = ags_ladspa_conversion_new();
+    g_object_set(port,
+	       "conversion\0", ladspa_conversion,
+	       NULL);
+    
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
   }
 
   if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL){
+    if(ladspa_conversion == NULL ||
+       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
+      g_object_set(port,
+		   "conversion\0", ladspa_conversion,
+		   NULL);
     }
     
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
   }
-
-  g_object_set(port,
-	       "conversion\0", ladspa_conversion,
-	       NULL);
 }
 
 /**

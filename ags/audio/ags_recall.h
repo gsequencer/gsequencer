@@ -222,6 +222,9 @@ void ags_recall_add_handler(AgsRecall *recall,
 void ags_recall_remove_handler(AgsRecall *recall,
 			       AgsRecallHandler *recall_handler);
 
+void ags_recall_lock_port(AgsRecall *recall);
+void ags_recall_unlock_port(AgsRecall *recall);
+
 AgsRecall* ags_recall_new();
 
 #endif /*__AGS_RECALL_H__*/

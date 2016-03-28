@@ -81,6 +81,8 @@ enum{
   PROP_WIDGET_TYPE,
   PROP_WIDGET_LABEL,
   PROP_PLUGIN_NAME,
+  PROP_FILENAME,
+  PROP_EFFECT,
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
   PROP_PORT,
@@ -151,7 +153,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The widget type to instantiate and use as control.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_ulong("widget-type\0",
 				  "widget type of line member\0",
@@ -168,7 +170,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The widget's label to use.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_string("widget-label\0",
 				   "label to display\0",
@@ -184,7 +186,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin name of the recall to use.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_string("plugin-name\0",
 				   "plugin name to control\0",
@@ -196,11 +198,43 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  param_spec);
 
   /**
+   * AgsLineMember:filename:
+   *
+   * The plugin filename of the recall to apply.
+   * 
+   * Since: 0.7.10
+   */
+  param_spec = g_param_spec_string("filename\0",
+				   "the filename\0",
+				   "The filename of the plugin\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+    /**
+   * AgsLineMember:effect:
+   *
+   * The plugin effect of the recall to apply.
+   * 
+   * Since: 0.7.10
+   */
+  param_spec = g_param_spec_string("effect\0",
+				   "the effect\0",
+				   "The effect of the plugin\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EFFECT,
+				  param_spec);
+
+  /**
    * AgsLineMember:specifier:
    *
    * The plugin specifier of the recall to apply.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_string("specifier\0",
 				   "port specifier\0",
@@ -216,7 +250,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The control port of the recall.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_string("control-port\0",
 				   "control port index\0",
@@ -232,7 +266,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The matching simple port of plugin name and specifier.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("port\0",
 				   "port to apply\0",
@@ -248,7 +282,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The port data to apply.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("port-data\0",
 				    "port data\0",
@@ -263,7 +297,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The matching complex port of plugin name and specifier.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall-port\0",
 				   "recall port to apply\0",
@@ -279,7 +313,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The complex port data to apply.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("recall-port-data\0",
 				    "recall port data\0",
@@ -470,6 +504,32 @@ ags_line_member_set_property(GObject *gobject,
       line_member->plugin_name = g_strdup(plugin_name);
     }
     break;
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = g_value_get_string(value);
+
+      if(filename == line_member->filename){
+	return;
+      }
+
+      line_member->filename = g_strdup(filename);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      gchar *effect;
+
+      effect = g_value_get_string(value);
+
+      if(effect == line_member->effect){
+	return;
+      }
+
+      line_member->effect = g_strdup(effect);
+    }
+    break;
   case PROP_SPECIFIER:
     {
       gchar *specifier;
@@ -607,6 +667,16 @@ ags_line_member_get_property(GObject *gobject,
   case PROP_PLUGIN_NAME:
     {
       g_value_set_string(value, line_member->plugin_name);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      g_value_set_string(value, line_member->filename);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      g_value_set_string(value, line_member->effect);
     }
     break;
   case PROP_SPECIFIER:
@@ -765,6 +835,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
       return;
     }
 
+    pthread_mutex_lock(port->mutex);
+
     if(!port->port_value_is_pointer){
       if(port->port_value_type == G_TYPE_BOOLEAN){
 	g_value_init(&value,
@@ -819,6 +891,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
       }
     }
 
+    pthread_mutex_unlock(port->mutex);
+    
     ags_port_safe_write(line_member->port,
 			&value);
 
@@ -879,7 +953,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
  *
  * Is emitted as port's value is modified.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_line_member_change_port(AgsLineMember *line_member,
@@ -1062,7 +1136,7 @@ ags_line_member_find_port(AgsLineMember *line_member)
  *
  * Returns: a new #AgsLineMember
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 AgsLineMember*
 ags_line_member_new()

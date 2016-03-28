@@ -25,11 +25,11 @@
 
 #include <ags/lib/ags_conversion.h>
 
-#define AGS_TYPE_CONVERSION                (ags_ladspa_conversion_get_type())
+#define AGS_TYPE_LADSPA_CONVERSION                (ags_ladspa_conversion_get_type())
 #define AGS_LADSPA_CONVERSION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONVERSION, AgsLadspaConversion))
 #define AGS_LADSPA_CONVERSION_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CONVERSION, AgsLadspaConversionClass))
-#define AGS_IS_CONVERSION(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CONVERSION))
-#define AGS_IS_CONVERSION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONVERSION))
+#define AGS_IS_LADSPA_CONVERSION(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CONVERSION))
+#define AGS_IS_LADSPA_CONVERSION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONVERSION))
 #define AGS_LADSPA_CONVERSION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_CONVERSION, AgsLadspaConversionClass))
 
 typedef struct _AgsLadspaConversion AgsLadspaConversion;

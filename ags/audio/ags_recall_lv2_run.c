@@ -370,8 +370,6 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   /* connect event port */
   if((AGS_RECALL_LV2_HAS_EVENT_PORT & (recall_lv2->flags)) != 0){
     recall_lv2_run->event_port = ags_lv2_plugin_alloc_event_buffer(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
-
-    g_message("connect port: %d\0", recall_lv2->event_port);
     
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						recall_lv2->event_port,
@@ -381,8 +379,6 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   /* connect atom port */
   if((AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
     recall_lv2_run->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT);
-
-    g_message("connect port: %d\0", recall_lv2->atom_port);
     
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						recall_lv2->atom_port,
