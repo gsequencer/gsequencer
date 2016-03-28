@@ -3,6 +3,7 @@ ags (0.7.10)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed XML IO
 	* implemented read and write functions of AgsLadspaBridge, AgsDssiBridge and AgsLv2Bridge
+	* fixed lock AgsPort as running recall
 
 ags (0.7.9)
 

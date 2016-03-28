@@ -587,6 +587,8 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
 {
   AgsEffectBulk *effect_bulk;
 
+  GList *list, *list_start;
+  
   effect_bulk = AGS_EFFECT_BULK(connectable);
 
   if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
@@ -611,6 +613,19 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
     g_signal_connect_after(effect_bulk->audio, "set-pads\0",
 			   G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
   }
+
+  list =
+    list_start = gtk_container_get_children(effect_bulk->table);
+
+  while(list != NULL){
+    if(AGS_IS_CONNECTABLE(list->data)){
+      ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void

@@ -364,14 +364,14 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    /* set default */
 	    if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
 	      g_value_init(port->default_value,
-			   G_TYPE_BOOLEAN);
-	      g_value_set_boolean(port->default_value,
-				  FALSE);
+			   G_TYPE_FLOAT);
+	      g_value_set_float(port->default_value,
+				0.0);
 	    }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
 	      g_value_init(port->default_value,
-			   G_TYPE_BOOLEAN);
-	      g_value_set_boolean(port->default_value,
-				  TRUE);
+			   G_TYPE_FLOAT);
+	      g_value_set_float(port->default_value,
+				1.0);
 	    }
 	  }else{
 	    /* set lower */

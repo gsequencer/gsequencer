@@ -278,6 +278,8 @@ ags_effect_pad_set_property(GObject *gobject,
     {
       AgsChannel *channel;
 
+      GList *effect_line, *effect_line_start;
+      
       channel = (AgsChannel *) g_value_get_object(value);
 
       if(effect_pad->channel == channel){
@@ -293,6 +295,17 @@ ags_effect_pad_set_property(GObject *gobject,
       }
 
       effect_pad->channel = channel;
+
+      effect_line =
+	effect_line_start = gtk_container_get_children(effect_pad->table);
+
+      while(effect_line != NULL){
+	g_object_set(G_OBJECT(effect_line->data),
+		     "channel\0", channel,
+		     NULL);
+
+	effect_line = effect_line->next;
+      }
     }
     break;
   default:

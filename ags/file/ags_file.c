@@ -1389,6 +1389,82 @@ ags_file_read_start(AgsFile *file)
 }
 
 void
+ags_file_read_config(AgsFile *file, xmlNode *node, GObject **config)
+{
+  AgsConfig *gobject;
+
+  gchar *id;
+
+  char *buffer;
+  gsize buffer_length;
+
+  gobject = config;
+  gobject->version = xmlGetProp(node,
+				AGS_FILE_VERSION_PROP);
+
+  gobject->build_id = xmlGetProp(node,
+				 AGS_FILE_BUILD_ID_PROP);
+
+  buffer = xmlNodeGetContent(node);
+  buffer_length = xmlStrlen(buffer);
+
+  ags_config_load_from_data(gobject,
+			    buffer, buffer_length);
+}
+
+void
+ags_file_write_config(AgsFile *file, xmlNode *parent, GObject *config)
+{
+  xmlNode *node;
+  xmlNode *cdata;
+
+  gchar *id;
+  char *buffer;
+  gsize buffer_length;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-config\0");
+
+  ags_file_add_id_ref(file,
+		      g_object_new(AGS_TYPE_FILE_ID_REF,
+				   "application-context\0", file->application_context,
+				   "file\0", file,
+				   "node\0", node,
+				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+				   "reference\0", config,
+				   NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_CONFIG(config)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_CONFIG(config)->build_id);
+
+  xmlAddChild(parent,
+	      node);
+
+  /* cdata */
+  ags_config_to_data(config,
+		     &buffer,
+		     &buffer_length);
+
+  cdata = xmlNewCDataBlock(file->doc,
+			   buffer,
+			   buffer_length);
+
+  xmlAddChild(node,
+	      cdata);
+}
+
+void
 ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **application_context)
 {
   GList *list;

@@ -656,6 +656,8 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 
   AgsThread *audio_loop, *task_thread, *gui_thread;
   
+  AgsConfig *config;
+
   xmlNode *child;
 
   GList *list;
@@ -688,6 +690,8 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
     
   pthread_mutex_unlock(application_mutex);
 
+  config = ags_config_get_instance();
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context\0", file->application_context,
@@ -715,7 +719,13 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("ags-window\0",
+      if(!xmlStrncmp("ags-config\0",
+		     child->name,
+		     11)){
+	ags_file_read_config(file,
+			     child,
+			     &(config));
+      }else if(!xmlStrncmp("ags-window\0",
 		     child->name,
 		     11)){
 	ags_file_read_window(file,
@@ -769,8 +779,13 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 xmlNode*
 ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context)
 {
+  AgsConfig *config;
+  
   xmlNode *node, *child;
+  
   gchar *id;
+
+  config = ags_config_get_instance();
   
   id = ags_id_generator_create_uuid();
 
@@ -810,6 +825,10 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
   xmlAddChild(parent,
 	      node);
 
+  ags_file_write_config(file,
+			node,
+			config);
+  
   ags_file_write_soundcard_list(file,
 				node,
 				AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard);

@@ -207,6 +207,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	AgsEffectLine *effect_line;
 	
 	effect_bridge = machine->bridge;
+	effect_line = NULL;
 	
 	if(is_output){
 	  pad_start = 

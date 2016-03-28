@@ -783,7 +783,9 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
     while(list != NULL){
       port = AGS_BULK_PORT(list->data)->port;
-      
+
+      pthread_mutex_lock(port->mutex);
+
       if(!port->port_value_is_pointer){
 	if(port->port_value_type == G_TYPE_BOOLEAN){
 	  g_value_init(&value,
@@ -837,6 +839,8 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 	  }
 	}
       }
+
+      pthread_mutex_unlock(port->mutex);
 
       ags_port_safe_write(port,
 			  &value);

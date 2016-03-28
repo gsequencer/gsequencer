@@ -876,8 +876,6 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 					snd_seq_event_t *events,
 					guint event_count)
 {
-  AgsLv2UriMapManager *uri_map_manager;
-  
   void *offset;
 
   snd_midi_event_t *midi_event;
@@ -889,8 +887,6 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
   guint i;
   gboolean success;
 
-  uri_map_manager = ags_lv2_uri_map_manager_get_instance();
-  
   /* create parse*/
   midi_event = NULL;
 
@@ -987,75 +983,21 @@ ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 void*
 ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
 {
-  void *atom_sequence, *current;
+  LV2_Atom_Sequence *aseq;
+
+  aseq = (LV2_Atom_Sequence *) malloc(sizeof(LV2_Atom_Sequence) + sequence_size);
+
+  aseq->atom.size = 0;
+  aseq->atom.type = ags_lv2_urid_manager_map(NULL,
+					     LV2_ATOM_URI);
+
+  aseq->body.unit = ags_lv2_urid_manager_map(NULL,
+					     LV2_MIDI_URI);
+  aseq->body.pad = 0;
   
-  guint padded_sequence_size;
-  guint sequence_count;
-  guint i;
+  memset(((void *) aseq) + sizeof(LV2_Atom_Sequence), 0, sequence_size);
   
-  sequence_count = ceil(sequence_size / 8.0);
-  padded_sequence_size = (guint) 8 * sequence_count;
-
-  current = 
-    atom_sequence = (void *) malloc(padded_sequence_size + sequence_count * sizeof(LV2_Atom_Sequence));
-
-  for(i = 0; i < sequence_count; i++){
-    AGS_LV2_ATOM_SEQUENCE(current)->atom.size = 0;
-    AGS_LV2_ATOM_SEQUENCE(current)->atom.type = 0;
-    
-    AGS_LV2_ATOM_SEQUENCE(current)->body.unit = 0;
-    AGS_LV2_ATOM_SEQUENCE(current)->body.pad = 8;
-    
-    current += (8 + sizeof(LV2_Atom_Sequence));
-  }
-  
-  return(atom_sequence);
-}
-
-/**
- * ags_lv2_plugin_concat_atom_sequence:
- * @sequence0: the fist atom sequence
- * @...: %NULL terminated variadict argument list
- *
- * Concats LV2_Atom_Sequence
- * 
- * Returns: the newly allocated atom sequence
- * 
- * Since: 0.7.7
- */
-void*
-ags_lv2_plugin_concat_atom_sequence(void *sequence0, ...)
-{
-  void *sequence;
-  void *current;
-  
-  va_list ap;
-
-  guint sequence_length, prev_length;
-  guint i;
-
-  sequence_length = 8 + sizeof(LV2_Atom_Sequence);
-
-  sequence = (void *) malloc(sequence_length);
-  memcpy(sequence, sequence0, sequence_length);
-  
-  va_start(ap, sequence0);
-  i = 1;
-  
-  while((current = va_arg(ap, void*)) != NULL){
-    prev_length = sequence_length;
-    sequence_length += ((i + 1) * 8 + sizeof(LV2_Event));
-    
-    sequence = (void *) realloc(sequence,
-				sequence_length);
-    memcpy(sequence + prev_length, current, sequence_length - prev_length);
-
-    i++;
-  }
-
-  va_end(ap);
-
-  return(sequence);
+  return(aseq);
 }
 
 /**
@@ -1079,17 +1021,19 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 {
   AgsLv2UriMapManager *uri_map_manager;
   
-  void *offset;
-  
+  LV2_Atom_Sequence *aseq;
+  LV2_Atom_Event *aev;
+
   snd_midi_event_t *midi_event;
   
   unsigned char midi_buffer[8];
 
-  guint count;
+  guint count, size;
+  guint padded_size;
   guint i;
   gboolean success;
 
-  uri_map_manager = ags_lv2_uri_map_manager_get_instance();
+  aseq = (LV2_Atom_Sequence *) atom_sequence;
   
   /* create parse*/
   midi_event = NULL;
@@ -1102,21 +1046,22 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
   }
 
   /* find offset */
-  offset = atom_sequence;
+  aev =(LV2_Atom_Event*) ((char*) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
   
-  while(offset < atom_sequence + sequence_size){
-    if(AGS_LV2_ATOM_SEQUENCE(offset)->body.pad == 8){
+  while(aev < atom_sequence + sequence_size){
+    if(aev->body.size == 0){
       break;
     }
     
-    offset += (8 + sizeof(LV2_Atom_Sequence));
+    size = aev->body.size;
+    aev = ((size + 7) & (~7));
   }
   
   /* append midi */
   success = TRUE;
 
   for(i = 0; i < event_count; i++){
-    if(offset >= atom_sequence + sequence_size){
+    if(aev >= atom_sequence + sequence_size){
       return(FALSE);
     }
   
@@ -1125,14 +1070,15 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 				      midi_buffer,
 				      8,
 				      &(events[i]))) <= 8){
-      AGS_LV2_ATOM_SEQUENCE(offset)->atom.size = count;
-      AGS_LV2_ATOM_SEQUENCE(offset)->atom.type = ags_lv2_uri_map_manager_lookup(uri_map_manager,
-										LV2_MIDI__MidiEvent);
+      aev->body.size = count;
+      aev->body.type = ags_lv2_urid_manager_map(NULL,
+						LV2_MIDI__MidiEvent);
       
-      AGS_LV2_ATOM_SEQUENCE(offset)->body.pad -= count;
-      memcpy(offset + sizeof(LV2_Atom_Sequence), midi_buffer, count * sizeof(unsigned char));
+      memcpy(LV2_ATOM_BODY(aev), midi_buffer, count * sizeof(unsigned char));
 
-      offset += (8 + sizeof(LV2_Atom_Sequence));
+      aseq->atom.size += ((count + 7) & (~7));
+      
+      aev += ((count + 7) & (~7));
     }else{
       success = FALSE;
 
