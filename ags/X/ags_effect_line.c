@@ -570,7 +570,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 										     port_count),
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
-
+      
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
 	GtkAdjustment *adjustment;
@@ -620,6 +620,9 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
       x++;
     }
 
+    ags_connectable_connect(AGS_CONNECTABLE(line_member));
+    gtk_widget_show_all(line_member);
+    
     port_descriptor = port_descriptor->next;
     k++;
   }

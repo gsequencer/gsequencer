@@ -29,6 +29,7 @@
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
+#include <ags/file/ags_file_launch.h>
 
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_thread-posix.h>
@@ -89,6 +90,8 @@ void ags_xorg_application_context_register_types(AgsApplicationContext *applicat
 
 void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
 xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
+
+void ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationContext *application_context);
 
 static gpointer ags_xorg_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_xorg_application_context_parent_connectable_interface;
@@ -620,6 +623,14 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_dial_get_type();
 
   /* register machine */
+  ags_effect_bridge_get_type();
+  ags_effect_bulk_get_type();
+  ags_effect_pad_get_type();
+  ags_effect_line_get_type();
+
+  ags_bulk_member_get_type();
+  ags_line_member_get_type();  
+  
   ags_panel_get_type();
   ags_panel_input_pad_get_type();
   ags_panel_input_line_get_type();
@@ -652,19 +663,11 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 {
   AgsXorgApplicationContext *gobject;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsThread *audio_loop, *task_thread, *gui_thread;
-  
   AgsConfig *config;
 
+  AgsFileLaunch *file_launch;
+
   xmlNode *child;
-
-  GList *list;
-  GList *start_queue;
-
-  pthread_mutex_t *audio_loop_mutex;
-  pthread_mutex_t *application_mutex;
 
   if(*application_context == NULL){
     gobject = g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
@@ -678,17 +681,6 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
   g_object_set(G_OBJECT(file),
 	       "application-context\0", gobject,
 	       NULL);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-  pthread_mutex_lock(application_mutex);
-    
-  audio_loop = AGS_APPLICATION_CONTEXT(gobject)->main_loop;
-  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      audio_loop);
-    
-  pthread_mutex_unlock(application_mutex);
 
   config = ags_config_get_instance();
 
@@ -750,12 +742,45 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
     child = child->next;
   }
 
-  gtk_widget_show_all(gobject->window);
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_xorg_application_context_launch), gobject);
+  ags_file_add_launch(file,
+		      (GObject *) file_launch);
+}
 
-  /* wait for audio loop */  
+void
+ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationContext *application_context)
+{
+  AgsMutexManager *mutex_manager;
+  
+  AgsThread *audio_loop, *task_thread, *gui_thread;
+
+  GList *list;
+  GList *start_queue;
+
+  pthread_mutex_t *audio_loop_mutex;
+  pthread_mutex_t *application_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+  pthread_mutex_lock(application_mutex);
+    
+  audio_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
+  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      audio_loop);
+    
+  pthread_mutex_unlock(application_mutex);
+
+  /* show all */
+  gtk_widget_show_all(application_context->window);
+
+  /* wait for audio loop */
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
-  gobject->thread_pool->parent = task_thread;
+  application_context->thread_pool->parent = task_thread;
 
   gui_thread = ags_thread_find_type(audio_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -772,7 +797,7 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 
   pthread_mutex_unlock(audio_loop_mutex);
 
-  ags_thread_pool_start(gobject->thread_pool);
+  ags_thread_pool_start(application_context->thread_pool);
   ags_thread_start(audio_loop);
 }
 

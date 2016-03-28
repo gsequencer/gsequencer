@@ -442,6 +442,10 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
     channel = ags_channel_nth(effect_pad->channel,
 			      audio_channels_old);
 
+    if(channel == NULL){
+      return;
+    }
+    
     for(i = audio_channels_old; i < audio_channels;){
       for(j = audio_channels_old % effect_pad->cols; j < effect_pad->cols && i < audio_channels; j++, i++){
 	effect_line = (AgsEffectLine *) g_object_new(effect_line_type,
