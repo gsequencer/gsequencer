@@ -1073,10 +1073,12 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 				      midi_buffer,
 				      8,
 				      &(events[i]))) <= 8){
+      aev->time.frames = 0;
+
       aev->body.size = count;
       aev->body.type = ags_lv2_urid_manager_map(NULL,
 						LV2_MIDI__MidiEvent);
-      
+
       memcpy(LV2_ATOM_BODY(aev), midi_buffer, count * sizeof(unsigned char));
 
       aseq->atom.size += ((count + 7) & (~7));
@@ -1088,6 +1090,9 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
       break;
     }
   }
+
+  /* set last empty */
+  aev->body.type = 0;
   
   return(success);
 }

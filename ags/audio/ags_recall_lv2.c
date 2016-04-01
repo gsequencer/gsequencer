@@ -501,7 +501,9 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 									    g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
 									    FALSE);
 	    
+#ifdef AGS_DEBUG
 	g_message("connecting port: %d/%d\0", i, port_count);      
+#endif
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_lv2->input_port == NULL){
@@ -691,7 +693,9 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   unsigned long i;
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(recall_lv2->filename, recall_lv2->effect);
+#ifdef AGS_DEBUG
   g_message("ports from ttl: %s\0", lv2_plugin->turtle->filename);
+#endif
   
   port = NULL;
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
@@ -700,7 +704,9 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     port_count = g_list_length(port_descriptor);
     
     for(i = 0; i < port_count; i++){
+#ifdef AGS_DEBUG
       g_message("Lv2 plugin port-index: %d\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
+#endif
       
       if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if((AGS_PORT_DESCRIPTOR_EVENT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -748,8 +754,10 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 									    g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
 									    FALSE);
 
+#ifdef AGS_DEBUG
 	g_message("connecting port: %s %d/%d\0", specifier, i, port_count);
-
+#endif
+	
 	port = g_list_prepend(port,
 			      current);
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){

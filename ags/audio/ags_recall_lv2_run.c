@@ -352,7 +352,9 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   /* can't be done in ags_recall_lv2_run_run_init_inter since possebility of overlapping buffers */
   /* connect audio port */
   for(i = 0; i < recall_lv2->input_lines; i++){
+#ifdef AGS_DEBUG
     g_message("connect port: %d\0", recall_lv2->input_port[i]);
+#endif
     
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						recall_lv2->input_port[i],
@@ -360,8 +362,10 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   }
 
   for(i = 0; i < recall_lv2->output_lines; i++){
+#ifdef AGS_DEBUG
     g_message("connect port: %d\0", recall_lv2->output_port[i]);
-
+#endif
+    
     recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						recall_lv2->output_port[i],
 						recall_lv2_run->output);
@@ -516,7 +520,9 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 	  port = port->next;
 	}
 
+#ifdef AGS_DEBUG
 	g_message("connect port: %d\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
+#endif
 	recall_lv2->plugin_descriptor->connect_port(recall_lv2_run->lv2_handle[0],
 						    (uint32_t) AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
 						    (float *) &(current->port_value.ags_port_float));
