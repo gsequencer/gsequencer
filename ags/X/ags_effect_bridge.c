@@ -329,7 +329,25 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(effect_bridge->audio != NULL){
 	GList *effect_pad;
-	
+
+	/* disconnect */
+	g_signal_handler_disconnect(effect_bridge->audio,
+				    g_signal_handler_find(effect_bridge->audio,
+							  G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
+							  0,
+							  0,
+							  NULL,
+							  ags_effect_bridge_set_audio_channels_callback,
+							  effect_bridge));
+	g_signal_handler_disconnect(effect_bridge->audio,
+				    g_signal_handler_find(effect_bridge->audio,
+							  G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
+							  0,
+							  0,
+							  NULL,
+							  ags_effect_bridge_set_pads_callback,
+							  effect_bridge));
+	    
 	g_object_unref(effect_bridge->audio);
 	
 	if(audio == NULL){
@@ -359,13 +377,11 @@ ags_effect_bridge_set_property(GObject *gobject,
 	
 	g_object_ref(audio);
 
-	if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
-	  g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
-				 G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
+	g_signal_connect_after(G_OBJECT(audio), "set-audio-channels\0",
+			       G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
 	  
-	  g_signal_connect_after(G_OBJECT(audio), "set-pads\0",
-				 G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
-	}
+	g_signal_connect_after(G_OBJECT(audio), "set-pads\0",
+			       G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
 
 	/* set channel and resize for AgsOutput */
 	if(effect_bridge->output_pad_type != G_TYPE_NONE){
@@ -557,13 +573,6 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
       effect_pad_list = effect_pad_list->next;
     }
   }
-
-  /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(effect_bridge->audio), "set-audio-channels\0",
-			 G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
-  
-  g_signal_connect_after(G_OBJECT(effect_bridge->audio), "set-pads\0",
-			 G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
 }
 
 void
