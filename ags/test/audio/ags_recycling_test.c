@@ -260,7 +260,8 @@ ags_recycling_test_create_audio_signal_with_frame_count()
   signed short *buffer;
   guint frame_count;
   guint loop_frame_count;
-  guint i, j, k;
+  gdouble n_loops;
+  guint i, j, k, l;
   
   /* instantiate recycling */
   recycling = ags_recycling_new(G_OBJECT(devout));
@@ -318,13 +319,13 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 
   /* create frame count */
   frame_count = (template->samplerate *
-		 (AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_NOTE_LENGTH /
+		 (AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_NOTE_LENGTH *
 		  (1.0 / 16.0 * AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_NOTE_DELAY)));
   ags_recycling_create_audio_signal_with_frame_count(recycling,
 						     audio_signal,
 						     0.0, 0,
 						     frame_count);
-
+  
   /* assert audio signal */
   CU_ASSERT(audio_signal->samplerate == template->samplerate);
   CU_ASSERT(audio_signal->buffer_size == template->buffer_size);
@@ -362,22 +363,30 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 							     template->buffer_size -
 							     template->loop_end)) % 
 		      (template->loop_end - template->loop_start));
-
+  n_loops = ((frame_count - template->loop_start - (template->length *
+						    template->buffer_size -
+						    template->loop_end)) /
+	     (template->loop_end - template->loop_start));
+  
   if(j < template->buffer_size){
     k = j;
   }else{
     k = 0;
   }
+
+  l = i;
   
-  for(; i < template->loop_start + loop_frame_count &&
+  for(; i < template->loop_start + (guint) floor(n_loops * loop_frame_count) &&
 	i < frame_count;){
+    
     for(; j < template->buffer_size &&
 	  k < audio_signal->buffer_size &&
-	  i < template->loop_start + loop_frame_count &&
+	  i < template->loop_start + (guint) floor(n_loops * loop_frame_count) &&
 	  i < frame_count &&
-	  !((i * template->buffer_size + k) > template->loop_start &&
-	    (i * template->buffer_size + k) % loop_frame_count == 0);
-	j++, i++){
+	  !(l > 0 &&
+	    l % loop_frame_count == 0 &&
+	    j != template->loop_start % template->buffer_size);
+	j++, i++, k++, l++){
       CU_ASSERT(AGS_AUDIO_BUFFER_S16(stream->data)[k] == AGS_AUDIO_BUFFER_S16(template_stream->data)[j]);
     }
 
@@ -387,8 +396,8 @@ ags_recycling_test_create_audio_signal_with_frame_count()
       j = 0;
     }
 
-    if((i * template->buffer_size + k) > template->loop_start &&
-       (i * template->buffer_size + k) % loop_frame_count == 0){
+    if(l > 0 &&
+       l % loop_frame_count == 0){
       template_stream = g_list_nth(template->stream_beginning,
 				   template->loop_start / template->buffer_size);
       j = template->loop_start % template->buffer_size;
@@ -405,10 +414,14 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 			       template->loop_end / template->buffer_size);
 
   for(; i < frame_count;){
+    if(template_stream == NULL){
+      break;
+    }
+    
     for(; j < template->buffer_size &&
 	  k < audio_signal->buffer_size &&
 	  i < frame_count;
-	j++, i++){
+	j++, i++, k++){
       CU_ASSERT(AGS_AUDIO_BUFFER_S16(stream->data)[k] == AGS_AUDIO_BUFFER_S16(template_stream->data)[j]);
     }
 

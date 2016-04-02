@@ -2,8 +2,10 @@ ags (0.7.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed unit tests
+	* fixed editor bug
 	* refactored ags_recycling_create_audio_signal_with_frame_count()
 	* implemented AgsGenericMainLoop
+	* added many unit tests in ags_thread_test.c
 
 ags (0.7.10)
 

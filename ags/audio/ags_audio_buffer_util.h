@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_complex.h>
+
 #define AGS_AUDIO_BUFFER_S8(ptr) ((signed char *)(ptr))
 #define AGS_AUDIO_BUFFER_S16(ptr) ((signed short *)(ptr))
 #define AGS_AUDIO_BUFFER_S24(ptr) ((signed long *)(ptr))

@@ -206,6 +206,7 @@ am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_acceleration.lo \
 	ags/audio/libags_audio_la-ags_audio.lo \
 	ags/audio/libags_audio_la-ags_audio_application_context.lo \
+	ags/audio/libags_audio_la-ags_audio_buffer_util.lo \
 	ags/audio/libags_audio_la-ags_audio_signal.lo \
 	ags/audio/libags_audio_la-ags_automation.lo \
 	ags/audio/libags_audio_la-ags_channel.lo \
@@ -1317,7 +1318,7 @@ ags_channel_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_
 ags_channel_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 ags_recycling_test_SOURCES = ags/test/audio/ags_recycling_test.c
 ags_recycling_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_recycling_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_recycling_test_LDFLAGS = -static -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 ags_recycling_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 ags_audio_signal_test_SOURCES = ags/test/audio/ags_audio_signal_test.c
 ags_audio_signal_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
@@ -1526,6 +1527,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_acceleration.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
+	ags/audio/ags_audio_buffer_util.h \
 	ags/audio/ags_audio_signal.h \
 	ags/audio/ags_automation.h \
 	ags/audio/ags_channel.h \
@@ -1574,6 +1576,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_acceleration.c \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \
+	ags/audio/ags_audio_buffer_util.c \
 	ags/audio/ags_audio_signal.c \
 	ags/audio/ags_automation.c \
 	ags/audio/ags_channel.c \
@@ -2672,6 +2675,8 @@ ags/audio/libags_audio_la-ags_acceleration.lo:  \
 ags/audio/libags_audio_la-ags_audio.lo: ags/audio/$(am__dirstamp) \
 	ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_audio_application_context.lo:  \
+	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
+ags/audio/libags_audio_la-ags_audio_buffer_util.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_audio_signal.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
@@ -4265,6 +4270,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_acceleration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_audio_application_context.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_audio_buffer_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_audio_signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_automation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_channel.Plo@am__quote@
@@ -4823,6 +4829,13 @@ ags/audio/libags_audio_la-ags_audio_application_context.lo: ags/audio/ags_audio_
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_audio_application_context.c' object='ags/audio/libags_audio_la-ags_audio_application_context.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_audio_application_context.lo `test -f 'ags/audio/ags_audio_application_context.c' || echo '$(srcdir)/'`ags/audio/ags_audio_application_context.c
+
+ags/audio/libags_audio_la-ags_audio_buffer_util.lo: ags/audio/ags_audio_buffer_util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_audio_buffer_util.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_audio_buffer_util.Tpo -c -o ags/audio/libags_audio_la-ags_audio_buffer_util.lo `test -f 'ags/audio/ags_audio_buffer_util.c' || echo '$(srcdir)/'`ags/audio/ags_audio_buffer_util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_audio_buffer_util.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_audio_buffer_util.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_audio_buffer_util.c' object='ags/audio/libags_audio_la-ags_audio_buffer_util.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_audio_buffer_util.lo `test -f 'ags/audio/ags_audio_buffer_util.c' || echo '$(srcdir)/'`ags/audio/ags_audio_buffer_util.c
 
 ags/audio/libags_audio_la-ags_audio_signal.lo: ags/audio/ags_audio_signal.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_audio_signal.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_audio_signal.Tpo -c -o ags/audio/libags_audio_la-ags_audio_signal.lo `test -f 'ags/audio/ags_audio_signal.c' || echo '$(srcdir)/'`ags/audio/ags_audio_signal.c
