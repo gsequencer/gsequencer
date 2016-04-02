@@ -457,6 +457,7 @@ libags_thread_la_DEPENDENCIES = libags.la
 am__objects_16 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_autosave_thread.lo \
 	ags/thread/libags_thread_la-ags_concurrency_provider.lo \
+	ags/thread/libags_thread_la-ags_generic_main_loop.lo \
 	ags/thread/libags_thread_la-ags_history.lo \
 	ags/thread/libags_thread_la-ags_mutex_manager.lo \
 	ags/thread/libags_thread_la-ags_returnable_thread.lo \
@@ -1440,6 +1441,7 @@ libags_thread_h_sources = \
 	$(deprecated_libags_thread_h_sources) \
 	ags/thread/ags_autosave_thread.h \
 	ags/thread/ags_concurrency_provider.h \
+	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_history.h \
 	ags/thread/ags_mutex_manager.h \
 	ags/thread/ags_returnable_thread.h \
@@ -1459,6 +1461,7 @@ libags_thread_c_sources = \
 	$(deprecated_libags_thread_c_sources) \
 	ags/thread/ags_autosave_thread.c \
 	ags/thread/ags_concurrency_provider.c \
+	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_history.c \
 	ags/thread/ags_mutex_manager.c \
 	ags/thread/ags_returnable_thread.c \
@@ -3347,6 +3350,9 @@ ags/thread/libags_thread_la-ags_autosave_thread.lo:  \
 ags/thread/libags_thread_la-ags_concurrency_provider.lo:  \
 	ags/thread/$(am__dirstamp) \
 	ags/thread/$(DEPDIR)/$(am__dirstamp)
+ags/thread/libags_thread_la-ags_generic_main_loop.lo:  \
+	ags/thread/$(am__dirstamp) \
+	ags/thread/$(DEPDIR)/$(am__dirstamp)
 ags/thread/libags_thread_la-ags_history.lo:  \
 	ags/thread/$(am__dirstamp) \
 	ags/thread/$(DEPDIR)/$(am__dirstamp)
@@ -4500,6 +4506,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_thread_test-ags_thread_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_autosave_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_concurrency_provider.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_generic_main_loop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_history.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_mutex_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_returnable_thread.Plo@am__quote@
@@ -6349,6 +6356,13 @@ ags/thread/libags_thread_la-ags_concurrency_provider.lo: ags/thread/ags_concurre
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_concurrency_provider.c' object='ags/thread/libags_thread_la-ags_concurrency_provider.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_concurrency_provider.lo `test -f 'ags/thread/ags_concurrency_provider.c' || echo '$(srcdir)/'`ags/thread/ags_concurrency_provider.c
+
+ags/thread/libags_thread_la-ags_generic_main_loop.lo: ags/thread/ags_generic_main_loop.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_generic_main_loop.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_generic_main_loop.Tpo -c -o ags/thread/libags_thread_la-ags_generic_main_loop.lo `test -f 'ags/thread/ags_generic_main_loop.c' || echo '$(srcdir)/'`ags/thread/ags_generic_main_loop.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/thread/$(DEPDIR)/libags_thread_la-ags_generic_main_loop.Tpo ags/thread/$(DEPDIR)/libags_thread_la-ags_generic_main_loop.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_generic_main_loop.c' object='ags/thread/libags_thread_la-ags_generic_main_loop.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_generic_main_loop.lo `test -f 'ags/thread/ags_generic_main_loop.c' || echo '$(srcdir)/'`ags/thread/ags_generic_main_loop.c
 
 ags/thread/libags_thread_la-ags_history.lo: ags/thread/ags_history.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_history.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_history.Tpo -c -o ags/thread/libags_thread_la-ags_history.lo `test -f 'ags/thread/ags_history.c' || echo '$(srcdir)/'`ags/thread/ags_history.c

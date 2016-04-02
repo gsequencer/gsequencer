@@ -52,7 +52,7 @@ void ags_channel_thread_stop(AgsThread *thread);
  * @short_description: channel thread
  * @title: AgsChannelThread
  * @section_id:
- * @include: ags/thread/ags_channel_thread.h
+ * @include: ags/audio/thread/ags_channel_thread.h
  *
  * The #AgsChannelThread acts as channel output thread to soundcard.
  */
