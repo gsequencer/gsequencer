@@ -82,7 +82,7 @@ void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlayb
  * @short_description: audio loop
  * @title: AgsAudioLoop
  * @section_id:
- * @include: ags/thread/ags_audio_loop.h
+ * @include: ags/audio/thread/ags_audio_loop.h
  *
  * The #AgsAudioLoop is suitable as #AgsMainLoop and does
  * audio processing.
@@ -185,7 +185,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsRecall to add for playback.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("play-recall\0",
 				   "recall to run\0",
@@ -201,7 +201,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsChannel to add for playback.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("play-channel\0",
 				   "channel to run\0",
@@ -217,7 +217,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsAudio to add for playback.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("play-audio\0",
 				   "audio to run\0",
@@ -641,7 +641,7 @@ ags_audio_loop_run(AgsThread *thread)
  * Runs all recalls assigned with @audio_loop. You may want to use
  * #AgsAppendRecall task to add an #AgsRecall.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
@@ -773,7 +773,7 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
  * #AgsRecycling around prior added #AgsChannel with #AgsAppendChannel
  * task.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
@@ -978,7 +978,7 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback
  * Like ags_audio_loop_play_channel() except that it runs all channels within
  * #AgsAudio.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
@@ -1382,7 +1382,7 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
  *
  * Add audio for playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
@@ -1404,7 +1404,7 @@ ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
  *
  * Remove audio of playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
@@ -1426,7 +1426,7 @@ ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
  *
  * Add channel for playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
@@ -1448,7 +1448,7 @@ ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
  *
  * Remove channel of playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
@@ -1470,7 +1470,7 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
  *
  * Add recall for playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer playback)
@@ -1492,7 +1492,7 @@ ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer playback)
  *
  * Remove recall of playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer playback)
@@ -1514,7 +1514,7 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer playback)
  *
  * Returns: the new #AgsAudioLoop
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 AgsAudioLoop*
 ags_audio_loop_new(GObject *soundcard, GObject *application_context)

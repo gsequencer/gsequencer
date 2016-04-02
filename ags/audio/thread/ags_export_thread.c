@@ -46,7 +46,7 @@ void ags_export_thread_stop(AgsThread *thread);
  * @short_description: export thread
  * @title: AgsExportThread
  * @section_id:
- * @include: ags/thread/ags_export_thread.h
+ * @include: ags/audio/thread/ags_export_thread.h
  *
  * The #AgsExportThread acts as audio output thread to file.
  */

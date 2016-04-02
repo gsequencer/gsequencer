@@ -59,7 +59,7 @@ void ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, 
  * @short_description: audio thread
  * @title: AgsAudioThread
  * @section_id:
- * @include: ags/thread/ags_audio_thread.h
+ * @include: ags/audio/thread/ags_audio_thread.h
  *
  * The #AgsAudioThread acts as audio output thread to soundcard.
  */

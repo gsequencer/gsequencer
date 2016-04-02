@@ -61,6 +61,7 @@ void ags_thread_test_timelock();
 void ags_thread_test_stop();
 
 AgsThread *main_loop;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.

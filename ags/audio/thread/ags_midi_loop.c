@@ -72,7 +72,7 @@ void ags_midi_loop_run(AgsThread *thread);
  * @short_description: midi loop
  * @title: AgsMidiLoop
  * @section_id:
- * @include: ags/thread/ags_midi_loop.h
+ * @include: ags/audio/thread/ags_midi_loop.h
  *
  * The #AgsMidiLoop is suitable as #AgsMainLoop and does
  * midi processing.
