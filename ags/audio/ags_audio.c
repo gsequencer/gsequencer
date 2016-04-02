@@ -809,37 +809,40 @@ ags_audio_init(AgsAudio *audio)
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
 			      "super-threaded-scope\0");
-  
-  if(!g_ascii_strncasecmp(str0,
-			  "super-threaded\0",
-			  15)){
-    if(!g_ascii_strncasecmp(str1,
-			    "audio\0",
-			    6) ||
-       !g_ascii_strncasecmp(ags_config_get_value(config,
-						 AGS_CONFIG_THREAD,
-						 "super-threaded-scope\0"),
-			    "channel\0",
-			    8) ||
-       !g_ascii_strncasecmp(ags_config_get_value(config,
-						 AGS_CONFIG_THREAD,
-						 "super-threaded-scope\0"),
-			    "recycling\0",
-			    10)){
-      g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
-		      AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
 
-      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
-											  audio);
-      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
-											  audio);
-      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
-											  audio);
+  if(str0 != NULL && str1 != NULL){
+    if(!g_ascii_strncasecmp(str0,
+			    "super-threaded\0",
+			    15)){
+      if(!g_ascii_strncasecmp(str1,
+			      "audio\0",
+			      6) ||
+	 !g_ascii_strncasecmp(str1,
+			      "channel\0",
+			      8) ||
+	 !g_ascii_strncasecmp(str1,
+			      "recycling\0",
+			      10)){
+	g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+			AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
+
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0] = ags_audio_thread_new(NULL,
+											    audio);
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] = ags_audio_thread_new(NULL,
+											    audio);
+	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] = ags_audio_thread_new(NULL,
+											    audio);
+      }
     }
   }
+  
+  if(str0 != NULL){
+    free(str0);
+  }
 
-  free(str0);
-  free(str1);
+  if(str1 != NULL){
+    free(str1);
+  }
   
   audio->notation = NULL;
   audio->automation = NULL;
@@ -3443,9 +3446,9 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   /* initial checks */
   pthread_mutex_lock(mutex);
   
-  //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
   g_message("ags_audio_duplicate_recall: %s - audio.lines[%u,%u]\n\0", G_OBJECT_TYPE_NAME(audio->machine), audio->output_lines, audio->input_lines);  
-  //#endif
+#endif
 
   playback = FALSE;
   sequencer = FALSE;

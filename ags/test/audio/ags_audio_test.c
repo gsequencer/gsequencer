@@ -875,8 +875,12 @@ ags_audio_test_add_recall_container()
   audio = ags_audio_new(AGS_SOUNDCARD(devout));
 
   /* instantiate recall */
-  recall_container = ags_recall_container_new(NULL);
+  recall_container = ags_recall_container_new();
 
+  /* add to audio */
+  ags_audio_add_recall_container(audio,
+				 recall_container);
+  
   /* assert to be in audio->recall_container */
   CU_ASSERT(g_list_find(audio->container,
 			recall_container) != NULL);
@@ -894,6 +898,10 @@ ags_audio_test_add_recall_id()
   /* instantiate recall */
   recall_id = ags_recall_id_new(NULL);
 
+  /* add to audio */
+  ags_audio_add_recall_id(audio,
+			  recall_id);
+  
   /* assert to be in audio->recall_id */
   CU_ASSERT(g_list_find(audio->recall_id,
 			recall_id) != NULL);
@@ -911,6 +919,10 @@ ags_audio_test_add_recycling_context()
   /* instantiate recall */
   recycling_context = ags_recycling_context_new(0);
 
+  /* add to audio */
+  ags_audio_add_recycling_context(audio,
+				  recycling_context);
+  
   /* assert to be in audio->recycling_context */
   CU_ASSERT(g_list_find(audio->recycling_context,
 			recycling_context) != NULL);
@@ -977,7 +989,7 @@ ags_audio_test_duplicate_recall()
   parent_recycling_context = ags_recycling_context_new(0);
   
   recycling_context = ags_recycling_context_new(0);
-  g_object_set(recall_id,
+  g_object_set(recycling_context,
 	       "parent\0", parent_recycling_context,
 	       NULL);
 

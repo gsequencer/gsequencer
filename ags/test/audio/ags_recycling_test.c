@@ -57,13 +57,19 @@ void ags_recycling_test_find_next_channel();
 #define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FRAMES (AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_SAMPLERATE / \
 									AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE * \
 									440.0)
-#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LAST_FRAME (AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_SAMPLERATE / \
-									    AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE * \
-									    440.0 - 1.0)
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LAST_FRAME (AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_SAMPLERATE % \
+									    AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE)
+
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LOOP_START (2.0 * AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LAST_FRAME / 5.0)
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LOOP_END (3.5 * AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LAST_FRAME / 5.0)
+
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_NOTE_DELAY (1.0 / 4.0)
+#define AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_NOTE_LENGTH (64.0)
 
 #define AGS_RECYCLING_TEST_POSITION_N_RECYCLING (16)
 #define AGS_RECYCLING_TEST_FIND_NEXT_CHANNEL_N_CHANNEL (8)
 
+AgsApplicationContext *application_context;
 AgsDevout *devout;
 
 /* The suite initialization function.
@@ -72,7 +78,10 @@ AgsDevout *devout;
  */
 int
 ags_recycling_test_init_suite()
-{ 
+{
+  application_context = ags_application_context_new(NULL,
+						    NULL);
+  
   devout = ags_devout_new(NULL);
 
   return(0);
@@ -86,6 +95,7 @@ int
 ags_recycling_test_clean_suite()
 {
   g_object_unref(devout);
+  g_object_unref(application_context);
   
   return(0);
 }
@@ -192,6 +202,8 @@ ags_recycling_test_create_audio_signal_with_defaults()
 
   template->stream_end = stream;
   template->stream_beginning = g_list_reverse(stream);
+
+  template->length = g_list_length(template->stream_beginning);
   
   /* add audio signal to recycling */
   ags_recycling_add_audio_signal(recycling,
@@ -204,7 +216,7 @@ ags_recycling_test_create_audio_signal_with_defaults()
 
   /* create defaults */
   ags_recycling_create_audio_signal_with_defaults(recycling,
-						  template,
+						  audio_signal,
 						  0.0, 0);
 
   /* assert audio signal */
@@ -242,9 +254,13 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 {
   AgsRecycling *recycling;
   AgsAudioSignal *template, *audio_signal;
+
   GList *stream, *template_stream;
+
   signed short *buffer;
-  guint i, j;
+  guint frame_count;
+  guint loop_frame_count;
+  guint i, j, k;
   
   /* instantiate recycling */
   recycling = ags_recycling_new(G_OBJECT(devout));
@@ -285,6 +301,11 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 
   template->stream_end = stream;
   template->stream_beginning = g_list_reverse(stream);
+
+  template->loop_start = AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LOOP_START;
+  template->loop_end = AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LOOP_END;
+  
+  template->length = g_list_length(template->stream_beginning);
   
   /* add audio signal to recycling */
   ags_recycling_add_audio_signal(recycling,
@@ -296,10 +317,13 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 				      NULL);
 
   /* create frame count */
+  frame_count = (template->samplerate *
+		 (AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_NOTE_LENGTH /
+		  (1.0 / 16.0 * AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_NOTE_DELAY)));
   ags_recycling_create_audio_signal_with_frame_count(recycling,
-						     template,
+						     audio_signal,
 						     0.0, 0,
-						     AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LAST_FRAME);
+						     frame_count);
 
   /* assert audio signal */
   CU_ASSERT(audio_signal->samplerate == template->samplerate);
@@ -308,17 +332,20 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 
   CU_ASSERT(audio_signal->length == template->length);
   CU_ASSERT(audio_signal->first_frame == template->first_frame);
-  CU_ASSERT(audio_signal->last_frame == AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LAST_FRAME);
+  CU_ASSERT(audio_signal->last_frame == frame_count % AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE);
   CU_ASSERT(audio_signal->loop_start == template->loop_start);
   CU_ASSERT(audio_signal->loop_end == template->loop_end);
 
   stream = audio_signal->stream_beginning;
   template_stream = template->stream_beginning;
-  
-  for(i = 0; i < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LAST_FRAME;){
+
+  /* assert before loop */
+  for(i = 0; i < template->loop_start &&
+	i < frame_count;){
     for(j = 0;
-	j < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE &&
-	  i + j < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_LAST_FRAME;
+	j < template->buffer_size &&
+	  i + j < template->loop_start &&
+	  i + j < frame_count;
 	j++){
       CU_ASSERT(AGS_AUDIO_BUFFER_S16(stream->data)[j] == AGS_AUDIO_BUFFER_S16(template_stream->data)[j]);
     }
@@ -329,6 +356,73 @@ ags_recycling_test_create_audio_signal_with_frame_count()
     
     i += AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE;
   }
+
+  /* assert loop */
+  loop_frame_count = ((frame_count - template->loop_start - (template->length *
+							     template->buffer_size -
+							     template->loop_end)) % 
+		      (template->loop_end - template->loop_start));
+
+  if(j < template->buffer_size){
+    k = j;
+  }else{
+    k = 0;
+  }
+  
+  for(; i < template->loop_start + loop_frame_count &&
+	i < frame_count;){
+    for(; j < template->buffer_size &&
+	  k < audio_signal->buffer_size &&
+	  i < template->loop_start + loop_frame_count &&
+	  i < frame_count &&
+	  !((i * template->buffer_size + k) > template->loop_start &&
+	    (i * template->buffer_size + k) % loop_frame_count == 0);
+	j++, i++){
+      CU_ASSERT(AGS_AUDIO_BUFFER_S16(stream->data)[k] == AGS_AUDIO_BUFFER_S16(template_stream->data)[j]);
+    }
+
+    /* iterate */
+    if(j == template->buffer_size){
+      template_stream = template_stream->next;
+      j = 0;
+    }
+
+    if((i * template->buffer_size + k) > template->loop_start &&
+       (i * template->buffer_size + k) % loop_frame_count == 0){
+      template_stream = g_list_nth(template->stream_beginning,
+				   template->loop_start / template->buffer_size);
+      j = template->loop_start % template->buffer_size;
+    }
+
+    if(k == audio_signal->buffer_size){
+      stream = stream->next;
+      k = 0;
+    }
+  }
+
+  /* assert after loop */
+  template_stream = g_list_nth(template->stream_beginning,
+			       template->loop_end / template->buffer_size);
+
+  for(; i < frame_count;){
+    for(; j < template->buffer_size &&
+	  k < audio_signal->buffer_size &&
+	  i < frame_count;
+	j++, i++){
+      CU_ASSERT(AGS_AUDIO_BUFFER_S16(stream->data)[k] == AGS_AUDIO_BUFFER_S16(template_stream->data)[j]);
+    }
+
+    /* iterate */
+    if(j == template->buffer_size){
+      template_stream = template_stream->next;
+      j = 0;
+    }
+
+    if(k == audio_signal->buffer_size){
+      stream = stream->next;
+      k = 0;
+    }
+  }  
 }
 
 void
@@ -385,9 +479,10 @@ ags_recycling_test_find_next_channel()
 
       start = 
 	channel = g_object_new(AGS_TYPE_CHANNEL,
-			       "first-recycling\0", recycling,
 			       NULL);
-
+      channel->last_recycling =
+	channel->first_recycling = recycling;
+      
       g_object_set(G_OBJECT(recycling),
 		   "channel\0", channel,
 		   NULL);
@@ -396,8 +491,9 @@ ags_recycling_test_find_next_channel()
       
       channel->next = 
 	channel->next_pad = g_object_new(AGS_TYPE_CHANNEL,
-					 "first-recycling\0", recycling,
 					 NULL);
+      channel->next->last_recycling = 
+	channel->next->first_recycling = recycling;
       
       g_object_set(G_OBJECT(recycling),
 		   "channel\0", channel,
