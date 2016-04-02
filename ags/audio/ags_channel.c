@@ -623,42 +623,49 @@ ags_channel_init(AgsChannel *channel)
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
 			      "super-threaded-scope\0");
-  
-  if(!g_ascii_strncasecmp(str0,
-			  "super-threaded\0",
-			  15)){
-    if(!g_ascii_strncasecmp(str1,
-			    "channel\0",
-			    8) ||
-       !g_ascii_strncasecmp(str1,
-			    "recycling\0",
-			    10)){
-      g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
-		      AGS_PLAYBACK_SUPER_THREADED_CHANNEL);
 
-      AGS_PLAYBACK(channel->playback)->channel_thread[0] = ags_channel_thread_new(NULL,
-										  channel);
-      AGS_PLAYBACK(channel->playback)->channel_thread[1] = ags_channel_thread_new(NULL,
-										  channel);
-      AGS_PLAYBACK(channel->playback)->channel_thread[2] = ags_channel_thread_new(NULL,
-										  channel);
-      
+  if(str0 != NULL && str1 != NULL){
+    if(!g_ascii_strncasecmp(str0,
+			    "super-threaded\0",
+			    15)){
       if(!g_ascii_strncasecmp(str1,
+			      "channel\0",
+			      8) ||
+	 !g_ascii_strncasecmp(str1,
 			      "recycling\0",
 			      10)){
-	AGS_PLAYBACK(channel->playback)->recycling_thread[0] = ags_recycling_thread_new(NULL,
-											NULL);
-	AGS_PLAYBACK(channel->playback)->recycling_thread[1] = ags_recycling_thread_new(NULL,
-											NULL);
-	AGS_PLAYBACK(channel->playback)->recycling_thread[2] = ags_recycling_thread_new(NULL,
-											NULL);
+	g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			AGS_PLAYBACK_SUPER_THREADED_CHANNEL);
+
+	AGS_PLAYBACK(channel->playback)->channel_thread[0] = ags_channel_thread_new(NULL,
+										    channel);
+	AGS_PLAYBACK(channel->playback)->channel_thread[1] = ags_channel_thread_new(NULL,
+										    channel);
+	AGS_PLAYBACK(channel->playback)->channel_thread[2] = ags_channel_thread_new(NULL,
+										    channel);
+      
+	if(!g_ascii_strncasecmp(str1,
+				"recycling\0",
+				10)){
+	  AGS_PLAYBACK(channel->playback)->recycling_thread[0] = ags_recycling_thread_new(NULL,
+											  NULL);
+	  AGS_PLAYBACK(channel->playback)->recycling_thread[1] = ags_recycling_thread_new(NULL,
+											  NULL);
+	  AGS_PLAYBACK(channel->playback)->recycling_thread[2] = ags_recycling_thread_new(NULL,
+											  NULL);
+	}
       }
     }
+  } 
+
+  if(str0 != NULL){
+    free(str0);
   }
- 
-  free(str0);
-  free(str1);
-   
+
+  if(str1 != NULL){
+    free(str1);
+  }
+  
   channel->recall_id = NULL;
   channel->container = NULL;
 

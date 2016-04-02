@@ -1363,10 +1363,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
     ags_audio_signal_stream_resize(audio_signal,
 				   0);
   }else{
-    //    AgsSoundcard *soundcard;
     GList *template_stream, *stream;
-    //    guint i, j, j_offcut;
-    //    guint k, template_k;
 
     audio_signal->buffer_size = template->buffer_size;
     ags_audio_signal_stream_resize(audio_signal,
@@ -1375,10 +1372,6 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
     stream = audio_signal->stream_beginning;
     template_stream = template->stream_beginning;
 
-    //    k = 0;
-    //    template_k = 0;
-
-    //TODO:JK: enhance me
     while(template_stream != NULL){
       ags_audio_signal_copy_buffer_to_buffer(stream->data, 1,
 					     template_stream->data, 1,
