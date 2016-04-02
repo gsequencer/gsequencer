@@ -48,7 +48,7 @@ void ags_gui_thread_suspend_handler(int sig);
  * @short_description: gui thread
  * @title: AgsGuiThread
  * @section_id:
- * @include: ags/thread/ags_gui_thread.h
+ * @include: ags/X/thread/ags_gui_thread.h
  *
  * The #AgsGuiThread acts as graphical user interface thread.
  */
