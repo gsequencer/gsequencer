@@ -162,7 +162,7 @@ ags_channel_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_t
 
 ags_recycling_test_SOURCES = ags/test/audio/ags_recycling_test.c
 ags_recycling_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_recycling_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_recycling_test_LDFLAGS = -static -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 ags_recycling_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 ags_audio_signal_test_SOURCES = ags/test/audio/ags_audio_signal_test.c
@@ -381,6 +381,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_acceleration.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
+	ags/audio/ags_audio_buffer_util.h \
 	ags/audio/ags_audio_signal.h \
 	ags/audio/ags_automation.h \
 	ags/audio/ags_channel.h \
@@ -430,6 +431,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_acceleration.c \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \
+	ags/audio/ags_audio_buffer_util.c \
 	ags/audio/ags_audio_signal.c \
 	ags/audio/ags_automation.c \
 	ags/audio/ags_channel.c \
