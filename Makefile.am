@@ -15,7 +15,7 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la libgsequencer.la
 
-bin_PROGRAMS = gsequencer gsequencer_static midi2xml
+bin_PROGRAMS = gsequencer gsequencer_static midi2xml recycling
 
 EXTRA_DIST = gsequencer.share acsite.m4 gsequencer.1 midi2xml.1 README gsequencer-documentation
 
@@ -169,6 +169,11 @@ ags_audio_signal_test_SOURCES = ags/test/audio/ags_audio_signal_test.c
 ags_audio_signal_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_signal_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 ags_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+
+recycling_SOURCES = ags/test/recycling.c
+recycling_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+recycling_LDFLAGS = -static -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+recycling_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # libags all files
 deprecated_libags_h_sources =
