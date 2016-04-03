@@ -894,6 +894,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   guint first_frame;
   guint loop_frame_count;
   guint shifted_frame_count;
+  guint template_stream_index, stream_index;
   guint i, j, k;
   gboolean template_is_shifted;
   
@@ -913,6 +914,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   
   pthread_mutex_lock(recycling_mutex);
 
+  g_message("a\0");
+  
   if(!AGS_IS_RECYCLING(recycling)){
     pthread_mutex_unlock(recycling_mutex);
 
@@ -924,6 +927,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
     return;
   }
+  
+  g_message("b\0");
 
   /* create audio signal */
   template = ags_audio_signal_get_template(recycling->audio_signal);
@@ -967,140 +972,180 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
     return;
   }
+  
+  g_message("c\0");
 
   audio_signal->last_frame = ((guint) (delay * audio_signal->buffer_size) + frame_count + attack) % audio_signal->buffer_size;
 
   /* generic copying */
   stream = g_list_nth(audio_signal->stream_beginning,
-		      ((delay * audio_signal->buffer_size) + attack) / audio_signal->buffer_size);
+		      (guint) ((delay * audio_signal->buffer_size) + attack) / audio_signal->buffer_size);
   template_stream = template->stream_beginning;
 
   /* loop related copying */
   first_frame = (guint) floor((delay * audio_signal->buffer_size) + attack) % audio_signal->buffer_size;
   
   /* before loop */
-  for(i = 0; i < template->loop_start &&
-	i < frame_count;){
-    if(first_frame == 0){
-      if(i + template->buffer_size < template->loop_start){
-	ags_audio_signal_copy_buffer_to_buffer(((short *) stream->data), 1,
-					       ((short *) template_stream->data), 1,
-					       template->buffer_size);
+  i = 0;
+  j = 0;
+  k = first_frame;
 
-	/* iterate */
+  g_message("before loop %d %d\0", template->loop_start, frame_count);
+  
+  for(; i < template->loop_start &&
+	i < frame_count;){
+    template_stream_index = j % template->buffer_size;
+    stream_index = k % template->buffer_size;
+    
+    if(template_stream_index > stream_index){
+      shifted_frame_count = template->buffer_size - template_stream_index;
+      template_is_shifted = TRUE;
+    }else{
+      shifted_frame_count = template->buffer_size - stream_index;
+      template_is_shifted = FALSE;
+    }
+    
+    if(shifted_frame_count == 0){
+      shifted_frame_count = template->buffer_size;
+
+      if(template_stream_index > 0){
+	shifted_frame_count = template->buffer_size - j % template->buffer_size;
+      }else if(stream_index > 0){
+	shifted_frame_count = template->buffer_size - k % template->buffer_size;
+      }
+    }
+
+    g_message("1. shifted %d %d %d\0", shifted_frame_count, template_stream_index, stream_index);
+
+    /* first copy */
+    if(i + shifted_frame_count >= template->loop_start ||
+       i + shifted_frame_count >= frame_count){
+      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
+					     &(((short *) template_stream->data)[template_stream_index]), 1,
+					     template->loop_start % template->buffer_size);
+
+      i = template->loop_start;
+      j = template->loop_start;
+      k = first_frame + template->loop_start;
+
+      if(k % template->buffer_size == 0){
 	stream = stream->next;
-	template_stream = template_stream->next;
-	
-	i += template->buffer_size;
-      }else{
-	ags_audio_signal_copy_buffer_to_buffer(((short *) stream->data), 1,
-					       ((short *) template_stream->data), 1,
+      }
+      
+      break;
+    }
+    
+    g_message("copy a %d %d %d\0", i, j, k);    
+    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
+					   &(((short *) template_stream->data)[template_stream_index]), 1,
+					   shifted_frame_count);
+
+    i += shifted_frame_count;
+    j += shifted_frame_count;
+    k += shifted_frame_count;
+
+    if(template_is_shifted){
+      template_stream = template_stream->next;
+    }else{
+      stream = stream->next;
+    }
+
+    /* second copy */
+    if(shifted_frame_count != template->buffer_size){
+      if(i + template->buffer_size - shifted_frame_count >= template->loop_start ||
+	 i + template->buffer_size - shifted_frame_count >= frame_count){
+	ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k % template->buffer_size]), 1,
+					       &(((short *) template_stream->data)[j % template->buffer_size]), 1,
 					       template->loop_start % template->buffer_size);
 
-	i += (template->loop_start % template->buffer_size);
+	i = template->loop_start;
+	j = template->loop_start;
+	k = first_frame + template->loop_start;
+
+	break;
       }
+    
+      g_message("copy b %d %d %d\0", i, j, k);
+      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k % template->buffer_size]), 1,
+					     &(((short *) template_stream->data)[j % template->buffer_size]), 1,
+					     template->buffer_size - shifted_frame_count);
+
+      i += (template->buffer_size - shifted_frame_count);
+      j += (template->buffer_size - shifted_frame_count);
+      k += (template->buffer_size - shifted_frame_count);
+    }
+    
+    if(template_is_shifted){
+      stream = stream->next;
     }else{
-      if(i == 0){
-	if(i + template->buffer_size < first_frame + template->loop_start){
-	  ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[first_frame]), 1,
-						 ((short *) template_stream->data), 1,
-						 template->buffer_size - first_frame);
-
-	  /* iterate */
-	  stream = stream->next;
-	  template_stream = template_stream->next;
-	  
-	  i += template->buffer_size - first_frame;
-	}else{
-	  ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[first_frame]), 1,
-						 ((short *) template_stream->data), 1,
-						 template->loop_start);
-	}
-      }else{
-	if(i + template->buffer_size < template->loop_start){
-	  ags_audio_signal_copy_buffer_to_buffer(((short *) stream->data), 1,
-						 &(((short *) template_stream->data)[template->buffer_size - first_frame]), 1,
-						 first_frame);
-	  /* iterate */
-	  template_stream = template_stream->next;
-	  
-	  ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[first_frame]), 1,
-						 ((short *) template_stream->data), 1,
-						 template->buffer_size - first_frame);
-
-	  /* iterate */
-	  stream = stream->next;
-	  
-	  i += template->buffer_size;
-	}else{
-	  if(i + first_frame < template->loop_start){
-	    ags_audio_signal_copy_buffer_to_buffer(((short *) stream->data), 1,
-						   &(((short *) template_stream->data)[template->buffer_size - first_frame]), 1,
-						   first_frame);
-	    /* iterate */
-	    template_stream = template_stream->next;
-
-	    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[first_frame]), 1,
-						   ((short *) template_stream->data), 1,
-						   template->loop_start -
-						   (i + first_frame));
-	    
-	    /* iterate */
-	    stream = stream->next;
-	  }else{
-	    ags_audio_signal_copy_buffer_to_buffer(((short *) stream->data), 1,
-						   &(((short *) template_stream->data)[template->buffer_size - first_frame]), 1,
-						   template->loop_start - i);
-
-	    /* iterate */
-	    stream = stream->next;
-	    template_stream = template_stream->next;
-	  }
-	}
-      }
+      template_stream = template_stream->next;
     }
   }
 
   /* loop */
-  loop_frame_count = ((frame_count - template->loop_start - (template->length *
-							     template->buffer_size -
-							     template->loop_end)) % 
-		      (template->loop_end - template->loop_start));
+  loop_frame_count = (frame_count - template->loop_start - (template->length *
+							    template->buffer_size -
+							    template->loop_end));
+  template_stream = g_list_nth(template->stream_beginning,
+			       (guint) floor(template->loop_start / template->buffer_size));
 
-  
-  j = i;
-  k = first_frame + i;
-  
   for(; i < template->loop_start + loop_frame_count &&
 	i < frame_count;){
-    if(k % template->buffer_size > j % template->buffer_size){
-      shifted_frame_count = j % template->buffer_size;
+    template_stream_index = j % template->buffer_size;
+    stream_index = k % template->buffer_size;
+    
+    if(template_stream_index > stream_index){
+      shifted_frame_count = template->buffer_size - template_stream_index;
       template_is_shifted = TRUE;
     }else{
-      shifted_frame_count = k % template->buffer_size;
+      shifted_frame_count = template->buffer_size - stream_index;
       template_is_shifted = FALSE;
     }
 
-    if(j + shifted_frame_count >= template->loop_end){      
-      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k]), 1,
-					     &(((short *) template_stream->data)[j]), 1,
+    if(shifted_frame_count == 0){
+      shifted_frame_count = template->buffer_size;
+      
+      if(template_stream_index > 0){
+	shifted_frame_count = template->buffer_size - template_stream_index;
+	template_is_shifted = TRUE;
+      }else if(stream_index > 0){
+	shifted_frame_count = template->buffer_size - stream_index;
+	template_is_shifted = FALSE;
+      }
+    }
+
+    g_message("2. shifted %d %d %d\0", shifted_frame_count, template_stream_index, stream_index);
+
+    /* first copy */
+    if(j + shifted_frame_count >= template->loop_end ||
+       i + shifted_frame_count >= frame_count){
+      g_message("cont a %d %d %d\0", i, j, k);
+      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
+					     &(((short *) template_stream->data)[template_stream_index]), 1,
 					     template->loop_end - j);
 
       i += (template->loop_end - j);
-      
-      j = template->loop_start % template->buffer_size;
       k += (template->loop_end - j);
+      
+      j = template->loop_start;
+      
+      template_stream = g_list_nth(template->stream_beginning,
+				   (guint) floor(template->loop_start / template->buffer_size));
 
+      if(k % template->buffer_size == 0){
+	stream = stream->next;
+      }
+      
       continue;
     }
     
-    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k]), 1,
-					   &(((short *) template_stream->data)[j]), 1,
+    g_message("copy a %d %d %d\0", i, j, k);    
+    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
+					   &(((short *) template_stream->data)[template_stream_index]), 1,
 					   shifted_frame_count);
 
 
     i += shifted_frame_count;
-    
     j += shifted_frame_count;
     k += shifted_frame_count;
     
@@ -1110,17 +1155,41 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       stream = stream->next;
     }
 
-    if(k % template->buffer_size != j % template->buffer_size){
-      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k]), 1,
-					     &(((short *) template_stream->data)[j]), 1,
+    /* second copy */
+    if(shifted_frame_count != template->buffer_size){
+      if(template->loop_end - j < template->buffer_size - shifted_frame_count ||
+	 i + (template->buffer_size - shifted_frame_count) >= frame_count){
+	ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k % template->buffer_size]), 1,
+					       &(((short *) template_stream->data)[j % template->buffer_size]), 1,
+					       template->loop_end - j);
+
+	i += (template->loop_end - j);
+	k += (template->loop_end - j);
+      
+	j = template->loop_start;
+      
+	template_stream = g_list_nth(template->stream_beginning,
+				     (guint) floor(template->loop_start / template->buffer_size));
+
+	if(k % template->buffer_size == 0){
+	  stream = stream->next;
+	}
+
+	g_message("cont b %d %d %d\0", i, j, k);
+
+	continue;
+      }
+    
+      g_message("copy b %d %d %d %x %x\0", i, j, k, stream, template_stream);
+      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k % template->buffer_size]), 1,
+					     &(((short *) template_stream->data)[j % template->buffer_size]), 1,
 					     template->buffer_size - shifted_frame_count);
 
       i += (template->buffer_size - shifted_frame_count);
-      
       j += (template->buffer_size - shifted_frame_count);
       k += (template->buffer_size - shifted_frame_count);
     }
-
+    
     if(template_is_shifted){
       stream = stream->next;
     }else{
@@ -1130,27 +1199,44 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
   /* after loop */
   template_stream = g_list_nth(template->stream_beginning,
-			       template->loop_end / template->buffer_size);
-
+			       (guint) floor(template->loop_end / template->buffer_size));
+  j = template->loop_end;
+  
   for(; i < frame_count;){
-    if(k % template->buffer_size > j % template->buffer_size){
-      shifted_frame_count = j % template->buffer_size;
+    template_stream_index = j % template->buffer_size;
+    stream_index = k % template->buffer_size;
+    
+    if(template_stream_index > stream_index){
+      shifted_frame_count = template->buffer_size - j % template->buffer_size;
       template_is_shifted = TRUE;
     }else{
-      shifted_frame_count = k % template->buffer_size;
+      shifted_frame_count = template->buffer_size - k % template->buffer_size;
       template_is_shifted = FALSE;
     }
 
-    if(j + shifted_frame_count >= template->length * template->buffer_size){
-      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k]), 1,
-					     &(((short *) template_stream->data)[j]), 1,
-					     (template->length * template->buffer_size) - j);
+    if(shifted_frame_count == 0){
+      shifted_frame_count = template->buffer_size;
+
+      if(template_stream_index > 0){
+	shifted_frame_count = template->buffer_size - j % template->buffer_size;
+      }else if(stream_index > 0){
+	shifted_frame_count = template->buffer_size - k % template->buffer_size;
+      }
+    }
+
+    g_message("3. shifted %d %d %d\0", shifted_frame_count, template_stream_index, stream_index);
+
+    /* first copy */
+    if(i + shifted_frame_count >= frame_count){
+      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
+					     &(((short *) template_stream->data)[template_stream_index]), 1,
+					     frame_count - j);
 
       break;
     }
     
-    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k]), 1,
-					   &(((short *) template_stream->data)[j]), 1,
+    ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
+					   &(((short *) template_stream->data)[template_stream_index]), 1,
 					   shifted_frame_count);
 
 
@@ -1165,9 +1251,18 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       stream = stream->next;
     }
 
-    if(k % template->buffer_size != j % template->buffer_size){
-      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k]), 1,
-					     &(((short *) template_stream->data)[j]), 1,
+    /* second copy */
+    if(shifted_frame_count != template->buffer_size){
+      if(i + template->buffer_size - shifted_frame_count >= frame_count){
+	ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k % template->buffer_size]), 1,
+					       &(((short *) template_stream->data)[j % template->buffer_size]), 1,
+					       frame_count - j);
+	
+      	break;
+      }
+    
+      ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k % template->buffer_size]), 1,
+					     &(((short *) template_stream->data)[j % template->buffer_size]), 1,
 					     template->buffer_size - shifted_frame_count);
 
       i += (template->buffer_size - shifted_frame_count);
@@ -1175,7 +1270,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       j += (template->buffer_size - shifted_frame_count);
       k += (template->buffer_size - shifted_frame_count);
     }
-
+    
     if(template_is_shifted){
       stream = stream->next;
     }else{
