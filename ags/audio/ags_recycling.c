@@ -913,8 +913,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   pthread_mutex_unlock(application_mutex);
   
   pthread_mutex_lock(recycling_mutex);
-
-  g_message("a\0");
   
   if(!AGS_IS_RECYCLING(recycling)){
     pthread_mutex_unlock(recycling_mutex);
@@ -927,8 +925,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
     return;
   }
-  
-  g_message("b\0");
 
   /* create audio signal */
   template = ags_audio_signal_get_template(recycling->audio_signal);
@@ -973,8 +969,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
     return;
   }
   
-  g_message("c\0");
-
   audio_signal->last_frame = ((guint) (delay * audio_signal->buffer_size) + frame_count + attack) % audio_signal->buffer_size;
 
   /* generic copying */
@@ -989,8 +983,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   i = 0;
   j = 0;
   k = first_frame;
-
-  g_message("before loop %d %d\0", template->loop_start, frame_count);
   
   for(; i < template->loop_start &&
 	i < frame_count;){
@@ -1015,8 +1007,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       }
     }
 
-    g_message("1. shifted %d %d %d\0", shifted_frame_count, template_stream_index, stream_index);
-
     /* first copy */
     if(i + shifted_frame_count >= template->loop_start ||
        i + shifted_frame_count >= frame_count){
@@ -1035,7 +1025,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       break;
     }
     
-    g_message("copy a %d %d %d\0", i, j, k);    
     ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
 					   &(((short *) template_stream->data)[template_stream_index]), 1,
 					   shifted_frame_count);
@@ -1065,7 +1054,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	break;
       }
     
-      g_message("copy b %d %d %d\0", i, j, k);
       ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k % template->buffer_size]), 1,
 					     &(((short *) template_stream->data)[j % template->buffer_size]), 1,
 					     template->buffer_size - shifted_frame_count);
@@ -1114,12 +1102,9 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       }
     }
 
-    g_message("2. shifted %d %d %d\0", shifted_frame_count, template_stream_index, stream_index);
-
     /* first copy */
     if(j + shifted_frame_count >= template->loop_end ||
        i + shifted_frame_count >= frame_count){
-      g_message("cont a %d %d %d\0", i, j, k);
       ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
 					     &(((short *) template_stream->data)[template_stream_index]), 1,
 					     template->loop_end - j);
@@ -1139,7 +1124,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       continue;
     }
     
-    g_message("copy a %d %d %d\0", i, j, k);    
     ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
 					   &(((short *) template_stream->data)[template_stream_index]), 1,
 					   shifted_frame_count);
@@ -1175,12 +1159,9 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	  stream = stream->next;
 	}
 
-	g_message("cont b %d %d %d\0", i, j, k);
-
 	continue;
       }
     
-      g_message("copy b %d %d %d %x %x\0", i, j, k, stream, template_stream);
       ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k % template->buffer_size]), 1,
 					     &(((short *) template_stream->data)[j % template->buffer_size]), 1,
 					     template->buffer_size - shifted_frame_count);
@@ -1224,13 +1205,11 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       }
     }
 
-    g_message("3. shifted %d %d %d\0", shifted_frame_count, template_stream_index, stream_index);
-
     /* first copy */
     if(i + shifted_frame_count >= frame_count){
       ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
 					     &(((short *) template_stream->data)[template_stream_index]), 1,
-					     frame_count - j);
+					     frame_count - i);
 
       break;
     }
@@ -1256,7 +1235,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
       if(i + template->buffer_size - shifted_frame_count >= frame_count){
 	ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[k % template->buffer_size]), 1,
 					       &(((short *) template_stream->data)[j % template->buffer_size]), 1,
-					       frame_count - j);
+					       frame_count - i);
 	
       	break;
       }
@@ -1298,12 +1277,12 @@ AgsRecycling*
 ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
 				GObject *prev_channel)
 {
-  AgsRecycling *recycling, *end_recycling;
+  AgsRecycling *recycling;
   
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *recycling_mutex, *start_recycling_mutex, *end_recycling_mutex;
+  pthread_mutex_t *recycling_mutex, *start_recycling_mutex;
 
   /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -1313,9 +1292,6 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
   
   start_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
 						   (GObject *) start_region);
-
-  end_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) end_region);
 
   pthread_mutex_unlock(application_mutex);
 
@@ -1330,22 +1306,11 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
 
   pthread_mutex_lock(start_recycling_mutex);
 
-  pthread_mutex_lock(end_recycling_mutex);
-
-  if(!AGS_IS_RECYCLING(end_region)){
-    pthread_mutex_unlock(end_recycling_mutex);
-    
-    return;
-  }
-
-  end_recycling = end_region->next;
-  
-  pthread_mutex_unlock(end_recycling_mutex);
-
   /* find */
   recycling = start_region;
 
-  while(recycling != end_recycling){
+  while(recycling != NULL &&
+	recycling != end_region){
     /* lock current */
     pthread_mutex_lock(application_mutex);
     
