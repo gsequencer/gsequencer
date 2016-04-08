@@ -92,7 +92,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = gsequencer$(EXEEXT) gsequencer_static$(EXEEXT) \
-	midi2xml$(EXEEXT) recycling$(EXEEXT)
+	midi2xml$(EXEEXT)
 check_PROGRAMS = ags_thread_test$(EXEEXT) ags_audio_test$(EXEEXT) \
 	ags_channel_test$(EXEEXT) ags_recycling_test$(EXEEXT) \
 	ags_audio_signal_test$(EXEEXT)
@@ -752,13 +752,6 @@ midi2xml_LDADD = $(LDADD)
 midi2xml_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(midi2xml_CFLAGS) \
 	$(CFLAGS) $(midi2xml_LDFLAGS) $(LDFLAGS) -o $@
-am_recycling_OBJECTS = ags/test/recycling-recycling.$(OBJEXT)
-recycling_OBJECTS = $(am_recycling_OBJECTS)
-recycling_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la
-recycling_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(recycling_CFLAGS) \
-	$(CFLAGS) $(recycling_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -799,16 +792,14 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
 	$(ags_channel_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_thread_test_SOURCES) $(gsequencer_SOURCES) \
-	$(gsequencer_static_SOURCES) $(midi2xml_SOURCES) \
-	$(recycling_SOURCES)
+	$(gsequencer_static_SOURCES) $(midi2xml_SOURCES)
 DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(libags_gui_la_SOURCES) $(libags_server_la_SOURCES) \
 	$(libags_thread_la_SOURCES) $(libgsequencer_la_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
 	$(ags_channel_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_thread_test_SOURCES) $(gsequencer_SOURCES) \
-	$(gsequencer_static_SOURCES) $(midi2xml_SOURCES) \
-	$(recycling_SOURCES)
+	$(gsequencer_static_SOURCES) $(midi2xml_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1333,10 +1324,6 @@ ags_audio_signal_test_SOURCES = ags/test/audio/ags_audio_signal_test.c
 ags_audio_signal_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_signal_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 ags_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
-recycling_SOURCES = ags/test/recycling.c
-recycling_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-recycling_LDFLAGS = -static -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-recycling_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # libags all files
 deprecated_libags_h_sources = 
@@ -4045,18 +4032,6 @@ ags/object/midi2xml-ags_marshal.$(OBJEXT): ags/object/$(am__dirstamp) \
 midi2xml$(EXEEXT): $(midi2xml_OBJECTS) $(midi2xml_DEPENDENCIES) $(EXTRA_midi2xml_DEPENDENCIES) 
 	@rm -f midi2xml$(EXEEXT)
 	$(AM_V_CCLD)$(midi2xml_LINK) $(midi2xml_OBJECTS) $(midi2xml_LDADD) $(LIBS)
-ags/test/$(am__dirstamp):
-	@$(MKDIR_P) ags/test
-	@: > ags/test/$(am__dirstamp)
-ags/test/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/$(DEPDIR)
-	@: > ags/test/$(DEPDIR)/$(am__dirstamp)
-ags/test/recycling-recycling.$(OBJEXT): ags/test/$(am__dirstamp) \
-	ags/test/$(DEPDIR)/$(am__dirstamp)
-
-recycling$(EXEEXT): $(recycling_OBJECTS) $(recycling_DEPENDENCIES) $(EXTRA_recycling_DEPENDENCIES) 
-	@rm -f recycling$(EXEEXT)
-	$(AM_V_CCLD)$(recycling_LINK) $(recycling_OBJECTS) $(recycling_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -4101,7 +4076,6 @@ mostlyclean-compile:
 	-rm -f ags/plugin/*.lo
 	-rm -f ags/server/*.$(OBJEXT)
 	-rm -f ags/server/*.lo
-	-rm -f ags/test/*.$(OBJEXT)
 	-rm -f ags/test/audio/*.$(OBJEXT)
 	-rm -f ags/test/thread/*.$(OBJEXT)
 	-rm -f ags/thread/*.$(OBJEXT)
@@ -4531,7 +4505,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_server.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_server_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_service_provider.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/test/$(DEPDIR)/recycling-recycling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_signal_test-ags_audio_signal_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_test-ags_audio_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_channel_test-ags_channel_test.Po@am__quote@
@@ -7860,20 +7833,6 @@ ags/object/midi2xml-ags_marshal.obj: ags/object/ags_marshal.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -c -o ags/object/midi2xml-ags_marshal.obj `if test -f 'ags/object/ags_marshal.c'; then $(CYGPATH_W) 'ags/object/ags_marshal.c'; else $(CYGPATH_W) '$(srcdir)/ags/object/ags_marshal.c'; fi`
 
-ags/test/recycling-recycling.o: ags/test/recycling.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(recycling_CFLAGS) $(CFLAGS) -MT ags/test/recycling-recycling.o -MD -MP -MF ags/test/$(DEPDIR)/recycling-recycling.Tpo -c -o ags/test/recycling-recycling.o `test -f 'ags/test/recycling.c' || echo '$(srcdir)/'`ags/test/recycling.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/$(DEPDIR)/recycling-recycling.Tpo ags/test/$(DEPDIR)/recycling-recycling.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/recycling.c' object='ags/test/recycling-recycling.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(recycling_CFLAGS) $(CFLAGS) -c -o ags/test/recycling-recycling.o `test -f 'ags/test/recycling.c' || echo '$(srcdir)/'`ags/test/recycling.c
-
-ags/test/recycling-recycling.obj: ags/test/recycling.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(recycling_CFLAGS) $(CFLAGS) -MT ags/test/recycling-recycling.obj -MD -MP -MF ags/test/$(DEPDIR)/recycling-recycling.Tpo -c -o ags/test/recycling-recycling.obj `if test -f 'ags/test/recycling.c'; then $(CYGPATH_W) 'ags/test/recycling.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/recycling.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/$(DEPDIR)/recycling-recycling.Tpo ags/test/$(DEPDIR)/recycling-recycling.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/recycling.c' object='ags/test/recycling-recycling.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(recycling_CFLAGS) $(CFLAGS) -c -o ags/test/recycling-recycling.obj `if test -f 'ags/test/recycling.c'; then $(CYGPATH_W) 'ags/test/recycling.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/recycling.c'; fi`
-
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -8638,8 +8597,6 @@ distclean-generic:
 	-rm -f ags/plugin/$(am__dirstamp)
 	-rm -f ags/server/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/server/$(am__dirstamp)
-	-rm -f ags/test/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ags/test/$(am__dirstamp)
 	-rm -f ags/test/audio/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/test/audio/$(am__dirstamp)
 	-rm -f ags/test/thread/$(DEPDIR)/$(am__dirstamp)
@@ -8667,7 +8624,7 @@ clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -8717,7 +8674,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
