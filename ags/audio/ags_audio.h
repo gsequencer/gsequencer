@@ -181,6 +181,6 @@ void ags_audio_open_files(AgsAudio *audio,
 GList* ags_audio_recursive_play_init(AgsAudio *audio,
 				     gboolean playback, gboolean sequencer, gboolean notation);
 
-AgsAudio* ags_audio_new();
+AgsAudio* ags_audio_new(GObject *soundcard);
 
 #endif /*__AGS_AUDIO_H__*/
