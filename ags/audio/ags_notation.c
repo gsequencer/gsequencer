@@ -1182,7 +1182,7 @@ ags_notation_remove_point_from_selection(AgsNotation *notation,
 
   note = ags_notation_find_point(notation,
 				 x, y,
-				 FALSE);
+				 TRUE);
 
   if(note != NULL){
     note->flags &= (~AGS_NOTE_IS_SELECTED);
