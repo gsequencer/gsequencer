@@ -141,7 +141,10 @@ check_PROGRAMS = \
 	ags_audio_test \
 	ags_channel_test \
 	ags_recycling_test \
-	ags_audio_signal_test
+	ags_audio_signal_test \
+	ags_recall_test \
+	ags_pattern_test \
+	ags_notation_test
 
 TESTS = $(check_PROGRAMS)
 
@@ -169,6 +172,21 @@ ags_audio_signal_test_SOURCES = ags/test/audio/ags_audio_signal_test.c
 ags_audio_signal_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_signal_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 ags_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+
+ags_recall_test_SOURCES = ags/test/audio/ags_recall_test.c
+ags_recall_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_recall_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_recall_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+
+ags_pattern_test_SOURCES = ags/test/audio/ags_pattern_test.c
+ags_pattern_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_pattern_test_LDFLAGS = -static -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_pattern_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
+
+ags_notation_test_SOURCES = ags/test/audio/ags_notation_test.c
+ags_notation_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_notation_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_notation_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 # libags all files
 deprecated_libags_h_sources =
