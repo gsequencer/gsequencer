@@ -68,14 +68,34 @@ void ags_notation_test_insert_from_clipboard();
 #define AGS_NOTATION_TEST_FIND_POINT_WIDTH (4096)
 #define AGS_NOTATION_TEST_FIND_POINT_HEIGHT (88)
 #define AGS_NOTATION_TEST_FIND_POINT_COUNT (1024)
-#define AGS_NOTATION_TEST_FIND_POINT_N_ATTEMPTS (1024)
+#define AGS_NOTATION_TEST_FIND_POINT_N_ATTEMPTS (128)
 
 #define AGS_NOTATION_TEST_FIND_REGION_WIDTH (4096)
 #define AGS_NOTATION_TEST_FIND_REGION_HEIGHT (88)
 #define AGS_NOTATION_TEST_FIND_REGION_COUNT (1024)
-#define AGS_NOTATION_TEST_FIND_REGION_N_ATTEMPTS (1024)
+#define AGS_NOTATION_TEST_FIND_REGION_N_ATTEMPTS (128)
 #define AGS_NOTATION_TEST_FIND_REGION_SELECTION_WIDTH (128)
 #define AGS_NOTATION_TEST_FIND_REGION_SELECTION_HEIGHT (24)
+
+#define AGS_NOTATION_TEST_FREE_SELECTION_WIDTH (4096)
+#define AGS_NOTATION_TEST_FREE_SELECTION_HEIGHT (88)
+#define AGS_NOTATION_TEST_FREE_SELECTION_COUNT (1024)
+#define AGS_NOTATION_TEST_FREE_SELECTION_SELECTION_COUNT (64)
+
+#define AGS_NOTATION_TEST_ADD_ALL_TO_SELECTION_WIDTH (4096)
+#define AGS_NOTATION_TEST_ADD_ALL_TO_SELECTION_HEIGHT (88)
+#define AGS_NOTATION_TEST_ADD_ALL_TO_SELECTION_COUNT (1024)
+
+#define AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_WIDTH (4096)
+#define AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_HEIGHT (88)
+#define AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_COUNT (1024)
+#define AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_N_ATTEMPTS (128)
+
+#define AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_WIDTH (4096)
+#define AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_HEIGHT (88)
+#define AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_COUNT (1024)
+#define AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_SELECTION_COUNT (128)
+#define AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_N_ATTEMPTS (64)
 
 AgsAudio *audio;
 
@@ -233,8 +253,8 @@ ags_notation_test_remove_note_at_position()
 			 nth);
     
     ags_notation_remove_note_at_position(notation,
-					 AGS_NOTE(current)->x[0],
-					 AGS_NOTE(current)->y);
+					 AGS_NOTE(current->data)->x[0],
+					 AGS_NOTE(current->data)->y);
   }
   
   /* assert position */
@@ -443,21 +463,256 @@ ags_notation_test_find_region()
 void
 ags_notation_test_free_selection()
 {
+  AgsNotation *notation;
+  AgsNote *note;
+
+  GList *list, *current;
+  
+  guint x0, y;
+  guint nth;
+  guint i;
+
+  /* create notation */
+  notation = ags_notation_new(audio,
+			      0);
+
+  for(i = 0; i < AGS_NOTATION_TEST_FREE_SELECTION_COUNT; i++){
+    x0 = rand() % AGS_NOTATION_TEST_FREE_SELECTION_WIDTH;
+    y = rand() % AGS_NOTATION_TEST_FREE_SELECTION_HEIGHT;
+    
+    note = ags_note_new_with_offset(x0, x0 + 1,
+				    y,
+				    0.0, 0.0);
+
+    ags_notation_add_note(notation,
+			  note,
+			  FALSE);
+  }
+
+  /* select notes */
+  for(i = 0; i < AGS_NOTATION_TEST_FREE_SELECTION_SELECTION_COUNT; i++){
+    nth = rand() % (AGS_NOTATION_TEST_FREE_SELECTION_SELECTION_COUNT - i);
+    current = g_list_nth(notation->notes,
+			 nth);
+
+    ags_notation_add_note(notation,
+			  current->data,
+			  TRUE);
+  }
+
+  /* assert free slection */
+  CU_ASSERT(notation->selection != NULL);
+
+  ags_notation_free_selection(notation);
+  
+  CU_ASSERT(notation->selection == NULL);
 }
 
 void
 ags_notation_test_add_all_to_selection()
 {
+  AgsNotation *notation;
+  AgsNote *note;
+
+  GList *list, *current, *current_selection;
+  
+  guint x0, y;
+  guint nth;
+  guint i;
+  gboolean success;
+
+  /* create notation */
+  notation = ags_notation_new(audio,
+			      0);
+
+  for(i = 0; i < AGS_NOTATION_TEST_ADD_ALL_TO_SELECTION_COUNT; i++){
+    x0 = rand() % AGS_NOTATION_TEST_ADD_ALL_TO_SELECTION_WIDTH;
+    y = rand() % AGS_NOTATION_TEST_ADD_ALL_TO_SELECTION_HEIGHT;
+    
+    note = ags_note_new_with_offset(x0, x0 + 1,
+				    y,
+				    0.0, 0.0);
+
+    ags_notation_add_note(notation,
+			  note,
+			  FALSE);
+  }
+
+  /* assert all present */
+  current = notation->notes;
+  current_selection = notation->selection;
+
+  success = TRUE;
+  
+  while(current != NULL &&
+	current_selection != NULL){
+    if(current->data != current_selection->data){
+      success = FALSE;
+      
+      break;
+    }
+    
+    current = current->next;
+    current_selection = current_selection->next;
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_notation_test_add_point_to_selection()
 {
+  AgsNotation *notation;
+  AgsNote *note;
+
+  GList *list, *current;
+  
+  guint x0, y;
+  guint nth;
+  guint i;
+  
+  gboolean success;
+
+  /* create notation */
+  notation = ags_notation_new(audio,
+			      0);
+
+  for(i = 0; i < AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_COUNT; i++){
+    x0 = rand() % AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_WIDTH;
+    y = rand() % AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_HEIGHT;
+    
+    note = ags_note_new_with_offset(x0, x0 + 1,
+				    y,
+				    0.0, 0.0);
+
+    ags_notation_add_note(notation,
+			  note,
+			  FALSE);
+  }
+
+  /* assert add point to selection */
+  success = TRUE;
+  
+  for(i = 0; i < AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_N_ATTEMPTS; i++){
+    nth = rand() % AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_COUNT;
+    current = g_list_nth(notation->notes,
+			 nth);
+
+    ags_notation_add_point_to_selection(notation,
+					AGS_NOTE(current->data)->x[0], AGS_NOTE(current->data)->y,
+					FALSE);
+
+    if(ags_notation_find_point(notation,
+			       AGS_NOTE(current->data)->x[0], AGS_NOTE(current->data)->y,
+			       TRUE) == NULL){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_notation_test_remove_point_from_selection()
 {
+  AgsNotation *notation;
+  AgsNote *note, *match;
+
+  GList *list, *current, *iter, *next;
+  
+  guint x0, y;
+  guint nth;
+  guint n_matches;
+  guint i;
+  
+  gboolean success;
+
+  /* create notation */
+  notation = ags_notation_new(audio,
+			      0);
+
+  for(i = 0; i < AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_COUNT; i++){
+    x0 = rand() % AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_WIDTH;
+    y = rand() % AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_HEIGHT;
+    
+    note = ags_note_new_with_offset(x0, x0 + 1,
+				    y,
+				    0.0, 0.0);
+
+    ags_notation_add_note(notation,
+			  note,
+			  FALSE);
+  }
+
+  /* add point to selection */
+  for(i = 0; i < AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_SELECTION_COUNT; i++){
+    nth = rand() % AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_COUNT;
+    current = g_list_nth(notation->notes,
+			 nth);
+
+    ags_notation_add_point_to_selection(notation,
+					AGS_NOTE(current->data)->x[0], AGS_NOTE(current->data)->y,
+					FALSE);
+  }
+
+  /* assert remove point from selection */
+  success = TRUE;
+  
+  for(i = 0; i < AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_N_ATTEMPTS; i++){
+    nth = rand() % (AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_N_ATTEMPTS);
+    current = g_list_nth(notation->selection,
+			 nth);
+
+    if(current == NULL){
+      continue;
+    }
+    
+    iter = current->next;
+    n_matches = 0;
+
+    while(iter != NULL &&
+	  AGS_NOTE(iter->data)->x[0] == AGS_NOTE(current->data)->x[0] &&
+	  AGS_NOTE(iter->data)->y == AGS_NOTE(current->data)->y){
+      n_matches++;
+
+      iter = iter->next;
+    }
+
+    ags_notation_remove_point_from_selection(notation,
+					     AGS_NOTE(current->data)->x[0], AGS_NOTE(current->data)->y);
+
+    
+    if((match = ags_notation_find_point(notation,
+					AGS_NOTE(current->data)->x[0], AGS_NOTE(current->data)->y,
+					TRUE)) != NULL){
+      if(n_matches == 0){
+	success = FALSE;
+	
+	break;
+      }else{
+	next = g_list_find(notation->selection,
+			   match);
+	
+	while(next != NULL &&
+	      AGS_NOTE(next->data)->x[0] == AGS_NOTE(current->data)->x[0] &&
+	    AGS_NOTE(next->data)->y == AGS_NOTE(current->data)->y){
+	  n_matches--;
+	  
+	  next = next->next;
+	}
+	
+	if(n_matches != 0){
+	  success = FALSE;
+	  
+	  break;
+	}
+      }
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
