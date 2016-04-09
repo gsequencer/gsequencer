@@ -78,7 +78,7 @@ ags_timestamp_class_init(AgsTimestampClass *timestamp)
 void
 ags_timestamp_init(AgsTimestamp *timestamp)
 {
-  timestamp->flags = 0;
+  timestamp->flags = AGS_TIMESTAMP_UNIX;
 
   time(&(timestamp->timer.unix_time.time_val));
 

@@ -81,6 +81,7 @@ enum{
   PROP_NOTE,
   PROP_CURRENT_NOTES,
   PROP_NEXT_NOTES,
+  PROP_TIMESTAMP,
 };
 
 static gpointer ags_notation_parent_class = NULL;
@@ -253,6 +254,22 @@ ags_notation_class_init(AgsNotationClass *notation)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NEXT_NOTES,
+				  param_spec);
+  
+  /**
+   * AgsPattern:timestamp:
+   *
+   * The pattern's timestamp.
+   * 
+   * Since: 0.7.12
+   */
+  param_spec = g_param_spec_object("timestamp\0",
+				   "timestamp of pattern\0",
+				   "The timestamp of pattern\0",
+				   AGS_TYPE_TIMESTAMP,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMESTAMP,
 				  param_spec);
 }
 
@@ -467,6 +484,27 @@ ags_notation_set_property(GObject *gobject,
       pthread_mutex_unlock(port->mutex);
     }
     break;
+  case PROP_TIMESTAMP:
+    {
+      AgsTimestamp *timestamp;
+
+      timestamp = (AgsTimestamp *) g_value_get_object(value);
+
+      if(timestamp == (AgsTimestamp *) notation->timestamp){
+	return;
+      }
+
+      if(notation->timestamp != NULL){
+	g_object_unref(G_OBJECT(notation->timestamp));
+      }
+
+      if(timestamp != NULL){
+	g_object_ref(G_OBJECT(timestamp));
+      }
+
+      notation->timestamp = (GObject *) timestamp;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -551,6 +589,9 @@ ags_notation_get_property(GObject *gobject,
 
       g_value_set_pointer(value, (gpointer) start);
     }
+    break;
+  case PROP_TIMESTAMP:
+    g_value_set_object(value, notation->timestamp);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

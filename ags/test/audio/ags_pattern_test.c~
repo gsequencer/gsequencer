@@ -1,0 +1,130 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2016 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include <CUnit/CUnit.h>
+#include <CUnit/Automated.h>
+#include <CUnit/Basic.h>
+
+#include <ags/object/ags_soundcard.h>
+
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_pattern.h>
+
+int ags_pattern_test_init_suite();
+int ags_pattern_test_clean_suite();
+
+void ags_pattern_test_find_near_timestamp();
+void ags_pattern_test_set_dim();
+void ags_pattern_test_get_bit();
+void ags_pattern_test_toggle_bit();
+
+AgsApplicationContext *application_context;
+AgsDevout *devout;
+
+/* The suite initialization function.
+ * Opens the temporary file used by the tests.
+ * Returns zero on success, non-zero otherwise.
+ */
+int
+ags_pattern_test_init_suite()
+{
+  application_context = ags_application_context_new(NULL,
+						    NULL);
+  
+  devout = ags_devout_new(NULL);
+
+  return(0);
+}
+
+/* The suite cleanup function.
+ * Closes the temporary file used by the tests.
+ * Returns zero on success, non-zero otherwise.
+ */
+int
+ags_pattern_test_clean_suite()
+{
+  g_object_unref(devout);
+  g_object_unref(application_context);
+  
+  return(0);
+}
+
+void
+ags_pattern_test_find_near_timestamp()
+{
+}
+
+void
+ags_pattern_test_set_dim()
+{
+}
+
+void
+ags_pattern_test_get_bit()
+{
+}
+
+void
+ags_pattern_test_toggle_bit()
+{
+}
+
+int
+main(int argc, char **argv)
+{
+  CU_pSuite pSuite = NULL;
+
+  /* initialize the CUnit test registry */
+  if(CUE_SUCCESS != CU_initialize_registry()){
+    return CU_get_error();
+  }
+
+  /* add a suite to the registry */
+  pSuite = CU_add_suite("AgsPatternTest\0", ags_pattern_test_init_suite, ags_pattern_test_clean_suite);
+  
+  if(pSuite == NULL){
+    CU_cleanup_registry();
+    
+    return CU_get_error();
+  }
+
+  /* add the tests to the suite */
+  if((CU_add_test(pSuite, "test of AgsPattern find near timestamp\0", ags_pattern_test_find_near_timestamp) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPattern set dim\0", ags_pattern_test_set_dim) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPattern get bit\0", ags_pattern_test_get_bit) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPattern toggle bit\0", ags_pattern_test_toggle_bit) == NULL)){
+    CU_cleanup_registry();
+    
+    return CU_get_error();
+  }
+  
+  /* Run all tests using the CUnit Basic interface */
+  CU_basic_set_mode(CU_BRM_VERBOSE);
+  CU_basic_run_tests();
+  
+  CU_cleanup_registry();
+  
+  return(CU_get_error());
+}
+
