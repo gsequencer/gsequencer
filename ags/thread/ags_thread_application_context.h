@@ -56,7 +56,6 @@ struct _AgsThreadApplicationContext
 
   guint flags;
 
-  AgsThread *main_loop;
   AgsThread *autosave_thread;
   AgsThreadPool *thread_pool;
 };
