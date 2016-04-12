@@ -81,11 +81,6 @@ AgsDevout *devout;
 int
 ags_recall_test_init_suite()
 {
-  application_context = ags_application_context_new(NULL,
-						    NULL);
-  
-  devout = ags_devout_new(NULL);
-
   return(0);
 }
 
@@ -96,15 +91,13 @@ ags_recall_test_init_suite()
 int
 ags_recall_test_clean_suite()
 {
-  g_object_unref(devout);
-  g_object_unref(application_context);
-  
   return(0);
 }
 
 void
 ags_recall_test_resolve_dependencies()
 {
+  CU_ASSERT(TRUE);
 }
 
 void
