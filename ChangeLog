@@ -1,3 +1,8 @@
+ags (0.7.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsAudioApplicationContext and AgsThreadApplicationContext
+
 ags (0.7.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

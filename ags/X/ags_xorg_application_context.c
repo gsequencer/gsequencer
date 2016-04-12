@@ -34,6 +34,7 @@
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_thread-posix.h>
 #include <ags/thread/ags_thread_pool.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
@@ -391,8 +392,11 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 				xorg_application_context->gui_thread,
 				TRUE, TRUE);
 
+  /* AgsAutosaveThread */
+  xorg_application_context->autosave_thread = NULL;
+  
   /* AgsThreadPool */
-  AGS_XORG_APPLICATION_CONTEXT(xorg_application_context)->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
+  xorg_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
 }
 
 void

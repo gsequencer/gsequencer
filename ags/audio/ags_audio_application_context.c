@@ -27,12 +27,38 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
+#include <ags/object/ags_distributed_manager.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_soundcard.h>
+
+#include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_thread_pool.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_midiin.h>
+
+#include <ags/audio/jack/ags_jack_midiin.h>
+#include <ags/audio/jack/ags_jack_server.h>
 
 #include <ags/audio/file/ags_audio_file_xml.h>
 
+#include <sys/types.h>
+#include <pwd.h>
+
+#include <jack/jslist.h>
+#include <jack/jack.h>
+#include <jack/control.h>
+#include <stdbool.h>
+
 void ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_application_context);
 void ags_audio_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_audio_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
+void ags_audio_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider);
 void ags_audio_application_context_init(AgsAudioApplicationContext *audio_application_context);
 void ags_audio_application_context_set_property(GObject *gobject,
 						guint prop_id,
@@ -44,6 +70,16 @@ void ags_audio_application_context_get_property(GObject *gobject,
 						GParamSpec *param_spec);
 void ags_audio_application_context_connect(AgsConnectable *connectable);
 void ags_audio_application_context_disconnect(AgsConnectable *connectable);
+AgsThread* ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+AgsThread* ags_audio_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
+AgsThreadPool* ags_audio_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+GList* ags_audio_application_context_get_soundcard(AgsSoundProvider *sound_provider);
+void ags_audio_application_context_set_soundcard(AgsSoundProvider *sound_provider,
+						 GList *soundcar);
+GList* ags_audio_application_context_get_sequencer(AgsSoundProvider *sound_provider);
+void ags_audio_application_context_set_sequencer(AgsSoundProvider *sound_provider,
+						 GList *sequencer);
+GList* ags_audio_application_context_get_distributed_manager(AgsSoundProvider *sound_provider);
 void ags_audio_application_context_finalize(GObject *gobject);
 
 void ags_audio_application_context_load_config(AgsApplicationContext *application_context);
@@ -86,6 +122,18 @@ ags_audio_application_context_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_concurrency_provider_interface_info = {
+      (GInterfaceInitFunc) ags_audio_application_context_concurrency_provider_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_sound_provider_interface_info = {
+      (GInterfaceInitFunc) ags_audio_application_context_sound_provider_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_audio_application_context = g_type_register_static(AGS_TYPE_APPLICATION_CONTEXT,
 								"AgsAudioApplicationContext\0",
 								&ags_audio_application_context_info,
@@ -94,6 +142,14 @@ ags_audio_application_context_get_type()
     g_type_add_interface_static(ags_type_audio_application_context,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_audio_application_context,
+				AGS_TYPE_CONCURRENCY_PROVIDER,
+				&ags_concurrency_provider_interface_info);
+
+    g_type_add_interface_static(ags_type_audio_application_context,
+				AGS_TYPE_SOUND_PROVIDER,
+				&ags_sound_provider_interface_info);
   }
 
   return (ags_type_audio_application_context);
@@ -151,11 +207,164 @@ ags_audio_application_context_connectable_interface_init(AgsConnectableInterface
 }
 
 void
+ags_audio_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider)
+{
+  concurrency_provider->get_main_loop = ags_audio_application_context_get_main_loop;
+  concurrency_provider->get_task_thread = ags_audio_application_context_get_task_thread;
+  concurrency_provider->get_thread_pool = ags_audio_application_context_get_thread_pool;
+}
+
+void
+ags_audio_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider)
+{
+  sound_provider->get_soundcard = ags_audio_application_context_get_soundcard;
+  sound_provider->set_soundcard = ags_audio_application_context_set_soundcard;
+  sound_provider->get_sequencer = ags_audio_application_context_get_sequencer;
+  sound_provider->set_sequencer = ags_audio_application_context_set_sequencer;
+  sound_provider->get_distributed_manager = ags_audio_application_context_get_distributed_manager;
+}
+
+void
 ags_audio_application_context_init(AgsAudioApplicationContext *audio_application_context)
 {
+  AgsAudioLoop *audio_loop;
+  GObject *soundcard;
+  GObject *sequencer;
+  AgsJackServer *jack_server;
+  
+  AgsConfig *config;
+
+  struct passwd *pw;
+  JSList *jslist;
+
+  gchar *str;
+  gboolean jack_enabled;
+  uid_t uid;
+  gchar *wdir, *config_file;
+
   audio_application_context->flags = 0;
 
+  AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
+
+  /**/
+  config = ags_config_get_instance();
+  AGS_APPLICATION_CONTEXT(audio_application_context)->config = config;
+  g_object_set(config,
+	       "application-context\0", audio_application_context,
+	       NULL);
+
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  wdir = g_strdup_printf("%s/%s\0",
+			 pw->pw_dir,
+			 AGS_DEFAULT_DIRECTORY);
+
+  config_file = g_strdup_printf("%s/%s\0",
+				wdir,
+				AGS_DEFAULT_CONFIG);
+
+  ags_config_load_from_file(config,
+			    config_file);
+
+  g_free(wdir);
+  g_free(config_file);
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "jack\0");
+  jack_enabled = (str != NULL && !g_ascii_strncasecmp(str, "enabled\0", 8)) ? TRUE: FALSE;
+
+  if(str != NULL){
+    free(str);
+  }
+  
+  /* distributed manager */
+  audio_application_context->distributed_manager = NULL;
+
+  if(jack_enabled){
+    jack_server = ags_jack_server_new(audio_application_context,
+				      NULL);
+    audio_application_context->distributed_manager = g_list_prepend(audio_application_context->distributed_manager,
+								    jack_server);
+    g_object_ref(G_OBJECT(jack_server));
+  }
+  
+  /* AgsSoundcard */
   audio_application_context->soundcard = NULL;
+ 
+  soundcard = ags_devout_new(audio_application_context);
+  audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
+							soundcard);
+  g_object_ref(G_OBJECT(soundcard));
+  
+  if(jack_enabled){
+    //    jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
+    //  jackctl_server_start(jack_server->jackctl);
+    //    jackctl_server_open(jack_server->jackctl,
+    //			jslist->data);
+    
+    soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
+							   TRUE);
+    audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
+							  soundcard);
+    g_object_ref(G_OBJECT(soundcard));
+  }
+  
+  /* AgsSequencer */
+  audio_application_context->sequencer = NULL;
+
+  sequencer = ags_midiin_new(audio_application_context);
+  audio_application_context->sequencer = g_list_prepend(audio_application_context->sequencer,
+							sequencer);
+  g_object_ref(G_OBJECT(sequencer));
+
+  if(jack_enabled){
+    sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
+							   FALSE);
+    audio_application_context->sequencer = g_list_prepend(audio_application_context->sequencer,
+							  sequencer);
+    g_object_ref(G_OBJECT(sequencer));
+  }
+
+  /* AgsAudioLoop */
+  AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop = 
+    audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
+						  audio_application_context);
+  g_object_set(audio_application_context,
+	       "main-loop\0", audio_loop,
+	       NULL);
+
+  g_object_ref(audio_loop);
+  ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
+
+  /* AgsTaskThread */
+  AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread,
+				TRUE, TRUE);
+
+  ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
+				AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread);
+  
+  /* AgsSoundcardThread */
+  audio_application_context->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				audio_application_context->soundcard_thread,
+				TRUE, TRUE);
+
+  /* AgsExportThread */
+  audio_application_context->export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+										 NULL);
+  ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				audio_application_context->export_thread,
+				TRUE, TRUE);
+
+  /* AgsAutosaveThread */
+  audio_application_context->autosave_thread = NULL;
+  
+  /* AgsThreadPool */
+  audio_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread)->thread_pool;
 }
 
 void
@@ -183,7 +392,7 @@ ags_audio_application_context_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(soundcard));
 
 	audio_application_context->soundcard = g_list_prepend(audio_application_context->soundcard,
-							       soundcard);
+							      soundcard);
       }
     }
     break;
@@ -252,6 +461,56 @@ ags_audio_application_context_disconnect(AgsConnectable *connectable)
   }
 
   ags_audio_application_context_parent_connectable_interface->disconnect(connectable);
+}
+
+AgsThread*
+ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+}
+
+AgsThread*
+ags_audio_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
+}
+
+AgsThreadPool*
+ags_audio_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_AUDIO_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
+}
+
+GList*
+ags_audio_application_context_get_soundcard(AgsSoundProvider *sound_provider)
+{
+  return(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->soundcard);
+}
+
+void
+ags_audio_application_context_set_soundcard(AgsSoundProvider *sound_provider,
+					    GList *soundcard)
+{
+  AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->soundcard = soundcard;
+}
+
+GList*
+ags_audio_application_context_get_sequencer(AgsSoundProvider *sound_provider)
+{
+  return(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->sequencer);
+}
+
+void
+ags_audio_application_context_set_sequencer(AgsSoundProvider *sound_provider,
+					    GList *sequencer)
+{
+  AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->sequencer = sequencer;
+}
+
+GList*
+ags_audio_application_context_get_distributed_manager(AgsSoundProvider *sound_provider)
+{
+  return(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->distributed_manager);
 }
 
 void
