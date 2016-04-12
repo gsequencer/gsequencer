@@ -680,12 +680,13 @@ ags_notation_test_remove_point_from_selection()
       iter = iter->next;
     }
 
+    note = AGS_NOTE(current->data);
     ags_notation_remove_point_from_selection(notation,
-					     AGS_NOTE(current->data)->x[0], AGS_NOTE(current->data)->y);
+					     note->x[0], note->y);
 
     
     if((match = ags_notation_find_point(notation,
-					AGS_NOTE(current->data)->x[0], AGS_NOTE(current->data)->y,
+					note->x[0], note->y,
 					TRUE)) != NULL){
       if(n_matches == 0){
 	success = FALSE;
@@ -696,8 +697,8 @@ ags_notation_test_remove_point_from_selection()
 			   match);
 	
 	while(next != NULL &&
-	      AGS_NOTE(next->data)->x[0] == AGS_NOTE(current->data)->x[0] &&
-	    AGS_NOTE(next->data)->y == AGS_NOTE(current->data)->y){
+	      AGS_NOTE(next->data)->x[0] == note->x[0] &&
+	    AGS_NOTE(next->data)->y == note->y){
 	  n_matches--;
 	  
 	  next = next->next;

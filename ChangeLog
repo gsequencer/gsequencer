@@ -1,7 +1,7 @@
 ags (0.7.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed unit all tests
+	* fixed all unit tests
 	* fixed ags_recycling_create_audio_signal_with_frame_count()
 	* implemented timestamp property of AgsPattern and AgsNotation
 
