@@ -1,0 +1,4 @@
+AgsApplicationContext *application_context;
+AgsThread *task_thread;
+
+application_context = (AgsApplicationContext *) ags_thread_application_context_new();

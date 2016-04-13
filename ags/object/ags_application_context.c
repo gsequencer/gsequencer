@@ -71,6 +71,7 @@ enum{
   PROP_APPLICATION_MUTEX,
   PROP_MAIN_LOOP,
   PROP_CONFIG,
+  PROP_FILE,
 };
 
 static gpointer ags_application_context_parent_class = NULL;
@@ -137,7 +138,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned main-loop.
    * 
-   * Since: 0.4
+   * Since: 0.5.0
    */
   param_spec = g_param_spec_object("main-loop\0",
 				   "main-loop of application context\0",
@@ -153,7 +154,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned config.
    * 
-   * Since: 0.4
+   * Since: 0.5.0
    */
   param_spec = g_param_spec_object("config\0",
 				   "config of application context\0",
@@ -162,6 +163,22 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CONFIG,
+				  param_spec);
+
+  /**
+   * AgsApplicationContext:file:
+   *
+   * The assigned file.
+   * 
+   * Since: 0.5.0
+   */
+  param_spec = g_param_spec_object("file\0",
+				   "file of application context\0",
+				   "The file what application context does persist\0",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE,
 				  param_spec);
 
   /* AgsApplicationContextClass */
@@ -290,6 +307,24 @@ ags_application_context_set_property(GObject *gobject,
       application_context->main_loop = main_loop;
     }
     break;
+  case PROP_FILE:
+    {
+      AgsFile *file;
+      
+      file = (AgsApplicationContext *) g_value_get_object(value);
+
+      if(file == application_context->file)
+	return;
+
+      if(application_context->file != NULL)
+	g_object_unref(application_context->file);
+
+      if(file != NULL)
+	g_object_ref(G_OBJECT(file));
+
+      application_context->file = (GObject *) file;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -316,6 +351,11 @@ ags_application_context_get_property(GObject *gobject,
   case PROP_MAIN_LOOP:
     {
       g_value_set_object(value, application_context->main_loop);
+    }
+    break;
+  case PROP_FILE:
+    {
+      g_value_set_object(value, application_context->file);
     }
     break;
   default:

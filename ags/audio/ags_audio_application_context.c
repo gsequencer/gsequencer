@@ -832,8 +832,6 @@ ags_audio_application_context_new(GObject *main_loop,
   AgsAudioApplicationContext *audio_application_context;
 
   audio_application_context = (AgsAudioApplicationContext *) g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
-									  "main-loop\0", main_loop,
-									  "config\0", config,
 									  NULL);
 
   return(audio_application_context);
