@@ -27,4 +27,8 @@
     AgsPlugin interface to do an abstraction of reading and writing xmlNode.
   </para>
 
+  <sect1>
+    <title></title>
+  </sect1>
+  
 </chapter>

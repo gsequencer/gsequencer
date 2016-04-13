@@ -587,14 +587,11 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
 }
 
 AgsThreadApplicationContext*
-ags_thread_application_context_new(AgsThread *main_loop,
-				   AgsConfig *config)
+ags_thread_application_context_new()
 {
   AgsThreadApplicationContext *thread_application_context;
 
   thread_application_context = (AgsThreadApplicationContext *) g_object_new(AGS_TYPE_THREAD_APPLICATION_CONTEXT,
-									    "main-loop\0", main_loop,
-									    "config\0", config,
 									    NULL);
 
   return(thread_application_context);
