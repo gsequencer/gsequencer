@@ -231,6 +231,8 @@ ags_matrix_tact_callback(AgsAudio *audio,
     return;
   }
 
+  gdk_threads_enter();
+  
   window = gtk_widget_get_ancestor(matrix,
 				   AGS_TYPE_WINDOW);
 
@@ -278,6 +280,10 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   if(play_count_beats_audio == NULL ||
      play_count_beats_audio_run == NULL){
+    pthread_mutex_unlock(audio_mutex);
+
+    gdk_threads_leave();
+    
     return;
   }
 
@@ -301,10 +307,12 @@ ags_matrix_tact_callback(AgsAudio *audio,
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
+  pthread_mutex_unlock(audio_mutex);
+
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(toggle_led));
 
-  pthread_mutex_unlock(audio_mutex);
+  gdk_threads_leave();
 }
 
 void

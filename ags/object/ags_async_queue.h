@@ -37,6 +37,9 @@ typedef struct _AgsAsyncQueueInterface AgsAsyncQueueInterface;
 struct _AgsAsyncQueueInterface
 {
   GTypeInterface interface;
+  
+  void (*increment_wait_ref)(AgsAsyncQueue *async_queue);
+  guint (*get_wait_ref)(AgsAsyncQueue *async_queue);
 
   void (*set_run_mutex)(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex);
   pthread_mutex_t* (*get_run_mutex)(AgsAsyncQueue *async_queue);
@@ -49,6 +52,9 @@ struct _AgsAsyncQueueInterface
 };
 
 GType ags_async_queue_get_type();
+
+void ags_async_queue_increment_wait_ref(AgsAsyncQueue *async_queue);
+guint ags_async_queue_get_wait_ref(AgsAsyncQueue *async_queue);
 
 void ags_async_queue_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex);
 pthread_mutex_t* ags_async_queue_get_run_mutex(AgsAsyncQueue *async_queue);

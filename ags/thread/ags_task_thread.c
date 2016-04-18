@@ -44,6 +44,8 @@ void ags_task_thread_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *ru
 pthread_cond_t* ags_task_thread_get_run_cond(AgsAsyncQueue *async_queue);
 void ags_task_thread_set_run(AgsAsyncQueue *async_queue, gboolean is_run);
 gboolean ags_task_thread_is_run(AgsAsyncQueue *async_queue);
+void ags_task_thread_increment_wait_ref(AgsAsyncQueue *async_queue);
+guint ags_task_thread_get_wait_ref(AgsAsyncQueue *async_queue);
 
 void ags_task_thread_start(AgsThread *thread);
 void ags_task_thread_run(AgsThread *thread);
@@ -151,6 +153,9 @@ ags_task_thread_async_queue_interface_init(AgsAsyncQueueInterface *async_queue)
 
   async_queue->set_run = ags_task_thread_set_run;
   async_queue->is_run = ags_task_thread_is_run;
+
+  async_queue->increment_wait_ref = ags_task_thread_increment_wait_ref;
+  async_queue->get_wait_ref = ags_task_thread_get_wait_ref;
 }
 
 void
@@ -170,6 +175,9 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   /* async queue */
   g_atomic_int_set(&(task_thread->is_run),
 		   FALSE);
+
+  g_atomic_int_set(&(task_thread->wait_ref),
+		   0);
 
   pthread_mutexattr_init(&(mutexattr));
   pthread_mutexattr_settype(&(mutexattr), PTHREAD_MUTEX_RECURSIVE);
@@ -266,6 +274,18 @@ gboolean
 ags_task_thread_is_run(AgsAsyncQueue *async_queue)
 {
   return(g_atomic_int_get(&(AGS_TASK_THREAD(async_queue)->is_run)));
+}
+
+void
+ags_task_thread_increment_wait_ref(AgsAsyncQueue *async_queue)
+{
+  g_atomic_int_inc(&(AGS_TASK_THREAD(async_queue)->wait_ref));
+}
+
+guint
+ags_task_thread_get_wait_ref(AgsAsyncQueue *async_queue)
+{
+  return(g_atomic_int_get(&(AGS_TASK_THREAD(async_queue)->wait_ref)));
 }
 
 void
@@ -393,7 +413,12 @@ ags_task_thread_run(AgsThread *thread)
   ags_async_queue_set_run(AGS_ASYNC_QUEUE(task_thread),
 			  TRUE);
 	
-  pthread_cond_broadcast(task_thread->run_cond);
+  if(ags_async_queue_get_wait_ref(AGS_ASYNC_QUEUE(task_thread)) != 0){
+    pthread_cond_broadcast(task_thread->run_cond);
+  }
+
+  g_atomic_int_set(&(task_thread->wait_ref),
+		   0);
   
   pthread_mutex_unlock(task_thread->run_mutex);
   
@@ -485,22 +510,6 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 		  AGS_RETURNABLE_THREAD_IN_USE);
     
   pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
-
-  /* pass-through */
-  pthread_mutex_lock(thread->mutex);
-  
-  //  g_atomic_int_or(&(thread->flags),
-  //		  AGS_THREAD_READY);
-
-  flags = g_atomic_int_get(&(thread->flags));
-  
-  if((AGS_THREAD_WAIT_0 & flags) != 0 ||
-     (AGS_THREAD_WAIT_1 & flags) != 0 ||
-     (AGS_THREAD_WAIT_2 & flags) != 0){
-    pthread_cond_signal(thread->cond);
-  }
-  
-  pthread_mutex_unlock(thread->mutex);
 }
 
 void
@@ -581,22 +590,6 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 		  AGS_RETURNABLE_THREAD_IN_USE);
   
   pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
-
-  /* pass-through */
-  pthread_mutex_lock(thread->mutex);
-  
-  //  g_atomic_int_or(&(thread->flags),
-  //		  AGS_THREAD_READY);
-
-  flags = g_atomic_int_get(&(thread->flags));
-  
-  if((AGS_THREAD_WAIT_0 & flags) != 0 ||
-     (AGS_THREAD_WAIT_1 & flags) != 0 ||
-     (AGS_THREAD_WAIT_2 & flags) != 0){
-    pthread_cond_signal(thread->cond);
-  }
-  
-  pthread_mutex_unlock(thread->mutex);
 }
 
 /**

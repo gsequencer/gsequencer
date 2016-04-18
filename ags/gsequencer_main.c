@@ -172,7 +172,7 @@ main(int argc, char **argv)
 
   pthread_mutex_t *audio_loop_mutex;
   pthread_mutex_t *application_mutex;
-  
+
   //  mtrace();
   atexit(ags_signal_cleanup);
 
@@ -244,8 +244,8 @@ main(int argc, char **argv)
 
   ao_initialize();
 
-  g_thread_init(NULL);
   gdk_threads_enter();
+  g_thread_init(NULL);
   gtk_init(&argc, &argv);
   ipatch_init();
 
@@ -257,9 +257,8 @@ main(int argc, char **argv)
   lv2_manager = ags_lv2_manager_get_instance();
   worker_manager = ags_lv2_worker_manager_get_instance();
   
-  lv2ui_manager = ags_lv2ui_manager_get_instance();
-  
-  /* init gsequencer */
+  lv2ui_manager = ags_lv2ui_manager_get_instance();  
+
   application_context = ags_xorg_application_context_new();
   application_context->argc = argc;
   application_context->argv = argv;
@@ -395,7 +394,6 @@ main(int argc, char **argv)
 
     pthread_mutex_unlock(audio_loop_mutex);
     
-    ags_thread_pool_start(thread_pool);
     ags_thread_start(audio_loop);
 
 #ifdef AGS_USE_TIMER
@@ -418,6 +416,7 @@ main(int argc, char **argv)
 #endif
 
     /* wait for audio loop */
+    ags_thread_pool_start(thread_pool);
     pthread_mutex_lock(audio_loop->start_mutex);
 
     if(g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
@@ -434,6 +433,8 @@ main(int argc, char **argv)
     
     pthread_mutex_unlock(audio_loop->start_mutex);
   }
+
+  gdk_threads_leave();
 
   if(!single_thread){
     /* join gui thread */
@@ -459,7 +460,7 @@ main(int argc, char **argv)
     }
     
     pthread_mutex_unlock(gui_thread->start_mutex);
-
+    
     pthread_join(*(gui_thread->thread),
 		 NULL);
 #endif
@@ -476,8 +477,6 @@ main(int argc, char **argv)
     /* start thread tree */
     ags_thread_start((AgsThread *) single_thread);
   }
-    
-  gdk_threads_leave();
 
   /* free managers */
   ladspa_manager = ags_ladspa_manager_get_instance();
