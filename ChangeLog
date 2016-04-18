@@ -1,8 +1,9 @@
 ags (0.7.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved AgsAudioApplicationContext and AgsThreadApplicationContext
+	* reverted changes of AgsTaskThread and AgsThreadPool
 	* extended developers book
+	* fixed dead-lock with AgsTaskThread
 
 ags (0.7.12)
 

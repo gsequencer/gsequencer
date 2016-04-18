@@ -65,9 +65,12 @@
       the following.
     </para>
     
-    <programlisting language="C">
-      <xi:include href="../listings/config.c" parse="text" />
-    </programlisting>
+    <example>
+      <title>Get config value</title>
+      <programlisting language="C">
+	<xi:include href="../listings/config.c" parse="text" />
+      </programlisting>
+    </example>
   </sect1>
 
   <sect1>
@@ -77,9 +80,12 @@
       view of having your application persisted.
     </para>
 
-    <programlisting language="C">
-      <xi:include href="../listings/file_property.c" parse="text" />
-    </programlisting>
+    <example>
+      <title>The application context :file property</title>
+      <programlisting language="C">
+	<xi:include href="../listings/file_property.c" parse="text" />
+      </programlisting>
+    </example>
   </sect1>
 
   <sect1>
@@ -91,9 +97,12 @@
       too.
     </para>
 
-    <programlisting language="C">
-      <xi:include href="../listings/application_mutex.c" parse="text" />
-    </programlisting>
+    <example>
+      <title>The application mutex</title>
+      <programlisting language="C">
+	<xi:include href="../listings/application_mutex.c" parse="text" />
+      </programlisting>
+    </example>
   </sect1>
 
 </chapter>

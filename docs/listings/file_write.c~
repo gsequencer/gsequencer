@@ -1,0 +1,11 @@
+file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				"application-context\0", window->application_context,
+				"filename\0", window->name,
+				NULL);
+
+error = NULL;
+ags_file_rw_open(file,
+		 TRUE,
+		 &error);
+ags_file_write(file);
+ags_file_close(file);

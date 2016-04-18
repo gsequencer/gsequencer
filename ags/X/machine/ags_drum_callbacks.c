@@ -513,10 +513,10 @@ ags_drum_tact_callback(AgsAudio *audio,
 				  (guint) active_led_new,
 				  (guint) active_led_old);
 
+  pthread_mutex_unlock(audio_mutex);
+
   ags_task_thread_append_task(task_thread,
 			      AGS_TASK(toggle_led));
-
-  pthread_mutex_unlock(audio_mutex);
 
   gdk_threads_leave();
 }

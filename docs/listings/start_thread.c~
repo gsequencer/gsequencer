@@ -1,0 +1,4 @@
+AgsThread *main_loop;
+AgsThread *thread;
+
+

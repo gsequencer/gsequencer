@@ -115,6 +115,8 @@ struct _AgsThread
 
   gdouble freq;
 
+  gboolean waiting;
+  
   pthread_mutex_t *mutex;
   pthread_mutexattr_t mutexattr;
   pthread_cond_t *cond;

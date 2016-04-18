@@ -8,7 +8,6 @@
     classes involved by doing XML IO. It does it in stages as following for reading:
   </para>
 
-  <title>Limitations</title>
   <orderedlist numeration="lowerroman">
     <listitem>
       Parsing the XML tree and map nodes and objects.
@@ -27,4 +26,36 @@
     AgsPlugin interface to do an abstraction of reading and writing xmlNode.
   </para>
 
+  <sect1>
+    <title>Writing XML files</title>
+    
+    <para>
+      Writing files is pretty easy. You just have to instantiate AgsFile, set the application
+      context, open it in read-write mode, call ags_file_write() and finally ags_file_close().
+    </para>
+
+    <example>
+      <title>Writing XML</title>
+      <programlisting language="C">
+	<xi:include href="../listings/file_write.c" parse="text" />
+      </programlisting>
+    </example>
+  </sect1>
+
+  <sect1>
+    <title>Reading XML files</title>
+    <para>
+      Normally you instantiate a new application context to be used to load objects into. Create
+      a file object by passing the application context and filename. Then open it and read the
+      content. At the end you close the file descriptor. To use your application start the
+      main loop.
+    </para>
+    
+    <example>
+      <title>Reading XML</title>
+      <programlisting language="C">
+	<xi:include href="../listings/file_read.c" parse="text" />
+      </programlisting>
+    </example>
+  </sect1>
 </chapter>

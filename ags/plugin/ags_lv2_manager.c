@@ -331,6 +331,8 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+  return;
+  
   if(turtle == NULL ||
      filename == NULL){
     return;
@@ -555,6 +557,8 @@ ags_lv2_manager_load_default_directory()
 
   GError *error;
 
+  return;
+  
   lv2_manager = ags_lv2_manager_get_instance();
 
   error = NULL;
