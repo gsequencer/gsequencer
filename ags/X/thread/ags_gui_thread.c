@@ -130,6 +130,8 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 {
   AgsThread *thread;
 
+  pthread_mutexattr_t attr;
+
   thread = AGS_THREAD(gui_thread);
 
   //  g_atomic_int_or(&(thread->flags),
@@ -137,10 +139,19 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   
   thread->freq = AGS_GUI_THREAD_DEFAULT_JIFFIE;
 
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  gui_thread->task_completion_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(gui_thread->task_completion_mutex,
+		     &attr);
+  
   g_cond_init(&(gui_thread->cond));
   g_mutex_init(&(gui_thread->mutex));
 
-  gui_thread->task_completion = NULL;
+  g_atomic_pointer_set(&(gui_thread->task_completion),
+		       NULL);
 }
 
 void
@@ -191,44 +202,30 @@ ags_gui_thread_run(AgsThread *thread)
   
   void ags_gui_thread_complete_task()
   {
-    GList *list, *list_next;
+    GList *list, *list_next, *list_start;
 
-    if(!g_main_context_acquire(main_context)){
-      gboolean got_ownership = FALSE;
-
-      g_mutex_lock(&(gui_thread->mutex));
-      
-      while(!got_ownership){
-	got_ownership = g_main_context_wait(main_context,
-					    &(gui_thread->cond),
-					    &(gui_thread->mutex));
-      }
-
-      g_mutex_unlock(&(gui_thread->mutex));
-    }
-
-    list = gui_thread->task_completion;
-
-    gdk_threads_enter();
+    pthread_mutex_lock(gui_thread->task_completion_mutex);
+    
+    list_start = 
+      list = g_atomic_pointer_get(&(gui_thread->task_completion));
+    g_atomic_pointer_set(&(gui_thread->task_completion),
+			 NULL);
+    
+    pthread_mutex_unlock(gui_thread->task_completion_mutex);
     
     while(list != NULL){
       list_next = list->next;
       
       if((AGS_TASK_COMPLETION_READY & (g_atomic_int_get(&(AGS_TASK_COMPLETION(list->data)->flags)))) != 0){
 	ags_task_completion_complete(AGS_TASK_COMPLETION(list->data));
-
-	gui_thread->task_completion = g_list_remove(gui_thread->task_completion,
-						    list->data);
       }
 
       list = list_next;
     }
 
-    gdk_threads_leave();
-    
-    g_main_context_release(main_context);
+    g_list_free(list_start);
   }
-  
+
   gui_thread = AGS_GUI_THREAD(thread);
 
   /*  */
@@ -247,15 +244,17 @@ ags_gui_thread_run(AgsThread *thread)
 
     g_mutex_unlock(&(gui_thread->mutex));
   }
-  
+
   gdk_threads_enter();
+  
   g_main_context_iteration(main_context,
 			   FALSE);
-  gdk_threads_leave();
 
   g_main_context_release(main_context);
 
   ags_gui_thread_complete_task();  
+
+  gdk_threads_leave();
 
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   //  pango_cairo_font_map_set_default(NULL);

@@ -928,10 +928,16 @@ ags_pad_play(AgsPad *pad)
 						NULL);
       g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
 			     G_CALLBACK(ags_pad_start_complete_callback), pad);
-      gui_thread->task_completion = g_list_prepend(gui_thread->task_completion,
-						   task_completion);
       ags_connectable_connect(AGS_CONNECTABLE(task_completion));
       
+      pthread_mutex_lock(gui_thread->task_completion_mutex);
+
+      g_atomic_pointer_set(&(gui_thread->task_completion),
+			   g_list_prepend(g_atomic_pointer_get(&(gui_thread->task_completion)),
+					  task_completion));
+
+      pthread_mutex_unlock(gui_thread->task_completion_mutex);
+
       /* append AgsStartSoundcard */
       tasks = g_list_reverse(tasks);
 

@@ -175,18 +175,9 @@ ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
 
   pthread_mutex_lock(&exclusive_lock);
   
-  err = pthread_mutex_trylock(parent_mutex);
+  pthread_mutex_lock(parent_mutex);
   pthread_mutex_lock(mutex);
 
-  if(err == EBUSY){
-    parent_locked = FALSE;
-  }else{
-    parent_locked = TRUE;
-  }
-  
-  ags_concurrent_tree_set_parent_locked(concurrent_tree,
-					parent_locked);
-  
   pthread_mutex_unlock(&exclusive_lock);
 
   return(parent_locked);
@@ -209,8 +200,5 @@ ags_concurrent_tree_unlock_context(AgsConcurrentTree *concurrent_tree)
   mutex = ags_concurrent_tree_get_lock(concurrent_tree);
 
   pthread_mutex_unlock(mutex);
-
-  if(ags_concurrent_tree_get_parent_locked(concurrent_tree)){
-    pthread_mutex_unlock(parent_mutex);
-  }
+  pthread_mutex_unlock(parent_mutex);
 }
