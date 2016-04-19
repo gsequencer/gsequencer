@@ -466,6 +466,8 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
   pthread_mutex_unlock(task_thread->read_mutex);
   /*  */
   //  g_message("ags_task_thread_append_task_thread ------------------------- %d\0", devout->append_task_suspend);
+
+  g_object_unref(returnable_thread);
 }
 
 /**
@@ -497,6 +499,7 @@ ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
 		       task);
 
   thread = ags_thread_pool_pull(task_thread->thread_pool);
+  g_object_ref(thread);
   
   pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 
@@ -545,6 +548,8 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
 
   /*  */
   pthread_mutex_unlock(task_thread->read_mutex);
+
+  g_object_unref(returnable_thread);
 }
 
 /**
@@ -577,7 +582,8 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 		       list);
 
   thread = ags_thread_pool_pull(task_thread->thread_pool);
-
+  g_object_ref(thread);
+  
   pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
 
 

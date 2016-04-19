@@ -1575,8 +1575,14 @@ ags_machine_set_run_extended(AgsMachine *machine,
       g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
 			     G_CALLBACK(ags_machine_start_complete_callback), machine);
       ags_connectable_connect(AGS_CONNECTABLE(task_completion));
-      gui_thread->task_completion = g_list_prepend(gui_thread->task_completion,
-						   task_completion);
+
+      pthread_mutex_lock(gui_thread->task_completion_mutex);
+      
+      g_atomic_pointer_set(&(gui_thread->task_completion),
+			   g_list_prepend(g_atomic_pointer_get(&(gui_thread->task_completion)),
+					  task_completion));
+
+      pthread_mutex_unlock(gui_thread->task_completion_mutex);
       
       /* append AgsStartSoundcard */
       list = g_list_reverse(list);
