@@ -250,12 +250,11 @@ ags_gui_thread_run(AgsThread *thread)
   g_main_context_iteration(main_context,
 			   FALSE);
 
-  g_main_context_release(main_context);
-
   ags_gui_thread_complete_task();  
 
   gdk_threads_leave();
 
+  g_main_context_release(main_context);
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   //  pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();
