@@ -56,8 +56,8 @@ void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
  * This can achieve enormeous performance.
  */
 
-#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 8
-#define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 128
+#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 32
+#define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 512
 
 enum{
   PROP_0,
@@ -322,7 +322,6 @@ ags_thread_pool_creation_thread(void *ptr)
   
   GList *tmplist;
   GList *start_queue;
-  GList *running_thread, *running_thread_next;
 
   guint n_threads, max_threads;
   gint i, i_stop;
@@ -359,7 +358,7 @@ ags_thread_pool_creation_thread(void *ptr)
 #endif
 
     /* wait until new request or timeout */
-    pthread_mutex_lock(thread_pool->creation_mutex);
+    pthread_mutex_lock(thread_pool->return_mutex);    
     
     g_atomic_int_or(&(thread_pool->flags),
 		    AGS_THREAD_POOL_READY);
@@ -369,7 +368,7 @@ ags_thread_pool_creation_thread(void *ptr)
     while(g_atomic_int_get(&(thread_pool->newly_pulled)) == 0 &&
 	  !timeout){
       err = pthread_cond_timedwait(thread_pool->creation_cond,
-				   thread_pool->creation_mutex,
+				   thread_pool->return_mutex,
 				   &timedwait);
 
       if(err == ETIMEDOUT){
@@ -379,34 +378,7 @@ ags_thread_pool_creation_thread(void *ptr)
 
     g_atomic_int_and(&(thread_pool->flags),
 		     (~AGS_THREAD_POOL_READY));
-
-    /* clean pool */      
-    running_thread = g_atomic_pointer_get(&(thread_pool->running_thread));
-
-    while(running_thread != NULL){
-      running_thread_next = running_thread->next;
-      returnable_thread = running_thread->data;
-
-      if(returnable_thread != NULL &&
-	 AGS_IS_RETURNABLE_THREAD(returnable_thread) &&
-	 (AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) == 0){
-	/* remove from thread-pool */
-	tmplist = g_atomic_pointer_get(&(thread_pool->running_thread));
-	g_atomic_pointer_set(&(thread_pool->running_thread),
-			     g_list_remove(tmplist,
-					   returnable_thread));
-	
-	/* disconnect and remove from thread tree */
-	//	  ags_returnable_thread_disconnect(returnable_thread);
-	//	  ags_returnable_thread_disconnect_safe_run(returnable_thread);
-
-	/* unref */
-	g_object_unref(returnable_thread);
-      }
-	
-      running_thread = running_thread_next;
-    }
-
+    
     /* create new threads */
     n_threads = g_atomic_int_get(&(thread_pool->n_threads));
     max_threads = g_atomic_int_get(&(thread_pool->max_threads));
@@ -447,7 +419,7 @@ ags_thread_pool_creation_thread(void *ptr)
       }
     }
 
-    pthread_mutex_unlock(thread_pool->creation_mutex);
+    pthread_mutex_unlock(thread_pool->return_mutex);
 
     pthread_mutex_lock(parent_mutex);
     
@@ -521,11 +493,6 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 			       g_list_remove(tmplist,
 					     returnable_thread));
 	  
-	  tmplist = g_atomic_pointer_get(&(thread_pool->running_thread));
-	  g_atomic_pointer_set(&(thread_pool->running_thread),
-			       g_list_prepend(tmplist,
-					      returnable_thread));
-
 	  /* dec n threads */
 	  g_atomic_int_dec_and_test(&(thread_pool->n_threads));
 	

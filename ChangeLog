@@ -2,6 +2,8 @@ ags (0.7.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsConcurrentTree in ags_devout.c and using it in ags_channel.c
+	* added task_completion_mutex to AgsGuiThread
+	* fixed memory-leak in ags_thread_pool.c
 
 ags (0.7.13)
 
