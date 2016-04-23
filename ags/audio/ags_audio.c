@@ -3890,12 +3890,13 @@ ags_audio_play(AgsAudio *audio,
     }
     
     if((AGS_RECALL_HIDE & (recall->flags)) == 0){
-      if(stage == 0)
+      if(stage == 0){
 	ags_recall_run_pre(recall);
-      else if(stage == 1)
+      }else if(stage == 1){
 	ags_recall_run_inter(recall);
-      else
+      }else{
 	ags_recall_run_post(recall);
+      }
     }
 
     list = list_next;
