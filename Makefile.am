@@ -802,6 +802,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_init_channel.h \
 	ags/audio/task/ags_link_channel.h \
 	ags/audio/task/ags_open_file.h \
+	ags/audio/task/ags_open_sf2_sample.h \
 	ags/audio/task/ags_open_single_file.h \
 	ags/audio/task/ags_remove_audio.h \
 	ags/audio/task/ags_remove_audio_signal.h \
@@ -854,6 +855,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_init_channel.c \
 	ags/audio/task/ags_link_channel.c \
 	ags/audio/task/ags_open_file.c \
+	ags/audio/task/ags_open_sf2_sample.c \
 	ags/audio/task/ags_open_single_file.c \
 	ags/audio/task/ags_remove_audio.c \
 	ags/audio/task/ags_remove_audio_signal.c \

@@ -1,3 +1,11 @@
+ags (0.7.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Soundfont2 support
+	* fixed dead-lock while stop multi-channel playback
+	* fixed open WAV files within AgsDrum
+	* implemented ags_open_sf2_sample.c
+
 ags (0.7.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -58,9 +58,6 @@ void ags_ipatch_info(AgsPlayable *playable,
 signed short* ags_ipatch_read(AgsPlayable *playable, guint channel,
 			      GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
-GList* ags_ipatch_read_audio_signal(AgsPlayable *playable,
-				    GObject *soundcard,
-				    guint start_channel, guint channels);
 
 /**
  * SECTION:ags_ipatch
@@ -556,17 +553,34 @@ ags_ipatch_level_select(AgsPlayable *playable,
 
       if(nth_level == 0 && !g_strcmp0(ipatch_sf2_reader->ipatch->filename, sublevel_name)){
 	ipatch->nth_level = 0;
-	ipatch_sf2_reader->selected[0] = sublevel_name;
+
+	if(ipatch_sf2_reader->selected[0] != NULL){
+	  g_free(ipatch_sf2_reader->selected[0]);
+	}
+	
+	ipatch_sf2_reader->selected[0] = g_strdup(sublevel_name);
 	return;
       }
 
       if(nth_level == 1){
 	ipatch->nth_level = 1;
-	ipatch_sf2_reader->selected[1] = sublevel_name;
+
+	if(ipatch_sf2_reader->selected[1] != NULL){
+	  g_free(ipatch_sf2_reader->selected[1]);
+	}
+	
+	ipatch_sf2_reader->selected[1] = g_strdup(sublevel_name);
 
 	/* preset */
 	ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
 						    IPATCH_TYPE_SF2_PRESET);
+
+	if(ipatch_list == NULL){
+	  ipatch->iter = NULL;
+	    
+	  return;
+	}
+	  
 	list = ipatch_list->items;
 	
 	while(list != NULL){
@@ -597,10 +611,22 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	  GList *tmp;
 
 	  ipatch->nth_level = 2;
-	  ipatch_sf2_reader->selected[2] = sublevel_name;
+
+	  if(ipatch_sf2_reader->selected[2] != NULL){
+	    g_free(ipatch_sf2_reader->selected[2]);
+	  }
+	  
+	  ipatch_sf2_reader->selected[2] = g_strdup(sublevel_name);
 
 	  /* instrument */
 	  ipatch_list = ipatch_sf2_preset_get_zones(ipatch_sf2_reader->preset);
+
+	  if(ipatch_list == NULL){
+	    ipatch->iter = NULL;
+
+	    return;
+	  }
+	  
 	  list = NULL;
 	  tmp = ipatch_list->items;
 
@@ -619,10 +645,22 @@ ags_ipatch_level_select(AgsPlayable *playable,
 	  GList *tmp;
 
 	  ipatch->nth_level = 3;
-	  ipatch_sf2_reader->selected[3] = sublevel_name;
+
+	  if(ipatch_sf2_reader->selected[3] != NULL){
+	    g_free(ipatch_sf2_reader->selected[3]);
+	  }
+	  
+	  ipatch_sf2_reader->selected[3] = g_strdup(sublevel_name);
 
 	  /* sample */
 	  ipatch_list = ipatch_sf2_preset_get_zones(ipatch_sf2_reader->instrument);
+
+	  if(ipatch_list == NULL){
+	    ipatch->iter = NULL;
+
+	    return;
+	  }
+	  
 	  list = NULL;
 	  tmp = ipatch_list->items;
 	
@@ -740,6 +778,8 @@ ags_ipatch_info(AgsPlayable *playable,
 		  "no sample selected for file: %s\0",
 		  ipatch->filename);
     }
+
+    return;
   }
 
   sample = IPATCH_SAMPLE(ipatch->iter->data);
