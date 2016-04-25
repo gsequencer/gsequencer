@@ -127,7 +127,11 @@ ags_ipatch_sf2_reader_init(AgsIpatchSF2Reader *ipatch_sf2_reader)
   ipatch_sf2_reader->program = -1;
 
   ipatch_sf2_reader->selected = (gchar **) malloc(4 * sizeof(gchar *));
-
+  ipatch_sf2_reader->selected[0] = NULL;
+  ipatch_sf2_reader->selected[1] = NULL;
+  ipatch_sf2_reader->selected[2] = NULL;
+  ipatch_sf2_reader->selected[3] = NULL;
+  
   ipatch_sf2_reader->preset = NULL;
   ipatch_sf2_reader->instrument = NULL;
   ipatch_sf2_reader->sample = NULL;
