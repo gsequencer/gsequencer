@@ -1013,8 +1013,10 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
 
   main_loop = ags_thread_get_toplevel(thread);
 
-  pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));  
-    
+  if(AGS_IS_MAIN_LOOP(main_loop)){
+    pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));  
+  }
+  
   g_object_ref(thread);
   g_object_ref(child);
   
@@ -1035,7 +1037,9 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
 			 sibling);
   }
   
-  pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+  if(AGS_IS_MAIN_LOOP(main_loop)){
+    pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+  }
   
   if(!no_start){
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){

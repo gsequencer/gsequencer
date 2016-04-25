@@ -31,7 +31,7 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
-#include <ags/audio/task/ags_link_channel.h>
+#include <ags/audio/task/ags_open_sf2_sample.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
 
 #include <ags/X/ags_window.h>
@@ -48,7 +48,6 @@
 
 void ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 						AgsMachine *machine);
-void ags_ffplayer_link_channel_launch_callback(AgsTask *task, AgsAudioSignal *audio_signal);
 
 void
 ags_ffplayer_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsFFPlayer *ffplayer)
@@ -219,7 +218,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AgsChannel *channel;
   AgsRecycling *recycling;
 
-  AgsLinkChannel *link_channel;
+  //  AgsLinkChannel *link_channel;
+  AgsOpenSf2Sample *open_sf2_sample;
   AgsAddAudioSignal *add_audio_signal;
 
   AgsMutexManager *mutex_manager;
@@ -229,7 +229,9 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AgsApplicationContext *application_context;
   
   AgsPlayable *playable;
-  
+
+  gchar *filename;
+  gchar *preset_name;
   gchar *instrument_name;
   gchar **preset;
   gchar **sample;
@@ -274,6 +276,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   /*  */
   playable = AGS_PLAYABLE(ffplayer->ipatch);
 
+  filename = ffplayer->ipatch->filename;
+  preset_name = AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->selected[1];
   instrument_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instrument));
 
   /* select instrument */
@@ -286,36 +290,18 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   if(error != NULL){
     g_error("%s\0", error->message);
   }
-
+  
   /* select first sample */
   sample = NULL;
 
   AGS_IPATCH(ffplayer->ipatch)->nth_level = 3;
   sample = ags_playable_sublevel_names(playable);
 
-  error = NULL;
-  ags_playable_level_select(playable,
-			    3, *sample,
-			    &error);
-
-  if(error != NULL){
-    g_error("%s\0", error->message);
-  }
-
-  count = 0;
-  
-  while(*sample != NULL){
-    sample++;
-    count++;
-  }
+  count = g_strv_length(sample);
 
   /* read all samples */
   ags_audio_set_audio_channels(audio,
 			       AGS_IPATCH_DEFAULT_CHANNELS);
-
-  AGS_IPATCH(ffplayer->ipatch)->nth_level = 3;
-
-  ags_playable_iter_start(playable);
 
   ags_audio_set_pads(audio, AGS_TYPE_INPUT,
 		     count);
@@ -330,50 +316,32 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   task = NULL;
   has_more = TRUE;
 
-  while(channel != NULL && has_more){
-    list = ags_playable_read_audio_signal(playable,
-					  AGS_MACHINE(ffplayer)->audio->soundcard,
-					  channel->audio_channel, AGS_IPATCH_DEFAULT_CHANNELS);
-
-    for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS && list != NULL; i++){
-      /* create tasks */
-      link_channel = ags_link_channel_new(channel, NULL);
-      task = g_list_prepend(task,
-			    link_channel);     
-      g_signal_connect_after((GObject *) link_channel, "launch\0",
-			     G_CALLBACK(ags_ffplayer_link_channel_launch_callback), list->data);
+  while(channel != NULL && *sample != NULL){
+    for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS; i++){
+      if(AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->selected[3] == NULL){
+	continue;
+      }
       
-      /* iterate */	
+      /* create tasks */
+      open_sf2_sample = ags_open_sf2_sample_new(channel,
+						g_strdup(filename),
+						g_strdup(preset_name),
+						g_strdup(instrument_name),
+						g_strdup(*sample));
+      task = g_list_prepend(task,
+			    open_sf2_sample);
+      
+      /* iterate */
       channel = channel->next;
-      list = list->next;
     }
 
-    has_more = ags_playable_iter_next(playable);
+    sample++;
   }
       
   /* append tasks */
   task = g_list_reverse(task);
   ags_task_thread_append_tasks(task_thread,
 			       task);
-}
-
-void
-ags_ffplayer_link_channel_launch_callback(AgsTask *task, AgsAudioSignal *audio_signal)
-{
-  AgsChannel *channel;
-  AgsAudioSignal *audio_signal_source_old;
-
-  channel = AGS_LINK_CHANNEL(task)->channel;
-  
-  /* replace template audio signal */
-  audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-  
-  ags_recycling_remove_audio_signal(channel->first_recycling,
-				    (gpointer) audio_signal_source_old);
-  
-  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-  ags_recycling_add_audio_signal(channel->first_recycling,
-				 audio_signal); 
 }
 
 gboolean
