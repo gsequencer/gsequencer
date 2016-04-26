@@ -3463,7 +3463,7 @@ ags_channel_play(AgsChannel *channel,
     list_next = list->next;
 
     recall = AGS_RECALL(list->data);
-
+    
     if(recall == NULL){
       if(recall_id->recycling_context->parent != NULL){
 	channel->recall = g_list_remove(channel->recall,
@@ -5265,7 +5265,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     gint i;
 
     if(channel == NULL){
-      return;
+      return(NULL);
     }
     
     audio = AGS_AUDIO(channel->audio);
@@ -5613,7 +5613,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     gint i;
 
     if(output == NULL){
-      return;
+      return(NULL);
     }
 
     /* AgsAudio */
@@ -5762,7 +5762,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 										   default_recall_id,
 										   FALSE);
     if(input_recall_id != NULL){
-      free(input_recall_id);
+      //FIXME:JK: memory leak
+      //      free(input_recall_id);
     }
 
     return(default_recall_id);

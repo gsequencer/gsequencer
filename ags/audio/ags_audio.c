@@ -3855,11 +3855,12 @@ ags_audio_play(AgsAudio *audio,
   ags_recall_id_set_run_stage(recall_id, stage);
 
   /* retrieve appropriate recalls */
-  if(recall_id->recycling_context->parent == NULL)
+  if(recall_id->recycling_context->parent == NULL){
     list = audio->play;
-  else
+  }else{
     list = audio->recall;
-
+  }
+  
   /* play */
   while(list != NULL){
     list_next = list->next;
