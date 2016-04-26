@@ -1003,14 +1003,12 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
        i < template->loop_start + loop_frame_count){
     ags_recycling_create_audio_signal_with_frame_count_LOOP0:
 
-      if(template->loop_end < template->loop_start - n_frames){
+      if(template->loop_end < template->loop_start + n_frames){
 	n_frames = template->loop_end - template->loop_start;
       }
       
       do_loop = TRUE;
     }
-
-    g_message("a: n_frames %d, %d|%d\0", n_frames, stream_index, template_stream_index);
 
     /* copy */
     hit_stream = FALSE;
@@ -1026,8 +1024,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
     if((i + first_frame) % template->buffer_size == 0){
       stream = stream->next;
-      g_message("stream\0");
-      
+
       hit_stream = TRUE;
     }
     
@@ -1044,8 +1041,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 
       if(k % template->buffer_size == 0){
 	template_stream = template_stream->next;
-
-	g_message("template stream\0");
 	
 	hit_template_stream = TRUE;
       }
@@ -1072,8 +1067,6 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	 i < template->loop_start + loop_frame_count){
 	goto ags_recycling_create_audio_signal_with_frame_count_LOOP0;
       }
-
-      g_message("b: n_frames %d\0", n_frames);
 
       ags_audio_signal_copy_buffer_to_buffer(&(((short *) stream->data)[stream_index]), 1,
 					     &(((short *) template_stream->data)[template_stream_index]), 1,
