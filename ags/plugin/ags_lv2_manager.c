@@ -556,8 +556,6 @@ ags_lv2_manager_load_default_directory()
   gchar *str;
 
   GError *error;
-
-  return;
   
   lv2_manager = ags_lv2_manager_get_instance();
 
