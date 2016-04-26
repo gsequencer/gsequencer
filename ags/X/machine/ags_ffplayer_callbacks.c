@@ -280,6 +280,10 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   preset_name = AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->selected[1];
   instrument_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instrument));
 
+  if(filename == NULL || preset_name == NULL || instrument_name == NULL){
+    return;
+  }
+  
   /* select instrument */
   error = NULL;
 
@@ -317,11 +321,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   has_more = TRUE;
 
   while(channel != NULL && *sample != NULL){
-    for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS; i++){
-      if(AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->selected[3] == NULL){
-	continue;
-      }
-      
+    for(i = 0; i < AGS_IPATCH_DEFAULT_CHANNELS; i++){      
       /* create tasks */
       open_sf2_sample = ags_open_sf2_sample_new(channel,
 						g_strdup(filename),

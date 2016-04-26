@@ -764,6 +764,8 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 
 
   if(AGS_RECALL(recall_recycling)->child_type != G_TYPE_NONE){
+    g_message("%s\0", g_type_name(AGS_RECALL(recall_recycling)->child_type));
+    
     recall_audio_signal = g_object_new(AGS_RECALL(recall_recycling)->child_type,
 				       "soundcard\0", recall->soundcard,
 				       "recall_id\0", audio_signal->recall_id,
