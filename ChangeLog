@@ -2,6 +2,7 @@ ags (0.7.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed uninitialized values in ags_ipatch_sf2_reader.c
+	* fixed Soundfont2 playback
 
 ags (0.7.15)
 
