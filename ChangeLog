@@ -1,3 +1,9 @@
+ags (0.7.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong reference count in ags_recycling_real_add_audio_signal()
+	* reverted ags_thread_pool.c due to performance impact of new code
+
 ags (0.7.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

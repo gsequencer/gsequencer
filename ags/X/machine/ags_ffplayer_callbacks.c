@@ -334,7 +334,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
       /* iterate */
       channel = channel->next;
     }
-
+    
     sample++;
   }
       
