@@ -41,7 +41,6 @@ typedef struct _AgsThreadPoolClass AgsThreadPoolClass;
 
 typedef enum{
   AGS_THREAD_POOL_RUNNING  = 1,
-  AGS_THREAD_POOL_READY    = 1 << 1,
 }AgsThreadPoolFlags;
 
 struct _AgsThreadPool
@@ -55,21 +54,20 @@ struct _AgsThreadPool
 
   pthread_t *thread;
 
+  volatile guint queued;
+
   pthread_mutex_t *creation_mutex;
   pthread_cond_t *creation_cond;
 
-  volatile guint n_threads;
-  volatile guint newly_pulled;
-  volatile guint queued;
+  volatile gboolean create_threads;
+  volatile gboolean idle;
+
+  pthread_mutex_t *idle_mutex;
+  pthread_cond_t *idle_cond;
 
   AgsThread *parent;
+
   volatile GList *returnable_thread;
-  volatile GList *running_thread;
-
-  pthread_mutex_t *pull_mutex;
-
-  pthread_mutex_t *return_mutex;
-  pthread_cond_t *return_cond;
 };
 
 struct _AgsThreadPoolClass

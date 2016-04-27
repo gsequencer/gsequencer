@@ -662,7 +662,7 @@ ags_recycling_add_audio_signal(AgsRecycling *recycling,
 					     (GObject *) recycling);
 
   pthread_mutex_unlock(application_mutex);
-  
+
   pthread_mutex_lock(recycling_mutex);
 
   if(!AGS_IS_RECYCLING(recycling)){
@@ -694,6 +694,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 {
   recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
   audio_signal->recycling = (GObject *) recycling;
+  g_object_ref(recycling);
   g_object_ref(audio_signal);
 }
 

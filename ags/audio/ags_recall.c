@@ -1833,7 +1833,7 @@ ags_recall_is_done(GList *recalls, GObject *recycling_context)
        recall->recall_id->recycling_context == (GObject *) recycling_context){
       if((AGS_RECALL_DONE & (recall->flags)) == 0){
 	recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
-	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
+	//	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
 	return(FALSE);
       }
     }
