@@ -170,7 +170,7 @@ ags_single_thread_run(AgsThread *thread)
   play_idle.tv_sec = 0;
   play_idle.tv_nsec = floor((double) NSEC_PER_SEC / (double) AGS_SINGLE_THREAD_DEFAULT_JIFFIE);
 
-  while((AGS_THREAD_RUNNING & (g_atomic_int_get(&thread->flags))) != 0){
+  while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
     /* initial value to calculate timing */
     clock_gettime(CLOCK_MONOTONIC, &play_start);
 

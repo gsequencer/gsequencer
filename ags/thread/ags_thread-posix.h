@@ -53,52 +53,61 @@ typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
 
 typedef enum{
-  AGS_THREAD_RUNNING                 = 1,
-  AGS_THREAD_IDLE                    = 1 << 1,
-  AGS_THREAD_LOCKED                  = 1 << 2,
-  AGS_THREAD_WAIT_FOR_PARENT         = 1 << 3,
-  AGS_THREAD_WAIT_FOR_SIBLING        = 1 << 4,
-  AGS_THREAD_WAIT_FOR_CHILDREN       = 1 << 5,
-  AGS_THREAD_WAIT_FOR_BARRIER        = 1 << 6,
-  AGS_THREAD_WAITING_FOR_PARENT      = 1 << 7,
-  AGS_THREAD_WAITING_FOR_SIBLING     = 1 << 8,
-  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 << 9,
-  AGS_THREAD_WAITING_FOR_BARRIER     = 1 << 10,
-  AGS_THREAD_BROADCAST_PARENT        = 1 << 11,
-  AGS_THREAD_BROADCAST_SIBLING       = 1 << 12,
-  AGS_THREAD_BROADCAST_CHILDREN      = 1 << 13,
-  AGS_THREAD_INITIAL_RUN             = 1 << 14,
-  AGS_THREAD_TREE_SYNC_0             = 1 << 15,
-  AGS_THREAD_WAIT_0                  = 1 << 16,
-  AGS_THREAD_TREE_SYNC_1             = 1 << 17,
-  AGS_THREAD_WAIT_1                  = 1 << 18,
-  AGS_THREAD_TREE_SYNC_2             = 1 << 19,
-  AGS_THREAD_WAIT_2                  = 1 << 20,
-  AGS_THREAD_TIMELOCK_RUN            = 1 << 21,
-  AGS_THREAD_TIMELOCK_WAIT           = 1 << 22,
-  AGS_THREAD_TIMELOCK_RESUME         = 1 << 23,
+  AGS_THREAD_CONNECTED               = 1,
+  AGS_THREAD_RUNNING                 = 1 <<  1,
+  AGS_THREAD_IDLE                    = 1 <<  2,
+  AGS_THREAD_INITIAL_RUN             = 1 <<  3,
+  AGS_THREAD_SUSPENDED               = 1 <<  4,
+  AGS_THREAD_SINGLE_LOOP             = 1 <<  5,
+  AGS_THREAD_UNREF_ON_EXIT           = 1 <<  6,
+  AGS_THREAD_START_SYNCED_FREQUENCY  = 1 <<  7,
+}AgsThreadFlags;
+
+typedef enum{
+  AGS_THREAD_LOCKED                  = 1,
+  AGS_THREAD_WAIT_FOR_PARENT         = 1 <<  1,
+  AGS_THREAD_WAIT_FOR_SIBLING        = 1 <<  2,
+  AGS_THREAD_WAIT_FOR_CHILDREN       = 1 <<  3,
+  AGS_THREAD_WAIT_FOR_BARRIER        = 1 <<  4,
+  AGS_THREAD_WAITING_FOR_PARENT      = 1 <<  5,
+  AGS_THREAD_WAITING_FOR_SIBLING     = 1 <<  6,
+  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 <<  7,
+  AGS_THREAD_WAITING_FOR_BARRIER     = 1 <<  8,
+  AGS_THREAD_BROADCAST_PARENT        = 1 <<  9,
+  AGS_THREAD_BROADCAST_SIBLING       = 1 << 10,
+  AGS_THREAD_BROADCAST_CHILDREN      = 1 << 11,
+}AgsThreadLockFlags;
+
+typedef enum{
+  AGS_THREAD_TREE_SYNC_0             = 1,
+  AGS_THREAD_WAIT_0                  = 1 <<  1,
+  AGS_THREAD_TREE_SYNC_1             = 1 <<  2,
+  AGS_THREAD_WAIT_1                  = 1 <<  3,
+  AGS_THREAD_TREE_SYNC_2             = 1 <<  4,
+  AGS_THREAD_WAIT_2                  = 1 <<  5,
+  AGS_THREAD_TIMELOCK_RUN            = 1 <<  6,
+  AGS_THREAD_TIMELOCK_WAIT           = 1 <<  7,
+  AGS_THREAD_TIMELOCK_RESUME         = 1 <<  8,
   /*
    * prefered way would be unlocking greedy_locks
    * and the suspend to not become greedy
    * but while pthread_suspend and pthread_resume
    * are missing you need this as work-around
    */
-  AGS_THREAD_SKIP_NON_GREEDY         = 1 << 24,
-  AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 << 25,
-  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 << 26,
-  AGS_THREAD_SUSPENDED               = 1 << 27,
-  AGS_THREAD_SINGLE_LOOP             = 1 << 28,
-  AGS_THREAD_READY                   = 1 << 29,
-  AGS_THREAD_UNREF_ON_EXIT           = 1 << 30,
-  AGS_THREAD_CONNECTED               = 1 << 31,
-}AgsThreadFlags;
+  AGS_THREAD_SKIP_NON_GREEDY         = 1 <<  9,
+  AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 << 10,
+  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 << 11,
+  AGS_THREAD_READY                   = 1 << 12,
+}AgsThreadSyncFlags;
 
 struct _AgsThread
 {
   GObject object;
 
   volatile guint flags;
-
+  volatile guint lock_flags;
+  volatile guint sync_flags;
+  
   gboolean rt_setup;
   
   sigset_t wait_mask;
@@ -229,6 +238,8 @@ void ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast);
 void ags_thread_signal_children(AgsThread *thread, gboolean broadcast);
 
 guint ags_thread_clock(AgsThread *thread);
+void ags_thread_run_start_queue(AgsThread *thread);
+void ags_thread_run_start_queue_recursive(AgsThread *thread);
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
