@@ -247,7 +247,7 @@ ags_generic_main_loop_start(AgsThread *thread)
 
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(thread);
 
-  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     /*  */
     AGS_THREAD_CLASS(ags_generic_main_loop_parent_class)->start(thread);
   }

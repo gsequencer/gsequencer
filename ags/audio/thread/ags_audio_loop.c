@@ -541,7 +541,7 @@ ags_audio_loop_start(AgsThread *thread)
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
-  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
   }
