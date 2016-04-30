@@ -27,8 +27,11 @@
 #include <ags/object/ags_concurrent_tree.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_notation.h>
+
+#include <ags/audio/task/ags_switch_buffer_flag.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -1631,6 +1634,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  AgsSwitchBufferFlag *switch_buffer_flag;
+  
+  AgsThread *task_thread;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -1844,7 +1850,12 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   ags_soundcard_tic(soundcard);
 
   /* reset - switch buffer flags */
-  ags_devout_switch_buffer_flag(devout);
+  task_thread = ags_thread_find_type(application_context->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
+  switch_buffer_flag = ags_switch_buffer_flag_new(devout);
+  ags_task_thread_append_task(task_thread,
+			      switch_buffer_flag);
 
   snd_pcm_prepare(devout->out.alsa.handle);
 }

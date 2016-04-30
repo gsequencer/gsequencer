@@ -61,6 +61,7 @@ typedef enum{
   AGS_THREAD_SINGLE_LOOP             = 1 <<  5,
   AGS_THREAD_UNREF_ON_EXIT           = 1 <<  6,
   AGS_THREAD_START_SYNCED_FREQUENCY  = 1 <<  7,
+  AGS_THREAD_RT_SETUP                = 1 <<  8,
 }AgsThreadFlags;
 
 typedef enum{
@@ -107,8 +108,6 @@ struct _AgsThread
   volatile guint flags;
   volatile guint lock_flags;
   volatile guint sync_flags;
-  
-  gboolean rt_setup;
   
   sigset_t wait_mask;
 

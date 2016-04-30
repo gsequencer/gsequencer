@@ -3,6 +3,9 @@ ags (0.7.17)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed wrong reference count in ags_recycling_real_add_audio_signal()
 	* refactored ags_thread_pool.c due to performance impact of new code
+	* refactored AgsThread flags
+	* implemented threads to start synced
+	* implemented AgsSwitchBufferFlag task because of data-race
 
 ags (0.7.16)
 
