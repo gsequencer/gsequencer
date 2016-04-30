@@ -341,7 +341,6 @@ ags_thread_init(AgsThread *thread)
 		   0);
   g_atomic_int_set(&(thread->sync_flags),
 		   0);
-  thread->rt_setup = FALSE;
 
   /* clock */
   thread->delay = 0;
@@ -2304,16 +2303,31 @@ ags_thread_run_start_queue(AgsThread *thread)
   pthread_mutex_lock(mutex);
     
   start_queue = g_atomic_pointer_get(&(thread->start_queue));
-  g_atomic_pointer_set(&(thread->start_queue),
-		       NULL);
 
   pthread_mutex_unlock(mutex);
 
   while(start_queue != NULL){
     queued_thread = (AgsThread *) start_queue->data;
 
-    /*  */
+    /* start thread and wait */
+    if((AGS_THREAD_START_SYNCED_FREQUENCY & (g_atomic_int_get(&(queued_thread->flags)))) != 0){
+      AgsThread *parent;
+
+      parent = g_atomic_pointer_get(&(queued_thread->parent));
+
+      if(parent != NULL &&
+	 parent->tic_delay != 0){
+	start_queue = start_queue->next;
+
+	continue;
+      }
+    }
+    
     ags_thread_start(queued_thread);
+    g_atomic_pointer_set(&(thread->start_queue),
+			 g_list_remove(g_atomic_pointer_get(&(thread->start_queue)),
+				       queued_thread));
+
 
     pthread_mutex_lock(queued_thread->start_mutex);
 
@@ -2330,7 +2344,7 @@ ags_thread_run_start_queue(AgsThread *thread)
     }
       
     pthread_mutex_unlock(queued_thread->start_mutex);
-
+    
     start_queue = start_queue->next;
   }
 }
@@ -2362,8 +2376,10 @@ ags_thread_real_start(AgsThread *thread)
     return;
   }
 
+  g_atomic_int_and(&(thread->flags),
+		   ~AGS_THREAD_RT_SETUP);
+
   main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
-  thread->rt_setup = FALSE;
   
 #ifdef AGS_DEBUG
   g_message("thread start: %s\0", G_OBJECT_TYPE_NAME(thread));

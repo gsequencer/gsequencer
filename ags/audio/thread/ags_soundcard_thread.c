@@ -161,6 +161,9 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   AgsThread *thread;
   
   thread = AGS_THREAD(soundcard_thread);
+
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_START_SYNCED_FREQUENCY);
   
   thread->freq = AGS_SOUNDCARD_THREAD_DEFAULT_JIFFIE;
 
