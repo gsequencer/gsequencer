@@ -181,9 +181,6 @@ ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread)
   AgsThread *thread;
   
   thread = AGS_THREAD(sequencer_thread);
-
-  g_atomic_int_or(&(thread->flags),
-		  AGS_THREAD_START_SYNCED_FREQUENCY);
   
   thread->freq = AGS_SEQUENCER_THREAD_DEFAULT_JIFFIE;
 
@@ -255,7 +252,7 @@ ags_sequencer_thread_connect(AgsConnectable *connectable)
 
   sequencer_thread = AGS_SEQUENCER_THREAD(connectable);
 
-  if((AGS_THREAD_CONNECTED & (g_atomic_int_get(&(sequencer_thread->flags)))) != 0){
+  if((AGS_THREAD_CONNECTED & (sequencer_thread->flags)) != 0){
     return;
   }  
 
