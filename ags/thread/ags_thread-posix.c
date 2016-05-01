@@ -1941,7 +1941,7 @@ ags_thread_real_clock(AgsThread *thread)
   AgsThread *main_loop, *async_queue;
   AgsMutexManager *mutex_manager;
   
-  struct timespec time_now;
+  struct timespec time_now, time_prev;
 
   gdouble main_loop_delay;
   gdouble delay_per_hertz;
@@ -2123,66 +2123,32 @@ ags_thread_real_clock(AgsThread *thread)
 	
     pthread_mutex_unlock(thread->timer_mutex);
 #else
-    long time_spent, time_limit, time_left;
-    long time_cycle, cycle_unit;
+    long time_spent;
 
-    static const long time_unit = NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE;
+    static const long time_unit = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
 
-    clock_gettime(CLOCK_MONOTONIC, &time_now);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_now);
 
-    /* ignore big delays and prevent integer overflow */
-    if(time_now.tv_sec - 1 <= thread->computing_time->tv_sec){
+    if(time_now.tv_sec > time_prev.tv_sec){
+      time_spent = (time_now.tv_nsec);
+    }else{
+      time_spent = time_now.tv_nsec - time_prev.tv_nsec;
+    }
+
+    if(time_spent < time_unit){
       struct timespec timed_sleep = {
 	0,
 	0,
       };
 
-      /* calculate time spent */
-      if(time_now.tv_sec > thread->computing_time->tv_sec){
-	time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
-      }else{
-	if(time_now.tv_nsec > thread->computing_time->tv_nsec){
-	  time_spent = time_now.tv_nsec - thread->computing_time->tv_nsec;
-	}else{
-	  time_spent = 0;
-	}
+      if(time_spent < time_unit){
+	timed_sleep.tv_nsec = time_unit - time_spent;
+
+	nanosleep(&timed_sleep, NULL);
       }
-
-      if(thread->tic_delay < thread->delay){
-	/* time spent per unit and multiple cycles */
-	time_cycle = thread->delay * delay_per_hertz * time_unit;
-	time_limit = (1.0 / (1 + thread->tic_delay) / thread->delay) * delay_per_hertz * time_unit;
-
-	time_left = time_cycle - time_spent;
-
-	//      if(thread->tic_delay != 0){
-	cycle_unit = time_left / (thread->delay - thread->tic_delay);
-
-	if(time_limit - time_spent < cycle_unit){
-	  if(time_limit > time_spent){
-	    if(time_limit - time_spent < cycle_unit){
-	      timed_sleep.tv_nsec = time_limit - time_spent;
-	    }else{
-	      timed_sleep.tv_nsec = cycle_unit;
-	    }
-	  }else{
-	    timed_sleep.tv_nsec = 0;
-	  }
-	}else{
-	  if(cycle_unit < delay_per_hertz * time_unit){
-	    timed_sleep.tv_nsec = cycle_unit;
-	  }else{
-	    timed_sleep.tv_nsec = delay_per_hertz * time_unit;
-	  }
-	}
-      }else{
-	if(delay_per_hertz * time_unit > time_spent){
-	  //      timed_sleep.tv_nsec = delay_per_hertz * time_unit - time_spent;
-	}
-      }
-
-      nanosleep(&timed_sleep, NULL);
     }
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time_prev);
 #endif
   }
 
