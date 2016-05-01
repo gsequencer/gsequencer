@@ -42,6 +42,10 @@ struct _AgsAppendAudio
 
   GObject *audio_loop;
   GObject *audio;
+
+  gboolean do_playback;
+  gboolean do_sequencer;
+  gboolean do_notation;
 };
 
 struct _AgsAppendAudioClass
@@ -52,6 +56,7 @@ struct _AgsAppendAudioClass
 GType ags_append_audio_get_type();
 
 AgsAppendAudio* ags_append_audio_new(GObject *audio_loop,
-				     GObject *audio);
+				     GObject *audio,
+				     gboolean do_playback, gboolean do_sequencer, gboolean do_notation);
 
 #endif /*__AGS_APPEND_AUDIO_H__*/

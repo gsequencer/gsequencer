@@ -1537,7 +1537,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
     
       /* create append task */
       append_audio = ags_append_audio_new(audio_loop,
-					  (GObject *) machine->audio);
+					  (GObject *) machine->audio,
+					  FALSE, TRUE, FALSE);
 
       list = g_list_prepend(list, append_audio);
     }
@@ -1550,7 +1551,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
       /* create append task */
       append_audio = ags_append_audio_new(audio_loop,
-					  (GObject *) machine->audio);
+					  (GObject *) machine->audio,
+					  FALSE, FALSE, TRUE);
 
       list = g_list_prepend(list, append_audio);
     }

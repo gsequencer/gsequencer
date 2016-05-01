@@ -328,11 +328,15 @@ ags_soundcard_thread_stop(AgsThread *thread)
   AgsSoundcard *soundcard;
   AgsSoundcardThread *soundcard_thread;
 
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
+    return;
+  }
+  
+  AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
+
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
 
   soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
-
-  AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
   ags_soundcard_stop(soundcard);
 }
 
