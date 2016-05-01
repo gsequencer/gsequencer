@@ -368,9 +368,13 @@ ags_export_thread_stop(AgsThread *thread)
 {
   AgsExportThread *export_thread;
 
-  export_thread = AGS_EXPORT_THREAD(thread);
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
+    return;
+  }
 
   AGS_THREAD_CLASS(ags_export_thread_parent_class)->stop(thread);
+  
+  export_thread = AGS_EXPORT_THREAD(thread);
 
   ags_audio_file_flush(export_thread->audio_file);
   ags_audio_file_close(export_thread->audio_file);

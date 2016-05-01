@@ -355,13 +355,7 @@ ags_channel_thread_finalize(GObject *gobject)
 void
 ags_channel_thread_start(AgsThread *thread)
 {
-  /* reset status */
-  g_atomic_int_or(&(AGS_CHANNEL_THREAD(thread)->flags),
-		   (AGS_CHANNEL_THREAD_WAIT |
-		    AGS_CHANNEL_THREAD_DONE |
-		    AGS_CHANNEL_THREAD_WAIT_SYNC |
-		    AGS_CHANNEL_THREAD_DONE_SYNC));
-  
+  /* reset status */  
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->start(thread);
 }
 
@@ -424,9 +418,7 @@ ags_channel_thread_run(AgsThread *thread)
   /* start - wait until signaled */
   pthread_mutex_lock(channel_thread->wakeup_mutex);
 
-  if((AGS_CHANNEL_THREAD_DONE & (g_atomic_int_get(&(channel_thread->flags)))) == 0 &&
-     (AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
-
+  if((AGS_CHANNEL_THREAD_WAIT & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
     g_atomic_int_and(&(channel_thread->flags),
 		     (~AGS_CHANNEL_THREAD_DONE));
     
@@ -501,11 +493,15 @@ ags_channel_thread_stop(AgsThread *thread)
 {
   AgsChannelThread *channel_thread;
 
-  /*  */
-  channel_thread = AGS_CHANNEL_THREAD(thread);
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
+    return;
+  }
 
   /* call parent */
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->stop(thread);
+  
+  /*  */
+  channel_thread = AGS_CHANNEL_THREAD(thread);
 
   /* ensure synced */
   pthread_mutex_lock(channel_thread->done_mutex);

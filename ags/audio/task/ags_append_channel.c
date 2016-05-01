@@ -174,6 +174,7 @@ ags_append_channel_launch(AgsTask *task)
   append_channel = AGS_APPEND_CHANNEL(task);
 
   audio_loop = AGS_AUDIO_LOOP(append_channel->audio_loop);
+
   channel = append_channel->channel;
 
   /* append to AgsDevout */

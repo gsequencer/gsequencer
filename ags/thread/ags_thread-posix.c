@@ -2316,7 +2316,7 @@ ags_thread_run_start_queue(AgsThread *thread)
       parent = g_atomic_pointer_get(&(queued_thread->parent));
 
       if(parent != NULL &&
-	 parent->tic_delay != 0){
+	 parent->tic_delay < queued_thread->delay){
 	start_queue = start_queue->next;
 
 	continue;
@@ -2372,7 +2372,8 @@ ags_thread_real_start(AgsThread *thread)
   AgsMainLoop *main_loop;
   guint sync_flags;
 
-  if(thread == NULL){
+  if(thread == NULL ||
+     (AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;
   }
 
@@ -2469,7 +2470,7 @@ ags_thread_loop(void *ptr)
 
   pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
-  thread->current_tic = 0; // ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+  thread->current_tic = thread->delay - 1; // ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
   pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
@@ -3021,6 +3022,10 @@ ags_thread_timelock(AgsThread *thread)
 void
 ags_thread_real_stop(AgsThread *thread)
 {
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
+    return;
+  }
+ 
   g_atomic_int_and(&(thread->flags),
 		   (~AGS_THREAD_RUNNING));
 }
