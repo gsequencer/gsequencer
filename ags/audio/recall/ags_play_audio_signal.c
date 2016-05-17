@@ -272,8 +272,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  buffer0 = ags_soundcard_get_next_buffer(AGS_SOUNDCARD(soundcard));
-  buffer1 = NULL;// ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
+  buffer0 = ags_soundcard_get_next_buffer(AGS_SOUNDCARD(soundcard)); // ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
+  buffer1 = NULL;
   
   if(buffer0 == NULL && 
      buffer1 == NULL){

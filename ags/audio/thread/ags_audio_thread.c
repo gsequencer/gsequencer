@@ -359,6 +359,8 @@ ags_audio_thread_finalize(GObject *gobject)
 void
 ags_audio_thread_start(AgsThread *thread)
 {
+  g_message("audio thread start\0");
+  
   /* reset status */
   g_atomic_int_or(&(AGS_AUDIO_THREAD(thread)->flags),
 		   (AGS_AUDIO_THREAD_WAIT |
@@ -386,7 +388,7 @@ ags_audio_thread_run(AgsThread *thread)
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *output_mutex;
 
-  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+  if(!thread->rt_setup){
     struct sched_param param;
     
     /* Declare ourself as a real time task */
@@ -396,10 +398,14 @@ ags_audio_thread_run(AgsThread *thread)
       perror("sched_setscheduler failed\0");
     }
 
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_RT_SETUP);
+    thread->rt_setup = TRUE;
   }
 
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    g_message("b\0");
+    return;
+  }
+  
   audio_thread = AGS_AUDIO_THREAD(thread);
   
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
@@ -522,11 +528,11 @@ ags_audio_thread_run(AgsThread *thread)
 
   g_atomic_int_and(&(audio_thread->flags),
 		   (~AGS_AUDIO_THREAD_WAIT_SYNC));
-	    
+  	    
   if((AGS_AUDIO_THREAD_DONE_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
     pthread_cond_signal(audio_thread->done_cond);
   }
-	    
+
   pthread_mutex_unlock(audio_thread->done_mutex);
 }
 
@@ -535,6 +541,8 @@ ags_audio_thread_stop(AgsThread *thread)
 {
   AgsAudioThread *audio_thread;
   AgsThread *child;
+
+  g_message("audio thread stop\0");
   
   audio_thread = AGS_AUDIO_THREAD(thread);
 

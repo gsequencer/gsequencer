@@ -169,7 +169,6 @@ ags_append_audio_launch(AgsTask *task)
   AgsAppendAudio *append_audio;
 
   AgsAudioLoop *audio_loop;
-  AgsSoundcardThread *soundcard_thread;
   
   AgsServer *server;
 
@@ -182,24 +181,22 @@ ags_append_audio_launch(AgsTask *task)
   gchar *str0, *str1;
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_thread_mutex;
-
+  pthread_mutex_t *audio_loop_mutex;
+  pthread_mutex_t *audio_thread_mutex;
+  
   append_audio = AGS_APPEND_AUDIO(task);
   
   audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);
   
   audio = append_audio->audio;
 
-  soundcard_thread = ags_thread_find_type(audio_loop,
-					  AGS_TYPE_SOUNDCARD_THREAD);
-
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   pthread_mutex_lock(application_mutex);
 
-  soundcard_thread_mutex = ags_mutex_manager_lookup(mutex_manager,
-						    soundcard_thread);
+  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      audio_loop);
   
   pthread_mutex_unlock(application_mutex);
 
@@ -217,8 +214,6 @@ ags_append_audio_launch(AgsTask *task)
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
 			      "super-threaded-scope\0");
-
-  start_queue = NULL;
       
   if(!g_ascii_strncasecmp(str0,
 			  "super-threaded\0",
@@ -229,41 +224,32 @@ ags_append_audio_launch(AgsTask *task)
        !g_ascii_strncasecmp(str1,
 			    "channel\0",
 			    8)){
-      /* super threaded setup - audio */
-      if(append_audio->do_sequencer){
-	start_queue = g_list_prepend(start_queue,
-				     AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]);
-
-	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->parent == NULL){
-	  ags_thread_add_child_extended(soundcard_thread,
-					AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-					TRUE, TRUE);
-	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]));
-	}
-      }
-
-      if(append_audio->do_notation){
-	start_queue = g_list_prepend(start_queue,
-				     AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]);
-
-	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->parent == NULL){
-	  ags_thread_add_child_extended(soundcard_thread,
-					AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
-					TRUE, TRUE);
-	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]));
-	}
-      }
-	
-      /* super threaed setup - channel */
+      /* super threaded setup - channel */
       if(!g_ascii_strncasecmp(str1,
 			      "channel\0",
 			      8)){
 	AgsChannel *output;
 
+	/* parent mutex */
+	pthread_mutex_lock(application_mutex);
+
+	audio_thread_mutex = ags_mutex_manager_lookup(mutex_manager,
+						      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* sequencer */
 	output = audio->output;
-      
+
+	start_queue = NULL;
+	
 	while(output != NULL){
 	  if(append_audio->do_sequencer){
+	    g_atomic_int_or(&(AGS_CHANNEL_THREAD(AGS_PLAYBACK(output->playback)->channel_thread[1])->flags),
+			    (AGS_CHANNEL_THREAD_WAIT |
+			     AGS_CHANNEL_THREAD_DONE |
+			     AGS_CHANNEL_THREAD_WAIT_SYNC |
+			     AGS_CHANNEL_THREAD_DONE_SYNC));
 	    start_queue = g_list_prepend(start_queue,
 					 AGS_PLAYBACK(output->playback)->channel_thread[1]);
 
@@ -274,8 +260,48 @@ ags_append_audio_launch(AgsTask *task)
 	      ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(output->playback)->channel_thread[1]));
 	    }
 	  }
+	  
+	  output = output->next;
+	}
 
+	/* start queue */
+	start_queue = g_list_reverse(start_queue);
+
+	pthread_mutex_lock(audio_thread_mutex);
+
+	if(start_queue != NULL){
+	  if(g_atomic_pointer_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->start_queue)) != NULL){
+	    g_atomic_pointer_set(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->start_queue),
+				 g_list_concat(start_queue,
+					       g_atomic_pointer_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->start_queue))));
+	  }else{
+	    g_atomic_pointer_set(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->start_queue),
+				 start_queue);
+	  }
+	}
+
+	pthread_mutex_unlock(audio_thread_mutex);
+
+	/* parent mutex */
+	pthread_mutex_lock(application_mutex);
+
+	audio_thread_mutex = ags_mutex_manager_lookup(mutex_manager,
+						      AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* notation */
+	output = audio->output;
+
+	start_queue = NULL;
+	
+	while(output != NULL){
 	  if(append_audio->do_notation){
+	    g_atomic_int_or(&(AGS_CHANNEL_THREAD(AGS_PLAYBACK(output->playback)->channel_thread[2])->flags),
+			    (AGS_CHANNEL_THREAD_WAIT |
+			     AGS_CHANNEL_THREAD_DONE |
+			     AGS_CHANNEL_THREAD_WAIT_SYNC |
+			     AGS_CHANNEL_THREAD_DONE_SYNC));
 	    start_queue = g_list_prepend(start_queue,
 					 AGS_PLAYBACK(output->playback)->channel_thread[2]);
 
@@ -288,29 +314,88 @@ ags_append_audio_launch(AgsTask *task)
 	  }
 	  
 	  output = output->next;
-	}	
+	}
+	
+	/* start queue */
+	start_queue = g_list_reverse(start_queue);
+
+	pthread_mutex_lock(audio_thread_mutex);
+
+	if(start_queue != NULL){
+	  if(g_atomic_pointer_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->start_queue)) != NULL){
+	    g_atomic_pointer_set(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->start_queue),
+				 g_list_concat(start_queue,
+					       g_atomic_pointer_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->start_queue))));
+	  }else{
+	    g_atomic_pointer_set(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->start_queue),
+				 start_queue);
+	  }
+	}
+
+	pthread_mutex_unlock(audio_thread_mutex);
+
       }
+
+      start_queue = NULL;
+      
+      /* super threaded setup - audio */
+      if(append_audio->do_sequencer){
+	g_atomic_int_or(&(AGS_AUDIO_THREAD(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1])->flags),
+			(AGS_AUDIO_THREAD_WAIT |
+			 AGS_AUDIO_THREAD_DONE |
+			 AGS_AUDIO_THREAD_WAIT_SYNC |
+			 AGS_AUDIO_THREAD_DONE_SYNC));
+	start_queue = g_list_prepend(start_queue,
+				     AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]);
+
+	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->parent == NULL){
+	  ags_thread_add_child_extended(audio_loop,
+					AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
+					TRUE, TRUE);
+	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]));
+	}
+      }
+
+      if(append_audio->do_notation){
+	g_atomic_int_or(&(AGS_AUDIO_THREAD(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2])->flags),
+			(AGS_AUDIO_THREAD_WAIT |
+			 AGS_AUDIO_THREAD_DONE |
+			 AGS_AUDIO_THREAD_WAIT_SYNC |
+			 AGS_AUDIO_THREAD_DONE_SYNC));
+	start_queue = g_list_prepend(start_queue,
+				     AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]);
+
+	if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]->parent == NULL){
+	  ags_thread_add_child_extended(audio_loop,
+					AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
+					TRUE, TRUE);
+	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2]));
+	}
+      }
+      
+      /* start queue */
+      start_queue = g_list_reverse(start_queue);
+
+      pthread_mutex_lock(audio_loop_mutex);
+
+      if(start_queue != NULL){
+	if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
+	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			       g_list_concat(start_queue,
+					     g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
+	}else{
+	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			       start_queue);
+	}
+      }
+
+      pthread_mutex_unlock(audio_loop_mutex);
+
     }
   }
 
   free(str0);
   free(str1);
-
-  /* start queue */
-  pthread_mutex_lock(soundcard_thread_mutex);
-
-  if(start_queue != NULL){
-    if(g_atomic_pointer_get(&(AGS_THREAD(soundcard_thread)->start_queue)) != NULL){
-      g_atomic_pointer_set(&(AGS_THREAD(soundcard_thread)->start_queue),
-			   g_list_concat(start_queue,
-					 g_atomic_pointer_get(&(AGS_THREAD(soundcard_thread)->start_queue))));
-    }else{
-      g_atomic_pointer_set(&(AGS_THREAD(soundcard_thread)->start_queue),
-			   start_queue);
-    }
-  }
-
-  pthread_mutex_unlock(soundcard_thread_mutex);
   
   /* add to server registry */
   //  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));

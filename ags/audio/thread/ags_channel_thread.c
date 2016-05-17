@@ -352,6 +352,8 @@ ags_channel_thread_finalize(GObject *gobject)
 void
 ags_channel_thread_start(AgsThread *thread)
 {
+  g_message("channel thread start\0");
+  
   /* reset status */
   g_atomic_int_or(&(AGS_CHANNEL_THREAD(thread)->flags),
 		   (AGS_CHANNEL_THREAD_WAIT |
@@ -378,7 +380,7 @@ ags_channel_thread_run(AgsThread *thread)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
-  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+  if(!thread->rt_setup){
     struct sched_param param;
     
     /* Declare ourself as a real time task */
@@ -388,8 +390,12 @@ ags_channel_thread_run(AgsThread *thread)
       perror("sched_setscheduler failed\0");
     }
 
-    g_atomic_int_or(&(thread->flags),
-		    AGS_THREAD_RT_SETUP);
+    thread->rt_setup = TRUE;
+  }
+
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    g_message("a\0");
+    return;
   }
 
   //  g_message("eer\0");
@@ -484,12 +490,12 @@ ags_channel_thread_run(AgsThread *thread)
   pthread_mutex_lock(channel_thread->done_mutex);
 
   g_atomic_int_and(&(channel_thread->flags),
-		   (~AGS_CHANNEL_THREAD_WAIT_SYNC));
-	    
+		   (~AGS_CHANNEL_THREAD_WAIT_SYNC));	    
+  
+
   if((AGS_CHANNEL_THREAD_DONE_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) == 0){
     pthread_cond_signal(channel_thread->done_cond);
   }
-  
   pthread_mutex_unlock(channel_thread->done_mutex);
 }
 
@@ -498,6 +504,8 @@ ags_channel_thread_stop(AgsThread *thread)
 {
   AgsChannelThread *channel_thread;
 
+  g_message("channel thread stop\0");
+  
   /*  */
   channel_thread = AGS_CHANNEL_THREAD(thread);
 
