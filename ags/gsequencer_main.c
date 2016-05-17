@@ -419,10 +419,10 @@ main(int argc, char **argv)
     ags_thread_pool_start(thread_pool);
     pthread_mutex_lock(audio_loop->start_mutex);
 
-    if(g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
+    if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){
 	
-      g_atomic_int_set(&(audio_loop->start_wait),
-		       TRUE);
+      g_atomic_int_set(&(audio_loop->start_done),
+		       FALSE);
       
       while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
 	    g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
