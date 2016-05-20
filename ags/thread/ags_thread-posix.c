@@ -338,8 +338,9 @@ ags_thread_init(AgsThread *thread)
   /* fields */
   g_atomic_int_set(&(thread->flags),
 		   0);
-  thread->rt_setup = FALSE;
-
+  g_atomic_int_set(&(thread->sync_flags),
+		   0);
+  
   /* clock */
   thread->delay = 0;
   thread->tic_delay = 0;
@@ -356,9 +357,7 @@ ags_thread_init(AgsThread *thread)
   pthread_attr_init(&(thread->thread_attr));
 
   thread->freq = AGS_THREAD_DEFAULT_JIFFIE;
-
-  thread->waiting = FALSE;
-      
+    
   pthread_mutexattr_init(&(thread->mutexattr));
   pthread_mutexattr_settype(&(thread->mutexattr), PTHREAD_MUTEX_RECURSIVE);
 
@@ -501,7 +500,7 @@ ags_thread_connect(AgsConnectable *connectable)
 
   thread = AGS_THREAD(connectable);
   
-  if((AGS_THREAD_CONNECTED & (thread->flags)) != 0){
+  if((AGS_THREAD_CONNECTED & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;
   }  
 
@@ -627,7 +626,7 @@ void
 ags_thread_set_sync(AgsThread *thread, guint tic)
 {
   guint next_tic;
-  guint flags;
+  guint flags, sync_flags;
   gboolean broadcast;
   gboolean waiting;
 
@@ -645,6 +644,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   pthread_mutex_lock(thread->mutex);
 
   flags = g_atomic_int_get(&(thread->flags));
+  sync_flags = g_atomic_int_get(&(thread->sync_flags));
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     pthread_mutex_unlock(thread->mutex);
@@ -655,7 +655,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   switch(tic){
   case 0:
     {
-      if((AGS_THREAD_WAIT_0 & flags) != 0){
+      if((AGS_THREAD_WAIT_0 & sync_flags) != 0){
 	next_tic = 1;
 	waiting = TRUE;
       }
@@ -663,7 +663,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
     break;
   case 1:
     {
-      if((AGS_THREAD_WAIT_1 & flags) != 0){
+      if((AGS_THREAD_WAIT_1 & sync_flags) != 0){
 	next_tic = 2;
 	waiting = TRUE;
       }
@@ -671,7 +671,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
     break;
   case 2:
     {
-      if((AGS_THREAD_WAIT_2 & flags) != 0){
+      if((AGS_THREAD_WAIT_2 & sync_flags) != 0){
 	next_tic = 0;
 	waiting = TRUE;
       }
@@ -682,32 +682,33 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   switch(tic){
   case 0:
     {
-      if((AGS_THREAD_WAIT_0 & flags) != 0){
-	g_atomic_int_and(&(thread->flags),
+      if((AGS_THREAD_WAIT_0 & sync_flags) != 0){
+	g_atomic_int_and(&(thread->sync_flags),
 			 (~AGS_THREAD_WAIT_0));
       }
     }
     break;
   case 1:
     {
-      if((AGS_THREAD_WAIT_1 & flags) != 0){
-	g_atomic_int_and(&(thread->flags),
+      if((AGS_THREAD_WAIT_1 & sync_flags) != 0){
+	g_atomic_int_and(&(thread->sync_flags),
 			 (~AGS_THREAD_WAIT_1));
       }
     }
     break;
   case 2:
     {
-      if((AGS_THREAD_WAIT_2 & flags) != 0){
-	g_atomic_int_and(&(thread->flags),
+      if((AGS_THREAD_WAIT_2 & sync_flags) != 0){
+	g_atomic_int_and(&(thread->sync_flags),
 			 (~AGS_THREAD_WAIT_2));
       }
     }
     break;
   }
 
-  if(thread->waiting){
-    thread->waiting = FALSE;
+  if((AGS_THREAD_WAITING & (g_atomic_int_get(&(thread->flags)))) != 0){
+    g_atomic_int_and(&(thread->flags),
+		     (~AGS_THREAD_WAITING));
 
     if(broadcast){
       pthread_cond_broadcast(thread->cond);
@@ -717,7 +718,8 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   }    
 
   thread->current_tic = next_tic;
-  thread->waiting = FALSE;
+  g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_WAITING));
 
   /*  */
   pthread_mutex_unlock(thread->mutex);
@@ -1216,7 +1218,7 @@ ags_thread_is_current_ready(AgsThread *current,
 {
 
   AgsThread *toplevel;
-  guint flags;
+  guint flags, sync_flags;
   gboolean retval;
 
   toplevel = ags_thread_get_toplevel(current);
@@ -1224,6 +1226,8 @@ ags_thread_is_current_ready(AgsThread *current,
   pthread_mutex_lock(current->mutex);
 
   flags = g_atomic_int_get(&(current->flags));
+  sync_flags = g_atomic_int_get(&(current->sync_flags));
+
   retval = FALSE;
 
   if((AGS_THREAD_RUNNING & flags) == 0){
@@ -1253,21 +1257,21 @@ ags_thread_is_current_ready(AgsThread *current,
   switch(tic){
   case 0:
     {
-      if((AGS_THREAD_WAIT_0 & flags) == 0){
+      if((AGS_THREAD_WAIT_0 & sync_flags) == 0){
 	retval = TRUE;
       }
     }
     break;
   case 1:
     {
-      if((AGS_THREAD_WAIT_1 & flags) == 0){
+      if((AGS_THREAD_WAIT_1 & sync_flags) == 0){
 	retval = TRUE;
       }
     }
     break;
   case 2:
     {
-      if((AGS_THREAD_WAIT_2 & flags) == 0){
+      if((AGS_THREAD_WAIT_2 & sync_flags) == 0){
 	retval = TRUE;
       }
     }
@@ -1291,7 +1295,7 @@ ags_thread_is_tree_ready(AgsThread *thread,
 
   gboolean ags_thread_is_tree_ready_current_tic(AgsThread *current){
     AgsThread *toplevel;
-    guint flags;
+    guint flags, sync_flags;
     gboolean retval;
 
     toplevel = ags_thread_get_toplevel(current);
@@ -1299,6 +1303,8 @@ ags_thread_is_tree_ready(AgsThread *thread,
     pthread_mutex_lock(current->mutex);
 
     flags = g_atomic_int_get(&(current->flags));
+    sync_flags = g_atomic_int_get(&(current->sync_flags));
+    
     retval = FALSE;
 
     if((AGS_THREAD_RUNNING & flags) == 0){
@@ -1328,21 +1334,21 @@ ags_thread_is_tree_ready(AgsThread *thread,
     switch(tic){
     case 0:
       {
-	if((AGS_THREAD_WAIT_0 & flags) != 0){
+	if((AGS_THREAD_WAIT_0 & sync_flags) != 0){
 	  retval = TRUE;
 	}
       }
       break;
     case 1:
       {
-	if((AGS_THREAD_WAIT_1 & flags) != 0){
+	if((AGS_THREAD_WAIT_1 & sync_flags) != 0){
 	  retval = TRUE;
 	}
       }
       break;
     case 2:
       {
-	if((AGS_THREAD_WAIT_2 & flags) != 0){
+	if((AGS_THREAD_WAIT_2 & sync_flags) != 0){
 	  retval = TRUE;
 	}
       }
@@ -1397,7 +1403,7 @@ ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
   current = g_atomic_pointer_get(&(thread->parent));
 
   while(current != parent){
-    if((AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_get(&(current->flags)))) != 0){
+    if((AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_get(&(current->sync_flags)))) != 0){
       return(current);
     }
 
@@ -1429,7 +1435,7 @@ ags_thread_next_sibling_locked(AgsThread *thread)
       continue;
     }
 
-    if((AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(thread->flags)))) != 0){
+    if((AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
       return(current);
     }
 
@@ -1460,7 +1466,7 @@ ags_thread_next_children_locked(AgsThread *thread)
     while(current != NULL){
       ags_thread_next_children_locked_recursive(g_atomic_pointer_get(&(current->children)));
 
-      if((AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_get(&(current->flags)))) != 0){
+      if((AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_get(&(current->sync_flags)))) != 0){
 	return(current);
       }
 
@@ -1497,7 +1503,7 @@ ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
 
   while(current != parent){
     ags_thread_lock(current);
-    g_atomic_int_or(&(current->flags),
+    g_atomic_int_or(&(current->sync_flags),
 		    AGS_THREAD_WAITING_FOR_CHILDREN);
 
     current = g_atomic_pointer_get(&(current->parent));
@@ -1533,7 +1539,7 @@ ags_thread_lock_sibling(AgsThread *thread)
     }
 
     ags_thread_lock(current);
-    g_atomic_int_or(&(current->flags),
+    g_atomic_int_or(&(current->sync_flags),
 		    AGS_THREAD_WAITING_FOR_SIBLING);
 
     current = g_atomic_pointer_get(&(current->next));
@@ -1562,7 +1568,7 @@ ags_thread_lock_children(AgsThread *thread)
       ags_thread_lock_children_recursive(g_atomic_pointer_get(&(current->children)));
 
       ags_thread_lock(current);
-      g_atomic_int_or(&(current->flags),
+      g_atomic_int_or(&(current->sync_flags),
 		      AGS_THREAD_WAITING_FOR_PARENT);
       
       current = g_atomic_pointer_get(&(current->prev));
@@ -1603,10 +1609,10 @@ ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
   current = g_atomic_pointer_get(&(thread->parent));
 
   while(current != parent){
-    g_atomic_int_and(&(current->flags),
+    g_atomic_int_and(&(current->sync_flags),
 		     (~AGS_THREAD_WAITING_FOR_CHILDREN));
 
-    if((AGS_THREAD_BROADCAST_PARENT & (g_atomic_int_get(&(thread->flags)))) == 0){
+    if((AGS_THREAD_BROADCAST_PARENT & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
       pthread_cond_signal(current->cond);
     }else{
       pthread_cond_broadcast(current->cond);
@@ -1644,10 +1650,10 @@ ags_thread_unlock_sibling(AgsThread *thread)
       continue;
     }
 
-    g_atomic_int_and(&(current->flags),
+    g_atomic_int_and(&(current->sync_flags),
 		     (~AGS_THREAD_WAITING_FOR_SIBLING));
 
-    if((AGS_THREAD_BROADCAST_SIBLING & (g_atomic_int_get(&(thread->flags)))) == 0){
+    if((AGS_THREAD_BROADCAST_SIBLING & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
       pthread_cond_signal(current->cond);
     }else{
       pthread_cond_broadcast(current->cond);
@@ -1684,13 +1690,13 @@ ags_thread_unlock_children(AgsThread *thread)
     while(current != NULL){
       ags_thread_unlock_children_recursive(g_atomic_pointer_get(&(current->children)));
 
-      g_atomic_int_and(&(current->flags),
+      g_atomic_int_and(&(current->sync_flags),
 		       (~AGS_THREAD_WAITING_FOR_PARENT));
 
       if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0 &&
 	 !AGS_IS_MAIN_LOOP(thread)){
 
-	if((AGS_THREAD_BROADCAST_CHILDREN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	if((AGS_THREAD_BROADCAST_CHILDREN & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
 	  pthread_cond_signal(current->cond);
 	}else{
 	  pthread_cond_broadcast(current->cond);
@@ -1737,19 +1743,19 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
     
   while((current != NULL && current != parent) &&
 	(((AGS_THREAD_IDLE & (g_atomic_int_get(&(current->flags)))) != 0 ||
-	  (AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_get(&(current->flags)))) == 0) ||
+	  (AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_get(&(current->sync_flags)))) == 0) ||
 	 g_atomic_pointer_get(&(current->parent)) != parent)){
     pthread_cond_wait(current->cond,
 		      current->mutex);
     
     if(!((AGS_THREAD_IDLE & (g_atomic_int_get(&(current->flags)))) != 0 ||
-	 (AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_get(&(current->flags)))) == 0)){
+	 (AGS_THREAD_WAITING_FOR_CHILDREN & (g_atomic_int_get(&(current->sync_flags)))) == 0)){
       current = g_atomic_pointer_get(&(current->parent));
     }
   }
 
   /* unset flag */
-  g_atomic_int_and(&(thread->flags),
+  g_atomic_int_and(&(thread->sync_flags),
 		   (~AGS_THREAD_WAITING_FOR_PARENT));
 }
 
@@ -1775,7 +1781,7 @@ ags_thread_wait_sibling(AgsThread *thread)
   
   while(current != NULL &&
 	(((AGS_THREAD_IDLE & (g_atomic_int_get(&(current->flags)))) != 0 ||
-	  (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(current->flags)))) == 0) ||
+	  (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(current->sync_flags)))) == 0) ||
 	 g_atomic_pointer_get(&(current->next)) != NULL)){
     if(current == thread){
       current = g_atomic_pointer_get(&(current->next));
@@ -1787,13 +1793,13 @@ ags_thread_wait_sibling(AgsThread *thread)
 		      current->mutex);
     
     if(!((AGS_THREAD_IDLE & (g_atomic_int_get(&(current->flags)))) != 0 ||
-	 (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(current->flags)))) == 0)){
+	 (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(current->sync_flags)))) == 0)){
       current = g_atomic_pointer_get(&(current->next));
     }
   }
 
   /* unset flags */
-  g_atomic_int_and(&(thread->flags),
+  g_atomic_int_and(&(thread->sync_flags),
 		   (~AGS_THREAD_WAITING_FOR_SIBLING));
 }
 
@@ -1821,7 +1827,7 @@ ags_thread_wait_children(AgsThread *thread)
 
     while(child != NULL &&
 	  (((AGS_THREAD_IDLE & (g_atomic_int_get(&(child->flags)))) != 0 ||
-	    (AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_get(&(child->flags)))) == 0) ||
+	    (AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_get(&(child->sync_flags)))) == 0) ||
 	   g_atomic_pointer_get(&(child->next)) != NULL)){
       if(initial_run){
 	ags_thread_wait_children_recursive(g_atomic_pointer_get(&(child->children)));
@@ -1833,7 +1839,7 @@ ags_thread_wait_children(AgsThread *thread)
 			child->mutex);
      
       if(!((AGS_THREAD_IDLE & (g_atomic_int_get(&(child->flags)))) != 0 ||
-	   (AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_get(&(child->flags)))) == 0)){
+	   (AGS_THREAD_WAITING_FOR_PARENT & (g_atomic_int_get(&(child->sync_flags)))) == 0)){
 	child = g_atomic_pointer_get(&(child->next));
 
 	initial_run = TRUE;
@@ -1849,7 +1855,7 @@ ags_thread_wait_children(AgsThread *thread)
   ags_thread_wait_children_recursive(g_atomic_pointer_get(&(thread->children)));
 
   /* unset flags */
-  g_atomic_int_and(&(thread->flags),
+  g_atomic_int_and(&(thread->sync_flags),
 		   (~AGS_THREAD_WAITING_FOR_CHILDREN));
 }
 
@@ -1871,7 +1877,7 @@ ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
   current = g_atomic_pointer_get(&(thread->parent));
 
   while(current != NULL){
-    if((AGS_THREAD_WAIT_FOR_CHILDREN & (g_atomic_int_get(&(current->flags)))) != 0){
+    if((AGS_THREAD_WAIT_FOR_CHILDREN & (g_atomic_int_get(&(current->sync_flags)))) != 0){
       if(!broadcast){
 	pthread_cond_signal(current->cond);
       }else{
@@ -1900,7 +1906,7 @@ ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
   current = ags_thread_first(thread);
 
   while(current != NULL){
-    if((AGS_THREAD_WAIT_FOR_SIBLING & (g_atomic_int_get(&(current->flags)))) != 0){
+    if((AGS_THREAD_WAIT_FOR_SIBLING & (g_atomic_int_get(&(current->sync_flags)))) != 0){
       if(!broadcast){
 	pthread_cond_signal(current->cond);
       }else{
@@ -1936,7 +1942,7 @@ ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
     current = thread;
 
     while(current != NULL){
-      if((AGS_THREAD_WAIT_FOR_PARENT & (g_atomic_int_get(&(current->flags)))) != 0){
+      if((AGS_THREAD_WAIT_FOR_PARENT & (g_atomic_int_get(&(current->sync_flags)))) != 0){
 	if(!broadcast){
 	  pthread_cond_signal(current->cond);
 	}else{
@@ -1990,6 +1996,20 @@ ags_thread_real_clock(AgsThread *thread)
     /* sync */
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
+    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+
+      if(g_atomic_pointer_get(&(thread->parent)) != NULL){
+	AgsThread *chaos_tree;
+
+	chaos_tree = ags_thread_chaos_tree(thread);
+	thread->tic_delay = chaos_tree->tic_delay;
+      }
+      
+      g_atomic_int_and(&(thread->flags),
+		       (~AGS_THREAD_INITIAL_RUN));
+    }
+
     /* thread tree */
     current_tic = thread->current_tic;
     
@@ -2004,35 +2024,24 @@ ags_thread_real_clock(AgsThread *thread)
     switch(thread->current_tic){
     case 0:
       {
-	g_atomic_int_or(&(thread->flags),
+	g_atomic_int_or(&(thread->sync_flags),
 			AGS_THREAD_WAIT_0);
       }
       break;
     case 1:
       {
-	g_atomic_int_or(&(thread->flags),
+	g_atomic_int_or(&(thread->sync_flags),
 			AGS_THREAD_WAIT_1);
       }
       break;
     case 2:
       {
-	g_atomic_int_or(&(thread->flags),
+	g_atomic_int_or(&(thread->sync_flags),
 			AGS_THREAD_WAIT_2);
       }
       break;
     }
     
-    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-      thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
-
-      if(g_atomic_pointer_get(&(thread->parent)) != NULL){
-	thread->tic_delay = AGS_THREAD(g_atomic_pointer_get(&(thread->parent)))->tic_delay;
-      }
-      
-      g_atomic_int_and(&(thread->flags),
-		       (~AGS_THREAD_INITIAL_RUN));
-    }
-
     if(!ags_thread_is_tree_ready(thread,
 				 current_tic)){
       //      ags_thread_hangcheck(main_loop);
@@ -2042,11 +2051,12 @@ ags_thread_real_clock(AgsThread *thread)
 
       if(!ags_thread_is_current_ready(thread,
 				      current_tic)){
-	thread->waiting = TRUE;
+	g_atomic_int_or(&(thread->flags),
+			AGS_THREAD_WAITING);
 	
 	while(!ags_thread_is_current_ready(thread,
 					   current_tic) &&
-	      thread->waiting){
+	      (AGS_THREAD_WAITING & (g_atomic_int_get(&(thread->flags)))) != 0){
 	  pthread_cond_wait(thread->cond,
 			    thread->mutex);
 	}
@@ -2140,9 +2150,11 @@ ags_thread_real_clock(AgsThread *thread)
   pthread_mutex_unlock(mutex);
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
-     thread->initial_sync){
+     (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
     clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
-    thread->initial_sync = FALSE;
+
+    g_atomic_int_and(&(thread->flags),
+		     (~AGS_THREAD_INITIAL_SYNC));
 
     return(1);
   }
@@ -2323,20 +2335,28 @@ ags_thread_real_start(AgsThread *thread)
   }
 
   main_loop = AGS_MAIN_LOOP(ags_thread_get_toplevel(thread));
-  thread->rt_setup = FALSE;
   
   /* get run flags */
-  thread->initial_sync = TRUE;
   g_atomic_int_or(&(thread->flags),
 		  (AGS_THREAD_RUNNING |
-		   AGS_THREAD_INITIAL_RUN));
-  
+		   AGS_THREAD_INITIAL_RUN |
+		   AGS_THREAD_INITIAL_SYNC));
+
+  g_atomic_int_and(&(thread->flags),
+		   (~(AGS_THREAD_RT_SETUP |
+		      AGS_THREAD_WAITING)));
+
+  g_atomic_int_and(&(thread->sync_flags),
+		   (~(AGS_THREAD_WAIT_0 |
+		      AGS_THREAD_WAIT_1 |
+		      AGS_THREAD_WAIT_2)));
+
 #ifdef AGS_DEBUG
   g_message("thread start: %s\0", G_OBJECT_TYPE_NAME(thread));
 #endif
 
   /* */
-  val = g_atomic_int_get(&(thread->flags));
+  val = g_atomic_int_get(&(thread->sync_flags));
   
   if((AGS_THREAD_TIMELOCK_RUN & val) != 0){
     pthread_create(thread->timelock_thread, NULL,
@@ -2479,8 +2499,21 @@ ags_thread_loop(void *ptr)
       start_queue = start_queue_next;
     }
 
+    /* notify start */
+    /* signal AgsAudioLoop */
+    pthread_mutex_lock(thread->start_mutex);
+      
+    g_atomic_int_set(&(thread->start_done),
+		     TRUE);    
+      
+    if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
+      pthread_cond_broadcast(thread->start_cond);
+    }
+      
+    pthread_mutex_unlock(thread->start_mutex);
+
     /* barrier */
-    if((AGS_THREAD_WAITING_FOR_BARRIER & (g_atomic_int_get(&(thread->flags)))) != 0){
+    if((AGS_THREAD_WAITING_FOR_BARRIER & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
       int wait_count;
 
       if(thread->first_barrier){
@@ -2510,22 +2543,6 @@ ags_thread_loop(void *ptr)
       
     /* run clock synchronization */
     i_stop = ags_thread_clock(thread);
-      
-    /* notify start */
-    if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
-      /* unset initial run */
-      /* signal AgsAudioLoop */
-      pthread_mutex_lock(thread->start_mutex);
-
-      g_atomic_int_set(&(thread->start_done),
-		       TRUE);    
-    
-      if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
-	pthread_cond_broadcast(thread->start_cond);
-      }
-    
-      pthread_mutex_unlock(thread->start_mutex);
-    }
 
     /* if still running */    
     running = g_atomic_int_get(&(thread->flags));
@@ -2538,10 +2555,10 @@ ags_thread_loop(void *ptr)
       g_atomic_int_or(&(thread->flags),
 		      AGS_THREAD_IDLE);
 
-      if((AGS_THREAD_WAIT_FOR_PARENT & (g_atomic_int_get(&(thread->flags)))) != 0){
+      if((AGS_THREAD_WAIT_FOR_PARENT & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
 	wait_for_parent = TRUE;
 
-	g_atomic_int_or(&(thread->flags),
+	g_atomic_int_or(&(thread->sync_flags),
 			AGS_THREAD_WAITING_FOR_PARENT);
 	ags_thread_lock_parent(thread, NULL);
       }else{
@@ -2549,10 +2566,10 @@ ags_thread_loop(void *ptr)
       }
 
       /* lock sibling */
-      if((AGS_THREAD_WAIT_FOR_SIBLING & (g_atomic_int_get(&(thread->flags)))) != 0){
+      if((AGS_THREAD_WAIT_FOR_SIBLING & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
 	wait_for_sibling = TRUE;
 
-	g_atomic_int_or(&(thread->flags),
+	g_atomic_int_or(&(thread->sync_flags),
 			AGS_THREAD_WAITING_FOR_SIBLING);
 	ags_thread_lock_sibling(thread);
       }else{
@@ -2560,10 +2577,10 @@ ags_thread_loop(void *ptr)
       }
 
       /* lock_children */
-      if((AGS_THREAD_WAIT_FOR_CHILDREN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      if((AGS_THREAD_WAIT_FOR_CHILDREN & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
 	wait_for_children = TRUE;
 
-	g_atomic_int_or(&(thread->flags),
+	g_atomic_int_or(&(thread->sync_flags),
 			AGS_THREAD_WAITING_FOR_CHILDREN);
 	ags_thread_lock_children(thread);
       }else{
@@ -2631,14 +2648,14 @@ ags_thread_loop(void *ptr)
       /* */
       pthread_mutex_lock(thread->timelock_mutex);
 
-      val = g_atomic_int_get(&(thread->flags));
+      val = g_atomic_int_get(&(thread->sync_flags));
 
       if((AGS_THREAD_TIMELOCK_RUN & val) != 0){
 	guint locked;
 
-	locked = g_atomic_int_get(&(thread->flags));
+	locked = g_atomic_int_get(&(thread->sync_flags));
 				
-	g_atomic_int_and(&(thread->flags),
+	g_atomic_int_and(&(thread->sync_flags),
 			 (~AGS_THREAD_TIMELOCK_WAIT));
 
 	if((AGS_THREAD_TIMELOCK_WAIT & locked) != 0){	
@@ -2706,22 +2723,26 @@ ags_thread_loop(void *ptr)
   
   pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+  }
+
   switch(thread->current_tic){
   case 0:
     {
-      g_atomic_int_or(&(thread->flags),
+      g_atomic_int_or(&(thread->sync_flags),
 		      AGS_THREAD_WAIT_0);
     }
     break;
   case 1:
     {
-      g_atomic_int_or(&(thread->flags),
+      g_atomic_int_or(&(thread->sync_flags),
 		      AGS_THREAD_WAIT_1);
     }
     break;
   case 2:
     {
-      g_atomic_int_or(&(thread->flags),
+      g_atomic_int_or(&(thread->sync_flags),
 		      AGS_THREAD_WAIT_2);
     }
     break;
@@ -2825,37 +2846,39 @@ ags_thread_timelock_loop(void *ptr)
 {
   AgsThread *thread;
   int retval;
-  guint val;
+  guint flags, sync_flags;
 
   thread = AGS_THREAD(ptr);
 
-  val = g_atomic_int_get(&(thread->flags));
+  flags = g_atomic_int_get(&(thread->flags));
+  
+  sync_flags = g_atomic_int_get(&(thread->sync_flags));
   
   pthread_mutex_lock(thread->timelock_mutex);
 
-  g_atomic_int_or(&(thread->flags),
+  g_atomic_int_or(&(thread->sync_flags),
 		  AGS_THREAD_TIMELOCK_WAIT);
 
-  while((AGS_THREAD_RUNNING & (val)) != 0){
+  while((AGS_THREAD_RUNNING & (flags)) != 0){
 
-    g_atomic_int_or(&(thread->flags),
+    g_atomic_int_or(&(thread->sync_flags),
 		    AGS_THREAD_TIMELOCK_WAIT);
 
-    val = g_atomic_int_get(&(thread->flags));
+    sync_flags = g_atomic_int_get(&(thread->sync_flags));
 
-    while((AGS_THREAD_TIMELOCK_WAIT & (val)) != 0){
+    while((AGS_THREAD_TIMELOCK_WAIT & (sync_flags)) != 0){
       retval = pthread_cond_wait(thread->timelock_cond,
 				 thread->timelock_mutex);
 
-      val = g_atomic_int_get(&(thread->flags));
+      sync_flags = g_atomic_int_get(&(thread->sync_flags));
     }
 
     nanosleep(&(thread->timelock), NULL);
     // ndelay(thread->timelock.tv_nsec);
 
-    val = g_atomic_int_get(&(thread->flags));
+    sync_flags = g_atomic_int_get(&(thread->sync_flags));
 
-    if((AGS_THREAD_WAIT_0 & val) != 0){
+    if((AGS_THREAD_WAIT_0 & sync_flags) != 0){
 #ifdef AGS_DEBUG
       g_message("thread in realtime\0");
 #endif
@@ -2866,7 +2889,7 @@ ags_thread_timelock_loop(void *ptr)
       ags_thread_timelock(thread);
     }
 
-    val = g_atomic_int_get(&(thread->flags));
+    flags = g_atomic_int_get(&(thread->flags));
   }
 
   pthread_mutex_unlock(thread->timelock_mutex);
@@ -2893,7 +2916,7 @@ ags_thread_real_timelock(AgsThread *thread)
   }
 
 #if defined(AGS_PTHREAD_SUSPEND) || defined(AGS_LINUX_SIGNALS)
-  val = g_atomic_int_get(&(thread->flags));
+  val = g_atomic_int_get(&(thread->sync_flags));
 
   if((AGS_THREAD_SKIP_NON_GREEDY & val) != 0){
 #endif
@@ -2908,7 +2931,7 @@ ags_thread_real_timelock(AgsThread *thread)
     while(greedy_locks != NULL){
       pthread_mutex_lock(AGS_THREAD(greedy_locks->data)->greedy_mutex);
       
-      g_atomic_int_or(&(AGS_THREAD(greedy_locks->data)->flags),
+      g_atomic_int_or(&(AGS_THREAD(greedy_locks->data)->sync_flags),
 		      (AGS_THREAD_WAIT_0 | AGS_THREAD_SKIPPED_BY_TIMELOCK));
 
       pthread_mutex_unlock(AGS_THREAD(greedy_locks->data)->greedy_mutex);
@@ -2920,7 +2943,7 @@ ags_thread_real_timelock(AgsThread *thread)
 
     if(!ags_thread_is_tree_ready(thread,
 				 next_tic)){
-      g_atomic_int_or(&(thread->flags),
+      g_atomic_int_or(&(thread->sync_flags),
 		      AGS_THREAD_WAIT_0);
 
       while(!ags_thread_is_current_ready(thread,
@@ -2935,7 +2958,7 @@ ags_thread_real_timelock(AgsThread *thread)
     }
 #if defined(AGS_PTHREAD_SUSPEND) || defined(AGS_LINUX_SIGNALS)
   }else{
-    g_atomic_int_or(&(thread->flags),
+    g_atomic_int_or(&(thread->sync_flags),
 		    AGS_THREAD_TIMELOCK_RESUME);
     
     /* throughput is mandatory */
@@ -2970,7 +2993,7 @@ ags_thread_real_timelock(AgsThread *thread)
 
     if(!ags_thread_is_tree_ready(thread,
 				 next_tic)){
-      g_atomic_int_or(&(thread->flags),
+      g_atomic_int_or(&(thread->sync_flags),
 		      AGS_THREAD_WAIT_0);
 
       while(!ags_thread_is_current_ready(thread,
@@ -3063,19 +3086,19 @@ ags_thread_hangcheck(AgsThread *thread)
 
   void ags_thread_hangcheck_recursive(AgsThread *thread){
     AgsThread *child;
-    guint flags;
+    guint sync_flags;
 
-    flags = g_atomic_int_get(&(thread->flags));
+    sync_flags = g_atomic_int_get(&(thread->sync_flags));
 
-    if((AGS_THREAD_WAIT_0 & flags) != 0){
+    if((AGS_THREAD_WAIT_0 & sync_flags) != 0){
       synced[0] = TRUE;
     }
 
-    if((AGS_THREAD_WAIT_1 & flags) != 0){
+    if((AGS_THREAD_WAIT_1 & sync_flags) != 0){
       synced[1] = TRUE;
     }
 
-    if((AGS_THREAD_WAIT_2 & flags) != 0){
+    if((AGS_THREAD_WAIT_2 & sync_flags) != 0){
       synced[2] = TRUE;
     }
 
@@ -3090,15 +3113,15 @@ ags_thread_hangcheck(AgsThread *thread)
   }
   void ags_thread_hangcheck_unsync_all(AgsThread *thread, gboolean broadcast){
     AgsThread *child;
-    guint flags;
+    guint sync_flags;
 
-    flags = g_atomic_int_get(&(thread->flags));
-    g_atomic_int_and(&(thread->flags),
+    sync_flags = g_atomic_int_get(&(thread->sync_flags));
+    g_atomic_int_and(&(thread->sync_flags),
 		     (~(AGS_THREAD_WAIT_0 |
 			AGS_THREAD_WAIT_1 |
 			AGS_THREAD_WAIT_2)));
 
-    if(AGS_THREAD_WAIT_0 & flags){
+    if(AGS_THREAD_WAIT_0 & sync_flags){
       if(broadcast){
 	pthread_cond_broadcast(thread->cond);
       }else{
@@ -3106,7 +3129,7 @@ ags_thread_hangcheck(AgsThread *thread)
       }
     }
 
-    if(AGS_THREAD_WAIT_1 & flags){
+    if(AGS_THREAD_WAIT_1 & sync_flags){
       if(broadcast){
 	pthread_cond_broadcast(thread->cond);
       }else{
@@ -3114,7 +3137,7 @@ ags_thread_hangcheck(AgsThread *thread)
       }
     }
 
-    if(AGS_THREAD_WAIT_2 & flags){
+    if(AGS_THREAD_WAIT_2 & sync_flags){
       if(broadcast){
 	pthread_cond_broadcast(thread->cond);
       }else{
@@ -3188,6 +3211,17 @@ AgsThread*
 ags_thread_self(void)
 {
   return((AgsThread *) pthread_getspecific(ags_thread_key));
+}
+
+AgsThread*
+ags_thread_chaos_tree(AgsThread *thread)
+{
+  while((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
+	g_atomic_pointer_get(&(thread->parent)) != NULL){
+    thread = g_atomic_pointer_get(&(thread->parent));
+  }
+
+  return(thread);
 }
 
 /**

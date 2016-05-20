@@ -6,6 +6,7 @@ ags (0.7.17)
 	* refactored AgsThread flags
 	* implemented threads to start synced
 	* implemented AgsSwitchBufferFlag task because of data-race
+	* implemented ags_thread_chaos_tree()
 
 ags (0.7.16)
 
