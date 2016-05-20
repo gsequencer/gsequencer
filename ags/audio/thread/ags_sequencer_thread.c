@@ -252,7 +252,7 @@ ags_sequencer_thread_connect(AgsConnectable *connectable)
 
   sequencer_thread = AGS_SEQUENCER_THREAD(connectable);
 
-  if((AGS_THREAD_CONNECTED & (sequencer_thread->flags)) != 0){
+  if((AGS_THREAD_CONNECTED & (g_atomic_int_get(&(sequencer_thread->flags)))) != 0){
     return;
   }  
 

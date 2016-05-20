@@ -541,7 +541,7 @@ ags_audio_loop_start(AgsThread *thread)
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
-  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
   }
@@ -554,7 +554,7 @@ ags_audio_loop_run(AgsThread *thread)
 
   guint val;
 
-  if(!thread->rt_setup){
+  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
     /* Declare ourself as a real time task */
@@ -564,9 +564,9 @@ ags_audio_loop_run(AgsThread *thread)
       perror("sched_setscheduler failed\0");
     }
 
-    thread->rt_setup = TRUE;
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_RT_SETUP);
   }
-
   
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
   audio_loop = AGS_AUDIO_LOOP(thread);

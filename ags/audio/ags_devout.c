@@ -1849,15 +1849,13 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   /* tic */
   ags_soundcard_tic(soundcard);
 
-  /* reset - switch buffer flags * /
+  /* reset - switch buffer flags */
   task_thread = ags_thread_find_type(application_context->main_loop,
 				     AGS_TYPE_TASK_THREAD);
   
   switch_buffer_flag = ags_switch_buffer_flag_new(devout);
   ags_task_thread_append_task(task_thread,
 			      switch_buffer_flag);
-  */
-  ags_devout_switch_buffer_flag(devout);
   
   snd_pcm_prepare(devout->out.alsa.handle);
 }

@@ -95,14 +95,20 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 						   AGS_FILE_FLAGS_PROP),
 					NULL,
 					16);
+  
   g_atomic_int_set(&(gobject->flags),
-		   ((~(AGS_THREAD_WAIT_0 |
-		       AGS_THREAD_WAIT_1 |
-		       AGS_THREAD_WAIT_2 |
-		       AGS_THREAD_RUNNING)) & (guint) g_ascii_strtoull(xmlGetProp(node,
+		   ((~(AGS_THREAD_RUNNING)) & (guint) g_ascii_strtoull(xmlGetProp(node,
 										  AGS_FILE_FLAGS_PROP),
 								       NULL,
 								       16)));
+  
+  g_atomic_int_set(&(gobject->sync_flags),
+		   ((~(AGS_THREAD_WAIT_0 |
+		       AGS_THREAD_WAIT_1 |
+		       AGS_THREAD_WAIT_2)) & (guint) g_ascii_strtoull(xmlGetProp(node,
+										 "sync-flags\0"),
+								      NULL,
+								      16)));
 
   /* start */
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(orig_flags)))) != 0){
@@ -145,7 +151,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 void
 ags_file_read_thread_start(AgsFileLaunch *file_launch, AgsThread *thread)
 {
-  thread->flags &= (~AGS_THREAD_RUNNING);
+  g_atomic_int_and(&(thread->flags),
+		   ~AGS_THREAD_RUNNING);
   ags_thread_start(thread);
 
   /* wait thread */
@@ -200,7 +207,11 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
-	     g_strdup_printf("%x\0", thread->flags));
+	     g_strdup_printf("%x\0", g_atomic_int_get(&(thread->flags))));
+
+  xmlNewProp(node,
+	     "sync-flags\0",
+	     g_strdup_printf("%x\0", g_atomic_int_get(&(thread->sync_flags))));
 
   /* add to parent */
   xmlAddChild(parent,
