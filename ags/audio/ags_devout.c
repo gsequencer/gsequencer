@@ -1241,18 +1241,19 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
   while(TRUE){
     error = snd_card_next(&card_num);
 
-    if(card_num < 0){
+    if(card_num < 0 || error < 0){
+      g_message("Can't get the next card number: %s\0", snd_strerror(error));
+      
       break;
     }
 
-    if(error < 0){
-      continue;
-    }
-
-    str = g_strdup_printf("hw:%i\0", card_num);
+    str = g_strdup_printf("hw:%d\0", card_num);
+    g_message("%s\0", str);
     error = snd_ctl_open(&card_handle, str, 0);
 
     if(error < 0){
+      g_free(str);
+      
       continue;
     }
 
@@ -1260,6 +1261,8 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     error = snd_ctl_card_info(card_handle, card_info);
 
     if(error < 0){
+      g_free(str);
+      
       continue;
     }
 
@@ -1267,6 +1270,8 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     error = snd_ctl_pcm_next_device(card_handle, &device);
 
     if(error < 0){
+      g_free(str);
+      
       continue;
     }
     

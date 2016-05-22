@@ -215,7 +215,6 @@ am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_channel_iter.lo \
 	ags/audio/libags_audio_la-ags_devout.lo \
 	ags/audio/libags_audio_la-ags_input.lo \
-	ags/audio/libags_audio_la-ags_libao.lo \
 	ags/audio/libags_audio_la-ags_message.lo \
 	ags/audio/libags_audio_la-ags_midiin.lo \
 	ags/audio/libags_audio_la-ags_notation.lo \
@@ -1125,8 +1124,6 @@ JACK_CFLAGS = @JACK_CFLAGS@
 JACK_LIBS = @JACK_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
-LIBAO_CFLAGS = @LIBAO_CFLAGS@
-LIBAO_LIBS = @LIBAO_LIBS@
 LIBASOUND2_CFLAGS = @LIBASOUND2_CFLAGS@
 LIBASOUND2_LIBS = @LIBASOUND2_LIBS@
 LIBINSTPATCH_CFLAGS = @LIBINSTPATCH_CFLAGS@
@@ -1216,7 +1213,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -1582,7 +1578,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_effect.h \
 	ags/audio/ags_input.h \
-	ags/audio/ags_libao.h \
 	ags/audio/ags_message.h \
 	ags/audio/ags_midiin.h \
 	ags/audio/ags_notation.h \
@@ -1630,7 +1625,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_channel_iter.c \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_input.c \
-	ags/audio/ags_libao.c \
 	ags/audio/ags_message.c \
 	ags/audio/ags_midiin.c \
 	ags/audio/ags_notation.c \
@@ -2740,8 +2734,6 @@ ags/audio/libags_audio_la-ags_channel_iter.lo:  \
 ags/audio/libags_audio_la-ags_devout.lo: ags/audio/$(am__dirstamp) \
 	ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_input.lo: ags/audio/$(am__dirstamp) \
-	ags/audio/$(DEPDIR)/$(am__dirstamp)
-ags/audio/libags_audio_la-ags_libao.lo: ags/audio/$(am__dirstamp) \
 	ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_message.lo: ags/audio/$(am__dirstamp) \
 	ags/audio/$(DEPDIR)/$(am__dirstamp)
@@ -4355,7 +4347,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_channel_iter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_devout.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_input.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_libao.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_message.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_midiin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_notation.Plo@am__quote@
@@ -4961,13 +4952,6 @@ ags/audio/libags_audio_la-ags_input.lo: ags/audio/ags_input.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_input.c' object='ags/audio/libags_audio_la-ags_input.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_input.lo `test -f 'ags/audio/ags_input.c' || echo '$(srcdir)/'`ags/audio/ags_input.c
-
-ags/audio/libags_audio_la-ags_libao.lo: ags/audio/ags_libao.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_libao.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_libao.Tpo -c -o ags/audio/libags_audio_la-ags_libao.lo `test -f 'ags/audio/ags_libao.c' || echo '$(srcdir)/'`ags/audio/ags_libao.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_libao.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_libao.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_libao.c' object='ags/audio/libags_audio_la-ags_libao.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_libao.lo `test -f 'ags/audio/ags_libao.c' || echo '$(srcdir)/'`ags/audio/ags_libao.c
 
 ags/audio/libags_audio_la-ags_message.lo: ags/audio/ags_message.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_message.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_message.Tpo -c -o ags/audio/libags_audio_la-ags_message.lo `test -f 'ags/audio/ags_message.c' || echo '$(srcdir)/'`ags/audio/ags_message.c

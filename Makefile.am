@@ -407,7 +407,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_effect.h \
 	ags/audio/ags_input.h \
-	ags/audio/ags_libao.h \
 	ags/audio/ags_message.h \
 	ags/audio/ags_midiin.h \
 	ags/audio/ags_notation.h \
@@ -456,7 +455,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_channel_iter.c \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_input.c \
-	ags/audio/ags_libao.c \
 	ags/audio/ags_message.c \
 	ags/audio/ags_midiin.c \
 	ags/audio/ags_notation.c \

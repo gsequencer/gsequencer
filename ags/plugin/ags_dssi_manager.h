@@ -52,7 +52,8 @@ GType ags_dssi_manager_get_type(void);
 gchar** ags_dssi_manager_get_filenames();
 AgsDssiPlugin* ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect);
 
-void ags_dssi_manager_load_file(gchar *filename);
+void ags_dssi_manager_load_file(gchar *dssi_path,
+				gchar *filename);
 void ags_dssi_manager_load_default_directory();
 
 /*  */

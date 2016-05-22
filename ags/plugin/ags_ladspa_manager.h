@@ -52,7 +52,8 @@ GType ags_ladspa_manager_get_type(void);
 gchar** ags_ladspa_manager_get_filenames();
 AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin(gchar *filename, gchar *effect);
 
-void ags_ladspa_manager_load_file(gchar *filename);
+void ags_ladspa_manager_load_file(gchar *ladspa_plugin,
+				  gchar *filename);
 void ags_ladspa_manager_load_default_directory();
 
 /*  */

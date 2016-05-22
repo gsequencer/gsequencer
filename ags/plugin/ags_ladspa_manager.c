@@ -55,7 +55,7 @@ static gpointer ags_ladspa_manager_parent_class = NULL;
 static guint ladspa_manager_signals[LAST_SIGNAL];
 
 AgsLadspaManager *ags_ladspa_manager = NULL;
-static const gchar *ags_ladspa_default_path = "/usr/lib/ladspa\0";
+gchar **ags_ladspa_default_path = NULL;
 
 GType
 ags_ladspa_manager_get_type (void)
@@ -101,6 +101,14 @@ void
 ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
 {
   ladspa_manager->ladspa_plugin = NULL;
+
+  if(ags_ladspa_default_path == NULL){
+    ags_ladspa_default_path = (gchar **) malloc(3 * sizeof(gchar *));
+
+    ags_ladspa_default_path[0] = g_strdup("/usr/lib/ladspa\0");
+    ags_ladspa_default_path[1] = g_strdup("/usr/lib64/ladspa\0");
+    ags_ladspa_default_path[2] = NULL;
+  }
 }
 
 void
@@ -204,6 +212,7 @@ ags_ladspa_manager_find_ladspa_plugin(gchar *filename, gchar *effect)
 
 /**
  * ags_ladspa_manager_load_file:
+ * @ladspa_path: the LADSPA path
  * @filename: the filename of the plugin
  *
  * Load @filename specified plugin.
@@ -211,7 +220,8 @@ ags_ladspa_manager_find_ladspa_plugin(gchar *filename, gchar *effect)
  * Since: 0.4
  */
 void
-ags_ladspa_manager_load_file(gchar *filename)
+ags_ladspa_manager_load_file(gchar *ladspa_path,
+			     gchar *filename)
 {
   AgsLadspaManager *ladspa_manager;
   AgsLadspaPlugin *ladspa_plugin;
@@ -231,7 +241,7 @@ ags_ladspa_manager_load_file(gchar *filename)
   pthread_mutex_lock(&(mutex));
 
   path = g_strdup_printf("%s/%s\0",
-			 ags_ladspa_default_path,
+			 ladspa_path,
 			 filename);
 
   g_message("ags_ladspa_manager.c loading - %s\0", path);
@@ -279,26 +289,48 @@ ags_ladspa_manager_load_default_directory()
 {
   AgsLadspaManager *ladspa_manager;
   AgsLadspaPlugin *ladspa_plugin;
+
   GDir *dir;
+
+  gchar **ladspa_path;
   gchar *filename;
+
   GError *error;
 
   ladspa_manager = ags_ladspa_manager_get_instance();
 
-  error = NULL;
-  dir = g_dir_open(ags_ladspa_default_path,
-		   0,
-		   &error);
+  ladspa_path = ags_ladspa_default_path;
 
-  if(error != NULL){
-    g_warning("%s\0", error->message);
-  }
-
-  while((filename = g_dir_read_name(dir)) != NULL){
-    if(g_str_has_suffix(filename,
-			".so\0")){
-      ags_ladspa_manager_load_file(filename);
+  while(*ladspa_path != NULL){
+    if(!g_file_test(*ladspa_path,
+		    G_FILE_TEST_EXISTS)){
+      ladspa_path++;
+      
+      continue;
     }
+    
+    error = NULL;
+    dir = g_dir_open(*ladspa_path,
+		     0,
+		     &error);
+
+    if(error != NULL){
+      g_warning("%s\0", error->message);
+
+      ladspa_path++;
+
+      continue;
+    }
+
+    while((filename = g_dir_read_name(dir)) != NULL){
+      if(g_str_has_suffix(filename,
+			  ".so\0")){
+	ags_ladspa_manager_load_file(*ladspa_path,
+				     filename);
+      }
+    }
+
+    ladspa_path++;
   }
 }
 

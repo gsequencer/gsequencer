@@ -65,7 +65,7 @@ enum{
 static gpointer ags_lv2_manager_parent_class = NULL;
 
 AgsLv2Manager *ags_lv2_manager = NULL;
-static const gchar *ags_lv2_default_path = "/usr/lib/lv2\0";
+gchar **ags_lv2_default_path = NULL;
 
 GType
 ags_lv2_manager_get_type (void)
@@ -132,6 +132,14 @@ void
 ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
 {
   lv2_manager->lv2_plugin = NULL;
+
+  if(ags_lv2_default_path == NULL){
+    ags_lv2_default_path = (gchar **) malloc(3 * sizeof(gchar *));
+
+    ags_lv2_default_path[0] = g_strdup("/usr/lib/lv2\0");
+    ags_lv2_default_path[1] = g_strdup("/usr/lib64/lv2\0");
+    ags_lv2_default_path[2] = NULL;
+  }
 }
 
 void
@@ -294,6 +302,8 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
 
 /**
  * ags_lv2_manager_load_file:
+ * @turtle: the loaded turtle
+ * @lv2_path: the lv2 path
  * @filename: the filename of the plugin
  *
  * Load @filename specified plugin.
@@ -302,6 +312,7 @@ ags_lv2_manager_find_lv2_plugin(gchar *filename, gchar *effect)
  */
 void
 ags_lv2_manager_load_file(AgsTurtle *turtle,
+			  gchar *lv2_path,
 			  gchar *filename)
 {
   AgsLv2Manager *lv2_manager;
@@ -331,8 +342,6 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-  return;
-  
   if(turtle == NULL ||
      filename == NULL){
     return;
@@ -344,7 +353,7 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
   pthread_mutex_lock(&(mutex));
 
   path = g_strdup_printf("%s/%s\0",
-			 ags_lv2_default_path,
+			 lv2_path,
 			 filename);
 
   xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0";
@@ -552,6 +561,7 @@ ags_lv2_manager_load_default_directory()
 
   GDir *dir;
 
+  gchar **lv2_path;
   gchar *path, *plugin_path;
   gchar *str;
 
@@ -559,147 +569,165 @@ ags_lv2_manager_load_default_directory()
   
   lv2_manager = ags_lv2_manager_get_instance();
 
-  error = NULL;
-  dir = g_dir_open(ags_lv2_default_path,
-		   0,
-		   &error);
+  lv2_path = ags_lv2_default_path;
 
-  if(error != NULL){
-    g_warning(error->message);
-  }
-
-  while((path = g_dir_read_name(dir)) != NULL){
-    if(!g_ascii_strncasecmp(path,
-			    "..\0",
-			    3) ||
-       !g_ascii_strncasecmp(path,
-			    ".\0",
-			    2)){
+  while(*lv2_path != NULL){
+    if(!g_file_test(*lv2_path,
+		    G_FILE_TEST_EXISTS)){
+      lv2_path++;
+      
       continue;
     }
+
+    error = NULL;
+    dir = g_dir_open(*lv2_path,
+		     0,
+		     &error);
+
+    if(error != NULL){
+      g_warning(error->message);
+
+      lv2_path++;
+
+      continue;
+    }
+
+    while((path = g_dir_read_name(dir)) != NULL){
+      if(!g_ascii_strncasecmp(path,
+			      "..\0",
+			      3) ||
+	 !g_ascii_strncasecmp(path,
+			      ".\0",
+			      2)){
+	continue;
+      }
     
-    plugin_path = g_strdup_printf("%s/%s\0",
-				  ags_lv2_default_path,
-				  path);
+      plugin_path = g_strdup_printf("%s/%s\0",
+				    *lv2_path,
+				    path);
 
-    if(g_file_test(plugin_path,
-		   G_FILE_TEST_IS_DIR)){
-      AgsTurtle *manifest, *turtle;
+      if(g_file_test(plugin_path,
+		     G_FILE_TEST_IS_DIR)){
+	AgsTurtle *manifest, *turtle;
 
-      xmlDoc *doc;
+	xmlDoc *doc;
 
-      FILE *out;
+	FILE *out;
 
-      xmlChar *buffer;
-      int size;
+	xmlChar *buffer;
+	int size;
       
-      GList *ttl_list, *binary_list;
+	GList *ttl_list, *binary_list;
 
-      gchar *turtle_path, *filename;
+	gchar *turtle_path, *filename;
 
-      gboolean turtle_loaded;
+	gboolean turtle_loaded;
       
-      manifest = ags_turtle_new(g_strdup_printf("%s/manifest.ttl\0",
-						plugin_path));
-      ags_turtle_load(manifest,
-		      NULL);
+	manifest = ags_turtle_new(g_strdup_printf("%s/manifest.ttl\0",
+						  plugin_path));
+	ags_turtle_load(manifest,
+			NULL);
 
-      /* read binary from turtle */
-      binary_list = ags_turtle_find_xpath(manifest,
-					  "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0");
-
-      /* persist XML */
-      //NOTE:JK: no need for it
-      
-      //      xmlDocDumpFormatMemoryEnc(manifest->doc, &buffer, &size, "UTF-8\0", TRUE);
-
-      //      out = fopen(g_strdup_printf("%s/manifest.xml\0", plugin_path), "w+\0");
-
-      //      fwrite(buffer, size, sizeof(xmlChar), out);
-      //      fflush(out);
-            
-      /* load */
-      while(binary_list != NULL){
-	/* read filename of binary */
-	str = xmlNodeGetContent((xmlNode *) binary_list->data);
-
-	if(str == NULL){
-	  binary_list = binary_list->next;
-	  continue;
-	}
-	
-	str = g_strndup(&(str[1]),
-			strlen(str) - 2);
-	filename = g_strdup_printf("%s/%s\0",
-				   path,
-				   str);
-	free(str);
-
-	/* read turtle from manifest */
-	ttl_list = ags_turtle_find_xpath_with_context_node(manifest,
-							   "./ancestor::*[self::rdf-triple][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0",
-							   (xmlNode *) binary_list->data);
-
-	if(ttl_list == NULL){
-	  binary_list = binary_list->next;
-
-	  continue;
-	}
-	
-	/* read filename */
-	turtle_path = xmlNodeGetContent((xmlNode *) ttl_list->data);
-
-	if(turtle_path == NULL){
-	  binary_list = binary_list->next;
-	  
-	  continue;
-	}
-	
-	turtle_path = g_strndup(&(turtle_path[1]),
-				strlen(turtle_path) - 2);
-	
-	if(!g_ascii_strncasecmp(turtle_path,
-				"http://\0",
-				7)){
-	  binary_list = binary_list->next;
-	  
-	  continue;
-	}
-
-	/* load turtle doc */
-	g_message(turtle_path);
-
-	if((turtle = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
-					     turtle_path)) == NULL){
-	  turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
-						  plugin_path,
-						  turtle_path));
-	  ags_turtle_load(turtle,
-			  NULL);
-	  ags_turtle_manager_add(ags_turtle_manager_get_instance(),
-				 turtle);
-	}
-	
-	/* load specified plugin */
-	ags_lv2_manager_load_file(turtle,
-				  filename);
+	/* read binary from turtle */
+	binary_list = ags_turtle_find_xpath(manifest,
+					    "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']\0");
 
 	/* persist XML */
 	//NOTE:JK: no need for it
-	//	xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
+      
+	//      xmlDocDumpFormatMemoryEnc(manifest->doc, &buffer, &size, "UTF-8\0", TRUE);
 
-	//	out = fopen(g_strdup_printf("%s/%s.xml\0", plugin_path, turtle_path), "w+\0");
+	//      out = fopen(g_strdup_printf("%s/manifest.xml\0", plugin_path), "w+\0");
+
+	//      fwrite(buffer, size, sizeof(xmlChar), out);
+	//      fflush(out);
+            
+	/* load */
+	while(binary_list != NULL){
+	  /* read filename of binary */
+	  str = xmlNodeGetContent((xmlNode *) binary_list->data);
+
+	  if(str == NULL){
+	    binary_list = binary_list->next;
+	    continue;
+	  }
 	
-	//	fwrite(buffer, size, sizeof(xmlChar), out);
-	//	fflush(out);
-	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
+	  str = g_strndup(&(str[1]),
+			  strlen(str) - 2);
+	  filename = g_strdup_printf("%s/%s\0",
+				     path,
+				     str);
+	  free(str);
+
+	  /* read turtle from manifest */
+	  ttl_list = ags_turtle_find_xpath_with_context_node(manifest,
+							     "./ancestor::*[self::rdf-triple][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0",
+							     (xmlNode *) binary_list->data);
+
+	  if(ttl_list == NULL){
+	    binary_list = binary_list->next;
+
+	    continue;
+	  }
+	
+	  /* read filename */
+	  turtle_path = xmlNodeGetContent((xmlNode *) ttl_list->data);
+
+	  if(turtle_path == NULL){
+	    binary_list = binary_list->next;
+	  
+	    continue;
+	  }
+	
+	  turtle_path = g_strndup(&(turtle_path[1]),
+				  strlen(turtle_path) - 2);
+	
+	  if(!g_ascii_strncasecmp(turtle_path,
+				  "http://\0",
+				  7)){
+	    binary_list = binary_list->next;
+	  
+	    continue;
+	  }
+
+	  /* load turtle doc */
+	  g_message(turtle_path);
+
+	  if((turtle = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
+					       turtle_path)) == NULL){
+	    turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
+						    plugin_path,
+						    turtle_path));
+	    ags_turtle_load(turtle,
+			    NULL);
+	    ags_turtle_manager_add(ags_turtle_manager_get_instance(),
+				   turtle);
+	  }
+	
+	  /* load specified plugin */
+	  ags_lv2_manager_load_file(turtle,
+				    *lv2_path,
+				    filename);
+
+	  /* persist XML */
+	  //NOTE:JK: no need for it
+	  //	xmlDocDumpFormatMemoryEnc(turtle->doc, &buffer, &size, "UTF-8\0", TRUE);
+
+	  //	out = fopen(g_strdup_printf("%s/%s.xml\0", plugin_path, turtle_path), "w+\0");
+	
+	  //	fwrite(buffer, size, sizeof(xmlChar), out);
+	  //	fflush(out);
+	  //	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
 
 	
-	binary_list = binary_list->next;
+	  binary_list = binary_list->next;
+	}
+
+	g_object_unref(manifest);
       }
-
-      g_object_unref(manifest);
     }
+
+    lv2_path++;
   }
 }
 
