@@ -585,7 +585,7 @@ ags_lv2_manager_load_default_directory()
 		     &error);
 
     if(error != NULL){
-      g_warning(error->message);
+      g_warning("%s\0", error->message);
 
       lv2_path++;
 
@@ -691,7 +691,7 @@ ags_lv2_manager_load_default_directory()
 	  }
 
 	  /* load turtle doc */
-	  g_message(turtle_path);
+	  g_message("%s\0", turtle_path);
 
 	  if((turtle = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
 					       turtle_path)) == NULL){

@@ -300,7 +300,7 @@ ags_lv2ui_manager_load_default_directory()
 		   &error);
 
   if(error != NULL){
-    g_warning(error->message);
+    g_warning("%s\0", error->message);
   }
 
   while((path = g_dir_read_name(dir)) != NULL){
@@ -357,7 +357,7 @@ ags_lv2ui_manager_load_default_directory()
 	}
 
 	/* load turtle doc */
-	g_message(turtle_path);
+	g_message("%s\0", turtle_path);
 
 	turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
 						plugin_path,
@@ -463,8 +463,8 @@ ags_lv2ui_manager_uri_index(gchar *filename,
     
     if(dlerror() == NULL && lv2ui_descriptor){
       for(i = 0; (plugin_descriptor = lv2ui_descriptor(i)) != NULL; i++){
-	g_message(plugin_descriptor->URI);
-	g_message(uri);
+	g_message("%s\0", plugin_descriptor->URI);
+	g_message("%s\0", uri);
 	
 	if(!strncmp(plugin_descriptor->URI,
 		    uri,
