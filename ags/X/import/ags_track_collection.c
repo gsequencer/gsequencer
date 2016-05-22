@@ -458,8 +458,8 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
 					  node[i],
 					  instrument, sequence);
 	}else{
-	  g_message(instrument);
-	  g_message(sequence);
+	  g_message("%s\0", instrument);
+	  g_message("%s\0", sequence);
 	  g_object_set(AGS_TRACK_COLLECTION_MAPPER(track_collection_mapper->data),
 		       "track\0", node[i],
 		       NULL);
