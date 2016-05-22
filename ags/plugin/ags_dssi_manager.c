@@ -55,7 +55,7 @@ static gpointer ags_dssi_manager_parent_class = NULL;
 static guint dssi_manager_signals[LAST_SIGNAL];
 
 AgsDssiManager *ags_dssi_manager = NULL;
-static const gchar *ags_dssi_default_path = "/usr/lib/dssi\0";
+gchar **ags_dssi_default_path = NULL;
 
 GType
 ags_dssi_manager_get_type (void)
@@ -101,6 +101,14 @@ void
 ags_dssi_manager_init(AgsDssiManager *dssi_manager)
 {
   dssi_manager->dssi_plugin = NULL;
+
+  if(ags_dssi_default_path == NULL){
+    ags_dssi_default_path = (gchar **) malloc(3 * sizeof(gchar *));
+
+    ags_dssi_default_path[0] = g_strdup("/usr/lib/dssi\0");
+    ags_dssi_default_path[1] = g_strdup("/usr/lib64/dssi\0");
+    ags_dssi_default_path[2] = NULL;
+  }
 }
 
 void
@@ -180,8 +188,9 @@ ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect)
 {
   AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
+  
   GList *list;
-
+ 
   dssi_manager = ags_dssi_manager_get_instance();
 
   list = dssi_manager->dssi_plugin;
@@ -204,6 +213,7 @@ ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect)
 
 /**
  * ags_dssi_manager_load_file:
+ * @dssi_path: the dssi path
  * @filename: the filename of the plugin
  *
  * Load @filename specified plugin.
@@ -211,7 +221,8 @@ ags_dssi_manager_find_dssi_plugin(gchar *filename, gchar *effect)
  * Since: 0.7.0
  */
 void
-ags_dssi_manager_load_file(gchar *filename)
+ags_dssi_manager_load_file(gchar *dssi_path,
+			   gchar *filename)
 {
   AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
@@ -231,7 +242,7 @@ ags_dssi_manager_load_file(gchar *filename)
   pthread_mutex_lock(&(mutex));
 
   path = g_strdup_printf("%s/%s\0",
-			 ags_dssi_default_path,
+			 dssi_path,
 			 filename);
 
   g_message("ags_dssi_manager.c loading - %s\0", path);
@@ -280,26 +291,48 @@ ags_dssi_manager_load_default_directory()
 {
   AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
+
   GDir *dir;
+
+  gchar **dssi_path;
   gchar *filename;
+
   GError *error;
 
   dssi_manager = ags_dssi_manager_get_instance();
-
-  error = NULL;
-  dir = g_dir_open(ags_dssi_default_path,
-		   0,
-		   &error);
-
-  if(error != NULL){
-    g_warning("%s\0", error->message);
-  }
-
-  while((filename = g_dir_read_name(dir)) != NULL){
-    if(g_str_has_suffix(filename,
-			".so\0")){
-      ags_dssi_manager_load_file(filename);
+  
+  dssi_path = ags_dssi_default_path;
+  
+  while(*dssi_path != NULL){
+    if(!g_file_test(*dssi_path,
+		    G_FILE_TEST_EXISTS)){
+      dssi_path++;
+      
+      continue;
     }
+
+    error = NULL;
+    dir = g_dir_open(*dssi_path,
+		     0,
+		     &error);
+
+    if(error != NULL){
+      g_warning("%s\0", error->message);
+
+      dssi_path++;
+
+      continue;
+    }
+
+    while((filename = g_dir_read_name(dir)) != NULL){
+      if(g_str_has_suffix(filename,
+			  ".so\0")){
+	ags_dssi_manager_load_file(*dssi_path,
+				   filename);
+      }
+    }
+
+    dssi_path++;
   }
 }
 

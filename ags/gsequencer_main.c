@@ -66,7 +66,7 @@
 #include <sys/resource.h>
 #include <sys/mman.h>
 
-#include <ao/ao.h>
+//#include <ao/ao.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -242,7 +242,8 @@ main(int argc, char **argv)
   /**/
   LIBXML_TEST_VERSION;
 
-  ao_initialize();
+
+  //ao_initialize();
 
   gdk_threads_enter();
   g_thread_init(NULL);

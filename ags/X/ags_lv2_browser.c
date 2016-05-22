@@ -162,20 +162,20 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   lv2_browser->path = NULL;
 
-  //  ags_lv2_manager_load_default_directory();
+  ags_lv2_manager_load_default_directory();
   filenames =
     filenames_start = ags_lv2_manager_get_filenames();
   
-  if(filenames != NULL){
+  if(filenames_start != NULL){
     while(*filenames != NULL){
       gtk_combo_box_text_append_text(combo_box,
 				     *filenames);
       
       filenames++;
     }
-  }
 
-  free(filenames_start);
+    g_free(filenames_start);
+  }
 
   label = (GtkLabel *) gtk_label_new("effect: \0");
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),

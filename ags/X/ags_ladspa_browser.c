@@ -164,19 +164,21 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   ladspa_browser->path = NULL;
 
-  //  ags_ladspa_manager_load_default_directory();
+  ags_ladspa_manager_load_default_directory();
   filenames =
     filenames_start = ags_ladspa_manager_get_filenames();
 
-  while(*filenames != NULL){
-    gtk_combo_box_text_append_text(combo_box,
-				   *filenames);
+  if(filenames_start != NULL){
+    while(*filenames != NULL){
+      gtk_combo_box_text_append_text(combo_box,
+				     *filenames);
 
-    filenames++;
+      filenames++;
+    }
+
+    free(filenames_start);
   }
-
-  free(filenames_start);
-
+    
   label = (GtkLabel *) gtk_label_new("effect: \0");
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
 		     GTK_WIDGET(label),
