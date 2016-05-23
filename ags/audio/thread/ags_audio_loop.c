@@ -316,7 +316,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->application_context = NULL;
   audio_loop->soundcard = NULL;
-  
+
+  audio_loop->async_queue = NULL;
+    
   /* tree lock mutex */
   pthread_mutexattr_init(&(audio_loop->tree_lock_mutexattr));
   pthread_mutexattr_settype(&(audio_loop->tree_lock_mutexattr), PTHREAD_MUTEX_RECURSIVE);
@@ -474,6 +476,18 @@ ags_audio_loop_get_tree_lock(AgsMainLoop *main_loop)
 void
 ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
 {
+  if(AGS_AUDIO_LOOP(main_loop)->async_queue == async_queue){
+    return;
+  }
+
+  if(AGS_AUDIO_LOOP(main_loop)->async_queue != NULL){
+    g_object_unref(AGS_AUDIO_LOOP(main_loop)->async_queue);
+  }
+  
+  if(async_queue != NULL){
+    g_object_ref(async_queue);
+  }
+  
   AGS_AUDIO_LOOP(main_loop)->async_queue = async_queue;
 }
 

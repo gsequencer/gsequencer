@@ -28,7 +28,6 @@
 
 #include <sys/types.h>
 
-#include <fontconfig/fontconfig.h>
 #include <math.h>
 
 void ags_task_thread_class_init(AgsTaskThreadClass *task_thread);

@@ -251,6 +251,7 @@ ags_application_context_init(AgsApplicationContext *application_context)
   pthread_mutex_init(application_context->mutex, &(mutexattr));
 
   application_context->main_loop = NULL;
+  application_context->task_thread = NULL;
   application_context->autosave_thread = NULL;
   
   application_context->file = NULL;
