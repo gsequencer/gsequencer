@@ -20,15 +20,16 @@
 #ifndef __AGS_AUDIO_LOOP_H__
 #define __AGS_AUDIO_LOOP_H__
 
-#include <math.h>
-
+#include <glib.h>
 #include <glib-object.h>
 
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
 #else
 #include <ags/thread/ags_thread-posix.h>
-#endif 
+#endif
+
+#include <math.h>
 
 #define AGS_TYPE_AUDIO_LOOP                (ags_audio_loop_get_type())
 #define AGS_AUDIO_LOOP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_LOOP, AgsAudioLoop))

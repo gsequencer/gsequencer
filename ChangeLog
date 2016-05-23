@@ -1,3 +1,11 @@
+ags (0.7.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed not nul-terminated string in ags_export_window.c
+	* fixed missing include in ags_export_window.c
+	* fixed initialization and reference count of async_queue in AgsAudioLoop
+	* set environment variables LANG and LC_ALL programmatically to C
+
 ags (0.7.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

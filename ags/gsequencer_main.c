@@ -54,31 +54,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <jack/jslist.h>
-#include <jack/jack.h>
-//#include <jack/control.h>
-#include <stdbool.h>
-
-#include <libintl.h>
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/resource.h>
-#include <sys/mman.h>
-
-//#include <ao/ao.h>
-
-#include <glib.h>
-#include <glib-object.h>
-#include <gio/gio.h>
-
-#include <gtk/gtk.h>
-
-#include <pthread.h>
-
-#include <sys/types.h>
-#include <pwd.h>
-
 #include "config.h"
 
 void ags_signal_handler(int signr);
@@ -173,6 +148,9 @@ main(int argc, char **argv)
   pthread_mutex_t *audio_loop_mutex;
   pthread_mutex_t *application_mutex;
 
+  putenv("LC_ALL=C\0");
+  putenv("LANG=C\0");
+  
   //  mtrace();
   atexit(ags_signal_cleanup);
 
@@ -246,7 +224,7 @@ main(int argc, char **argv)
   //ao_initialize();
 
   gdk_threads_enter();
-  g_thread_init(NULL);
+  //g_thread_init(NULL);
   gtk_init(&argc, &argv);
   ipatch_init();
 
@@ -264,12 +242,12 @@ main(int argc, char **argv)
   application_context->argc = argc;
   application_context->argv = argv;
   
-  gtk_rc_parse(g_strdup_printf("%s/%s/ags.rc",
+  gtk_rc_parse(g_strdup_printf("%s/%s/ags.rc\0",
 			       pw->pw_dir,
 			       AGS_DEFAULT_DIRECTORY));
   
   audio_loop = application_context->main_loop;
-  task_thread = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(audio_loop));
+  task_thread = application_context->task_thread;
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
 
   config = application_context->config;
@@ -306,7 +284,7 @@ main(int argc, char **argv)
       
       exit(0);
     }else if(!strncmp(argv[i], "--version\0", 10)){
-      printf("GSequencer 0.4.2\n\n\0");
+      printf("GSequencer 0.7.18n\n\0");
       
       printf("%s\n%s\n%s\n\n\0",
 	     "Copyright (C) 2005-2015 Joël Krähemann\0",
@@ -339,13 +317,13 @@ main(int argc, char **argv)
     if(error != NULL){
       GtkDialog *dialog;
       
-      g_warning("could not parse file %s\n", file->filename);
+      g_warning("could not parse file %s\0", file->filename);
       
       dialog = gtk_message_dialog_new(NULL,
 				      0,
 				      GTK_MESSAGE_WARNING,
 				      GTK_BUTTONS_OK,
-				    "Failed to open '%s'\0",
+				      "Failed to open '%s'\0",
 				      file->filename);
       gtk_widget_show_all(dialog);
       g_signal_connect(dialog, "response\0",

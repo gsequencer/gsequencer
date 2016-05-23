@@ -20,9 +20,12 @@
 #ifndef __AGS_MAIN_LOOP_H__
 #define __AGS_MAIN_LOOP_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/object/ags_application_context.h>
+
+#include <pthread.h>
 
 #define AGS_TYPE_MAIN_LOOP                    (ags_main_loop_get_type())
 #define AGS_MAIN_LOOP(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MAIN_LOOP, AgsMainLoop))
@@ -59,6 +62,9 @@ pthread_mutex_t* ags_main_loop_get_tree_lock(AgsMainLoop *main_loop);
 
 void ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context);
 AgsApplicationContext* ags_main_loop_get_application_context(AgsMainLoop *main_loop);
+
+void ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
+GObject* ags_main_loop_get_async_queue(AgsMainLoop *main_loop);
 
 void ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_main_loop_get_tic(AgsMainLoop *main_loop);

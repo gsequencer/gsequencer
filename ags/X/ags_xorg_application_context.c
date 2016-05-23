@@ -354,9 +354,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->server = ags_server_new(xorg_application_context);
 
   /* AgsAudioLoop */
-  AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop = 
-    audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
-						  xorg_application_context);
+  audio_loop = (AgsThread *) ags_audio_loop_new((GObject *) soundcard,
+						xorg_application_context);
   g_object_set(xorg_application_context,
 	       "main-loop\0", audio_loop,
 	       NULL);
@@ -366,12 +365,11 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* AgsTaskThread */
   AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
+  ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
+				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
 				TRUE, TRUE);
-
-  ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
-				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread);
   
   /* AgsSoundcardThread */
   xorg_application_context->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);

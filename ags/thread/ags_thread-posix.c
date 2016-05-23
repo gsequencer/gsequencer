@@ -2084,7 +2084,11 @@ ags_thread_real_clock(AgsThread *thread)
   }
   
   void ags_thread_clock_wait_async(){
-      /* async-queue */
+    if(async_queue == NULL){
+      return;
+    }
+    
+    /* async-queue */
     if(!AGS_IS_ASYNC_QUEUE(thread)){
       if(async_queue_running){
 	pthread_mutex_lock(run_mutex);
@@ -2112,11 +2116,18 @@ ags_thread_real_clock(AgsThread *thread)
   steps = 0;
 
   /* async-queue */
-  async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
+  if(AGS_IS_MAIN_LOOP(main_loop)){
+    async_queue = ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
+    async_queue_running = FALSE;
 
-  run_mutex = ags_async_queue_get_run_mutex(AGS_ASYNC_QUEUE(async_queue));
-  run_cond = ags_async_queue_get_run_cond(AGS_ASYNC_QUEUE(async_queue));
-
+    if(async_queue != NULL){
+      run_mutex = ags_async_queue_get_run_mutex(AGS_ASYNC_QUEUE(async_queue));
+      run_cond = ags_async_queue_get_run_cond(AGS_ASYNC_QUEUE(async_queue));
+    }
+  }else{
+    async_queue = NULL;
+  }
+  
   /* lookup mutices */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
