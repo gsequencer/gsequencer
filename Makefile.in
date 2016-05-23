@@ -99,18 +99,14 @@ check_PROGRAMS = ags_thread_test$(EXEEXT) ags_audio_test$(EXEEXT) \
 	ags_pattern_test$(EXEEXT) ags_notation_test$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/gtk-doc.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
-	$(am__configure_deps) $(libags_audio_la_HEADERS) \
-	$(libags_gui_la_HEADERS) $(libags_la_HEADERS) \
-	$(libags_server_la_HEADERS) $(libags_thread_la_HEADERS) \
-	$(libgsequencer_la_HEADERS) $(nobase_include_HEADERS) \
+	$(am__configure_deps) $(nobase_include_HEADERS) \
 	$(am__DIST_COMMON)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
@@ -147,11 +143,7 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)" \
-	"$(DESTDIR)$(docdir)" "$(DESTDIR)$(libags_audio_ladir)" \
-	"$(DESTDIR)$(libags_gui_ladir)" "$(DESTDIR)$(libags_ladir)" \
-	"$(DESTDIR)$(libags_server_ladir)" \
-	"$(DESTDIR)$(libags_thread_ladir)" \
-	"$(DESTDIR)$(libgsequencer_ladir)" "$(DESTDIR)$(includedir)"
+	"$(DESTDIR)$(docdir)" "$(DESTDIR)$(includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libags_la_LIBADD =
 am__objects_1 =
@@ -843,10 +835,7 @@ man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man1_MANS)
 DATA = $(appdata_DATA) $(doc_DATA)
-HEADERS = $(libags_audio_la_HEADERS) $(libags_gui_la_HEADERS) \
-	$(libags_la_HEADERS) $(libags_server_la_HEADERS) \
-	$(libags_thread_la_HEADERS) $(libgsequencer_la_HEADERS) \
-	$(nobase_include_HEADERS)
+HEADERS = $(nobase_include_HEADERS)
 am__extra_recursive_targets = ags-docs-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)config.h.in
@@ -1106,15 +1095,8 @@ GIO_LIBS = @GIO_LIBS@
 GOBJECT_CFLAGS = @GOBJECT_CFLAGS@
 GOBJECT_LIBS = @GOBJECT_LIBS@
 GREP = @GREP@
-GTKDOC_CHECK = @GTKDOC_CHECK@
-GTKDOC_CHECK_PATH = @GTKDOC_CHECK_PATH@
-GTKDOC_DEPS_CFLAGS = @GTKDOC_DEPS_CFLAGS@
-GTKDOC_DEPS_LIBS = @GTKDOC_DEPS_LIBS@
-GTKDOC_MKPDF = @GTKDOC_MKPDF@
-GTKDOC_REBASE = @GTKDOC_REBASE@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
-HTML_DIR = @HTML_DIR@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -1213,6 +1195,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -1246,7 +1229,7 @@ libgsequencer_ladir = $(datadir)
 appdatadir = $(datadir)/applications
 appdata_DATA = gsequencer.desktop
 otherincludedir = $(includedir)/ags
-nobase_include_HEADERS = $(libags_la_HEADERS) $(libags_thread_la_HEADERS) $(libags_server_la_HEADERS) $(libags_audio_la_HEADERS) $(libags_gui_la_HEADERS)
+nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(libags_server_la_HEADERS_0) $(libags_audio_la_HEADERS_0) $(libags_gui_la_HEADERS_0)
 doc_DATA = README
 
 # documentation
@@ -1283,18 +1266,18 @@ userdocimages = \
 
 # libraries and gsequencer
 libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object_c_sources) $(libags_file_c_sources) $(libags_file_task_c_sources)
-libags_la_HEADERS = $(libags_h_sources) $(libags_util_h_sources) $(libags_object_h_sources) $(libags_file_h_sources) $(libags_file_task_h_sources)
+libags_la_HEADERS_0 = $(libags_h_sources) $(libags_util_h_sources) $(libags_object_h_sources) $(libags_file_h_sources) $(libags_file_task_h_sources)
 libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sources) $(libags_thread_task_c_sources)
-libags_thread_la_HEADERS = $(libags_thread_h_sources) $(libags_thread_file_h_sources) $(libags_thread_task_h_sources)
+libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_file_h_sources) $(libags_thread_task_h_sources)
 libags_server_la_SOURCES = $(libags_server_c_sources)
-libags_server_la_HEADERS = $(libags_server_h_sources)
+libags_server_la_HEADERS_0 = $(libags_server_h_sources)
 libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
-libags_audio_la_HEADERS = $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
+libags_audio_la_HEADERS_0 = $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
-libags_gui_la_HEADERS = $(libags_gui_h_sources)
+libags_gui_la_HEADERS_0 = $(libags_gui_h_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
-libgsequencer_la_HEADERS = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
-gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders) $(libags_la_HEADERS) $(libags_thread_la_HEADERS) $(libags_server_la_HEADERS) $(libags_audio_la_HEADERS) $(libags_gui_la_HEADERS) $(libgsequencer_la_HEADERS)
+libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
+gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders) $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(libags_server_la_HEADERS_0) $(libags_audio_la_HEADERS_0) $(libags_gui_la_HEADERS_0) $(libgsequencer_la_HEADERS_0)
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
@@ -8071,132 +8054,6 @@ uninstall-docDATA:
 	@list='$(doc_DATA)'; test -n "$(docdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(docdir)'; $(am__uninstall_files_from_dir)
-install-libags_audio_laHEADERS: $(libags_audio_la_HEADERS)
-	@$(NORMAL_INSTALL)
-	@list='$(libags_audio_la_HEADERS)'; test -n "$(libags_audio_ladir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(libags_audio_ladir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(libags_audio_ladir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libags_audio_ladir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libags_audio_ladir)" || exit $$?; \
-	done
-
-uninstall-libags_audio_laHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(libags_audio_la_HEADERS)'; test -n "$(libags_audio_ladir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(libags_audio_ladir)'; $(am__uninstall_files_from_dir)
-install-libags_gui_laHEADERS: $(libags_gui_la_HEADERS)
-	@$(NORMAL_INSTALL)
-	@list='$(libags_gui_la_HEADERS)'; test -n "$(libags_gui_ladir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(libags_gui_ladir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(libags_gui_ladir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libags_gui_ladir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libags_gui_ladir)" || exit $$?; \
-	done
-
-uninstall-libags_gui_laHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(libags_gui_la_HEADERS)'; test -n "$(libags_gui_ladir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(libags_gui_ladir)'; $(am__uninstall_files_from_dir)
-install-libags_laHEADERS: $(libags_la_HEADERS)
-	@$(NORMAL_INSTALL)
-	@list='$(libags_la_HEADERS)'; test -n "$(libags_ladir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(libags_ladir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(libags_ladir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libags_ladir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libags_ladir)" || exit $$?; \
-	done
-
-uninstall-libags_laHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(libags_la_HEADERS)'; test -n "$(libags_ladir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(libags_ladir)'; $(am__uninstall_files_from_dir)
-install-libags_server_laHEADERS: $(libags_server_la_HEADERS)
-	@$(NORMAL_INSTALL)
-	@list='$(libags_server_la_HEADERS)'; test -n "$(libags_server_ladir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(libags_server_ladir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(libags_server_ladir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libags_server_ladir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libags_server_ladir)" || exit $$?; \
-	done
-
-uninstall-libags_server_laHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(libags_server_la_HEADERS)'; test -n "$(libags_server_ladir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(libags_server_ladir)'; $(am__uninstall_files_from_dir)
-install-libags_thread_laHEADERS: $(libags_thread_la_HEADERS)
-	@$(NORMAL_INSTALL)
-	@list='$(libags_thread_la_HEADERS)'; test -n "$(libags_thread_ladir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(libags_thread_ladir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(libags_thread_ladir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libags_thread_ladir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libags_thread_ladir)" || exit $$?; \
-	done
-
-uninstall-libags_thread_laHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(libags_thread_la_HEADERS)'; test -n "$(libags_thread_ladir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(libags_thread_ladir)'; $(am__uninstall_files_from_dir)
-install-libgsequencer_laHEADERS: $(libgsequencer_la_HEADERS)
-	@$(NORMAL_INSTALL)
-	@list='$(libgsequencer_la_HEADERS)'; test -n "$(libgsequencer_ladir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(libgsequencer_ladir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(libgsequencer_ladir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libgsequencer_ladir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libgsequencer_ladir)" || exit $$?; \
-	done
-
-uninstall-libgsequencer_laHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(libgsequencer_la_HEADERS)'; test -n "$(libgsequencer_ladir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(libgsequencer_ladir)'; $(am__uninstall_files_from_dir)
 install-nobase_includeHEADERS: $(nobase_include_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(nobase_include_HEADERS)'; test -n "$(includedir)" || list=; \
@@ -8666,7 +8523,7 @@ all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(MANS) $(DATA) $(HEADERS) \
 install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)" "$(DESTDIR)$(docdir)" "$(DESTDIR)$(libags_audio_ladir)" "$(DESTDIR)$(libags_gui_ladir)" "$(DESTDIR)$(libags_ladir)" "$(DESTDIR)$(libags_server_ladir)" "$(DESTDIR)$(libags_thread_ladir)" "$(DESTDIR)$(libgsequencer_ladir)" "$(DESTDIR)$(includedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(appdatadir)" "$(DESTDIR)$(docdir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -8784,12 +8641,7 @@ info: info-am
 info-am:
 
 install-data-am: install-appdataDATA install-data-local \
-	install-docDATA install-libags_audio_laHEADERS \
-	install-libags_gui_laHEADERS install-libags_laHEADERS \
-	install-libags_server_laHEADERS \
-	install-libags_thread_laHEADERS \
-	install-libgsequencer_laHEADERS install-man \
-	install-nobase_includeHEADERS
+	install-docDATA install-man install-nobase_includeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -8836,12 +8688,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-appdataDATA uninstall-binPROGRAMS \
-	uninstall-docDATA uninstall-libLTLIBRARIES \
-	uninstall-libags_audio_laHEADERS \
-	uninstall-libags_gui_laHEADERS uninstall-libags_laHEADERS \
-	uninstall-libags_server_laHEADERS \
-	uninstall-libags_thread_laHEADERS \
-	uninstall-libgsequencer_laHEADERS uninstall-man \
+	uninstall-docDATA uninstall-libLTLIBRARIES uninstall-man \
 	uninstall-nobase_includeHEADERS
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
@@ -8863,24 +8710,15 @@ uninstall-man: uninstall-man1
 	install-data-local install-docDATA install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-libLTLIBRARIES \
-	install-libags_audio_laHEADERS install-libags_gui_laHEADERS \
-	install-libags_laHEADERS install-libags_server_laHEADERS \
-	install-libags_thread_laHEADERS \
-	install-libgsequencer_laHEADERS install-man install-man1 \
-	install-nobase_includeHEADERS install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	recheck tags tags-am uninstall uninstall-am \
-	uninstall-appdataDATA uninstall-binPROGRAMS uninstall-docDATA \
-	uninstall-hook uninstall-libLTLIBRARIES \
-	uninstall-libags_audio_laHEADERS \
-	uninstall-libags_gui_laHEADERS uninstall-libags_laHEADERS \
-	uninstall-libags_server_laHEADERS \
-	uninstall-libags_thread_laHEADERS \
-	uninstall-libgsequencer_laHEADERS uninstall-man uninstall-man1 \
-	uninstall-nobase_includeHEADERS
+	install-man install-man1 install-nobase_includeHEADERS \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am recheck tags tags-am uninstall \
+	uninstall-am uninstall-appdataDATA uninstall-binPROGRAMS \
+	uninstall-docDATA uninstall-hook uninstall-libLTLIBRARIES \
+	uninstall-man uninstall-man1 uninstall-nobase_includeHEADERS
 
 .PRECIOUS: Makefile
 
@@ -8905,7 +8743,7 @@ gsequencer.desktop: gsequencer.desktop.in
 
 html:
 	mkdir -p html/
-	xsltproc --output html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/doc/usersBook.xml
+	xsltproc --output html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
