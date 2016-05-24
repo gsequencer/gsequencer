@@ -1133,6 +1133,8 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 			     NULL);
 	  gtk_box_pack_start((GtkBox *) machine->input,
 			     (GtkWidget *) pad, FALSE, FALSE, 0);
+
+	  /* resize lines */
 	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
 			       audio->audio_channels, 0);
 	  
@@ -1177,6 +1179,8 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 			     "channel\0", channel,
 			     NULL);
 	  gtk_box_pack_start((GtkBox *) machine->output, (GtkWidget *) pad, FALSE, FALSE, 0);
+
+	  /* resize lines */
 	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
 			       audio->audio_channels, 0);
 

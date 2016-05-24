@@ -27,6 +27,8 @@
 #include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_notation.h>
 
@@ -37,6 +39,7 @@
 #include <ags/audio/task/ags_remove_audio.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_pad.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_midi_dialog.h>
@@ -524,8 +527,53 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
 					guint audio_channels, guint audio_channels_old,
 					AgsMachine *machine)
 {
+  GList *pad_list;
+  GList *line_list;
+  
+  guint i;
+  
   ags_machine_resize_audio_channels(machine,
 				    audio_channels, audio_channels_old);
+
+  if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
+    if(audio_channels > audio_channels_old){
+      if(machine->input != NULL){
+	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+      
+	while(pad_list != NULL){
+	  line_list = gtk_container_get_children(AGS_PAD(pad_list->data)->expander_set);
+	  line_list = g_list_nth(line_list,
+				 audio_channels_old);
+	
+	  for(i = 0; i < audio_channels - audio_channels_old; i++){
+	    ags_connectable_connect(AGS_CONNECTABLE(line_list->data));
+
+	    line_list = line_list->next;
+	  }
+	
+	  pad_list = pad_list->next;
+	}
+      }
+
+      if(machine->output != NULL){
+	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+      
+	while(pad_list != NULL){
+	  line_list = gtk_container_get_children(AGS_PAD(pad_list->data)->expander_set);
+	  line_list = g_list_nth(line_list,
+				 audio_channels_old);
+	
+	  for(i = 0; i < audio_channels - audio_channels_old; i++){
+	    ags_connectable_connect(AGS_CONNECTABLE(line_list->data));
+
+	    line_list = line_list->next;
+	  }
+	  
+	  pad_list = pad_list->next;
+	}
+      }
+    }
+  }
 }
 
 void
@@ -533,9 +581,41 @@ ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
 			      guint pads, guint pads_old,
 			      AgsMachine *machine)
 {
+  GList *pad_list;
+  
   ags_machine_resize_pads(machine,
 			  channel_type,
 			  pads, pads_old);
+
+  if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
+    if(pads > pads_old){
+      if(g_type_is_a(channel_type,
+		     AGS_TYPE_INPUT)){
+	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+	pad_list = g_list_nth(pad_list,
+			      pads_old);
+      
+	while(pad_list != NULL){
+	  ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+	
+	  pad_list = pad_list->next;
+	}
+      }
+
+      if(g_type_is_a(channel_type,
+		     AGS_TYPE_OUTPUT)){
+	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+	pad_list = g_list_nth(pad_list,
+			      pads_old);
+      
+	while(pad_list != NULL){
+	  ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+	
+	  pad_list = pad_list->next;
+	}
+      }
+    }
+  }
 }
 
 void

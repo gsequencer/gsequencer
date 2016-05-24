@@ -2736,6 +2736,9 @@ ags_thread_loop(void *ptr)
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
+    
+    g_atomic_int_and(&(thread->flags),
+		     (~AGS_THREAD_INITIAL_RUN));
   }
 
   switch(thread->current_tic){
