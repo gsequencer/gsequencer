@@ -626,7 +626,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			     (GtkWidget *) line,
 			     j, i / pad->cols,
 			     1, 1);
-
+	
 	/* iterate */
 	if(channel != NULL){
 	  pthread_mutex_lock(channel_mutex);

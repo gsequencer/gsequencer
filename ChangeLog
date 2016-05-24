@@ -1,3 +1,10 @@
+ags (0.7.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dead-lock in ags_thread_loop()
+	* fixed inresponsive AgsDrumInputPad
+	* fixed unset AGS_DEVOUT_INITIALIZED flag as stopping the device
+
 ags (0.7.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

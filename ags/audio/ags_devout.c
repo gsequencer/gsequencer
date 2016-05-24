@@ -1900,7 +1900,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_BUFFER1 |
 		      AGS_DEVOUT_BUFFER2 |
 		      AGS_DEVOUT_BUFFER3 |
-		      AGS_DEVOUT_PLAY));
+		      AGS_DEVOUT_PLAY |
+		      AGS_DEVOUT_INITIALIZED));
 }
 
 void
