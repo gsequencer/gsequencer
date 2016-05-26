@@ -94,6 +94,16 @@
 
   <sect1>
     <title>Launching tasks</title>
-    
+    <para>
+      It's for thread-safety for sure to run tasks asynchronously exclusive. This means what ever
+      you do it's safe exceptional in view of third-party libraries that might have their own threads.
+      To do your own task you should inherit AgsTask base object and implement ::launch. This signal
+      is invoked after syncing the thread tree.
+    </para>
+
+    <para>
+      You can use either ags_task_thread_append_task() or ags_task_thread_append_tasks() to add one
+      respectively a GList of tasks.
+    </para>
   </sect1>
 </chapter>

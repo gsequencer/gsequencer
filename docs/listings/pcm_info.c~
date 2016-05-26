@@ -1,0 +1,4 @@
+GObject *soundcard;
+GList *list;
+
+list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
