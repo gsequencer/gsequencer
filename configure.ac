@@ -57,7 +57,7 @@ PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.25])
 AC_SUBST(LIBASOUND2_CFLAGS)
 AC_SUBST(LIBASOUND2_LIBS)
 
-PKG_CHECK_MODULES([JACK], [jack >= 1.9.10])
+PKG_CHECK_MODULES([JACK], [jack])
 AC_SUBST(JACK_CFLAGS)
 AC_SUBST(JACK_LIBS)
 
@@ -121,14 +121,13 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify atexit clock_gettime floor getcwd localeconv mblen mbrlen memchr mempcpy memset munmap nl_langinfo setlocale socket sqrt stpcpy strcasecmp strchr strcspn strdup strstr strtol strtoul])
 
 # check for gtk-doc
-#m4_ifdef([GTK_DOC_CHECK], [
-#GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
-#],[
-#AM_CONDITIONAL([ENABLE_GTK_DOC], false)
-#])
+m4_ifdef([GTK_DOC_CHECK], [
+GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC], false)
+])
 
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
-#AC_CONFIG_FILES([Makefile docs/reference/ags/Makefile])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile docs/reference/ags/Makefile])
 
 AC_OUTPUT
