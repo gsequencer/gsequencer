@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>The soundcard and sequencer interface</title>
+  <para>
+    With AgsSoundcard and AgsSequencer interface you can obtain information about
+    output or input devices. Getting the next buffer for playback something can be
+    achieved, too. As weel reading MIDI data from current buffer is supported.
+    Note these operations are performed all delayed in order to avoid concurrent
+    memory access.
+  </para>
+
+  <para>
+    Latency is at most one buffer time. Operations on buffers might be performed
+    non-blocking so the thread returns earlier than expected. This has the advantage
+    of controlling timings and let the thread continue to do more synchronization
+    runs. Real-time behaviour is indicated as all pending sync operations were fulfilled
+    as the next buffer is needed.
+  </para>
+
+  <sect1>
+    <title>Gathering PCM information of soundcard</title>
+    <para>
+      In this short example we just get some information out of AgsSoundcard by using
+      ags_soundcard_pcm_info(). It tells us the card identifier, minimum and maximum
+      supported audio channels, samplerate and buffer size.
+    </para>
+
+    <example>
+      <title>PCM information from AgsSoundcard</title>
+      <programlisting language="C">
+	<xi:include href="../listings/pcm_info.c" parse="text" />
+      </programlisting>
+    </example>    
+  </sect1>
+</chapter>

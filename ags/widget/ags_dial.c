@@ -85,7 +85,6 @@ gboolean ags_dial_motion_notify(GtkWidget *widget,
 				GdkEventMotion *event);
 
 void ags_dial_draw(AgsDial *dial);
-void* ags_dial_idle(void *dial0);
 
 void ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
 					  AgsDial *dial);
@@ -1053,7 +1052,7 @@ ags_dial_draw(AgsDial *dial)
   dial_style = gtk_widget_get_style(widget);
   
   cr = gdk_cairo_create(widget->window);
-
+  
   radius = (gdouble) dial->radius;
   outline_strength = (gdouble) dial->outline_strength;
 
@@ -1068,7 +1067,18 @@ ags_dial_draw(AgsDial *dial)
 
   button_width = dial->button_width;
   button_height = dial->button_height;
+  
+  /* clear bg */
+  cairo_set_source_rgb(cr,
+		       dial_style->bg[0].red / white_gc,
+		       dial_style->bg[0].green / white_gc,
+		       dial_style->bg[0].blue / white_gc);
 
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  2.0 * (dial->radius + button_width) + outline_strength + margin_left + margin_right, 2.0 * (dial->radius + outline_strength));
+  cairo_fill(cr);
+  
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
     /* draw controller button down */
     cairo_set_source_rgb(cr,
@@ -1089,7 +1099,7 @@ ags_dial_draw(AgsDial *dial)
     cairo_show_text (cr, "-\0");
   }
 
-  /* border fill */
+  /* border fill * /
   cairo_set_source_rgb(cr,
 		       dial_style->fg[0].red / white_gc,
 		       dial_style->fg[0].green / white_gc,
@@ -1101,7 +1111,8 @@ ags_dial_draw(AgsDial *dial)
 	    -1.0 * M_PI,
 	    1.0 * M_PI);
   cairo_stroke(cr);
-
+  */
+  
   /* background */
   cairo_set_source_rgb(cr,
 		       dial_style->dark[0].red / white_gc,
@@ -1114,7 +1125,7 @@ ags_dial_draw(AgsDial *dial)
 	    -1.0 * M_PI,
 	    1.0 * M_PI);
   cairo_fill(cr);
-
+  
   /* light effect */
   cairo_set_source_rgba(cr,
 			dial_style->light[0].red / white_gc,
@@ -1263,19 +1274,6 @@ ags_dial_draw(AgsDial *dial)
   }
 
   cairo_destroy(cr);
-}
-
-void*
-ags_dial_idle(void *dial0)
-{
-  AgsDial *dial;
-
-  dial = AGS_DIAL(dial0);
-
-  usleep(dial->sleep_interval);
-  dial->flags &= (~AGS_DIAL_IDLE);
-
-  return(NULL);
 }
 
 void
