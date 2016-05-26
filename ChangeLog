@@ -1,3 +1,10 @@
+ags (0.7.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed proper version information of *.so, *.a and *.la
+	* fixed version information in --version to use AGS_VERSION macro
+	* improved ags_dial.c by clearing background
+
 ags (0.7.19)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -91,8 +91,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = gsequencer$(EXEEXT) gsequencer_static$(EXEEXT) \
-	midi2xml$(EXEEXT)
+bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
 check_PROGRAMS = ags_thread_test$(EXEEXT) ags_audio_test$(EXEEXT) \
 	ags_channel_test$(EXEEXT) ags_recycling_test$(EXEEXT) \
 	ags_audio_signal_test$(EXEEXT) ags_recall_test$(EXEEXT) \
@@ -673,7 +672,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_ags_audio_signal_test_OBJECTS = ags/test/audio/ags_audio_signal_test-ags_audio_signal_test.$(OBJEXT)
 ags_audio_signal_test_OBJECTS = $(am_ags_audio_signal_test_OBJECTS)
 ags_audio_signal_test_DEPENDENCIES = libags_audio-1.0.la \
-	libags_server.la libags_gui.la libags_thread-1.0.la \
+	libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la \
 	libags-1.0.la
 ags_audio_signal_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -682,8 +681,8 @@ ags_audio_signal_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_audio_test_OBJECTS =  \
 	ags/test/audio/ags_audio_test-ags_audio_test.$(OBJEXT)
 ags_audio_test_OBJECTS = $(am_ags_audio_test_OBJECTS)
-ags_audio_test_DEPENDENCIES = libags_audio-1.0.la libags_server.la \
-	libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_audio_test_DEPENDENCIES = libags_audio-1.0.la libags_server-0.7.la \
+	libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 ags_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_audio_test_CFLAGS) $(CFLAGS) $(ags_audio_test_LDFLAGS) \
@@ -691,8 +690,9 @@ ags_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_channel_test_OBJECTS =  \
 	ags/test/audio/ags_channel_test-ags_channel_test.$(OBJEXT)
 ags_channel_test_OBJECTS = $(am_ags_channel_test_OBJECTS)
-ags_channel_test_DEPENDENCIES = libags_audio-1.0.la libags_server.la \
-	libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_channel_test_DEPENDENCIES = libags_audio-1.0.la \
+	libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la \
+	libags-1.0.la
 ags_channel_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_channel_test_CFLAGS) $(CFLAGS) \
@@ -700,8 +700,9 @@ ags_channel_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_notation_test_OBJECTS =  \
 	ags/test/audio/ags_notation_test-ags_notation_test.$(OBJEXT)
 ags_notation_test_OBJECTS = $(am_ags_notation_test_OBJECTS)
-ags_notation_test_DEPENDENCIES = libags_audio-1.0.la libags_server.la \
-	libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_notation_test_DEPENDENCIES = libags_audio-1.0.la \
+	libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la \
+	libags-1.0.la
 ags_notation_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_notation_test_CFLAGS) $(CFLAGS) \
@@ -709,8 +710,9 @@ ags_notation_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_pattern_test_OBJECTS =  \
 	ags/test/audio/ags_pattern_test-ags_pattern_test.$(OBJEXT)
 ags_pattern_test_OBJECTS = $(am_ags_pattern_test_OBJECTS)
-ags_pattern_test_DEPENDENCIES = libags_audio-1.0.la libags_server.la \
-	libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_pattern_test_DEPENDENCIES = libags_audio-1.0.la \
+	libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la \
+	libags-1.0.la
 ags_pattern_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_pattern_test_CFLAGS) $(CFLAGS) \
@@ -718,16 +720,18 @@ ags_pattern_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_recall_test_OBJECTS =  \
 	ags/test/audio/ags_recall_test-ags_recall_test.$(OBJEXT)
 ags_recall_test_OBJECTS = $(am_ags_recall_test_OBJECTS)
-ags_recall_test_DEPENDENCIES = libags_audio-1.0.la libags_server.la \
-	libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_recall_test_DEPENDENCIES = libags_audio-1.0.la \
+	libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la \
+	libags-1.0.la
 ags_recall_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_recall_test_CFLAGS) $(CFLAGS) $(ags_recall_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_ags_recycling_test_OBJECTS = ags/test/audio/ags_recycling_test-ags_recycling_test.$(OBJEXT)
 ags_recycling_test_OBJECTS = $(am_ags_recycling_test_OBJECTS)
-ags_recycling_test_DEPENDENCIES = libags_audio-1.0.la libags_server.la \
-	libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_recycling_test_DEPENDENCIES = libags_audio-1.0.la \
+	libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la \
+	libags-1.0.la
 ags_recycling_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_recycling_test_CFLAGS) $(CFLAGS) \
@@ -749,16 +753,6 @@ gsequencer_DEPENDENCIES = libgsequencer-0.7.la libags_audio-1.0.la \
 gsequencer_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(gsequencer_CFLAGS) \
 	$(CFLAGS) $(gsequencer_LDFLAGS) $(LDFLAGS) -o $@
-am__objects_26 = ags/gsequencer_static-gsequencer_main.$(OBJEXT)
-am_gsequencer_static_OBJECTS = $(am__objects_26)
-gsequencer_static_OBJECTS = $(am_gsequencer_static_OBJECTS)
-gsequencer_static_DEPENDENCIES = libgsequencer-0.7.la \
-	libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la \
-	libags_thread-1.0.la libags-1.0.la
-gsequencer_static_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(gsequencer_static_CFLAGS) $(CFLAGS) \
-	$(gsequencer_static_LDFLAGS) $(LDFLAGS) -o $@
 am_midi2xml_OBJECTS = ags/midi2xml-midi2xml_main.$(OBJEXT) \
 	ags/audio/midi/midi2xml-ags_midi_parser.$(OBJEXT) \
 	ags/object/midi2xml-ags_marshal.$(OBJEXT)
@@ -809,8 +803,7 @@ SOURCES = $(libags_1_0_la_SOURCES) $(libags_audio_1_0_la_SOURCES) \
 	$(ags_channel_test_SOURCES) $(ags_notation_test_SOURCES) \
 	$(ags_pattern_test_SOURCES) $(ags_recall_test_SOURCES) \
 	$(ags_recycling_test_SOURCES) $(ags_thread_test_SOURCES) \
-	$(gsequencer_SOURCES) $(gsequencer_static_SOURCES) \
-	$(midi2xml_SOURCES)
+	$(gsequencer_SOURCES) $(midi2xml_SOURCES)
 DIST_SOURCES = $(libags_1_0_la_SOURCES) $(libags_audio_1_0_la_SOURCES) \
 	$(libags_gui_0_7_la_SOURCES) $(libags_server_0_7_la_SOURCES) \
 	$(libags_thread_1_0_la_SOURCES) \
@@ -819,8 +812,7 @@ DIST_SOURCES = $(libags_1_0_la_SOURCES) $(libags_audio_1_0_la_SOURCES) \
 	$(ags_channel_test_SOURCES) $(ags_notation_test_SOURCES) \
 	$(ags_pattern_test_SOURCES) $(ags_recall_test_SOURCES) \
 	$(ags_recycling_test_SOURCES) $(ags_thread_test_SOURCES) \
-	$(gsequencer_SOURCES) $(gsequencer_static_SOURCES) \
-	$(midi2xml_SOURCES)
+	$(gsequencer_SOURCES) $(midi2xml_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -1232,7 +1224,7 @@ libgsequencer_ladir = $(datadir)
 appdatadir = $(datadir)/applications
 appdata_DATA = gsequencer.desktop
 otherincludedir = $(includedir)/ags
-nobase_include_HEADERS = $(libags_1_0_la_HEADERS_0) $(libags_thread_1_0_la_HEADERS_0) $(libags_server_0_7_la_HEADERS_0) $(libags_audio_1_0_la_HEADERS_0) $(libags_gui_0_7_la_HEADERS_0)
+nobase_include_HEADERS = $(libags_1_0_la_HEADERS_0) $(libags_thread_1_0_la_HEADERS_0) $(libags_server_0_7_la_HEADERS_0) $(libags_audio_1_0_la_HEADERS_0) $(libags_gui_0_7_la_HEADERS_0) $(libgsequencer_0_7_la_HEADERS_0)
 doc_DATA = README
 
 # documentation
@@ -1280,7 +1272,6 @@ libags_gui_0_7_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_0_7_la_HEADERS_0 = $(libags_gui_h_sources)
 libgsequencer_0_7_la_SOURCES = $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 libgsequencer_0_7_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
-gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders) $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(libags_server_la_HEADERS_0) $(libags_audio_la_HEADERS_0) $(libags_gui_la_HEADERS_0) $(libgsequencer_la_HEADERS_0)
 
 # library libags
 libags_1_0_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
@@ -1310,16 +1301,11 @@ libgsequencer_0_7_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ 
 libgsequencer_0_7_la_LDFLAGS = $(LDFLAGS) -version-info 0:0:0 -L/lib -L/usr/lib -L/usr/X11/lib -L/usr/lib/x86_64-linux-gnu -ldl -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(JACK_LIBS)
 libgsequencer_0_7_la_LIBADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 
-# application gsequencer
-gsequencer_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS) $(JACK_CFLAGS)
-gsequencer_LDFLAGS = -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
-gsequencer_LDADD = libgsequencer-0.7.la libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
-
 # static gsequencer - for testing
-gsequencer_static_SOURCES = $(gsequencer_c_sources)
-gsequencer_static_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS) $(JACK_CFLAGS)
-gsequencer_static_LDFLAGS = -static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
-gsequencer_static_LDADD = libgsequencer-0.7.la libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
+gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
+gsequencer_CFLAGS = $(CFLAGS) $(UUID_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS) $(PTH_FLAGS) $(JACK_CFLAGS)
+gsequencer_LDFLAGS = -static -ldl -lm -lrt -pthread $(LDFLAGS) $(UUID_LIBS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(JACK_LIBS)
+gsequencer_LDADD = libgsequencer-0.7.la libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 TESTS = $(check_PROGRAMS)
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
 ags_thread_test_CFLAGS = $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
@@ -1328,31 +1314,31 @@ ags_thread_test_LDADD = libags_thread-1.0.la libags-1.0.la
 ags_audio_test_SOURCES = ags/test/audio/ags_audio_test.c
 ags_audio_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_audio_test_LDADD = libags_audio-1.0.la libags_server.la libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_audio_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 ags_channel_test_SOURCES = ags/test/audio/ags_channel_test.c
 ags_channel_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_channel_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_channel_test_LDADD = libags_audio-1.0.la libags_server.la libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_channel_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 ags_recycling_test_SOURCES = ags/test/audio/ags_recycling_test.c
 ags_recycling_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_recycling_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_recycling_test_LDADD = libags_audio-1.0.la libags_server.la libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_recycling_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 ags_audio_signal_test_SOURCES = ags/test/audio/ags_audio_signal_test.c
 ags_audio_signal_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_signal_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_audio_signal_test_LDADD = libags_audio-1.0.la libags_server.la libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_audio_signal_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 ags_recall_test_SOURCES = ags/test/audio/ags_recall_test.c
 ags_recall_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_recall_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_recall_test_LDADD = libags_audio-1.0.la libags_server.la libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_recall_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 ags_pattern_test_SOURCES = ags/test/audio/ags_pattern_test.c
 ags_pattern_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_pattern_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_pattern_test_LDADD = libags_audio-1.0.la libags_server.la libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_pattern_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 ags_notation_test_SOURCES = ags/test/audio/ags_notation_test.c
 ags_notation_test_CFLAGS = $(UUID_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_notation_test_LDFLAGS = -lcunit -lm -pthread -lrt -lgmp $(UUID_LIBS) $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-ags_notation_test_LDADD = libags_audio-1.0.la libags_server.la libags_gui.la libags_thread-1.0.la libags-1.0.la
+ags_notation_test_LDADD = libags_audio-1.0.la libags_server-0.7.la libags_gui-0.7.la libags_thread-1.0.la libags-1.0.la
 
 # libags all files
 deprecated_libags_h_sources = 
@@ -4086,12 +4072,6 @@ ags/gsequencer-gsequencer_main.$(OBJEXT): ags/$(am__dirstamp) \
 gsequencer$(EXEEXT): $(gsequencer_OBJECTS) $(gsequencer_DEPENDENCIES) $(EXTRA_gsequencer_DEPENDENCIES) 
 	@rm -f gsequencer$(EXEEXT)
 	$(AM_V_CCLD)$(gsequencer_LINK) $(gsequencer_OBJECTS) $(gsequencer_LDADD) $(LIBS)
-ags/gsequencer_static-gsequencer_main.$(OBJEXT): ags/$(am__dirstamp) \
-	ags/$(DEPDIR)/$(am__dirstamp)
-
-gsequencer_static$(EXEEXT): $(gsequencer_static_OBJECTS) $(gsequencer_static_DEPENDENCIES) $(EXTRA_gsequencer_static_DEPENDENCIES) 
-	@rm -f gsequencer_static$(EXEEXT)
-	$(AM_V_CCLD)$(gsequencer_static_LINK) $(gsequencer_static_OBJECTS) $(gsequencer_static_LDADD) $(LIBS)
 ags/midi2xml-midi2xml_main.$(OBJEXT): ags/$(am__dirstamp) \
 	ags/$(DEPDIR)/$(am__dirstamp)
 ags/audio/midi/midi2xml-ags_midi_parser.$(OBJEXT):  \
@@ -4162,7 +4142,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@ags/$(DEPDIR)/gsequencer-gsequencer_main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/$(DEPDIR)/gsequencer_static-gsequencer_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/$(DEPDIR)/midi2xml-midi2xml_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_0_7_la-ags_audio_preferences.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_0_7_la-ags_audio_preferences_callbacks.Plo@am__quote@
@@ -7900,20 +7879,6 @@ ags/gsequencer-gsequencer_main.obj: ags/gsequencer_main.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/gsequencer_main.c' object='ags/gsequencer-gsequencer_main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_CFLAGS) $(CFLAGS) -c -o ags/gsequencer-gsequencer_main.obj `if test -f 'ags/gsequencer_main.c'; then $(CYGPATH_W) 'ags/gsequencer_main.c'; else $(CYGPATH_W) '$(srcdir)/ags/gsequencer_main.c'; fi`
-
-ags/gsequencer_static-gsequencer_main.o: ags/gsequencer_main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -MT ags/gsequencer_static-gsequencer_main.o -MD -MP -MF ags/$(DEPDIR)/gsequencer_static-gsequencer_main.Tpo -c -o ags/gsequencer_static-gsequencer_main.o `test -f 'ags/gsequencer_main.c' || echo '$(srcdir)/'`ags/gsequencer_main.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/$(DEPDIR)/gsequencer_static-gsequencer_main.Tpo ags/$(DEPDIR)/gsequencer_static-gsequencer_main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/gsequencer_main.c' object='ags/gsequencer_static-gsequencer_main.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -c -o ags/gsequencer_static-gsequencer_main.o `test -f 'ags/gsequencer_main.c' || echo '$(srcdir)/'`ags/gsequencer_main.c
-
-ags/gsequencer_static-gsequencer_main.obj: ags/gsequencer_main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -MT ags/gsequencer_static-gsequencer_main.obj -MD -MP -MF ags/$(DEPDIR)/gsequencer_static-gsequencer_main.Tpo -c -o ags/gsequencer_static-gsequencer_main.obj `if test -f 'ags/gsequencer_main.c'; then $(CYGPATH_W) 'ags/gsequencer_main.c'; else $(CYGPATH_W) '$(srcdir)/ags/gsequencer_main.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/$(DEPDIR)/gsequencer_static-gsequencer_main.Tpo ags/$(DEPDIR)/gsequencer_static-gsequencer_main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/gsequencer_main.c' object='ags/gsequencer_static-gsequencer_main.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gsequencer_static_CFLAGS) $(CFLAGS) -c -o ags/gsequencer_static-gsequencer_main.obj `if test -f 'ags/gsequencer_main.c'; then $(CYGPATH_W) 'ags/gsequencer_main.c'; else $(CYGPATH_W) '$(srcdir)/ags/gsequencer_main.c'; fi`
 
 ags/midi2xml-midi2xml_main.o: ags/midi2xml_main.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(midi2xml_CFLAGS) $(CFLAGS) -MT ags/midi2xml-midi2xml_main.o -MD -MP -MF ags/$(DEPDIR)/midi2xml-midi2xml_main.Tpo -c -o ags/midi2xml-midi2xml_main.o `test -f 'ags/midi2xml_main.c' || echo '$(srcdir)/'`ags/midi2xml_main.c
