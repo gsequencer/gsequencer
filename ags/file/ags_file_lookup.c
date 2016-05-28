@@ -313,7 +313,7 @@ ags_file_lookup_find_by_node(GList *file_lookup,
 }
 
 /**
- * ags_file_lookup_find_by_node:
+ * ags_file_lookup_find_by_reference:
  * @file_lookup: the #GList containing #AgsFileLookup
  * @ref: a #gpointer
  *

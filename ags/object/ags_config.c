@@ -743,6 +743,7 @@ ags_config_get_instance()
 
 /**
  * ags_config_new:
+ * @application_context: the #AgsApplicationContext
  *
  * Creates an #AgsConfig.
  *

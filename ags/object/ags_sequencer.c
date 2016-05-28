@@ -228,7 +228,6 @@ ags_sequencer_get_device(AgsSequencer *sequencer)
  * @sequencer: an #AgsSequencer
  * @card_id: a list containing card ids
  * @card_name: a list containing card names
- * @error: an error that may occure
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *

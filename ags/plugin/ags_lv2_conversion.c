@@ -77,7 +77,7 @@ ags_lv2_conversion_class_init(AgsLv2ConversionClass *lv2_conversion)
   GObjectClass *gobject;
   GParamSpec *param_spec;
   
-  ags_lv2_conversion_parent_class = g_type_class_peek_parent(conversion);
+  ags_lv2_conversion_parent_class = g_type_class_peek_parent(lv2_conversion);
 
   /* GObjectClass */
   gobject = (GObjectClass *) lv2_conversion;

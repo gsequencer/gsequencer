@@ -175,7 +175,7 @@ ags_add_bulk_member_launch(AgsTask *task)
 
 /**
  * ags_add_bulk_member_new:
- * @effect_bulkd: the #AgsEffectBulk
+ * @effect_bulk: the #AgsEffectBulk
  * @bulk_member: the #AgsBulkMember to add
  * @x: pack start x
  * @y: pack start y

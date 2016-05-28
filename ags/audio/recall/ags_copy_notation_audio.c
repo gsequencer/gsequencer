@@ -226,7 +226,7 @@ ags_copy_notation_audio_finalize(GObject *gobject)
 
 /**
  * ags_copy_notation_audio_new:
- * @audio: the #AgsAudio
+ * @soundcard: the #AgsSoundcard
  * @notation: the notation
  * @audio_channel: the audio channel to use
  *

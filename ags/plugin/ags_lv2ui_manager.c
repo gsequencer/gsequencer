@@ -106,53 +106,7 @@ ags_lv2ui_manager_finalize(GObject *gobject)
   lv2ui_plugin = lv2ui_manager->lv2ui_plugin;
 
   g_list_free_full(lv2ui_plugin,
-		   ags_lv2ui_plugin_free);
-}
-
-/**
- * ags_lv2ui_plugin_alloc:
- * 
- * Alloc the #AgsLv2uiPlugin-struct
- *
- * Returns: the #AgsLv2uiPlugin-struct
- *
- * Since: 0.4.3
- */
-AgsLv2uiPlugin*
-ags_lv2ui_plugin_alloc()
-{
-  AgsLv2uiPlugin *lv2ui_plugin;
-
-  lv2ui_plugin = (AgsLv2uiPlugin *) malloc(sizeof(AgsLv2uiPlugin));
-
-  lv2ui_plugin->flags = 0;
-
-  lv2ui_plugin->turtle = NULL;
-
-  lv2ui_plugin->filename = NULL;
-  lv2ui_plugin->plugin_so = NULL;
-
-  return(lv2ui_plugin);
-}
-
-/**
- * ags_lv2ui_plugin_free:
- * @lv2ui_plugin: the #AgsLv2uiPlugin-struct
- * 
- * Free the #AgsLv2uiPlugin-struct
- *
- * Since: 0.4.3
- */
-void
-ags_lv2ui_plugin_free(AgsLv2uiPlugin *lv2ui_plugin)
-{
-  if(lv2ui_plugin->plugin_so != NULL){
-    dlclose(lv2ui_plugin->plugin_so);
-  }
-
-  free(lv2ui_plugin->filename);
-  g_object_unref(lv2ui_plugin->turtle);
-  free(lv2ui_plugin);
+		   g_object_unref);
 }
 
 /**
@@ -180,7 +134,7 @@ ags_lv2ui_manager_get_filenames()
   filenames = (gchar **) malloc((length + 1) * sizeof(gchar *));
 
   for(i = 0; i < length; i++){
-    filenames[i] = AGS_LV2UI_PLUGIN(lv2ui_plugin->data)->filename;
+    filenames[i] = AGS_BASE_PLUGIN(lv2ui_plugin->data)->filename;
     lv2ui_plugin = lv2ui_plugin->next;
   }
 
@@ -212,7 +166,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(gchar *filename)
 
   while(list != NULL){
     lv2ui_plugin = AGS_LV2UI_PLUGIN(list->data);
-    if(!g_strcmp0(lv2ui_plugin->filename,
+    if(!g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->filename,
 		  filename)){
       return(lv2ui_plugin);
     }
@@ -225,6 +179,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(gchar *filename)
 
 /**
  * ags_lv2ui_manager_load_file:
+ * @turtle: the #AgsTurtle
  * @filename: the filename of the plugin
  *
  * Load @filename specified plugin.
@@ -257,13 +212,8 @@ ags_lv2ui_manager_load_file(AgsTurtle *turtle,
   g_message("loading: %s\0", filename);
 
   if(lv2ui_plugin == NULL){
-    lv2ui_plugin = ags_lv2ui_plugin_alloc();
-
-    /* set turtle */
-    lv2ui_plugin->turtle = turtle;
-
-    /* set filename and plugin file */
-    lv2ui_plugin->filename = g_strdup(filename);
+    //FIXME:JK: do proper setup
+    lv2ui_plugin = ags_lv2ui_plugin_new(turtle, filename, NULL, NULL, 0);
     
     lv2ui_manager->lv2ui_plugin = g_list_prepend(lv2ui_manager->lv2ui_plugin,
 						 lv2ui_plugin);
@@ -447,12 +397,12 @@ ags_lv2ui_manager_uri_index(gchar *filename,
     return(G_MAXULONG);
   }
     
-  if(lv2ui_plugin->plugin_so == NULL){
+  if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so == NULL){
     plugin_so =
-      lv2ui_plugin->plugin_so = dlopen(lv2ui_plugin->filename,
-				       RTLD_NOW);
+      AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so = dlopen(AGS_BASE_PLUGIN(lv2ui_plugin)->filename,
+							RTLD_NOW);
   }else{
-    plugin_so = lv2ui_plugin->plugin_so;
+    plugin_so = AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so;
   }
   
   uri_index = G_MAXULONG;

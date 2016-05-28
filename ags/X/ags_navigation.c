@@ -605,7 +605,7 @@ ags_navigation_tact_to_time_string(gdouble tact,
 /**
  * ags_navigation_update_time_string:
  * @tact: the new position
- * @time_str: the pointer location to set
+ * @time_string: the pointer location to set
  *
  * Updates time as string.
  *

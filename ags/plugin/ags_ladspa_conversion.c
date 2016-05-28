@@ -77,7 +77,7 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
   GObjectClass *gobject;
   GParamSpec *param_spec;
   
-  ags_ladspa_conversion_parent_class = g_type_class_peek_parent(conversion);
+  ags_ladspa_conversion_parent_class = g_type_class_peek_parent(ladspa_conversion);
 
   /* GObjectClass */
   gobject = (GObjectClass *) ladspa_conversion;

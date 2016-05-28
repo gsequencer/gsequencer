@@ -25,6 +25,8 @@
 
 #include <ags/lib/ags_turtle.h>
 
+#include <ags/plugin/ags_lv2ui_plugin.h>
+
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
 
@@ -38,42 +40,22 @@
 #define AGS_IS_LV2UI_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2UI_MANAGER))
 #define AGS_LV2UI_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2UI_MANAGER, AgsLv2uiManagerClass))
 
-#define AGS_LV2UI_PLUGIN(ptr) ((AgsLv2uiPlugin *)(ptr))
-
 typedef struct _AgsLv2uiManager AgsLv2uiManager;
 typedef struct _AgsLv2uiManagerClass AgsLv2uiManagerClass;
-typedef struct _AgsLv2uiPlugin AgsLv2uiPlugin;
-
-typedef enum{
-  AGS_LV2UI_PLUGIN_IS_LOADED    = 1,
-}AgsLv2uiPluginFlags;
 
 struct _AgsLv2uiManager
 {
-  GObject object;
+  GObject gobject;
 
   GList *lv2ui_plugin;
 };
 
 struct _AgsLv2uiManagerClass
 {
-  GObjectClass object;
-};
-
-struct _AgsLv2uiPlugin
-{
-  guint flags;
-
-  AgsTurtle *turtle;
-
-  gchar *filename;
-  void *plugin_so;
+  GObjectClass gobject;
 };
 
 GType ags_lv2ui_manager_get_type(void);
-
-AgsLv2uiPlugin* ags_lv2ui_plugin_alloc();
-void ags_lv2ui_plugin_free(AgsLv2uiPlugin *lv2ui_plugin);
 
 gchar** ags_lv2ui_manager_get_filenames();
 AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin(gchar *filename);

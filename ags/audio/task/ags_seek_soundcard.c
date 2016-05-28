@@ -194,8 +194,8 @@ ags_seek_soundcard_launch(AgsTask *task)
 /**
  * ags_seek_soundcard_new:
  * @soundcard: the #AgsSoundcard to seek
- * @steps:
- * @move_forward:
+ * @steps: steps
+ * @move_forward: moves forward if %TRUE, otherwise backward
  *
  * Creates an #AgsSeekSoundcard.
  *

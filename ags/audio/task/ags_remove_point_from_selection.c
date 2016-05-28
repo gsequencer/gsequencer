@@ -31,7 +31,7 @@ void ags_remove_point_from_selection_finalize(GObject *gobject);
 void ags_remove_point_from_selection_launch(AgsTask *task);
 
 /**
- * SECTION:ags_remove_point_to_selection
+ * SECTION:ags_remove_point_from_selection
  * @short_description: remove point to notation selection
  * @title: AgsRemovePointToSelection
  * @section_id:

@@ -64,9 +64,9 @@ ags_audio_set_recycling_get_type()
     };
 
     ags_type_audio_set_recycling = g_type_register_static(AGS_TYPE_TASK,
-							    "AgsAudioSetRecycling\0",
-							    &ags_audio_set_recycling_info,
-							    0);
+							  "AgsAudioSetRecycling\0",
+							  &ags_audio_set_recycling_info,
+							  0);
 
     g_type_add_interface_static(ags_type_audio_set_recycling,
 				AGS_TYPE_CONNECTABLE,

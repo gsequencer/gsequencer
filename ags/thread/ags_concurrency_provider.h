@@ -20,6 +20,7 @@
 #ifndef __AGS_CONCURRENCY_PROVIDER_H__
 #define __AGS_CONCURRENCY_PROVIDER_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/thread/ags_mutex_manager.h>

@@ -1497,7 +1497,7 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 /**
  * ags_audio_loop_add_recall:
  * @audio_loop: the #AgsAudioLoop
- * @recall: an #AgsRecall
+ * @playback: an #AgsRecall
  *
  * Add recall for playback.
  *
@@ -1519,7 +1519,7 @@ ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer playback)
 /**
  * ags_audio_loop_remove_recall:
  * @audio_loop: the #AgsAudioLoop
- * @recall: an #AgsRecall
+ * @playback: an #AgsRecall
  *
  * Remove recall of playback.
  *

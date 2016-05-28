@@ -100,7 +100,7 @@ gchar* ags_function_get_expanded(AgsFunction *function,
 gchar* ags_funciton_get_normalized(AgsFunction *function);
 
 AgsComplex* ags_function_compute_term(gchar *term,
-				      gchar *substitute_symbol, AgsComplex *subsitute_value);
+				      gchar *substitute_symbol, AgsComplex *substitute_value);
 
 AgsComplex** ags_function_symbolic_translate_value(AgsFunction *function,
 						   gchar *symbol,

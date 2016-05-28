@@ -1001,7 +1001,7 @@ ags_notation_find_point(AgsNotation *notation,
  * @y0: start tone
  * @x1: end offset
  * @y1: end tone
- * @use_selection:_list if %TRUE selection is searched
+ * @use_selection_list: if %TRUE selection is searched
  *
  * Find notes by offset and tone region.
  *

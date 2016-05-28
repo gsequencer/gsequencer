@@ -69,9 +69,9 @@ struct _AgsPatternClass
 
 GType ags_pattern_get_type();
 
-GList* ags_pattern_find_near_timestamp(GList *list, GObject *gobject);
+GList* ags_pattern_find_near_timestamp(GList *pattern, GObject *timestamp);
 
-void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint lenght);
+void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length);
 
 gboolean ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit);
 void ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit);

@@ -164,7 +164,7 @@ ags_cancel_recall_launch(AgsTask *task)
 /**
  * ags_cancel_recall_new:
  * @recall: the #AgsRecall to cancel
- * @play: the #AgsPlayback
+ * @playback: the #AgsPlayback
  *
  * Creates an #AgsCancelRecall.
  *

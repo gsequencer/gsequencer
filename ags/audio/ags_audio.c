@@ -3273,7 +3273,7 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
 /**
  * ags_audio_add_recall:
  * @audio: an #AgsAudio
- * @recall_container: the #AgsRecall
+ * @recall: the #AgsRecall
  * @play: %TRUE if simple playback.
  *
  * Adds a recall.
@@ -3316,7 +3316,7 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
 /**
  * ags_audio_remove_recall:
  * @audio: an #AgsAudio
- * @recall_container: the #AgsRecall
+ * @recall: the #AgsRecall
  * @play: %TRUE if simple playback.
  *
  * Removes a recall.

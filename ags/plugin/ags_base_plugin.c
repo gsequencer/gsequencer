@@ -611,6 +611,8 @@ ags_base_plugin_deactivate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
  * ags_base_plugin_run:
  * @base_plugin: the #AgsBasePlugin
  * @plugin_handle: the plugin instance handle
+ * @seq_event: the alsa sequencer events
+ * @frame_count: the frame counts
  *
  * Deactivat a plugin instance
  *

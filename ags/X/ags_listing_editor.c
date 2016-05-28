@@ -288,6 +288,7 @@ ags_listing_editor_show(GtkWidget *widget)
 
 /**
  * ags_listing_editor_add_children:
+ * @listing_editor: the #AgsListingEditor
  * @audio: the #AgsAudio to use
  * @nth_channel: nth channel to start creation until end
  * @connect: if %TRUE widget is connected and shown

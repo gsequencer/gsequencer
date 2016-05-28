@@ -1990,7 +1990,7 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
 /**
  * ags_channel_remove_recall:
  * @channel: an #AgsChannel
- * @recall_container: the #AgsRecall
+ * @recall: the #AgsRecall
  * @play: %TRUE if simple playback.
  *
  * Removes a recall.
@@ -2037,7 +2037,7 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
 /**
  * ags_channel_add_recall:
  * @channel: an #AgsChannel
- * @recall_container: the #AgsRecall
+ * @recall: the #AgsRecall
  * @play: %TRUE if simple playback.
  *
  * Adds a recall.
@@ -3304,6 +3304,7 @@ ags_channel_resolve_recall(AgsChannel *channel,
 /**
  * ags_channel_init_recall:
  * @channel: an #AgsChannel that contains the recalls
+ * @stage: the stage to init
  * @recall_id: the #AgsRecallId this recall belongs to
  *
  * Prepare #AgsRecall objects to become runnning, ags_channel_recursive_play_init()

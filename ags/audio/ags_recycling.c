@@ -773,8 +773,8 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
  * ags_recycling_create_audio_signal_with_defaults:
  * @recycling: an #AgsRecycling
  * @audio_signal: the #AgsAudioSignal to apply defaults 
- * @delay: 
- * @attack: 
+ * @delay: the delay
+ * @attack: the attack
  *
  * Create audio signal with defaults.
  *
@@ -872,8 +872,8 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
  * @recycling: an #AgsRecycling
  * @audio_signal: the #AgsAudioSignal to apply defaults 
  * @frame_count: the audio data size
- * @delay:
- * @attack: 
+ * @delay: the delay
+ * @attack: the attack
  *
  * Create audio signal with frame count.
  *

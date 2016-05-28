@@ -184,7 +184,6 @@ ags_matrix_bridge_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_matrix_bridge_new:
- * @matrix_bridge: the parent matrix_bridge
  * @audio: the #AgsAudio to visualize
  *
  * Creates an #AgsMatrixBridge

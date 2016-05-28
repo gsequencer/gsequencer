@@ -558,10 +558,10 @@ ags_automation_area_paint(AgsAutomationArea *automation_area,
 
 /**
  * ags_automation_area_new:
- * @drawing_area: 
- * @audio: 
- * @channel_type:
- * @control_name: 
+ * @drawing_area: the assigned drawing area
+ * @audio: the assigned #AgsAudio
+ * @channel_type: the channel type
+ * @control_name: the control_name
  *
  * Create a new #AgsAutomationArea.
  *

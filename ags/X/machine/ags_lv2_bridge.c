@@ -587,13 +587,13 @@ ags_lv2_bridge_set_property(GObject *gobject,
 
 	lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(gui_filename);
 
-	if(lv2ui_plugin->plugin_so == NULL){
-	  lv2ui_plugin->plugin_so = dlopen(lv2ui_plugin->filename,
-					   RTLD_NOW);
+	if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so == NULL){
+	  AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so = dlopen(AGS_BASE_PLUGIN(lv2ui_plugin)->filename,
+							    RTLD_NOW);
 	}
 
-	if(lv2ui_plugin->plugin_so){
-	  lv2ui_descriptor = (LV2UI_Descriptor *) dlsym(lv2ui_plugin->plugin_so,
+	if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so){
+	  lv2ui_descriptor = (LV2UI_Descriptor *) dlsym(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so,
 							"lv2ui_descriptor\0");
 	  
 	  if(dlerror() == NULL && lv2ui_descriptor){

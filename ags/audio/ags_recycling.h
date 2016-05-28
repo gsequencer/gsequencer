@@ -84,7 +84,7 @@ void ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 							guint frame_count,
 							gdouble delay, guint attack);
 
-gint ags_recycling_position(AgsRecycling *start_recycling, AgsRecycling *end_region,
+gint ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
 			    AgsRecycling *recycling);
 AgsRecycling* ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
 					      GObject *prev_channel);

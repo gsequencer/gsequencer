@@ -389,6 +389,7 @@ ags_file_class_init(AgsFileClass *file)
 		 G_TYPE_NONE, 0);
 
   /**
+   * AgsFile::read-resolve:
    * @file: the #AgsFile
    *
    * Resolve XPath expressions to their counterpart the newly created
@@ -406,6 +407,7 @@ ags_file_class_init(AgsFileClass *file)
 		 G_TYPE_NONE, 0);
 
   /**
+   * AgsFile::read-start:
    * @file: the #AgsFile
    *
    * Hook after reading XML document to update or start the application.
@@ -677,7 +679,7 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
 }
 
 /**
- * ags_file_add_id_ref:
+ * ags_file_add_id_ref_by_node:
  * @file: the @AgsFile
  * @node: a XML node
  *
@@ -875,6 +877,7 @@ ags_file_real_open(AgsFile *file,
 /**
  * ags_file_open:
  * @file: the #AgsFile
+ * @error: the return location for errors
  *
  * Opens the file specified by :filename property.
  *
@@ -925,6 +928,7 @@ ags_file_real_open_from_data(AgsFile *file,
  * @file: the #AgsFile
  * @data: a buffer containing the XML document
  * @length: the buffer length
+ * @error: the return location for errors
  *
  * Opens the file provided by @data.
  *
@@ -965,6 +969,7 @@ ags_file_real_rw_open(AgsFile *file,
  * ags_file_rw_open:
  * @file: the #AgsFile
  * @create: if %TRUE create the file as needed
+ * @error: the return location for errors
  *
  * Opens the file specified by :filename property in read-write mode.
  *

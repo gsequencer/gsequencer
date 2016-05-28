@@ -976,6 +976,8 @@ ags_line_real_add_effect(AgsLine *line,
 
 /**
  * ags_line_add_effect:
+ * @line: the #AgsLine
+ * @control_type_name: the control type name
  * @filename: the filename of the plugin
  * @effect: the effect's name
  *
@@ -1080,6 +1082,8 @@ ags_line_real_map_recall(AgsLine *line,
 /**
  * ags_line_map_recall:
  * @line: an #AgsLine
+ * @output_pad_start: the start pad
+ * 
  * Returns: an #GList containing all related #AgsPort
  *
  * Is emitted as group is changed.

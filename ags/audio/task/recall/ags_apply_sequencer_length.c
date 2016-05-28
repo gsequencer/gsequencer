@@ -255,7 +255,7 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
 /**
  * ags_apply_sequencer_length_new:
  * @gobject: the #GObject
- * @sequencer_length: the sequencer length to apply
+ * @length: the sequencer length to apply
  *
  * Creates an #AgsApplySequencerLength.
  *

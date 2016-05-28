@@ -20,6 +20,7 @@
 #ifndef __AGS_APPLICABLE_H__
 #define __AGS_APPLICABLE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_APPLICABLE                    (ags_applicable_get_type())

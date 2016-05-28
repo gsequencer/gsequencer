@@ -194,7 +194,7 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
 
 /**
  * ags_recall_dependency_resolve:
- * @recall_dependeny: an #AgsRecallDependency
+ * @recall_dependency: an #AgsRecallDependency
  * @recall_id: the #AgsRecallID refering to
  *
  * Resolve dependency.

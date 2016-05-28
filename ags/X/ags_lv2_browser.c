@@ -309,6 +309,7 @@ ags_lv2_browser_reset(AgsApplicable *applicable)
 
 /**
  * ags_lv2_browser_get_plugin_filename:
+ * @lv2_browser: the #AgsLv2Browser
  *
  * Retrieve selected lv2 plugin filename.
  *
@@ -331,6 +332,7 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 
 /**
  * ags_lv2_browser_get_plugin_uri:
+ * @lv2_browser: the #AgsLv2Browser
  *
  * Retrieve selected lv2 uri.
  *

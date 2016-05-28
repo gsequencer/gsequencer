@@ -574,7 +574,7 @@ ags_funciton_get_normalized(AgsFunction *function)
  * ags_function_compute_term:
  * @term: the term as string to compute
  * @substitute_symbol: a variable to substitute
- * @substitue_value: the #AgsComplex value representing @substitute_symbol
+ * @substitute_value: the #AgsComplex value representing @substitute_symbol
  * 
  * Compute term by substituting @substitute_symbol with @substitue_value and do basic
  * solving.
@@ -585,7 +585,7 @@ ags_funciton_get_normalized(AgsFunction *function)
  */
 AgsComplex*
 ags_function_compute_term(gchar *term,
-			  gchar *substitute_symbol, AgsComplex *subsitute_value)
+			  gchar *substitute_symbol, AgsComplex *substitute_value)
 {
   AgsComplex *complex_value;
 
@@ -598,8 +598,9 @@ ags_function_compute_term(gchar *term,
 
 /**
  * ags_function_symbolic_translate_value:
- * @symbol:
- * @value
+ * @function: the #AgsFunction
+ * @symbol: the symbol to translate
+ * @value: the value to substitute
  * 
  * Symbolic translate to @value for @symbol and compute resulting
  * vector.
@@ -619,12 +620,15 @@ ags_function_symbolic_translate_value(AgsFunction *function,
 }
 
 /**
+ * ags_function_substitute_values:
  * @function: the #AgsFunction
  * @symbol: the first symbol as string, or %NULL if no more symbol and value pair.
  * @...: %NULL terminated symbol and value pairs of list.
  *
  * Verify :source-function to be %TRUE or %FALSE by substiution.
  *
+ * Returns: %TRUE if function evaluates, otherwise %FALSE
+ * 
  * Since: 0.7.2
  */
 gboolean
@@ -641,7 +645,7 @@ ags_function_substitute_values(AgsFunction *function,
  * @function: the #AgsFunction
  * @value: the #AgsComplex value to translate
  * 
- * 
+ * Translates @value by source function.
  * 
  * Returns: the solution as #AgsComplex boxed-type.
  * 

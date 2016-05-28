@@ -269,6 +269,7 @@ ags_jack_port_find(GList *jack_port,
 
 /**
  * ags_jack_port_register:
+ * @jack_port: the #AgsJackPort
  * @port_name: the name as string
  * @is_audio: if %TRUE interpreted as audio port
  * @is_midi: if %TRUE interpreted as midi port

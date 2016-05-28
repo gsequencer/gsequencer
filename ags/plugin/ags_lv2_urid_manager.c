@@ -155,7 +155,7 @@ ags_lv2_urid_manager_finder(gpointer key, gpointer value, gpointer user_data)
 /**
  * ags_lv2_urid_manager_insert:
  * @lv2_urid_manager: the #AgsLv2UridManager
- * @urid: the object as key
+ * @uri: the object as key
  * @id: the id to insert
  *
  * Inserts a id into hash  associated with @urid.
@@ -175,7 +175,7 @@ ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
 /**
  * ags_lv2_urid_manager_remove:
  * @lv2_urid_manager: the #AgsLv2UridManager
- * @urid: the object to remove
+ * @uri: the object to remove
  * 
  * Removes a lock associated with @urid.3
  *
@@ -203,7 +203,7 @@ ags_lv2_urid_manager_remove(AgsLv2UridManager *lv2_urid_manager,
 /**
  * ags_lv2_urid_manager_lookup:
  * @lv2_urid_manager: the #AgsLv2UridManager
- * @urid: the object to lookup
+ * @uri: the object to lookup
  *
  * Lookup a id associated with @urid in @lv2_urid_manager
  *

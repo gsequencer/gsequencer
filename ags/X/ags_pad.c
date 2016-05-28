@@ -1087,7 +1087,6 @@ ags_pad_play(AgsPad *pad)
 
 /**
  * ags_pad_new:
- * @pad: the parent pad
  * @channel: the bunch of channel to visualize
  *
  * Creates an #AgsPad

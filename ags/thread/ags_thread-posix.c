@@ -1020,7 +1020,7 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
 }
 
 /**
- * ags_thread_add_child:
+ * ags_thread_add_child_extended:
  * @thread: an #AgsThread
  * @child: the child to remove
  * @no_start: don't start thread

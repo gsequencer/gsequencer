@@ -311,6 +311,7 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
 
 /**
  * ags_ladspa_browser_get_plugin_filename:
+ * @ladspa_browser: the #AgsLadspaBrowser
  *
  * Retrieve selected ladspa plugin filename.
  *
@@ -333,6 +334,7 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 
 /**
  * ags_ladspa_browser_get_plugin_effect:
+ * @ladspa_browser: the #AgsLadspaBrowser
  *
  * Retrieve selected ladspa effect.
  *

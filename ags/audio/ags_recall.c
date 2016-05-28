@@ -1806,7 +1806,7 @@ ags_recall_remove(AgsRecall *recall)
 
 /**
  * ags_recall_is_done:
- * @recall: an #AgsRecall
+ * @recalls: an #AgsRecall
  * @recycling_context: an #AgsRecyclingContext
  *
  * Check if recall is over.
@@ -1893,8 +1893,6 @@ ags_recall_real_duplicate(AgsRecall *recall,
  * ags_recall_duplicate:
  * @recall: an #AgsRecall
  * @recall_id: an #AgsRecallID
- * @n_params: the count of #parameter entries
- * @parameter: the properties to be passed for instantiating the #AgsRecall
  *
  * Should duplicate an #AgsRecall, so it can pass the runs. Mainly used for
  * creating duplicates from templates, see %AGS_RECALL_TEMPLATE.
@@ -2045,7 +2043,7 @@ ags_recall_get_dependencies(AgsRecall *recall)
 
 /**
  * ags_recall_remove_child:
- * @parent: an #AgsRecall
+ * @recall: an #AgsRecall
  * @child: an #AgsRecall
  *
  * An #AgsRecall may have children.
@@ -2309,7 +2307,7 @@ ags_recall_find_type(GList *recall_i, GType type)
 
 /**
  * ags_recall_find_template:
- * @recall_i a #GList containing recalls
+ * @recall_i: a #GList containing recalls
  *
  * Finds next template, see #AGS_RECALL_TEMPLATE flag. Intended to be used as
  * iteration function.
@@ -2366,9 +2364,9 @@ ags_recall_template_find_type(GList *recall_i, GType type)
 }
 
 /**
- * ags_recall_template_find_type:
+ * ags_recall_template_find_all_type:
  * @recall_i: a #GList containing recalls
- * @recall_type: a #GType
+ * @...: a #GType
  * 
  * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
  * Intended to be used as iteration function.

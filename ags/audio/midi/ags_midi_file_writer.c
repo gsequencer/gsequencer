@@ -135,9 +135,9 @@ ags_midi_file_writer_finalize(GObject *gobject)
 
 /**
  * ags_midi_file_writer_write_bytes:
- * @midi_file_writer:
- * @buffer:
- * @buffer_length:
+ * @midi_file_writer: the #AgsMidiFileWriter
+ * @buffer: the buffer
+ * @buffer_length: the buffer length
  *
  * Write @buffer_length count bytes from @buffer to MIDI file.
  *
@@ -153,11 +153,11 @@ ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
 
 /**
  * ags_midi_file_writer_write_channel_message:
- * @midi_file_writer:
- * @track_name:
- * @status:
+ * @midi_file_writer: the #AgsMidiFileWriter
+ * @track_name: the track name
+ * @status: the status
  * 
- * 
+ * Writes a channel message.
  * 
  * Since: 0.7.1
  */
@@ -171,11 +171,11 @@ ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
 
 /**
  * ags_midi_file_writer_write_status_message:
- * @midi_file_writer:
- * @track_name:
- * @status:
+ * @midi_file_writer: the #AgsMidiFileWriter
+ * @track_name: the track name
+ * @status: the status
  * 
- * 
+ * Writes a status message.
  * 
  * Since: 0.7.1
  */

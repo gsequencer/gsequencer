@@ -106,6 +106,7 @@ struct _AgsMachineCounter
 
 GType ags_window_get_type(void);
 
+GList* ags_window_standard_machine_counter_alloc();
 AgsMachineCounter* ags_window_find_machine_counter(AgsWindow *window,
 						   GType machine_type);
 
