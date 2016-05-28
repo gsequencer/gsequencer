@@ -27,7 +27,7 @@ SCAN_OPTIONS=
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS=--xml-mode --output-format=xml
+MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=ags
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS=
@@ -73,14 +73,12 @@ AM_CPPFLAGS = \
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 GTKDOC_CFLAGS=
 GTKDOC_LIBS = \
-	$(top_srcdir)/libags.la \
-	$(top_srcdir)/libags_thread.la \
-	$(top_srcdir)/libags_server.la \
-	$(top_srcdir)/libags_audio.la \
-	$(top_srcdir)/libags_gui.la \
-	$(top_srcdir)/libgsequencer.la
-
-MKDB_OPTIONS=--output-format=xml --name-space=ags
+	$(top_srcdir)/libags-1.0.la \
+	$(top_srcdir)/libags_thread-1.0.la \
+	$(top_srcdir)/libags_server-0.7.la \
+	$(top_srcdir)/libags_audio-1.0.la \
+	$(top_srcdir)/libags_gui-0.7.la \
+	$(top_srcdir)/libgsequencer-0.7.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make
