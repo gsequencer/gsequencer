@@ -264,7 +264,10 @@ ags_soundcard_get_presets(AgsSoundcard *soundcard,
 /**
  * ags_soundcard_set_presets:
  * @soundcard: an #AgsSoundcard
- * @presets: the presets to set
+ * @channels: the audio channels
+ * @rate: the samplerate
+ * @buffer_size: the buffer size
+ * @format: the format
  *
  * Set presets. 
  *
@@ -294,7 +297,6 @@ ags_soundcard_set_presets(AgsSoundcard *soundcard,
  * @soundcard: an #AgsSoundcard
  * @card_id: a list containing card ids
  * @card_name: a list containing card names
- * @error: an error that may occure
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *

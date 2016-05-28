@@ -185,6 +185,7 @@ ags_async_queue_get_run_cond(AgsAsyncQueue *async_queue)
 }
 
 /**
+ * ags_async_queue_set_run:
  * @async_queue: the #AgsAsyncQueue
  * @is_run: if %TRUE the queue was already running
  * 

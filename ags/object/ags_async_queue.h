@@ -20,9 +20,10 @@
 #ifndef __AGS_ASYNC_QUEUE_H__
 #define __AGS_ASYNC_QUEUE_H__
 
-#include <pthread.h>
-
+#include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
 
 #define AGS_TYPE_ASYNC_QUEUE                    (ags_async_queue_get_type())
 #define AGS_ASYNC_QUEUE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ASYNC_QUEUE, AgsAsyncQueue))

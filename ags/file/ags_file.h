@@ -117,7 +117,7 @@ struct _AgsFileClass
 
 GType ags_file_get_type(void);
 
-gchar* ags_file_str2md5(gchar *content, guint strlen);
+gchar* ags_file_str2md5(gchar *content, guint content_length);
 
 void ags_file_add_id_ref(AgsFile *file, GObject *id_ref);
 

@@ -958,7 +958,6 @@ ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
 
 /**
  * ags_effect_bridge_new:
- * @effect_bridge: the parent effect_bridge
  * @audio: the #AgsAudio to visualize
  *
  * Creates an #AgsEffectBridge

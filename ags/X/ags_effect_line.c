@@ -984,7 +984,6 @@ ags_effect_line_find_port(AgsEffectLine *effect_line)
 
 /**
  * ags_effect_line_new:
- * @effect_line: the parent effect_line
  * @channel: the #AgsChannel to visualize
  *
  * Creates an #AgsEffectLine

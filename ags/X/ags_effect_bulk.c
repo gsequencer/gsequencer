@@ -2086,7 +2086,6 @@ ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
 
 /**
  * ags_effect_bulk_new:
- * @effect_bulk: the parent effect_bulk
  * @audio: the #AgsAudio to visualize
  * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
  *

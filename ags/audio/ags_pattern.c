@@ -586,23 +586,21 @@ ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
  * Since: 0.7.12
  */
 GList*
-ags_pattern_find_near_timestamp(GList *pattern, GObject *gobject)
+ags_pattern_find_near_timestamp(GList *pattern, GObject *timestamp)
 {
-  AgsTimestamp *timestamp, *current_timestamp;
+  AgsTimestamp *current_timestamp;
 
-  if(gobject == NULL){
+  if(timestamp == NULL){
     return(NULL);
   }
-  
-  timestamp = AGS_TIMESTAMP(gobject);
 
   while(pattern != NULL){
     current_timestamp = (AgsTimestamp *) AGS_PATTERN(pattern->data)->timestamp;
 
-    if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0){
+    if((AGS_TIMESTAMP_UNIX & (AGS_TIMESTAMP(timestamp)->flags)) != 0){
       if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
-	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_PATTERN_DEFAULT_DURATION){
+	if(current_timestamp->timer.unix_time.time_val >= AGS_TIMESTAMP(timestamp)->timer.unix_time.time_val &&
+	   current_timestamp->timer.unix_time.time_val < AGS_TIMESTAMP(timestamp)->timer.unix_time.time_val + AGS_PATTERN_DEFAULT_DURATION){
 	  return(pattern);
 	}
       }

@@ -174,7 +174,6 @@ ags_ffplayer_input_line_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_ffplayer_input_line_new:
- * @ffplayer_input_line: the parent ffplayer_input_line
  * @channel: the #AgsChannel to visualize
  *
  * Creates an #AgsFFPlayerInputLine

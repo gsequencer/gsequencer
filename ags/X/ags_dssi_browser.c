@@ -308,6 +308,7 @@ ags_dssi_browser_reset(AgsApplicable *applicable)
 
 /**
  * ags_dssi_browser_get_plugin_filename:
+ * @dssi_browser: the #AgsDssiBrowser
  *
  * Retrieve selected dssi plugin filename.
  *
@@ -330,6 +331,7 @@ ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
 
 /**
  * ags_dssi_browser_get_plugin_effect:
+ * @dssi_browser: the #AgsDssiBrowser
  *
  * Retrieve selected dssi effect.
  *

@@ -2236,12 +2236,12 @@ ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 
 /**
  * ags_audio_signal_envelope:
- * @audio_signal:
- * @attack:
- * @decay:
- * @sustain:
- * @release:
- * @ratio:
+ * @audio_signal: the #AgsAudioSignal
+ * @attack: the attack
+ * @decay: the decay
+ * @sustain: the sustain
+ * @release: the release
+ * @ratio: the ratio
  *
  * Envelope audio signal.
  *

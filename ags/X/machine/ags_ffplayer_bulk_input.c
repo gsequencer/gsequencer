@@ -151,7 +151,6 @@ ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_ffplayer_bulk_input_new:
- * @ffplayer_bulk_input: the parent ffplayer_bulk_input
  * @audio: the #AgsAudio to visualize
  * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
  *

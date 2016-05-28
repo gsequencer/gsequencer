@@ -463,7 +463,7 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 
 /**
  * ags_recall_channel_find_channel:
- * @recall_channel: a #GList containing #AgsRecallChannel
+ * @recall_channel_i: a #GList containing #AgsRecallChannel
  * @source: the #AgsChannel to find
  *
  * Retrieve next recall assigned to channel.

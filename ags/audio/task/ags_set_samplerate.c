@@ -267,7 +267,7 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 
 /**
  * ags_set_samplerate_new:
- * @soundcard: the #AgsSoundcard to reset
+ * @gobject: the #AgsSoundcard to reset
  * @samplerate: the new samplerate
  *
  * Creates an #AgsSetSamplerate.

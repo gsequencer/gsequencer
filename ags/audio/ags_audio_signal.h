@@ -117,7 +117,7 @@ GList* ags_audio_signal_get_by_recall_id(GList *audio_signal,
 
 void ags_audio_signal_tile(AgsAudioSignal *audio_signal,
 			   AgsAudioSignal *template,
-			   guint length);
+			   guint frame_count);
 void ags_audio_signal_scale(AgsAudioSignal *audio_signal,
 			    AgsAudioSignal *template,
 			    guint length);

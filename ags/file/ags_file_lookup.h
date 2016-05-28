@@ -61,7 +61,7 @@ GList* ags_file_lookup_find_by_node(GList *file_lookup,
 GList* ags_file_lookup_find_by_reference(GList *file_lookup,
 					 gpointer ref);
 
-void ags_file_lookup_resolve(AgsFileLookup *lookup);
+void ags_file_lookup_resolve(AgsFileLookup *file_lookup);
 
 /* */
 AgsFileLookup* ags_file_lookup_new();

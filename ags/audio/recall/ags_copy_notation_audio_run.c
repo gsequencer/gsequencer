@@ -463,6 +463,7 @@ ags_copy_notation_audio_run_tic_alloc_input_callback(AgsDelayAudioRun *delay_aud
 
 /**
  * ags_copy_notation_audio_run_new:
+ * count_beats_audio_run: the #AgsCountBeatsAudioRun
  *
  * Creates an #AgsCopyNotationAudioRun
  *

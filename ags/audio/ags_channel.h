@@ -155,7 +155,7 @@ void ags_channel_remove_effect(AgsChannel *channel,
 			       guint nth);
 
 void ags_channel_safe_resize_audio_signal(AgsChannel *channel,
-					  guint size);
+					  guint length);
 
 void ags_channel_duplicate_recall(AgsChannel *channel,
 				  AgsRecallID *recall_id);
@@ -192,7 +192,7 @@ void ags_channel_recycling_changed(AgsChannel *channel,
 
 AgsRecallID* ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 					     gboolean arrange_recall_id, gboolean duplicate_templates,
-					     gboolean playback, gboolean sequencer, gboolean notation,
+					     gboolean do_playback, gboolean do_sequencer, gboolean do_notation,
 					     gboolean resolve_dependencies,
 					     AgsRecallID *recall_id);
 void ags_channel_recursive_play_threaded(AgsChannel *channel,

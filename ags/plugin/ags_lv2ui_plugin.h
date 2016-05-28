@@ -26,7 +26,8 @@
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/lib/ags_turtle.h>
 
-#include <lv2ui.h>
+#include <lv2.h>
+#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
 
 #define AGS_TYPE_LV2UI_PLUGIN                (ags_lv2ui_plugin_get_type())
 #define AGS_LV2UI_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2UI_PLUGIN, AgsLv2uiPlugin))
@@ -66,6 +67,6 @@ struct _AgsLv2uiPluginClass
 
 GType ags_lv2ui_plugin_get_type(void);
 
-AgsLv2uiPlugin* ags_lv2ui_plugin_new(gchar *filename, gchar *effect);
+AgsLv2uiPlugin* ags_lv2ui_plugin_new(AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, guint effect_index);
 
 #endif /*__AGS_LV2UI_PLUGIN_H__*/

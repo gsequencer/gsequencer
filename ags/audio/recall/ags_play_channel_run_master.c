@@ -82,7 +82,7 @@ void ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
 							      AgsPlayChannelRunMasterStreamer *streamer);
 
 /**
- * SECTION:ags_play_channel_master_run
+ * SECTION:ags_play_channel_run_master
  * @short_description: plays channel as toplevel
  * @title: AgsPlayChannelMaster
  * @section_id:

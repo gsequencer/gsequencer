@@ -361,7 +361,6 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit)
 /**
  * ags_automation_edit_draw_scroll:
  * @automation_edit: the #AgsAutomationEdit
- * @cr: the #cairo_t surface
  * @position: the new position
  *
  * Change visible x-position of @automation_edit.

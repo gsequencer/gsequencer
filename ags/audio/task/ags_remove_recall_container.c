@@ -157,8 +157,8 @@ ags_remove_recall_container_launch(AgsTask *task)
 
 /**
  * ags_remove_recall_container_new:
- * @context: the #AgsAudio
- * @recall: the #AgsRecallContainer to remove
+ * @audio: the #AgsAudio
+ * @recall_container: the #AgsRecallContainer to remove
  *
  * Creates an #AgsRemoveRecallContainer.
  *

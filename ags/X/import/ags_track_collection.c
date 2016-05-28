@@ -515,9 +515,9 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
 
 /**
  * ags_track_collection_new:
- * @child_type: 
- * @child_parameter_count:
- * @child_parameter:
+ * @child_type: the child type
+ * @child_parameter_count: the child parameter count
+ * @child_parameter: the child parameters
  *
  * Creates an #AgsTrackCollection
  *

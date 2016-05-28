@@ -199,7 +199,6 @@ ags_synth_bridge_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_synth_bridge_new:
- * @synth_bridge: the parent synth_bridge
  * @audio: the #AgsAudio to visualize
  *
  * Creates an #AgsSynthBridge

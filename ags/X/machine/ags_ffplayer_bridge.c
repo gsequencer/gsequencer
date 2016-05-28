@@ -197,7 +197,6 @@ ags_ffplayer_bridge_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_ffplayer_bridge_new:
- * @ffplayer_bridge: the parent ffplayer_bridge
  * @audio: the #AgsAudio to visualize
  *
  * Creates an #AgsFFPlayerBridge

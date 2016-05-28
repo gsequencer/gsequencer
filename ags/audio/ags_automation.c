@@ -978,7 +978,7 @@ ags_automation_find_point(AgsAutomation *automation,
  * @y0: start tone
  * @x1: end offset
  * @y1: end tone
- * @use_selection:_list if %TRUE selection is searched
+ * @use_selection_list: if %TRUE selection is searched
  *
  * Find acceleration by offset and tone region.
  *
@@ -1571,7 +1571,7 @@ ags_automation_get_specifier_unique(GList *automation)
 }
 
 /**
- * ags_automation_get_specifier_unique:
+ * ags_automation_find_specifier:
  * @automation: a #GList containing #AgsAutomation
  * @specifier: the string specifier to find
  *

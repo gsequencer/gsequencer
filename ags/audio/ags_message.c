@@ -45,9 +45,9 @@ ags_message_class_init(AgsMessageInterface *interface)
   /**
    * AgsMessage::key-on:
    * @message: the object
-   * @note:
-   * @audio_channel:
-   * @velocity:
+   * @note: the note
+   * @audio_channel: the audio channel
+   * @velocity: the velocity
    *
    * The ::key-on signal
    */
@@ -65,9 +65,9 @@ ags_message_class_init(AgsMessageInterface *interface)
   /**
    * AgsMessage::key-off:
    * @message: the object
-   * @note:
-   * @audio_channel:
-   * @velocity:
+   * @note: the note
+   * @audio_channel: the audio channel
+   * @velocity: the velocity
    *
    * The ::key-off signal
    */
@@ -85,9 +85,9 @@ ags_message_class_init(AgsMessageInterface *interface)
   /**
    * AgsMessage::key-pressure:
    * @message: the objectw
-   * @note:
-   * @audio_channel:
-   * @pressure:
+   * @note: the note
+   * @audio_channel: the audio channel
+   * @pressure: the pressure
    *
    * The ::key-pressure signal
    */
@@ -105,10 +105,10 @@ ags_message_class_init(AgsMessageInterface *interface)
   /**
    * AgsMessage::change-parameter:
    * @message: the object
-   * @note:
-   * @audio_channel:
-   * @control_specifier:
-   * @value:
+   * @note: the note
+   * @audio_channel: the audio channel
+   * @control_specifier: the control specifier
+   * @value: the value
    *
    * The ::change-parameter signal
    */
@@ -127,9 +127,9 @@ ags_message_class_init(AgsMessageInterface *interface)
   /**
    * AgsMessage::change-mode:
    * @message: the object
-   * @audio_channel:
-   * @mode:
-   * @enabled:
+   * @audio_channel: the audio channel
+   * @mode: the mode
+   * @enabled: if %TRUE then enable
    *
    * The ::change-mode signal
    */
@@ -146,8 +146,8 @@ ags_message_class_init(AgsMessageInterface *interface)
   /**
    * AgsMessage::pitch-bend:
    * @message: the object
-   * @pitch:
-   * @transmitter:
+   * @pitch: the pitch
+   * @transmitter: the transmitter
    *
    * The ::pitch-bend signal
    */
@@ -163,8 +163,8 @@ ags_message_class_init(AgsMessageInterface *interface)
   /**
    * AgsMessage::set-bpm:
    * @message: the object
-   * @bpm:
-   *
+   * @bpm: the BPM
+   * 
    * The ::set-bpm signal
    */
   g_signal_new("set-bpm\0",
@@ -179,7 +179,7 @@ ags_message_class_init(AgsMessageInterface *interface)
   /**
    * AgsMessage::set-delay-factor:
    * @message: the object
-   * @delay_factor:
+   * @delay_factor: the delay factor
    *
    * The ::set-delay-factor signal
    */
@@ -195,10 +195,10 @@ ags_message_class_init(AgsMessageInterface *interface)
 
 /**
  * ags_message_key_on:
- * @message: 
- * @note:
- * @audio_channel:
- * @velocity:
+ * @message: the #AgsMessage
+ * @note: the note
+ * @audio_channel: the audio channel
+ * @velocity: the velocity
  *
  * Notifies about key-on event.
  *
@@ -223,10 +223,10 @@ ags_message_key_on(AgsMessage *message,
 
 /**
  * ags_message_key_on:
- * @message: 
- * @note:
- * @audio_channel:
- * @velocity:
+ * @message: the #AgsMessage
+ * @note: the note
+ * @audio_channel: the audio channel
+ * @velocity: the velocity
  *
  * Notifies about key-off event.
  *
@@ -251,10 +251,10 @@ ags_message_key_off(AgsMessage *message,
 
 /**
  * ags_message_key_pressure:
- * @message: 
- * @note:
- * @audio_channel:
- * @pressure:
+ * @message: the #AgsMessage
+ * @note: the note
+ * @audio_channel: the audio channel
+ * @pressure: the pressure
  *
  * Notifies about key pressure event.
  *
@@ -279,11 +279,11 @@ ags_message_key_pressure(AgsMessage *message,
 
 /**
  * ags_message_change_parameter:
- * @message: 
- * @note:
- * @audio_channel:
- * @control_specifier:
- * @value:
+ * @message: the #AgsMessage
+ * @note: the note
+ * @audio_channel: the audio channel
+ * @control_specifier: the control specifier
+ * @value: the value
  *
  * Notifies about changed parameter.
  *
@@ -309,11 +309,11 @@ ags_message_change_parameter(AgsMessage *message,
 }
 
 /**
- * ags_message_change_parameter:
- * @message: 
- * @audio_channel:
- * @mode:
- * @enabled:
+ * ags_message_change_mode:
+ * @message: the #AgsMessage
+ * @audio_channel: the audio channel
+ * @mode: the mode
+ * @enabled: %TRUE if enabled, otherwise %FALSE
  *
  * Notifies about changed mode.
  *
@@ -338,9 +338,9 @@ ags_message_change_mode(AgsMessage *message,
 
 /**
  * ags_message_pitch_bend:
- * @message: 
- * @pitch:
- * @transmitter:
+ * @message: the #AgsMessage
+ * @pitch: the pitch
+ * @transmitter: the transmitter
  *
  * Notifies about pitch bend.
  *
@@ -362,9 +362,9 @@ ags_message_pitch_bend(AgsMessage *message,
 }
 
 /**
- * ags_message_pitch_bend:
- * @message: 
- * @bpm:
+ * ags_message_set_bpm:
+ * @message: the #AgsMessage 
+ * @bpm: the BPM
  *
  * Notifies about modified bpm.
  *
@@ -384,9 +384,9 @@ ags_message_set_bpm(AgsMessage *message,
 }
 
 /**
- * ags_message_pitch_bend:
- * @message: 
- * @delay_factor:
+ * ags_message_set_delay_factor:
+ * @message: the #AgsMessage 
+ * @delay_factor: the delay factor
  *
  * Notifies about modified bpm.
  *

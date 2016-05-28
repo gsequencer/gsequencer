@@ -482,7 +482,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -512,8 +511,11 @@ SCANGOBJ_OPTIONS =
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-SCAN_OPTIONS = 
-MKDB_OPTIONS = --output-format=xml --name-space=ags
+SCAN_OPTIONS = --rebuild-sections
+
+# Extra options to supply to gtkdoc-mkdb
+# e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
+MKDB_OPTIONS = --xml-mode --output-format=xml --name-space=ags
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS = 
@@ -559,12 +561,12 @@ AM_CPPFLAGS = \
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 GTKDOC_CFLAGS = 
 GTKDOC_LIBS = \
-	$(top_srcdir)/libags.la \
-	$(top_srcdir)/libags_thread.la \
-	$(top_srcdir)/libags_server.la \
-	$(top_srcdir)/libags_audio.la \
-	$(top_srcdir)/libags_gui.la \
-	$(top_srcdir)/libgsequencer.la
+	-lags-1.0 \
+	-lags_thread-1.0 \
+	-lags_server-0.7 \
+	-lags_audio-1.0 \
+	-lags_gui-0.7 \
+	-lgsequencer-0.7
 
 @GTK_DOC_USE_LIBTOOL_FALSE@GTKDOC_CC = $(CC) $(INCLUDES) $(GTKDOC_DEPS_CFLAGS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 @GTK_DOC_USE_LIBTOOL_TRUE@GTKDOC_CC = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(INCLUDES) $(GTKDOC_DEPS_CFLAGS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -1075,7 +1077,7 @@ scan-build.stamp: setup-build.stamp $(HFILE_GLOB) $(CFILE_GLOB)
 $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt: scan-build.stamp
 	@true
 
-sgml-build.stamp: setup-build.stamp $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(HFILE_GLOB) $(CFILE_GLOB) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt $(expand_content_files) xml/gtkdocentities.ent
+sgml-build.stamp: setup-build.stamp $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt $(expand_content_files)
 	$(GTK_DOC_V_XML)_source_dir='' ; \
 	for i in $(DOC_SOURCE_DIR) ; do \
 	    _source_dir="$${_source_dir} --source-dir=$$i" ; \
@@ -1085,17 +1087,6 @@ sgml-build.stamp: setup-build.stamp $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(HF
 
 sgml.stamp: sgml-build.stamp
 	@true
-
-xml/gtkdocentities.ent: Makefile
-	$(GTK_DOC_V_XML)$(MKDIR_P) $(@D) && ( \
-		echo "<!ENTITY package \"$(PACKAGE)\">"; \
-		echo "<!ENTITY package_bugreport \"$(PACKAGE_BUGREPORT)\">"; \
-		echo "<!ENTITY package_name \"$(PACKAGE_NAME)\">"; \
-		echo "<!ENTITY package_string \"$(PACKAGE_STRING)\">"; \
-		echo "<!ENTITY package_tarname \"$(PACKAGE_TARNAME)\">"; \
-		echo "<!ENTITY package_url \"$(PACKAGE_URL)\">"; \
-		echo "<!ENTITY package_version \"$(PACKAGE_VERSION)\">"; \
-	) > $@
 
 html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_content_files)
 	$(GTK_DOC_V_HTML)rm -rf html && mkdir html && \

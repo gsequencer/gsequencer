@@ -20,6 +20,7 @@
 #ifndef __AGS_CONCURRENT_TREE_H__
 #define __AGS_CONCURRENT_TREE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <pthread.h>

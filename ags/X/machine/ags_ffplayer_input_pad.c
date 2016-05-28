@@ -162,7 +162,6 @@ ags_ffplayer_input_pad_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_ffplayer_input_pad_new:
- * @ffplayer_input_pad: the parent ffplayer_input_pad
  * @channel: the #AgsChannel to visualize
  *
  * Creates an #AgsFFPlayerInputPad

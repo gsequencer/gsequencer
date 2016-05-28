@@ -350,7 +350,7 @@ ags_play_audio_signal_duplicate(AgsRecall *recall,
  * ags_play_audio_signal_new:
  * @source: the source #AgsAudioSignal
  * @soundcard: the #GObject outputting to
- * @attack: the attack
+ * @audio_channel: the audio channel
  *
  * Creates an #AgsPlayAudioSignal
  *

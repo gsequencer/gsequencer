@@ -20,19 +20,29 @@
 #include <ags/audio/midi/ags_midi_util.h>
 
 /**
+ * SECTION:ags_midi_util
+ * @short_description: MIDI util
+ * @title: AgsMidiUtil
+ * @section_id:
+ * @include: ags/audio/midi/ags_midi_util.h
+ *
+ * Utility functions for MIDI.
+ */
+
+/**
  * ags_midi_util_envelope_to_velocity:
- * @attack:
- * @decay:
- * @sustain:
- * @release:
- * @ratio:
- * @samplerate:
- * @start_frame:
- * @end_frame:
+ * @attack: attack
+ * @decay: decay
+ * @sustain: sustain
+ * @release: release
+ * @ratio: ratio
+ * @samplerate: samplerate
+ * @start_frame: start frame
+ * @end_frame: end frame
  *
+ * Envelope to velocity.
  *
- *
- * Returns:
+ * Returns: the velocity
  *
  * Since: 0.7.2
  */
@@ -56,18 +66,18 @@ ags_midi_util_envelope_to_velocity(AgsComplex *attack,
 
 /**
  * ags_midi_util_velocity_to_envelope:
- * @delta_time:
- * @is_release:
- * @attack:
- * @decay:
- * @sustain:
- * @release:
- * @ratio:
- * @samplerate
- * @start_frame:
- * @end_frame:
+ * @delta_time: delta time
+ * @is_release: is release
+ * @attack: attack
+ * @decay: decay
+ * @sustain: sustain
+ * @release: release
+ * @ratio: ratio
+ * @samplerate samplerate
+ * @start_frame: start frame
+ * @end_frame: end frame
  *
- *
+ * Velocity to envelope.
  *
  * Since: 0.7.2
  */
@@ -87,18 +97,18 @@ ags_midi_util_velocity_to_envelope(long delta_time,
 
 /**
  * ags_midi_util_envelope_to_pressure:
- * @attack:
- * @decay:
- * @sustain:
- * @release:
- * @ratio:
- * @samplerate:
- * @start_frame:
- * @end_frame:
+ * @attack: attack
+ * @decay: decay
+ * @sustain: sustain
+ * @release: release
+ * @ratio: ratio
+ * @samplerate: samplerate
+ * @start_frame: start frame
+ * @end_frame: end frame
  *
+ * Envelope to pressure.
  *
- *
- * Returns:
+ * Returns: the pressure
  *
  * Since: 0.7.2
  */
@@ -122,18 +132,18 @@ ags_midi_util_envelope_to_pressure(AgsComplex *attack,
 
 /**
  * ags_midi_util_pressure_to_envelope:
- * @delta_time:
- * @is_sustain:
- * @attack:
- * @decay:
- * @sustain:
- * @release:
- * @ratio:
- * @samplerate:
- * @start_frame:
- * @end_frame:
+ * @delta_time: delta time
+ * @is_sustain: is sustain
+ * @attack: attack
+ * @decay: decay
+ * @sustain: sustain
+ * @release: release
+ * @ratio: ratio
+ * @samplerate: samplerate
+ * @start_frame: start frame
+ * @end_frame: end frame
  *
- *
+ * Pressure to envelope.
  *
  * Since: 0.7.2
  */
@@ -153,13 +163,15 @@ ags_midi_util_pressure_to_envelope(long delta_time,
 
 /**
  * ags_midi_util_delta_time_to_offset:
- * @delta_time:
- * @bpm:
- * @delay_factor:
- * @delay:
- * @attack:
+ * @delta_time: delta time
+ * @bpm: bpm
+ * @delay_factor: delay factor
+ * @delay: delay
+ * @attack: attack
  *
+ * Delta time to offset
  *
+ * Returns: the offset
  *
  * Since: 0.7.2
  */
@@ -179,11 +191,13 @@ ags_midi_util_delta_time_to_offset(long delta_time,
 
 /**
  * ags_midi_util_offset_to_delta_time:
- * @x:
- * @bpm:
- * @delay_factor:
+ * @x: offset
+ * @bpm: bpm
+ * @delay_factor: delay factor
  *
+ * Offset to delta time
  *
+ * Returns: the delta time
  *
  * Since: 0.7.2
  */

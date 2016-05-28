@@ -210,7 +210,7 @@ ags_cancel_channel_launch(AgsTask *task)
  * ags_cancel_channel_new:
  * @channel: the #AgsChannel to cancel
  * @recall_id: the #AgsRecallID to cancel
- * @play: the #AgsDevoutPlay-struct
+ * @playback: the #AgsPlayback
  *
  * Creates an #AgsCancelChannel.
  *

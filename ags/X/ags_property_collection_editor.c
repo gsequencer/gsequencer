@@ -222,7 +222,9 @@ ags_property_collection_editor_show(GtkWidget *widget)
 
 /**
  * ags_property_collection_editor_new:
- * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
+ * @child_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
+ * @child_parameter_count: child parameter count
+ * @child_parameter: child parameter
  *
  * Creates an #AgsPropertyCollectionEditor
  *

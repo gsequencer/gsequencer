@@ -31,7 +31,7 @@ void ags_remove_region_from_selection_finalize(GObject *gobject);
 void ags_remove_region_from_selection_launch(AgsTask *task);
 
 /**
- * SECTION:ags_remove_region_to_selection
+ * SECTION:ags_remove_region_from_selection
  * @short_description: remove region to notation selection
  * @title: AgsRemoveRegionToSelection
  * @section_id:

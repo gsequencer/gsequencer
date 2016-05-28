@@ -262,7 +262,7 @@ ags_open_file_launch(AgsTask *task)
 
 /**
  * ags_open_file_new:
- * @file: the #AgsFile
+ * @audio: the #AgsAudio
  * @filenames: the filenames to be opened
  * @overwrite_channels: reset existing #AgsInput
  * @create_channels: inistantiate new #AgsInput, if @overwrite_channell as needed

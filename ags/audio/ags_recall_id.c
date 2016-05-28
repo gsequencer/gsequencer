@@ -393,7 +393,7 @@ ags_recall_id_find_recycling_context(GList *recall_id_list,
 /**
  * ags_recall_id_find_parent_recycling_context:
  * @recall_id_list: a #GList containing #AgsRecallID
- * @recycling_context: the #AgsRecyclingContext to match
+ * @parent_recycling_context: the #AgsRecyclingContext to match
  *
  * Retrieve recall id by recycling context.
  *
@@ -422,7 +422,7 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
 
 /**
  * ags_recall_id_new:
- * @recycling:
+ * @recycling: the assigned #AgsRecycling
  *
  * Creates a #AgsRecallID, assigned to @recycling
  *

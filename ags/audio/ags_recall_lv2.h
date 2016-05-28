@@ -78,7 +78,7 @@ struct _AgsRecallLv2Class
 GType ags_recall_lv2_get_type();
 
 GList* ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2);
-void ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_ladspa,
+void ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
 				    GObject *port,
 				    gpointer port_descriptor);
 

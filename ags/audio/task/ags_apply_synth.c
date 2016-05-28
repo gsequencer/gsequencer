@@ -325,17 +325,17 @@ ags_apply_synth_launch(AgsTask *task)
 
 /**
  * ags_apply_synth_new:
- * @start_channel:
- * @count:
- * @wave:
- * @attack:
- * @frame_count:
- * @frequency:
- * @phase:
- * @start:
- * @volume:
- * @loop_start:
- * @loop_end:
+ * @start_channel: the start channel
+ * @count: the count of lines
+ * @wave: the selected wave
+ * @attack: the attack
+ * @frame_count: frame count
+ * @frequency: frequency
+ * @phase: the phase
+ * @start: first frame
+ * @volume: volume
+ * @loop_start: loop start
+ * @loop_end: loop end
  *
  * Creates an #AgsApplySynth.
  *

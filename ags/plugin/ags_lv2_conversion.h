@@ -41,14 +41,14 @@ typedef enum{
 
 struct _AgsLv2Conversion
 {
-  AgsConversion gobject;
+  AgsConversion conversion;
 
   guint flags;
 };
 
 struct _AgsLv2ConversionClass
 {
-  AgsConversionClass gobject;
+  AgsConversionClass conversion;
 };
 
 GType ags_lv2_conversion_get_type(void);

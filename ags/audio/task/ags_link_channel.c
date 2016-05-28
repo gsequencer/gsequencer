@@ -163,7 +163,7 @@ ags_link_channel_launch(AgsTask *task)
 /**
  * ags_link_channel_new:
  * @channel: the #AgsChannel
- * @play_pad: the #AgsChannel to be linked, may be %NULL
+ * @link: the #AgsChannel to be linked, may be %NULL
  *
  * Creates an #AgsLinkChannel.
  *

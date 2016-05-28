@@ -502,9 +502,9 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   /**
    * AgsMidiBuilder::quarter-frame:
    * @midi_builder: the builder
-   * @delta_time: 
-   * @message_type: 
-   * @values:
+   * @delta_time: the delta time
+   * @message_type: the message type
+   * @values: the values
    *
    * The ::quarter-frame signal is emited during building of event.
    *
@@ -1015,7 +1015,7 @@ ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
  * @delta_time: delta-time
  * @audio_channel: the audio channel
  * @note: the note to play from 0 to 128
- * @velocity: key dynamics
+ * @pressure: key dynamics
  *
  * Append key-pressure for @note to @midi_builder with key dynamics @pressure, at @delta_time.
  *

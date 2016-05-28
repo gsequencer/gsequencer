@@ -318,7 +318,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 }
 
 /**
- * ags_automation_toolbar_load_port:
+ * ags_automation_toolbar_apply_port:
  * @automation_toolbar: an #AgsAutomationToolbar
  * @control_name: the specifier as string
  *

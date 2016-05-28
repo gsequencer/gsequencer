@@ -81,7 +81,7 @@ void* ags_lv2_plugin_alloc_event_buffer(guint buffer_size);
 void* ags_lv2_plugin_concat_event_buffer(void *buffer0, ...);
 
 gboolean ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
-						 guint length,
+						 guint buffer_size,
 						 snd_seq_event_t *events,
 						 guint event_count);
 void ags_lv2_plugin_clear_event_buffer(void *event_buffer,

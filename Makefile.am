@@ -535,6 +535,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_worker_manager.h \
 	ags/plugin/ags_lv2_worker.h \
 	ags/plugin/ags_lv2ui_manager.h \
+	ags/plugin/ags_lv2ui_plugin.h \
 	ags/plugin/ags_plugin_stock.h
 
 deprecated_libags_plugin_c_sources =
@@ -557,6 +558,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_worker_manager.c \
 	ags/plugin/ags_lv2_worker.c \
 	ags/plugin/ags_lv2ui_manager.c \
+	ags/plugin/ags_lv2ui_plugin.c \
 	ags/plugin/ags_plugin_factory.c
 
 # libags-audio - file
@@ -1324,8 +1326,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_automation_toolbar_callbacks.c \
 	ags/X/editor/ags_automation_area.c \
 	ags/X/editor/ags_automation_area_callbacks.c \
-	ags/X/editor/ags_file_selection.c \
 	ags/X/editor/ags_file_selection_callbacks.c \
+	ags/X/editor/ags_file_selection.c \
 	ags/X/editor/ags_inline_player.c \
 	ags/X/editor/ags_inline_player_callbacks.c \
 	ags/X/editor/ags_machine_radio_button.c \

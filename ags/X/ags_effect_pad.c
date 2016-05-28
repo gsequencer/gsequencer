@@ -581,7 +581,6 @@ ags_effect_pad_find_port(AgsEffectPad *effect_pad)
 
 /**
  * ags_effect_pad_new:
- * @effect_pad: the parent effect_pad
  * @channel: the #AgsChannel to visualize
  *
  * Creates an #AgsEffectPad
