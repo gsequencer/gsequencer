@@ -136,7 +136,6 @@ ags_ladspa_bridge_get_type
 ags_ladspa_browser_get_type
 ags_ladspa_manager_get_type
 ags_led_get_type
-ags_libao_get_type
 ags_line_editor_get_type
 ags_line_get_type
 ags_line_member_editor_get_type
