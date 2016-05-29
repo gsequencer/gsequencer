@@ -1,22 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook"
 	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
-  <title>Linking</title>
+  <title>Your tree linked with AgsChannel</title>
   <para>
-    In this section you get some knowledge about AgsChannel internals. Here you get an
-    overview of the audio layer. All code related to it is located in subdirectory 
-    &lt;ags/audio&gt;. Linking AgsChannel is a quiet complex thing but If you wish
-    to do so you can just call ags_channel_link() and this will the especially covered
-    here.
+    AgsChannel forms your audio processing tree and contains recalls, too. You might
+    want to iterate the channels of your audio object or just call one of these functions:
   </para>
 
+  <itemizedlist mark="bullet">
+    <listitem>
+      ags_channel_first()
+    </listitem>
+    <listitem>
+      ags_channel_last()
+    </listitem>
+    <listitem>
+      ags_channel_nth()
+    </listitem>
+    <listitem>
+      ags_channel_pad_first()
+    </listitem>
+    <listitem>
+      ags_channel_pad_last()
+    </listitem>
+    <listitem>
+      ags_channel_pad_nth()
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    As you see there is a grained access to channels. You can lookup channels from with the
+    same audio channel with the functions containing pad in its name. An other exciting
+    feature is finding channels having an assigned recycling. These functions operate on
+    the very same audio channel.
+  </para>
+
+  <itemizedlist mark="bullet">
+    <listitem>
+      ags_channel_first_with_recycling()
+    </listitem>
+    <listitem>
+      ags_channel_last_with_recycling()
+    </listitem>
+    <listitem>
+      ags_channel_prev_with_recycling()
+    </listitem>
+    <listitem>
+      ags_channel_next_with_recycling()
+    </listitem>
+  </itemizedlist>  
+  
   <sect1>
-    <title>Overview</title>
+    <title>The pattern</title>
+    <para>
+      There can AgsPattern being added to a channel by ags_channel_add_pattern(). Later if
+      not used anymore likewise call ags_channel_remove_pattern().
+    </para>
+
+    <example>
+      <title>Adding AgsPattern</title>
+      <programlisting language="C">
+	<xi:include href="../listings/add_pattern.c" parse="text" />
+      </programlisting>
+    </example>
+  </sect1>
+  
+  <sect1>
+    <title>Linking overview</title>
+    <para>
+      In this section you get some knowledge about AgsChannel internals. Here you get an
+      overview of the audio layer. All code related to it is located in subdirectory 
+      &lt;ags/audio&gt;. Linking AgsChannel is a quiet complex thing but If you wish
+      to do so you can just call ags_channel_set_link() and this will the especially covered
+      here.
+    </para>
+
     <para>
       AgsAudio, AgsChannel and AgsRecycling are involved in linking. When talking about
       linking we should view AgsChannel objects as networked and therefore exists an
       additional nested network of AgsRecycling objects.
     </para>
+    
     <para>
       The AgsAudio object gives clarification about how AgsChannel has to be accessed
       either synchronously or asynchronously. Further it tells us whether AgsOutput or
@@ -171,5 +235,4 @@
     </example>
 
   </sect1>
-
 </chapter>

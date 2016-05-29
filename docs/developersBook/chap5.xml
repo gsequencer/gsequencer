@@ -45,4 +45,58 @@
       <xi:include href="../listings/audio.c" parse="text" />
     </programlisting>
   </example>
+
+  <sect1>
+    <title>AgsRecallID and AgsRecyclingContext</title>
+    <para>
+      As mentioned previously in this chapter AgsAudio organizes your recall ids and
+      recycling contices. The following functions are here to add and remove them.
+    </para>
+    
+    <itemizedlist mark='bullet'>
+      <listitem>
+	ags_audio_add_recall_id()
+      </listitem>
+      <listitem>
+	ags_audio_remove_recall_id()
+      </listitem>
+      <listitem>
+	ags_audio_add_recycling_context()
+      </listitem>
+      <listitem>
+	ags_audio_remove_recycling_context()
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1>
+    <title>Dealing with recalls</title>
+    <para>
+      Since AgsAudio is your entry point to do sound processing there are some useful
+      functions to set it up, but later on them. Instances of AgsRecallAudio base object
+      may be added or removed with ags_audio_add_recall() and ags_audio_remove_recall().
+    </para>
+    
+    <para>
+      You can initialize the sound processing tree with ags_audio_recursive_play_init().
+      This invokes successive ags_audio_init_recall(), ags_channel_init_recall() and related
+      within your tree.
+    </para>
+
+    <para>
+      The following signals are triggered during playback ::play, ::tact and ::done - 
+      ::cancel and ::remove during termination.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Open audio files</title>
+    <para>
+      There is a handy function called ags_audio_open_files() taking as parameter filenames
+      as GSList, overwrite_channels and create_channels as boolean. Filenames is a single
+      linked list of strings, overwrite_channels means use pre-allocated channels and
+      create_channels to allow instantiate new channels. The boolean parameters can be combined
+      as you want.
+    </para>
+  </sect1>
 </chapter>
