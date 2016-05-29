@@ -1,0 +1,3 @@
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_notation.h>
+
