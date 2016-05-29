@@ -1,0 +1,11 @@
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_pattern.h>
+
+AgsChannel *channel;
+AgsPattern *pattern;
+
+channel = ags_channel_new(NULL);
+
+pattern = ags_pattern_new();
+ags_channel_add_pattern(channel,
+			pattern);

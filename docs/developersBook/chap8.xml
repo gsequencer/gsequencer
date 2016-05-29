@@ -3,6 +3,32 @@
 	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
   <title>Your audio data in AgsAudioSignal</title>
   <para>
-    Add content.
+    AgsAudioSignal is the object orientated representation of your audio data.
+    It has a GList with data pointer to audio buffers. There convenience functions
+    to resize the stream.
+  </para>
+
+  <itemizedlist mark="bullet">
+    <listitem>
+      ags_audio_signal_stream_resize()
+    </listitem>
+    <listitem>
+      ags_audio_signal_stream_safe_resize()
+    </listitem>
+    <listitem>
+      ags_audio_signal_stream_add()
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    There exists a safe resize function because the audio signal might be in use
+    and it doesn't allow to shrink beyond used entries. This could be fatal if
+    an effect processor is using the stream and it gets freed as it uses it.
+  </para>
+
+  <para>
+    ags_audio_signal_duplicate_stream() can be used to blue-print one audio signals
+    buffer to an other audio signal. Or you might call ags_audio_signal_get_template()
+    from your AgsRecycling internal GList of audio signals to get the template.
   </para>
 </chapter>
