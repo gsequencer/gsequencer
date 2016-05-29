@@ -8721,9 +8721,7 @@ uninstall-man: uninstall-man1
 
 
 ags-docs-local:
-	cd docs/reference/ags
-	make
-	gtkdoc-fixxref
+	$(MAKE) -C docs/reference/ags
 	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>AgsAudio a container of AgsChannel</title>
+  <para>
+    AgsAudio contains a pointer to your notation and automation data. It has its
+    own recall context, AgsRecallAudio. It organizes your recycling contices and
+    thus having an associated AgsRecallID for running contices. Further AgsAudio
+    is your topmost nesting level of AgsAudioSignal. You might traverse the layers
+    in following order:
+  </para>
+
+  <orderedlist numeration="lowerroman">
+    <listitem>
+      AgsAudio
+    </listitem>
+    <listitem>
+      AgsChannel
+    </listitem>
+    <listitem>
+      AgsRecycling
+    </listitem>
+    <listitem>
+      AgsAudioSignal
+    </listitem>
+  </orderedlist>
+
+  <para>
+    AgsAudioSignal keeps your audio data as a GList of buffers. AgsRecycling is your
+    nested tree to AgsChannel, giving you the opportunity to emit ::add_audio_signal
+    or ::remove_audio_signal by producer and havig many consumers. AgsChannel is your
+    opposite to an audio channel representing a single line. AgsAudio keeps track of
+    all of them. You might want to add your audio object to an AgsSoundcard.
+  </para>
+
+  <para>
+    You may resize the count of pads or audio channels with ags_audio_set_pads() and
+    ags_audio_set_audio_channels(). Like in the following example the channels are
+    adjusted and notation is added.
+  </para>
+
+  <example>
+    <title>Using AgsAudio</title>
+    <programlisting language="C">
+      <xi:include href="../listings/audio.c" parse="text" />
+    </programlisting>
+  </example>
+</chapter>

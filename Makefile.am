@@ -1365,9 +1365,7 @@ midi2xml_LDFLAGS= -ldl $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 midi2xml_SOURCES = ags/midi2xml_main.c ags/audio/midi/ags_midi_parser.c ags/audio/midi/ags_midi_parser.h ags/object/ags_marshal.c ags/object/ags_marshal.h
 
 ags-docs-local:
-	cd docs/reference/ags
-	make
-	gtkdoc-fixxref
+	$(MAKE) -C docs/reference/ags
 	cd $(top_srcdir)
 
 libtool: $(LIBTOOL_DEPS)
