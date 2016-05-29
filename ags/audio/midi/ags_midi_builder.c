@@ -1053,12 +1053,12 @@ ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_change_parameter:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @channel:
- * @control:
- * @value:
+ * @delta_time: the delta time
+ * @channel: the channel
+ * @control: the control
+ * @value: the value
  *
- *
+ * Appends change parameter.
  *
  * Since: 0.7.3
  */
@@ -1094,10 +1094,14 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_change_pitch_bend:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @channel:
+ * @delta_time: the delta time
+ * @channel: the channel
+ * @pitch: the pitch
+ * @transmitter: the transmitter
  *
- *
+ * Change pitch bend.
+ * 
+ * Since: 0.7.3
  */
 void
 ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
@@ -1130,11 +1134,11 @@ ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_change_program:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @channel:
- * @program:
+ * @delta_time: the delta time
+ * @channel: the channel
+ * @program: the program
  *
- * 
+ * Appends change program.
  *
  * Since: 0.7.3
  */
@@ -1167,11 +1171,11 @@ ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_change_pressure:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @channel:
- * @pressure:
- *
- *
+ * @delta_time: the delta time
+ * @channel: the channel
+ * @pressure: the pressure
+ * 
+ * Appends change pressure.
  *
  * Since: 0.7.3
  */
@@ -1203,11 +1207,11 @@ ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_sysex:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @sysex_data:
- * @length:
+ * @delta_time: the delta time
+ * @sysex_data: the sysex data
+ * @length: length
  *
- *
+ * Appends sysex data.
  *
  * Since: 0.7.3
  */
@@ -1238,11 +1242,11 @@ ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_quarter_frame:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @message_type:
- * @values:
+ * @delta_time: the delta time
+ * @message_type: the message type
+ * @values: values
  *
- *
+ * Appends quarter frame.
  * 
  * Since: 0.7.3
  */
@@ -1273,10 +1277,10 @@ ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_song_position:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @song_position:
+ * @delta_time: the delta time
+ * @song_position: the song position
  * 
- * 
+ * Appends song position.
  *
  * Since: 0.7.3
  */
@@ -1306,10 +1310,10 @@ ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_song_select:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @song_select:
+ * @delta_time: the delta time
+ * @song_select: the song select
  * 
- * 
+ * Appends song select.
  *
  * Since: 0.7.3
  */
@@ -1338,9 +1342,9 @@ ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_tune_request:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
+ * @delta_time: the delta time
  * 
- * 
+ * Appends tune request.
  *
  * Since: 0.7.3
  */
@@ -1368,10 +1372,10 @@ ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_sequence_number:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @sequence:
+ * @delta_time: the delta time
+ * @sequence: the sequence number
  * 
- * 
+ * Appends sequence number.
  *
  * Since: 0.7.3
  */
@@ -1401,14 +1405,14 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_smtpe:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @hr:
- * @mn:
- * @se:
- * @fr:
- * @ff:
+ * @delta_time: the delta time
+ * @hr: hours
+ * @mn: minutes
+ * @se: seconds
+ * @fr: fraction
+ * @ff: fraction functio
  * 
- * 
+ * Appends smtpe.
  *
  * Since: 0.7.3
  */
@@ -1439,10 +1443,10 @@ ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_tempo:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
- * @tempo:
+ * @delta_time: the delta time
+ * @tempo: the tempo
  * 
- * 
+ * Appends tempo.
  *
  * Since: 0.7.3
  */
@@ -1472,14 +1476,14 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_append_time_signature:
  * @midi_builder: the #AgsMidiBuilder
- * @delta_time:
+ * @delta_time: the delta time
  * @nn:
  * @denom:
  * @dd:
  * @cc:
  * @bb:
  *
- * 
+ * Appends time signature.
  *
  * Since: 0.7.3
  */
@@ -1506,6 +1510,17 @@ ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_key_signature:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: the delta time
+ * @sf:
+ * @mi:
+ *
+ * Appends key signature.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_key_signature(AgsMidiBuilder *midi_builder,
 				      guint delta_time,
@@ -1529,6 +1544,18 @@ ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_sequencer_meta_event:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: the delta time
+ * @len: the length
+ * @id: the id
+ * @data: the data
+ * 
+ * Appends sequencer meta event.
+ *
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
 					     guint delta_time,
@@ -1552,6 +1579,17 @@ ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_append_text_event:
+ * @midi_builder: the #AgsMidiBuilder
+ * @delta_time: the delta time
+ * @text: the string
+ * @length: the string length
+ *
+ * Appends text event.
+ * 
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
 				   guint delta_time,
@@ -1567,6 +1605,15 @@ ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
   g_object_unref((GObject *) midi_builder);
 }
 
+/**
+ * ags_midi_builder_append_xml_node:
+ * @midi_builder: the #AgsMidiBuilder
+ * @node: the xmlNode
+ * 
+ * Append from XML node @node.
+ * 
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
 				 xmlNode *node)
@@ -1574,6 +1621,15 @@ ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_from_xml_doc:
+ * @midi_builder: the #AgsMidiBuilder
+ * @doc: the xmlDocument
+ *
+ * Builds from XML document @doc.
+ * 
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
 			      xmlDoc *doc)
@@ -1581,12 +1637,30 @@ ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_build:
+ * @midi_builder: the #AgsMidiBuilder
+ *
+ * Build the MIDI data.
+ * 
+ * Since: 0.7.3
+ */
 void
 ags_midi_builder_build(AgsMidiBuilder *midi_builder)
 {
   //TODO:JK: implement me
 }
 
+/**
+ * ags_midi_builder_new:
+ * @file: the FILE handle
+ * 
+ * Creates a new #AgsMidiBuilder
+ *
+ * Returns: an #AgsMidiBuilder
+ * 
+ * Since: 0.7.0
+ */
 AgsMidiBuilder*
 ags_midi_builder_new(FILE *file)
 {

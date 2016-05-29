@@ -708,6 +708,8 @@ ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
  * ags_recall_ladspa_short_to_float:
  * @buffer: source
  * @destination: destination
+ * @buffer_size: buffer size
+ * @lines: lines
  *
  * Convert data type.
  * 
@@ -732,7 +734,8 @@ ags_recall_ladspa_short_to_float(signed short *buffer,
  * ags_recall_ladspa_float_to_short:
  * @buffer: source
  * @destination: destination
- * @buffer_size: buffer_size
+ * @buffer_size: buffer size
+ * @lines: lines
  *
  * Convert data type.
  * 

@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_time.h>
+
 #include <sys/types.h>
 
 #include <pthread.h>

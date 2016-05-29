@@ -88,7 +88,7 @@ GType ags_file_selection_get_type(void);
 
 AgsFileSelectionEntry* ags_file_selection_entry_alloc();
 
-void ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry);
+void ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry_list);
 
 void ags_file_selection_add_entry(AgsFileSelection *file_selection, GtkWidget *widget);
 void ags_file_selection_remove_entry(AgsFileSelection *file_selection, GtkWidget *widget);

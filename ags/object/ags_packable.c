@@ -61,6 +61,7 @@ ags_packable_base_init(AgsPackableInterface *interface)
 /**
  * ags_packable_pack:
  * @packable: the #AgsPackable
+ * @container: the container
  *
  * Pack to container.
  *

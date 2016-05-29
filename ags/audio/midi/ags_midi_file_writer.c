@@ -36,7 +36,7 @@ void ags_midi_file_writer_finalize(GObject *gobject);
  * @short_description: the MIDI file writer
  * @title: AgsMidiFileWriter
  * @section_id:
- * @include: ags/X/ags_midi_file_writer.h
+ * @include: ags/audio/midi/ags_midi_file_writer.h
  *
  * #AgsMidiFileWriter reads your midi files.
  */
@@ -156,6 +156,7 @@ ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
  * @midi_file_writer: the #AgsMidiFileWriter
  * @track_name: the track name
  * @status: the status
+ * @...: parameters
  * 
  * Writes a channel message.
  * 
@@ -174,6 +175,7 @@ ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
  * @midi_file_writer: the #AgsMidiFileWriter
  * @track_name: the track name
  * @status: the status
+ * @...: parameters
  * 
  * Writes a status message.
  * 

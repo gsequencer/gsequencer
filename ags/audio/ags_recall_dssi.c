@@ -709,6 +709,8 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
  * ags_recall_dssi_short_to_float:
  * @buffer: source
  * @destination: destination
+ * @buffer_size: buffer size
+ * @lines: lines
  *
  * Convert data type.
  * 
@@ -733,7 +735,8 @@ ags_recall_dssi_short_to_float(signed short *buffer,
  * ags_recall_dssi_float_to_short:
  * @buffer: source
  * @destination: destination
- * @buffer_size: buffer_size
+ * @buffer_size: buffer size
+ * @lines: lines
  *
  * Convert data type.
  * 

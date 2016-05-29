@@ -242,8 +242,8 @@ ags_file_selection_show(GtkWidget *widget)
 
 /**
  * ags_file_selection_set_entry:
- * @file_selection an #AgsFileSelection
- * @entry a #GList
+ * @file_selection: an #AgsFileSelection
+ * @entry_list: a #GList
  *
  * Add new entries to the #AgsFileSelection.
  */

@@ -216,8 +216,8 @@ ags_recall_recycling_dummy_duplicate(AgsRecall *recall,
 
 /**
  * ags_recall_recycling_dummy_new:
- * @source the source #AgsRecycling
- * @child_type child type
+ * @recycling: the source #AgsRecycling
+ * @child_type: child type
  *
  * Creates an #AgsRecallRecyclingDummy.
  *

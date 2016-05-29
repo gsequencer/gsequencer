@@ -52,7 +52,7 @@ typedef struct _AgsLv2PluginClass AgsLv2PluginClass;
 
 typedef enum{
   AGS_LV2_PLUGIN_IS_SYNTHESIZER  = 1,
-};
+}AgsLv2PluginFlags;
 
 struct _AgsLv2Plugin
 {

@@ -180,6 +180,8 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_machine_selector_changed:
+ * @machine_selector: the #AgsMachineSelector
+ * @machine: the selected #AgsMachine
  *
  * Emitted as #AgsMachineSelector modified.
  *
@@ -217,6 +219,7 @@ ags_machine_selector_new()
 
 /**
  * ags_machine_selector_popup_new:
+ * @machine_selector: the #AgsMachineSelector
  *
  * Create a new #AgsMachineSelectorPopup.
  *

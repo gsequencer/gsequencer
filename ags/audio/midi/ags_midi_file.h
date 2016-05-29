@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_time.h>
+
 #include <stdio.h>
 
 #define AGS_TYPE_MIDI_FILE                (ags_midi_file_get_type ())
@@ -33,8 +35,6 @@
 #define AGS_MIDI_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MIDI_FILE, AgsMidiFileClass))
 
 #define AGS_MIDI_FILE_TRACK(ptr) ((AgsMidiFileTrack *)(ptr))
-
-#define USEC_PER_SEC (1000000)
 
 #define AGS_MIDI_FILE_MAX_TEXT_LENGTH (4096)
 #define AGS_MIDI_FILE_MTHD "MThd\0"

@@ -40,7 +40,7 @@ typedef struct _AgsMachineSelectorClass AgsMachineSelectorClass;
 typedef enum{
   AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING   = 1,
   AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO    = 1 <<  1,
-};
+}AgsMachineSelectorFlags;
 
 struct _AgsMachineSelector
 {

@@ -3031,6 +3031,7 @@ ags_recall_factory_create_route_lv2(AgsAudio *audio,
 /**
  * ags_recall_factory_create:
  * @audio: an #AgsAudio that should keep the recalls
+ * @play_container: an #AgsRecallContainer to indetify what recall to use
  * @recall_container: an #AgsRecallContainer to indetify what recall to use
  * @plugin_name: the plugin identifier to instantiate 
  * @start_audio_channel: the first audio channel to apply
@@ -3256,7 +3257,6 @@ ags_recall_factory_remove(AgsAudio *audio,
 
 /**
  * ags_recall_factory_new:
- * @factory: the #AgsRecall depending on
  *
  * Creates a #AgsRecallFactory
  *

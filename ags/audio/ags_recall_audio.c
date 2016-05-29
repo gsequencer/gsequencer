@@ -405,6 +405,7 @@ ags_recall_audio_duplicate(AgsRecall *recall,
 
 /**
  * ags_recall_audio_new:
+ * @audio: the assigned #AgsAudio
  *
  * Creates an #AgsRecallAudio.
  *
