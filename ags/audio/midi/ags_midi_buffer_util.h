@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <stdlib.h>
+
 guint ags_midi_buffer_util_get_varlength_size(long varlength);
 void ags_midi_buffer_util_put_varlength(unsigned char *buffer,
 					long varlength);

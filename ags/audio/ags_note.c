@@ -466,7 +466,7 @@ ags_note_to_raw_midi(AgsNote *note,
   k = 0;
   
   /* delta-time */
-  delta_time = note->x[0] / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
+  delta_time = note->x[0] / 16.0 / bpm * 60.0 / ((USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USEC_PER_SEC);
   delta_time_length = 
     current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
 
@@ -505,7 +505,7 @@ ags_note_to_raw_midi(AgsNote *note,
 
     for(i = 1; i <= i_stop; i++){
       /* delta-time */
-      delta_time = (note->x[0] + i + 1)  / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
+      delta_time = (note->x[0] + i + 1)  / 16.0 / bpm * 60.0 / ((USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USEC_PER_SEC);
       delta_time_length = 
 	current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
 
@@ -542,7 +542,7 @@ ags_note_to_raw_midi(AgsNote *note,
 
   /* key-off */
   /* delta-time */
-  delta_time = note->x[1] / 16.0 / bpm * 60.0 / ((USECS_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USECS_PER_SEC);
+  delta_time = note->x[1] / 16.0 / bpm * 60.0 / ((USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USEC_PER_SEC);
   delta_time_length = 
     current_length = ags_midi_buffer_util_get_varlength_size(delta_time);
 

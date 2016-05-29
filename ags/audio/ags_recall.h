@@ -143,10 +143,10 @@ struct _AgsRecallClass
 
 /**
  * AgsRecallHandler:
- * @signal_name the signal to listen
- * @callback the callback to use
- * @data user data to pass
- * @handler the handler id
+ * @signal_name: the signal to listen
+ * @callback: the callback to use
+ * @data: user data to pass
+ * @handler: the handler id
  *
  * A #AgsRecallHandler-struct acts as a callback definition
  */

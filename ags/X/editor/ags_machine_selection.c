@@ -260,6 +260,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
 
 /**
  * ags_machine_selection_new:
+ * @window: the #AgsWindow
  *
  * Create a new #AgsMachineSelection.
  *

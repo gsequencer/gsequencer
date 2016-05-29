@@ -43,7 +43,7 @@ typedef struct _AgsRecallLv2Class AgsRecallLv2Class;
 typedef enum{
   AGS_RECALL_LV2_HAS_EVENT_PORT   = 1,
   AGS_RECALL_LV2_HAS_ATOM_PORT    = 1 <<  1,
-};
+}AgsRecallLv2FLags;
 
 struct _AgsRecallLv2
 {

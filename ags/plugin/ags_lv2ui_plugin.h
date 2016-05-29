@@ -43,11 +43,8 @@ typedef enum{
   AGS_LV2UI_GTK2       = 1,
   AGS_LV2UI_GTK3       = 1 <<  1,
   AGS_LV2UI_QT         = 1 <<  2,
+  AGS_LV2UI_PLUGIN_IS_SYNTHESIZER  = 1 << 3,
 }AgsLv2uiFlags;
-
-typedef enum{
-  AGS_LV2UI_PLUGIN_IS_SYNTHESIZER  = 1,
-};
 
 struct _AgsLv2uiPlugin
 {

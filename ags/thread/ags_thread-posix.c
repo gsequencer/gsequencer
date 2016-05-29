@@ -1862,6 +1862,7 @@ ags_thread_wait_children(AgsThread *thread)
 /**
  * ags_thread_signal_parent:
  * @thread: an #AgsThread
+ * @parent: the parent #AgsThread
  * @broadcast: whether to perforam a signal or to broadcast
  *
  * Signals the tree in higher levels.

@@ -279,9 +279,9 @@ ags_machine_editor_set_property(GObject *gobject,
 
 void
 ags_machine_editor_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec)
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
 {
   AgsMachineEditor *machine_editor;
 
@@ -395,6 +395,7 @@ ags_machine_editor_reset(AgsApplicable *applicable)
 
 /**
  * ags_machine_editor_add_children:
+ * @machine_editor: the #AgsMachineEditor
  *
  * Add all child editors.
  *

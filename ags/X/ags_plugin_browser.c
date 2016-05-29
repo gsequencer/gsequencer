@@ -272,6 +272,7 @@ ags_plugin_browser_reset(AgsApplicable *applicable)
 
 /**
  * ags_plugin_browser_get_plugin_filename:
+ * @plugin_browser: the #AgsPluginBrowser
  *
  * Retrieve selected plugin plugin filename.
  *
@@ -293,6 +294,7 @@ ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
 
 /**
  * ags_plugin_browser_get_plugin_effect:
+ * @plugin_browser: the #AgsPluginBrowser
  *
  * Retrieve selected plugin effect.
  *
@@ -314,6 +316,7 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
 
 /**
  * ags_plugin_browser_new:
+ * @parent: the #AgsWindow
  *
  * Creates an #AgsPluginBrowser
  *

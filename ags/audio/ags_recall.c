@@ -122,8 +122,10 @@ void ags_recall_child_done(AgsRecall *child,
 
 /**
  * SECTION:ags_recall
- * @Short_description: The recall base class
- * @Title: AgsRecall
+ * @short_description: The recall base class
+ * @title: AgsRecall
+ * @section_id: 
+ * @include: ags/audio/ags_recall.h
  *
  * #AgsRecall acts as effect processor.
  */

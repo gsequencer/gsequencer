@@ -237,6 +237,10 @@ ags_soundcard_get_device(AgsSoundcard *soundcard)
 /**
  * ags_soundcard_get_presets:
  * @soundcard: an #AgsSoundcard
+ * @channels: the audio channels
+ * @rate: the samplerate
+ * @buffer_size: the buffer size
+ * @format: the format
  *
  * Get presets. 
  *

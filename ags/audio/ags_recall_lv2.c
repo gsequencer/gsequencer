@@ -834,6 +834,8 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
  * ags_recall_lv2_short_to_float:
  * @buffer: source
  * @destination: destination
+ * @buffer_size: buffer size
+ * @lines: lines
  *
  * Convert data type.
  * 
@@ -858,7 +860,8 @@ ags_recall_lv2_short_to_float(signed short *buffer,
  * ags_recall_lv2_float_to_short:
  * @buffer: source
  * @destination: destination
- * @buffer_size: buffer_size
+ * @buffer_size: buffer size
+ * @lines: lines
  *
  * Convert data type.
  * 
@@ -914,8 +917,9 @@ ags_recall_lv2_find(GList *recall,
 /**
  * ags_recall_lv2_new:
  * @source: the source
- * #turtle: the .ttl file
+ * @turtle: the .ttl file
  * @filename: the LV2 plugin filename
+ * @effect: the LV2 plugin effect
  * @uri: uri's name
  * @index: uri's index
  *

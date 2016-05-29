@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_time.h>
+
 #define _GNU_SOURCE
 
 #include <signal.h>
@@ -34,9 +36,6 @@
 #define AGS_IS_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_THREAD))
 #define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
-
-#define USEC_PER_SEC    (1000000) /* The number of msecs per sec. */
-#define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
 
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1

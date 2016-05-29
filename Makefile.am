@@ -191,6 +191,7 @@ libags_h_sources = \
 	ags/lib/ags_function.h \
 	ags/lib/ags_parameter.h \
 	ags/lib/ags_string_util.h \
+	ags/lib/ags_time.h \
 	ags/lib/ags_turtle.h \
 	ags/lib/ags_turtle_manager.h
 
