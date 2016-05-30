@@ -391,6 +391,10 @@ main(int argc, char **argv)
 						AGS_PLAYBACK_DOMAIN(slave->playback_domain)->audio_thread[1]);
   
   pthread_mutex_unlock(application_mutex);
+
+  /* append to AgsAudioLoop */
+  ags_audio_loop_add_audio(main_loop,
+			   slave);
   
   /* add audio and channel threads */
   output = slave->output;
