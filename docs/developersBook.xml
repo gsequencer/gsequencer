@@ -43,7 +43,6 @@
   <xi:include href="developersBook/chap9.xml"/> <!-- recall -->
   <xi:include href="developersBook/chap10.xml"/> <!-- recall implementations-->
   <xi:include href="developersBook/chap11.xml"/> <!-- putting all together -->
-  <xi:include href="developersBook/chap12.xml"/> <!-- XML read example -->
   <xi:include href="appa.xml"/>
   <xi:include href="developersBook/appb.xml"/>
 

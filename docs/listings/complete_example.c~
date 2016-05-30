@@ -1,0 +1,124 @@
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_application_context.h>
+
+#include <ags/audio/ags_audio_application_context.h>
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+
+#include <ags/audio/recall/ags_play_channel.h>
+
+AgsAudio* setup_master(AgsApplicationContext *application_context);
+AgsAudio* setup_slave(AgsApplicationContext *application_context);
+
+AgsAudio*
+setup_master(AgsApplicationContext *application_context)
+{
+  AgsAudio *master;
+  AgsChannel *channel;
+  
+  GObject *soundcard;
+
+  GList *list;
+  GList *recall;
+  
+  guint n_audio_channels, n_output_pads, n_input_pads;
+  
+  /* get soundcard */
+  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  soundcard = list->data;
+
+  /* create master playback */
+  master = ags_audio_new();
+
+  n_audio_channels = 2;
+
+  n_output_pads = 1;
+  n_input_pads = 1;
+  
+  ags_audio_set_audio_channels(audio,
+			       n_audio_channels);
+  
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_OUTPUT,
+		     n_output_pads);
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     n_input_pads);
+
+  /* add ags-play-master recall */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-master\0",
+			    0, n_audio_channels,
+			    0, n_output_pads,
+			    (AGS_RECALL_FACTORY_INPUT,
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+  
+  /* set audio channel on play channel */
+  channel = audio->output;
+  
+  while(channel != NULL){
+    recall = channel->play;
+
+    while((recall = ags_recall_template_find_type(recall,
+						  AGS_TYPE_PLAY_CHANNEL)) != NULL){
+      GValue audio_channel_value = {0,};
+
+      play_channel = AGS_PLAY_CHANNEL(recall->data);
+
+      g_value_init(&audio_channel_value, G_TYPE_UINT64);
+      g_value_set_uint64(&audio_channel_value,
+			 channel->audio_channel);
+      ags_port_safe_write(play_channel->audio_channel,
+			  &audio_channel_value);
+
+      recall = recall->next;
+    }
+
+    channel = channel->next;
+  }
+
+  return(master);
+}
+
+AgsAudio*
+setup_slave(AgsApplicationContext *application_context)
+{
+}
+
+int
+main(int argc, char **argv)
+{
+  AgsAudio *master, *slave;
+
+  AgsThread *main_loop;
+  
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+
+  /* create application context */
+  application_context = ags_audio_application_context_new();
+
+  /* set config */
+  config = application_context->config;
+
+  ags_config_set_value(config,
+		       AGS_CONFIG_THREAD,
+		       "model\0",
+		       "super-threaded\0");
+  ags_config_set_value(config,
+		       AGS_CONFIG_THREAD,
+		       "super-threaded-scope\0",
+		       "channel\0");
+
+  /* setup audio tree */
+  master = setup_master(application_context);
+  slave = setup_slave(application_context);
+  
+  return(0);
+}
