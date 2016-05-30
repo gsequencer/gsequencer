@@ -626,7 +626,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 			     (GtkWidget *) line,
 			     j, i / pad->cols,
 			     1, 1);
-
+	
 	/* iterate */
 	if(channel != NULL){
 	  pthread_mutex_lock(channel_mutex);
@@ -725,74 +725,40 @@ ags_pad_map_recall(AgsPad *pad, guint output_pad_start)
 GList*
 ags_pad_real_find_port(AgsPad *pad)
 {
-  AgsChannel *channel, *next_pad;
-
-  AgsMutexManager *mutex_manager;
+  GList *line;
   
-  GList *list, *tmp;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
+  GList *port, *tmp_port;
 
-  channel = pad->channel;
-  list = NULL;
-  
-  if(channel != NULL){
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get mutex manager */
-    pthread_mutex_lock(application_mutex);
-  
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+  port = NULL;
 
-    pthread_mutex_unlock(application_mutex);
+  /* find output ports */
+  if(pad->expander_set != NULL){
+    line = gtk_container_get_children(pad->expander_set);
 
-    /* find ports */
-    pthread_mutex_lock(channel_mutex);
-    
-    next_pad = channel->next_pad;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    while(channel != next_pad){
-      /* lookup channel mutex */
-      pthread_mutex_lock(application_mutex);
+    while(line != NULL){
+      tmp_port = ags_line_find_port(AGS_LINE(line->data));
       
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) channel);
-      
-      pthread_mutex_unlock(application_mutex);
-
-      /* do it so */
-      if(list != NULL){
-	list = ags_channel_find_port(channel);
+      if(port != NULL){
+	port = g_list_concat(port,
+			     tmp_port);
       }else{
-	tmp = ags_channel_find_port(channel);
-	list = g_list_concat(list,
-			     tmp);
-	g_list_free(tmp);
+	port = tmp_port;
       }
 
-      /* iterate */
-      pthread_mutex_lock(channel_mutex);
-
-      channel = channel->next;
-
-      pthread_mutex_unlock(channel_mutex);
+      line = line->next;
     }
   }
-  
-  return(list);
+
+  return(port);
 }
 
 /**
  * ags_pad_find_port:
  * @pad: an #AgsPad
- * Returns: an #GList containing all related #AgsPort
  *
  * Lookup ports of assigned recalls.
+ *
+ * Returns: an #GList containing all related #AgsPort
  *
  * Since: 0.4
  */
@@ -962,10 +928,16 @@ ags_pad_play(AgsPad *pad)
 						NULL);
       g_signal_connect_after(G_OBJECT(task_completion), "complete\0",
 			     G_CALLBACK(ags_pad_start_complete_callback), pad);
-      gui_thread->task_completion = g_list_prepend(gui_thread->task_completion,
-						   task_completion);
       ags_connectable_connect(AGS_CONNECTABLE(task_completion));
       
+      pthread_mutex_lock(gui_thread->task_completion_mutex);
+
+      g_atomic_pointer_set(&(gui_thread->task_completion),
+			   g_list_prepend(g_atomic_pointer_get(&(gui_thread->task_completion)),
+					  task_completion));
+
+      pthread_mutex_unlock(gui_thread->task_completion_mutex);
+
       /* append AgsStartSoundcard */
       tasks = g_list_reverse(tasks);
 
@@ -1115,7 +1087,6 @@ ags_pad_play(AgsPad *pad)
 
 /**
  * ags_pad_new:
- * @pad: the parent pad
  * @channel: the bunch of channel to visualize
  *
  * Creates an #AgsPad

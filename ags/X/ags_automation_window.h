@@ -43,6 +43,8 @@ struct _AgsAutomationWindow
 {
   GtkWindow window;
 
+  guint flags;
+  
   GtkWidget *parent_window;
 
   AgsAutomationEditor *automation_editor;

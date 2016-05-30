@@ -32,6 +32,16 @@
 typedef struct _AgsAcceleration AgsAcceleration;
 typedef struct _AgsAccelerationClass AgsAccelerationClass;
 
+/**
+ * AgsAccelerationFlags:
+ * @AGS_ACCELERATION_DEFAULT_START: if start is default start point
+ * @AGS_ACCELERATION_DEFAULT_END: if end is default end point
+ * @AGS_ACCELERATION_GUI: interpret x and y as GUI format
+ * @AGS_ACCELERATION_RUNTIME: interpret x and y as runtime formant
+ * @AGS_ACCELERATION_HUMAN_READABLE: interpret x and y as human readable
+ * @AGS_ACCELERATION_DEFAULT_LENGTH: if default length applies
+ * @AGS_ACCELERATION_IS_SELECTED: if the acceleration is selected
+ */
 typedef enum{
   AGS_ACCELERATION_DEFAULT_START   = 1,
   AGS_ACCELERATION_DEFAULT_END     = 1 <<  1,

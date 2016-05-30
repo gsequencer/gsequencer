@@ -72,7 +72,7 @@ void ags_midi_loop_run(AgsThread *thread);
  * @short_description: midi loop
  * @title: AgsMidiLoop
  * @section_id:
- * @include: ags/thread/ags_midi_loop.h
+ * @include: ags/audio/thread/ags_midi_loop.h
  *
  * The #AgsMidiLoop is suitable as #AgsMainLoop and does
  * midi processing.
@@ -232,7 +232,6 @@ ags_midi_loop_init(AgsMidiLoop *midi_loop)
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-  //  thread->flags |= AGS_THREAD_WAIT_FOR_CHILDREN;
   pthread_mutex_lock(application_mutex);
 
   config = ags_config_get_instance();
@@ -451,7 +450,7 @@ ags_midi_loop_start(AgsThread *thread)
 
   midi_loop = AGS_MIDI_LOOP(thread);
 
-  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     AgsMutexManager *mutex_manager;
     
     AgsThread *async_queue;

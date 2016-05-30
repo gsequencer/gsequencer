@@ -30,6 +30,9 @@
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_plugin.h>
+
 #include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_output.h>
@@ -125,16 +128,21 @@ ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   AgsFile *file;
+  
+  GError *error;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
 
   //TODO:JK: revise me
   file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "main\0", window->application_context,
-				  "filename\0", g_strdup(window->name),
+				  "application-context\0", window->application_context,
+				  "filename\0", window->name,
 				  NULL);
+
+  error = NULL;
   ags_file_rw_open(file,
-		   TRUE);
+		   TRUE,
+		   &error);
   ags_file_write(file);
   ags_file_close(file);
   g_object_unref(G_OBJECT(file));
@@ -195,7 +203,7 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->application_context,
+				    "application-context\0", window->application_context,
 				    "filename\0", filename,
 				    NULL);
 
@@ -254,8 +262,8 @@ ags_menu_bar_quit_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
     //TODO:JK: revise me
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->application_context,
-				    "filename\0", g_strdup(window->name),
+				    "application-context\0", window->application_context,
+				    "filename\0", window->name,
 				    NULL);
 
     ags_file_write(file);
@@ -622,8 +630,9 @@ ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ffplayer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);
-
+  
   ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
+
   gtk_widget_show_all((GtkWidget *) ffplayer);
 }
 
@@ -787,10 +796,12 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 
   AgsApplicationContext *application_context;
 
+  AgsLv2Plugin *lv2_plugin;
+
   gchar *filename, *effect;
   
   pthread_mutex_t *application_mutex;
-
+    
   filename = g_object_get_data(menu_item,
 			       AGS_MENU_ITEM_FILENAME_KEY);
   effect = g_object_get_data(menu_item,
@@ -800,11 +811,25 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   application_context = window->application_context;
 
   lv2_bridge = ags_lv2_bridge_new(G_OBJECT(window->soundcard),
-					filename,
-					effect);
+				  filename,
+				  effect);
     
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
+  
+  if(lv2_plugin != NULL &&
+     (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
+    AGS_MACHINE(lv2_bridge)->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+					      AGS_AUDIO_INPUT_HAS_RECYCLING |
+					      AGS_AUDIO_SYNC |
+					      AGS_AUDIO_ASYNC |
+					      AGS_AUDIO_HAS_NOTATION | 
+					      AGS_AUDIO_NOTATION_DEFAULT);
+    AGS_MACHINE(lv2_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
+				       AGS_MACHINE_REVERSE_NOTATION);
+  }
   
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
@@ -825,12 +850,19 @@ ags_menu_bar_add_lv2_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(lv2_bridge),
 		     FALSE, FALSE, 0);
-
+  
   /*  */
   lv2_bridge->machine.audio->audio_channels = 2;
 
   /*  */
-  ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_INPUT, 1);
+  if(lv2_plugin != NULL){
+    if((AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) == 0){
+      ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_INPUT, 1);
+    }else{
+      ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_INPUT, 128);
+    }
+  }
+  
   ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
 
   /* connect everything */

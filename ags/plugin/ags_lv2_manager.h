@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_LV2_MANAGER_H__
@@ -22,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_turtle.h>
+#include <ags/plugin/ags_lv2_plugin.h>
 
 #include <lv2.h>
 
@@ -36,17 +37,10 @@
 #define AGS_IS_LV2_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_MANAGER))
 #define AGS_LV2_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_MANAGER, AgsLv2ManagerClass))
 
-#define AGS_LV2_PLUGIN(ptr) ((AgsLv2Plugin *)(ptr))
-
 #define AGS_LV2_MANAGER_DEFAULT_LOCALE "en-gb\0"
 
 typedef struct _AgsLv2Manager AgsLv2Manager;
 typedef struct _AgsLv2ManagerClass AgsLv2ManagerClass;
-typedef struct _AgsLv2Plugin AgsLv2Plugin;
-
-typedef enum{
-  AGS_LV2_PLUGIN_IS_LOADED    = 1,
-}AgsLv2PluginFlags;
 
 struct _AgsLv2Manager
 {
@@ -62,33 +56,16 @@ struct _AgsLv2ManagerClass
   GObjectClass object;
 };
 
-struct _AgsLv2Plugin
-{
-  guint flags;
-
-  AgsTurtle *turtle;
-
-  gchar *filename;
-  void *plugin_so;
-};
-
 GType ags_lv2_manager_get_type(void);
 
-AgsLv2Plugin* ags_lv2_plugin_alloc();
-void ags_lv2_plugin_free(AgsLv2Plugin *lv2_plugin);
-
 gchar** ags_lv2_manager_get_filenames();
-AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(gchar *filename);
+AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(gchar *filename,
+					      gchar *effect);
 
 void ags_lv2_manager_load_file(AgsTurtle *turtle,
+			       gchar *lv2_path,
 			       gchar *filename);
 void ags_lv2_manager_load_default_directory();
-
-uint32_t ags_lv2_manager_uri_index(gchar *filename,
-				   gchar *uri);
-
-gchar* ags_lv2_manager_find_uri(gchar *filename,
-				gchar *effect);
 
 /*  */
 AgsLv2Manager* ags_lv2_manager_get_instance();

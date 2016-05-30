@@ -24,9 +24,12 @@
 #include <string.h>
 
 #include <sys/types.h>
+#include <regex.h>
+
+#include <pthread.h>
+
 #include <sys/stat.h>
 #include <unistd.h>
-#include <regex.h>
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -223,49 +226,16 @@ ags_turtle_finalize(GObject *gobject)
 }
 
 /**
- * ags_turtle_find_xpath:
- * @turtle: the #AgsTurtle
- * @xpath: a XPath expression as string
+ * ags_turtle_read_iriref:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
  *
- * Lookup XPath expression withing @turtle.
+ * Read iriref value.
  *
- * Returns: a #GList-struct containing xmlNode
- *
- * Since: 0.4.3
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
  */
-GList*
-ags_turtle_find_xpath(AgsTurtle *turtle,
-		      gchar *xpath)
-{
-  xmlXPathContext *xpath_context;
-  xmlXPathObject *xpath_object;
-  xmlNode **node;
-  GList *list;
-
-  guint i;
-  
-  xpath_context = xmlXPathNewContext(turtle->doc);
-  xpath_object = xmlXPathEval((xmlChar *) xpath,
-			      xpath_context);
-  
-  list = NULL;
-
-  if(xpath_object->nodesetval != NULL){
-    node = xpath_object->nodesetval->nodeTab;
-
-    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
-      if(node[i]->type == XML_ELEMENT_NODE){
-	list = g_list_prepend(list,
-			      node[i]);
-      }
-    }
-  }
-
-  list = g_list_reverse(list);
-  
-  return(list);
-}
-
 gchar*
 ags_turtle_read_iriref(gchar *offset,
 		       gchar *end_ptr)
@@ -303,6 +273,17 @@ ags_turtle_read_iriref(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_pname_ns:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read prefixed-name namespace value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_pname_ns(gchar *offset,
 			 gchar *end_ptr)
@@ -333,6 +314,17 @@ ags_turtle_read_pname_ns(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_pname_ln:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read prefixed-name localized name value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_pname_ln(gchar *offset,
 			 gchar *end_ptr)
@@ -370,6 +362,17 @@ ags_turtle_read_pname_ln(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_blank_node_label:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read blank node label value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_blank_node_label(gchar *offset,
 				 gchar *end_ptr)
@@ -455,21 +458,60 @@ ags_turtle_read_blank_node_label(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_langtag:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read langtag value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_langtag(gchar *offset,
 			gchar *end_ptr)
 {
+  regmatch_t match_arr[1];
+  
   gchar *str;
 
+  static regex_t langtag_regex;
+
+  static gboolean regex_compiled = FALSE;
+    
   static const char *langtag_pattern = "(@[a-zA-Z]+(-[a-zA-Z0-9]+))*";
+  
+  static const size_t max_matches = 1;
   
   str = NULL;
 
-  //TODO:JK: implement me
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    regcomp(&langtag_regex, langtag_pattern, REG_EXTENDED);
+  }
+
+  if(regexec(&langtag_regex, offset, max_matches, match_arr, 0) == 0){
+    str = g_strndup(offset,
+		    match_arr[0].rm_eo - match_arr[0].rm_so);
+  }
   
   return(str);
 }
 
+/**
+ * ags_turtle_read_boolean:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read boolean value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_boolean(gchar *offset,
 			gchar *end_ptr)
@@ -502,6 +544,17 @@ ags_turtle_read_boolean(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_integer:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read integer value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_integer(gchar *offset,
 			gchar *end_ptr)
@@ -534,6 +587,17 @@ ags_turtle_read_integer(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_decimal:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read decimal value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_decimal(gchar *offset,
 			gchar *end_ptr)
@@ -566,6 +630,17 @@ ags_turtle_read_decimal(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_double:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read double value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_double(gchar *offset,
 		       gchar *end_ptr)
@@ -598,6 +673,17 @@ ags_turtle_read_double(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_exponent:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read exponent value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_exponent(gchar *offset,
 			 gchar *end_ptr)
@@ -630,6 +716,17 @@ ags_turtle_read_exponent(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_string:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read string value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_string(gchar *offset,
 		       gchar *end_ptr)
@@ -667,6 +764,17 @@ ags_turtle_read_string(gchar *offset,
   return(NULL);
 }
 
+/**
+ * ags_turtle_read_string_literal_quote:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read string literal quote value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_string_literal_quote(gchar *offset,
 				     gchar *end_ptr)
@@ -703,6 +811,17 @@ ags_turtle_read_string_literal_quote(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_string_literal_single_quote:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read string literal single quote value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_string_literal_single_quote(gchar *offset,
 					    gchar *end_ptr)
@@ -739,6 +858,17 @@ ags_turtle_read_string_literal_single_quote(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_string_literal_long_quote:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read string literal long quote value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_string_literal_long_quote(gchar *offset,
 					  gchar *end_ptr)
@@ -769,7 +899,7 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
     ret = regcomp(&string_literal_long_double_quote_regex, string_literal_long_double_quote_pattern, REG_EXTENDED);
 
     if(ret != 0){
-      g_warning("fAIL\0");
+      g_warning("fail\0");
     }
   }
 
@@ -781,6 +911,17 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_string_literal_long_single_quote:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read string literal long single quote value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_string_literal_long_single_quote(gchar *offset,
 						 gchar *end_ptr)
@@ -817,6 +958,17 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_uchar:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read uchar value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_uchar(gchar *offset,
 		      gchar *end_ptr)
@@ -863,6 +1015,17 @@ ags_turtle_read_uchar(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_echar:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read echar value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_echar(gchar *offset,
 		      gchar *end_ptr)
@@ -888,6 +1051,17 @@ ags_turtle_read_echar(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_ws:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read ws value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_ws(gchar *offset,
 		   gchar *end_ptr)
@@ -907,6 +1081,17 @@ ags_turtle_read_ws(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_anon:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read anon value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_anon(gchar *offset,
 		     gchar *end_ptr)
@@ -952,6 +1137,47 @@ ags_turtle_read_anon(gchar *offset,
   return(str);
 }
 
+#define AGS_TURTLE_UTF8_RANGE_0 "([A-Za-z])"
+#define AGS_TURTLE_UTF8_RANGE_1 "(\xC3[\x80-\x96])"
+#define AGS_TURTLE_UTF8_RANGE_2 "(0xC3[\x98-\xB6])"
+#define AGS_TURTLE_UTF8_RANGE_3 "((\xC3[\xB8-\xBF])|([\xC3-\xCA][\x80-\xBF])|(\xCB[\x80-\xBF]))"
+#define AGS_TURTLE_UTF8_RANGE_4 "(\xCD[\xB0-\xBD])"
+#define AGS_TURTLE_UTF8_RANGE_5 "((\xCD[\xBF-\xDF])|([\xCE-\xDF][\x80-\xBF])|([\xE0-\xE1][\x80\xBF][\x80-\xBF]))"
+#define AGS_TURTLE_UTF8_RANGE_6 "(\xE2\x80[\x8C-\x8D])"
+#define AGS_TURTLE_UTF8_RANGE_7 "((\xE2\x81[\xB0-\xBF])|(\xE2[\x81-\x85][\x80-\xBF])|(\xE2\x86[\x80-\x8F]))"
+#define AGS_TURTLE_UTF8_RANGE_8 "((\xE2[\xB0-\xBE][\x80-\xBF])(\xE2\xBF[\x80-\xAF]))"
+#define AGS_TURTLE_UTF8_RANGE_9 "((\xE3[\x80-\xBF][\x81-\xBF])|([\xE4-\xEC][\x80-\x9F][\x80-\xBF]))"
+#define AGS_TURTLE_UTF8_RANGE_10 "((\xEF[\xA4-\xB6][\x80-\xBF])|(\xEF\xB7[\x80-\x8F]))"
+#define AGS_TURTLE_UTF8_RANGE_11 "((\xEF\xB7[\xB0-\xBF])|(\xEF[\xB8-\xBE][\x80-\xBF])|(\xEF\xBF[\x80-\xBD]))"
+#define AGS_TURTLE_UTF8_RANGE_12 "(([\xF0-\xF3][\x90-\xAF][\x80-\xBF][\x80-\xBF]))"
+
+#define AGS_TURTLE_UTF8_RANGE_ALL "(" AGS_TURTLE_UTF8_RANGE_0 "|" \
+  AGS_TURTLE_UTF8_RANGE_1 "|" \
+  AGS_TURTLE_UTF8_RANGE_2 "|" \
+  AGS_TURTLE_UTF8_RANGE_3 "|" \
+  AGS_TURTLE_UTF8_RANGE_4 "|" \
+  AGS_TURTLE_UTF8_RANGE_5 "|" \
+  AGS_TURTLE_UTF8_RANGE_6 "|" \
+  AGS_TURTLE_UTF8_RANGE_7 "|" \
+  AGS_TURTLE_UTF8_RANGE_8 "|" \
+  AGS_TURTLE_UTF8_RANGE_9 "|" \
+  AGS_TURTLE_UTF8_RANGE_10 "|" \
+  AGS_TURTLE_UTF8_RANGE_11 "|" \
+  AGS_TURTLE_UTF8_RANGE_12 ")"
+
+#define AGS_TURLTE_UTF8_RANGE_ALL_PATTERN "^" AGS_TURTLE_UTF8_RANGE_ALL
+
+/**
+ * ags_turtle_read_pn_chars_base:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read prefixed-name chars base value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_pn_chars_base(gchar *offset,
 			      gchar *end_ptr)
@@ -964,22 +1190,23 @@ ags_turtle_read_pn_chars_base(gchar *offset,
     
   static gboolean regex_compiled = FALSE;
 
-  static const gchar *chars_base_pattern = AGS_TURLTE_UTF8_RANGE_ALL_PATTERN;
-  // "^([A-Za-z]|[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u02FF]|[\u0370-\u037D]|[\u037F-\u1FFF]|[\u200C-\u200D]|[\u2070-\u218F]|[\u2C00-\u2FEF]|[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\U00010000-\U000EFFFF]";
-  // "^([A-Za-z]|[&#192;-&#214;]|[&#216;-&#246;]|[&#248;-&#767;]|[&#880;-&#893;]|[&#895;-&#8191;]|[&#8204;-&#8205;]|[&#8304;-&#8591;]|[&#12289;-&#55295;]|[&#63744;-&#64975;]|[&#65008;-&#65533;]|[&#65536;-&#983039;])\0";
+  static const char *chars_base_pattern = AGS_TURLTE_UTF8_RANGE_ALL_PATTERN;
 
   static const size_t max_matches = 1;
 
-  if(offset >= end_ptr){
+  if(offset == NULL ||
+     offset >= end_ptr){
     return(NULL);
   }
-  
+
   str = NULL;
 
   if(!regex_compiled){
     regex_compiled = TRUE;
     
-    regcomp(&chars_base_regex, chars_base_pattern, REG_EXTENDED);
+    if(regcomp(&chars_base_regex, chars_base_pattern, REG_EXTENDED)){
+      g_warning("failed to compile regex: %s\0", chars_base_pattern);
+    }
   }
 
   if(regexec(&chars_base_regex, offset, max_matches, match_arr, 0) == 0){
@@ -990,6 +1217,17 @@ ags_turtle_read_pn_chars_base(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_pn_chars_u:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read prefixed-name chars underscore value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_pn_chars_u(gchar *offset,
 			   gchar *end_ptr)
@@ -1008,6 +1246,17 @@ ags_turtle_read_pn_chars_u(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_pn_chars:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read prefixed-name chars value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_pn_chars(gchar *offset,
 			 gchar *end_ptr)
@@ -1050,6 +1299,17 @@ ags_turtle_read_pn_chars(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_pn_prefix:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read prefixe-name prefix value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_pn_prefix(gchar *offset,
 			  gchar *end_ptr)
@@ -1059,7 +1319,8 @@ ags_turtle_read_pn_prefix(gchar *offset,
 
   gboolean last_is_point;
 
-  if(offset >= end_ptr){
+  if(offset == NULL ||
+     offset >= end_ptr){
     return(NULL);
   }
     
@@ -1105,6 +1366,17 @@ ags_turtle_read_pn_prefix(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_pn_local:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read prefixed-name local value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_pn_local(gchar *offset,
 			 gchar *end_ptr)
@@ -1205,6 +1477,17 @@ ags_turtle_read_pn_local(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_plx:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read plx value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_plx(gchar *offset,
 		    gchar *end_ptr)
@@ -1222,6 +1505,17 @@ ags_turtle_read_plx(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_percent:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read percent value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_percent(gchar *offset,
 			gchar *end_ptr)
@@ -1242,6 +1536,17 @@ ags_turtle_read_percent(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_hex:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read hex value.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_hex(gchar *offset,
 		    gchar *end_ptr)
@@ -1258,6 +1563,17 @@ ags_turtle_read_hex(gchar *offset,
   return(str);
 }
 
+/**
+ * ags_turtle_read_pn_local_esc:
+ * @offset: the string pointer
+ * @end_ptr: the end of @offset
+ *
+ * Read prefixed name local escapes.
+ *
+ * Returns: a string on success otherwise %NULL
+ * 
+ * Since: 0.7.4
+ */
 gchar*
 ags_turtle_read_pn_local_esc(gchar *offset,
 			     gchar *end_ptr)
@@ -1277,6 +1593,99 @@ ags_turtle_read_pn_local_esc(gchar *offset,
   }
   
   return(str);
+}
+
+/**
+ * ags_turtle_find_xpath:
+ * @turtle: the #AgsTurtle
+ * @xpath: a XPath expression as string
+ *
+ * Lookup XPath expression withing @turtle.
+ *
+ * Returns: a #GList-struct containing xmlNode
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_turtle_find_xpath(AgsTurtle *turtle,
+		      gchar *xpath)
+{
+  xmlXPathContext *xpath_context;
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  GList *list;
+
+  guint i;
+  
+  xpath_context = xmlXPathNewContext(turtle->doc);
+  xpath_object = xmlXPathEval((xmlChar *) xpath,
+			      xpath_context);
+  
+  list = NULL;
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	list = g_list_prepend(list,
+			      node[i]);
+      }
+    }
+  }
+
+  list = g_list_reverse(list);
+  
+  return(list);
+}
+
+/**
+ * ags_turtle_find_xpath_with_context_node:
+ * @turtle: the #AgsTurtle
+ * @xpath: a XPath expression as string
+ * @context_node: a #xmlNode-struct
+ *
+ * Lookup XPath expression from @context_node withing @turtle.
+ *
+ * Returns: a #GList-struct containing xmlNode
+ *
+ * Since: 0.4.3
+ */
+GList*
+ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
+					gchar *xpath,
+					xmlNode *context_node)
+{
+  xmlXPathContext *xpath_context;
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+  GList *list;
+
+  guint i;
+  
+  xpath_context = xmlXPathNewContext(turtle->doc);
+  xpath_context->node = context_node;
+  xpath_object = xmlXPathEval((xmlChar *) xpath,
+			      xpath_context);
+  
+  list = NULL;
+
+  if(xpath_object->nodesetval != NULL){
+    node = xpath_object->nodesetval->nodeTab;
+
+    for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+      if(node[i]->type == XML_ELEMENT_NODE){
+	list = g_list_prepend(list,
+			      node[i]);
+      }
+    }
+  }
+
+  if(list != NULL){
+    list = g_list_reverse(list);
+  }
+  
+  return(list);
 }
 
 /**
@@ -2510,9 +2919,6 @@ ags_turtle_load(AgsTurtle *turtle,
       start_ptr = look_ahead;
       look_ahead++;
 
-      end_ptr = index(look_ahead,
-		      ')');
-
       /* create node */
       node = xmlNewNode(NULL,
 			"rdf-collection");
@@ -2526,7 +2932,10 @@ ags_turtle_load(AgsTurtle *turtle,
 	xmlAddChild(node,
 		    object_node);
       }
-      
+
+      end_ptr = index(look_ahead,
+		      ')');
+
       *iter = end_ptr + 1;
     }
 
@@ -2607,9 +3016,6 @@ ags_turtle_load(AgsTurtle *turtle,
       start_ptr = look_ahead;
       look_ahead++;
       
-      end_ptr = index(look_ahead,
-		      ']');
-
       predicate_object_list_node = ags_turtle_load_read_predicate_object_list(&look_ahead);
 
       if(predicate_object_list_node != NULL){
@@ -2622,6 +3028,9 @@ ags_turtle_load(AgsTurtle *turtle,
 
 	xmlAddChild(node,
 		    predicate_object_list_node);
+
+	end_ptr = index(look_ahead,
+			']');
 	
 	*iter = end_ptr + 1;
       }

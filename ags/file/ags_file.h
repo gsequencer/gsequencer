@@ -52,6 +52,12 @@ typedef enum{
   AGS_FILE_WRITE_EMBEDDED_AUDIO    = 1 << 5,
 }AgsFileFlags;
 
+#define AGS_FILE_ERROR (ags_file_error_quark())
+
+typedef enum{
+  AGS_FILE_ERROR_PARSER_FAILURE,
+}AgsFileError;
+
 struct _AgsFile
 {
   GObject object;
@@ -111,7 +117,7 @@ struct _AgsFileClass
 
 GType ags_file_get_type(void);
 
-gchar* ags_file_str2md5(gchar *content, guint strlen);
+gchar* ags_file_str2md5(gchar *content, guint content_length);
 
 void ags_file_add_id_ref(AgsFile *file, GObject *id_ref);
 
@@ -124,11 +130,14 @@ void ags_file_add_lookup(AgsFile *file, GObject *file_lookup);
 void ags_file_add_launch(AgsFile *file, GObject *file_launch);
 
 /*  */
-void ags_file_open(AgsFile *file);
+void ags_file_open(AgsFile *file,
+		   GError **error);
 void ags_file_open_from_data(AgsFile *file,
-			     gchar *data, guint length);
+			     gchar *data, guint length,
+			     GError **error);
 void ags_file_rw_open(AgsFile *file,
-		      gboolean create);
+		      gboolean create,
+		      GError **error);
 
 void ags_file_open_filename(AgsFile *file,
 			    gchar *filename);
@@ -142,6 +151,9 @@ void ags_file_write_resolve(AgsFile *file);
 void ags_file_read(AgsFile *file);
 void ags_file_read_resolve(AgsFile *file);
 void ags_file_read_start(AgsFile *file);
+
+void ags_file_read_config(AgsFile *file, xmlNode *node, GObject **ags_config);
+void ags_file_write_config(AgsFile *file, xmlNode *parent, GObject *ags_config);
 
 /*  */
 void ags_file_read_application_context(AgsFile *file, xmlNode *node, GObject **application_context);

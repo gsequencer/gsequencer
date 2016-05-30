@@ -223,8 +223,8 @@ ags_jack_server_init(AgsJackServer *jack_server)
 				     AGS_JACK_SERVER_DEFAULT_PROTOCOL,
 				     AGS_JACK_SERVER_DEFAULT_HOST,
 				     AGS_JACK_SERVER_DEFAULT_PORT);
-  jack_server->jackctl = jackctl_server_create(NULL,
-  					       NULL);
+  //  jack_server->jackctl = jackctl_server_create(NULL,
+  //					       NULL);
 
   jack_server->port = NULL;
   jack_server->port_count = 0;

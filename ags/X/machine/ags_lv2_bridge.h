@@ -28,6 +28,9 @@
 
 #include <ags/X/ags_machine.h>
 
+#include <lv2.h>
+#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
+
 #define AGS_TYPE_LV2_BRIDGE                (ags_lv2_bridge_get_type())
 #define AGS_LV2_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_BRIDGE, AgsLv2Bridge))
 #define AGS_LV2_BRIDGE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LV2_BRIDGE, AgsLv2BridgeClass))
@@ -59,12 +62,28 @@ struct _AgsLv2Bridge
   gchar *version;
   gchar *build_id;
 
-  guint mapped_output;
-  guint mapped_input;
+  gchar *xml_type;
+  
+  guint mapped_output_pad;
+  guint mapped_input_pad;
 
   gchar *filename;
+  gchar *effect;
   gchar *uri;
   guint uri_index;
+  
+  gboolean has_midi;
+  
+  gboolean has_gui;
+  gchar *gui_filename;
+  gchar *gui_uri;
+
+  LV2UI_Handle ui_handle;
+  
+  GtkWidget *lv2_gui;
+  GtkWidget *ui_widget;
+
+  GtkMenu *lv2_menu;
 };
 
 struct _AgsLv2BridgeClass
@@ -74,10 +93,15 @@ struct _AgsLv2BridgeClass
 
 GType ags_lv2_bridge_get_type(void);
 
+void ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint input_pad_start);
+void ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint output_pad_start);
+
+void ags_lv2_bridge_load_midi(AgsLv2Bridge *lv2_bridge);
+void ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge);
 
 AgsLv2Bridge* ags_lv2_bridge_new(GObject *soundcard,
 				 gchar *filename,
-				 gchar *uri);
+				 gchar *effect);
 
 #endif /*__AGS_LV2_BRIDGE_H__*/

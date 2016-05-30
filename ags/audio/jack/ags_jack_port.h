@@ -66,7 +66,7 @@ GList* ags_jack_port_find(GList *jack_port,
 			  gchar *port_name);
 
 void ags_jack_port_register(AgsJackPort *jack_port,
-			    gchar *name,
+			    gchar *port_name,
 			    gboolean is_audio, gboolean is_midi,
 			    gboolean is_output);
 void ags_jack_port_unregister(AgsJackPort *jack_port);

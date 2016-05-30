@@ -238,11 +238,11 @@ ags_scale_area_paint(AgsScaleArea *scale_area,
 
 /**
  * ags_scale_area_new:
- * @drawing_area: 
- * @control_name: 
- * @lower: 
- * @upper: 
- * @steps: 
+ * @drawing_area: the assigned #GtkDrawingArea
+ * @control_name: the control name
+ * @lower: lower bound
+ * @upper: upper bound
+ * @steps: n-steps
  *
  * Create a new #AgsScaleArea.
  *

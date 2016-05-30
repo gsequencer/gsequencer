@@ -68,10 +68,14 @@ GType ags_config_get_type();
 
 void ags_config_load_defaults(AgsConfig *config);
 void ags_config_load_from_file(AgsConfig *config, gchar *filename);
+void ags_config_load_from_data(AgsConfig *config,
+			       char *buffer, gsize buffer_length);
 
 void ags_config_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value);
 gchar* ags_config_get_value(AgsConfig *config, gchar *group, gchar *key);
 
+void ags_config_to_data(AgsConfig *config,
+			char **buffer, gsize *buffer_length);
 void ags_config_save(AgsConfig *config);
 
 AgsConfig* ags_config_get_instance();

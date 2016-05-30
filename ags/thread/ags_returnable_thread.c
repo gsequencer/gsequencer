@@ -61,6 +61,8 @@ static gpointer ags_returnable_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_returnable_thread_parent_connectable_interface;
 static guint returnable_thread_signals[LAST_SIGNAL];
 
+static pthread_mutex_t class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_returnable_thread_get_type()
 {
@@ -159,7 +161,7 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
   thread->freq = AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE;
 
   g_atomic_int_set(&(returnable_thread->flags),
-		   0);
+		   AGS_RETURNABLE_THREAD_RUN_ONCE);
 
   returnable_thread->reset_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(returnable_thread->reset_mutex, NULL);
@@ -217,23 +219,34 @@ ags_returnable_thread_run(AgsThread *thread)
   if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
 
     ags_returnable_thread_safe_run(returnable_thread);
-    g_atomic_int_and(&(returnable_thread->flags),
-		     (~AGS_RETURNABLE_THREAD_IN_USE));
 
-    g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
-    		     (~AGS_THREAD_RUNNING));
+    if((AGS_RETURNABLE_THREAD_RUN_ONCE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
+      g_atomic_int_and(&(returnable_thread->flags),
+		       (~AGS_RETURNABLE_THREAD_IN_USE));
+      
+      g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
+		       (~AGS_THREAD_RUNNING));
+    }
   }
 }
 
 void
 ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread)
 {
+  guint returnable_thread_signal;
+
+  pthread_mutex_lock(&class_mutex);
+
+  returnable_thread_signal = returnable_thread_signals[SAFE_RUN];
+  
+  pthread_mutex_unlock(&class_mutex);
+
   g_return_if_fail(AGS_IS_RETURNABLE_THREAD(returnable_thread));
 
-  g_object_ref(G_OBJECT(returnable_thread));
-  g_signal_emit(G_OBJECT(returnable_thread),
-		returnable_thread_signals[SAFE_RUN], 0);
-  g_object_unref(G_OBJECT(returnable_thread));
+  g_object_ref(returnable_thread);
+  g_signal_emit(returnable_thread,
+		returnable_thread_signal, 0);
+  g_object_unref(returnable_thread);
 }
 
 void
@@ -294,10 +307,14 @@ ags_returnable_thread_new(GObject *thread_pool)
 {
   AgsReturnableThread *returnable_thread;
 
+  pthread_mutex_lock(&class_mutex);
+
   returnable_thread = (AgsReturnableThread *) g_object_new(AGS_TYPE_RETURNABLE_THREAD,
 							   NULL);
 
   returnable_thread->thread_pool = thread_pool;
 
+  pthread_mutex_unlock(&class_mutex);
+  
   return(returnable_thread);
 }

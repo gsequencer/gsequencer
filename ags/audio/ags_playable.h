@@ -131,6 +131,6 @@ void ags_playable_close(AgsPlayable *playable);
 
 GList* ags_playable_read_audio_signal(AgsPlayable *playable,
 				      GObject *soundcard,
-				      guint start_channel, guint channels);
+				      guint start_channel, guint channels_to_read);
 
 #endif /*__AGS_PLAYABLE_H__*/

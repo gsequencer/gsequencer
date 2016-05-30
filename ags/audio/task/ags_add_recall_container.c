@@ -157,8 +157,8 @@ ags_add_recall_container_launch(AgsTask *task)
 
 /**
  * ags_add_recall_container_new:
- * @context: the #AgsAudio
- * @recall: the #AgsRecallContainer to add
+ * @audio: the #AgsAudio
+ * @recall_container: the #AgsRecallContainer to add
  *
  * Creates an #AgsAddRecallContainer.
  *

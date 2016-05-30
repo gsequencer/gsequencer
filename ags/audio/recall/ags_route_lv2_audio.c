@@ -171,8 +171,8 @@ ags_route_lv2_audio_init(AgsRouteLv2Audio *route_lv2_audio)
   /* notation input */
   route_lv2_audio->notation_input = g_object_new(AGS_TYPE_PORT,
 						 "plugin-name\0", ags_route_lv2_audio_plugin_name,
-						 "specifier\0", ags_route_lv2_audio_specifier[0],
-						 "control-port\0", ags_route_lv2_audio_control_port[0],
+						 "specifier\0", ags_route_lv2_audio_specifier[2],
+						 "control-port\0", ags_route_lv2_audio_control_port[2],
 						 "port-value-is-pointer\0", FALSE,
 						 "port-value-type\0", G_TYPE_BOOLEAN,
 						 "port-value-size\0", sizeof(gboolean),
@@ -186,8 +186,8 @@ ags_route_lv2_audio_init(AgsRouteLv2Audio *route_lv2_audio)
   /* sequencer input */
   route_lv2_audio->sequencer_input = g_object_new(AGS_TYPE_PORT,
 						  "plugin-name\0", ags_route_lv2_audio_plugin_name,
-						  "specifier\0", ags_route_lv2_audio_specifier[1],
-						  "control-port\0", ags_route_lv2_audio_control_port[1],
+						  "specifier\0", ags_route_lv2_audio_specifier[3],
+						  "control-port\0", ags_route_lv2_audio_control_port[3],
 						  "port-value-is-pointer\0", FALSE,
 						  "port-value-type\0", G_TYPE_BOOLEAN,
 						  "port-value-size\0", sizeof(gboolean),

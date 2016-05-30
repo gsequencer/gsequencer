@@ -1,8 +1,133 @@
+ags (0.7.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed proper version information of *.so, *.a and *.la
+	* fixed version information in --version to use AGS_VERSION macro
+	* improved ags_dial.c by clearing background
+
+ags (0.7.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed dead-lock in ags_thread_loop()
+	* fixed inresponsive AgsDrumInputPad
+	* fixed unset AGS_DEVOUT_INITIALIZED flag as stopping the device
+
+ags (0.7.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed not nul-terminated string in ags_export_window.c
+	* fixed missing include in ags_export_window.c
+	* fixed initialization and reference count of async_queue in AgsAudioLoop
+	* set environment variables LANG and LC_ALL programmatically to C
+
+ags (0.7.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong reference count in ags_recycling_real_add_audio_signal()
+	* refactored ags_thread_pool.c due to performance impact of new code
+	* refactored AgsThread flags
+	* implemented threads to start synced
+	* implemented AgsSwitchBufferFlag task because of data-race
+	* implemented ags_thread_chaos_tree()
+
+ags (0.7.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed uninitialized values in ags_ipatch_sf2_reader.c
+	* fixed Soundfont2 playback
+
+ags (0.7.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Soundfont2 support
+	* fixed dead-lock while stop multi-channel playback
+	* fixed open WAV files within AgsDrum
+	* implemented ags_open_sf2_sample.c
+
+ags (0.7.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsConcurrentTree in ags_devout.c and using it in ags_channel.c
+	* added task_completion_mutex to AgsGuiThread
+	* fixed memory-leak in ags_thread_pool.c
+
+ags (0.7.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted changes of AgsTaskThread and AgsThreadPool
+	* extended developers book
+	* fixed dead-lock with AgsTaskThread
+
+ags (0.7.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed all unit tests
+	* fixed ags_recycling_create_audio_signal_with_frame_count()
+	* implemented timestamp property of AgsPattern and AgsNotation
+
+ags (0.7.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unit tests
+	* fixed editor bug
+	* refactored ags_recycling_create_audio_signal_with_frame_count()
+	* implemented AgsGenericMainLoop
+	* added many unit tests in ags_thread_test.c
+
+ags (0.7.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed XML IO
+	* implemented read and write functions of AgsLadspaBridge, AgsDssiBridge and AgsLv2Bridge
+	* fixed lock AgsPort as running recall
+
+ags (0.7.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented conversion objects AgsLadspaConversion and AgsLv2Conversion
+	* implemended lv2 feature AgsLv2UridManager
+	* improved AgsLadspaPlugin, AgsDssiPlugin and AgsLv2Plugin to relay on conversion objects
+	* removed JACK server functions because of duplicated symbols
+	* fixed integer support of plugins in ags_line_member.c and ags_bulk_member.c
+	* fixed editing notation especially ags_notation_add_note() that was broken
+
+ags (0.7.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed lv2 event buffer functions
+	* fixed wrong property mapping in ags_recall_lv2.c
+	* implemented ags_lv2_uri_map_manager.c
+	* implemented ags_lv2_log_manager.c
+	* implemented ags_lv2_worker_manager.c
+	* implemented ags_lv2_event_manager.c
+	* implemented ::find-port in ags_machine.c, ags_pad.c ags_line.c, ags_line_member.c, ags_effect_bridge.c, ags_effect_bulk.c, ags_bulk_member.c, ags_effect_pad.c and ags_effect_line.c
+	* refactored ags_machine_set_audio_channels() to ags_machine_set_audio_channels_callback() and added ags_machine_resize_audio_channels() in order to have a straight forward API
+	* refactored ags_machine_set_pads() to ags_machine_set_pads_callback() and added ags_machine_resize_pads() in order to have a straight forward API
+	* implemented XML IO of ags_effect_bridge.c and related
+	* implemented XML IO of ags_automation_window.c and related
+	* added AgsConversion prototype
+
+ags (0.7.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed XML IO
+	* implemented ags_route_lv2_audio.c and ags_route_lv2_audio_run.c
+
+ags (0.7.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Lv2 XPath and thus refactored code
+	* implemented ags_base_plugin.c, ags_ladpsa_plugin.c, ags_dssi_plugin.c and ags_lv2_plugin.c to reduce over-head
+	* implemented contextual XPath lookup in ags_turtle.c
+	* refactored ags_recall_ladspa{,_run}.c, ags_recall_dssi{,_run}.c and ags_recall_lv2{,_run}.c to use the new plugins API
+	* refactored ags_effect_bulk.c, ags_effect_line.c and ags_line.c to use the new plugins API
+	* added ags_string_util.c
+
 ags (0.7.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed DSSI support
-	
+
 ags (0.7.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

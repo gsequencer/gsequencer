@@ -56,7 +56,6 @@ struct _AgsThreadApplicationContext
 
   guint flags;
 
-  AgsThread *main_loop;
   AgsThread *autosave_thread;
   AgsThreadPool *thread_pool;
 };
@@ -68,7 +67,6 @@ struct _AgsThreadApplicationContextClass
 
 GType ags_thread_application_context_get_type();
 
-AgsThreadApplicationContext* ags_thread_application_context_new(AgsThread *main_loop,
-								AgsConfig *config);
+AgsThreadApplicationContext* ags_thread_application_context_new();
 
 #endif /*__AGS_THREAD_APPLICATION_CONTEXT_H__*/

@@ -22,6 +22,7 @@
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
@@ -55,6 +56,7 @@ void ags_line_member_finalize(GObject *gobject);
 
 void ags_line_member_real_change_port(AgsLineMember *line_member,
 				      gpointer port_data);
+GList* ags_line_member_real_find_port(AgsLineMember *line_member);
 
 /**
  * SECTION:ags_line_member
@@ -70,6 +72,7 @@ void ags_line_member_real_change_port(AgsLineMember *line_member,
 
 enum{
   CHANGE_PORT,
+  FIND_PORT,
   LAST_SIGNAL,
 };
 
@@ -78,14 +81,14 @@ enum{
   PROP_WIDGET_TYPE,
   PROP_WIDGET_LABEL,
   PROP_PLUGIN_NAME,
+  PROP_FILENAME,
+  PROP_EFFECT,
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
   PROP_PORT,
   PROP_PORT_DATA,
-  PROP_PORT_DATA_LENGTH,
   PROP_RECALL_PORT,
   PROP_RECALL_PORT_DATA,
-  PROP_RECALL_PORT_DATA_LENGTH,
   PROP_TASK_TYPE,
 };
 
@@ -150,7 +153,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The widget type to instantiate and use as control.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_ulong("widget-type\0",
 				  "widget type of line member\0",
@@ -167,7 +170,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The widget's label to use.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_string("widget-label\0",
 				   "label to display\0",
@@ -183,7 +186,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The plugin name of the recall to use.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_string("plugin-name\0",
 				   "plugin name to control\0",
@@ -195,11 +198,43 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  param_spec);
 
   /**
+   * AgsLineMember:filename:
+   *
+   * The plugin filename of the recall to apply.
+   * 
+   * Since: 0.7.10
+   */
+  param_spec = g_param_spec_string("filename\0",
+				   "the filename\0",
+				   "The filename of the plugin\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+    /**
+   * AgsLineMember:effect:
+   *
+   * The plugin effect of the recall to apply.
+   * 
+   * Since: 0.7.10
+   */
+  param_spec = g_param_spec_string("effect\0",
+				   "the effect\0",
+				   "The effect of the plugin\0",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EFFECT,
+				  param_spec);
+
+  /**
    * AgsLineMember:specifier:
    *
    * The plugin specifier of the recall to apply.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_string("specifier\0",
 				   "port specifier\0",
@@ -215,7 +250,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The control port of the recall.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_string("control-port\0",
 				   "control port index\0",
@@ -231,7 +266,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The matching simple port of plugin name and specifier.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("port\0",
 				   "port to apply\0",
@@ -247,7 +282,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The port data to apply.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("port-data\0",
 				    "port data\0",
@@ -262,7 +297,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The matching complex port of plugin name and specifier.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("recall-port\0",
 				   "recall port to apply\0",
@@ -278,7 +313,7 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    *
    * The complex port data to apply.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_pointer("recall-port-data\0",
 				    "recall port data\0",
@@ -288,8 +323,26 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  PROP_RECALL_PORT_DATA,
 				  param_spec);
 
+  /**
+   * AgsLineMember:task-type:
+   *
+   * The task type to apply the port.
+   * 
+   * Since: 0.7.8
+   */
+  param_spec = g_param_spec_ulong("task-type\0",
+				  "task type to apply\0",
+				  "The task type to apply the port\0",
+				  0, G_MAXULONG, 
+				  G_TYPE_NONE,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TASK_TYPE,
+				  param_spec);
+
   /* AgsLineMember */
   line_member->change_port = ags_line_member_real_change_port;
+  line_member->find_port = ags_line_member_real_find_port;
 
   /* signals */
   /**
@@ -308,6 +361,22 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 		 g_cclosure_marshal_VOID__POINTER,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_POINTER);
+
+  /**
+   * AgsLine_Member::find-port:
+   * @line_member: the #AgsLineMember to resize
+   * Returns: a #GList with associated ports
+   *
+   * The ::find-port retrieves all associated ports
+   */
+  line_member_signals[FIND_PORT] =
+    g_signal_new("find-port\0",
+		 G_TYPE_FROM_CLASS(line_member),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineMemberClass, find_port),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -327,7 +396,7 @@ ags_line_member_init(AgsLineMember *line_member)
 
   line_member->flags = (AGS_LINE_MEMBER_RESET_BY_ATOMIC |
 			AGS_LINE_MEMBER_APPLY_RECALL);
-
+  
   line_member->widget_type = AGS_TYPE_DIAL;
   dial = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
 				       "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
@@ -340,6 +409,9 @@ ags_line_member_init(AgsLineMember *line_member)
 		    dial);
 
   line_member->widget_label = NULL;
+
+  line_member->filename = NULL;
+  line_member->effect = NULL;
 
   line_member->plugin_name = NULL;
   line_member->specifier = NULL;
@@ -430,6 +502,32 @@ ags_line_member_set_property(GObject *gobject,
       }
 
       line_member->plugin_name = g_strdup(plugin_name);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = g_value_get_string(value);
+
+      if(filename == line_member->filename){
+	return;
+      }
+
+      line_member->filename = g_strdup(filename);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      gchar *effect;
+
+      effect = g_value_get_string(value);
+
+      if(effect == line_member->effect){
+	return;
+      }
+
+      line_member->effect = g_strdup(effect);
     }
     break;
   case PROP_SPECIFIER:
@@ -569,6 +667,16 @@ ags_line_member_get_property(GObject *gobject,
   case PROP_PLUGIN_NAME:
     {
       g_value_set_string(value, line_member->plugin_name);
+    }
+    break;
+  case PROP_FILENAME:
+    {
+      g_value_set_string(value, line_member->filename);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      g_value_set_string(value, line_member->effect);
     }
     break;
   case PROP_SPECIFIER:
@@ -727,6 +835,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
       return;
     }
 
+    pthread_mutex_lock(port->mutex);
+
     if(!port->port_value_is_pointer){
       if(port->port_value_type == G_TYPE_BOOLEAN){
 	g_value_init(&value,
@@ -781,6 +891,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
       }
     }
 
+    pthread_mutex_unlock(port->mutex);
+    
     ags_port_safe_write(line_member->port,
 			&value);
 
@@ -841,7 +953,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
  *
  * Is emitted as port's value is modified.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_line_member_change_port(AgsLineMember *line_member,
@@ -856,24 +968,20 @@ ags_line_member_change_port(AgsLineMember *line_member,
   g_object_unref((GObject *) line_member);
 }
 
-/**
- * ags_line_member_find_port:
- * @line_member: an #AgsLineMember
- *
- * Lookup ports of assigned recall.
- *
- * Since: 0.4
- */
-void
-ags_line_member_find_port(AgsLineMember *line_member)
+GList*
+ags_line_member_real_find_port(AgsLineMember *line_member)
 {
   AgsMachine *machine;
   AgsLine *line;
+
   AgsAudio *audio;
   AgsChannel *channel;
   AgsPort *audio_port, *channel_port;
   AgsPort *recall_audio_port, *recall_channel_port;
+
   GList *recall;
+  GList *port;
+  
   gchar *specifier;
 
   auto AgsPort* ags_line_member_find_specifier(GList *recall);
@@ -882,7 +990,13 @@ ags_line_member_find_port(AgsLineMember *line_member)
     GList *port;
     
     while(recall != NULL){
-      port = AGS_RECALL(recall->data)->port;
+      if((AGS_RECALL_BULK_MODE & (AGS_RECALL(recall->data)->flags)) != 0){
+	recall = recall->next;
+
+	continue;
+      }
+
+    port = AGS_RECALL(recall->data)->port;
 
 #ifdef AGS_DEBUG
       g_message("search port in %s\0", G_OBJECT_TYPE_NAME(recall->data));
@@ -903,15 +1017,14 @@ ags_line_member_find_port(AgsLineMember *line_member)
     return(NULL);
   }
 
-
   if(line_member == NULL){
-    return;
+    return(NULL);
   }
 
   specifier = line_member->specifier;
 
   if(!AGS_IS_LINE_MEMBER(line_member) || specifier == NULL){
-    return;
+    return(NULL);
   }
 
   line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
@@ -926,7 +1039,9 @@ ags_line_member_find_port(AgsLineMember *line_member)
   
   recall_audio_port = NULL;
   recall_channel_port = NULL;
-  
+
+  port = NULL;
+    
   /* search channels */
   channel = line->channel;
 
@@ -935,17 +1050,37 @@ ags_line_member_find_port(AgsLineMember *line_member)
 
   recall = channel->recall;
   recall_channel_port = ags_line_member_find_specifier(recall);
- 
+
+  if(channel_port != NULL){
+    port = g_list_prepend(port,
+			  channel_port);
+  }
+
+  if(recall_channel_port != NULL){
+    port = g_list_prepend(port,
+			  recall_channel_port);
+  }
+  
   /* search audio */
-  if(channel_port == NULL){
+  if(channel_port == NULL && recall_channel_port == NULL){
     recall = audio->play;
     audio_port = ags_line_member_find_specifier(recall);
 
     recall = audio->recall;
     recall_audio_port = ags_line_member_find_specifier(recall);
+
+    if(audio_port != NULL){
+      port = g_list_prepend(port,
+			    audio_port);
+    }
+
+    if(recall_audio_port != NULL){
+      port = g_list_prepend(port,
+			    recall_audio_port);
+    }
   }
 
-  if(channel_port != NULL){
+  if(channel_port != NULL || recall_channel_port != NULL){
     g_object_set(G_OBJECT(line_member),
 		 "port\0", channel_port,
 		 NULL);
@@ -953,7 +1088,7 @@ ags_line_member_find_port(AgsLineMember *line_member)
     g_object_set(G_OBJECT(line_member),
 		 "recall-port\0", recall_channel_port,
 		 NULL);
-  }else if(audio_port != NULL){
+  }else if(audio_port != NULL || recall_audio_port != NULL){
     g_object_set(G_OBJECT(line_member),
 		 "port\0", audio_port,
 		 NULL);
@@ -962,6 +1097,36 @@ ags_line_member_find_port(AgsLineMember *line_member)
 		 "recall-port\0", recall_audio_port,
 		 NULL);
   }
+
+  return(port);
+}
+
+/**
+ * ags_line_member_find_port:
+ * @line_member: an #AgsLineMember
+ *
+ * Lookup ports of assigned recalls.
+ *
+ * Returns: an #GList containing all related #AgsPort
+ *
+ * Since: 0.7.8
+ */
+GList*
+ags_line_member_find_port(AgsLineMember *line_member)
+{
+  GList *list;
+
+  list = NULL;
+  g_return_val_if_fail(AGS_IS_LINE_MEMBER(line_member),
+		       NULL);
+
+  g_object_ref((GObject *) line_member);
+  g_signal_emit((GObject *) line_member,
+		line_member_signals[FIND_PORT], 0,
+		&list);
+  g_object_unref((GObject *) line_member);
+
+  return(list);
 }
 
 /**
@@ -971,7 +1136,7 @@ ags_line_member_find_port(AgsLineMember *line_member)
  *
  * Returns: a new #AgsLineMember
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 AgsLineMember*
 ags_line_member_new()

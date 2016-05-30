@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.7.5],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.7.20],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -49,15 +49,15 @@ PKG_CHECK_MODULES([UUID], [uuid >= 1.0.2])
 AC_SUBST(UUID_CFLAGS)
 AC_SUBST(UUID_LIBS)
 
-PKG_CHECK_MODULES([LIBAO], [ao >= 1.1.0])
-AC_SUBST(LIBAO_CFLAGS)
-AC_SUBST(LIBAO_LIBS)
+#PKG_CHECK_MODULES([LIBAO], [ao >= 1.1.0])
+#AC_SUBST(LIBAO_CFLAGS)
+#AC_SUBST(LIBAO_LIBS)
 
 PKG_CHECK_MODULES([LIBASOUND2], [alsa >= 1.0.25])
 AC_SUBST(LIBASOUND2_CFLAGS)
 AC_SUBST(LIBASOUND2_LIBS)
 
-PKG_CHECK_MODULES([JACK], [jack >= 0.124.2])
+PKG_CHECK_MODULES([JACK], [jack])
 AC_SUBST(JACK_CFLAGS)
 AC_SUBST(JACK_LIBS)
 
@@ -76,6 +76,10 @@ AC_SUBST(LIBINSTPATCH_LIBS)
 PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
+
+PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
+AC_SUBST(GIO_CFLAGS)
+AC_SUBST(GIO_LIBS)
 
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.11.0])
 AC_SUBST(FONTCONFIG_CFLAGS)

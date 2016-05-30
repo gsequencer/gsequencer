@@ -26,6 +26,12 @@
 
 #include <ags/X/machine/ags_lv2_bridge.h>
 
+#include <lv2.h>
+#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
 
+void ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge);
+gboolean ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge);
+
+void ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer);
 
 #endif /*__AGS_LV2_BRIDGE_CALLBACKS_H__*/

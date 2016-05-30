@@ -60,6 +60,47 @@ ags_async_queue_base_init(AgsAsyncQueueInterface *interface)
 }
 
 /**
+ * ags_async_queue_increment_wait_ref:
+ * @async_queue: the #AgsAsyncQueue
+ * 
+ * Increments wait ref.
+ * 
+ * Since: 0.7.13
+ */
+void
+ags_async_queue_increment_wait_ref(AgsAsyncQueue *async_queue)
+{
+  AgsAsyncQueueInterface *async_queue_interface;
+
+  g_return_if_fail(AGS_IS_ASYNC_QUEUE(async_queue));
+  async_queue_interface = AGS_ASYNC_QUEUE_GET_INTERFACE(async_queue);
+  g_return_if_fail(async_queue_interface->increment_wait_ref);
+  async_queue_interface->increment_wait_ref(async_queue);
+}
+
+/**
+ * ags_async_queue_get_wait_ref:
+ * @async_queue: the #AgsAsyncQueue
+ *
+ * Get wait ref.
+ *
+ * Returns: The number of threads waiting.
+ *
+ * Since: 0.7.13
+ */
+guint
+ags_async_queue_get_wait_ref(AgsAsyncQueue *async_queue)
+{
+  AgsAsyncQueueInterface *async_queue_interface;
+
+  g_return_val_if_fail(AGS_IS_ASYNC_QUEUE(async_queue), FALSE);
+  async_queue_interface = AGS_ASYNC_QUEUE_GET_INTERFACE(async_queue);
+  g_return_val_if_fail(async_queue_interface->get_wait_ref, FALSE);
+
+  return(async_queue_interface->get_wait_ref(async_queue));
+}
+
+/**
  * ags_async_queue_set_run_mutex:
  * @async_queue: the #AgsAsyncQueue
  * @run_mutex: a pthread_mutex_t
@@ -144,6 +185,7 @@ ags_async_queue_get_run_cond(AgsAsyncQueue *async_queue)
 }
 
 /**
+ * ags_async_queue_set_run:
  * @async_queue: the #AgsAsyncQueue
  * @is_run: if %TRUE the queue was already running
  * 

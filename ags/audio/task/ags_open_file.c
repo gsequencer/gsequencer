@@ -22,12 +22,11 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/file/ags_audio_file_link.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
 void ags_open_file_class_init(AgsOpenFileClass *open_file);
@@ -263,7 +262,7 @@ ags_open_file_launch(AgsTask *task)
 
 /**
  * ags_open_file_new:
- * @file: the #AgsFile
+ * @audio: the #AgsAudio
  * @filenames: the filenames to be opened
  * @overwrite_channels: reset existing #AgsInput
  * @create_channels: inistantiate new #AgsInput, if @overwrite_channell as needed

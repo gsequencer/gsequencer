@@ -342,6 +342,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   GValue value = {0,};
 
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
   
   gdk_threads_enter();
   
@@ -376,23 +377,34 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
       child = GTK_BIN(list->data)->child;
 
+      /* get port */
+      pthread_mutex_lock(application_mutex);
+
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       line->channel);
+      
+      pthread_mutex_unlock(application_mutex);
+
+      pthread_mutex_lock(channel_mutex);
+      
       port = AGS_PEAK_CHANNEL(AGS_RECALL_CHANNEL_RUN(peak_channel_run)->recall_channel)->peak;
-	
+
+      pthread_mutex_unlock(channel_mutex);
+
+      /* get peak */
       g_value_init(&value, G_TYPE_DOUBLE);
       ags_port_safe_read(port,
 			 &value);
 
       peak = g_value_get_double(&value);
       g_value_unset(&value);
-      
+
       //      if(peak_channel_run->recall_id->recycling_context->parent == NULL)
 	//	g_message("%f\0", peak);
-      
+
+      /* change indicator */
       change_indicator = ags_change_indicator_new((AgsIndicator *) child,
 						  peak);
-
-      ags_task_thread_append_task(task_thread,
-				  (AgsTask *) change_indicator);
 
       break;
     }
@@ -401,6 +413,9 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   }
 
   g_list_free(list_start);
+
+  ags_task_thread_append_task(task_thread,
+			      (AgsTask *) change_indicator);
 
   gdk_threads_leave();
 }

@@ -26,20 +26,12 @@ ags_plugin_browser_plugin_type_changed_callback(GtkWidget *combo_box,
     plugin_browser->active_browser = plugin_browser->lv2_browser;
     gtk_widget_show(plugin_browser->lv2_browser);
 
-    gtk_widget_hide(plugin_browser->dssi_browser);
     gtk_widget_hide(plugin_browser->ladspa_browser);
   }else if(gtk_combo_box_get_active(combo_box) == 1){
-    plugin_browser->active_browser = plugin_browser->dssi_browser;
-    gtk_widget_show(plugin_browser->dssi_browser);
-    
-    gtk_widget_hide(plugin_browser->ladspa_browser);
-    gtk_widget_hide(plugin_browser->lv2_browser);
-  }else if(gtk_combo_box_get_active(combo_box) == 2){
     plugin_browser->active_browser = plugin_browser->ladspa_browser;
     gtk_widget_show(plugin_browser->ladspa_browser);
 
     gtk_widget_hide(plugin_browser->lv2_browser);
-    gtk_widget_hide(plugin_browser->dssi_browser);
   }
 }
 

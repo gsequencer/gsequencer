@@ -156,7 +156,6 @@ ags_synth_output_pad_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_synth_output_pad_new:
- * @synth_output_pad: the parent synth_output_pad
  * @channel: the #AgsChannel to visualize
  *
  * Creates an #AgsSynthOutputPad

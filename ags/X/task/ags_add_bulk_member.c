@@ -23,6 +23,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 
+#include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 
 void ags_add_bulk_member_class_init(AgsAddBulkMemberClass *add_bulk_member);
@@ -150,8 +151,13 @@ ags_add_bulk_member_finalize(GObject *gobject)
 void
 ags_add_bulk_member_launch(AgsTask *task)
 {
+  AgsEffectBridge *effect_bridge;
   AgsAddBulkMember *add_bulk_member;
 
+  AgsChannel *channel;
+
+  gboolean found_ports;
+  
   add_bulk_member = AGS_ADD_BULK_MEMBER(task);
 
   gtk_table_attach(AGS_EFFECT_BULK(add_bulk_member->effect_bulk)->table,
@@ -160,13 +166,17 @@ ags_add_bulk_member_launch(AgsTask *task)
 		   add_bulk_member->y, add_bulk_member->y + add_bulk_member->height,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+  ags_connectable_connect(AGS_CONNECTABLE(add_bulk_member->bulk_member));
   gtk_widget_show_all(AGS_EFFECT_BULK(add_bulk_member->effect_bulk)->table);
+
+  /* find ports */
+  ags_bulk_member_find_port(add_bulk_member->bulk_member);
 }
 
 /**
  * ags_add_bulk_member_new:
- * @line: the #AgsLine or #AgsEffectLine
- * @line_member: the #AgsLineMember to add
+ * @effect_bulk: the #AgsEffectBulk
+ * @bulk_member: the #AgsBulkMember to add
  * @x: pack start x
  * @y: pack start y
  * @width: pack width

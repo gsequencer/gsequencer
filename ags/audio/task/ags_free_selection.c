@@ -151,7 +151,7 @@ ags_free_selection_launch(AgsTask *task)
 
 /**
  * ags_free_selection_new:
- * @navigation: the #AgsNavigation
+ * @notation: the #AgsNotation
  *
  * Creates an #AgsFreeSelection.
  *

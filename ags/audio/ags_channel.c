@@ -623,42 +623,49 @@ ags_channel_init(AgsChannel *channel)
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
 			      "super-threaded-scope\0");
-  
-  if(!g_ascii_strncasecmp(str0,
-			  "super-threaded\0",
-			  15)){
-    if(!g_ascii_strncasecmp(str1,
-			    "channel\0",
-			    8) ||
-       !g_ascii_strncasecmp(str1,
-			    "recycling\0",
-			    10)){
-      g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
-		      AGS_PLAYBACK_SUPER_THREADED_CHANNEL);
 
-      AGS_PLAYBACK(channel->playback)->channel_thread[0] = ags_channel_thread_new(NULL,
-										  channel);
-      AGS_PLAYBACK(channel->playback)->channel_thread[1] = ags_channel_thread_new(NULL,
-										  channel);
-      AGS_PLAYBACK(channel->playback)->channel_thread[2] = ags_channel_thread_new(NULL,
-										  channel);
-      
+  if(str0 != NULL && str1 != NULL){
+    if(!g_ascii_strncasecmp(str0,
+			    "super-threaded\0",
+			    15)){
       if(!g_ascii_strncasecmp(str1,
+			      "channel\0",
+			      8) ||
+	 !g_ascii_strncasecmp(str1,
 			      "recycling\0",
 			      10)){
-	AGS_PLAYBACK(channel->playback)->recycling_thread[0] = ags_recycling_thread_new(NULL,
-											NULL);
-	AGS_PLAYBACK(channel->playback)->recycling_thread[1] = ags_recycling_thread_new(NULL,
-											NULL);
-	AGS_PLAYBACK(channel->playback)->recycling_thread[2] = ags_recycling_thread_new(NULL,
-											NULL);
+	g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+			AGS_PLAYBACK_SUPER_THREADED_CHANNEL);
+
+	AGS_PLAYBACK(channel->playback)->channel_thread[0] = ags_channel_thread_new(NULL,
+										    channel);
+	AGS_PLAYBACK(channel->playback)->channel_thread[1] = ags_channel_thread_new(NULL,
+										    channel);
+	AGS_PLAYBACK(channel->playback)->channel_thread[2] = ags_channel_thread_new(NULL,
+										    channel);
+      
+	if(!g_ascii_strncasecmp(str1,
+				"recycling\0",
+				10)){
+	  AGS_PLAYBACK(channel->playback)->recycling_thread[0] = ags_recycling_thread_new(NULL,
+											  NULL);
+	  AGS_PLAYBACK(channel->playback)->recycling_thread[1] = ags_recycling_thread_new(NULL,
+											  NULL);
+	  AGS_PLAYBACK(channel->playback)->recycling_thread[2] = ags_recycling_thread_new(NULL,
+											  NULL);
+	}
       }
     }
+  } 
+
+  if(str0 != NULL){
+    free(str0);
   }
- 
-  free(str0);
-  free(str1);
-   
+
+  if(str1 != NULL){
+    free(str1);
+  }
+  
   channel->recall_id = NULL;
   channel->container = NULL;
 
@@ -671,7 +678,6 @@ ags_channel_init(AgsChannel *channel)
   channel->last_recycling = NULL;
 
   channel->pattern = NULL;
-  channel->notation = NULL;
 
   channel->line_widget = NULL;
   channel->file_data = NULL;
@@ -1060,10 +1066,6 @@ ags_channel_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
-
-  if(channel->notation != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(channel->notation));
-  }
 }
 
 void
@@ -1139,11 +1141,6 @@ ags_channel_finalize(GObject *gobject)
 
   g_list_free_full(channel->pattern,
 		   g_object_unref);
-
-  /* AgsNotation */
-  if(channel->notation != NULL){
-    g_object_unref(channel->notation);
-  }
   
   /* call parent class */
   G_OBJECT_CLASS(ags_channel_parent_class)->finalize(gobject);
@@ -1993,7 +1990,7 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
 /**
  * ags_channel_remove_recall:
  * @channel: an #AgsChannel
- * @recall_container: the #AgsRecall
+ * @recall: the #AgsRecall
  * @play: %TRUE if simple playback.
  *
  * Removes a recall.
@@ -2040,7 +2037,7 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
 /**
  * ags_channel_add_recall:
  * @channel: an #AgsChannel
- * @recall_container: the #AgsRecall
+ * @recall: the #AgsRecall
  * @play: %TRUE if simple playback.
  *
  * Adds a recall.
@@ -2211,11 +2208,9 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   long effect_index;
 
   /* load plugin */
-  ags_ladspa_manager_load_file(filename);
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
 
-  effect_index = ags_ladspa_manager_effect_index(filename,
-						 effect);
+  effect_index = AGS_BASE_PLUGIN(ladspa_plugin)->effect_index;
 
   /* ladspa play */
   recall_container = ags_recall_container_new();
@@ -2419,11 +2414,9 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
   long effect_index;
 
   /* load plugin */
-  ags_dssi_manager_load_file(filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
 
-  effect_index = ags_dssi_manager_effect_index(filename,
-					       effect);
+  effect_index = AGS_BASE_PLUGIN(dssi_plugin)->effect_index;
 
   /* dssi play */
   recall_container = ags_recall_container_new();
@@ -2632,13 +2625,10 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   uint32_t effect_index;
 
   /* find plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
-  uri = ags_lv2_manager_find_uri(filename,
-				 effect);
-  
-  effect_index = ags_lv2_manager_uri_index(filename,
-					   uri);
+  effect_index = AGS_BASE_PLUGIN(lv2_plugin);
+  uri = lv2_plugin->uri;
   
   /* lv2 play */
   recall_container = ags_recall_container_new();
@@ -2837,7 +2827,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
   GList *port;
 
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
   port = NULL;
   
   if(ladspa_plugin != NULL){
@@ -2847,7 +2837,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
   }
 
   if(ladspa_plugin == NULL){
-    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename);
+    dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
     
     if(dssi_plugin != NULL){
       port = ags_channel_add_dssi_effect(channel,
@@ -2858,7 +2848,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
   
   if(ladspa_plugin == NULL &&
      dssi_plugin == NULL){
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
     
     if(lv2_plugin != NULL){
       port = ags_channel_add_lv2_effect(channel,
@@ -3314,6 +3304,7 @@ ags_channel_resolve_recall(AgsChannel *channel,
 /**
  * ags_channel_init_recall:
  * @channel: an #AgsChannel that contains the recalls
+ * @stage: the stage to init
  * @recall_id: the #AgsRecallId this recall belongs to
  *
  * Prepare #AgsRecall objects to become runnning, ags_channel_recursive_play_init()
@@ -3473,7 +3464,7 @@ ags_channel_play(AgsChannel *channel,
     list_next = list->next;
 
     recall = AGS_RECALL(list->data);
-
+    
     if(recall == NULL){
       if(recall_id->recycling_context->parent != NULL){
 	channel->recall = g_list_remove(channel->recall,
@@ -5275,7 +5266,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     gint i;
 
     if(channel == NULL){
-      return;
+      return(NULL);
     }
     
     audio = AGS_AUDIO(channel->audio);
@@ -5623,7 +5614,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     gint i;
 
     if(output == NULL){
-      return;
+      return(NULL);
     }
 
     /* AgsAudio */
@@ -5772,7 +5763,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 										   default_recall_id,
 										   FALSE);
     if(input_recall_id != NULL){
-      free(input_recall_id);
+      //FIXME:JK: memory leak
+      //      free(input_recall_id);
     }
 
     return(default_recall_id);
@@ -7178,7 +7170,7 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
     pthread_mutex_unlock(application_mutex);
 
     /* lock context */
-    //    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+    ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
 
     /* retrieve recall id */
     pthread_mutex_lock(mutex);
@@ -7234,7 +7226,7 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
     }
     
     /* unlock context */
-    //    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
+    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
     
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (flags)) != 0){
       /* call function which play input */
@@ -7243,7 +7235,7 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 						     recycling_thread);
 
       /* lock context */
-      //      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
     
       /* play audio */
       ags_recycling_thread_play_audio(recycling_thread,
@@ -7262,7 +7254,7 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 						     recycling_thread);
 
       /* lock context */
-      //      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
+      ags_concurrent_tree_lock_context(AGS_CONCURRENT_TREE(first_recycling));
       
       /* play audio */
       ags_recycling_thread_play_audio(recycling_thread,
@@ -7278,7 +7270,7 @@ ags_channel_recursive_play_threaded(AgsChannel *channel,
 				      stage);
 
     /* unlock context */
-    //    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
+    ags_concurrent_tree_unlock_context(AGS_CONCURRENT_TREE(first_recycling));
   }
 
   /* entry point */

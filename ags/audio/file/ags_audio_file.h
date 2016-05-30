@@ -72,7 +72,7 @@ void ags_audio_file_write(AgsAudioFile *audio_file,
 			  signed short *buffer, guint buffer_size);
 void ags_audio_file_flush(AgsAudioFile *audio_file);
 
-AgsAudioFile* ags_audio_file_new(gchar *name,
+AgsAudioFile* ags_audio_file_new(gchar *filename,
 				 GObject *soundcard,
 				 guint start_channel, guint audio_channels);
 

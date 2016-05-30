@@ -72,10 +72,10 @@ struct _AgsAutomation
   
   GList *acceleration;
 
-  gdouble start_loop;
-  gdouble end_loop;
+  gdouble loop_start;
+  gdouble loop_end;
   gdouble offset;
-
+  
   GList *selection;
 
   GObject *port;
@@ -90,6 +90,9 @@ struct _AgsAutomationClass
 };
 
 GType ags_automation_get_type(void);
+
+GList* ags_automation_find_port(GList *automation,
+				GObject *port);
 
 GList* ags_automation_find_near_timestamp(GList *automation, guint line,
 					  GObject *timestamp);
@@ -142,6 +145,10 @@ GList* ags_automation_get_current(AgsAutomation *automation);
 gchar** ags_automation_get_specifier_unique(GList *automation);
 GList* ags_automation_find_specifier(GList *automation,
 				     gchar *specifier);
+
+void ags_automation_get_value(AgsAutomation *automation,
+			      guint x,
+			      GValue *value);
 
 AgsAutomation* ags_automation_new(GObject *audio,
 				  guint line,

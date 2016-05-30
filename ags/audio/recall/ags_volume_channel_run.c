@@ -218,6 +218,7 @@ ags_volume_channel_run_duplicate(AgsRecall *recall,
 
 /**
  * ags_volume_channel_run_new:
+ * @channel: the assigned #AgsChannel
  *
  * Creates an #AgsVolumeChannelRun
  *

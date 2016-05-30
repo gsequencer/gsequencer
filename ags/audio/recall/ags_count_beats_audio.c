@@ -661,6 +661,7 @@ ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdouble du
 
 /**
  * ags_count_beats_audio_new:
+ * @loop: set loop port
  *
  * Creates an #AgsCountBeatsAudio
  *

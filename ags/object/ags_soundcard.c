@@ -237,6 +237,10 @@ ags_soundcard_get_device(AgsSoundcard *soundcard)
 /**
  * ags_soundcard_get_presets:
  * @soundcard: an #AgsSoundcard
+ * @channels: the audio channels
+ * @rate: the samplerate
+ * @buffer_size: the buffer size
+ * @format: the format
  *
  * Get presets. 
  *
@@ -264,7 +268,10 @@ ags_soundcard_get_presets(AgsSoundcard *soundcard,
 /**
  * ags_soundcard_set_presets:
  * @soundcard: an #AgsSoundcard
- * @presets: the presets to set
+ * @channels: the audio channels
+ * @rate: the samplerate
+ * @buffer_size: the buffer size
+ * @format: the format
  *
  * Set presets. 
  *
@@ -294,7 +301,6 @@ ags_soundcard_set_presets(AgsSoundcard *soundcard,
  * @soundcard: an #AgsSoundcard
  * @card_id: a list containing card ids
  * @card_name: a list containing card names
- * @error: an error that may occure
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *
@@ -723,6 +729,28 @@ ags_soundcard_get_attack(AgsSoundcard *soundcard)
   g_return_val_if_fail(soundcard_interface->get_attack, G_MAXUINT);
 
   return(soundcard_interface->get_attack(soundcard));
+}
+
+/**
+ * ags_soundcard_get_delay_counter:
+ * @soundcard: an #AgsSoundcard
+ *
+ * Get current playback note offset. 
+ *
+ * Returns: offset
+ *
+ * Since: 0.7.6
+ */
+guint
+ags_soundcard_get_delay_counter(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_delay_counter, G_MAXUINT);
+
+  return(soundcard_interface->get_delay_counter(soundcard));
 }
 
 /**

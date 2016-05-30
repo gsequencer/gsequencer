@@ -390,11 +390,11 @@ ags_automation_init(AgsAutomation *automation)
   ags_automation_add_acceleration(automation,
 				  acceleration,
 				  FALSE);
-  
-  automation->start_loop = 0.0;
-  automation->end_loop = 0.0;
-  automation->offset = 0.0;
 
+  automation->loop_start = 0.0;
+  automation->loop_end = 0.0;
+  automation->offset = 0.0;
+  
   automation->selection = NULL;
 
   automation->port = NULL;
@@ -718,6 +718,26 @@ ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GVal
 			property_name, value);
 }
 
+GList*
+ags_automation_find_port(GList *automation,
+			 GObject *port)
+{
+  if(automation == NULL ||
+     port == NULL){
+    return(NULL);
+  }
+
+  while(automation != NULL){
+    if(AGS_AUTOMATION(automation->data)->port == port){
+      break;
+    }
+    
+    automation = automation->next;
+  }
+
+  return(automation);
+}
+
 /**
  * ags_automation_find_near_timestamp:
  * @automation: a #GList containing #AgsAutomation
@@ -958,7 +978,7 @@ ags_automation_find_point(AgsAutomation *automation,
  * @y0: start tone
  * @x1: end offset
  * @y1: end tone
- * @use_selection:_list if %TRUE selection is searched
+ * @use_selection_list: if %TRUE selection is searched
  *
  * Find acceleration by offset and tone region.
  *
@@ -1551,7 +1571,7 @@ ags_automation_get_specifier_unique(GList *automation)
 }
 
 /**
- * ags_automation_get_specifier_unique:
+ * ags_automation_find_specifier:
  * @automation: a #GList containing #AgsAutomation
  * @specifier: the string specifier to find
  *
@@ -1575,6 +1595,234 @@ ags_automation_find_specifier(GList *automation,
   }
 
   return(automation);
+}
+
+void
+ags_automation_get_value(AgsAutomation *automation,
+			 guint x,
+			 GValue *value)
+{
+  AgsPort *port;
+
+  GList *acceleration;
+  
+  port = automation->port;
+  acceleration = automation->acceleration;
+
+  if(acceleration != NULL){
+    while(acceleration->next != NULL){
+      if(AGS_ACCELERATION(acceleration->data)->x >= x){
+	break;
+      }
+
+      acceleration = acceleration->next;
+    }
+    
+    if(AGS_ACCELERATION(acceleration->data)->x >= x){
+      acceleration = acceleration->prev;
+    }
+  }
+  
+  if(!port->port_value_is_pointer){
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      gboolean current;
+
+      current = FALSE;
+
+      if(acceleration == NULL){
+	if(automation->default_value != 0){
+	  current = TRUE;
+	}
+      }else{
+	if(AGS_ACCELERATION(acceleration->data)->y != 0){
+	  current = TRUE;
+	}
+      }
+      
+      g_value_init(value,
+		   G_TYPE_BOOLEAN);
+      g_value_set_boolean(value,
+			  current);
+    }else if(port->port_value_type == G_TYPE_INT64){
+      gint64 current;
+
+      current = 0;
+      
+      if(acceleration == NULL){
+	current = automation->default_value;
+      }else{
+	gdouble y1, y2;
+	gdouble x1, x2;
+	gdouble y;
+	
+	if(acceleration->next != NULL){
+	  x1 = AGS_ACCELERATION(acceleration->data)->x;
+	  y1 = AGS_ACCELERATION(acceleration->data)->y;
+
+	  x2 = AGS_ACCELERATION(acceleration->next->data)->x;
+	  y2 = AGS_ACCELERATION(acceleration->next->data)->y;
+
+	  /*  */
+	  //TODO:JK: verify me
+	  x2 -= x1;
+	  x1 = 0;
+
+	  y2 -= y1;
+	    
+	  y = (x2 / x * y2) + y1;
+	}else{
+	  y = AGS_ACCELERATION(acceleration->data)->y;
+	}
+
+	current = floor(y);
+      }
+
+      g_value_init(value,
+		   G_TYPE_INT64);
+      g_value_set_int64(value,
+			current);
+    }else if(port->port_value_type == G_TYPE_UINT64){
+      guint64 current;
+
+      current = 0;
+      
+      if(acceleration == NULL){
+	current = automation->default_value;
+      }else{
+	gdouble y1, y2;
+	gdouble x1, x2;
+	gdouble y;
+	
+	if(acceleration->next != NULL){
+	  x1 = AGS_ACCELERATION(acceleration->data)->x;
+	  y1 = AGS_ACCELERATION(acceleration->data)->y;
+
+	  x2 = AGS_ACCELERATION(acceleration->next->data)->x;
+	  y2 = AGS_ACCELERATION(acceleration->next->data)->y;
+
+	  /*  */
+	  //TODO:JK: verify me
+	  x2 -= x1;
+	  x1 = 0;
+
+	  y2 -= y1;
+	    
+	  y = (x2 / x * y2) + y1;
+	}else{
+	  y = AGS_ACCELERATION(acceleration->data)->y;
+	}
+
+	current = floor(y);
+      }
+      
+      g_value_init(value,
+		   G_TYPE_UINT64);
+      g_value_set_uint64(value,
+			 current);
+    }else if(port->port_value_type == G_TYPE_FLOAT){
+      gfloat current;
+
+      current = 0.0;
+      
+      if(acceleration == NULL){
+	current = automation->default_value;
+      }else{
+	gdouble range;
+	gdouble y1, y2;
+	gdouble x1, x2;
+	gdouble y;
+	
+	if(acceleration->next != NULL){
+	  x1 = AGS_ACCELERATION(acceleration->data)->x;
+	  y1 = AGS_ACCELERATION(acceleration->data)->y;
+
+	  x2 = AGS_ACCELERATION(acceleration->next->data)->x;
+	  y2 = AGS_ACCELERATION(acceleration->next->data)->y;
+
+	  /*  */
+	  //TODO:JK: verify me
+	  x2 -= x1;
+	  x1 = 0;
+
+	  y2 -= y1;
+	    
+	  y = (x2 / x * y2) + y1;
+	}else{
+	  y = AGS_ACCELERATION(acceleration->data)->y;
+	}
+
+	if(automation->lower < 0.0 && automation->upper < 0.0){
+	  range = -1.0 * (automation->lower - automation->upper);
+	}else if(automation->lower < 0.0){
+	  range = (-1.0 * automation->lower) + automation->upper;
+	}else{
+	  range = automation->upper -automation->lower;
+	}
+	
+	current = automation->lower + (range * y / (gdouble) automation->steps);
+      }
+      
+      g_value_init(value,
+		   G_TYPE_FLOAT);
+      g_value_set_float(value,
+			current);
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      gdouble current;
+
+      current = 0.0;
+      
+      if(acceleration == NULL){
+	current = automation->default_value;
+      }else{
+	gdouble range;
+	gdouble y1, y2;
+	gdouble x1, x2;
+	gdouble y;
+	
+	if(acceleration->next != NULL){
+	  x1 = AGS_ACCELERATION(acceleration->data)->x;
+	  y1 = AGS_ACCELERATION(acceleration->data)->y;
+
+	  x2 = AGS_ACCELERATION(acceleration->next->data)->x;
+	  y2 = AGS_ACCELERATION(acceleration->next->data)->y;
+
+	  /*  */
+	  //TODO:JK: verify me
+	  x2 -= x1;
+	  x1 = 0;
+
+	  y2 -= y1;
+	    
+	  y = (x2 / x * y2) + y1;
+	}else{
+	  y = AGS_ACCELERATION(acceleration->data)->y;
+	}
+
+	if(automation->lower < 0.0 && automation->upper < 0.0){
+	  range = -1.0 * (automation->lower - automation->upper);
+	}else if(automation->lower < 0.0){
+	  range = (-1.0 * automation->lower) + automation->upper;
+	}else{
+	  range = automation->upper -automation->lower;
+	}
+	
+	current = automation->lower + (range * y / (gdouble) automation->steps);
+      }
+  
+      g_value_init(value,
+		   G_TYPE_DOUBLE);
+      g_value_set_double(value,
+			 current);
+    }else if(port->port_value_type == G_TYPE_POINTER){
+      g_warning("ags_automation.c - unsupported value type pointer\0");
+    }else if(port->port_value_type == G_TYPE_OBJECT){
+      g_warning("ags_automation.c - unsupported value type object\0");
+    }else{
+      g_warning("ags_automation.c - unknown type\0");
+    }
+  }else{
+    g_warning("ags_automation.c - unsupported value type pointer\0");
+  }
 }
 
 /**

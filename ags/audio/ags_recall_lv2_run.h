@@ -34,6 +34,8 @@
 #define AGS_IS_RECALL_LV2_RUN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RECALL_LV2_RUN))
 #define AGS_RECALL_LV2_RUN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_RECALL_LV2_RUN, AgsRecallLv2RunClass))
 
+#define AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT (8 * 256)
+
 typedef struct _AgsRecallLv2Run AgsRecallLv2Run;
 typedef struct _AgsRecallLv2RunClass AgsRecallLv2RunClass;
 
@@ -42,9 +44,20 @@ struct _AgsRecallLv2Run
   AgsRecallAudioSignal recall_audio_signal;
 
   LV2_Handle *lv2_handle;
-
+  LV2_Feature **feature;
+  
   float *input;
   float *output;
+
+  void *event_port;
+  void *atom_port;
+
+  long delta_time;
+  
+  snd_seq_event_t **event_buffer;
+  unsigned long *event_count;
+
+  GObject *note;
 };
 
 struct _AgsRecallLv2RunClass

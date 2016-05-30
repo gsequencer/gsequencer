@@ -26,6 +26,21 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/thread/ags_concurrency_provider.h>
+#ifdef AGS_USE_LINUX_THREADS
+#include <ags/thread/ags_thread-kthreads.h>
+#else
+#include <ags/thread/ags_thread-posix.h>
+#endif
+#include <ags/thread/ags_single_thread.h>
+#include <ags/thread/ags_autosave_thread.h>
+#include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_thread_pool.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
+
 #define AGS_TYPE_AUDIO_APPLICATION_CONTEXT                (ags_audio_application_context_get_type())
 #define AGS_AUDIO_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_APPLICATION_CONTEXT, AgsAudioApplicationContext))
 #define AGS_AUDIO_APPLICATION_CONTEXT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_AUDIO_APPLICATION_CONTEXT, AgsAudioApplicationContextClass))
@@ -35,10 +50,10 @@
 
 #define AGS_AUDIO_RT_PRIORITY (49)
 
-#define AGS_AUDIO_BUILD_ID "Thu Apr  2 13:04:21 GMT 2015\0"
-#define AGS_AUDIO_DEFAULT_VERSION "0.4.3\0"
+#define AGS_AUDIO_BUILD_ID "Wed Apr 13 00:16:43 CEST 2016\0"
+#define AGS_AUDIO_DEFAULT_VERSION "0.7.13\0"
 
-#define AGS_EFFECTS_DEFAULT_VERSION "0.4.2\0"
+#define AGS_EFFECTS_DEFAULT_VERSION "0.7.13\0"
 
 typedef struct _AgsAudioApplicationContext AgsAudioApplicationContext;
 typedef struct _AgsAudioApplicationContextClass AgsAudioApplicationContextClass;
@@ -56,7 +71,16 @@ struct _AgsAudioApplicationContext
   gchar *version;
   gchar *build_id;
 
+  AgsThread *autosave_thread;
+  AgsThreadPool *thread_pool;
+
+  AgsThread *soundcard_thread;
+  AgsThread *export_thread;
+
   GList *soundcard;
+  GList *sequencer;
+
+  GList *distributed_manager;
 };
 
 struct _AgsAudioApplicationContextClass
@@ -66,7 +90,6 @@ struct _AgsAudioApplicationContextClass
 
 GType ags_audio_application_context_get_type();
 
-AgsAudioApplicationContext* ags_audio_application_context_new(GObject *main_loop,
-							      AgsConfig *config);
+AgsAudioApplicationContext* ags_audio_application_context_new();
 
 #endif /*__AGS_AUDIO_APPLICATION_CONTEXT_H__*/

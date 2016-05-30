@@ -483,20 +483,14 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
     AgsEditorChild *editor_child;
 
     editor_child = child->data;
-    
-    gtk_table_attach(editor->table, (GtkWidget *) editor_child->notebook,
-		     0, 3, 0, 1,
-		     GTK_FILL|GTK_EXPAND, GTK_FILL,
-		     0, 0);
 
-    gtk_table_attach(editor->table, (GtkWidget *) editor_child->meter,
-		     0, 1, 1, 2,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-    gtk_table_attach(editor->table, (GtkWidget *) editor_child->edit_widget,
-		     1, 2, 1, 2,
-		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		     0, 0);
+    editor->current_notebook = editor_child->notebook;
+    editor->current_meter = editor_child->meter;
+    editor->current_edit_widget = editor_child->edit_widget;
+
+    gtk_widget_show_all(editor_child->notebook);
+    gtk_widget_show_all(editor_child->meter);
+    gtk_widget_show_all(editor_child->edit_widget);
   }
 }
 

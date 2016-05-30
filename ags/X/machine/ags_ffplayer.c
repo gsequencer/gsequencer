@@ -817,7 +817,9 @@ xmlNode*
 ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsFFPlayer *ffplayer;
+
   xmlNode *node;
+
   gchar *id;
 
   ffplayer = AGS_FFPLAYER(plugin);
@@ -832,7 +834,7 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),

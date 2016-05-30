@@ -86,6 +86,8 @@ GList* ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 				       gchar *effect);
 void ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 					guint nth);
+void ags_effect_line_real_map_recall(AgsEffectLine *effect_line);
+GList* ags_effect_line_real_find_port(AgsEffectLine *effect_line);
 
 /**
  * SECTION:ags_effect_line
@@ -101,6 +103,8 @@ void ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 enum{
   ADD_EFFECT,
   REMOVE_EFFECT,
+  MAP_RECALL,
+  FIND_PORT,
   LAST_SIGNAL,
 };
 
@@ -192,7 +196,9 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
   /* AgsEffectLineClass */
   effect_line->add_effect = ags_effect_line_real_add_effect;
   effect_line->remove_effect = ags_effect_line_real_remove_effect;
-  
+  effect_line->map_recall = ags_effect_line_real_map_recall;
+  effect_line->find_port = ags_effect_line_real_find_port;
+
   /* signals */
   /**
    * AgsEffectLine::add-effect:
@@ -228,6 +234,37 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
+
+  /**
+   * AgsEffectLine::map-recall:
+   * @effect_line: the #AgsEffectLine
+   *
+   * The ::map-recall should be used to add the effect_line's default recall.
+   */
+  effect_line_signals[MAP_RECALL] =
+    g_signal_new("map-recall\0",
+                 G_TYPE_FROM_CLASS (effect_line),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsEffectLineClass, map_recall),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__UINT,
+                 G_TYPE_NONE, 0);
+
+  /**
+   * AgsEffectLine::find-port:
+   * @effect_line: the #AgsEffectLine to resize
+   * Returns: a #GList with associated ports
+   *
+   * The ::find-port as recall should be mapped
+   */
+  effect_line_signals[FIND_PORT] =
+    g_signal_new("find-port\0",
+		 G_TYPE_FROM_CLASS(effect_line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectLineClass, find_port),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -451,30 +488,19 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   GList *list, *list_start;
   GList *recall, *recall_start;
   GList *port, *recall_port;
+  GList *port_descriptor;
+  
   gdouble step;
+  guint port_count;
   guint x, y;
+  guint k;
   
-  void *plugin_so;
-  LADSPA_Descriptor_Function ladspa_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
-  LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_Data lower_bound, upper_bound;
-  unsigned long effect_index;
-  unsigned long i;
-  
-  effect_index = ags_ladspa_manager_effect_index(filename,
-						 effect);
-
   /* load plugin */
-  ags_ladspa_manager_load_file(filename);
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
-
-  plugin_so = ladspa_plugin->plugin_so;
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
 
   /* retrieve position within table  */
   x = 0;
   y = 0;
-  i = 0;
   
   list_start = 
     list = effect_line->table->children;
@@ -505,89 +531,100 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
   recall_port = AGS_RECALL(recall->data)->port;
   g_list_free(recall_start);
-  
+
   /* load ports */
-  if(effect_index != -1 &&
-     plugin_so){
-    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor\0");
+  port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
 
-    if(dlerror() == NULL && ladspa_descriptor){
-      plugin_descriptor = ladspa_descriptor(effect_index);
+  port_count = g_list_length(port_descriptor);
+  k = 0;
 
-      port_descriptor = plugin_descriptor->PortDescriptors;   
+  while(port_descriptor != NULL){
+    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      GtkWidget *child_widget;
+      
+      GType widget_type;
+      
+      if(x == AGS_EFFECT_LINE_COLUMNS_COUNT){
+	x = 0;
+	y++;
+	gtk_table_resize(effect_line->table,
+			 y + 1, AGS_EFFECT_LINE_COLUMNS_COUNT);
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	widget_type = GTK_TYPE_TOGGLE_BUTTON;
+      }else{
+	widget_type = AGS_TYPE_DIAL;
+      }
 
-      while(port != NULL && recall_port != NULL){
-	if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
-	    (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
-	  AgsDial *dial;
-	  GtkAdjustment *adjustment;
+      /* add line member */
+      line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+						   "widget-type\0", widget_type,
+						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name\0", g_strdup_printf("ladspa-%lu\0", ladspa_plugin->unique_id),
+						   "filename\0", filename,
+						   "effect\0", effect,
+						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
+						   "control-port\0", g_strdup_printf("%d/%d\0",
+										     k,
+										     port_count),
+						   NULL);
+      child_widget = ags_line_member_get_widget(line_member);
+      
+      if(AGS_IS_DIAL(child_widget)){
+	AgsDial *dial;
+	GtkAdjustment *adjustment;
+	float lower_bound, upper_bound;
+	
+	dial = child_widget;
 
-	  if(x == AGS_EFFECT_LINE_COLUMNS_COUNT){
-	    x = 0;
-	    y++;
-	    gtk_table_resize(effect_line->table,
-			     y + 1, AGS_EFFECT_LINE_COLUMNS_COUNT);
-	  }
+	/* add controls of ports and apply range  */
+	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
 
-	  /* add line member */
-	  line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-						       "widget-type\0", AGS_TYPE_DIAL,
-						       "widget-label\0", plugin_descriptor->PortNames[i],
-						       "plugin-name\0", AGS_PORT(port->data)->plugin_name,
-						       "specifier\0", AGS_PORT(port->data)->specifier,
-						       "control-port\0", AGS_PORT(port->data)->control_port,
-						       NULL);
-	  dial = ags_line_member_get_widget(line_member);
-	  gtk_widget_set_size_request(dial,
-				      2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
-				      2 * dial->radius + 2 * dial->outline_strength + 1);
-		
-	  /* add controls of ports and apply range  */
-	  lower_bound = plugin_descriptor->PortRangeHints[i].LowerBound;
-	  upper_bound = plugin_descriptor->PortRangeHints[i].UpperBound;
+	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	g_object_set(dial,
+		     "adjustment", adjustment,
+		     NULL);
 
-	  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-	  g_object_set(dial,
-		       "adjustment", adjustment,
-		       NULL);
-
-	  if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	    step = -1.0 * (upper_bound + lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }else{
-	    step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-	  }
-
-	  gtk_adjustment_set_step_increment(adjustment,
-					    step);
-	  gtk_adjustment_set_lower(adjustment,
-				   lower_bound);
-	  gtk_adjustment_set_upper(adjustment,
-				   upper_bound);
-	  gtk_adjustment_set_value(adjustment,
-				   lower_bound);
-
-	  gtk_table_attach(effect_line->table,
-			   line_member,
-			   x, x + 1,
-			   y, y + 1,
-			   GTK_FILL, GTK_FILL,
-			   0, 0);
-
-	  ags_connectable_connect(AGS_CONNECTABLE(line_member));
-	  gtk_widget_show_all(line_member);
-	  
-	  x++;
-	  port = port->next;
-	  recall_port = recall_port->next;
+	if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else if(upper_bound < 0.0 && lower_bound < 0.0){
+	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else{
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
 	}
 
-	i++;
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_lower(adjustment,
+				 lower_bound);
+	gtk_adjustment_set_upper(adjustment,
+				 upper_bound);
+	gtk_adjustment_set_value(adjustment,
+				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
       }
+
+#ifdef AGS_DEBUG
+      g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
+#endif
+	  
+      gtk_table_attach(effect_line->table,
+		       line_member,
+		       x, x + 1,
+		       y, y + 1,
+		       GTK_FILL, GTK_FILL,
+		       0, 0);
+      
+      port = port->next;
+      x++;
     }
+
+    ags_connectable_connect(AGS_CONNECTABLE(line_member));
+    gtk_widget_show_all(line_member);
+    
+    port_descriptor = port_descriptor->next;
+    k++;
   }
   
   return(port);
@@ -607,16 +644,15 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   GList *list, *list_start;
   GList *recall, *recall_start;
   GList *port, *recall_port;
-  GList *port_type_node, *port_name_node, *port_max_node, *port_min_node, *port_default_node;
-
-  gchar *port_type_0, *port_type_1;
-  gchar *str;
+  GList *port_descriptor;
+  
   gdouble step;
-  float lower_bound, upper_bound, default_bound;
+  guint port_count;
   guint x, y;
+  guint k;
   
   /* load plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
 
   /* retrieve position within table  */
   x = 0;
@@ -652,104 +688,86 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   recall_port = AGS_RECALL(recall->data)->port;
   g_list_free(recall_start);
 
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@has-type=\"true\"]/rdf-list/rdf-value\0",
-			effect);
-  port_type_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					 str);
-
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:name\"]/rdf-list/rdf-value\0",
-			effect);
-  port_name_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					 str);
-  free(str);
-
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:minimum\"]/rdf-list/rdf-value\0",
-			effect);
-  port_min_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					str);
-  free(str);
-
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:maximum\"]/rdf-list/rdf-value\0",
-			effect);
-  port_max_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					str);
-  free(str);
-
-  str = g_strdup_printf("//rdf-triple[@subject=\"<%s>\"]//rdf-triple[@subject=\"lv2:port\"]/rdf-verb[@do=\"lv2:default\"]/rdf-list/rdf-value\0",
-			effect);
-  port_default_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					    str);
-  free(str);
 
   /* load ports */
-  while(port != NULL && recall_port != NULL){
-    port_type_0 = xmlGetProp(port_type_node->data,
-			     "value\0");
-    port_type_1 = xmlGetProp(port_type_node->next->data,
-			     "value\0");
+  port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
 
-    if(!g_ascii_strncasecmp(port_type_0,
-			    "lv2:ControlPort\0",
-			    15) ||
-       !g_ascii_strncasecmp(port_type_1,
-			    "lv2:ControlPort\0",
-			    15)){
-      AgsDial *dial;
-      GtkAdjustment *adjustment;
+  port_count = g_list_length(port_descriptor);
+  k = 0;
+  
+  while(port_descriptor != NULL &&
+	port != NULL){
+    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      GtkWidget *child_widget;
+	  
+      GType widget_type;
 
-      if(x == 2){
+      if(x == AGS_EFFECT_LINE_COLUMNS_COUNT){
 	x = 0;
 	y++;
 	gtk_table_resize(effect_line->table,
 			 y + 1, AGS_EFFECT_LINE_COLUMNS_COUNT);
       }
 
-      /* add line member */
-      line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
-						   "widget-type\0", AGS_TYPE_DIAL,
-						   "widget-label\0", xmlGetProp(port_name_node->data,
-										"value\0"),
-						   "plugin-name\0", AGS_PORT(port->data)->plugin_name,
-						   "specifier\0", AGS_PORT(port->data)->specifier,
-						   "control-port\0", AGS_PORT(port->data)->control_port,
-						   NULL);
-      dial = ags_line_member_get_widget(line_member);
-      gtk_widget_set_size_request(dial,
-				  2 * dial->radius + 2 * dial->outline_strength + dial->button_width + 1,
-				  2 * dial->radius + 2 * dial->outline_strength + 1);
-		
-      /* add controls of ports and apply range  */
-      lower_bound = (float) g_ascii_strtod(xmlGetProp(port_min_node->data,
-						      "value\0"),
-					   NULL);
-      upper_bound = (float) g_ascii_strtod(xmlGetProp(port_max_node->data,
-						      "value\0"),
-					   NULL);
-      default_bound = (float) g_ascii_strtod(xmlGetProp(port_default_node->data,
-							"value\0"),
-					     NULL);
-      adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-      g_object_set(dial,
-		   "adjustment", adjustment,
-		   NULL);
-
-      if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
-      }else if(upper_bound < 0.0 && lower_bound < 0.0){
-	step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	widget_type = GTK_TYPE_TOGGLE_BUTTON;
       }else{
-	step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	widget_type = AGS_TYPE_DIAL;
       }
 
-      gtk_adjustment_set_step_increment(adjustment,
-					step);
-      gtk_adjustment_set_lower(adjustment,
-			       lower_bound);
-      gtk_adjustment_set_upper(adjustment,
-			       upper_bound);
-      gtk_adjustment_set_value(adjustment,
-			       default_bound);
+      /* add line member */
+      line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
+						   "widget-type\0", widget_type,
+						   "widget-label\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "plugin-name\0", g_strdup_printf("lv2-<%s>\0", lv2_plugin->uri),
+						   "filename\0", filename,
+						   "effect\0", effect,
+						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
+						   "control-port\0", g_strdup_printf("%d/%d\0",
+										     k,
+										     port_count),
+						   NULL);
+      child_widget = ags_line_member_get_widget(line_member);
 
+      if(AGS_IS_DIAL(child_widget)){
+	AgsDial *dial;
+	GtkAdjustment *adjustment;
+
+	float lower_bound, upper_bound;
+	
+	dial = child_widget;
+
+	/* add controls of ports and apply range  */
+	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
+
+	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	g_object_set(dial,
+		     "adjustment", adjustment,
+		     NULL);
+
+	if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else if(upper_bound < 0.0 && lower_bound < 0.0){
+	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}else{
+	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	}
+
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_lower(adjustment,
+				 lower_bound);
+	gtk_adjustment_set_upper(adjustment,
+				 upper_bound);
+	gtk_adjustment_set_value(adjustment,
+				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+      }
+
+#ifdef AGS_DEBUG
+      g_message("lv2 bounds: %f %f\0", lower_bound, upper_bound);
+#endif
+	  
       gtk_table_attach(effect_line->table,
 		       line_member,
 		       x, x + 1,
@@ -760,18 +778,12 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all(line_member);
 
-      x++;
       port = port->next;
-      recall_port = recall_port->next;
-
-
-      port_default_node = port_default_node->next;
-      port_min_node = port_min_node->next;
-      port_max_node = port_max_node->next;
+      x++;
     }
 
-    port_name_node = port_name_node->next;
-    port_type_node = port_type_node->next->next;
+    port_descriptor = port_descriptor->next;
+    k++;
   }
   
   return(port);
@@ -788,7 +800,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
   GList *port;
 
   /* load plugin */
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename);
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(filename, effect);
   port = NULL;
   
   if(ladspa_plugin != NULL){
@@ -796,7 +808,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
 					     filename,
 					     effect);
   }else{
-    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
+    lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename, effect);
     
     if(lv2_plugin != NULL){
       port = ags_effect_line_add_lv2_effect(effect_line,
@@ -877,9 +889,101 @@ ags_effect_line_remove_effect(AgsEffectLine *effect_line,
   g_object_unref((GObject *) effect_line);
 }
 
+void
+ags_effect_line_real_map_recall(AgsEffectLine *effect_line)
+{
+  if((AGS_EFFECT_LINE_MAPPED_RECALL & (effect_line->flags)) != 0){
+    return;
+  }
+
+  effect_line->flags |= AGS_EFFECT_LINE_MAPPED_RECALL;
+
+  ags_effect_line_find_port(effect_line);
+}
+
+/**
+ * ags_effect_line_map_recall:
+ * @effect_line: the #AgsEffectLine to add its default recall.
+ *
+ * You may want the @effect_line to add its default recall.
+ */
+void
+ags_effect_line_map_recall(AgsEffectLine *effect_line)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit((GObject *) effect_line,
+		effect_line_signals[MAP_RECALL], 0);
+  g_object_unref((GObject *) effect_line);
+}
+
+GList*
+ags_effect_line_real_find_port(AgsEffectLine *effect_line)
+{
+  GList *port, *tmp_port;
+  GList *line_member, *line_member_start;
+
+  if(effect_line == NULL || effect_line->table == NULL){
+    return(NULL);
+  }
+
+  line_member_start = 
+    line_member = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
+  
+  port = NULL;
+
+  if(line_member != NULL){
+    while(line_member != NULL){
+      if(AGS_IS_LINE_MEMBER(line_member->data)){
+	tmp_port = ags_line_member_find_port(AGS_LINE_MEMBER(line_member->data));
+
+	if(port != NULL){
+	  port = g_list_concat(port,
+			       tmp_port);
+	}else{
+	  port = tmp_port;
+	}
+      }
+
+      line_member = line_member->next;
+    }
+
+    g_list_free(line_member_start);
+  }  
+  
+  return(port);
+}
+
+/**
+ * ags_effect_line_find_port:
+ * @effect_line: the #AgsEffectLine
+ * Returns: an #GList containing all related #AgsPort
+ *
+ * Lookup ports of associated recalls.
+ *
+ * Since: 0.7.8
+ */
+GList*
+ags_effect_line_find_port(AgsEffectLine *effect_line)
+{
+  GList *list;
+
+  list = NULL;
+  g_return_val_if_fail(AGS_IS_EFFECT_LINE(effect_line),
+		       NULL);
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit((GObject *) effect_line,
+		effect_line_signals[FIND_PORT], 0,
+		&list);
+  g_object_unref((GObject *) effect_line);
+
+  return(list);
+}
+
 /**
  * ags_effect_line_new:
- * @effect_line: the parent effect_line
  * @channel: the #AgsChannel to visualize
  *
  * Creates an #AgsEffectLine

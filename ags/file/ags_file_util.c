@@ -65,59 +65,87 @@ ags_file_util_read_value(AgsFile *file,
   if(!xmlStrncmp(type_str,
 		 AGS_FILE_BOOLEAN_PROP,
 		 7)){
-    g_value_init(value, G_TYPE_BOOLEAN);
+    if(!G_VALUE_HOLDS_BOOLEAN(value)){
+      g_value_init(value, G_TYPE_BOOLEAN);
+    }
+    
     g_value_set_boolean(value, ((!xmlStrncmp(content, AGS_FILE_TRUE, 5)) ? TRUE: FALSE));
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_CHAR_PROP,
 		       5)){
-    g_value_init(value, G_TYPE_CHAR);
+    if(!G_VALUE_HOLDS_CHAR(value)){
+      g_value_init(value, G_TYPE_CHAR);
+    }
+    
     g_value_set_schar(value, content[0]);
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_INT64_PROP,
 		       7)){
-    g_value_init(value, G_TYPE_INT64);
+    if(!G_VALUE_HOLDS_INT64(value)){
+      g_value_init(value, G_TYPE_INT64);
+    }
+    
     g_value_set_int64(value, g_ascii_strtoll(content, NULL, 10));
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_UINT64_PROP,
 		       8)){
-    g_value_init(value, G_TYPE_UINT64);
+    if(!G_VALUE_HOLDS_UINT64(value)){
+      g_value_init(value, G_TYPE_UINT64);
+    }
+    
     g_value_set_uint64(value, g_ascii_strtoull(content, NULL, 10));
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_FLOAT_PROP,
 		       6)){
-    g_value_init(value, G_TYPE_FLOAT);
+    if(!G_VALUE_HOLDS_FLOAT(value)){
+      g_value_init(value, G_TYPE_FLOAT);
+    }
+    
     g_value_set_float(value, g_ascii_strtod(content, NULL));
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_DOUBLE_PROP,
 		       7)){
-    g_value_init(value, G_TYPE_DOUBLE);
+    if(!G_VALUE_HOLDS_DOUBLE(value)){
+      g_value_init(value, G_TYPE_DOUBLE);
+    }
+    
     g_value_set_double(value, g_ascii_strtod(content, NULL));
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_CHAR_POINTER_PROP,
 		       13)){
-    g_value_init(value, G_TYPE_STRING);
+    if(!G_VALUE_HOLDS_STRING(value)){
+      g_value_init(value, G_TYPE_STRING);
+    }
+    
     g_value_set_static_string(value, content);
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_BOOLEAN_POINTER_PROP,
 		       14)){
@@ -153,8 +181,9 @@ ags_file_util_read_value(AgsFile *file,
     g_value_set_pointer(value, (gpointer) arr);
     g_free(str_arr);
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_INT64_POINTER_PROP,
 		       11)){
@@ -186,8 +215,9 @@ ags_file_util_read_value(AgsFile *file,
     g_value_set_pointer(value, (gpointer) arr);
     g_free(str_arr);
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_UINT64_POINTER_PROP,
 		       12)){
@@ -219,8 +249,9 @@ ags_file_util_read_value(AgsFile *file,
     g_value_set_pointer(value, (gpointer) arr);
     g_free(str_arr);
 
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_FLOAT_POINTER_PROP,
 		       14)){
@@ -252,8 +283,9 @@ ags_file_util_read_value(AgsFile *file,
     g_value_set_pointer(value, (gpointer) arr);
     g_free(str_arr);
     
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_DOUBLE_POINTER_PROP,
 		       15)){
@@ -285,8 +317,9 @@ ags_file_util_read_value(AgsFile *file,
     g_value_set_pointer(value, (gpointer) arr);
     g_free(str_arr);
     
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = NULL;
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_POINTER_PROP,
 		       9)){
@@ -303,9 +336,10 @@ ags_file_util_read_value(AgsFile *file,
 		     G_CALLBACK(ags_file_util_read_value_resolve), value);
 
     /* xpath */
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = xmlGetProp(node,
 			  "link\0");
+    }
   }else if(!xmlStrncmp(type_str,
 		       AGS_FILE_OBJECT_PROP,
 		       8)){
@@ -322,9 +356,10 @@ ags_file_util_read_value(AgsFile *file,
 		     G_CALLBACK(ags_file_util_read_value_resolve), value);
 
     /* xpath */
-    if(xpath != NULL)
+    if(xpath != NULL){
       *xpath = xmlGetProp(node,
 			  "link\0");
+    }
   }else{
     g_warning("ags_file_util_read_value: unsupported type: %s\0", type_str);
     return;
@@ -649,21 +684,25 @@ ags_file_util_read_parameter(AgsFile *file,
 
   g_free(name_arr);
 
-  if(id != NULL)
+  if(id != NULL){
     *id = (gchar *) xmlGetProp(node, AGS_FILE_ID_PROP);
-
-  if(parameter != NULL)
+  }
+  
+  if(parameter != NULL){
     *parameter = parameter_arr;
-  else
+  }else{
     g_free(parameter);
-
-  if(n_params != NULL)
+  }
+  
+  if(n_params != NULL){
     *n_params = i;
+  }
 
-  if(xpath != NULL)
+  if(xpath != NULL){
     *xpath = xpath_arr;
-  else
+  }else{
     free(xpath_arr);
+  }
 }
 
 xmlNode*

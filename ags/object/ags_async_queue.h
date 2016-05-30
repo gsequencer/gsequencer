@@ -20,9 +20,10 @@
 #ifndef __AGS_ASYNC_QUEUE_H__
 #define __AGS_ASYNC_QUEUE_H__
 
-#include <pthread.h>
-
+#include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
 
 #define AGS_TYPE_ASYNC_QUEUE                    (ags_async_queue_get_type())
 #define AGS_ASYNC_QUEUE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ASYNC_QUEUE, AgsAsyncQueue))
@@ -37,6 +38,9 @@ typedef struct _AgsAsyncQueueInterface AgsAsyncQueueInterface;
 struct _AgsAsyncQueueInterface
 {
   GTypeInterface interface;
+  
+  void (*increment_wait_ref)(AgsAsyncQueue *async_queue);
+  guint (*get_wait_ref)(AgsAsyncQueue *async_queue);
 
   void (*set_run_mutex)(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex);
   pthread_mutex_t* (*get_run_mutex)(AgsAsyncQueue *async_queue);
@@ -49,6 +53,9 @@ struct _AgsAsyncQueueInterface
 };
 
 GType ags_async_queue_get_type();
+
+void ags_async_queue_increment_wait_ref(AgsAsyncQueue *async_queue);
+guint ags_async_queue_get_wait_ref(AgsAsyncQueue *async_queue);
 
 void ags_async_queue_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex);
 pthread_mutex_t* ags_async_queue_get_run_mutex(AgsAsyncQueue *async_queue);

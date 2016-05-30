@@ -32,8 +32,8 @@
 #define AGS_IS_EFFECT_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EFFECT_LINE))
 #define AGS_EFFECT_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EFFECT_LINE, AgsEffectLineClass))
 
-#define AGS_EFFECT_LINE_DEFAULT_VERSION "0.4.3\0"
-#define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 20-03-2015 08:24\0"
+#define AGS_EFFECT_LINE_DEFAULT_VERSION "0.7.8\0"
+#define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
 
 #define AGS_EFFECT_LINE_COLUMNS_COUNT (2)
 
@@ -41,7 +41,9 @@ typedef struct _AgsEffectLine AgsEffectLine;
 typedef struct _AgsEffectLineClass AgsEffectLineClass;
 
 typedef enum{
-  AGS_EFFECT_LINE_CONNECTED        = 1,
+  AGS_EFFECT_LINE_MAPPED_RECALL       = 1,
+  AGS_EFFECT_LINE_PREMAPPED_RECALL    = 1 <<  1,
+  AGS_EFFECT_LINE_CONNECTED           = 1 <<  2,
 }AgsEffectLineFlags;
 
 struct _AgsEffectLine
@@ -66,20 +68,30 @@ struct _AgsEffectLineClass
 {
   GtkVBoxClass vbox;
 
+  void (*set_channel)(AgsEffectLine *effect_line, AgsChannel *channel);
+
   GList* (*add_effect)(AgsEffectLine *effect_line,
 		       gchar *filename,
 		       gchar *effect);
   void (*remove_effect)(AgsEffectLine *effect_line,
 			guint nth);
+
+  void (*map_recall)(AgsEffectLine *effect_line);
+  GList* (*find_port)(AgsEffectLine *effect_line);
 };
 
 GType ags_effect_line_get_type(void);
+
+void ags_effect_line_set_channel(AgsEffectLine *effect_line, AgsChannel *channel);
 
 GList* ags_effect_line_add_effect(AgsEffectLine *effect_line,
 				  gchar *filename,
 				  gchar *effect);
 void ags_effect_line_remove_effect(AgsEffectLine *effect_line,
 				   guint nth);
+
+void ags_effect_line_map_recall(AgsEffectLine *effect_line);
+GList* ags_effect_line_find_port(AgsEffectLine *effect_line);
 
 AgsEffectLine* ags_effect_line_new(AgsChannel *channel);
 

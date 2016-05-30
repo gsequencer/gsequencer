@@ -156,7 +156,7 @@ ags_append_recall_launch(AgsTask *task)
 /**
  * ags_append_recall_new:
  * @audio_loop: the #AgsAudioLoop
- * @recall: the #AgsRecall to append
+ * @playback: the #AgsRecall to append
  *
  * Creates an #AgsAppendRecall.
  *

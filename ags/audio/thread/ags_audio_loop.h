@@ -20,15 +20,16 @@
 #ifndef __AGS_AUDIO_LOOP_H__
 #define __AGS_AUDIO_LOOP_H__
 
-#include <math.h>
-
+#include <glib.h>
 #include <glib-object.h>
 
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
 #else
 #include <ags/thread/ags_thread-posix.h>
-#endif 
+#endif
+
+#include <math.h>
 
 #define AGS_TYPE_AUDIO_LOOP                (ags_audio_loop_get_type())
 #define AGS_AUDIO_LOOP(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_LOOP, AgsAudioLoop))
@@ -102,9 +103,9 @@ void ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio);
 void ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
 
-void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
-void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer devout_play);
+void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer playback);
+void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer playback);
 
-AgsAudioLoop* ags_audio_loop_new(GObject *devout, GObject *application_context);
+AgsAudioLoop* ags_audio_loop_new(GObject *soundcard, GObject *application_context);
 
 #endif /*__AGS_AUDIO_LOOP_H__*/

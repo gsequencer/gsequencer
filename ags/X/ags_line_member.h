@@ -58,6 +58,9 @@ struct _AgsLineMember
   GType widget_type;
   gchar *widget_label;
 
+  gchar *filename;
+  gchar *effect;
+
   gchar *plugin_name;
   gchar *specifier;
 
@@ -80,6 +83,8 @@ struct _AgsLineMemberClass
 
   void (*change_port)(AgsLineMember *line_member,
 		      gpointer port_data);
+
+  GList* (*find_port)(AgsLineMember *line_member);
 };
 
 GType ags_line_member_get_type(void);
@@ -91,7 +96,7 @@ void ags_line_member_set_label(AgsLineMember *line_member,
 void ags_line_member_change_port(AgsLineMember *line_member,
 				 gpointer port_data);
 
-void ags_line_member_find_port(AgsLineMember *line_member);
+GList* ags_line_member_find_port(AgsLineMember *line_member);
 
 AgsLineMember* ags_line_member_new();
 

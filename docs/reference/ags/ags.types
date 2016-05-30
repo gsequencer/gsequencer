@@ -4,7 +4,6 @@ ags_add_audio_signal_get_type
 ags_add_bulk_member_get_type
 ags_add_effect_get_type
 ags_add_line_member_get_type
-ags_add_line_member_get_type
 ags_add_note_get_type
 ags_add_point_to_selection_get_type
 ags_add_recall_container_get_type
@@ -38,6 +37,7 @@ ags_automation_get_type
 ags_automation_toolbar_get_type
 ags_automation_window_get_type
 ags_autosave_thread_get_type
+ags_base_plugin_get_type
 ags_blink_cell_pattern_cursor_get_type
 ags_buffer_audio_signal_get_type
 ags_buffer_channel_get_type
@@ -59,6 +59,7 @@ ags_concurrency_provider_get_type
 ags_concurrent_tree_get_type
 ags_config_get_type
 ags_connectable_get_type
+ags_conversion_get_type
 ags_copy_audio_signal_get_type
 ags_copy_channel_get_type
 ags_copy_channel_run_get_type
@@ -83,8 +84,10 @@ ags_drum_input_line_get_type
 ags_drum_input_pad_get_type
 ags_drum_output_line_get_type
 ags_drum_output_pad_get_type
+ags_dssi_bridge_get_type
 ags_dssi_browser_get_type
 ags_dssi_manager_get_type
+ags_dssi_plugin_get_type
 ags_dynamic_connectable_get_type
 ags_editor_get_type
 ags_effect_bridge_get_type
@@ -113,6 +116,7 @@ ags_file_lookup_get_type
 ags_file_selection_get_type
 ags_free_selection_get_type
 ags_function_get_type
+ags_generic_main_loop_get_type
 ags_generic_preferences_get_type
 ags_gui_thread_get_type
 ags_hindicator_get_type
@@ -134,9 +138,10 @@ ags_jack_port_get_type
 ags_jack_server_get_type
 ags_ladspa_bridge_get_type
 ags_ladspa_browser_get_type
+ags_ladspa_conversion_get_type
 ags_ladspa_manager_get_type
+ags_ladspa_plugin_get_type
 ags_led_get_type
-ags_libao_get_type
 ags_line_editor_get_type
 ags_line_get_type
 ags_line_member_editor_get_type
@@ -149,8 +154,17 @@ ags_loop_channel_get_type
 ags_loop_channel_run_get_type
 ags_lv2_bridge_get_type
 ags_lv2_browser_get_type
+ags_lv2_conversion_get_type
+ags_lv2_event_manager_get_type
+ags_lv2_log_manager_get_type
 ags_lv2_manager_get_type
+ags_lv2_plugin_get_type
+ags_lv2_uri_map_manager_get_type
+ags_lv2_urid_manager_get_type
+ags_lv2_worker_get_type
+ags_lv2_worker_manager_get_type
 ags_lv2ui_manager_get_type
+ags_lv2ui_plugin_get_type
 ags_machine_editor_get_type
 ags_machine_get_type
 ags_machine_radio_button_get_type
@@ -189,6 +203,7 @@ ags_note_edit_get_type
 ags_note_get_type
 ags_notebook_get_type
 ags_open_file_get_type
+ags_open_sf2_sample_get_type
 ags_open_single_file_get_type
 ags_option_menu_get_type
 ags_oscillator_get_type
@@ -302,6 +317,7 @@ ags_stream_channel_get_type
 ags_stream_channel_run_get_type
 ags_stream_get_type
 ags_stream_recycling_get_type
+ags_switch_buffer_flag_get_type
 ags_synth_get_type
 ags_synth_input_line_get_type
 ags_synth_input_pad_get_type
@@ -311,7 +327,6 @@ ags_task_completion_get_type
 ags_task_get_type
 ags_task_thread_get_type
 ags_thread_application_context_get_type
-ags_thread_get_type
 ags_thread_get_type
 ags_thread_pool_get_type
 ags_timestamp_factory_get_type
@@ -324,6 +339,7 @@ ags_track_collection_get_type
 ags_track_collection_mapper_get_type
 ags_tree_iterator_get_type
 ags_turtle_get_type
+ags_turtle_manager_get_type
 ags_unref_audio_signal_get_type
 ags_update_bulk_member_get_type
 ags_vindicator_get_type

@@ -268,7 +268,7 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
 
 /**
  * ags_set_buffer_size_new:
- * @soundcard: the #AgsSoundcard reset
+ * @gobject: the #AgsSoundcard reset
  * @buffer_size: the new count of buffer size
  *
  * Creates an #AgsSetAudioChannels.

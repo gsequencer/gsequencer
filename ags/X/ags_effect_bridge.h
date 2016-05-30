@@ -32,8 +32,8 @@
 #define AGS_IS_EFFECT_BRIDGE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EFFECT_BRIDGE))
 #define AGS_EFFECT_BRIDGE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EFFECT_BRIDGE, AgsEffectBridgeClass))
 
-#define AGS_EFFECT_BRIDGE_DEFAULT_VERSION "0.4.3\0"
-#define AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID "CEST 15-03-2015 13:40\0"
+#define AGS_EFFECT_BRIDGE_DEFAULT_VERSION "0.7.8\0"
+#define AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
 
 #define AGS_EFFECT_BRIDGE_MAX_COLUMNS (2)
 
@@ -41,11 +41,13 @@ typedef struct _AgsEffectBridge AgsEffectBridge;
 typedef struct _AgsEffectBridgeClass AgsEffectBridgeClass;
 
 typedef enum{
-  AGS_EFFECT_BRIDGE_CONNECTED        = 1,
-  AGS_EFFECT_BRIDGE_DISPLAY_INPUT    = 1 <<  1,
-  AGS_EFFECT_BRIDGE_BULK_OUTPUT      = 1 <<  2,
-  AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT   = 1 <<  3,
-  AGS_EFFECT_BRIDGE_BULK_INPUT       = 1 <<  4,
+  AGS_EFFECT_BRIDGE_MAPPED_RECALL     = 1,
+  AGS_EFFECT_BRIDGE_PREMAPPED_RECALL  = 1 <<  1,
+  AGS_EFFECT_BRIDGE_CONNECTED         = 1 <<  2, 
+  AGS_EFFECT_BRIDGE_DISPLAY_INPUT     = 1 <<  3,
+  AGS_EFFECT_BRIDGE_BULK_OUTPUT       = 1 <<  4,
+  AGS_EFFECT_BRIDGE_DISPLAY_OUTPUT    = 1 <<  5,
+  AGS_EFFECT_BRIDGE_BULK_INPUT        = 1 <<  6,
 }AgsEffectBridgeFlags;
 
 struct _AgsEffectBridge
@@ -60,8 +62,6 @@ struct _AgsEffectBridge
   gchar *build_id;
   
   AgsAudio *audio;
-  gulong set_audio_channels_handler;
-  gulong set_pads_handler;
   
   GType bulk_output_type;
   GtkWidget *bulk_output;
@@ -87,6 +87,9 @@ struct _AgsEffectBridgeClass
   void (*resize_pads)(AgsEffectBridge *effect_bridge,
 		      GType channel_type,
 		      guint new_size, guint old_size);
+
+  void (*map_recall)(AgsEffectBridge *effect_bridge);
+  GList* (*find_port)(AgsEffectBridge *effect_bridge);
 };
 
 GType ags_effect_bridge_get_type(void);
@@ -96,6 +99,9 @@ void ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
 void ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
 				   GType channel_type,
 				   guint new_size, guint old_size);
+
+void ags_effect_bridge_map_recall(AgsEffectBridge *effect_bridge);
+GList* ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge);
 
 AgsEffectBridge* ags_effect_bridge_new(AgsAudio *audio);
 

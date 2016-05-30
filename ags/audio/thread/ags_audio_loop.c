@@ -82,7 +82,7 @@ void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlayb
  * @short_description: audio loop
  * @title: AgsAudioLoop
  * @section_id:
- * @include: ags/thread/ags_audio_loop.h
+ * @include: ags/audio/thread/ags_audio_loop.h
  *
  * The #AgsAudioLoop is suitable as #AgsMainLoop and does
  * audio processing.
@@ -185,7 +185,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsRecall to add for playback.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("play-recall\0",
 				   "recall to run\0",
@@ -201,7 +201,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsChannel to add for playback.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("play-channel\0",
 				   "channel to run\0",
@@ -217,7 +217,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsAudio to add for playback.
    * 
-   * Since: 0.4
+   * Since: 0.4.0
    */
   param_spec = g_param_spec_object("play-audio\0",
 				   "audio to run\0",
@@ -316,7 +316,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->application_context = NULL;
   audio_loop->soundcard = NULL;
-  
+
+  audio_loop->async_queue = NULL;
+    
   /* tree lock mutex */
   pthread_mutexattr_init(&(audio_loop->tree_lock_mutexattr));
   pthread_mutexattr_settype(&(audio_loop->tree_lock_mutexattr), PTHREAD_MUTEX_RECURSIVE);
@@ -474,6 +476,18 @@ ags_audio_loop_get_tree_lock(AgsMainLoop *main_loop)
 void
 ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
 {
+  if(AGS_AUDIO_LOOP(main_loop)->async_queue == async_queue){
+    return;
+  }
+
+  if(AGS_AUDIO_LOOP(main_loop)->async_queue != NULL){
+    g_object_unref(AGS_AUDIO_LOOP(main_loop)->async_queue);
+  }
+  
+  if(async_queue != NULL){
+    g_object_ref(async_queue);
+  }
+  
   AGS_AUDIO_LOOP(main_loop)->async_queue = async_queue;
 }
 
@@ -541,7 +555,7 @@ ags_audio_loop_start(AgsThread *thread)
 
   audio_loop = AGS_AUDIO_LOOP(thread);
 
-  if((AGS_THREAD_SINGLE_LOOP & (thread->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     /*  */
     AGS_THREAD_CLASS(ags_audio_loop_parent_class)->start(thread);
   }
@@ -554,7 +568,7 @@ ags_audio_loop_run(AgsThread *thread)
 
   guint val;
 
-  if(!thread->rt_setup){
+  if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
     /* Declare ourself as a real time task */
@@ -564,9 +578,9 @@ ags_audio_loop_run(AgsThread *thread)
       perror("sched_setscheduler failed\0");
     }
 
-    thread->rt_setup = TRUE;
+    g_atomic_int_or(&(thread->flags),
+		    AGS_THREAD_RT_SETUP);
   }
-
   
   //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
   audio_loop = AGS_AUDIO_LOOP(thread);
@@ -641,7 +655,7 @@ ags_audio_loop_run(AgsThread *thread)
  * Runs all recalls assigned with @audio_loop. You may want to use
  * #AgsAppendRecall task to add an #AgsRecall.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
@@ -773,7 +787,7 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
  * #AgsRecycling around prior added #AgsChannel with #AgsAppendChannel
  * task.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
@@ -902,7 +916,8 @@ ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback
   thread = playback->channel_thread[0];
   channel_thread = (AgsChannelThread *) thread;
   
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0 &&
+     (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
     /* wakeup wait */
     pthread_mutex_lock(channel_thread->wakeup_mutex);
 
@@ -935,7 +950,8 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback
 
     pthread_mutex_lock(channel_thread->done_mutex);
   
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0 &&
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
       
       if((AGS_CHANNEL_THREAD_WAIT_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
 	g_atomic_int_and(&(channel_thread->flags),
@@ -978,7 +994,7 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback
  * Like ags_audio_loop_play_channel() except that it runs all channels within
  * #AgsAudio.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
@@ -1202,22 +1218,26 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
     AgsAudioThread *audio_thread;
 
     thread = playback_domain->audio_thread[1];
-    audio_thread = (AgsAudioThread *) thread;
-    
-    do_sequencer = TRUE;
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
-      /* wakeup wait */
-      pthread_mutex_lock(audio_thread->wakeup_mutex);
+    if(thread != NULL){
+      audio_thread = (AgsAudioThread *) thread;
+    
+      do_sequencer = TRUE;
+
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	/* wakeup wait */
+	pthread_mutex_lock(audio_thread->wakeup_mutex);
       
-      g_atomic_int_and(&(audio_thread->flags),
-		       (~AGS_AUDIO_THREAD_WAIT));
+	g_atomic_int_and(&(audio_thread->flags),
+			 (~AGS_AUDIO_THREAD_WAIT));
       
-      if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
-	pthread_cond_signal(audio_thread->wakeup_cond);
+	if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
+	  pthread_cond_signal(audio_thread->wakeup_cond);
+	}
+      
+	pthread_mutex_unlock(audio_thread->wakeup_mutex);
       }
-      
-      pthread_mutex_unlock(audio_thread->wakeup_mutex);
     }
   }
 
@@ -1227,22 +1247,26 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
     AgsAudioThread *audio_thread;
 
     thread = playback_domain->audio_thread[2];
-    audio_thread = (AgsAudioThread *) thread;
 
-    do_notation = TRUE;
+    if(thread != NULL){
+      audio_thread = (AgsAudioThread *) thread;
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
-      /* wakeup wait */
-      pthread_mutex_lock(audio_thread->wakeup_mutex);
+      do_notation = TRUE;
+
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+	/* wakeup wait */
+	pthread_mutex_lock(audio_thread->wakeup_mutex);
 	  
-      g_atomic_int_and(&(audio_thread->flags),
-		       (~AGS_AUDIO_THREAD_WAIT));
+	g_atomic_int_and(&(audio_thread->flags),
+			 (~AGS_AUDIO_THREAD_WAIT));
 	  
-      if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
-	pthread_cond_signal(audio_thread->wakeup_cond);
+	if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
+	  pthread_cond_signal(audio_thread->wakeup_cond);
+	}
+	  
+	pthread_mutex_unlock(audio_thread->wakeup_mutex);
       }
-	  
-      pthread_mutex_unlock(audio_thread->wakeup_mutex);
     }
   }
 }
@@ -1262,9 +1286,13 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
   GList *playback;
   gboolean do_sequencer, do_notation;
   gboolean found_sequencer, found_notation;
+  gboolean initial_sequencer, initial_notation;
   
   do_sequencer = FALSE;
   do_notation = FALSE;
+
+  initial_sequencer = FALSE;
+  initial_notation = FALSE;
   
   /* sequencer */
   if((AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
@@ -1275,7 +1303,8 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 
     pthread_mutex_lock(audio_thread->done_mutex);
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[1]->flags)))) != 0){
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[1]->flags)))) != 0 &&
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(playback_domain->audio_thread[1]->flags)))) == 0){
 
       
       if((AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
@@ -1288,6 +1317,8 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 			    audio_thread->done_mutex);
 	}
       }
+    }else{
+      initial_sequencer = TRUE;
     }
     
     g_atomic_int_or(&(audio_thread->flags),
@@ -1302,30 +1333,36 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
     AgsAudioThread *audio_thread;
 
     audio_thread = AGS_AUDIO_THREAD(playback_domain->audio_thread[2]);
-    do_notation = TRUE;
 
-    pthread_mutex_lock(audio_thread->done_mutex);
+    if(audio_thread != NULL){
+      do_notation = TRUE;
 
-    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) != 0){
+      pthread_mutex_lock(audio_thread->done_mutex);
 
-      if((AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
+      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) != 0 &&
+	 (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(playback_domain->audio_thread[2]->flags)))) == 0){
 
-	g_atomic_int_and(&(audio_thread->flags),
-			 (~AGS_AUDIO_THREAD_DONE_SYNC));
+	if((AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
+
+	  g_atomic_int_and(&(audio_thread->flags),
+			   (~AGS_AUDIO_THREAD_DONE_SYNC));
 	
-	while((AGS_AUDIO_THREAD_DONE_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) == 0 &&
-	      (AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
-	  pthread_cond_wait(audio_thread->done_cond,
-			    audio_thread->done_mutex);
+	  while((AGS_AUDIO_THREAD_DONE_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) == 0 &&
+		(AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
+	    pthread_cond_wait(audio_thread->done_cond,
+			      audio_thread->done_mutex);
+	  }
 	}
+      }else{
+	initial_notation = TRUE;
       }
-    }
       
-    g_atomic_int_or(&(audio_thread->flags),
-		    (AGS_AUDIO_THREAD_WAIT_SYNC |
-		     AGS_AUDIO_THREAD_DONE_SYNC));
+      g_atomic_int_or(&(audio_thread->flags),
+		      (AGS_AUDIO_THREAD_WAIT_SYNC |
+		       AGS_AUDIO_THREAD_DONE_SYNC));
     
-    pthread_mutex_unlock(audio_thread->done_mutex);
+      pthread_mutex_unlock(audio_thread->done_mutex);
+    }
   }
 
   /* check if flags are still valid */
@@ -1346,13 +1383,15 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
     playback = playback->next;
   }
 
-  if(!found_sequencer){
+  if(!found_sequencer &&
+     !initial_sequencer){
     ags_thread_stop(playback_domain->audio_thread[1]);
     g_atomic_int_and(&(playback_domain->flags),
 		     (~AGS_PLAYBACK_DOMAIN_SEQUENCER));
   }
 
-  if(!found_notation){
+  if(!found_notation &&
+     !initial_notation){
     ags_thread_stop(playback_domain->audio_thread[2]);
 
     g_atomic_int_and(&(playback_domain->flags),
@@ -1360,7 +1399,8 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
   }
 
   /* remove domain from playback */
-  if(!found_sequencer && !found_notation){
+  if(!found_sequencer && !found_notation &&
+     !initial_sequencer && !initial_notation){
     ags_audio_loop_remove_audio(audio_loop,
 				playback_domain->domain);
   }
@@ -1373,7 +1413,7 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
  *
  * Add audio for playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
@@ -1395,7 +1435,7 @@ ags_audio_loop_add_audio(AgsAudioLoop *audio_loop, GObject *audio)
  *
  * Remove audio of playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
@@ -1417,7 +1457,7 @@ ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio)
  *
  * Add channel for playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
@@ -1439,7 +1479,7 @@ ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel)
  *
  * Remove channel of playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
@@ -1457,11 +1497,11 @@ ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel)
 /**
  * ags_audio_loop_add_recall:
  * @audio_loop: the #AgsAudioLoop
- * @recall: an #AgsRecall
+ * @playback: an #AgsRecall
  *
  * Add recall for playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer playback)
@@ -1479,11 +1519,11 @@ ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer playback)
 /**
  * ags_audio_loop_remove_recall:
  * @audio_loop: the #AgsAudioLoop
- * @recall: an #AgsRecall
+ * @playback: an #AgsRecall
  *
  * Remove recall of playback.
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 void
 ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer playback)
@@ -1505,7 +1545,7 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer playback)
  *
  * Returns: the new #AgsAudioLoop
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 AgsAudioLoop*
 ags_audio_loop_new(GObject *soundcard, GObject *application_context)

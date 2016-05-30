@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_BULK_MEMBER_H__
@@ -36,6 +37,9 @@
 
 #define AGS_BULK_PORT(ptr) ((AgsBulkPort *)(ptr))
 
+#define AGS_BULK_MEMBER_DEFAULT_VERSION "0.7.8\0"
+#define AGS_BULK_MEMBER_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
+
 typedef struct _AgsBulkMember AgsBulkMember;
 typedef struct _AgsBulkMemberClass AgsBulkMemberClass;
 typedef struct _AgsBulkPort AgsBulkPort;
@@ -53,6 +57,11 @@ struct _AgsBulkMember
 
   guint flags;
 
+  gchar *version;
+  gchar *build_id;
+
+  GList *handler;
+  
   GType widget_type;
   gchar *widget_label;
 
@@ -65,6 +74,7 @@ struct _AgsBulkMember
   gchar *control_port;
 
   GList *bulk_port;
+  GList *recall_bulk_port;
   
   GType task_type;
 };
@@ -75,6 +85,8 @@ struct _AgsBulkMemberClass
 
   void (*change_port)(AgsBulkMember *bulk_member,
 		      gpointer port_data);
+
+  GList* (*find_port)(AgsBulkMember *bulk_member);
 };
 
 struct _AgsBulkPort
@@ -82,16 +94,12 @@ struct _AgsBulkPort
   AgsPort *port;
   gpointer port_data;
   gboolean active;
-
-  AgsPort *recall_port;
-  gpointer recall_port_data;
-  gboolean recall_active;
 };
 
 GType ags_bulk_member_get_type(void);
 
-AgsBulkPort* ags_bulk_port_alloc(AgsPort *port,
-				 AgsPort *recall_port);
+AgsBulkPort* ags_bulk_port_alloc(AgsPort *port);
+GList* ags_bulk_port_find(GList *list, AgsPort *port);
 
 GtkWidget* ags_bulk_member_get_widget(AgsBulkMember *bulk_member);
 void ags_bulk_member_set_label(AgsBulkMember *bulk_member,
@@ -100,7 +108,7 @@ void ags_bulk_member_set_label(AgsBulkMember *bulk_member,
 void ags_bulk_member_change_port(AgsBulkMember *bulk_member,
 				 gpointer port_data);
 
-void ags_bulk_member_find_port(AgsBulkMember *bulk_member);
+GList* ags_bulk_member_find_port(AgsBulkMember *bulk_member);
 
 AgsBulkMember* ags_bulk_member_new();
 

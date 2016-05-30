@@ -48,8 +48,6 @@ void ags_window_disconnect(AgsConnectable *connectable);
 void ags_window_show(GtkWidget *widget);
 gboolean ags_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
-static GList* ags_window_standard_machine_counter();
-
 /**
  * SECTION:ags_window
  * @short_description: The window object.
@@ -63,7 +61,7 @@ static GList* ags_window_standard_machine_counter();
 enum{
   PROP_0,
   PROP_SOUNDCARD,
-  PROP_MAIN,
+  PROP_APPLICATION_CONTEXT,
 };
 
 static gpointer ags_window_parent_class = NULL;
@@ -137,7 +135,7 @@ ags_window_class_init(AgsWindowClass *window)
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MAIN,
+				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
 
@@ -199,7 +197,7 @@ ags_window_init(AgsWindow *window)
   gtk_scrolled_window_add_with_viewport((GtkScrolledWindow *) scrolled_window,
 					(GtkWidget *) window->machines);
 
-  window->machine_counter = ags_window_standard_machine_counter();
+  window->machine_counter = ags_window_standard_machine_counter_alloc();
   window->selected = NULL;
   
   window->editor = g_object_new(AGS_TYPE_EDITOR,
@@ -218,8 +216,10 @@ ags_window_init(AgsWindow *window)
 		     (GtkWidget *) window->navigation,
 		     FALSE, FALSE, 0);
 
+  window->dialog = NULL;
+
   window->automation_window = ags_automation_window_new(window);
-  
+
   window->export_window = ags_export_window_new();
   window->import_window = NULL;
   
@@ -265,7 +265,7 @@ ags_window_set_property(GObject *gobject,
 		   NULL);
     }
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     {
       AgsApplicationContext *application_context;
 
@@ -309,7 +309,7 @@ ags_window_get_property(GObject *gobject,
   case PROP_SOUNDCARD:
     g_value_set_object(value, window->soundcard);
     break;
-  case PROP_MAIN:
+  case PROP_APPLICATION_CONTEXT:
     g_value_set_object(value, window->application_context);
     break;
   default:
@@ -395,15 +395,19 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 }
 
 /**
- * @window: the #AgsWindow
- * @machine_type: the machine type
+ * ags_window_standard_machine_counter_alloc:
  *
- * Keep track of count of machines. Well known machines.
+ * Keep track of count of machines. Allocates a #GList of well
+ * known machines.
+ * 
+ * Returns: a new #GList containing #AgsMachineCounter for know machines
+ * 
+ * Since: 0.5.0
  */
-static GList*
-ags_window_standard_machine_counter()
+GList*
+ags_window_standard_machine_counter_alloc()
 {
-  static GList *machine_counter;
+  GList *machine_counter = NULL;
 
   machine_counter = NULL;
 
@@ -425,15 +429,20 @@ ags_window_standard_machine_counter()
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_FFPLAYER, 0));
-
+  
   return(machine_counter);
 }
 
 /**
+ * ags_window_find_machine_counter:
  * @window: the #AgsWindow
  * @machine_type: the machine type
  *
  * Keep track of count of machines. Lookup window's counter.
+ * 
+ * Returns: an #AgsMachineCounter
+ * 
+ * Since: 0.5.0
  */
 AgsMachineCounter*
 ags_window_find_machine_counter(AgsWindow *window,
@@ -455,10 +464,13 @@ ags_window_find_machine_counter(AgsWindow *window,
 }
 
 /**
+ * ags_window_increment_machine_counter:
  * @window: the #AgsWindow
  * @machine_type: the machine type
  *
  * Keep track of count of machines. Increment window's counter.
+ * 
+ * Since: 0.5.0
  */
 void
 ags_window_increment_machine_counter(AgsWindow *window,
@@ -475,10 +487,13 @@ ags_window_increment_machine_counter(AgsWindow *window,
 }
 
 /**
+ * ags_window_decrement_machine_counter:
  * @window: the #AgsWindow
  * @machine_type: the machine type
  *
  * Keep track of count of machines. Decrement window's counter.
+ * 
+ * Since: 0.5.0
  */
 void
 ags_window_decrement_machine_counter(AgsWindow *window,
@@ -495,12 +510,17 @@ ags_window_decrement_machine_counter(AgsWindow *window,
 }
 
 /**
+ * ags_machine_counter_alloc:
  * @version: the machine's version
  * @build_id: the machine's build id
  * @machine_type: the machine type
  * @initial_value: initialize counter
  *
  * Keep track of count of machines.
+ * 
+ * Returns: an #AgsMachineCounter
+ * 
+ * Since: 0.5.0
  */
 AgsMachineCounter*
 ags_machine_counter_alloc(gchar *version, gchar *build_id,
@@ -514,6 +534,8 @@ ags_machine_counter_alloc(gchar *version, gchar *build_id,
   machine_counter->build_id = build_id;
 
   machine_counter->machine_type = machine_type;
+  machine_counter->filename = NULL;
+  machine_counter->effect = NULL;
   machine_counter->counter = initial_value;
 
   return(machine_counter);

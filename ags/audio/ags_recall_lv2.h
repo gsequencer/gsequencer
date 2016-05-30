@@ -40,10 +40,17 @@
 typedef struct _AgsRecallLv2 AgsRecallLv2;
 typedef struct _AgsRecallLv2Class AgsRecallLv2Class;
 
+typedef enum{
+  AGS_RECALL_LV2_HAS_EVENT_PORT   = 1,
+  AGS_RECALL_LV2_HAS_ATOM_PORT    = 1 <<  1,
+}AgsRecallLv2FLags;
+
 struct _AgsRecallLv2
 {
   AgsRecallChannel recall_channel;
 
+  guint flags;
+  
   AgsTurtle *turtle;
   
   gchar *filename;
@@ -58,6 +65,9 @@ struct _AgsRecallLv2
 
   uint32_t *output_port;
   uint32_t output_lines;
+
+  uint32_t event_port;
+  uint32_t atom_port;
 };
 
 struct _AgsRecallLv2Class
@@ -68,6 +78,9 @@ struct _AgsRecallLv2Class
 GType ags_recall_lv2_get_type();
 
 GList* ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2);
+void ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
+				    GObject *port,
+				    gpointer port_descriptor);
 
 void ags_recall_lv2_short_to_float(signed short *buffer,
 				   float *destination,

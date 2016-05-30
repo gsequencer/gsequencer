@@ -66,6 +66,7 @@ typedef enum{
   AGS_RECALL_PERSISTENT_SEQUENCER  = 1 << 18,
   AGS_RECALL_PERSISTENT_NOTATION   = 1 << 19,
   AGS_RECALL_SKIP_DEPENDENCIES     = 1 << 20,
+  AGS_RECALL_BULK_MODE             = 1 << 21,
 }AgsRecallFlags;
 
 typedef enum{
@@ -83,9 +84,6 @@ struct _AgsRecall
 
   guint flags;
 
-  GObject *soundcard;
-  GObject *container; // see AgsRecallContainer
-
   gchar *version;
   gchar *build_id;
 
@@ -93,6 +91,9 @@ struct _AgsRecall
   gchar *name;
 
   gchar *xml_type;
+
+  GObject *soundcard;
+  GObject *container; // see AgsRecallContainer
 
   GList *dependencies;
 
@@ -120,6 +121,7 @@ struct _AgsRecallClass
   void (*run_init_inter)(AgsRecall *recall);
   void (*run_init_post)(AgsRecall *recall);
 
+  void (*automate)(AgsRecall *recall);
   void (*run_pre)(AgsRecall *recall);
   void (*run_inter)(AgsRecall *recall);
   void (*run_post)(AgsRecall *recall);
@@ -141,10 +143,10 @@ struct _AgsRecallClass
 
 /**
  * AgsRecallHandler:
- * @signal_name the signal to listen
- * @callback the callback to use
- * @data user data to pass
- * @handler the handler id
+ * @signal_name: the signal to listen
+ * @callback: the callback to use
+ * @data: user data to pass
+ * @handler: the handler id
  *
  * A #AgsRecallHandler-struct acts as a callback definition
  */
@@ -160,13 +162,14 @@ GType ags_recall_get_type();
 
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
 
-void ags_recall_resolve_dependencies(AgsRecall *reall);
+void ags_recall_resolve_dependencies(AgsRecall *recall);
 void ags_recall_child_added(AgsRecall *parent, AgsRecall *child);
 
 void ags_recall_run_init_pre(AgsRecall *recall);
 void ags_recall_run_init_inter(AgsRecall *recall);
 void ags_recall_run_init_post(AgsRecall *recall);
 
+void ags_recall_automate(AgsRecall *recall);
 void ags_recall_run_pre(AgsRecall *recall);
 void ags_recall_run_inter(AgsRecall *recall);
 void ags_recall_run_post(AgsRecall *recall);
@@ -185,28 +188,28 @@ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
 void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
 void ags_recall_set_soundcard_recursive(AgsRecall *recall, GObject *soundcard);
 
-void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gint count);
+void ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count);
 
-void ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *dependency);
-void ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *template);
+void ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
+void ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency);
 GList* ags_recall_get_dependencies(AgsRecall *recall);
 
 void ags_recall_remove_child(AgsRecall *recall, AgsRecall *child);
-void ags_recall_add_child(AgsRecall *recall, AgsRecall *child);
+void ags_recall_add_child(AgsRecall *parent, AgsRecall *child);
 GList* ags_recall_get_children(AgsRecall *recall);
 
-GList* ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect);
+GList* ags_recall_get_by_effect(GList *list, gchar *filename, gchar *effect);
 GList* ags_recall_find_by_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect);
 
-GList* ags_recall_find_type(GList *recall, GType type);
-GList* ags_recall_find_template(GList *recall);
-GList* ags_recall_template_find_type(GList *recall, GType type);
-GList* ags_recall_template_find_all_type(GList *recall, ...);
-GList* ags_recall_find_type_with_recycling_context(GList *recall, GType type, GObject *recycling_context);
-GList* ags_recall_find_recycling_context(GList *recall, GObject *recycling_context);
+GList* ags_recall_find_type(GList *recall_i, GType type);
+GList* ags_recall_find_template(GList *recall_i);
+GList* ags_recall_template_find_type(GList *recall_i, GType type);
+GList* ags_recall_template_find_all_type(GList *recall_i, ...);
+GList* ags_recall_find_type_with_recycling_context(GList *recall_i, GType type, GObject *recycling_context);
+GList* ags_recall_find_recycling_context(GList *recall_i, GObject *recycling_context);
 GList* ags_recall_find_provider(GList *recall, GObject *provider);
 GList* ags_recall_template_find_provider(GList *recall, GObject *provider);
-GList* ags_recall_find_provider_with_recycling_context(GList *recall, GObject *provider, GObject *recycling_context);
+GList* ags_recall_find_provider_with_recycling_context(GList *recall_i, GObject *provider, GObject *recycling_context);
 
 void ags_recall_run_init(AgsRecall *recall, guint stage);
 
@@ -218,6 +221,9 @@ void ags_recall_add_handler(AgsRecall *recall,
 			    AgsRecallHandler *recall_handler);
 void ags_recall_remove_handler(AgsRecall *recall,
 			       AgsRecallHandler *recall_handler);
+
+void ags_recall_lock_port(AgsRecall *recall);
+void ags_recall_unlock_port(AgsRecall *recall);
 
 AgsRecall* ags_recall_new();
 

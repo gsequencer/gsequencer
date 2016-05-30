@@ -44,6 +44,8 @@ struct _AgsAutomationArea
 {
   GObject gobject;
 
+  guint flags;
+  
   guint y;
   guint height;
   
@@ -51,6 +53,11 @@ struct _AgsAutomationArea
 
   AgsAudio *audio;
   GType channel_type;
+
+  gchar *filename;
+  gchar *effect;
+  gchar *control_specifier;
+
   gchar *control_name;
 };
 

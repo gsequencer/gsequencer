@@ -23,12 +23,25 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/thread/ags_timestamp_thread.h>
+#include <ags/thread/ags_timestamp.h>
+
 #define AGS_TYPE_PATTERN                (ags_pattern_get_type())
 #define AGS_PATTERN(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PATTERN, AgsPattern))
 #define AGS_PATTERN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PATTERN, AgsPatternClass))
 #define AGS_IS_PATTERN(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PATTERN))
 #define AGS_IS_PATTERN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PATTERN))
 #define AGS_PATTERN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PATTERN, AgsPatternClass))
+
+#define AGS_PATTERN_DEFAULT_BPM (120.0)
+
+#define AGS_PATTERN_TICS_PER_BEAT (1.0)
+#define AGS_PATTERN_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
+#define AGS_PATTERN_MAXIMUM_NOTE_LENGTH (16.0)
+
+#define AGS_PATTERN_DEFAULT_LENGTH (65535.0 / AGS_PATTERN_TICS_PER_BEAT - AGS_PATTERN_MAXIMUM_NOTE_LENGTH)
+#define AGS_PATTERN_DEFAULT_JIFFIE (60.0 / AGS_PATTERN_DEFAULT_BPM / AGS_PATTERN_TICS_PER_BEAT)
+#define AGS_PATTERN_DEFAULT_DURATION (AGS_PATTERN_DEFAULT_LENGTH * AGS_PATTERN_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
 
 typedef struct _AgsPattern AgsPattern;
 typedef struct _AgsPatternClass AgsPatternClass;
@@ -56,9 +69,9 @@ struct _AgsPatternClass
 
 GType ags_pattern_get_type();
 
-AgsPattern* ags_pattern_get_by_timestamp(GList *list, GObject *timestamp);
+GList* ags_pattern_find_near_timestamp(GList *pattern, GObject *timestamp);
 
-void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint lenght);
+void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length);
 
 gboolean ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit);
 void ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit);

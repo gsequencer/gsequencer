@@ -187,7 +187,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   AgsAudioSignal *audio_signal;
   unsigned long samplerate;
   unsigned long buffer_size;
-  unsigned long i;
+  unsigned long i, i_stop;
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_init_pre(recall);
@@ -212,7 +212,13 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   recall_ladspa_run->ladspa_handle = (LADSPA_Handle *) malloc(recall_ladspa->input_lines *
 							      sizeof(LADSPA_Handle));
 
-  for(i = 0; i < recall_ladspa->input_lines; i++){
+  if(recall_ladspa->input_lines < recall_ladspa->output_lines){
+    i_stop = recall_ladspa->output_lines;
+  }else{
+    i_stop = recall_ladspa->input_lines;
+  }
+  
+  for(i = 0; i < i_stop; i++){
     /* instantiate ladspa */
     recall_ladspa_run->ladspa_handle[i] = (LADSPA_Handle *) recall_ladspa->plugin_descriptor->instantiate(recall_ladspa->plugin_descriptor,
 													  samplerate);
@@ -239,8 +245,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
 						   &(recall_ladspa_run->output[i]));
   }
 
-
-  for(i = 0; i < recall_ladspa->input_lines; i++){
+  for(i = 0; i < i_stop; i++){
     if(recall_ladspa->plugin_descriptor->activate != NULL){
       recall_ladspa->plugin_descriptor->activate(recall_ladspa_run->ladspa_handle[i]);
     }
@@ -331,7 +336,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
   GList *port;
   gchar *path;
   unsigned long port_count;
-  unsigned long i, j;
+  unsigned long i, j, j_stop;
 
   LADSPA_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
@@ -345,6 +350,12 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 
   port_count = plugin_descriptor->PortCount;
   port_descriptor = plugin_descriptor->PortDescriptors;
+  
+  if(recall_ladspa->input_lines < recall_ladspa->output_lines){
+    j_stop = recall_ladspa->output_lines;
+  }else{
+    j_stop = recall_ladspa->input_lines;
+  }
 
   for(i = 0; i < port_count; i++){
     if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
@@ -371,7 +382,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 	  list = list->next;
 	}
 
-	for(j = 0; j < recall_ladspa->input_lines; j++){
+	for(j = 0; j < j_stop; j++){
 	  g_message("connecting port[%d]: %d/%d\0", j, i, port_count);
 	  port_data = (LADSPA_Data *) &(current->port_value.ags_port_ladspa);
 	  recall_ladspa->plugin_descriptor->connect_port(recall_ladspa_run->ladspa_handle[j],

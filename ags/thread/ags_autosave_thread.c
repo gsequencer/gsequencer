@@ -173,11 +173,7 @@ ags_autosave_thread_init(AgsAutosaveThread *autosave_thread)
 
   thread = AGS_THREAD(autosave_thread);
 
-  g_atomic_int_or(&(thread->flags), 
-		  AGS_THREAD_READY);
-
   thread->freq = AGS_AUTOSAVE_THREAD_DEFAULT_JIFFIE;
-
 
   g_atomic_int_set(&(autosave_thread->tic), 0);
   g_atomic_int_set(&(autosave_thread->last_sync), 0);

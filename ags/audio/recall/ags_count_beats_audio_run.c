@@ -1007,6 +1007,8 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 
   if((AGS_RECALL_ID_SEQUENCER & (recall->recall_id->flags)) != 0){
     sequencer = TRUE;
+  }else{
+    sequencer = FALSE;
   }
 
   notation = FALSE;

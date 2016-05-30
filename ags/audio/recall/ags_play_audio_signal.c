@@ -272,10 +272,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  buffer0 = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
-  buffer1 = ags_soundcard_get_next_buffer(AGS_SOUNDCARD(soundcard));
+  buffer0 = ags_soundcard_get_next_buffer(AGS_SOUNDCARD(soundcard)); // ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
+  buffer1 = NULL;
   
-  if(buffer0 == NULL ||
+  if(buffer0 == NULL && 
      buffer1 == NULL){
     g_warning("no output buffer\0");
     return;
@@ -350,7 +350,7 @@ ags_play_audio_signal_duplicate(AgsRecall *recall,
  * ags_play_audio_signal_new:
  * @source: the source #AgsAudioSignal
  * @soundcard: the #GObject outputting to
- * @attack: the attack
+ * @audio_channel: the audio channel
  *
  * Creates an #AgsPlayAudioSignal
  *

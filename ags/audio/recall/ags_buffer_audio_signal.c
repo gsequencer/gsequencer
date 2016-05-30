@@ -169,6 +169,7 @@ void
 ags_buffer_audio_signal_finalize(GObject *gobject)
 {
   /* empty */
+  g_object_unref(AGS_RECALL_AUDIO_SIGNAL(gobject)->destination);
 
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_audio_signal_parent_class)->finalize(gobject); 
@@ -243,7 +244,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   gchar *str;
   
   pthread_mutex_t *application_mutex;
-
+  pthread_mutex_t *recycling_mutex;
+  
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
   buffer_recycling = AGS_BUFFER_RECYCLING(recall->parent);
 
@@ -273,9 +275,19 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   free(str);
 
   pthread_mutex_unlock(application_mutex);
-  
+
+  /* recycling */
   //  recall->flags &= (~AGS_RECALL_PERSISTENT);
   recycling = AGS_RECALL_RECYCLING(buffer_recycling)->destination;
+
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* recycling context */
   recycling_context = recall->recall_id->recycling_context;
 
   parent_recall_id = ags_recall_id_find_recycling_context(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->destination->recall_id,
@@ -289,19 +301,25 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   destination = ags_audio_signal_new((GObject *) soundcard,
 				     (GObject *) recycling,
 				     (GObject *) parent_recall_id);
+  g_object_ref(destination);
   ags_recycling_create_audio_signal_with_defaults(recycling,
 						  destination,
 						  delay, attack);
-  length = 3; //(guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
+  length = 3; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
   ags_audio_signal_stream_resize(destination,
 				 length);
 
   ags_audio_signal_connect(destination);
   
   destination->stream_current = destination->stream_beginning;
+
+  pthread_mutex_lock(recycling_mutex);
+  
+  AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination = destination;
   ags_recycling_add_audio_signal(recycling,
 				 destination);
-  AGS_RECALL_AUDIO_SIGNAL(buffer_audio_signal)->destination = destination;
+
+  pthread_mutex_unlock(recycling_mutex);
 
 #ifdef AGS_DEBUG
   g_message("buffer %x to %x\0", destination, parent_recall_id);

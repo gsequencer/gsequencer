@@ -34,8 +34,8 @@
 
 #define AGS_EFFECT_BULK_PLUGIN(ptr) ((AgsEffectBulkPlugin *)(ptr))
 
-#define AGS_EFFECT_BULK_DEFAULT_VERSION "0.4.3\0"
-#define AGS_EFFECT_BULK_DEFAULT_BUILD_ID "CEST 20-03-2015 08:24\0"
+#define AGS_EFFECT_BULK_DEFAULT_VERSION "0.7.8\0"
+#define AGS_EFFECT_BULK_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
 
 #define AGS_EFFECT_BULK_COLUMNS_COUNT (4)
 
@@ -45,10 +45,12 @@ typedef struct _AgsEffectBulkClass AgsEffectBulkClass;
 typedef struct _AgsEffectBulkPlugin AgsEffectBulkPlugin;
 
 typedef enum{
-  AGS_EFFECT_BULK_CONNECTED        = 1,
-  AGS_EFFECT_BULK_HIDE_BUTTONS     = 1 << 1,
-  AGS_EFFECT_BULK_HIDE_ENTRIES     = 1 << 2,
-  AGS_EFFECT_BULK_SHOW_LABELS      = 1 << 3,
+  AGS_EFFECT_BULK_MAPPED_RECALL       = 1,
+  AGS_EFFECT_BULK_PREMAPPED_RECALL    = 1 <<  1,
+  AGS_EFFECT_BULK_CONNECTED           = 1 <<  2,
+  AGS_EFFECT_BULK_HIDE_BUTTONS        = 1 <<  3,
+  AGS_EFFECT_BULK_HIDE_ENTRIES        = 1 <<  4,
+  AGS_EFFECT_BULK_SHOW_LABELS         = 1 <<  5,
 }AgsEffectBulkFlags;
 
 struct _AgsEffectBulk
@@ -64,8 +66,6 @@ struct _AgsEffectBulk
 
   GType *channel_type;
   AgsAudio *audio;
-  gulong set_audio_channels_handler;
-  gulong set_pads_handler;
 
   GtkButton *add;
   GtkButton *remove;
@@ -93,6 +93,9 @@ struct _AgsEffectBulkClass
   void (*resize_pads)(AgsEffectBulk *effect_bulk,
 		      guint new_size,
 		      guint old_size);
+
+  void (*map_recall)(AgsEffectBulk *effect_bulk);
+  GList* (*find_port)(AgsEffectBulk *effect_bulk);
 };
 
 struct _AgsEffectBulkPlugin
@@ -119,6 +122,9 @@ void ags_effect_bulk_resize_audio_channels(AgsEffectBulk *effect_bulk,
 void ags_effect_bulk_resize_pads(AgsEffectBulk *effect_bulk,
 				 guint new_size,
 				 guint old_size);
+
+void ags_effect_bulk_map_recall(AgsEffectBulk *effect_bulk);
+GList* ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk);
 
 AgsEffectBulk* ags_effect_bulk_new(AgsAudio *audio,
 				   GType channel_type);

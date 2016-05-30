@@ -32,8 +32,8 @@
 #define AGS_IS_EFFECT_PAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EFFECT_PAD))
 #define AGS_EFFECT_PAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EFFECT_PAD, AgsEffectPadClass))
 
-#define AGS_EFFECT_PAD_DEFAULT_VERSION "0.4.3\0"
-#define AGS_EFFECT_PAD_DEFAULT_BUILD_ID "CEST 20-03-2015 08:24\0"
+#define AGS_EFFECT_PAD_DEFAULT_VERSION "0.7.8\0"
+#define AGS_EFFECT_PAD_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
 
 #define AGS_EFFECT_PAD_COLUMNS_COUNT (2)
 
@@ -41,12 +41,12 @@ typedef struct _AgsEffectPad AgsEffectPad;
 typedef struct _AgsEffectPadClass AgsEffectPadClass;
 
 typedef enum{
-  AGS_EFFECT_PAD_CONNECTED           = 1,
-  AGS_EFFECT_PAD_SHOW_GROUPING       = 1 << 1,
-  AGS_EFFECT_PAD_GROUP_ALL           = 1 << 2,
-  AGS_EFFECT_PAD_GROUP_LINE          = 1 << 3,
-  AGS_EFFECT_PAD_MAPPED_RECALL       = 1 << 4,
-  AGS_EFFECT_PAD_PREMAPPED_RECALL    = 1 << 5,
+  AGS_EFFECT_PAD_MAPPED_RECALL       = 1,
+  AGS_EFFECT_PAD_PREMAPPED_RECALL    = 1 <<  1,
+  AGS_EFFECT_PAD_CONNECTED           = 1 <<  2,
+  AGS_EFFECT_PAD_SHOW_GROUPING       = 1 <<  3,
+  AGS_EFFECT_PAD_GROUP_ALL           = 1 <<  4,
+  AGS_EFFECT_PAD_GROUP_LINE          = 1 <<  5,
 }AgsEffectPadFlags;
 
 struct _AgsEffectPad
@@ -70,14 +70,24 @@ struct _AgsEffectPadClass
 {
   GtkVBoxClass vbox;
 
+  void (*set_channel)(AgsEffectPad *effect_pad, AgsChannel *channel);
+
   void (*resize_lines)(AgsEffectPad *effect_pad, GType line_type,
 		       guint audio_channels, guint audio_channels_old);
+
+  void (*map_recall)(AgsEffectPad *effect_pad);
+  GList* (*find_port)(AgsEffectPad *effect_pad);
 };
 
 GType ags_effect_pad_get_type(void);
 
+void ags_effect_pad_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel);
+
 void ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 				 guint audio_channels, guint audio_channels_old);
+
+void ags_effect_pad_map_recall(AgsEffectPad *effect_pad);
+GList* ags_effect_pad_find_port(AgsEffectPad *effect_pad);
 
 AgsEffectPad* ags_effect_pad_new(AgsChannel *channel);
 

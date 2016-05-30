@@ -27,11 +27,18 @@
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/thread/file/ags_thread_file_xml.h>
+#include <ags/thread/ags_concurrency_provider.h>
+#include <ags/thread/ags_thread-posix.h>
+#include <ags/thread/ags_thread_pool.h>
+#include <ags/thread/ags_generic_main_loop.h>
 #include <ags/thread/ags_autosave_thread.h>
+#include <ags/thread/ags_task_thread.h>
+
+#include <ags/thread/file/ags_thread_file_xml.h>
 
 void ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thread_application_context);
 void ags_thread_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_thread_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
 void ags_thread_application_context_init(AgsThreadApplicationContext *thread_application_context);
 void ags_thread_application_context_set_property(GObject *gobject,
 						 guint prop_id,
@@ -43,6 +50,9 @@ void ags_thread_application_context_get_property(GObject *gobject,
 						 GParamSpec *param_spec);
 void ags_thread_application_context_connect(AgsConnectable *connectable);
 void ags_thread_application_context_disconnect(AgsConnectable *connectable);
+AgsThread* ags_thread_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+AgsThread* ags_thread_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
+AgsThreadPool* ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 void ags_thread_application_context_finalize(GObject *gobject);
 
 void ags_thread_application_context_load_config(AgsApplicationContext *application_context);
@@ -86,6 +96,12 @@ ags_thread_application_context_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_concurrency_provider_interface_info = {
+      (GInterfaceInitFunc) ags_thread_application_context_concurrency_provider_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_thread_application_context = g_type_register_static(AGS_TYPE_APPLICATION_CONTEXT,
 								 "AgsThreadApplicationContext\0",
 								 &ags_thread_application_context_info,
@@ -94,6 +110,10 @@ ags_thread_application_context_get_type()
     g_type_add_interface_static(ags_type_thread_application_context,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_thread_application_context,
+				AGS_TYPE_CONCURRENCY_PROVIDER,
+				&ags_concurrency_provider_interface_info);
   }
 
   return (ags_type_thread_application_context);
@@ -168,14 +188,44 @@ ags_thread_application_context_connectable_interface_init(AgsConnectableInterfac
 }
 
 void
+ags_thread_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider)
+{
+  concurrency_provider->get_main_loop = ags_thread_application_context_get_main_loop;
+  concurrency_provider->get_task_thread = ags_thread_application_context_get_task_thread;
+  concurrency_provider->get_thread_pool = ags_thread_application_context_get_thread_pool;
+}
+
+void
 ags_thread_application_context_init(AgsThreadApplicationContext *thread_application_context)
 {
+  AgsGenericMainLoop *generic_main_loop;
+  
   thread_application_context->flags = 0;
 
+  /* AgsGenericMainLoop */
+  AGS_APPLICATION_CONTEXT(thread_application_context)->main_loop = 
+    generic_main_loop = (AgsThread *) ags_generic_main_loop_new(thread_application_context);
   g_object_set(thread_application_context,
-	       "autosave-thread", ags_autosave_thread_new(thread_application_context),
-	       "thread-pool\0", ags_thread_pool_new(NULL),
+	       "main-loop\0", generic_main_loop,
 	       NULL);
+
+  g_object_ref(generic_main_loop);
+  ags_connectable_connect(AGS_CONNECTABLE(generic_main_loop));
+
+  /* AgsTaskThread */
+  AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread = (AgsThread *) ags_task_thread_new();
+  ags_thread_add_child_extended(AGS_THREAD(generic_main_loop),
+				AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread,
+				TRUE, TRUE);
+
+  ags_main_loop_set_async_queue(AGS_MAIN_LOOP(generic_main_loop),
+				AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread);
+
+  /* AgsAutosaveThread */
+  thread_application_context->autosave_thread = NULL;
+  
+  /* AgsThreadPool */
+  thread_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(thread_application_context)->task_thread)->thread_pool;
 }
 
 void
@@ -291,6 +341,24 @@ ags_thread_application_context_disconnect(AgsConnectable *connectable)
   }
 
   ags_thread_application_context_parent_connectable_interface->disconnect(connectable);
+}
+
+AgsThread*
+ags_thread_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+}
+
+AgsThread*
+ags_thread_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
+}
+
+AgsThreadPool*
+ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
+{
+  return(AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
 }
 
 void
@@ -463,7 +531,7 @@ ags_thread_application_context_write(AgsFile *file, xmlNode *parent, GObject *ap
   /* child elements */
   ags_file_write_thread(file,
 			node,
-			AGS_THREAD(AGS_THREAD_APPLICATION_CONTEXT(application_context)->main_loop));
+			AGS_THREAD(AGS_APPLICATION_CONTEXT(application_context)->main_loop));
 
   ags_file_write_thread_pool(file,
 			     node,
@@ -519,14 +587,11 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
 }
 
 AgsThreadApplicationContext*
-ags_thread_application_context_new(AgsThread *main_loop,
-				   AgsConfig *config)
+ags_thread_application_context_new()
 {
   AgsThreadApplicationContext *thread_application_context;
 
   thread_application_context = (AgsThreadApplicationContext *) g_object_new(AGS_TYPE_THREAD_APPLICATION_CONTEXT,
-									    "main-loop\0", main_loop,
-									    "config\0", config,
 									    NULL);
 
   return(thread_application_context);

@@ -19,20 +19,20 @@
 
 #include <ags/audio/ags_recall_dssi.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/plugin/ags_dssi_manager.h>
-
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_plugin.h>
+
+#include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_ladspa_conversion.h>
 
 #include <ags/file/ags_file.h>
 #include <ags/file/ags_file_stock.h>
 #include <ags/file/ags_file_id_ref.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_port.h>
 
 #include <dlfcn.h>
@@ -356,95 +356,85 @@ void
 ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 {
   AgsRecallDssi *recall_dssi;
-  AgsDssiPlugin *dssi_plugin;
   AgsPort *current;
+
+  AgsDssiPlugin *dssi_plugin;
+
   GList *list;
-  gchar *path;
+  GList *port_descriptor;
+  
   unsigned long port_count;
   unsigned long i;
-
-  void *plugin_so;
-  DSSI_Descriptor_Function dssi_descriptor;
-  DSSI_Descriptor *plugin_descriptor;
-  LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_PortRangeHintDescriptor hint_descriptor;
-
+  
   recall_dssi = AGS_RECALL_DSSI(plugin);
 
-  ags_dssi_manager_load_file(recall_dssi->filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename);
-  
-  plugin_so = dssi_plugin->plugin_so;
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
 
-  if(plugin_so){
-    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						       "dssi_descriptor\0");
+  port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
 
-    if(dlerror() == NULL && dssi_descriptor){
-      recall_dssi->plugin_descriptor = 
-	plugin_descriptor = dssi_descriptor(recall_dssi->index);
+  if(port_descriptor != NULL){
+    port_count = g_list_length(port_descriptor);
 
-      port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
-      port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
+    for(i = 0; i < port_count; i++){
+      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	gchar *plugin_name;
+	gchar *specifier;
+	
+	plugin_name = g_strdup_printf("dssi-%lu\0", dssi_plugin->unique_id);
+	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+	
+	list = port;
+	current = NULL;
+	
+	while(list != NULL){
+	  if(!g_strcmp0(specifier,
+			AGS_PORT(list->data)->specifier)){
+	    current = list->data;
+	    break;
+	  }
+	  
+	  list = list->next;
+	}
 
-      for(i = 0; i < port_count; i++){
-	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
-	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	    gchar *plugin_name;
-	    gchar *specifier;
+	ags_recall_dssi_load_conversion(recall_dssi,
+					current,
+					port_descriptor->data);
 
-	    hint_descriptor = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].HintDescriptor;
-
-	    plugin_name = g_strdup_printf("dssi-%lu\0", plugin_descriptor->LADSPA_Plugin->UniqueID);
-	    specifier = g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[i]);
-
-	    list = port;
-	    current = NULL;
-
-	    while(list != NULL){
-	      if(!g_strcmp0(specifier,
-			    AGS_PORT(list->data)->specifier)){
-		current = list->data;
-		break;
-	      }
-
-	      list = list->next;
-	    }
+	current->port_value.ags_port_float = (LADSPA_Data) ags_conversion_convert(current->conversion,
+										  g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
+										  FALSE);
 	    
-	    current->port_value.ags_port_float = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].LowerBound;
-
-	    g_message("connecting port: %d/%d\0", i, port_count);
-	  }
-	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
-	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
-	    if(recall_dssi->input_port == NULL){
-	      recall_dssi->input_port = (unsigned long *) malloc(sizeof(unsigned long));
-	      recall_dssi->input_port[0] = i;
-	    }else{
-	      recall_dssi->input_port = (unsigned long *) realloc(recall_dssi->input_port,
+	g_message("connecting port: %d/%d\0", i, port_count);      
+      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  if(recall_dssi->input_port == NULL){
+	    recall_dssi->input_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_dssi->input_port[0] = i;
+	  }else{
+	    recall_dssi->input_port = (unsigned long *) realloc(recall_dssi->input_port,
 								  (recall_dssi->input_lines + 1) * sizeof(unsigned long));
-	      recall_dssi->input_port[recall_dssi->input_lines] = i;
-	    }
-
-	    recall_dssi->input_lines += 1;
-	  }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	    if(recall_dssi->output_port == NULL){
-	      recall_dssi->output_port = (unsigned long *) malloc(sizeof(unsigned long));
-	      recall_dssi->output_port[0] = i;
-	    }else{
-	      recall_dssi->output_port = (unsigned long *) realloc(recall_dssi->output_port,
-								   (recall_dssi->output_lines + 1) * sizeof(unsigned long));
-	      recall_dssi->output_port[recall_dssi->output_lines] = i;
-	    }
-
-	    recall_dssi->output_lines += 1;
+	    recall_dssi->input_port[recall_dssi->input_lines] = i;
 	  }
+
+	  recall_dssi->input_lines += 1;
+	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  if(recall_dssi->output_port == NULL){
+	    recall_dssi->output_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_dssi->output_port[0] = i;
+	  }else{
+	    recall_dssi->output_port = (unsigned long *) realloc(recall_dssi->output_port,
+								   (recall_dssi->output_lines + 1) * sizeof(unsigned long));
+	    recall_dssi->output_port[recall_dssi->output_lines] = i;
+	  }
+
+	  recall_dssi->output_lines += 1;
 	}
       }
 
-      AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
+      port_descriptor = port_descriptor->next;
     }
+
+    AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
   }
 }
 
@@ -471,7 +461,7 @@ ags_recall_dssi_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
@@ -515,7 +505,7 @@ ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "file\0", file,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
@@ -558,10 +548,9 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
   DSSI_Descriptor *plugin_descriptor;
 
   /*  */
-  ags_dssi_manager_load_file(recall_dssi->filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename);
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
   
-  plugin_so = dssi_plugin->plugin_so;
+  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
   if(plugin_so){
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
@@ -589,100 +578,139 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 {
   AgsDssiPlugin *dssi_plugin;
   AgsPort *current;
+
   GList *port;
-  gchar *path;
+  GList *port_descriptor;
+
   unsigned long port_count;
   unsigned long i;
 
-  void *plugin_so;
-  DSSI_Descriptor_Function dssi_descriptor;
-  DSSI_Descriptor *plugin_descriptor;
-  LADSPA_PortDescriptor *port_descriptor;
-  LADSPA_PortRangeHintDescriptor hint_descriptor;
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename, recall_dssi->effect);
 
-  ags_dssi_manager_load_file(recall_dssi->filename);
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(recall_dssi->filename);
   port = NULL;
+  port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
   
-  plugin_so = dssi_plugin->plugin_so;
+  if(port_descriptor != NULL){
+    port_count = g_list_length(port_descriptor);
+    
+    for(i = 0; i < port_count; i++){
+      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	gchar *plugin_name;
+	gchar *specifier;
+	
+	plugin_name = g_strdup_printf("dssi-%lu\0", dssi_plugin->unique_id);
+	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 
-  if(plugin_so){
-    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						       "dssi_descriptor\0");
+	current = g_object_new(AGS_TYPE_PORT,
+			       "plugin-name\0", plugin_name,
+			       "specifier\0", specifier,
+			       "control-port\0", g_strdup_printf("%d/%d\0",
+								 i,
+								 port_count),
+			       "port-value-is-pointer\0", FALSE,
+			       "port-value-type\0", G_TYPE_FLOAT,
+			       NULL);
 
-    if(dlerror() == NULL && dssi_descriptor){
-      recall_dssi->plugin_descriptor = 
-	plugin_descriptor = dssi_descriptor(recall_dssi->index);
+	ags_recall_dssi_load_conversion(recall_dssi,
+					current,
+					port_descriptor->data);
+	
+	current->port_value.ags_port_float = (LADSPA_Data) ags_conversion_convert(current->conversion,
+										  g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
+										  FALSE);
 
-      port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
-      port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
+	g_message("connecting port: %d/%d\0", i, port_count);
 
-      for(i = 0; i < port_count; i++){
-	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
-	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	    gchar *plugin_name;
-	    gchar *specifier;
-
-	    hint_descriptor = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].HintDescriptor;
-
-	    plugin_name = g_strdup_printf("dssi-%lu\0", plugin_descriptor->LADSPA_Plugin->UniqueID);
-	    specifier = g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[i]);
-
-	    current = g_object_new(AGS_TYPE_PORT,
-				   "plugin-name\0", plugin_name,
-				   "specifier\0", specifier,
-				   "control-port\0", g_strdup_printf("%d/%d\0",
-								     i,
-								     port_count),
-				   "port-value-is-pointer\0", FALSE,
-				   "port-value-type\0", G_TYPE_FLOAT,
-				   NULL);
-	    current->port_value.ags_port_float = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].LowerBound;
-
-	    g_message("connecting port: %d/%d\0", i, port_count);
-
-	    port = g_list_prepend(port,
-				  current);
-	  }
-	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
-	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
-	    if(recall_dssi->input_port == NULL){
-	      recall_dssi->input_port = (unsigned long *) malloc(sizeof(unsigned long));
-	      recall_dssi->input_port[0] = i;
-	    }else{
-	      recall_dssi->input_port = (unsigned long *) realloc(recall_dssi->input_port,
+	port = g_list_prepend(port,
+			      current);
+      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  if(recall_dssi->input_port == NULL){
+	    recall_dssi->input_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_dssi->input_port[0] = i;
+	  }else{
+	    recall_dssi->input_port = (unsigned long *) realloc(recall_dssi->input_port,
 								  (recall_dssi->input_lines + 1) * sizeof(unsigned long));
-	      recall_dssi->input_port[recall_dssi->input_lines] = i;
-	    }
-
-	    recall_dssi->input_lines += 1;
-	  }else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	    if(recall_dssi->output_port == NULL){
-	      recall_dssi->output_port = (unsigned long *) malloc(sizeof(unsigned long));
-	      recall_dssi->output_port[0] = i;
-	    }else{
-	      recall_dssi->output_port = (unsigned long *) realloc(recall_dssi->output_port,
-								   (recall_dssi->output_lines + 1) * sizeof(unsigned long));
-	      recall_dssi->output_port[recall_dssi->output_lines] = i;
-	    }
-
-	    recall_dssi->output_lines += 1;
+	    recall_dssi->input_port[recall_dssi->input_lines] = i;
 	  }
+	  
+	  recall_dssi->input_lines += 1;
+	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	  if(recall_dssi->output_port == NULL){
+	    recall_dssi->output_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_dssi->output_port[0] = i;
+	  }else{
+	    recall_dssi->output_port = (unsigned long *) realloc(recall_dssi->output_port,
+								   (recall_dssi->output_lines + 1) * sizeof(unsigned long));
+	    recall_dssi->output_port[recall_dssi->output_lines] = i;
+	  }
+	  
+	  recall_dssi->output_lines += 1;
 	}
       }
 
-      AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
+      port_descriptor = port_descriptor->next;
     }
+    
+    AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
   }
 
   return(AGS_RECALL(recall_dssi)->port);
 }
 
 /**
+ * ags_recall_dssi_load_conversion:
+ * @recall_dssi: the #AgsRecallDssi
+ * @port: an #AgsPort
+ * @port_descriptor: the #AgsPortDescriptor-struct
+ * 
+ * Loads conversion object by using @port_descriptor and sets in on @port.
+ * 
+ * Since: 0.7.9
+ */
+void
+ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
+				GObject *port,
+				gpointer port_descriptor)
+{
+  AgsLadspaConversion *ladspa_conversion;
+
+  if(recall_dssi == NULL ||
+     port == NULL ||
+     port_descriptor == NULL){
+    return;
+  }
+
+  ladspa_conversion = NULL;
+  
+  if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
+    ladspa_conversion = ags_ladspa_conversion_new();
+    g_object_set(port,
+	       "conversion\0", ladspa_conversion,
+	       NULL);
+    
+    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
+  }
+
+  if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
+    if(ladspa_conversion == NULL ||
+       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+      ladspa_conversion = ags_ladspa_conversion_new();
+      g_object_set(port,
+		   "conversion\0", ladspa_conversion,
+		   NULL);
+    }
+    
+    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+  }
+}
+
+/**
  * ags_recall_dssi_short_to_float:
  * @buffer: source
  * @destination: destination
+ * @buffer_size: buffer size
+ * @lines: lines
  *
  * Convert data type.
  * 
@@ -707,7 +735,8 @@ ags_recall_dssi_short_to_float(signed short *buffer,
  * ags_recall_dssi_float_to_short:
  * @buffer: source
  * @destination: destination
- * @buffer_size: buffer_size
+ * @buffer_size: buffer size
+ * @lines: lines
  *
  * Convert data type.
  * 

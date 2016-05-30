@@ -87,7 +87,7 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
     filename = window->name;
 
     file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "main\0", window->application_context,
+				    "application-context\0", window->application_context,
 				    "filename\0", g_strdup(filename),
 				    NULL);
 

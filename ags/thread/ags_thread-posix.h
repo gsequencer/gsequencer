@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_time.h>
+
 #define _GNU_SOURCE
 
 #include <signal.h>
@@ -34,9 +36,6 @@
 #define AGS_IS_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_THREAD))
 #define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
-
-#define USEC_PER_SEC    (1000000) /* The number of msecs per sec. */
-#define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */
 
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
@@ -53,53 +52,58 @@ typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
 
 typedef enum{
-  AGS_THREAD_RUNNING                 = 1,
-  AGS_THREAD_IDLE                    = 1 << 1,
-  AGS_THREAD_LOCKED                  = 1 << 2,
-  AGS_THREAD_WAIT_FOR_PARENT         = 1 << 3,
-  AGS_THREAD_WAIT_FOR_SIBLING        = 1 << 4,
-  AGS_THREAD_WAIT_FOR_CHILDREN       = 1 << 5,
-  AGS_THREAD_WAIT_FOR_BARRIER        = 1 << 6,
-  AGS_THREAD_WAITING_FOR_PARENT      = 1 << 7,
-  AGS_THREAD_WAITING_FOR_SIBLING     = 1 << 8,
-  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 << 9,
-  AGS_THREAD_WAITING_FOR_BARRIER     = 1 << 10,
-  AGS_THREAD_BROADCAST_PARENT        = 1 << 11,
-  AGS_THREAD_BROADCAST_SIBLING       = 1 << 12,
-  AGS_THREAD_BROADCAST_CHILDREN      = 1 << 13,
-  AGS_THREAD_INITIAL_RUN             = 1 << 14,
-  AGS_THREAD_TREE_SYNC_0             = 1 << 15,
-  AGS_THREAD_WAIT_0                  = 1 << 16,
-  AGS_THREAD_TREE_SYNC_1             = 1 << 17,
-  AGS_THREAD_WAIT_1                  = 1 << 18,
-  AGS_THREAD_TREE_SYNC_2             = 1 << 19,
-  AGS_THREAD_WAIT_2                  = 1 << 20,
-  AGS_THREAD_TIMELOCK_RUN            = 1 << 21,
-  AGS_THREAD_TIMELOCK_WAIT           = 1 << 22,
-  AGS_THREAD_TIMELOCK_RESUME         = 1 << 23,
+  AGS_THREAD_CONNECTED               = 1,
+  AGS_THREAD_SINGLE_LOOP             = 1 <<  1,
+  AGS_THREAD_INITIAL_SYNC            = 1 <<  2,
+  AGS_THREAD_INITIAL_RUN             = 1 <<  3,
+  AGS_THREAD_RT_SETUP                = 1 <<  4,
+  AGS_THREAD_WAITING                 = 1 <<  5,
+  AGS_THREAD_RUNNING                 = 1 <<  6,
+  AGS_THREAD_IDLE                    = 1 <<  7,
+  AGS_THREAD_LOCKED                  = 1 <<  8,
+  AGS_THREAD_SUSPENDED               = 1 <<  9,
+  AGS_THREAD_READY                   = 1 << 10,
+  AGS_THREAD_UNREF_ON_EXIT           = 1 << 11,
+}AgsThreadFlags;
+
+typedef enum{
+  AGS_THREAD_WAIT_FOR_PARENT         = 1,
+  AGS_THREAD_WAIT_FOR_SIBLING        = 1 <<  1,
+  AGS_THREAD_WAIT_FOR_CHILDREN       = 1 <<  2,
+  AGS_THREAD_WAIT_FOR_BARRIER        = 1 <<  3,
+  AGS_THREAD_WAITING_FOR_PARENT      = 1 <<  4,
+  AGS_THREAD_WAITING_FOR_SIBLING     = 1 <<  5,
+  AGS_THREAD_WAITING_FOR_CHILDREN    = 1 <<  6,
+  AGS_THREAD_WAITING_FOR_BARRIER     = 1 <<  7,
+  AGS_THREAD_BROADCAST_PARENT        = 1 <<  8,
+  AGS_THREAD_BROADCAST_SIBLING       = 1 <<  9,
+  AGS_THREAD_BROADCAST_CHILDREN      = 1 << 10,
+  AGS_THREAD_TREE_SYNC_0             = 1 << 11,
+  AGS_THREAD_WAIT_0                  = 1 << 12,
+  AGS_THREAD_TREE_SYNC_1             = 1 << 13,
+  AGS_THREAD_WAIT_1                  = 1 << 14,
+  AGS_THREAD_TREE_SYNC_2             = 1 << 15,
+  AGS_THREAD_WAIT_2                  = 1 << 16,
+  AGS_THREAD_TIMELOCK_RUN            = 1 << 17,
+  AGS_THREAD_TIMELOCK_WAIT           = 1 << 18,
+  AGS_THREAD_TIMELOCK_RESUME         = 1 << 19,
   /*
    * prefered way would be unlocking greedy_locks
    * and the suspend to not become greedy
    * but while pthread_suspend and pthread_resume
    * are missing you need this as work-around
    */
-  AGS_THREAD_SKIP_NON_GREEDY         = 1 << 24,
-  AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 << 25,
-  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 << 26,
-  AGS_THREAD_SUSPENDED               = 1 << 27,
-  AGS_THREAD_SINGLE_LOOP             = 1 << 28,
-  AGS_THREAD_READY                   = 1 << 29,
-  AGS_THREAD_UNREF_ON_EXIT           = 1 << 30,
-  AGS_THREAD_CONNECTED               = 1 << 31,
-}AgsThreadFlags;
+  AGS_THREAD_SKIP_NON_GREEDY         = 1 << 20,
+  AGS_THREAD_SKIPPED_BY_TIMELOCK     = 1 << 21,
+  AGS_THREAD_LOCK_GREEDY_RUN_MUTEX   = 1 << 22,
+}AgsThreadSyncFlags;
 
 struct _AgsThread
 {
   GObject object;
 
   volatile guint flags;
-
-  gboolean rt_setup;
+  volatile guint sync_flags;
   
   sigset_t wait_mask;
 
@@ -193,7 +197,7 @@ AgsThread* ags_thread_last(AgsThread *thread);
 void ags_thread_remove_child(AgsThread *thread, AgsThread *child);
 void ags_thread_add_child(AgsThread *thread, AgsThread *child);
 void ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
-				   gboolean no_start, gboolean no_Wait);
+				   gboolean no_start, gboolean no_wait);
 
 gboolean ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent);
 gboolean ags_thread_sibling_is_locked(AgsThread *thread);
@@ -239,6 +243,7 @@ void ags_thread_hangcheck(AgsThread *thread);
 
 AgsThread* ags_thread_find_type(AgsThread *thread, GType type);
 AgsThread* ags_thread_self(void);
+AgsThread* ags_thread_chaos_tree(AgsThread *thread);
 
 AgsThread* ags_thread_new(gpointer data);
 

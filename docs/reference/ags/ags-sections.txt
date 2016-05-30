@@ -17,105 +17,6 @@ ags_acceleration_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_accessible_editor</FILE>
-<TITLE>AgsAccessibleEditor</TITLE>
-ags_accessible_editor_insert_note
-ags_accessible_editor_delete_note
-ags_accessible_editor_select_region
-ags_accessible_editor_select_all
-ags_accessible_editor_unselect_all
-ags_accessible_editor_copy
-ags_accessible_editor_cut
-ags_accessible_editor_paste
-ags_accessible_editor_add_index
-ags_accessible_editor_remove_index
-ags_accessible_editor_link_index
-ags_accessible_editor_reverse_mapping
-ags_accessible_editor_move_to_index
-<SUBSECTION Standard>
-AGS_ACCESSIBLE_EDITOR
-AGS_ACCESSIBLE_EDITOR_GET_INTERFACE
-AGS_ACCESSIBLE_EDITOR_INTERFACE
-AGS_IS_ACCESSIBLE_EDITOR
-AGS_IS_ACCESSIBLE_EDITOR_INTERFACE
-AGS_TYPE_ACCESSIBLE_EDITOR
-AgsAccessibleEditor
-AgsAccessibleEditorInterface
-ags_accessible_editor_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_accessible_machine</FILE>
-<TITLE>AgsAccessibleMachine</TITLE>
-ags_accessible_machine_move_to_pad
-ags_accessible_machine_move_to_line
-ags_accessible_machine_move_to_line_member
-ags_accessible_machine_move_up
-ags_accessible_machine_move_down
-ags_accessible_machine_destroy
-ags_accessible_machine_rename
-ags_accessible_machine_popup_context_menu
-<SUBSECTION Standard>
-AGS_ACCESSIBLE_MACHINE
-AGS_ACCESSIBLE_MACHINE_GET_INTERFACE
-AGS_ACCESSIBLE_MACHINE_INTERFACE
-AGS_IS_ACCESSIBLE_MACHINE
-AGS_IS_ACCESSIBLE_MACHINE_INTERFACE
-AGS_TYPE_ACCESSIBLE_MACHINE
-AgsAccessibleMachine
-AgsAccessibleMachineInterface
-ags_accessible_machine_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_accessible_sequencer</FILE>
-<TITLE>AgsAccessibleSequencer</TITLE>
-<SUBSECTION Standard>
-AGS_ACCESSIBLE_SEQUENCER
-AGS_ACCESSIBLE_SEQUENCER_GET_INTERFACE
-AGS_ACCESSIBLE_SEQUENCER_INTERFACE
-AGS_IS_ACCESSIBLE_SEQUENCER
-AGS_IS_ACCESSIBLE_SEQUENCER_INTERFACE
-AGS_TYPE_ACCESSIBLE_SEQUENCER
-AgsAccessibleSequencer
-AgsAccessibleSequencerInterface
-ags_accessible_sequencer_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_accessible_window</FILE>
-<TITLE>AgsAccessibleWindow</TITLE>
-ags_accessible_window_move_to_machines_pane
-ags_accessible_window_move_to_editor_index_pane
-ags_accessible_window_move_to_notation_editor_pane
-ags_accessible_window_move_to_navigation
-ags_accessible_window_open_file
-ags_accessible_window_save_file
-ags_accessible_window_save_file_as
-ags_accessible_window_export_to_audio_file
-ags_accessible_window_quit
-ags_accessible_window_add_panel
-ags_accessible_window_add_mixer
-ags_accessible_window_add_drum
-ags_accessible_window_add_matrix
-ags_accessible_window_add_synth
-ags_accessible_window_add_ffplayer
-ags_accessible_window_remove_machine
-ags_accessible_window_show_preferences
-ags_accessible_window_show_about_dialog
-<SUBSECTION Standard>
-AGS_ACCESSIBLE_WINDOW
-AGS_ACCESSIBLE_WINDOW_GET_INTERFACE
-AGS_ACCESSIBLE_WINDOW_INTERFACE
-AGS_IS_ACCESSIBLE_WINDOW
-AGS_IS_ACCESSIBLE_WINDOW_INTERFACE
-AGS_TYPE_ACCESSIBLE_WINDOW
-AgsAccessibleWindow
-AgsAccessibleWindowInterface
-ags_accessible_window_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_add_audio</FILE>
 <TITLE>AgsAddAudio</TITLE>
 ags_add_audio_new
@@ -177,22 +78,6 @@ AGS_TYPE_ADD_EFFECT
 AgsAddEffect
 AgsAddEffectClass
 ags_add_effect_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_add_line_member</FILE>
-<TITLE>AgsAddLineMember</TITLE>
-ags_add_line_member_new
-<SUBSECTION Standard>
-AGS_ADD_LINE_MEMBER
-AGS_ADD_LINE_MEMBER_CLASS
-AGS_ADD_LINE_MEMBER_GET_CLASS
-AGS_IS_ADD_LINE_MEMBER
-AGS_IS_ADD_LINE_MEMBER_CLASS
-AGS_TYPE_ADD_LINE_MEMBER
-AgsAddLineMember
-AgsAddLineMemberClass
-ags_add_line_member_get_type
 </SECTION>
 
 <SECTION>
@@ -488,6 +373,8 @@ ags_apply_wavetable_get_type
 <SECTION>
 <FILE>ags_async_queue</FILE>
 <TITLE>AgsAsyncQueue</TITLE>
+ags_async_queue_increment_wait_ref
+ags_async_queue_get_wait_ref
 ags_async_queue_set_run_mutex
 ags_async_queue_get_run_mutex
 ags_async_queue_set_run_cond
@@ -576,6 +463,87 @@ AGS_TYPE_AUDIO_APPLICATION_CONTEXT
 AgsAudioApplicationContext
 AgsAudioApplicationContextClass
 ags_audio_application_context_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_audio_buffer_util</FILE>
+AGS_AUDIO_BUFFER_S8
+AGS_AUDIO_BUFFER_S16
+AGS_AUDIO_BUFFER_S24
+AGS_AUDIO_BUFFER_S32
+AGS_AUDIO_BUFFER_S64
+AGS_AUDIO_BUFFER_FLOAT
+AGS_AUDIO_BUFFER_DOUBLE
+AgsAudioBufferUtilFormat
+AgsAudioBufferUtilSamplerate
+AgsAudioBufferUtilCopyMode
+ags_audio_buffer_util_morph_s8
+ags_audio_buffer_util_morph_s16
+ags_audio_buffer_util_morph_s24
+ags_audio_buffer_util_morph_s32
+ags_audio_buffer_util_morph_s64
+ags_audio_buffer_util_morph_float
+ags_audio_buffer_util_morph_double
+ags_audio_buffer_util_morph
+ags_audio_buffer_util_resample_s8
+ags_audio_buffer_util_resample_s16
+ags_audio_buffer_util_resample_s24
+ags_audio_buffer_util_resample_s32
+ags_audio_buffer_util_resample_s64
+ags_audio_buffer_util_resample_float
+ags_audio_buffer_util_resample_double
+ags_audio_buffer_util_resample
+ags_audio_buffer_util_copy_s8_to_s8
+ags_audio_buffer_util_copy_s8_to_s16
+ags_audio_buffer_util_copy_s8_to_s24
+ags_audio_buffer_util_copy_s8_to_s32
+ags_audio_buffer_util_copy_s8_to_s64
+ags_audio_buffer_util_copy_s8_to_float
+ags_audio_buffer_util_copy_s8_to_double
+ags_audio_buffer_util_copy_s16_to_s8
+ags_audio_buffer_util_copy_s16_to_s16
+ags_audio_buffer_util_copy_s16_to_s24
+ags_audio_buffer_util_copy_s16_to_s32
+ags_audio_buffer_util_copy_s16_to_s64
+ags_audio_buffer_util_copy_s16_to_float
+ags_audio_buffer_util_copy_s16_to_double
+ags_audio_buffer_util_copy_s24_to_s8
+ags_audio_buffer_util_copy_s24_to_s16
+ags_audio_buffer_util_copy_s24_to_s24
+ags_audio_buffer_util_copy_s24_to_s32
+ags_audio_buffer_util_copy_s24_to_s64
+ags_audio_buffer_util_copy_s24_to_float
+ags_audio_buffer_util_copy_s24_to_double
+ags_audio_buffer_util_copy_s32_to_s8
+ags_audio_buffer_util_copy_s32_to_s16
+ags_audio_buffer_util_copy_s32_to_s24
+ags_audio_buffer_util_copy_s32_to_s32
+ags_audio_buffer_util_copy_s32_to_s64
+ags_audio_buffer_util_copy_s32_to_float
+ags_audio_buffer_util_copy_s32_to_double
+ags_audio_buffer_util_copy_s64_to_s8
+ags_audio_buffer_util_copy_s64_to_s16
+ags_audio_buffer_util_copy_s64_to_s24
+ags_audio_buffer_util_copy_s64_to_s32
+ags_audio_buffer_util_copy_s64_to_s64
+ags_audio_buffer_util_copy_s64_to_float
+ags_audio_buffer_util_copy_s64_to_double
+ags_audio_buffer_util_copy_float_to_s8
+ags_audio_buffer_util_copy_float_to_s16
+ags_audio_buffer_util_copy_float_to_s24
+ags_audio_buffer_util_copy_float_to_s32
+ags_audio_buffer_util_copy_float_to_s64
+ags_audio_buffer_util_copy_float_to_float
+ags_audio_buffer_util_copy_float_to_double
+ags_audio_buffer_util_copy_double_to_s8
+ags_audio_buffer_util_copy_double_to_s16
+ags_audio_buffer_util_copy_double_to_s24
+ags_audio_buffer_util_copy_double_to_s32
+ags_audio_buffer_util_copy_double_to_s64
+ags_audio_buffer_util_copy_double_to_float
+ags_audio_buffer_util_copy_double_to_double
+ags_audio_buffer_util_get_copy_mode
+ags_audio_buffer_util_copy_buffer_to_buffer
 </SECTION>
 
 <SECTION>
@@ -692,6 +660,14 @@ ags_file_read_note
 ags_file_write_note
 ags_file_read_note_list
 ags_file_write_note_list
+ags_file_read_automation
+ags_file_write_automation
+ags_file_read_automation_list
+ags_file_write_automation_list
+ags_file_read_acceleration
+ags_file_write_acceleration
+ags_file_read_acceleration_list
+ags_file_write_acceleration_list
 ags_file_read_task
 ags_file_write_task
 ags_file_read_task_list
@@ -704,10 +680,6 @@ ags_file_read_embedded_audio
 ags_file_write_embedded_audio
 ags_file_read_embedded_audio_list
 ags_file_write_embedded_audio_list
-ags_file_read_file_link
-ags_file_write_file_link
-ags_file_read_file_link_list
-ags_file_write_file_link_list
 </SECTION>
 
 <SECTION>
@@ -757,6 +729,9 @@ ags_audio_preferences_card_changed_callback
 ags_audio_preferences_audio_channels_changed
 ags_audio_preferences_samplerate_changed
 ags_audio_preferences_buffer_size_changed
+ags_audio_preferences_enable_jack_callback
+ags_audio_preferences_start_jack_callback
+ags_audio_preferences_stop_jack_callback
 </SECTION>
 
 <SECTION>
@@ -779,7 +754,6 @@ ags_audio_set_recycling_get_type
 <FILE>ags_audio_signal</FILE>
 <TITLE>AgsAudioSignal</TITLE>
 AgsAudioSignalFlags
-AgsAttackFlags
 ags_stream_alloc
 ags_audio_signal_get_length_till_current
 ags_audio_signal_add_stream
@@ -799,7 +773,6 @@ ags_audio_signal_scale
 ags_audio_signal_envelope
 ags_audio_signal_new
 ags_audio_signal_new_with_length
-AgsAttack
 <SUBSECTION Standard>
 AGS_AUDIO_SIGNAL
 AGS_AUDIO_SIGNAL_CLASS
@@ -840,6 +813,7 @@ AGS_AUTOMATION_DEFAULT_LENGTH
 AGS_AUTOMATION_DEFAULT_JIFFIE
 AGS_AUTOMATION_DEFAULT_DURATION
 AgsAutomationFlags
+ags_automation_find_port
 ags_automation_find_near_timestamp
 ags_automation_add_acceleration
 ags_automation_remove_acceleration_at_position
@@ -858,6 +832,7 @@ ags_automation_insert_from_clipboard
 ags_automation_get_current
 ags_automation_get_specifier_unique
 ags_automation_find_specifier
+ags_automation_get_value
 ags_automation_new
 <SUBSECTION Standard>
 AGS_AUTOMATION
@@ -1029,6 +1004,36 @@ ags_autosave_thread_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_base_plugin</FILE>
+<TITLE>AgsBasePlugin</TITLE>
+AGS_PORT_DESCRIPTOR
+AgsBasePluginFlags
+AgsPortDescriptorFlags
+AgsPortDescriptor
+ags_port_descriptor_alloc
+ags_port_descriptor_free
+ags_base_plugin_find_filename
+ags_base_plugin_apply_port_group_by_prefix
+ags_base_plugin_instantiate
+ags_base_plugin_connect_port
+ags_base_plugin_activate
+ags_base_plugin_deactivate
+ags_base_plugin_run
+ags_base_plugin_load_plugin
+ags_base_plugin_new
+<SUBSECTION Standard>
+AGS_BASE_PLUGIN
+AGS_BASE_PLUGIN_CLASS
+AGS_BASE_PLUGIN_GET_CLASS
+AGS_IS_BASE_PLUGIN
+AGS_IS_BASE_PLUGIN_CLASS
+AGS_TYPE_BASE_PLUGIN
+AgsBasePlugin
+AgsBasePluginClass
+ags_base_plugin_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_blink_cell_pattern_cursor</FILE>
 <TITLE>AgsBlinkCellPatternCursor</TITLE>
 ags_blink_cell_pattern_cursor_new
@@ -1112,9 +1117,12 @@ ags_buffer_recycling_get_type
 <FILE>ags_bulk_member</FILE>
 <TITLE>AgsBulkMember</TITLE>
 AGS_BULK_PORT
+AGS_BULK_MEMBER_DEFAULT_VERSION
+AGS_BULK_MEMBER_DEFAULT_BUILD_ID
 AgsBulkMemberFlags
 AgsBulkPort
 ags_bulk_port_alloc
+ags_bulk_port_find
 ags_bulk_member_get_widget
 ags_bulk_member_set_label
 ags_bulk_member_change_port
@@ -1425,6 +1433,8 @@ ags_concurrency_provider_get_type
 <SECTION>
 <FILE>ags_concurrent_tree</FILE>
 <TITLE>AgsConcurrentTree</TITLE>
+ags_concurrent_tree_set_parent_locked
+ags_concurrent_tree_get_parent_locked
 ags_concurrent_tree_get_lock
 ags_concurrent_tree_get_parent_lock
 ags_concurrent_tree_lock_context
@@ -1453,8 +1463,10 @@ AGS_CONFIG_SEQUENCER
 AGS_CONFIG_RECALL
 ags_config_load_defaults
 ags_config_load_from_file
+ags_config_load_from_data
 ags_config_set_value
 ags_config_get_value
+ags_config_to_data
 ags_config_save
 ags_config_get_instance
 ags_config_new
@@ -1477,20 +1489,37 @@ ags_connectable_add_to_registry
 ags_connectable_connect
 ags_connectable_disconnect
 <SUBSECTION Standard>
+AgsConnectable
+AgsConnectableInterface
 AGS_CONNECTABLE
 AGS_CONNECTABLE_GET_INTERFACE
 AGS_CONNECTABLE_INTERFACE
 AGS_IS_CONNECTABLE
 AGS_IS_CONNECTABLE_INTERFACE
 AGS_TYPE_CONNECTABLE
-AgsConnectable
-AgsConnectableInterface
 ags_connectable_get_type
 </SECTION>
 
 <SECTION>
 <FILE>ags_container</FILE>
 ags_container_add_all
+</SECTION>
+
+<SECTION>
+<FILE>ags_conversion</FILE>
+<TITLE>AgsConversion</TITLE>
+ags_conversion_convert
+ags_conversion_new
+<SUBSECTION Standard>
+AGS_CONVERSION
+AGS_CONVERSION_CLASS
+AGS_CONVERSION_GET_CLASS
+AGS_IS_CONVERSION
+AGS_IS_CONVERSION_CLASS
+AGS_TYPE_CONVERSION
+AgsConversion
+AgsConversionClass
+ags_conversion_get_type
 </SECTION>
 
 <SECTION>
@@ -1958,6 +1987,33 @@ ags_drum_output_pad_play_cancel
 </SECTION>
 
 <SECTION>
+<FILE>ags_dssi_bridge</FILE>
+<TITLE>AgsDssiBridge</TITLE>
+AGS_DSSI_BRIDGE_DEFAULT_VERSION
+AGS_DSSI_BRIDGE_DEFAULT_BUILD_ID
+AgsDssiBridgeFlags
+ags_dssi_bridge_input_map_recall
+ags_dssi_bridge_output_map_recall
+ags_dssi_bridge_load
+ags_dssi_bridge_new
+<SUBSECTION Standard>
+AGS_DSSI_BRIDGE
+AGS_DSSI_BRIDGE_CLASS
+AGS_DSSI_BRIDGE_GET_CLASS
+AGS_IS_DSSI_BRIDGE
+AGS_IS_DSSI_BRIDGE_CLASS
+AGS_TYPE_DSSI_BRIDGE
+AgsDssiBridge
+AgsDssiBridgeClass
+ags_dssi_bridge_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_dssi_bridge_callbacks</FILE>
+ags_dssi_bridge_program_changed_callback
+</SECTION>
+
+<SECTION>
 <FILE>ags_dssi_browser</FILE>
 <TITLE>AgsDssiBrowser</TITLE>
 ags_dssi_browser_get_plugin_filename
@@ -1986,16 +2042,10 @@ ags_dssi_browser_plugin_effect_callback
 <SECTION>
 <FILE>ags_dssi_manager</FILE>
 <TITLE>AgsDssiManager</TITLE>
-AGS_DSSI_PLUGIN
-AgsDssiPluginFlags
-AgsDssiPlugin
-ags_dssi_plugin_alloc
-ags_dssi_plugin_free
 ags_dssi_manager_get_filenames
 ags_dssi_manager_find_dssi_plugin
 ags_dssi_manager_load_file
 ags_dssi_manager_load_default_directory
-ags_dssi_manager_effect_index
 ags_dssi_manager_get_instance
 ags_dssi_manager_new
 <SUBSECTION Standard>
@@ -2008,6 +2058,24 @@ AGS_TYPE_DSSI_MANAGER
 AgsDssiManager
 AgsDssiManagerClass
 ags_dssi_manager_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_dssi_plugin</FILE>
+<TITLE>AgsDssiPlugin</TITLE>
+AGS_DSSI_PLUGIN_DESCRIPTOR
+ags_dssi_plugin_change_program
+ags_dssi_plugin_new
+<SUBSECTION Standard>
+AGS_DSSI_PLUGIN
+AGS_DSSI_PLUGIN_CLASS
+AGS_DSSI_PLUGIN_GET_CLASS
+AGS_IS_DSSI_PLUGIN
+AGS_IS_DSSI_PLUGIN_CLASS
+AGS_TYPE_DSSI_PLUGIN
+AgsDssiPlugin
+AgsDssiPluginClass
+ags_dssi_plugin_get_type
 </SECTION>
 
 <SECTION>
@@ -2064,6 +2132,13 @@ ags_editor_machine_changed_callback
 
 <SECTION>
 <FILE>ags_effect</FILE>
+AGS_EFFECT_COPY_STREAM
+AGS_EFFECT_COPY_BUFFER
+AGS_EFFECT_DOWN_MIX
+</SECTION>
+
+<SECTION>
+<FILE>ags_effect</FILE>
 <TITLE>AgsEffect</TITLE>
 <SUBSECTION Standard>
 AGS_EFFECT
@@ -2078,13 +2153,6 @@ ags_effect_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_effect</FILE>
-AGS_EFFECT_COPY_STREAM
-AGS_EFFECT_COPY_BUFFER
-AGS_EFFECT_DOWN_MIX
-</SECTION>
-
-<SECTION>
 <FILE>ags_effect_bridge</FILE>
 <TITLE>AgsEffectBridge</TITLE>
 AGS_EFFECT_BRIDGE_DEFAULT_VERSION
@@ -2093,6 +2161,8 @@ AGS_EFFECT_BRIDGE_MAX_COLUMNS
 AgsEffectBridgeFlags
 ags_effect_bridge_resize_audio_channels
 ags_effect_bridge_resize_pads
+ags_effect_bridge_map_recall
+ags_effect_bridge_find_port
 ags_effect_bridge_new
 <SUBSECTION Standard>
 AGS_EFFECT_BRIDGE
@@ -2126,6 +2196,8 @@ ags_effect_bulk_add_effect
 ags_effect_bulk_remove_effect
 ags_effect_bulk_resize_audio_channels
 ags_effect_bulk_resize_pads
+ags_effect_bulk_map_recall
+ags_effect_bulk_find_port
 ags_effect_bulk_new
 <SUBSECTION Standard>
 AGS_EFFECT_BULK
@@ -2146,7 +2218,6 @@ ags_effect_bulk_remove_callback
 ags_effect_bulk_plugin_browser_response_callback
 ags_effect_bulk_set_audio_channels_callback
 ags_effect_bulk_set_pads_callback
-ags_effect_bulk_lv2ui_write_function
 </SECTION>
 
 <SECTION>
@@ -2156,8 +2227,11 @@ AGS_EFFECT_LINE_DEFAULT_VERSION
 AGS_EFFECT_LINE_DEFAULT_BUILD_ID
 AGS_EFFECT_LINE_COLUMNS_COUNT
 AgsEffectLineFlags
+ags_effect_line_set_channel
 ags_effect_line_add_effect
 ags_effect_line_remove_effect
+ags_effect_line_map_recall
+ags_effect_line_find_port
 ags_effect_line_new
 <SUBSECTION Standard>
 AGS_EFFECT_LINE
@@ -2183,7 +2257,10 @@ AGS_EFFECT_PAD_DEFAULT_VERSION
 AGS_EFFECT_PAD_DEFAULT_BUILD_ID
 AGS_EFFECT_PAD_COLUMNS_COUNT
 AgsEffectPadFlags
+ags_effect_pad_set_channel
 ags_effect_pad_resize_lines
+ags_effect_pad_map_recall
+ags_effect_pad_find_port
 ags_effect_pad_new
 <SUBSECTION Standard>
 AGS_EFFECT_PAD
@@ -2478,6 +2555,8 @@ AGS_FILE_CHECKSUM_LENGTH
 AGS_FILE_DEFAULT_AUDIO_FORMAT
 AGS_FILE_DEFAULT_AUDIO_ENCODING
 AgsFileFlags
+AGS_FILE_ERROR
+AgsFileError
 ags_file_str2md5
 ags_file_add_id_ref
 ags_file_find_id_ref_by_node
@@ -2496,6 +2575,8 @@ ags_file_write_resolve
 ags_file_read
 ags_file_read_resolve
 ags_file_read_start
+ags_file_read_config
+ags_file_write_config
 ags_file_read_application_context
 ags_file_write_application_context
 ags_file_new
@@ -2571,6 +2652,7 @@ ags_file_link_get_type
 <FILE>ags_file_lookup</FILE>
 <TITLE>AgsFileLookup</TITLE>
 ags_file_lookup_find_by_node
+ags_file_lookup_find_by_reference
 ags_file_lookup_resolve
 ags_file_lookup_new
 <SUBSECTION Standard>
@@ -2817,6 +2899,23 @@ ags_generic_accessible_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_generic_main_loop</FILE>
+<TITLE>AgsGenericMainLoop</TITLE>
+AGS_GENERIC_MAIN_LOOP_DEFAULT_JIFFIE
+ags_generic_main_loop_new
+<SUBSECTION Standard>
+AGS_GENERIC_MAIN_LOOP
+AGS_GENERIC_MAIN_LOOP_CLASS
+AGS_GENERIC_MAIN_LOOP_GET_CLASS
+AGS_IS_GENERIC_MAIN_LOOP
+AGS_IS_GENERIC_MAIN_LOOP_CLASS
+AGS_TYPE_GENERIC_MAIN_LOOP
+AgsGenericMainLoop
+AgsGenericMainLoopClass
+ags_generic_main_loop_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_generic_preferences</FILE>
 <TITLE>AgsGenericPreferences</TITLE>
 ags_generic_preferences_new
@@ -2881,9 +2980,9 @@ ags_file_read_machine_counter_list
 ags_file_write_machine_counter_list
 ags_file_read_machine
 ags_file_write_machine
+ags_file_read_machine_resolve_audio
 ags_file_read_machine_list
 ags_file_write_machine_list
-ags_file_read_machine_resolve_audio
 ags_file_read_pad
 ags_file_write_pad
 ags_file_read_pad_list
@@ -2900,6 +2999,28 @@ ags_file_read_line_member
 ags_file_write_line_member
 ags_file_read_line_member_list
 ags_file_write_line_member_list
+ags_file_read_effect_bridge
+ags_file_write_effect_bridge
+ags_file_read_effect_bridge_resolve_audio
+ags_file_read_effect_bridge_list
+ags_file_write_effect_bridge_list
+ags_file_read_effect_bulk
+ags_file_write_effect_bulk
+ags_file_read_effect_bulk_list
+ags_file_write_effect_bulk_list
+ags_file_read_effect_bulk_resolve_audio
+ags_file_read_bulk_member
+ags_file_write_bulk_member
+ags_file_read_bulk_member_list
+ags_file_write_bulk_member_list
+ags_file_read_effect_pad
+ags_file_write_effect_pad
+ags_file_read_effect_pad_list
+ags_file_write_effect_pad_list
+ags_file_read_effect_line
+ags_file_write_effect_line
+ags_file_read_effect_line_list
+ags_file_write_effect_line_list
 ags_file_read_dialog
 ags_file_write_dialog
 ags_file_read_dialog_list
@@ -2934,6 +3055,26 @@ ags_file_read_notebook_tab
 ags_file_write_notebook_tab
 ags_file_read_navigation
 ags_file_write_navigation
+ags_file_read_automation_window
+ags_file_write_automation_window
+ags_file_read_automation_window_list
+ags_file_write_automation_window_list
+ags_file_read_automation_editor
+ags_file_write_automation_editor
+ags_file_read_automation_editor_list
+ags_file_write_automation_editor_list
+ags_file_read_automation_toolbar
+ags_file_write_automation_toolbar
+ags_file_read_automation_toolbar_list
+ags_file_write_automation_toolbar_list
+ags_file_read_automation_edit
+ags_file_write_automation_edit
+ags_file_read_automation_edit_list
+ags_file_write_automation_edit_list
+ags_file_read_automation_area
+ags_file_write_automation_area
+ags_file_read_automation_area_list
+ags_file_write_automation_area_list
 </SECTION>
 
 <SECTION>
@@ -3309,6 +3450,7 @@ ags_ladspa_bridge_get_type
 <TITLE>AgsLadspaBrowser</TITLE>
 ags_ladspa_browser_get_plugin_filename
 ags_ladspa_browser_get_plugin_effect
+ags_ladspa_browser_combo_box_boolean_controls_new
 ags_ladspa_browser_combo_box_controls_new
 ags_ladspa_browser_preview_new
 ags_ladspa_browser_new
@@ -3331,18 +3473,29 @@ ags_ladspa_browser_plugin_effect_callback
 </SECTION>
 
 <SECTION>
+<FILE>ags_ladspa_conversion</FILE>
+<TITLE>AgsLadspaConversion</TITLE>
+AgsLadspaConversionFlaags
+ags_ladspa_conversion_new
+<SUBSECTION Standard>
+AGS_IS_LADSPA_CONVERSION
+AGS_IS_LADSPA_CONVERSION_CLASS
+AGS_LADSPA_CONVERSION
+AGS_LADSPA_CONVERSION_CLASS
+AGS_LADSPA_CONVERSION_GET_CLASS
+AGS_TYPE_LADSPA_CONVERSION
+AgsLadspaConversion
+AgsLadspaConversionClass
+ags_ladspa_conversion_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_ladspa_manager</FILE>
 <TITLE>AgsLadspaManager</TITLE>
-AGS_LADSPA_PLUGIN
-AgsLadspaPluginFlags
-AgsLadspaPlugin
-ags_ladspa_plugin_alloc
-ags_ladspa_plugin_free
 ags_ladspa_manager_get_filenames
 ags_ladspa_manager_find_ladspa_plugin
 ags_ladspa_manager_load_file
 ags_ladspa_manager_load_default_directory
-ags_ladspa_manager_effect_index
 ags_ladspa_manager_get_instance
 ags_ladspa_manager_new
 <SUBSECTION Standard>
@@ -3355,6 +3508,23 @@ AGS_TYPE_LADSPA_MANAGER
 AgsLadspaManager
 AgsLadspaManagerClass
 ags_ladspa_manager_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_ladspa_plugin</FILE>
+<TITLE>AgsLadspaPlugin</TITLE>
+AGS_LADSPA_PLUGIN_DESCRIPTOR
+ags_ladspa_plugin_new
+<SUBSECTION Standard>
+AGS_IS_LADSPA_PLUGIN
+AGS_IS_LADSPA_PLUGIN_CLASS
+AGS_LADSPA_PLUGIN
+AGS_LADSPA_PLUGIN_CLASS
+AGS_LADSPA_PLUGIN_GET_CLASS
+AGS_TYPE_LADSPA_PLUGIN
+AgsLadspaPlugin
+AgsLadspaPluginClass
+ags_ladspa_plugin_get_type
 </SECTION>
 
 <SECTION>
@@ -3401,14 +3571,15 @@ ags_libao_get_type
 <TITLE>AgsLine</TITLE>
 AGS_LINE_DEFAULT_VERSION
 AGS_LINE_DEFAULT_BUILD_ID
+AGS_LINE_COLUMNS_COUNT
 AgsLineFlags
 ags_line_set_channel
 ags_line_group_changed
 ags_line_add_effect
 ags_line_remove_effect
-ags_line_find_next_grouped
 ags_line_map_recall
 ags_line_find_port
+ags_line_find_next_grouped
 ags_line_new
 <SUBSECTION Standard>
 AGS_IS_LINE
@@ -3677,6 +3848,10 @@ ags_loop_channel_run_get_type
 AGS_LV2_BRIDGE_DEFAULT_VERSION
 AGS_LV2_BRIDGE_DEFAULT_BUILD_ID
 AgsLv2BridgeFlags
+ags_lv2_bridge_input_map_recall
+ags_lv2_bridge_output_map_recall
+ags_lv2_bridge_load_midi
+ags_lv2_bridge_load_gui
 ags_lv2_bridge_load
 ags_lv2_bridge_new
 <SUBSECTION Standard>
@@ -3692,10 +3867,18 @@ ags_lv2_bridge_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_lv2_bridge_callbacks</FILE>
+ags_lv2_bridge_show_gui_callback
+ags_lv2_bridge_delete_event_callback
+ags_lv2_bridge_lv2ui_write_function
+</SECTION>
+
+<SECTION>
 <FILE>ags_lv2_browser</FILE>
 <TITLE>AgsLv2Browser</TITLE>
 ags_lv2_browser_get_plugin_filename
 ags_lv2_browser_get_plugin_effect
+ags_lv2_browser_combo_box_boolean_controls_new
 ags_lv2_browser_combo_box_controls_new
 ags_lv2_browser_preview_new
 ags_lv2_browser_new
@@ -3718,19 +3901,68 @@ ags_lv2_browser_plugin_uri_callback
 </SECTION>
 
 <SECTION>
+<FILE>ags_lv2_conversion</FILE>
+<TITLE>AgsLv2Conversion</TITLE>
+AgsLv2ConversionFlaags
+ags_lv2_conversion_new
+<SUBSECTION Standard>
+AGS_IS_LV2_CONVERSION
+AGS_IS_LV2_CONVERSION_CLASS
+AGS_LV2_CONVERSION
+AGS_LV2_CONVERSION_CLASS
+AGS_LV2_CONVERSION_GET_CLASS
+AGS_TYPE_LV2_CONVERSION
+AgsLv2Conversion
+AgsLv2ConversionClass
+ags_lv2_conversion_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_lv2_event_manager</FILE>
+<TITLE>AgsLv2EventManager</TITLE>
+ags_lv2_event_manager_lv2_event_ref
+ags_lv2_event_manager_lv2_event_unref
+ags_lv2_event_manager_get_instance
+ags_lv2_event_manager_new
+<SUBSECTION Standard>
+AGS_IS_LV2_EVENT_MANAGER
+AGS_IS_LV2_EVENT_MANAGER_CLASS
+AGS_LV2_EVENT_MANAGER
+AGS_LV2_EVENT_MANAGER_CLASS
+AGS_LV2_EVENT_MANAGER_GET_CLASS
+AGS_TYPE_LV2_EVENT_MANAGER
+AgsLv2EventManager
+AgsLv2EventManagerClass
+ags_lv2_event_manager_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_lv2_log_manager</FILE>
+<TITLE>AgsLv2LogManager</TITLE>
+ags_lv2_log_manager_printf
+ags_lv2_log_manager_vprintf
+ags_lv2_log_manager_get_instance
+ags_lv2_log_manager_new
+<SUBSECTION Standard>
+AGS_IS_LV2_LOG_MANAGER
+AGS_IS_LV2_LOG_MANAGER_CLASS
+AGS_LV2_LOG_MANAGER
+AGS_LV2_LOG_MANAGER_CLASS
+AGS_LV2_LOG_MANAGER_GET_CLASS
+AGS_TYPE_LV2_LOG_MANAGER
+AgsLv2LogManager
+AgsLv2LogManagerClass
+ags_lv2_log_manager_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_lv2_manager</FILE>
 <TITLE>AgsLv2Manager</TITLE>
-AGS_LV2_PLUGIN
 AGS_LV2_MANAGER_DEFAULT_LOCALE
-AgsLv2PluginFlags
-AgsLv2Plugin
-ags_lv2_plugin_alloc
-ags_lv2_plugin_free
 ags_lv2_manager_get_filenames
 ags_lv2_manager_find_lv2_plugin
 ags_lv2_manager_load_file
 ags_lv2_manager_load_default_directory
-ags_lv2_manager_uri_index
 ags_lv2_manager_get_instance
 ags_lv2_manager_new
 <SUBSECTION Standard>
@@ -3746,18 +3978,131 @@ ags_lv2_manager_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_lv2_plugin</FILE>
+<TITLE>AgsLv2Plugin</TITLE>
+AGS_LV2_PLUGIN_DESCRIPTOR
+AGS_LV2_EVENT_BUFFER
+AGS_LV2_EVENT
+AGS_LV2_EVENT_DATA
+AGS_LV2_ATOM_SEQUENCE
+AgsLv2PluginFlags
+ags_lv2_plugin_alloc_event_buffer
+ags_lv2_plugin_concat_event_buffer
+ags_lv2_plugin_event_buffer_append_midi
+ags_lv2_plugin_clear_event_buffer
+ags_lv2_plugin_alloc_atom_sequence
+ags_lv2_plugin_concat_atom_sequence
+ags_lv2_plugin_atom_sequence_append_midi
+ags_lv2_plugin_clear_atom_sequence
+ags_lv2_plugin_new
+<SUBSECTION Standard>
+AGS_IS_LV2_PLUGIN
+AGS_IS_LV2_PLUGIN_CLASS
+AGS_LV2_PLUGIN
+AGS_LV2_PLUGIN_CLASS
+AGS_LV2_PLUGIN_GET_CLASS
+AGS_TYPE_LV2_PLUGIN
+AgsLv2Plugin
+AgsLv2PluginClass
+ags_lv2_plugin_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_lv2_uri_map_manager</FILE>
+<TITLE>AgsLv2UriMapManager</TITLE>
+ags_lv2_uri_map_manager_insert
+ags_lv2_uri_map_manager_remove
+ags_lv2_uri_map_manager_lookup
+ags_lv2_uri_map_manager_load_default
+ags_lv2_uri_map_manager_uri_to_id
+ags_lv2_uri_map_manager_get_instance
+ags_lv2_uri_map_manager_new
+<SUBSECTION Standard>
+AGS_IS_LV2_URI_MAP_MANAGER
+AGS_IS_LV2_URI_MAP_MANAGER_CLASS
+AGS_LV2_URI_MAP_MANAGER
+AGS_LV2_URI_MAP_MANAGER_CLASS
+AGS_LV2_URI_MAP_MANAGER_GET_CLASS
+AGS_TYPE_LV2_URI_MAP_MANAGER
+AgsLv2UriMapManager
+AgsLv2UriMapManagerClass
+ags_lv2_uri_map_manager_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_lv2_urid_manager</FILE>
+<TITLE>AgsLv2UridManager</TITLE>
+ags_lv2_urid_manager_insert
+ags_lv2_urid_manager_remove
+ags_lv2_urid_manager_lookup
+ags_lv2_urid_manager_load_default
+ags_lv2_urid_manager_map
+ags_lv2_urid_manager_unmap
+ags_lv2_urid_manager_get_instance
+ags_lv2_urid_manager_new
+<SUBSECTION Standard>
+AGS_IS_LV2_URID_MANAGER
+AGS_IS_LV2_URID_MANAGER_CLASS
+AGS_LV2_URID_MANAGER
+AGS_LV2_URID_MANAGER_CLASS
+AGS_LV2_URID_MANAGER_GET_CLASS
+AGS_TYPE_LV2_URID_MANAGER
+AgsLv2UridManager
+AgsLv2UridManagerClass
+ags_lv2_urid_manager_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_lv2_worker</FILE>
+<TITLE>AgsLv2Worker</TITLE>
+AGS_LV2_WORKER_RESPONSE_DATA
+AgsLv2WorkerFlags
+AgsLv2WorkerResponseData
+ags_lv2_worker_alloc_response_data
+ags_lv2_worker_free_response_data
+ags_lv2_worker_respond
+ags_lv2_worker_schedule_work
+ags_lv2_worker_safe_run
+ags_lv2_worker_new
+<SUBSECTION Standard>
+AGS_IS_LV2_WORKER
+AGS_IS_LV2_WORKER_CLASS
+AGS_LV2_WORKER
+AGS_LV2_WORKER_CLASS
+AGS_LV2_WORKER_GET_CLASS
+AGS_TYPE_LV2_WORKER
+AgsLv2Worker
+AgsLv2WorkerClass
+ags_lv2_worker_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_lv2_worker_manager</FILE>
+<TITLE>AgsLv2WorkerManager</TITLE>
+ags_lv2_worker_manager_pull_worker
+ags_lv2_worker_manager_get_instance
+ags_lv2_worker_manager_new
+<SUBSECTION Standard>
+AGS_IS_LV2_WORKER_MANAGER
+AGS_IS_LV2_WORKER_MANAGER_CLASS
+AGS_LV2_WORKER_MANAGER
+AGS_LV2_WORKER_MANAGER_CLASS
+AGS_LV2_WORKER_MANAGER_GET_CLASS
+AGS_TYPE_LV2_WORKER_MANAGER
+AgsLv2WorkerManager
+AgsLv2WorkerManagerClass
+ags_lv2_worker_manager_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_lv2ui_manager</FILE>
 <TITLE>AgsLv2uiManager</TITLE>
-AGS_LV2UI_PLUGIN
-AgsLv2uiPluginFlags
-AgsLv2uiPlugin
-ags_lv2ui_plugin_alloc
-ags_lv2ui_plugin_free
 ags_lv2ui_manager_get_filenames
 ags_lv2ui_manager_find_lv2ui_plugin
 ags_lv2ui_manager_load_file
 ags_lv2ui_manager_load_default_directory
 ags_lv2ui_manager_uri_index
+ags_lv2ui_manager_find_uri
 ags_lv2ui_manager_get_instance
 ags_lv2ui_manager_new
 <SUBSECTION Standard>
@@ -3773,6 +4118,23 @@ ags_lv2ui_manager_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_lv2ui_plugin</FILE>
+<TITLE>AgsLv2uiPlugin</TITLE>
+AgsLv2uiFlags
+ags_lv2ui_plugin_new
+<SUBSECTION Standard>
+AGS_IS_LV2UI_PLUGIN
+AGS_IS_LV2UI_PLUGIN_CLASS
+AGS_LV2UI_PLUGIN
+AGS_LV2UI_PLUGIN_CLASS
+AGS_LV2UI_PLUGIN_GET_CLASS
+AGS_TYPE_LV2UI_PLUGIN
+AgsLv2uiPlugin
+AgsLv2uiPluginClass
+ags_lv2ui_plugin_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_machine</FILE>
 <TITLE>AgsMachine</TITLE>
 AGS_MACHINE_DEFAULT_VERSION
@@ -3782,13 +4144,13 @@ AgsMachineFileInputFlags
 AgsMachineMappingFlags
 AgsMachineEditOptions
 AgsMachineConnectionOptions
-ags_machine_set_audio_channels
-ags_machine_set_pads
-ags_machine_add_default_recalls
+ags_machine_resize_audio_channels
+ags_machine_resize_pads
 ags_machine_map_recall
+ags_machine_find_port
+ags_machine_add_default_recalls
 ags_machine_get_possible_links
 ags_machine_find_by_name
-ags_machine_find_port
 ags_machine_set_run
 ags_machine_set_run_extended
 ags_machine_file_chooser_dialog_new
@@ -3824,6 +4186,8 @@ ags_machine_popup_paste_pattern_callback
 ags_machine_popup_midi_dialog_callback
 ags_machine_open_response_callback
 ags_machine_play_callback
+ags_machine_set_audio_channels_callback
+ags_machine_set_pads_callback
 ags_machine_tact_callback
 ags_machine_done_callback
 ags_machine_start_complete_callback
@@ -3899,6 +4263,7 @@ ags_machine_selection_get_type
 <SECTION>
 <FILE>ags_machine_selector</FILE>
 <TITLE>AgsMachineSelector</TITLE>
+AgsMachineSelectorFlags
 ags_machine_selector_changed
 ags_machine_selector_popup_new
 ags_machine_selector_new
@@ -3932,6 +4297,8 @@ ags_machine_selector_radio_changed
 ags_main_loop_get_tree_lock
 ags_main_loop_set_application_context
 ags_main_loop_get_application_context
+ags_main_loop_set_async_queue
+ags_main_loop_get_async_queue
 ags_main_loop_set_tic
 ags_main_loop_get_tic
 ags_main_loop_set_last_sync
@@ -3950,6 +4317,8 @@ ags_main_loop_get_type
 
 <SECTION>
 <FILE>ags_marshal</FILE>
+g_cclosure_user_marshal_UINT__VOID
+g_cclosure_user_marshal_VOID__BOOLEAN_POINTER
 g_cclosure_user_marshal_VOID__UINT_BOOLEAN
 g_cclosure_user_marshal_VOID__UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_UINT_BOOLEAN
@@ -3966,10 +4335,14 @@ g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE
 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT
 g_cclosure_user_marshal_VOID__STRING_UINT
 g_cclosure_user_marshal_VOID__STRING_UINT_DOUBLE
+g_cclosure_user_marshal_VOID__STRING_UINT_POINTER
 g_cclosure_user_marshal_VOID__STRING_UINT_STRING_DOUBLE
 g_cclosure_user_marshal_VOID__STRING_POINTER
 g_cclosure_user_marshal_VOID__STRING_STRING_STRING
 g_cclosure_user_marshal_VOID__POINTER_UINT
+g_cclosure_user_marshal_VOID__POINTER_UINT_UINT
+g_cclosure_user_marshal_VOID__POINTER_UINT_POINTER
+g_cclosure_user_marshal_VOID__POINTER_POINTER_UINT
 g_cclosure_user_marshal_VOID__OBJECT_UINT
 g_cclosure_user_marshal_VOID__OBJECT_OBJECT
 g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN
@@ -3978,12 +4351,14 @@ g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_O
 g_cclosure_user_marshal_ULONG__VOID
 g_cclosure_user_marshal_INT__VOID
 g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT
+g_cclosure_user_marshal_DOUBLE__DOUBLE_BOOLEAN
 g_cclosure_user_marshal_STRING__STRING_STRING
 g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER
 g_cclosure_user_marshal_POINTER__VOID
 g_cclosure_user_marshal_POINTER__UINT
 g_cclosure_user_marshal_POINTER__POINTER_UINT
 g_cclosure_user_marshal_POINTER__STRING_STRING
+g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING
 g_cclosure_user_marshal_OBJECT__VOID
 g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING
 g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER
@@ -4074,11 +4449,16 @@ ags_menu_get_type
 <SECTION>
 <FILE>ags_menu_bar</FILE>
 <TITLE>AgsMenuBar</TITLE>
-ags_menu_bar_new
+AGS_MENU_ITEM_FILENAME_KEY
+AGS_MENU_ITEM_EFFECT_KEY
 ags_zoom_menu_new
 ags_tact_menu_new
 ags_zoom_combo_box_new
 ags_tact_combo_box_new
+ags_ladspa_bridge_menu_new
+ags_dssi_bridge_menu_new
+ags_lv2_bridge_menu_new
+ags_menu_bar_new
 <SUBSECTION Standard>
 AGS_IS_MENU_BAR
 AGS_IS_MENU_BAR_CLASS
@@ -4107,6 +4487,9 @@ ags_menu_bar_add_drum_callback
 ags_menu_bar_add_matrix_callback
 ags_menu_bar_add_synth_callback
 ags_menu_bar_add_ffplayer_callback
+ags_menu_bar_add_ladspa_bridge_callback
+ags_menu_bar_add_dssi_bridge_callback
+ags_menu_bar_add_lv2_bridge_callback
 ags_menu_bar_automation_callback
 ags_menu_bar_preferences_callback
 ags_menu_bar_about_callback
@@ -4181,9 +4564,13 @@ ags_meter_configure_event
 <FILE>ags_midi_buffer_util</FILE>
 ags_midi_buffer_util_get_varlength_size
 ags_midi_buffer_util_put_varlength
+ags_midi_buffer_util_get_varlength
 ags_midi_buffer_util_put_key_on
+ags_midi_buffer_util_get_key_on
 ags_midi_buffer_util_put_key_off
+ags_midi_buffer_util_get_key_off
 ags_midi_buffer_util_put_key_pressure
+ags_midi_buffer_util_get_key_pressure
 </SECTION>
 
 <SECTION>
@@ -4268,7 +4655,6 @@ ags_midi_dialog_cancel_callback
 <FILE>ags_midi_file</FILE>
 <TITLE>AgsMidiFile</TITLE>
 AGS_MIDI_FILE_TRACK
-USEC_PER_SEC
 AGS_MIDI_FILE_MAX_TEXT_LENGTH
 AGS_MIDI_FILE_MTHD
 AGS_MIDI_FILE_MTRK
@@ -4760,7 +5146,6 @@ ags_notation_get_type
 <SECTION>
 <FILE>ags_note</FILE>
 <TITLE>AgsNote</TITLE>
-USECS_PER_SEC
 AgsNoteFlags
 ags_note_find_prev
 ags_note_find_next
@@ -4875,6 +5260,22 @@ AGS_TYPE_OPEN_FILE
 AgsOpenFile
 AgsOpenFileClass
 ags_open_file_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_open_sf2_sample</FILE>
+<TITLE>AgsOpenSf2Sample</TITLE>
+ags_open_sf2_sample_new
+<SUBSECTION Standard>
+AGS_IS_OPEN_SF2_SAMPLE
+AGS_IS_OPEN_SF2_SAMPLE_CLASS
+AGS_OPEN_SF2_SAMPLE
+AGS_OPEN_SF2_SAMPLE_CLASS
+AGS_OPEN_SF2_SAMPLE_GET_CLASS
+AGS_TYPE_OPEN_SF2_SAMPLE
+AgsOpenSf2Sample
+AgsOpenSf2SampleClass
+ags_open_sf2_sample_get_type
 </SECTION>
 
 <SECTION>
@@ -5097,7 +5498,14 @@ ags_parameter_grow
 <SECTION>
 <FILE>ags_pattern</FILE>
 <TITLE>AgsPattern</TITLE>
-ags_pattern_get_by_timestamp
+AGS_PATTERN_DEFAULT_BPM
+AGS_PATTERN_TICS_PER_BEAT
+AGS_PATTERN_MINIMUM_NOTE_LENGTH
+AGS_PATTERN_MAXIMUM_NOTE_LENGTH
+AGS_PATTERN_DEFAULT_LENGTH
+AGS_PATTERN_DEFAULT_JIFFIE
+AGS_PATTERN_DEFAULT_DURATION
+ags_pattern_find_near_timestamp
 ags_pattern_set_dim
 ags_pattern_get_bit
 ags_pattern_toggle_bit
@@ -5662,6 +6070,7 @@ AGS_PLUGIN_NAME_VOLUME
 <SECTION>
 <FILE>ags_port</FILE>
 <TITLE>AgsPort</TITLE>
+AgsPortFlags
 ags_port_safe_read
 ags_port_safe_write
 ags_port_safe_get_property
@@ -5678,60 +6087,6 @@ AGS_TYPE_PORT
 AgsPort
 AgsPortClass
 ags_port_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_portable_thread</FILE>
-<TITLE>AgsPortableThread</TITLE>
-AgsPortableThreadFlags
-ags_portable_thread_lock
-ags_portable_thread_trylock
-ags_portable_thread_unlock
-ags_portable_thread_get_toplevel
-ags_portable_thread_first
-ags_portable_thread_last
-ags_portable_thread_remove_child
-ags_portable_thread_add_child
-ags_portable_thread_parental_is_locked
-ags_portable_thread_sibling_is_locked
-ags_portable_thread_children_is_locked
-ags_portable_thread_is_current_ready
-ags_portable_thread_is_current_synced
-ags_portable_thread_is_tree_ready
-ags_portable_thread_is_tree_synced
-ags_portable_thread_main_loop_unlock_children
-ags_portable_thread_next_parent_locked
-ags_portable_thread_next_sibling_locked
-ags_portable_thread_next_children_locked
-ags_portable_thread_lock_parent
-ags_portable_thread_lock_sibling
-ags_portable_thread_lock_children
-ags_portable_thread_lock_all
-ags_portable_thread_unlock_parent
-ags_portable_thread_unlock_sibling
-ags_portable_thread_unlock_children
-ags_portable_thread_unlock_all
-ags_portable_thread_wait_parent
-ags_portable_thread_wait_sibling
-ags_portable_thread_wait_children
-ags_portable_thread_signal_parent
-ags_portable_thread_signal_sibling
-ags_portable_thread_signal_children
-ags_portable_thread_start
-ags_portable_thread_run
-ags_portable_thread_timelock
-ags_portable_thread_stop
-ags_portable_thread_new
-<SUBSECTION Standard>
-AGS_IS_PORTABLE_THREAD
-AGS_IS_PORTABLE_THREAD_CLASS
-AGS_PORTABLE_THREAD
-AGS_PORTABLE_THREAD_CLASS
-AGS_PORTABLE_THREAD_GET_CLASS
-AGS_TYPE_PORTABLE_THREAD
-AgsPortableThread
-AgsPortableThreadClass
-ags_portable_thread_get_type
 </SECTION>
 
 <SECTION>
@@ -5852,6 +6207,7 @@ ags_recall_child_added
 ags_recall_run_init_pre
 ags_recall_run_init_inter
 ags_recall_run_init_post
+ags_recall_automate
 ags_recall_run_pre
 ags_recall_run_inter
 ags_recall_run_post
@@ -5885,6 +6241,8 @@ ags_recall_run_init
 ags_recall_handler_alloc
 ags_recall_add_handler
 ags_recall_remove_handler
+ags_recall_lock_port
+ags_recall_unlock_port
 ags_recall_new
 <SUBSECTION Standard>
 AGS_IS_RECALL
@@ -6044,6 +6402,7 @@ ags_recall_dependency_get_type
 <FILE>ags_recall_dssi</FILE>
 <TITLE>AgsRecallDssi</TITLE>
 ags_recall_dssi_load_ports
+ags_recall_dssi_load_conversion
 ags_recall_dssi_short_to_float
 ags_recall_dssi_float_to_short
 ags_recall_dssi_find
@@ -6123,6 +6482,7 @@ ags_recall_id_get_type
 <FILE>ags_recall_ladspa</FILE>
 <TITLE>AgsRecallLadspa</TITLE>
 ags_recall_ladspa_load_ports
+ags_recall_ladspa_load_conversion
 ags_recall_ladspa_short_to_float
 ags_recall_ladspa_float_to_short
 ags_recall_ladspa_find
@@ -6158,10 +6518,12 @@ ags_recall_ladspa_run_get_type
 <SECTION>
 <FILE>ags_recall_lv2</FILE>
 <TITLE>AgsRecallLv2</TITLE>
+AgsRecallLv2FLags
 ags_recall_lv2_load_ports
+ags_recall_lv2_load_conversion
 ags_recall_lv2_short_to_float
 ags_recall_lv2_float_to_short
-ags_recall_ladpsa_find
+ags_recall_lv2_find
 ags_recall_lv2_new
 <SUBSECTION Standard>
 AGS_IS_RECALL_LV2
@@ -6178,6 +6540,7 @@ ags_recall_lv2_get_type
 <SECTION>
 <FILE>ags_recall_lv2_run</FILE>
 <TITLE>AgsRecallLv2Run</TITLE>
+AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT
 ags_recall_lv2_run_new
 <SUBSECTION Standard>
 AGS_IS_RECALL_LV2_RUN
@@ -7149,6 +7512,7 @@ ags_soundcard_set_delay_factor
 ags_soundcard_get_delay_factor
 ags_soundcard_get_delay
 ags_soundcard_get_attack
+ags_soundcard_get_delay_counter
 ags_soundcard_set_note_offset
 ags_soundcard_get_note_offset
 ags_soundcard_set_audio
@@ -7291,6 +7655,27 @@ AGS_TYPE_STREAM_RECYCLING
 AgsStreamRecycling
 AgsStreamRecyclingClass
 ags_stream_recycling_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_string_util</FILE>
+ags_string_util_escape_single_quote
+</SECTION>
+
+<SECTION>
+<FILE>ags_switch_buffer_flag</FILE>
+<TITLE>AgsSwitchBufferFlag</TITLE>
+ags_switch_buffer_flag_new
+<SUBSECTION Standard>
+AGS_IS_SWITCH_BUFFER_FLAG
+AGS_IS_SWITCH_BUFFER_FLAG_CLASS
+AGS_SWITCH_BUFFER_FLAG
+AGS_SWITCH_BUFFER_FLAG_CLASS
+AGS_SWITCH_BUFFER_FLAG_GET_CLASS
+AGS_TYPE_SWITCH_BUFFER_FLAG
+AgsSwitchBufferFlag
+AgsSwitchBufferFlagClass
+ags_switch_buffer_flag_get_type
 </SECTION>
 
 <SECTION>
@@ -7506,22 +7891,17 @@ ags_task_thread_get_type
 <SECTION>
 <FILE>ags_thread-posix</FILE>
 <TITLE>AgsThread</TITLE>
-AGS_ACCOUNTING_TABLE
-USEC_PER_SEC
-NSEC_PER_SEC
-AGS_PRIORITY
-AGS_RT_PRIORITY
 AGS_THREAD_RESUME_SIG
 AGS_THREAD_SUSPEND_SIG
+AGS_RT_PRIORITY
+AGS_THREAD_HERTZ_JIFFIE
 AGS_THREAD_DEFAULT_JIFFIE
 AGS_THREAD_MAX_PRECISION
 AGS_THREAD_DEFAULT_ATTACK
 AgsThreadFlags
-AgsAccountingTable
+AgsThreadSyncFlags
 ags_thread_resume_handler
 ags_thread_suspend_handler
-ags_accounting_table_alloc
-ags_accounting_table_set_sanity
 ags_thread_set_sync
 ags_thread_set_sync_all
 ags_thread_lock
@@ -7555,6 +7935,7 @@ ags_thread_wait_children
 ags_thread_signal_parent
 ags_thread_signal_sibling
 ags_thread_signal_children
+ags_thread_clock
 ags_thread_start
 ags_thread_run
 ags_thread_suspend
@@ -7564,6 +7945,7 @@ ags_thread_stop
 ags_thread_hangcheck
 ags_thread_find_type
 ags_thread_self
+ags_thread_chaos_tree
 ags_thread_new
 <SUBSECTION Standard>
 AGS_IS_THREAD
@@ -7623,6 +8005,12 @@ AGS_TYPE_THREAD_POOL
 AgsThreadPool
 AgsThreadPoolClass
 ags_thread_pool_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_time</FILE>
+USEC_PER_SEC
+NSEC_PER_SEC
 </SECTION>
 
 <SECTION>
@@ -7833,21 +8221,6 @@ ags_tree_iterator_get_type
 <TITLE>AgsTurtle</TITLE>
 AGS_TURTLE_DEFAULT_ENCODING
 AGS_TURTLE_DEFAULT_VERSION
-AGS_TURTLE_UTF8_RANGE_0
-AGS_TURTLE_UTF8_RANGE_1
-AGS_TURTLE_UTF8_RANGE_2
-AGS_TURTLE_UTF8_RANGE_3
-AGS_TURTLE_UTF8_RANGE_4
-AGS_TURTLE_UTF8_RANGE_5
-AGS_TURTLE_UTF8_RANGE_6
-AGS_TURTLE_UTF8_RANGE_7
-AGS_TURTLE_UTF8_RANGE_8
-AGS_TURTLE_UTF8_RANGE_9
-AGS_TURTLE_UTF8_RANGE_10
-AGS_TURTLE_UTF8_RANGE_11
-AGS_TURTLE_UTF8_RANGE_12
-AGS_TURTLE_UTF8_RANGE_ALL
-AGS_TURLTE_UTF8_RANGE_ALL_PATTERN
 AgsTurtleFlags
 ags_turtle_read_iriref
 ags_turtle_read_pname_ns
@@ -7878,9 +8251,9 @@ ags_turtle_read_percent
 ags_turtle_read_hex
 ags_turtle_read_pn_local_esc
 ags_turtle_find_xpath
+ags_turtle_find_xpath_with_context_node
 ags_turtle_load
 ags_turtle_new
-AgsTurtleParserContext
 <SUBSECTION Standard>
 AGS_IS_TURTLE
 AGS_IS_TURTLE_CLASS
@@ -7891,6 +8264,25 @@ AGS_TYPE_TURTLE
 AgsTurtle
 AgsTurtleClass
 ags_turtle_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_turtle_manager</FILE>
+<TITLE>AgsTurtleManager</TITLE>
+ags_turtle_manager_find
+ags_turtle_manager_add
+ags_turtle_manager_get_instance
+ags_turtle_manager_new
+<SUBSECTION Standard>
+AGS_IS_TURTLE_MANAGER
+AGS_IS_TURTLE_MANAGER_CLASS
+AGS_TURTLE_MANAGER
+AGS_TURTLE_MANAGER_CLASS
+AGS_TURTLE_MANAGER_GET_CLASS
+AGS_TYPE_TURTLE_MANAGER
+AgsTurtleManager
+AgsTurtleManagerClass
+ags_turtle_manager_get_type
 </SECTION>
 
 <SECTION>
@@ -8027,6 +8419,7 @@ ags_waveform_get_type
 AGS_MACHINE_COUNTER
 AgsWindowFlags
 AgsMachineCounter
+ags_window_standard_machine_counter_alloc
 ags_window_find_machine_counter
 ags_window_increment_machine_counter
 ags_window_decrement_machine_counter

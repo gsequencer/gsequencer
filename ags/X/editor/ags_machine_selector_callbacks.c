@@ -174,7 +174,11 @@ ags_machine_selector_selection_response(GtkWidget *machine_selection,
 	index = gtk_container_get_children(vbox);
 
       while(list != NULL){
-	if(AGS_IS_FFPLAYER(list->data) || AGS_IS_DRUM(list->data) || AGS_IS_MATRIX(list->data) || AGS_IS_DSSI_BRIDGE(list->data)){
+	if(AGS_IS_FFPLAYER(list->data) ||
+	   AGS_IS_DRUM(list->data) ||
+	   AGS_IS_MATRIX(list->data) ||
+	   AGS_IS_DSSI_BRIDGE(list->data) ||
+	   (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0)){
 	  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
 	    machine = AGS_MACHINE(list->data);
 

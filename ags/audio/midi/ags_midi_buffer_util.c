@@ -20,6 +20,16 @@
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
 /**
+ * SECTION:ags_midi_buffer_util
+ * @short_description: MIDI buffer util
+ * @title: AgsMidiBufferUtil
+ * @section_id:
+ * @include: ags/audio/midi/ags_midi_buffer_util.h
+ *
+ * Utility functions for MIDI buffers.
+ */
+
+/**
  * ags_midi_buffer_util_get_varlength_size:
  * @varlength: the variable length
  *

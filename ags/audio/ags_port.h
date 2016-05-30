@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/lib/ags_complex.h>
+#include <ags/lib/ags_conversion.h>
 
 #include <pthread.h>
 
@@ -39,15 +40,21 @@
 typedef struct _AgsPort AgsPort;
 typedef struct _AgsPortClass AgsPortClass;
 
+typedef enum{
+  AGS_PORT_CONVERT_ALWAYS   =  1,
+}AgsPortFlags;
+
 struct _AgsPort
 {
   GObject object;
 
+  guint flags;
+  
   gchar *plugin_name;
   gchar *specifier;
 
   gchar *control_port;
-
+  
   gboolean port_value_is_pointer;
   GType port_value_type;
 
@@ -56,6 +63,8 @@ struct _AgsPort
 
   pthread_mutex_t *mutex;
 
+  AgsConversion *conversion;
+  
   union _AgsPortValue{
     gboolean ags_port_boolean;
     gint64 ags_port_int;

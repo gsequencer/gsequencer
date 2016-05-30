@@ -157,7 +157,6 @@ ags_synth_output_line_disconnect(AgsConnectable *connectable)
 
 /**
  * ags_synth_output_line_new:
- * @synth_output_line: the parent synth_output_line
  * @channel: the #AgsChannel to visualize
  *
  * Creates an #AgsSynthOutputLine

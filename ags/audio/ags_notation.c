@@ -81,6 +81,7 @@ enum{
   PROP_NOTE,
   PROP_CURRENT_NOTES,
   PROP_NEXT_NOTES,
+  PROP_TIMESTAMP,
 };
 
 static gpointer ags_notation_parent_class = NULL;
@@ -254,6 +255,22 @@ ags_notation_class_init(AgsNotationClass *notation)
   g_object_class_install_property(gobject,
 				  PROP_NEXT_NOTES,
 				  param_spec);
+  
+  /**
+   * AgsPattern:timestamp:
+   *
+   * The pattern's timestamp.
+   * 
+   * Since: 0.7.12
+   */
+  param_spec = g_param_spec_object("timestamp\0",
+				   "timestamp of pattern\0",
+				   "The timestamp of pattern\0",
+				   AGS_TYPE_TIMESTAMP,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMESTAMP,
+				  param_spec);
 }
 
 void
@@ -303,8 +320,8 @@ ags_notation_init(AgsNotation *notation)
 
   notation->notes = NULL;
 
-  notation->start_loop = 0.0;
-  notation->end_loop = 0.0;
+  notation->loop_start = 0.0;
+  notation->loop_end = 0.0;
   notation->offset = 0.0;
 
   notation->selection = NULL;
@@ -467,6 +484,27 @@ ags_notation_set_property(GObject *gobject,
       pthread_mutex_unlock(port->mutex);
     }
     break;
+  case PROP_TIMESTAMP:
+    {
+      AgsTimestamp *timestamp;
+
+      timestamp = (AgsTimestamp *) g_value_get_object(value);
+
+      if(timestamp == (AgsTimestamp *) notation->timestamp){
+	return;
+      }
+
+      if(notation->timestamp != NULL){
+	g_object_unref(G_OBJECT(notation->timestamp));
+      }
+
+      if(timestamp != NULL){
+	g_object_ref(G_OBJECT(timestamp));
+      }
+
+      notation->timestamp = (GObject *) timestamp;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -551,6 +589,9 @@ ags_notation_get_property(GObject *gobject,
 
       g_value_set_pointer(value, (gpointer) start);
     }
+    break;
+  case PROP_TIMESTAMP:
+    g_value_set_object(value, notation->timestamp);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -697,7 +738,29 @@ ags_notation_add_note(AgsNotation *notation,
 		      gboolean use_selection_list)
 {
   GList *list, *list_new;
-  
+
+  auto gint ags_notation_add_note_compare_function(gpointer a, gpointer b);
+
+  gint ags_notation_add_note_compare_function(gpointer a, gpointer b){
+    if(AGS_NOTE(a)->x[0] == AGS_NOTE(b)->x[0]){
+      if(AGS_NOTE(a)->y == AGS_NOTE(b)->y){
+	return(0);
+      }
+
+      if(AGS_NOTE(a)->y < AGS_NOTE(b)->y){
+	return(-1);
+      }else{
+	return(1);
+      }
+    }
+
+    if(AGS_NOTE(a)->x[0] < AGS_NOTE(b)->x[0]){
+      return(-1);
+    }else{
+      return(1);
+    }
+  }
+
   if(note == NULL){
     return;
   }
@@ -705,83 +768,13 @@ ags_notation_add_note(AgsNotation *notation,
   g_object_ref(note);
   
   if(use_selection_list){
-    list = notation->selection;
+    notation->selection = g_list_insert_sorted(notation->selection,
+					       note,
+					       (GCompareFunc) ags_notation_add_note_compare_function);
   }else{
-    list = notation->notes;
-  }
-  
-  if(list == NULL){
-    list_new = g_list_alloc();
-    list_new->data = (gpointer) note;
-
-    if(use_selection_list){
-      notation->selection = list_new;
-    }else{
-      notation->notes = list_new;
-    }
-    
-    return;
-  }
-
-  while(list->next != NULL){
-    if((AGS_NOTE(list->data))->x[0] >= note->x[0]){
-      while(list->next != NULL){
-	if((AGS_NOTE(list->data))->x[0] > note->x[0] ||
-	   (AGS_NOTE(list->data))->y >= note->y){
-	  list_new = (GList *) g_list_alloc();
-	  list_new->data = (gpointer) note;
-
-	  list_new->prev = list->prev;
-	  list_new->next = list;
-
-	  list->prev = list_new;
-    
-	  if(list->prev != NULL){
-	    list_new->prev->next = list_new;
-	  }else{        
-	    if(use_selection_list){
-	      notation->selection = list_new;
-	    }else{
-	      notation->notes = list_new;
-	    }
-	  }
-
-	  return;
-	}
-
-	list = list->next;
-      }
-
-      break;
-    }
-
-    list = list->next;
-  }
-
-  if((AGS_NOTE(list->data))->x[0] >= note->x[0]){
-    list_new = (GList *) g_list_alloc();
-    list_new->data = (gpointer) note;
-
-    list_new->prev = list->prev;
-    list_new->next = list;
-
-    list->prev = list_new;
-    
-    if(list->prev != NULL){
-      list_new->prev->next = list_new;
-    }else{        
-      if(use_selection_list){
-	notation->selection = list_new;
-      }else{
-	notation->notes = list_new;
-      }
-    }
-  }else{
-    list_new = g_list_alloc();
-    list_new->data = (gpointer) note;
-    
-    list_new->prev = list;
-    list->next = list_new;
+    notation->notes = g_list_insert_sorted(notation->notes,
+					   note,
+					   (GCompareFunc) ags_notation_add_note_compare_function);
   }
 }
 
@@ -1008,7 +1001,7 @@ ags_notation_find_point(AgsNotation *notation,
  * @y0: start tone
  * @x1: end offset
  * @y1: end tone
- * @use_selection:_list if %TRUE selection is searched
+ * @use_selection_list: if %TRUE selection is searched
  *
  * Find notes by offset and tone region.
  *
@@ -1189,7 +1182,7 @@ ags_notation_remove_point_from_selection(AgsNotation *notation,
 
   note = ags_notation_find_point(notation,
 				 x, y,
-				 FALSE);
+				 TRUE);
 
   if(note != NULL){
     note->flags &= (~AGS_NOTE_IS_SELECTED);
@@ -1385,7 +1378,8 @@ ags_notation_cut_selection(AgsNotation *notation)
     selection_next = selection->next;
     
     if(notes->prev == NULL){
-      notation->notes = g_list_remove_link(notes, notes);
+      notation->notes = g_list_remove_link(notation->notes,
+					   notes);
       notes = notation->notes;
     }else{
       GList *next_note;

@@ -192,7 +192,7 @@ ags_export_output_launch(AgsTask *task)
 	       NULL);
   ags_thread_start((AgsThread *) export_thread);
 
-  if((AGS_THREAD_SINGLE_LOOP & (AGS_THREAD(export_thread)->flags)) == 0){
+  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(AGS_THREAD(export_thread)->flags)))) == 0){
     /* wait thread */
     pthread_mutex_lock(AGS_THREAD(export_thread)->start_mutex);
 

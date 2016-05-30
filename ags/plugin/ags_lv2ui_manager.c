@@ -1,22 +1,25 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2015 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/plugin/ags_lv2ui_manager.h>
+
+#include <ags/lib/ags_string_util.h>
 
 #include <ags/object/ags_marshal.h>
 
@@ -103,53 +106,7 @@ ags_lv2ui_manager_finalize(GObject *gobject)
   lv2ui_plugin = lv2ui_manager->lv2ui_plugin;
 
   g_list_free_full(lv2ui_plugin,
-		   ags_lv2ui_plugin_free);
-}
-
-/**
- * ags_lv2ui_plugin_alloc:
- * 
- * Alloc the #AgsLv2uiPlugin-struct
- *
- * Returns: the #AgsLv2uiPlugin-struct
- *
- * Since: 0.4.3
- */
-AgsLv2uiPlugin*
-ags_lv2ui_plugin_alloc()
-{
-  AgsLv2uiPlugin *lv2ui_plugin;
-
-  lv2ui_plugin = (AgsLv2uiPlugin *) malloc(sizeof(AgsLv2uiPlugin));
-
-  lv2ui_plugin->flags = 0;
-
-  lv2ui_plugin->turtle = NULL;
-
-  lv2ui_plugin->filename = NULL;
-  lv2ui_plugin->plugin_so = NULL;
-
-  return(lv2ui_plugin);
-}
-
-/**
- * ags_lv2ui_plugin_free:
- * @lv2ui_plugin: the #AgsLv2uiPlugin-struct
- * 
- * Free the #AgsLv2uiPlugin-struct
- *
- * Since: 0.4.3
- */
-void
-ags_lv2ui_plugin_free(AgsLv2uiPlugin *lv2ui_plugin)
-{
-  if(lv2ui_plugin->plugin_so != NULL){
-    dlclose(lv2ui_plugin->plugin_so);
-  }
-
-  free(lv2ui_plugin->filename);
-  g_object_unref(lv2ui_plugin->turtle);
-  free(lv2ui_plugin);
+		   g_object_unref);
 }
 
 /**
@@ -177,7 +134,7 @@ ags_lv2ui_manager_get_filenames()
   filenames = (gchar **) malloc((length + 1) * sizeof(gchar *));
 
   for(i = 0; i < length; i++){
-    filenames[i] = AGS_LV2UI_PLUGIN(lv2ui_plugin->data)->filename;
+    filenames[i] = AGS_BASE_PLUGIN(lv2ui_plugin->data)->filename;
     lv2ui_plugin = lv2ui_plugin->next;
   }
 
@@ -209,7 +166,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(gchar *filename)
 
   while(list != NULL){
     lv2ui_plugin = AGS_LV2UI_PLUGIN(list->data);
-    if(!g_strcmp0(lv2ui_plugin->filename,
+    if(!g_strcmp0(AGS_BASE_PLUGIN(lv2ui_plugin)->filename,
 		  filename)){
       return(lv2ui_plugin);
     }
@@ -222,6 +179,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(gchar *filename)
 
 /**
  * ags_lv2ui_manager_load_file:
+ * @turtle: the #AgsTurtle
  * @filename: the filename of the plugin
  *
  * Load @filename specified plugin.
@@ -254,13 +212,8 @@ ags_lv2ui_manager_load_file(AgsTurtle *turtle,
   g_message("loading: %s\0", filename);
 
   if(lv2ui_plugin == NULL){
-    lv2ui_plugin = ags_lv2ui_plugin_alloc();
-
-    /* set turtle */
-    lv2ui_plugin->turtle = turtle;
-
-    /* set filename and plugin file */
-    lv2ui_plugin->filename = g_strdup(filename);
+    //FIXME:JK: do proper setup
+    lv2ui_plugin = ags_lv2ui_plugin_new(turtle, filename, NULL, NULL, 0);
     
     lv2ui_manager->lv2ui_plugin = g_list_prepend(lv2ui_manager->lv2ui_plugin,
 						 lv2ui_plugin);
@@ -297,7 +250,7 @@ ags_lv2ui_manager_load_default_directory()
 		   &error);
 
   if(error != NULL){
-    g_warning(error->message);
+    g_warning("%s\0", error->message);
   }
 
   while((path = g_dir_read_name(dir)) != NULL){
@@ -318,7 +271,7 @@ ags_lv2ui_manager_load_default_directory()
 		   G_FILE_TEST_IS_DIR)){
       AgsTurtle *manifest, *turtle;
       
-      GList *ttl_list, *binary_list;
+      GList *ttl_list, *gtkui_list, *binary_list;
 
       gchar *turtle_path, *filename;
       
@@ -327,18 +280,21 @@ ags_lv2ui_manager_load_default_directory()
       ags_turtle_load(manifest,
 		      NULL);
   
-      /* instantiate and load turtle */
+      /* read turtle from manifest */
       ttl_list = ags_turtle_find_xpath(manifest,
-				       "//rdf-triple/rdf-verb[@do=\"rdfs:seeAlso\"]/rdf-list/rdf-value\0");
+				       "//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']]/following-sibling::rdf-object-list//rdf-iriref[substring(text(), string-length(text()) - string-length('.ttl>') + 1) = '.ttl>']\0");
 
       /* load */
-      if(ttl_list == NULL){
-	continue;
-      }
-      
       while(ttl_list != NULL){
-	turtle_path = xmlGetProp((xmlNode *) ttl_list->data,
-				 "value\0");
+	/* read filename */
+	turtle_path = xmlNodeGetContent((xmlNode *) ttl_list->data);
+
+	if(turtle_path == NULL){
+	  ttl_list = ttl_list->next;
+	  binary_list = binary_list->next;
+	  continue;
+	}
+	
 	turtle_path = g_strndup(&(turtle_path[1]),
 				strlen(turtle_path) - 2);
 	
@@ -346,28 +302,47 @@ ags_lv2ui_manager_load_default_directory()
 				"http://\0",
 				7)){
 	  ttl_list = ttl_list->next;
+	  binary_list = binary_list->next;
 	  continue;
 	}
 
-	g_message(turtle_path);
+	/* load turtle doc */
+	g_message("%s\0", turtle_path);
+
 	turtle = ags_turtle_new(g_strdup_printf("%s/%s\0",
 						plugin_path,
 						turtle_path));
 	ags_turtle_load(turtle,
 			NULL);
-	//	xmlSaveFormatFileEnc("-\0", turtle->doc, "UTF-8\0", 1);
+
+	/* check if works with Gtk+ */
+	gtkui_list = ags_turtle_find_xpath(turtle,
+					   "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':GtkUI') + 1) = ':GtkUI']\0");
+
+	if(gtkui_list == NULL){
+	  ttl_list = ttl_list->next;
+	  
+	  continue;
+	}
 
 	/* read binary from turtle */
 	binary_list = ags_turtle_find_xpath(turtle,
-					    "//rdf-triple/rdf-verb[@do=\"uiext:binary\"]/rdf-list/rdf-value\0");
+					    "//rdf-triple//rdf-verb//rdf-pname-ln[text()='uiext:binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref\0");
 
 	if(binary_list == NULL){
 	  ttl_list = ttl_list->next;
+	  
+	  continue;
+	}
+
+	str = xmlNodeGetContent(binary_list->data);
+
+	if(strlen(str) < 2){
+	  ttl_list = ttl_list->next;
+	  
 	  continue;
 	}
 	
-	str = xmlGetProp(binary_list->data,
-			 "value\0");
 	str = g_strndup(&(str[1]),
 			strlen(str) - 2);
 	filename = g_strdup_printf("%s/%s\0",
@@ -422,12 +397,12 @@ ags_lv2ui_manager_uri_index(gchar *filename,
     return(G_MAXULONG);
   }
     
-  if(lv2ui_plugin->plugin_so == NULL){
+  if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so == NULL){
     plugin_so =
-      lv2ui_plugin->plugin_so = dlopen(lv2ui_plugin->filename,
-				       RTLD_NOW);
+      AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so = dlopen(AGS_BASE_PLUGIN(lv2ui_plugin)->filename,
+							RTLD_NOW);
   }else{
-    plugin_so = lv2ui_plugin->plugin_so;
+    plugin_so = AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so;
   }
   
   uri_index = G_MAXULONG;
@@ -438,8 +413,8 @@ ags_lv2ui_manager_uri_index(gchar *filename,
     
     if(dlerror() == NULL && lv2ui_descriptor){
       for(i = 0; (plugin_descriptor = lv2ui_descriptor(i)) != NULL; i++){
-	g_message(plugin_descriptor->URI);
-	g_message(uri);
+	g_message("%s\0", plugin_descriptor->URI);
+	g_message("%s\0", uri);
 	
 	if(!strncmp(plugin_descriptor->URI,
 		    uri,
@@ -452,6 +427,143 @@ ags_lv2ui_manager_uri_index(gchar *filename,
   }
   
   return(uri_index);
+}
+
+/**
+ * ags_lv2ui_manager_find_uri:
+ * @filename: the plugin.so filename
+ * @effect: the uri's effect
+ *
+ * Retrieve the uri of @filename and @effect
+ *
+ * Returns: the appropriate uri
+ *
+ * Since: 0.4.3
+ */
+gchar*
+ags_lv2ui_manager_find_uri(gchar *filename,
+			   gchar *effect)
+{
+  AgsLv2uiPlugin *lv2ui_plugin;
+  
+  GList *uri_node;
+
+  gchar *escaped_effect;
+  gchar *uri;
+  gchar *str;
+  
+  /* load plugin */
+  lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin(filename);
+
+  if(lv2ui_plugin == NULL){
+    return(NULL);
+  }
+
+  escaped_effect = ags_string_util_escape_single_quote(effect);
+  str = g_strdup_printf("//rdf-triple//rdf-subject[ancestor::*[self::rdf-triple][1]//rdf-verb[@verb='a']/following-sibling::*//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':Plugin') + 1) = ':Plugin'] and ancestor::*[self::rdf-triple][1]//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name']]/following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple][1]//rdf-pname-ln[text()='uiext:ui']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iri",
+			escaped_effect);
+  uri_node = ags_turtle_find_xpath(lv2ui_plugin->turtle,
+				   str);
+  free(str);
+  
+  uri = NULL;
+  
+  if(uri_node != NULL){
+    xmlNode *child;
+
+    child = ((xmlNode *) uri_node->data)->children;
+
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"rdf-iriref\0",
+				11)){
+	  uri = xmlNodeGetContent(child);
+
+	  if(strlen(uri) > 2){
+	    uri = g_strndup(uri + 1,
+			    strlen(uri) - 2);
+	  }
+
+	  break;
+	}else if(!g_ascii_strncasecmp(child->name,
+				      "rdf-prefixed-name\0",
+				      18)){
+	  xmlNode *pname_node;
+
+	  gchar *pname;
+	  
+	  pname_node = child->children;
+	  pname = NULL;
+	  
+	  while(pname_node != NULL){
+	    if(pname_node->type == XML_ELEMENT_NODE){
+	      if(!g_ascii_strncasecmp(pname_node->name,
+				      "rdf-pname-ln\0",
+				      11)){
+		pname = xmlNodeGetContent(pname_node);
+		
+		break;
+	      }
+	    }
+
+	    pname_node = pname_node->next;
+	  }
+
+	  if(pname != NULL){
+	    gchar *suffix, *prefix;
+	    gchar *offset;
+
+	    offset = index(pname, ':');
+
+	    if(offset != NULL){
+	      GList *prefix_node;
+	      
+	      offset++;
+	      suffix = g_strndup(offset,
+				 strlen(pname) - (offset - pname));
+	      prefix = g_strndup(pname,
+				 offset - pname);
+
+	      str = g_strdup_printf("//rdf-pname-ns[text()='%s']/following-sibling::rdf-iriref",
+				    prefix);
+	      prefix_node = ags_turtle_find_xpath(lv2ui_plugin->turtle,
+						  str);
+	      free(str);
+
+	      if(prefix_node != NULL){
+		gchar *iriref;
+
+		iriref = xmlNodeGetContent(prefix_node->data);
+
+		if(iriref != NULL){
+		  if(strlen(iriref) > 2){
+		    gchar *tmp;
+		    
+		    tmp = g_strndup(iriref + 1,
+				    strlen(iriref) - 2);
+		    uri = g_strdup_printf("%s/%s\0",
+					  tmp,
+					  suffix);
+
+		    free(tmp);
+		  }
+		  
+		  free(iriref);
+		}
+	      }
+	    }
+	  }
+	  
+	  break;
+	}
+      }
+
+      child = child->next;
+    }
+  }
+
+  return(uri);
 }
 
 /**

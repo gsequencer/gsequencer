@@ -25,6 +25,8 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_dynamic_connectable.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/task/ags_unref_audio_signal.h>
 
 void ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signal);
@@ -231,6 +233,16 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
   AgsStreamChannelRun *stream_channel_run;
   AgsStreamAudioSignal *stream_audio_signal;
 
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   stream_audio_signal = AGS_STREAM_AUDIO_SIGNAL(recall);
   
   if(recall->parent != NULL &&
@@ -285,8 +297,20 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
     AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_post(recall);
 
     if(recall->parent != NULL){
+      /* lookup recycling mutex */
+      pthread_mutex_lock(application_mutex);
+
+      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) AGS_RECALL_RECYCLING(recall->parent)->source);
+	
+      pthread_mutex_unlock(application_mutex);
+      
+      pthread_mutex_lock(recycling_mutex);
+      
       ags_recycling_remove_audio_signal(AGS_RECALL_RECYCLING(recall->parent)->source,
 					AGS_RECALL_AUDIO_SIGNAL(recall)->source);
+
+      pthread_mutex_unlock(recycling_mutex);
     }
 
     ags_recall_done(recall);

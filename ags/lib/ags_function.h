@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2016 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_FUNCTION_H__
@@ -23,6 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/lib/ags_complex.h>
+#include <ags/lib/ags_conversion.h>
 
 #define AGS_TYPE_FUNCTION                (ags_function_get_type())
 #define AGS_FUNCTION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_FUNCTION, AgsFunction))
@@ -51,7 +53,7 @@ typedef enum{
 
 struct _AgsFunction
 {
-  GObject gobject;
+  AgsConversion conversion;
 
   guint flags;
   
@@ -76,7 +78,7 @@ struct _AgsFunction
 
 struct _AgsFunctionClass
 {
-  GObjectClass gobject;
+  AgsConversionClass conversion;
 
   void (*literal_solve)(AgsFunction *function);
 };
@@ -98,7 +100,7 @@ gchar* ags_function_get_expanded(AgsFunction *function,
 gchar* ags_funciton_get_normalized(AgsFunction *function);
 
 AgsComplex* ags_function_compute_term(gchar *term,
-				      gchar *substitute_symbol, AgsComplex *subsitute_value);
+				      gchar *substitute_symbol, AgsComplex *substitute_value);
 
 AgsComplex** ags_function_symbolic_translate_value(AgsFunction *function,
 						   gchar *symbol,

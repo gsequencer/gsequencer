@@ -26,6 +26,8 @@
 
 #include <ags/audio/ags_notation.h>
 
+#include <ags/X/ags_navigation.h>
+
 #include <stdlib.h>
 
 void ags_export_window_class_init(AgsExportWindowClass *export_window);
@@ -272,7 +274,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   0, 0);
 
   /*  */
-  label = (GtkLabel *) gtk_label_new("tact");
+  label = (GtkLabel *) gtk_label_new("tact\0");
   g_object_set(G_OBJECT(label),
 	       "xalign\0", 0.0,
 	       NULL);
@@ -293,7 +295,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  label = (GtkLabel *) gtk_label_new("time");
+  label = (GtkLabel *) gtk_label_new("time\0");
   g_object_set(G_OBJECT(label),
 	       "xalign\0", 0.0,
 	       NULL);

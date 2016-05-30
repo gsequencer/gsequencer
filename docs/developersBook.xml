@@ -32,8 +32,17 @@
   </dedication>
 
   <xi:include href="developersBook/preface.xml"/>
-  <xi:include href="developersBook/chap1.xml"/>
-  <xi:include href="developersBook/chap2.xml"/>
+  <xi:include href="developersBook/chap1.xml"/> <!-- application context -->
+  <xi:include href="developersBook/chap2.xml"/> <!-- XML file -->
+  <xi:include href="developersBook/chap3.xml"/> <!-- threads -->
+  <xi:include href="developersBook/chap4.xml"/> <!-- soundcard and sequencer -->
+  <xi:include href="developersBook/chap5.xml"/> <!-- audio -->
+  <xi:include href="developersBook/chap6.xml"/> <!-- channel -->
+  <xi:include href="developersBook/chap7.xml"/> <!-- recycling -->
+  <xi:include href="developersBook/chap8.xml"/> <!-- audio signal -->
+  <xi:include href="developersBook/chap9.xml"/> <!-- recall -->
+  <xi:include href="developersBook/chap10.xml"/> <!-- recall implementations-->
+  <xi:include href="developersBook/chap11.xml"/> <!-- putting all together -->
   <xi:include href="appa.xml"/>
   <xi:include href="developersBook/appb.xml"/>
 

@@ -45,6 +45,7 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
@@ -101,6 +102,7 @@ void ags_recall_real_run_init_pre(AgsRecall *recall);
 void ags_recall_real_run_init_inter(AgsRecall *recall);
 void ags_recall_real_run_init_post(AgsRecall *recall);
 
+void ags_recall_real_run_automate(AgsRecall *recall);
 void ags_recall_real_run_pre(AgsRecall *recall);
 void ags_recall_real_run_inter(AgsRecall *recall);
 void ags_recall_real_run_post(AgsRecall *recall);
@@ -120,8 +122,10 @@ void ags_recall_child_done(AgsRecall *child,
 
 /**
  * SECTION:ags_recall
- * @Short_description: The recall base class
- * @Title: AgsRecall
+ * @short_description: The recall base class
+ * @title: AgsRecall
+ * @section_id: 
+ * @include: ags/audio/ags_recall.h
  *
  * #AgsRecall acts as effect processor.
  */
@@ -131,6 +135,7 @@ enum{
   RUN_INIT_PRE,
   RUN_INIT_INTER,
   RUN_INIT_POST,
+  AUTOMATE,
   RUN_PRE,
   RUN_INTER,
   RUN_POST,
@@ -361,6 +366,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->run_init_inter = ags_recall_real_run_init_inter;
   recall->run_init_post = ags_recall_real_run_init_post;
 
+  recall->automate = NULL;
   recall->run_pre = ags_recall_real_run_pre;
   recall->run_inter = ags_recall_real_run_inter;
   recall->run_post = ags_recall_real_run_post;
@@ -438,6 +444,22 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_post),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsRecall::automate:
+   * @recall: the object to play 
+   *
+   * The ::automate signal notifies about running
+   * automation and is normally called during ::run-pre.
+   */
+  recall_signals[AUTOMATE] =
+    g_signal_new("automate\0",
+		 G_TYPE_FROM_CLASS (recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsRecallClass, automate),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -1163,7 +1185,7 @@ ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference\0", recall,
@@ -1189,7 +1211,7 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
-				   "main\0", file->application_context,
+				   "application-context\0", file->application_context,
 				   "node\0", node,
 				   "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
 				   "reference\0", recall,
@@ -1325,18 +1347,20 @@ ags_recall_child_added(AgsRecall *parent, AgsRecall *child)
 void
 ags_recall_real_run_init_pre(AgsRecall *recall)
 {
-  GList *list;
+  GList *list, *list_next;
 
   list = recall->children;
 
   while(list != NULL){
+    list_next = list->next;
+
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
     }
 
     ags_recall_run_init_pre(AGS_RECALL(list->data));
 
-    list = list->next;
+    list = list_next;
   }
 }
 
@@ -1362,18 +1386,20 @@ ags_recall_run_init_pre(AgsRecall *recall)
 void
 ags_recall_real_run_init_inter(AgsRecall *recall)
 {
-  GList *list;
+  GList *list, *list_next;
 
   list = recall->children;
 
   while(list != NULL){
+    list_next = list->next;
+    
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
     }
 
     ags_recall_run_init_inter(AGS_RECALL(list->data));
 
-    list = list->next;
+    list = list_next;
   }
 }
 
@@ -1399,18 +1425,20 @@ ags_recall_run_init_inter(AgsRecall *recall)
 void
 ags_recall_real_run_init_post(AgsRecall *recall)
 {
-  GList *list;
+  GList *list, *list_next;
 
   list = recall->children;
 
   while(list != NULL){
+    list_next = list->next;
+    
     if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
       g_warning("running on template\0");
     }
 
     ags_recall_run_init_post(AGS_RECALL(list->data));
 
-    list = list->next;
+    list = list_next;
   }
 
   recall->flags |= (AGS_RECALL_INITIAL_RUN |
@@ -1436,11 +1464,37 @@ ags_recall_run_init_post(AgsRecall *recall)
   g_object_unref(G_OBJECT(recall));
 }
 
+/**
+ * ags_recall_automate:
+ * @recall: an #AgsRecall
+ *
+ * This is the automate port of @recall.
+ * 
+ * Since: 0.7.6
+ */
+void
+ags_recall_automate(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[AUTOMATE], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
 void
 ags_recall_real_run_pre(AgsRecall *recall)
 {
   GList *list, *list_next;
 
+  /* lock ports */
+  ags_recall_lock_port(recall);
+  
+  /* run automation*/
+  ags_recall_automate(recall);
+
+  /* run */
   list = recall->children;
 
   while(list != NULL){
@@ -1456,6 +1510,9 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
     list = list_next;
   }
+
+  /* unlock ports */
+  ags_recall_unlock_port(recall);
 }
 
 /**
@@ -1482,6 +1539,10 @@ ags_recall_real_run_inter(AgsRecall *recall)
 {
   GList *list, *list_next;
 
+  /* lock port */
+  ags_recall_lock_port(recall);
+
+  /* run */
   list = recall->children;
 
   while(list != NULL){
@@ -1497,6 +1558,9 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
     list = list_next;
   }
+
+  /* unlock port */
+  ags_recall_unlock_port(recall);
 }
 
 /**
@@ -1523,6 +1587,10 @@ ags_recall_real_run_post(AgsRecall *recall)
 {
   GList *list, *list_next;
 
+  /* lock port */
+  ags_recall_lock_port(recall);
+
+  /* run */
   list = recall->children;
 
   while(list != NULL){
@@ -1542,6 +1610,9 @@ ags_recall_real_run_post(AgsRecall *recall)
   if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0){
     recall->flags &= (~AGS_RECALL_INITIAL_RUN);
   }
+
+  /* unlock port */
+  ags_recall_unlock_port(recall);
 }
 
 /**
@@ -1737,7 +1808,7 @@ ags_recall_remove(AgsRecall *recall)
 
 /**
  * ags_recall_is_done:
- * @recall: an #AgsRecall
+ * @recalls: an #AgsRecall
  * @recycling_context: an #AgsRecyclingContext
  *
  * Check if recall is over.
@@ -1764,7 +1835,7 @@ ags_recall_is_done(GList *recalls, GObject *recycling_context)
        recall->recall_id->recycling_context == (GObject *) recycling_context){
       if((AGS_RECALL_DONE & (recall->flags)) == 0){
 	recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
-	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
+	//	g_message("done: %s\0", G_OBJECT_TYPE_NAME(recall));
 	return(FALSE);
       }
     }
@@ -1824,8 +1895,6 @@ ags_recall_real_duplicate(AgsRecall *recall,
  * ags_recall_duplicate:
  * @recall: an #AgsRecall
  * @recall_id: an #AgsRecallID
- * @n_params: the count of #parameter entries
- * @parameter: the properties to be passed for instantiating the #AgsRecall
  *
  * Should duplicate an #AgsRecall, so it can pass the runs. Mainly used for
  * creating duplicates from templates, see %AGS_RECALL_TEMPLATE.
@@ -1976,7 +2045,7 @@ ags_recall_get_dependencies(AgsRecall *recall)
 
 /**
  * ags_recall_remove_child:
- * @parent: an #AgsRecall
+ * @recall: an #AgsRecall
  * @child: an #AgsRecall
  *
  * An #AgsRecall may have children.
@@ -2196,30 +2265,9 @@ ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar
 		 recall_id->recycling_context == recall->recall_id->recycling_context) ||
 		(recall_id == NULL &&
 		 recall->recall_id == NULL)) &&
-	       !g_strcmp0(AGS_RECALL_LV2(recall)->filename, filename)){
-	AgsLv2Plugin *lv2_plugin;
-	GList *uri_node;
-	
-	gchar *uri;
-	gchar *str;
-      
-	lv2_plugin = ags_lv2_manager_find_lv2_plugin(filename);
-	str = g_strdup_printf("/rdf-turtle/rdf-list/rdf-triple/rdf-verb[@do=\"doap:name\"]\0");
-	uri_node = ags_turtle_find_xpath(lv2_plugin->turtle,
-					 str);
-	free(str);
-  
-	str = xmlGetProp(((xmlNode *) uri_node->data)->parent,
-			 "subject\0");
-	uri = g_strndup(&(str[1]),
-			strlen(str) - 2);
-	free(uri);
-
-	if(!g_strcmp0(AGS_RECALL_LV2(recall)->uri, uri)){
-	  list = g_list_prepend(list,
-				recall);
-	  return(list);
-	}
+	       !g_strcmp0(AGS_RECALL_LV2(recall)->filename, filename) &&
+	       !g_strcmp0(AGS_RECALL_LV2(recall)->effect, effect)){
+	return(list);
       }
     }
   
@@ -2261,7 +2309,7 @@ ags_recall_find_type(GList *recall_i, GType type)
 
 /**
  * ags_recall_find_template:
- * @recall_i a #GList containing recalls
+ * @recall_i: a #GList containing recalls
  *
  * Finds next template, see #AGS_RECALL_TEMPLATE flag. Intended to be used as
  * iteration function.
@@ -2318,9 +2366,9 @@ ags_recall_template_find_type(GList *recall_i, GType type)
 }
 
 /**
- * ags_recall_template_find_type:
+ * ags_recall_template_find_all_type:
  * @recall_i: a #GList containing recalls
- * @recall_type: a #GType
+ * @...: a #GType
  * 
  * Finds next matching recall for type which is a template, see #AGS_RECALL_TEMPLATE flag.
  * Intended to be used as iteration function.
@@ -2656,6 +2704,58 @@ ags_recall_child_done(AgsRecall *child,
   
   ags_recall_remove_child(parent,
 			  child);
+}
+
+/**
+ * ags_recall_lock_port:
+ * @recall: the #AgsRecall
+ *
+ * Unlocks the ports.
+ *
+ * Since: 0.7.10
+ */
+void
+ags_recall_lock_port(AgsRecall *recall)
+{
+  GList *port;
+
+  if(recall == NULL){
+    return;
+  }
+  
+  port = recall->port;
+
+  while(port != NULL){
+    pthread_mutex_lock(AGS_PORT(port->data)->mutex);
+
+    port = port->next;
+  }
+}
+
+/**
+ * ags_recall_unlock_port:
+ * @recall: the #AgsRecall
+ *
+ * Unlocks the ports.
+ *
+ * Since: 0.7.10
+ */
+void
+ags_recall_unlock_port(AgsRecall *recall)
+{
+  GList *port;
+
+  if(recall == NULL){
+    return;
+  }
+  
+  port = recall->port;
+
+  while(port != NULL){
+    pthread_mutex_unlock(AGS_PORT(port->data)->mutex);
+
+    port = port->next;
+  }
 }
 
 /**

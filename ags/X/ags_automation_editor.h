@@ -44,13 +44,13 @@ struct _AgsAutomationEditor
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   gchar *version;
   gchar *build_id;
 
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
-  gulong set_audio_channels_handler;
-  gulong set_pads_handler;
 
   AgsAutomationToolbar *automation_toolbar;
 

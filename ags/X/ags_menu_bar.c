@@ -589,47 +589,24 @@ ags_ladspa_bridge_menu_new()
   GtkImageMenuItem *item;
 
   AgsLadspaManager *ladspa_manager;
-  
+
   GList *list;
-
-  gchar *effect_name;
-
-  void *plugin_so;
-  LADSPA_Descriptor_Function ladspa_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
-  unsigned long index;
-
+  
   menu = (GtkMenu *) gtk_menu_new();
+
   ladspa_manager = ags_ladspa_manager_get_instance();
 
   list = ladspa_manager->ladspa_plugin;
 
-  while(list != NULL){
-    plugin_so = AGS_LADSPA_PLUGIN(list->data)->plugin_so;
-    
-    if(plugin_so){
-      ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							     "ladspa_descriptor\0");
-
-      if(dlerror() == NULL && ladspa_descriptor){
-	for(index = 0; ; index++){	  
-	  plugin_descriptor = ladspa_descriptor(index);
-	  
-	  if(plugin_descriptor == NULL){
-	    break;
-	  }
-	  
-	  effect_name = plugin_descriptor->Name;
-	  
-	  item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strdup(effect_name));
-	  g_object_set_data(item,
-			    AGS_MENU_ITEM_FILENAME_KEY, AGS_LADSPA_PLUGIN(list->data)->filename);
-	  g_object_set_data(item,
-			    AGS_MENU_ITEM_EFFECT_KEY, effect_name);
-	  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
-	}
-      }
-    }
+  while(list != NULL){    
+	
+    item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
+    g_object_set_data(item,
+		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
+    g_object_set_data(item,
+		      AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
+    gtk_menu_shell_append((GtkMenuShell *) menu,
+			  (GtkWidget *) item);
 
     list = list->next;
   }
@@ -644,52 +621,28 @@ ags_dssi_bridge_menu_new()
   GtkImageMenuItem *item;
 
   AgsDssiManager *dssi_manager;
-  
+
   GList *list;
-
-  gchar *effect_name;
-
-  void *plugin_so;
-  DSSI_Descriptor_Function dssi_descriptor;
-  DSSI_Descriptor *plugin_descriptor;
-  unsigned long index;
-
+  
   menu = (GtkMenu *) gtk_menu_new();
+
   dssi_manager = ags_dssi_manager_get_instance();
 
   list = dssi_manager->dssi_plugin;
 
-  while(list != NULL){
-    plugin_so = AGS_DSSI_PLUGIN(list->data)->plugin_so;
-    
-    if(plugin_so){
-      dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-							 "dssi_descriptor\0");
-
-      if(dlerror() == NULL && dssi_descriptor){
-	for(index = 0; ; index++){
-	  
-	  plugin_descriptor = dssi_descriptor(index);
-	  
-	  if(plugin_descriptor == NULL){
-	    break;
-	  }
-	  
-	  effect_name = plugin_descriptor->LADSPA_Plugin->Name;
-	  
-	  item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strdup(effect_name));
-	  g_object_set_data(item,
-			    AGS_MENU_ITEM_FILENAME_KEY, AGS_DSSI_PLUGIN(list->data)->filename);
-	  g_object_set_data(item,
-			    AGS_MENU_ITEM_EFFECT_KEY, effect_name);
-	  gtk_menu_shell_append((GtkMenuShell*) menu, (GtkWidget*) item);
-	}
-      }
-    }
+  while(list != NULL){    
+	
+    item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
+    g_object_set_data(item,
+		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
+    g_object_set_data(item,
+		      AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
+    gtk_menu_shell_append((GtkMenuShell *) menu,
+			  (GtkWidget *) item);
 
     list = list->next;
   }
-  
+
   return(menu);
 }
 
@@ -700,15 +653,8 @@ ags_lv2_bridge_menu_new()
   GtkImageMenuItem *item;
 
   AgsLv2Manager *lv2_manager;
-  
-  AgsTurtle *turtle;
 
-  xmlNode *node;
-  
   GList *list;
-  GList *effect_list;
-
-  gchar *effect_name;
   
   menu = (GtkMenu *) gtk_menu_new();
 
@@ -716,46 +662,17 @@ ags_lv2_bridge_menu_new()
 
   list = lv2_manager->lv2_plugin;
 
-  while(list != NULL){
-    turtle = AGS_LV2_PLUGIN(list->data)->turtle;
+  while(list != NULL){    
+	
+    item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(AGS_BASE_PLUGIN(list->data)->effect);
+    g_object_set_data(item,
+		      AGS_MENU_ITEM_FILENAME_KEY, AGS_BASE_PLUGIN(list->data)->filename);
+    g_object_set_data(item,
+		      AGS_MENU_ITEM_EFFECT_KEY, AGS_BASE_PLUGIN(list->data)->effect);
+    g_message("%s %s\0", AGS_BASE_PLUGIN(list->data)->filename, AGS_BASE_PLUGIN(list->data)->effect);
     
-    if(turtle != NULL){
-      effect_list = ags_turtle_find_xpath(turtle,
-					  "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]\0");
-
-      while(effect_list != NULL){
-	node = effect_list->data;
-	
-	if(node == NULL){
-	  effect_list = effect_list->next;
-	  
-	  continue;
-	}
-	  
-	effect_name = xmlNodeGetContent(node);
-
-	if(strlen(effect_name) < 2){
-	  effect_list = effect_list->next;
-	  
-	  continue;
-	}
-	
-	//	g_message("%s\0", effect_name);
-	
-	item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(g_strndup(effect_name + 1,
-									   strlen(effect_name) - 2));
-	g_object_set_data(item,
-			  AGS_MENU_ITEM_FILENAME_KEY, AGS_LV2_PLUGIN(list->data)->filename);
-	g_object_set_data(item,
-			  AGS_MENU_ITEM_EFFECT_KEY, effect_name);
-	gtk_menu_shell_append((GtkMenuShell *) menu,
-			      (GtkWidget *) item);
-
-	break;
-	
-	effect_list = effect_list->next;
-      }
-    }
+    gtk_menu_shell_append((GtkMenuShell *) menu,
+			  (GtkWidget *) item);
 
     list = list->next;
   }

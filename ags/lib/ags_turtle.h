@@ -36,39 +36,8 @@
 
 #define AGS_TURTLE_DEFAULT_VERSION "0.7.3\0"
 
-#define AGS_TURTLE_UTF8_RANGE_0 "([A-Za-z])"
-#define AGS_TURTLE_UTF8_RANGE_1 "(\xC3[\x80-\x96])"
-#define AGS_TURTLE_UTF8_RANGE_2 "(0xC3[\x98-\xB6])"
-#define AGS_TURTLE_UTF8_RANGE_3 "((\xC3[\xB8-\xBF])|([\xC3-\xCA][\x80-\xBF])|(\xCB[\x80-\xBF]))"
-#define AGS_TURTLE_UTF8_RANGE_4 "(\xCD[\xB0-\xBD])"
-#define AGS_TURTLE_UTF8_RANGE_5 "((\xCD[\xBF-\xDF])|([\xCE-\xDF][\x80-\xBF])|([\xE0-\xE1][\x80\xBF][\x80-\xBF]))"
-#define AGS_TURTLE_UTF8_RANGE_6 "(\xE2\x80[\x8C-\x8D])"
-#define AGS_TURTLE_UTF8_RANGE_7 "((\xE2\x81[\xB0-\xBF])|(\xE2[\x81-\x85][\x80-\xBF])|(\xE2\x86[\x80-\x8F]))"
-#define AGS_TURTLE_UTF8_RANGE_8 "((\xE2[\xB0-\xBE][\x80-\xBF])(\xE2\xBF[\x80-\xAF]))"
-#define AGS_TURTLE_UTF8_RANGE_9 "((\xE3[\x80-\xBF][\x81-\xBF])|([\xE4-\xEC][\x80-\x9F][\x80-\xBF]))"
-#define AGS_TURTLE_UTF8_RANGE_10 "((\xEF[\xA4-\xB6][\x80-\xBF])|(\xEF\xB7[\x80-\x8F]))"
-#define AGS_TURTLE_UTF8_RANGE_11 "((\xEF\xB7[\xB0-\xBF])|(\xEF[\xB8-\xBE][\x80-\xBF])|(\xEF\xBF[\x80-\xBD]))"
-#define AGS_TURTLE_UTF8_RANGE_12 "(([\xF0-\xF3][\x90-\xAF][\x80-\xBF][\x80-\xBF]))"
-
-#define AGS_TURTLE_UTF8_RANGE_ALL "(" AGS_TURTLE_UTF8_RANGE_0 "|" \
-  AGS_TURTLE_UTF8_RANGE_1 "|" \
-  AGS_TURTLE_UTF8_RANGE_2 "|" \
-  AGS_TURTLE_UTF8_RANGE_3 "|" \
-  AGS_TURTLE_UTF8_RANGE_4 "|" \
-  AGS_TURTLE_UTF8_RANGE_5 "|" \
-  AGS_TURTLE_UTF8_RANGE_6 "|" \
-  AGS_TURTLE_UTF8_RANGE_7 "|" \
-  AGS_TURTLE_UTF8_RANGE_8 "|" \
-  AGS_TURTLE_UTF8_RANGE_9 "|" \
-  AGS_TURTLE_UTF8_RANGE_10 "|" \
-  AGS_TURTLE_UTF8_RANGE_11 "|" \
-  AGS_TURTLE_UTF8_RANGE_12 ")"
-
-#define AGS_TURLTE_UTF8_RANGE_ALL_PATTERN "^" AGS_TURTLE_UTF8_RANGE_ALL
-
 typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
-typedef struct _AgsTurtleParserContext AgsTurtleParserContext;
 
 typedef enum{
   AGS_TURTLE_READ_SUBJECT    = 1,
@@ -163,6 +132,10 @@ gchar* ags_turtle_read_pn_local_esc(gchar *offset,
 /* XML related */
 GList* ags_turtle_find_xpath(AgsTurtle *turtle,
 			     gchar *xpath);
+GList* ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
+					       gchar *xpath,
+					       xmlNode *context_node);
+
 xmlDoc* ags_turtle_load(AgsTurtle *turtle,
 			GError **error);
 

@@ -23,6 +23,7 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_ladspa_plugin.h>
 
 #include <ags/object/ags_applicable.h>
 
@@ -163,19 +164,21 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   ladspa_browser->path = NULL;
 
-  //  ags_ladspa_manager_load_default_directory();
+  ags_ladspa_manager_load_default_directory();
   filenames =
     filenames_start = ags_ladspa_manager_get_filenames();
 
-  while(*filenames != NULL){
-    gtk_combo_box_text_append_text(combo_box,
-				   *filenames);
+  if(filenames_start != NULL){
+    while(*filenames != NULL){
+      gtk_combo_box_text_append_text(combo_box,
+				     *filenames);
 
-    filenames++;
+      filenames++;
+    }
+
+    free(filenames_start);
   }
-
-  //  free(filenames_start);
-
+    
   label = (GtkLabel *) gtk_label_new("effect: \0");
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
 		     GTK_WIDGET(label),
@@ -308,6 +311,7 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
 
 /**
  * ags_ladspa_browser_get_plugin_filename:
+ * @ladspa_browser: the #AgsLadspaBrowser
  *
  * Retrieve selected ladspa plugin filename.
  *
@@ -330,6 +334,7 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 
 /**
  * ags_ladspa_browser_get_plugin_effect:
+ * @ladspa_browser: the #AgsLadspaBrowser
  *
  * Retrieve selected ladspa effect.
  *
@@ -359,32 +364,7 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 
   g_list_free(list_start);
 
-  /* update description */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->description));
-
-  ags_ladspa_manager_load_file(gtk_combo_box_text_get_active_text(filename));
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(gtk_combo_box_text_get_active_text(filename));
-  
-  plugin_so = ladspa_plugin->plugin_so;
-
-  effect_name = NULL;
-  
-  index = (unsigned long) gtk_combo_box_get_active(effect);
-  
-  if(index != -1 &&
-     plugin_so){
-    ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
-							   "ladspa_descriptor\0");
-
-    if(dlerror() == NULL && ladspa_descriptor){
-      plugin_descriptor = ladspa_descriptor(index);
-
-      effect_name = plugin_descriptor->Name;
-    }
-  }
-
-  return(effect_name);
+  return(gtk_combo_box_text_get_active_text(effect));
 }
 
 /**

@@ -37,6 +37,7 @@
 
 #define AGS_LINE_DEFAULT_VERSION "0.7.0\0"
 #define AGS_LINE_DEFAULT_BUILD_ID "CEST 31-10-2015 19:49\0"
+#define AGS_LINE_COLUMNS_COUNT (2)
 
 typedef struct _AgsLine AgsLine;
 typedef struct _AgsLineClass AgsLineClass;
@@ -103,11 +104,11 @@ GList* ags_line_add_effect(AgsLine *line,
 void ags_line_remove_effect(AgsLine *line,
 			    guint nth);
 
-GList* ags_line_find_next_grouped(GList *line);
-
 void ags_line_map_recall(AgsLine *line,
 			 guint output_pad_start);
 GList* ags_line_find_port(AgsLine *line);
+
+GList* ags_line_find_next_grouped(GList *line);
 
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);
 

@@ -142,12 +142,15 @@ void
 ags_save_file_launch(AgsTask *task)
 {
   AgsSaveFile *save_file;
+  GError *error;
 
   save_file = AGS_SAVE_FILE(task);
 
-  g_message("Saving to: %s", save_file->file->filename);
+  g_message("Saving to: %s\0", save_file->file->filename);
+  error = NULL;
   ags_file_rw_open(save_file->file,
-		   TRUE);
+		   TRUE,
+		   &error);
   ags_file_write(save_file->file);
   ags_file_close(save_file->file);
 }

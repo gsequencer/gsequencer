@@ -20,7 +20,6 @@
 #include <ags/audio/ags_pattern.h>
 
 #include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_tactable.h>
 #include <ags/object/ags_portlet.h>
 
@@ -72,6 +71,7 @@ enum{
   PROP_SECOND_INDEX,
   PROP_OFFSET,
   PROP_CURRENT_BIT,
+  PROP_TIMESTAMP,
 };
 
 static gpointer ags_pattern_parent_class = NULL;
@@ -231,6 +231,22 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   g_object_class_install_property(gobject,
 				  PROP_CURRENT_BIT,
 				  param_spec);
+
+  /**
+   * AgsPattern:timestamp:
+   *
+   * The pattern's timestamp.
+   * 
+   * Since: 0.7.12
+   */
+  param_spec = g_param_spec_object("timestamp\0",
+				   "timestamp of pattern\0",
+				   "The timestamp of pattern\0",
+				   AGS_TYPE_TIMESTAMP,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMESTAMP,
+				  param_spec);
 }
 
 void
@@ -261,7 +277,6 @@ ags_pattern_portlet_interface_init(AgsPortletInterface *portlet)
 void
 ags_pattern_init(AgsPattern *pattern)
 {
-  //TODO:JK: define timestamp
   pattern->timestamp = NULL;
 
   pattern->dim[0] = 0;
@@ -369,6 +384,27 @@ ags_pattern_set_property(GObject *gobject,
       pthread_mutex_unlock(port->mutex);
     }
     break;
+  case PROP_TIMESTAMP:
+    {
+      AgsTimestamp *timestamp;
+
+      timestamp = (AgsTimestamp *) g_value_get_object(value);
+
+      if(timestamp == (AgsTimestamp *) pattern->timestamp){
+	return;
+      }
+
+      if(pattern->timestamp != NULL){
+	g_object_unref(G_OBJECT(pattern->timestamp));
+      }
+
+      if(timestamp != NULL){
+	g_object_ref(G_OBJECT(timestamp));
+      }
+
+      pattern->timestamp = (GObject *) timestamp;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -443,6 +479,9 @@ ags_pattern_get_property(GObject *gobject,
 
       pthread_mutex_unlock(port->mutex);
     }
+    break;
+  case PROP_TIMESTAMP:
+    g_value_set_object(value, pattern->timestamp);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -536,30 +575,41 @@ ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
 }
 
 /**
- * ags_pattern_get_by_timestamp:
+ * ags_pattern_find_near_timestamp:
  * @pattern: a #GList containing #AgsPattern
  * @timestamp: the matching timestamp
  *
  * Retrieve appropriate pattern for timestamp.
  *
- * Returns: the matching pattern.
+ * Returns: Next match.
  *
- * Since: 0.4
+ * Since: 0.7.12
  */
-AgsPattern*
-ags_pattern_get_by_timestamp(GList *list, GObject *timestamp)
+GList*
+ags_pattern_find_near_timestamp(GList *pattern, GObject *timestamp)
 {
-  if(list == NULL)
+  AgsTimestamp *current_timestamp;
+
+  if(timestamp == NULL){
     return(NULL);
-
-  while(AGS_PATTERN(list->data)->timestamp != timestamp){
-    if(list->next == NULL)
-      return(NULL);
-
-    list = list->next;
   }
 
-  return((AgsPattern *) list->data);
+  while(pattern != NULL){
+    current_timestamp = (AgsTimestamp *) AGS_PATTERN(pattern->data)->timestamp;
+
+    if((AGS_TIMESTAMP_UNIX & (AGS_TIMESTAMP(timestamp)->flags)) != 0){
+      if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
+	if(current_timestamp->timer.unix_time.time_val >= AGS_TIMESTAMP(timestamp)->timer.unix_time.time_val &&
+	   current_timestamp->timer.unix_time.time_val < AGS_TIMESTAMP(timestamp)->timer.unix_time.time_val + AGS_PATTERN_DEFAULT_DURATION){
+	  return(pattern);
+	}
+      }
+    }
+
+    pattern = pattern->next;
+  }
+
+  return(NULL);
 }
 
 /**
@@ -580,9 +630,10 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   guint i, j, k, j_set, k_set;
   guint bitmap_size;
 
-  if(dim0 == 0 && pattern->pattern == NULL)
-      return;
-
+  if(dim0 == 0 && pattern->pattern == NULL){
+    return;
+  }
+  
   // shrink
   if(pattern->dim[0] > dim0){
     for(i = dim0; i < pattern->dim[0]; i++){

@@ -869,14 +869,15 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  ags_audio_signal_connect(audio_signal);
 
 	  audio_signal->stream_current = audio_signal->stream_beginning;
-	  
+
+	  /* lock and add */
+	  pthread_mutex_lock(recycling_mutex);
+
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
 	  g_object_unref(audio_signal);
 
 	  /* iterate */
-	  pthread_mutex_lock(recycling_mutex);
-
 	  recycling = recycling->next;
 
 	  pthread_mutex_unlock(recycling_mutex);

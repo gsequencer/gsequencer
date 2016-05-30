@@ -50,7 +50,8 @@ struct _AgsGuiThread
   GMutex mutex;
   GCond cond;
 
-  GList *task_completion;
+  pthread_mutex_t *task_completion_mutex;
+  volatile GList *task_completion;
 };
 
 struct _AgsGuiThreadClass

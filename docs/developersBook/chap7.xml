@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>The recycling tree</title>
+  <para>
+    AgsRecycling has a strong relation to AgsChannel although not every channel might
+    have its very own recycling. Rather having a reference to a start and end region
+    of an inter-connnected AgsRecycling. It may create or destroy audio signals event
+    based.
+  </para>
+
+  <para>
+    Inter-connected gets its meaning as ags_channel_set_recycling() invoked by
+    ags_channel_set_link() connects AgsRecycling:next and AgsRecycling:prev together
+    from different channels. Providing you the AgsRecyclingContext. A recycling context
+    has generally one parent and many children from different channels.
+  </para>
+
+  <para>
+    AgsRecallID points to one recycling context in order to make decisions of what
+    level you are running in. Theoretically super-threaded tree can run upto the
+    recycling context level.
+  </para>
+
+  <para>
+    Note, recyclings have they own recall base object AgsRecallRecycling. Usually, you
+    do ags_recall_add_child() to instances inherit of AgsRecallChannelRun.
+  </para>
+  
+  <sect1>
+    <title>Add and remove audio signal</title>
+    <para>
+      The two signals ::add_audio_signal and ::remove_audio_signal should be invoked
+      as adding or removing AgsAudioSignal to an AgsRecycling. Recalls act as producer
+      or consumer of AgsAudioSignal. They do basically play notation or process your
+      effects. Its are located in AgsAudio or AgsChannel.
+    </para>
+
+    <para>
+      There is generally a need for providing a template audio signal within your recycling.
+      As this does this example. This reduces the overhead of reading files for every
+      playing during a button click, notation or pattern.
+    </para>
+
+    <programlisting language="C">
+      <xi:include href="../listings/recycling.c" parse="text" />
+    </programlisting>
+  </sect1>
+</chapter>

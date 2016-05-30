@@ -137,6 +137,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
   GtkNotebook *notebook;
+
+  automation_editor->flags = 0;
   
   table = gtk_table_new(2,
 			2,
@@ -370,10 +372,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     return;
   }
 
-  automation_editor->set_audio_channels_handler = g_signal_connect(machine->audio, "set-audio-channels\0",
-								   G_CALLBACK(ags_automation_editor_set_audio_channels_callback), automation_editor);
-  automation_editor->set_pads_handler = g_signal_connect(machine->audio, "set-pads\0",
-							 G_CALLBACK(ags_automation_editor_set_pads_callback), automation_editor);
+  g_signal_connect(machine->audio, "set-audio-channels\0",
+		   G_CALLBACK(ags_automation_editor_set_audio_channels_callback), automation_editor);
+  g_signal_connect(machine->audio, "set-pads\0",
+		   G_CALLBACK(ags_automation_editor_set_pads_callback), automation_editor);
 
   /* audio */
   automation_editor->audio_scale = ags_scale_new();

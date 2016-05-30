@@ -132,7 +132,9 @@ struct _AgsSoundcardInterface
   
   gdouble (*get_delay)(AgsSoundcard *soundcard);
   guint (*get_attack)(AgsSoundcard *soundcard);
-  
+
+  guint (*get_delay_counter)(AgsSoundcard *soundcard);
+
   void (*set_note_offset)(AgsSoundcard *soundcard,
 			  guint note_offset);
   guint (*get_note_offset)(AgsSoundcard *soundcard);
@@ -208,6 +210,8 @@ gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
 
 gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);
 guint ags_soundcard_get_attack(AgsSoundcard *soundcard);
+
+guint ags_soundcard_get_delay_counter(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
 				   guint note_offset);

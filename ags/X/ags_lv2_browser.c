@@ -162,21 +162,20 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   lv2_browser->path = NULL;
 
-  //  ags_lv2_manager_load_default_directory();
-  //  filenames =
-  //    filenames_start = ags_lv2_manager_get_filenames();
-  filenames = NULL;
-
-  if(filenames != NULL){
+  ags_lv2_manager_load_default_directory();
+  filenames =
+    filenames_start = ags_lv2_manager_get_filenames();
+  
+  if(filenames_start != NULL){
     while(*filenames != NULL){
       gtk_combo_box_text_append_text(combo_box,
 				     *filenames);
       
       filenames++;
     }
-  }
 
-  //  free(filenames_start);
+    g_free(filenames_start);
+  }
 
   label = (GtkLabel *) gtk_label_new("effect: \0");
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
@@ -199,7 +198,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign\0", 0.0,
-				    "label\0", "Label: \0",
+				    "label\0", "Name: \0",
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
@@ -208,7 +207,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign\0", 0.0,
-				    "label\0", "Maker: \0",
+				    "label\0", "Homepage: \0",
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
@@ -217,7 +216,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "xalign\0", 0.0,
-				    "label\0", "Copyright: \0",
+				    "label\0", "M-Box: \0",
 				    NULL);
   gtk_box_pack_start(GTK_BOX(lv2_browser->description),
 		     GTK_WIDGET(label),
@@ -310,12 +309,13 @@ ags_lv2_browser_reset(AgsApplicable *applicable)
 
 /**
  * ags_lv2_browser_get_plugin_filename:
+ * @lv2_browser: the #AgsLv2Browser
  *
  * Retrieve selected lv2 plugin filename.
  *
  * Returns: the active lv2 filename
  *
- * Since: 0.4.2
+ * Since: 0.7.10
  */
 gchar*
 ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
@@ -332,12 +332,13 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
 
 /**
  * ags_lv2_browser_get_plugin_uri:
+ * @lv2_browser: the #AgsLv2Browser
  *
  * Retrieve selected lv2 uri.
  *
  * Returns: the active lv2 uri
  *
- * Since: 0.4.2
+ * Since: 0.7.10
  */
 gchar*
 ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
@@ -359,13 +360,40 @@ ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
 }
 
 /**
+ * ags_lv2_browser_combo_box_boolean_controls_new:
+ *
+ * Creates a #GtkComboBox containing suitable widgets as controls.
+ *
+ * Returns: a new #GtkComboBox
+ *
+ * Since: 0.7.10
+ */
+GtkWidget*
+ags_lv2_browser_combo_box_boolean_controls_new()
+{
+  GtkComboBoxText *combo_box;
+
+  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(combo_box,
+				 "check-button\0");
+  gtk_combo_box_text_append_text(combo_box,
+				 "toggle button\0");
+
+  gtk_combo_box_set_active(combo_box,
+			   1);
+
+  return(combo_box);
+}
+
+/**
  * ags_lv2_browser_combo_box_controls_new:
  *
  * Creates a #GtkComboBox containing suitable widgets as controls.
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 0.4.2
+ * Since: 0.7.10
  */
 GtkWidget*
 ags_lv2_browser_combo_box_controls_new()
@@ -408,7 +436,7 @@ ags_lv2_browser_preview_new()
  *
  * Returns: a new #AgsLv2Browser
  *
- * Since: 0.4.2
+ * Since: 0.7.10
  */
 AgsLv2Browser*
 ags_lv2_browser_new()

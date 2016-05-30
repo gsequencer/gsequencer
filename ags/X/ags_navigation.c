@@ -560,6 +560,8 @@ ags_navigation_change_position(AgsNavigation *navigation,
 /**
  * ags_navigation_tact_to_time_string:
  * @tact: the new position
+ * @bpm: the BPM
+ * @delay_factor: the delay factor
  * 
  * Convert tact unit to time.
  *
@@ -605,7 +607,9 @@ ags_navigation_tact_to_time_string(gdouble tact,
 /**
  * ags_navigation_update_time_string:
  * @tact: the new position
- * @time_str: the pointer location to set
+ * @bpm: the BPM
+ * @delay_factor: the delay factor
+ * @time_string: the pointer location to set
  *
  * Updates time as string.
  *

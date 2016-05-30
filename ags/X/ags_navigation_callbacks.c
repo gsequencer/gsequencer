@@ -261,6 +261,8 @@ ags_navigation_stop_callback(GtkWidget *widget,
   gtk_label_set_text(navigation->duration_time, timestr);
   
   g_free(timestr);
+  ags_soundcard_set_note_offset(AGS_SOUNDCARD(window->soundcard),
+				0);
 
   /* reset editor */
   window->editor->current_tact = 0.0;

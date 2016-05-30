@@ -196,6 +196,10 @@ ags_notebook_tab_index(AgsNotebook *notebook,
   GList *list;
   gint i;
 
+  if(notebook == NULL){
+    return(-1);
+  }
+
   list = notebook->tabs;
 
   for(i = g_list_length(notebook->tabs) - 1; list != NULL; i--){
@@ -220,7 +224,11 @@ ags_notebook_add_tab(AgsNotebook *notebook)
   gint tab_index;
   gint length;
   guint width;
-  
+
+  if(notebook == NULL){
+    return(-1);
+  }
+
   /* new tab */
   tab = ags_notebook_tab_alloc();
 
@@ -256,6 +264,10 @@ ags_notebook_next_active_tab(AgsNotebook *notebook,
   GList *list, *list_start;
   gint i;
 
+  if(notebook == NULL){
+    return(-1);
+  }
+  
   list_start = g_list_copy(notebook->tabs);
   list_start = 
     list = g_list_reverse(list_start);
@@ -287,7 +299,11 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
   
   gint length;
   guint width;
-  
+
+  if(notebook == NULL){
+    return;
+  }
+
   /* insert tab */
   length = g_list_length(notebook->tabs);
 
@@ -343,6 +359,10 @@ void
 ags_notebook_add_child(AgsNotebook *notebook,
 		       GtkWidget *child)
 {
+  if(notebook == NULL){
+    return;
+  }
+
   gtk_box_pack_start(GTK_BOX(notebook),
 		     child,
 		     FALSE, FALSE,
@@ -353,6 +373,10 @@ void
 ags_notebook_remove_child(AgsNotebook *notebook,
 			  GtkWidget *child)
 {
+  if(notebook == NULL){
+    return;
+  }
+
   gtk_widget_destroy(child);
 }
 

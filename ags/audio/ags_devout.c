@@ -24,10 +24,14 @@
 
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_concurrent_tree.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_notation.h>
+
+#include <ags/audio/task/ags_switch_buffer_flag.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -53,6 +57,7 @@
 void ags_devout_class_init(AgsDevoutClass *devout);
 void ags_devout_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard);
+void ags_devout_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent_tree);
 void ags_devout_init(AgsDevout *devout);
 void ags_devout_set_property(GObject *gobject,
 			     guint prop_id,
@@ -64,6 +69,8 @@ void ags_devout_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_devout_disconnect(AgsConnectable *connectable);
 void ags_devout_connect(AgsConnectable *connectable);
+pthread_mutex_t* ags_devout_get_lock(AgsConcurrentTree *concurrent_tree);
+pthread_mutex_t* ags_devout_get_parent_lock(AgsConcurrentTree *concurrent_tree);
 void ags_devout_finalize(GObject *gobject);
 
 void ags_devout_switch_buffer_flag(AgsDevout *devout);
@@ -126,6 +133,8 @@ guint ags_devout_get_attack(AgsSoundcard *soundcard);
 void* ags_devout_get_buffer(AgsSoundcard *soundcard);
 void* ags_devout_get_next_buffer(AgsSoundcard *soundcard);
 
+guint ags_devout_get_delay_counter(AgsSoundcard *soundcard);
+
 void ags_devout_set_note_offset(AgsSoundcard *soundcard,
 				guint note_offset);
 guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
@@ -187,6 +196,12 @@ ags_devout_get_type (void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_concurrent_tree_interface_info = {
+      (GInterfaceInitFunc) ags_devout_concurrent_tree_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_devout = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsDevout\0",
 					     &ags_devout_info,
@@ -199,6 +214,10 @@ ags_devout_get_type (void)
     g_type_add_interface_static(ags_type_devout,
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
+
+    g_type_add_interface_static(ags_type_devout,
+				AGS_TYPE_CONCURRENT_TREE,
+				&ags_concurrent_tree_interface_info);
   }
 
   return (ags_type_devout);
@@ -447,6 +466,13 @@ ags_devout_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
+ags_devout_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent_tree)
+{
+  concurrent_tree->get_lock = ags_devout_get_lock;
+  concurrent_tree->get_parent_lock = ags_devout_get_parent_lock;
+}
+
+void
 ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
   soundcard->set_application_context = ags_devout_set_application_context;
@@ -490,6 +516,8 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_buffer = ags_devout_get_buffer;
   soundcard->get_next_buffer = ags_devout_get_next_buffer;
+
+  soundcard->get_delay_counter = ags_devout_get_delay_counter;
 
   soundcard->set_note_offset = ags_devout_set_note_offset;
   soundcard->get_note_offset = ags_devout_get_note_offset;
@@ -797,7 +825,7 @@ ags_devout_set_property(GObject *gobject,
     break;
   case PROP_BUFFER:
     {
-	//TODO:JK: implement me
+      //TODO:JK: implement me
     }
     break;
   case PROP_BPM:
@@ -909,6 +937,34 @@ ags_devout_get_property(GObject *gobject,
   }
 }
 
+pthread_mutex_t*
+ags_devout_get_lock(AgsConcurrentTree *concurrent_tree)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *devout_mutex;
+  
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
+  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  AGS_DEVOUT(concurrent_tree));
+
+  pthread_mutex_unlock(application_mutex);
+
+  return(devout_mutex);
+}
+
+pthread_mutex_t*
+ags_devout_get_parent_lock(AgsConcurrentTree *concurrent_tree)
+{
+  return(NULL);
+}
+
 void
 ags_devout_finalize(GObject *gobject)
 {
@@ -1013,6 +1069,26 @@ ags_devout_disconnect(AgsConnectable *connectable)
 void
 ags_devout_switch_buffer_flag(AgsDevout *devout)
 {
+  AgsApplicationContext *application_context;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *mutex;
+  
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(devout));
+  
+  pthread_mutex_lock(application_context->mutex);
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) devout);
+  
+  pthread_mutex_unlock(application_context->mutex);
+
+  /* switch buffer flag */
+  pthread_mutex_lock(mutex);
+
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     devout->flags &= (~AGS_DEVOUT_BUFFER0);
     devout->flags |= AGS_DEVOUT_BUFFER1;
@@ -1026,6 +1102,8 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
     devout->flags &= (~AGS_DEVOUT_BUFFER3);
     devout->flags |= AGS_DEVOUT_BUFFER0;
   }
+
+  pthread_mutex_unlock(mutex);
 }
 
 void
@@ -1163,18 +1241,19 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
   while(TRUE){
     error = snd_card_next(&card_num);
 
-    if(card_num < 0){
+    if(card_num < 0 || error < 0){
+      g_message("Can't get the next card number: %s\0", snd_strerror(error));
+      
       break;
     }
 
-    if(error < 0){
-      continue;
-    }
-
-    str = g_strdup_printf("hw:%i\0", card_num);
+    str = g_strdup_printf("hw:%d\0", card_num);
+    g_message("%s\0", str);
     error = snd_ctl_open(&card_handle, str, 0);
 
     if(error < 0){
+      g_free(str);
+      
       continue;
     }
 
@@ -1182,6 +1261,8 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     error = snd_ctl_card_info(card_handle, card_info);
 
     if(error < 0){
+      g_free(str);
+      
       continue;
     }
 
@@ -1189,6 +1270,8 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     error = snd_ctl_pcm_next_device(card_handle, &device);
 
     if(error < 0){
+      g_free(str);
+      
       continue;
     }
     
@@ -1556,6 +1639,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 {
   AgsDevout *devout;
 
+  AgsSwitchBufferFlag *switch_buffer_flag;
+  
+  AgsThread *task_thread;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -1763,15 +1849,20 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     //      g_message("ags_devout_play 3\0");
   }
 
+  pthread_mutex_unlock(mutex);
+
   /* tic */
   ags_soundcard_tic(soundcard);
 
   /* reset - switch buffer flags */
-  ags_devout_switch_buffer_flag(devout);
-
+  task_thread = ags_thread_find_type(application_context->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+  
+  switch_buffer_flag = ags_switch_buffer_flag_new(devout);
+  ags_task_thread_append_task(task_thread,
+			      switch_buffer_flag);
+  
   snd_pcm_prepare(devout->out.alsa.handle);
-
-  pthread_mutex_unlock(mutex);
 }
 
 void
@@ -1809,7 +1900,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_BUFFER1 |
 		      AGS_DEVOUT_BUFFER2 |
 		      AGS_DEVOUT_BUFFER3 |
-		      AGS_DEVOUT_PLAY));
+		      AGS_DEVOUT_PLAY |
+		      AGS_DEVOUT_INITIALIZED));
 }
 
 void
@@ -1968,6 +2060,12 @@ ags_devout_get_next_buffer(AgsSoundcard *soundcard)
   }
 
   return(buffer);
+}
+
+guint
+ags_devout_get_delay_counter(AgsSoundcard *soundcard)
+{
+  return(AGS_DEVOUT(soundcard)->delay_counter);
 }
 
 void

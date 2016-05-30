@@ -17,13 +17,37 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_MAIN_H__
-#define __AGS_MAIN_H__
+#ifndef __GSEQUENCER_MAIN_H__
+#define __GSEQUENCER_MAIN_H__
 
-#define _GNU_SOURCE
+#include <glib.h>
+#include <glib-object.h>
+#include <gio/gio.h>
+
+#include <gtk/gtk.h>
+
+#include <jack/jslist.h>
+#include <jack/jack.h>
+//#include <jack/control.h>
+#include <stdbool.h>
+
+#include <libintl.h>
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/resource.h>
+#include <sys/mman.h>
+
+//#include <ao/ao.h>
+
+#include <pthread.h>
+
+#include <sys/types.h>
+#include <pwd.h>
+
 #define ALSA_PCM_NEW_HW_PARAMS_API
 
 #define AGS_DEFAULT_DIRECTORY ".gsequencer\0"
 #define AGS_DEFAULT_CONFIG "ags.conf\0"
 
-#endif /*__AGS_MAIN_H__*/
+#endif /*__GSEQUENCER_MAIN_H__*/

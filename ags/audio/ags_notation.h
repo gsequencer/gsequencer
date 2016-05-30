@@ -79,8 +79,8 @@ struct _AgsNotation
 
   GList *notes;
   
-  gdouble start_loop;
-  gdouble end_loop;
+  gdouble loop_start;
+  gdouble loop_end;
   gdouble offset;
 
   GList *selection;
@@ -141,7 +141,7 @@ xmlNodePtr ags_notation_copy_selection(AgsNotation *notation);
 xmlNodePtr ags_notation_cut_selection(AgsNotation *notation);
 
 void ags_notation_insert_from_clipboard(AgsNotation *notation,
-					xmlNodePtr content,
+					xmlNodePtr notation_node,
 					gboolean reset_x_offset, guint x_offset,
 					gboolean reset_y_offset, guint y_offset);
 

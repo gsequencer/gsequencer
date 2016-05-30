@@ -190,6 +190,8 @@ ags_sndfile_init(AgsSndfile *sndfile)
   sndfile->pointer = NULL;
   sndfile->current = NULL;
   sndfile->length = 0;
+
+  sndfile->buffer = NULL;
 }
 
 void
@@ -217,6 +219,7 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
 
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
   sndfile->info->format = 0;
+  sndfile->info->channels = 0;
 
   if((AGS_SNDFILE_VIRTUAL & (sndfile->flags)) == 0){
     if(name != NULL){
@@ -226,10 +229,15 @@ ags_sndfile_open(AgsPlayable *playable, gchar *name)
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_READ, sndfile->info, sndfile);
   }
 
-  if(sndfile->file == NULL)
+#ifdef AGS_DEBUG
+  g_message("ags_sndfile_open(): channels %d frames %d\0", sndfile->info->channels, sndfile->info->frames);
+#endif
+  
+  if(sndfile->file == NULL){
     return(FALSE);
-  else
+  }else{
     return(TRUE);
+  }
 }
 
 gboolean
@@ -278,10 +286,11 @@ ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
 
   //  sndfile->info->frames = multi_frames;
 
-  if(sndfile->file == NULL)
+  if(sndfile->file == NULL){
     return(FALSE);
-  else
+  }else{
     return(TRUE);
+  }
 }
 
 guint
@@ -344,15 +353,26 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
   AgsSndfile *sndfile;
   signed short *buffer, *source;
   guint i;
+  guint num_read;
 
   sndfile = AGS_SNDFILE(playable);
 
-  source = (signed short *) malloc((size_t) sndfile->info->channels *
-				   sndfile->info->frames *
-				   sizeof(signed short));
-  
-  sf_seek(sndfile->file, 0, SEEK_SET);
-  sf_read_short(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
+  if(sndfile->buffer == NULL){
+    sndfile->buffer = 
+      source = (signed short *) malloc((size_t) sndfile->info->channels *
+				       sndfile->info->frames *
+				       sizeof(signed short));
+    
+    //FIXME:JK: work-around comment me out
+    //    sf_seek(sndfile->file, 0, SEEK_SET);  
+    num_read = sf_read_short(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
+
+    if(num_read != sndfile->info->frames * sndfile->info->channels){
+      g_warning("ags_sndfile_read(): read to many items\0");
+    }
+  }else{
+    source = sndfile->buffer;
+  }
 
   buffer = (signed short *) malloc((size_t) sndfile->info->frames *
 				   sizeof(signed short));
@@ -360,8 +380,6 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
   for(i = 0; i < sndfile->info->frames; i++){
     buffer[i] = source[i * sndfile->info->channels + channel];
   }
-
-  free(source);
 
   return(buffer);
 }
