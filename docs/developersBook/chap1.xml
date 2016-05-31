@@ -8,7 +8,7 @@
     callback and want to lookup a soundcard or sequencer the application context
     shall provide this functioanlity and provide access to its objects through a
     well defined interface. As doing it with interfaces you are not limited to one
-    specific implementation rather having the option to choose the appriate one
+    specific implementation rather having the option to choose the appropriate one
     implementing the interfaces.
   </para>
   <para>
@@ -38,7 +38,7 @@
 
     <para>
       The AgsAudioApplicationContext inherites from AgsApplicationContext and implements
-      the AgsConcurrency interface, too. So you can retrieve the task thread the samew
+      the AgsConcurrency interface, too. So you can retrieve the task thread the same
       way. But the context implements one more, the AgsSoundProvider interface. Giving
       you objects related to threading and audio processing.
     </para>
