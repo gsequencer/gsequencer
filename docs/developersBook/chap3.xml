@@ -52,7 +52,7 @@
     <example>
       <title>Starting threads</title>
       <programlisting language="C">
-	<xi:include href="../listings/start_thread.c" parse="text" />
+<xi:include href="../listings/start_thread.c" parse="text" />
       </programlisting>
     </example>
 
@@ -87,7 +87,7 @@
     <example>
       <title>Pulling threads of thread-pool</title>
       <programlisting language="C">
-	<xi:include href="../listings/pull_thread.c" parse="text" />
+<xi:include href="../listings/pull_thread.c" parse="text" />
       </programlisting>
     </example>    
   </sect1>

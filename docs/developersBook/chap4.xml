@@ -29,7 +29,7 @@
     <example>
       <title>PCM information from AgsSoundcard</title>
       <programlisting language="C">
-	<xi:include href="../listings/pcm_info.c" parse="text" />
+<xi:include href="../listings/pcm_info.c" parse="text" />
       </programlisting>
     </example>    
   </sect1>
