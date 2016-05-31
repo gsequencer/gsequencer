@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding="utf-8"?>
-<appendix>
+<appendix xmlns="http://docbook.org/ns/docbook"
+	  xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>Related projects</title>
 
   <variablelist>
@@ -7,7 +8,7 @@
     <varlistentry><term><filename>Gtk+</filename></term>
     <listitem>
       <para>
-	Gimp Tool Kit - http://www.gtk.org
+	Gimp Tool Kit - <link xlink:href="http://www.gtk.org">http://www.gtk.org</link>
       </para>
     </listitem>
     </varlistentry>
@@ -15,7 +16,7 @@
     <varlistentry><term><filename>Libinstpatch</filename></term>
     <listitem>
       <para>
-	Instrument patch library - http://www.swamiproject.org
+	Instrument patch library - <link xlink:href="http://www.swamiproject.org">http://www.swamiproject.org</link>
       </para>
     </listitem>
     </varlistentry>
@@ -23,7 +24,7 @@
     <varlistentry><term><filename>Libxml2</filename></term>
     <listitem>
       <para>
-	XML library - http://www.xmlsoft.org
+	XML library - <link xlink:href="http://www.xmlsoft.org">http://www.xmlsoft.org</link>
       </para>
     </listitem>
     </varlistentry>
@@ -31,7 +32,7 @@
     <varlistentry><term><filename>Libsndfile</filename></term>
     <listitem>
       <para>
-	Sound file library - http://www.mega-nerd.com
+	Sound file library - <link xlink:href="http://www.mega-nerd.com">http://www.mega-nerd.com</link>
       </para>
     </listitem>
     </varlistentry>
@@ -39,7 +40,7 @@
     <varlistentry><term><filename>Alsa</filename></term>
     <listitem>
       <para>
-	Advanced Linux Sound Architecture - http://www.alsa-project.org
+	Advanced Linux Sound Architecture - <link xlink:href="http://www.alsa-project.org">http://www.alsa-project.org</link>
       </para>
     </listitem>
     </varlistentry>
@@ -47,7 +48,7 @@
     <varlistentry><term><filename>JACK</filename></term>
     <listitem>
       <para>
-	Jack audio connection kit - http://www.jackaudio.org
+	Jack audio connection kit - <link xlink:href="http://www.jackaudio.org">http://www.jackaudio.org</link>
       </para>
     </listitem>
     </varlistentry>
@@ -55,7 +56,7 @@
     <varlistentry><term><filename>LADSPA</filename></term>
     <listitem>
       <para>
-	Linux Audio Developer's Simple Plugin API - http://www.ladspa.org
+	Linux Audio Developer's Simple Plugin API - <link xlink:href="http://www.ladspa.org">http://www.ladspa.org</link>
       </para>
     </listitem>
     </varlistentry>
@@ -63,7 +64,7 @@
     <varlistentry><term><filename>DSSI</filename></term>
     <listitem>
       <para>
-	Disposable Soft Synth Interface - http://dssi.sourceforge.net
+	Disposable Soft Synth Interface - <link xlink:href="http://dssi.sourceforge.net">http://dssi.sourceforge.net</link>
       </para>
     </listitem>
     </varlistentry>
@@ -71,7 +72,7 @@
     <varlistentry><term><filename>Lv2</filename></term>
     <listitem>
       <para>
-	LADSPA version 2 - http://www.lv2plug.in
+	LADSPA version 2 - <link xlink:href="http://www.lv2plug.in">http://www.lv2plug.in</link>
       </para>
     </listitem>
     </varlistentry>
