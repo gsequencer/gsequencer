@@ -12,7 +12,7 @@ pthread_mutex_lock(application_mutex);
 
 application_context = ags_application_context_get_instance();
 g_object_get(application_context,
-	     "main-loop\0", &main_loop,
-	     NULL);
+             "main-loop\0", &main_loop,
+             NULL);
 
 pthread_mutex_unlock(application_mutex);

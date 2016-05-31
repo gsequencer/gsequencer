@@ -18,8 +18,8 @@ length = 64;
 
 pattern = ags_pattern_new();
 ags_pattern_set_dim(pattern,
-		    n_bank_0,
-		    n_bank_1,
-		    length);
+                    n_bank_0,
+                    n_bank_1,
+                    length);
 ags_channel_add_pattern(channel,
-			pattern);
+                        pattern);
