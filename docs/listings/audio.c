@@ -25,18 +25,18 @@ audio_channels = 2;
 
 audio = ags_audio_new(soundcard->data);
 ags_audio_set_audio_channels(audio,
-			     audio_channels);
+                             audio_channels);
 ags_audio_set_pads(audio,
-		   AGS_TYPE_OUTPUT,
-		   1);
+                   AGS_TYPE_OUTPUT,
+                   1);
 ags_audio_set_pads(audio,
-		   AGS_TYPE_INPUT,
-		   1);
+                   AGS_TYPE_INPUT,
+                   1);
 
 /* add notation */
 for(i = 0; i < audio_channels; i++){
   notation = ags_notation_new(audio,
-			      i);
+                              i);
   ags_audio_add_notation(audio,
-			 notation);
+                         notation);
 }

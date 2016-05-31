@@ -37,7 +37,7 @@
     <example>
       <title>Writing XML</title>
       <programlisting language="C">
-	<xi:include href="../listings/file_write.c" parse="text" />
+<xi:include href="../listings/file_write.c" parse="text" />
       </programlisting>
     </example>
   </sect1>
@@ -54,7 +54,7 @@
     <example>
       <title>Reading XML</title>
       <programlisting language="C">
-	<xi:include href="../listings/file_read.c" parse="text" />
+<xi:include href="../listings/file_read.c" parse="text" />
       </programlisting>
     </example>
   </sect1>

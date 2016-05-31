@@ -14,7 +14,10 @@
     define an AgsPattern and add the needed recalls to do playback using the AgsRecallFactory.
   </para>
   
-  <programlisting language="C">
-    <xi:include href="../listings/complete_example.c" parse="text" />
+  <example>
+    <title>Simple pattern sequencer with master playback</title>
+    <programlisting language="C">
+<xi:include href="../listings/complete_example.c" parse="text" />
     </programlisting>
+  </example>
 </chapter>

@@ -30,13 +30,13 @@ main(int argc, char **argv)
   pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread_0)->reset_mutex);
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_0)->safe_data),
-		       "thread 0\0");
+                       "thread 0\0");
 
   ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_0),
-					 ags_task_thread_append_task_queue);
+                                         ags_task_thread_append_task_queue);
 
   g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread_0)->flags),
-		  AGS_RETURNABLE_THREAD_IN_USE);
+                  AGS_RETURNABLE_THREAD_IN_USE);
     
   pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread_0)->reset_mutex);
 
@@ -46,13 +46,13 @@ main(int argc, char **argv)
   pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread_1)->reset_mutex);
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_1)->safe_data),
-		       "thread 1\0");
+                       "thread 1\0");
 
   ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_1),
-					 ags_task_thread_append_task_queue);
+                                         ags_task_thread_append_task_queue);
 
   g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread_1)->flags),
-		  AGS_RETURNABLE_THREAD_IN_USE);
+                  AGS_RETURNABLE_THREAD_IN_USE);
     
   pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread_1)->reset_mutex);
 

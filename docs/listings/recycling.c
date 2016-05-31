@@ -23,9 +23,9 @@ recycling = ags_recycling_new(soundcard->data);
 stream_length = 5;
 
 audio_signal = ags_audio_signal_new(soundcard->data,
-				    recycling,
-				    NULL,
-				    stream_length);
+                                    recycling,
+                                    NULL,
+                                    stream_length);
 audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 ags_recycling_add_audio_signal(recyclig,
-			       audio_signal);
+                               audio_signal);

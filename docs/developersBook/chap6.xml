@@ -60,7 +60,7 @@
     <example>
       <title>Adding AgsPattern</title>
       <programlisting language="C">
-	<xi:include href="../listings/add_pattern.c" parse="text" />
+<xi:include href="../listings/add_pattern.c" parse="text" />
       </programlisting>
     </example>
   </sect1>

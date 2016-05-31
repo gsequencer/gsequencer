@@ -42,7 +42,7 @@
   <example>
     <title>Using AgsAudio</title>
     <programlisting language="C">
-      <xi:include href="../listings/audio.c" parse="text" />
+<xi:include href="../listings/audio.c" parse="text" />
     </programlisting>
   </example>
 

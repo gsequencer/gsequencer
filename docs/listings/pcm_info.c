@@ -14,10 +14,10 @@ if(list != NULL){
 
   error = NULL;
   ags_soundcard_pcm_info(AGS_SOUNDCARD(soundcard),
-			 &channels_min, &channels_max,
-			 &rate_min, &rate_max,
-			 &buffer_size_min, &buffer_size_max,
-			 &error);
+                         &channels_min, &channels_max,
+                         &rate_min, &rate_max,
+                         &buffer_size_min, &buffer_size_max,
+                         &error);
   if(error != NULL){
     g_warning("%s\0", error->msg);
   }

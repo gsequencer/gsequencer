@@ -42,8 +42,11 @@
       playing during a button click, notation or pattern.
     </para>
 
-    <programlisting language="C">
-      <xi:include href="../listings/recycling.c" parse="text" />
-    </programlisting>
+    <example>
+      <title>AgsRecycling and AgsAudioSignal</title>
+      <programlisting language="C">
+<xi:include href="../listings/recycling.c" parse="text" />
+      </programlisting>
+    </example>
   </sect1>
 </chapter>
