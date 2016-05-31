@@ -26,7 +26,7 @@
     <title>The main loop interface</title>
     <para>
       AgsMainLoop should be implemented by toplevel threads. Within a thread
-      tree there this is the topmost element. It has various get and set methods
+      tree this is the topmost element. It has various get and set methods
       you would expect. ::set_tic and ::get_tic is used for synchronization purpose
       as well ::set_last_sync and ::get_last_sync. ::get_async_queue should return
       an instance implementing AgsAsyncQueue eg. AgsTaskThread. ::get_application_context
@@ -45,7 +45,7 @@
 
     <para>
       The following example creates a thread and does add an other thread to :start_queue.
-      This causes it to be started as well. Note you to access :start_queue using atomic
+      This causes it to be started as well. Note you want to access :start_queue using atomic
       operations since it is volatile.
     </para>
 
@@ -58,14 +58,14 @@
 
     <para>
       There many other functions not covered like mutex wrappers ags_thread_lock() and
-      ags_thread_unlock(). As doing a closer look to the API there functions to lock
-      different parts of the tree. But all these functions should be carefully used.
+      ags_thread_unlock(). As doing a closer look to the API there are functions to lock
+      different parts of the tree. But all these functions should be carefully used,
       since you might run into a dead-lock.
     </para>
 
     <para>
       ags_thread_resume() and ags_suspend() wakes-up or suspends threads. But they
-      both shoul be used within same tic of ::clock. ags_thread_timelock() is used
+      both should be used within same tic of ::clock. ags_thread_timelock() is used
       for suspending computing expensive threads and passing ::clock within its run.
     </para>
 

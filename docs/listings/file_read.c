@@ -3,7 +3,7 @@ AgsFile *file;
 
 GError *error;
 
-static const gchar *filename = "my_file.xml";
+static const gchar *filename = "my_file.xml\0";
 
 application_context = ags_audio_application_context_new();
     

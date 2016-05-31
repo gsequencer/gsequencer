@@ -5,7 +5,7 @@
   <para>
     With AgsSoundcard and AgsSequencer interface you can obtain information about
     output or input devices. Getting the next buffer for playback something can be
-    achieved, too. As weel reading MIDI data from current buffer is supported.
+    achieved, too. As well reading MIDI data from current buffer is supported.
     Note these operations are performed all delayed in order to avoid concurrent
     memory access.
   </para>
