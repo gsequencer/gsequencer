@@ -85,6 +85,7 @@ enum{
   PROP_EFFECT,
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
+  PROP_STEPS,
   PROP_PORT,
   PROP_PORT_DATA,
   PROP_RECALL_PORT,
@@ -262,7 +263,25 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  param_spec);
 
   /**
-   * AgsLineMember:apply:
+   * AgsLineMember:steps:
+   *
+   * If line member has integer ports, this is the number of steps.
+   * 
+   * Since: 0.7.21
+   */
+  param_spec = g_param_spec_uint("steps\0",
+				 "steps of line members port\0",
+				 "The steps this line members port has\0",
+				 0,
+				 G_MAXUINT,
+				 AGS_DIAL_DEFAULT_PRECISION,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STEPS,
+				  param_spec);
+
+  /**
+   * AgsLineMember:port:
    *
    * The matching simple port of plugin name and specifier.
    * 
@@ -396,7 +415,8 @@ ags_line_member_init(AgsLineMember *line_member)
 
   line_member->flags = (AGS_LINE_MEMBER_RESET_BY_ATOMIC |
 			AGS_LINE_MEMBER_APPLY_RECALL);
-  
+  line_member->port_flags = 0;
+
   line_member->widget_type = AGS_TYPE_DIAL;
   dial = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
 				       "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
@@ -417,6 +437,8 @@ ags_line_member_init(AgsLineMember *line_member)
   line_member->specifier = NULL;
 
   line_member->control_port = NULL;
+
+  line_member->steps = 0;
 
   line_member->port = NULL;
   line_member->port_data = NULL;
@@ -554,6 +576,25 @@ ags_line_member_set_property(GObject *gobject,
       }
 
       line_member->control_port = g_strdup(control_port);
+    }
+    break;
+  case PROP_STEPS:
+    {
+      GtkWidget *child;
+      
+      guint steps;
+
+      steps = g_value_get_uint(value);
+
+      line_member->steps = steps;
+
+      child = gtk_bin_get_child(GTK_BIN(line_member));
+
+      if(AGS_IS_DIAL(child)){
+	g_object_set(child,
+		     "scale-precision\0", steps,
+		     NULL);
+      }
     }
     break;
   case PROP_PORT:

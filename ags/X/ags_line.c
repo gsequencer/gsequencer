@@ -713,13 +713,21 @@ ags_line_add_ladspa_effect(AgsLine *line,
       GtkWidget *child_widget;
       
       GType widget_type;
-            
+
+      guint step_count;
+      
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	widget_type = GTK_TYPE_TOGGLE_BUTTON;
       }else{
 	widget_type = AGS_TYPE_DIAL;
       }
 
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      }
+      
       /* add line member */
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type\0", widget_type,
@@ -731,9 +739,18 @@ ags_line_add_ladspa_effect(AgsLine *line,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
 
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_INTEGER;
+      }
+      
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
 	GtkAdjustment *adjustment;
@@ -751,11 +768,11 @@ ags_line_add_ladspa_effect(AgsLine *line,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,
@@ -863,10 +880,18 @@ ags_line_add_lv2_effect(AgsLine *line,
 	  
       GType widget_type;
 
+      guint step_count;
+      
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	widget_type = GTK_TYPE_TOGGLE_BUTTON;
       }else{
 	widget_type = AGS_TYPE_DIAL;
+      }
+
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
       }
 
       /* add line member */
@@ -880,8 +905,17 @@ ags_line_add_lv2_effect(AgsLine *line,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
+      
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	line_member->port_flags = AGS_LINE_MEMBER_PORT_INTEGER;
+      }
 
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
@@ -901,11 +935,11 @@ ags_line_add_lv2_effect(AgsLine *line,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,

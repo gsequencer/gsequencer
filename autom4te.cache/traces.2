@@ -70,6 +70,9 @@ m4trace:configure.ac:5: -1- m4_pattern_allow([^sharedstatedir$])
 m4trace:configure.ac:5: -1- AC_SUBST([localstatedir], ['${prefix}/var'])
 m4trace:configure.ac:5: -1- AC_SUBST_TRACE([localstatedir])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^localstatedir$])
+m4trace:configure.ac:5: -1- AC_SUBST([runstatedir], ['${localstatedir}/run'])
+m4trace:configure.ac:5: -1- AC_SUBST_TRACE([runstatedir])
+m4trace:configure.ac:5: -1- m4_pattern_allow([^runstatedir$])
 m4trace:configure.ac:5: -1- AC_SUBST([includedir], ['${prefix}/include'])
 m4trace:configure.ac:5: -1- AC_SUBST_TRACE([includedir])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^includedir$])
@@ -254,7 +257,6 @@ m4trace:configure.ac:6: -1- AC_SUBST_TRACE([AM_BACKSLASH])
 m4trace:configure.ac:6: -1- m4_pattern_allow([^AM_BACKSLASH$])
 m4trace:configure.ac:6: -1- _AM_SUBST_NOTMAKE([AM_BACKSLASH])
 m4trace:configure.ac:8: -1- AC_CONFIG_HEADERS([config.h])
-m4trace:configure.ac:9: -1- AC_CONFIG_MACRO_DIR([m4])
 m4trace:configure.ac:12: -1- AC_SUBST([CC])
 m4trace:configure.ac:12: -1- AC_SUBST_TRACE([CC])
 m4trace:configure.ac:12: -1- m4_pattern_allow([^CC$])
@@ -584,6 +586,14 @@ m4trace:configure.ac:35: -1- AH_OUTPUT([HAVE_SYS_TIME_H], [/* Define to 1 if you
 @%:@undef HAVE_SYS_TIME_H])
 m4trace:configure.ac:35: -1- AH_OUTPUT([HAVE_UNISTD_H], [/* Define to 1 if you have the <unistd.h> header file. */
 @%:@undef HAVE_UNISTD_H])
+m4trace:configure.ac:35: -1- AH_OUTPUT([HAVE_GMP_H], [/* Define to 1 if you have the <gmp.h> header file. */
+@%:@undef HAVE_GMP_H])
+m4trace:configure.ac:35: -1- AH_OUTPUT([HAVE_LADSPA_H], [/* Define to 1 if you have the <ladspa.h> header file. */
+@%:@undef HAVE_LADSPA_H])
+m4trace:configure.ac:35: -1- AH_OUTPUT([HAVE_DSSI_H], [/* Define to 1 if you have the <dssi.h> header file. */
+@%:@undef HAVE_DSSI_H])
+m4trace:configure.ac:35: -1- AH_OUTPUT([HAVE_LV2_H], [/* Define to 1 if you have the <lv2.h> header file. */
+@%:@undef HAVE_LV2_H])
 m4trace:configure.ac:38: -1- AC_DEFINE_TRACE_LITERAL([HAVE__BOOL])
 m4trace:configure.ac:38: -1- m4_pattern_allow([^HAVE__BOOL$])
 m4trace:configure.ac:38: -1- AH_OUTPUT([HAVE__BOOL], [/* Define to 1 if the system has the type `_Bool\'. */
@@ -903,7 +913,6 @@ m4trace:configure.ac:121: -1- AH_OUTPUT([HAVE_STRTOL], [/* Define to 1 if you ha
 @%:@undef HAVE_STRTOL])
 m4trace:configure.ac:121: -1- AH_OUTPUT([HAVE_STRTOUL], [/* Define to 1 if you have the `strtoul\' function. */
 @%:@undef HAVE_STRTOUL])
-m4trace:configure.ac:124: -1- GTK_DOC_CHECK([1.14], [--flavour no-tmpl])
 m4trace:configure.ac:124: -1- AC_SUBST([GTKDOC_CHECK])
 m4trace:configure.ac:124: -1- AC_SUBST_TRACE([GTKDOC_CHECK])
 m4trace:configure.ac:124: -1- m4_pattern_allow([^GTKDOC_CHECK$])

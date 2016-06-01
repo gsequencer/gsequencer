@@ -107,6 +107,7 @@ enum{
 enum{
   PROP_0,
   PROP_ADJUSTMENT,
+  PROP_SCALE_PRECISION,
 };
 
 static gpointer ags_dial_parent_class = NULL;
@@ -231,6 +232,24 @@ ags_dial_class_init(AgsDialClass *dial)
 				  PROP_ADJUSTMENT,
 				  param_spec);
 
+  /**
+   * AgsDial:scale-precision:
+   *
+   * The precision of the scale.
+   * 
+   * Since: 0.7.21
+   */
+  param_spec = g_param_spec_uint("scale-precision\0",
+				 "scale precision\0",
+				 "The precision of the scale\0",
+				 0,
+				 G_MAXUINT,
+				 AGS_DIAL_DEFAULT_PRECISION,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCALE_PRECISION,
+				  param_spec);
+
   /* AgsDialClass */
   dial->value_changed = NULL;
 
@@ -316,6 +335,7 @@ ags_dial_init(AgsDial *dial)
 
   dial->radius = 8;
   dial->scale_precision = AGS_DIAL_DEFAULT_PRECISION;
+  dial->scale_max_precision = AGS_DIAL_DEFAULT_PRECISION;
   dial->outline_strength = 4;
 
   dial->font_size = 6;
@@ -367,6 +387,21 @@ ags_dial_set_property(GObject *gobject,
       dial->adjustment = adjustment;
     }
     break;
+  case PROP_SCALE_PRECISION:
+    {
+      guint scale_precision;
+
+      scale_precision = g_value_get_uint(value);
+
+      if(scale_precision > dial->scale_max_precision){
+	dial->scale_precision = dial->scale_max_precision;
+      }else if(scale_precision == 0){
+	dial->scale_precision = 1;
+      }else{
+	dial->scale_precision = scale_precision;
+      }
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -386,6 +421,11 @@ ags_dial_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_ADJUSTMENT:
     g_value_set_object(value, dial->adjustment);
+    break;
+  case PROP_SCALE_PRECISION:
+    {
+      g_value_set_uint(value, dial->scale_precision);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -1099,6 +1139,28 @@ ags_dial_draw(AgsDial *dial)
     cairo_show_text (cr, "-\0");
   }
 
+  
+  if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
+    /* draw controller button up */
+    cairo_set_source_rgb(cr,
+			 dial_style->fg[0].red / white_gc,
+			 dial_style->fg[0].green / white_gc,
+			 dial_style->fg[0].blue / white_gc);
+    cairo_set_line_width(cr, 2.0);
+
+    cairo_rectangle(cr,
+		    1.0 + (2.0 * radius) + button_width + margin_left + margin_right,
+		    (2.0 * radius) - button_height + outline_strength,
+		    button_width, button_height);
+    cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
+    cairo_stroke(cr);
+
+    cairo_move_to (cr,
+		   1.0 + 0.5 - te_up.width / 2.0 - te_up.x_bearing + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
+		   0.5 - te_up.height / 2.0 - te_up.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
+    cairo_show_text (cr, "+\0");
+  }
+
   /* border fill * /
   cairo_set_source_rgb(cr,
 		       dial_style->fg[0].red / white_gc,
@@ -1250,28 +1312,6 @@ ags_dial_draw(AgsDial *dial)
 	     starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width),
 	     starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width) + scale_width);
   cairo_stroke(cr);
-
-
-  if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
-    /* draw controller button up */
-    cairo_set_source_rgb(cr,
-			 dial_style->fg[0].red / white_gc,
-			 dial_style->fg[0].green / white_gc,
-			 dial_style->fg[0].blue / white_gc);
-    cairo_set_line_width(cr, 2.0);
-
-    cairo_rectangle(cr,
-		    1.0 + (2.0 * radius) + button_width + margin_left + margin_right,
-		    (2.0 * radius) - button_height + outline_strength,
-		    button_width, button_height);
-    cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
-    cairo_stroke(cr);
-
-    cairo_move_to (cr,
-		   1.0 + 0.5 - te_up.width / 2.0 - te_up.x_bearing + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
-		   0.5 - te_up.height / 2.0 - te_up.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
-    cairo_show_text (cr, "+\0");
-  }
 
   cairo_destroy(cr);
 }

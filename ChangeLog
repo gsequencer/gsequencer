@@ -1,3 +1,9 @@
+ags (0.7.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented support for integer adjustments of LADSPA, DSSI and Lv2
+	* improved configure.ac
+
 ags (0.7.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

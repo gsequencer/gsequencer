@@ -912,6 +912,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       GtkWidget *child_widget;
       
       GType widget_type;
+
+      guint step_count;
       
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -925,6 +927,12 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       }else{
 	widget_type = AGS_TYPE_DIAL;
       }
+      
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      }
 
       /* add bulk member */
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
@@ -937,8 +945,17 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
+      }
 
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
@@ -957,11 +974,11 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,
@@ -1213,6 +1230,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	  
       GType widget_type;
 
+      guint step_count;
+      
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
 	y++;
@@ -1226,6 +1245,12 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	widget_type = AGS_TYPE_DIAL;
       }
 
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      }
+
       /* add bulk member */
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type\0", widget_type,
@@ -1237,8 +1262,17 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
+      }
 
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
@@ -1258,11 +1292,11 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,
@@ -1526,6 +1560,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	  
       GType widget_type;
 
+      guint step_count;
+      
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
 	y++;
@@ -1539,6 +1575,12 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	widget_type = AGS_TYPE_DIAL;
       }
 
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      }
+
       /* add bulk member */
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type\0", widget_type,
@@ -1550,8 +1592,17 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
+      }
 
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
@@ -1571,11 +1622,11 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,

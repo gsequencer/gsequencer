@@ -48,15 +48,21 @@ typedef enum{
   AGS_BULK_MEMBER_DEFAULT_TEMPLATE      = 1,
   AGS_BULK_MEMBER_RESET_BY_ATOMIC       = 1 << 1,
   AGS_BULK_MEMBER_RESET_BY_TASK         = 1 << 2,
-  AGS_BULK_MEMBER_APPLY_RECALL          = 1 << 3,
+  AGS_BULK_MEMBER_APPLY_RECALL          = 1 << 3,  
 }AgsBulkMemberFlags;
+
+typedef enum{
+  AGS_BULK_MEMBER_PORT_BOOLEAN   = 1,
+  AGS_BULK_MEMBER_PORT_INTEGER   = 1 <<  1,
+}AgsBulkMemberPortFlags;
 
 struct _AgsBulkMember
 {
   GtkFrame frame;
 
   guint flags;
-
+  guint port_flags;
+  
   gchar *version;
   gchar *build_id;
 
@@ -73,6 +79,8 @@ struct _AgsBulkMember
 
   gchar *control_port;
 
+  guint steps;
+  
   GList *bulk_port;
   GList *recall_bulk_port;
   

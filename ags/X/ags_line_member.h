@@ -49,12 +49,18 @@ typedef enum{
   AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 << 7,
 }AgsLineMemberFlags;
 
+typedef enum{
+  AGS_LINE_MEMBER_PORT_BOOLEAN   = 1,
+  AGS_LINE_MEMBER_PORT_INTEGER   = 1 <<  1,
+}AgsLineMemberPortFlags;
+
 struct _AgsLineMember
 {
   GtkFrame frame;
 
   guint flags;
-
+  guint port_flags;
+  
   GType widget_type;
   gchar *widget_label;
 
@@ -65,7 +71,9 @@ struct _AgsLineMember
   gchar *specifier;
 
   gchar *control_port;
-  
+
+  guint steps;
+    
   AgsPort *port;
   gpointer port_data;
   gboolean active;

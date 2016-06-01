@@ -85,6 +85,7 @@ enum{
   PROP_EFFECT,
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
+  PROP_STEPS,
   PROP_TASK_TYPE,
   PROP_BULK_PORT,
   PROP_RECALL_BULK_PORT,
@@ -260,6 +261,24 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 				  param_spec);
 
   /**
+   * AgsBulkMember:steps:
+   *
+   * If bulk member has integer ports, this is the number of steps.
+   * 
+   * Since: 0.7.21
+   */
+  param_spec = g_param_spec_uint("steps\0",
+				 "steps of bulk members port\0",
+				 "The steps this bulk members port has\0",
+				 0,
+				 G_MAXUINT,
+				 AGS_DIAL_DEFAULT_PRECISION,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STEPS,
+				  param_spec);
+
+  /**
    * AgsBulkMember:bulk-port:
    *
    * The playback bulk port to be added.
@@ -364,7 +383,8 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 
   bulk_member->flags = (AGS_BULK_MEMBER_RESET_BY_ATOMIC |
 			AGS_BULK_MEMBER_APPLY_RECALL);
-
+  bulk_member->port_flags = 0;
+  
   bulk_member->widget_type = AGS_TYPE_DIAL;
   dial = (GtkWidget *) g_object_new(AGS_TYPE_DIAL,
 				    "adjustment\0", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
@@ -385,7 +405,8 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   bulk_member->specifier = NULL;
 
   bulk_member->control_port = NULL;
-
+  bulk_member->steps = 0;
+  
   bulk_member->bulk_port = NULL;
   bulk_member->recall_bulk_port = NULL;
 
@@ -516,6 +537,24 @@ ags_bulk_member_set_property(GObject *gobject,
       }
 
       bulk_member->control_port = g_strdup(control_port);
+    }
+    break;
+  case PROP_STEPS:
+    {
+      GtkWidget *child;
+      
+      guint steps;
+
+      steps = g_value_get_uint(value);
+
+      bulk_member->steps = steps;
+      child = gtk_bin_get_child(GTK_BIN(bulk_member));
+
+      if(AGS_IS_DIAL(child)){
+	g_object_set(child,
+		     "scale-precision\0", steps,
+		     NULL);
+      }
     }
     break;
   case PROP_BULK_PORT:
