@@ -347,6 +347,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
   gchar *xpath;
   gchar *uri;
 
+  gdouble lower_value, upper_value;
   guint i;
   gboolean found_port;
   
@@ -661,29 +662,36 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
 						       xpath,
 						       port_node);
+
+      if(list != NULL){
+	port->scale_steps = g_list_length(list) - 1;
+
+	port->scale_points = malloc((port->scale_steps + 1) * sizeof(gchar *));
+	port->scale_value = malloc((port->scale_steps + 1) * sizeof(float));
       
-      port->scale_steps = g_list_length(list);
-      
-      port->scale_points = malloc(port->scale_steps * sizeof(gchar *));
-      port->scale_value = malloc(port->scale_steps * sizeof(float));
-      
-      for(i = 0; list != NULL; i++){
-	gchar *str;
+	for(i = 0; list != NULL; i++){
+	  gchar *str;
 	
-	current = (xmlNode *) list->data;
-	str = xmlNodeGetContent(current);
+	  current = (xmlNode *) list->data;
+	  str = xmlNodeGetContent(current);
 	
-	if(strlen(str) > 2){
-	  port->scale_points[i] = g_strndup(str + 1,
-					    strlen(str) - 2);
+	  if(strlen(str) > 2){
+	    port->scale_points[i] = g_strndup(str + 1,
+					      strlen(str) - 2);
+	  }
+
+	  list = list->next;
 	}
 
-	list = list->next;
-      }
+	if(list_start != NULL){
+	  g_list_free(list_start);
+	}
+      }else{
+	port->scale_steps = 0;
 
-      if(list_start != NULL){
-	g_list_free(list_start);
-      }
+	port->scale_points = NULL;
+	port->scale_value = NULL;
+      }      
       
       xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':scalePoint') + 1) = ':scalePoint']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0";
       list_start = 
@@ -716,11 +724,13 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       if(list != NULL){
 	current = (xmlNode *) list->data;
 
+	lower_value = g_ascii_strtod(xmlNodeGetContent(current),
+				     NULL);
+	
 	g_value_init(port->lower_value,
 		     G_TYPE_FLOAT);
 	g_value_set_float(port->lower_value,
-			  g_ascii_strtod(xmlNodeGetContent(current),
-					 NULL));
+			  lower_value);
 
 	g_list_free(list);
       }
@@ -734,15 +744,31 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       if(list != NULL){
 	current = (xmlNode *) list->data;
 
+	upper_value = g_ascii_strtod(xmlNodeGetContent(current),
+				     NULL);
+	
 	g_value_init(port->upper_value,
 		     G_TYPE_FLOAT);
 	g_value_set_float(port->upper_value,
-			  g_ascii_strtod(xmlNodeGetContent(current),
-					 NULL));
+			  upper_value);
 
 	g_list_free(list);
       }
 
+      /* check scale steps */
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (port->flags)) != 0 &&
+	 port->scale_steps == 0){
+	if(upper_value > 0 &&
+	   lower_value >= 0){
+	  port->scale_steps = upper_value - lower_value;
+	}else if(upper_value > 0 &&
+		 lower_value < 0){
+	  port->scale_steps = upper_value + (-1 * (lower_value));
+	}else{
+	  port->scale_steps = -1 * (lower_value - upper_value);
+	}	
+      }
+      
       /* default */
       xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':default') + 1) = ':default']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric\0";
       list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
