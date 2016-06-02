@@ -46,9 +46,10 @@ typedef struct _AgsBulkPort AgsBulkPort;
 
 typedef enum{
   AGS_BULK_MEMBER_DEFAULT_TEMPLATE      = 1,
-  AGS_BULK_MEMBER_RESET_BY_ATOMIC       = 1 << 1,
-  AGS_BULK_MEMBER_RESET_BY_TASK         = 1 << 2,
-  AGS_BULK_MEMBER_APPLY_RECALL          = 1 << 3,  
+  AGS_BULK_MEMBER_RESET_BY_ATOMIC       = 1 <<  1,
+  AGS_BULK_MEMBER_RESET_BY_TASK         = 1 <<  2,
+  AGS_BULK_MEMBER_APPLY_RECALL          = 1 <<  3,
+  AGS_BULK_MEMBER_NO_UPDATE             = 1 <<  4,
 }AgsBulkMemberFlags;
 
 typedef enum{

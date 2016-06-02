@@ -373,7 +373,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   
   g_signal_connect_after(G_OBJECT(audio), "set_pads\0",
 			 G_CALLBACK(ags_lv2_bridge_set_pads), NULL);
-
+  
   lv2_bridge->flags = 0;
 
   lv2_bridge->name = NULL;
@@ -1074,9 +1074,15 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		 "count-beats-audio-run\0", play_count_beats_audio_run,
 		 NULL);
   }
-  
+
   /* depending on destination */
   ags_lv2_bridge_input_map_recall(lv2_bridge, 0);
+
+  /* add new controls */
+  ags_effect_bulk_add_effect(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
+			     NULL,
+			     lv2_bridge->filename,
+			     lv2_bridge->effect);
 
   /* depending on destination */
   ags_lv2_bridge_output_map_recall(lv2_bridge, 0);
@@ -1316,12 +1322,6 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
     list = list->next;
   }
 
-  /* add new controls */
-  ags_effect_bulk_add_effect(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input,
-			     NULL,
-			     lv2_bridge->filename,
-			     lv2_bridge->effect);
-
   ags_lv2_bridge_load_gui(lv2_bridge);
 }
 
@@ -1360,6 +1360,6 @@ ags_lv2_bridge_new(GObject *soundcard,
 	       "filename\0", filename,
 	       "effect\0", effect,
 	       NULL);
-  
+
   return(lv2_bridge);
 }

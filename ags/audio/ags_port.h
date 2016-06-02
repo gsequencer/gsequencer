@@ -99,6 +99,7 @@ GType ags_port_get_type();
 
 void ags_port_safe_read(AgsPort *port, GValue *value);
 void ags_port_safe_write(AgsPort *port, GValue *value);
+void ags_port_safe_write_raw(AgsPort *port, GValue *value);
 
 void ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value);
 void ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);

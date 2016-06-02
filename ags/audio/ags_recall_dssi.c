@@ -400,9 +400,9 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 					current,
 					port_descriptor->data);
 
-	current->port_value.ags_port_float = (LADSPA_Data) ags_conversion_convert(current->conversion,
-										  g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
-										  FALSE);
+	current->port_value.ags_port_float = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value); // ags_conversion_convert(current->conversion,
+									     //										  g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
+									     //									     FALSE);
 	    
 	g_message("connecting port: %d/%d\0", i, port_count);      
       }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -615,11 +615,11 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 					current,
 					port_descriptor->data);
 	
-	current->port_value.ags_port_float = (LADSPA_Data) ags_conversion_convert(current->conversion,
-										  g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
-										  FALSE);
+	current->port_value.ags_port_ladspa = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value); //ags_conversion_convert(current->conversion,
+	  //										  g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
+	  //										  FALSE);
 
-	g_message("connecting port: %d/%d\0", i, port_count);
+	g_message("connecting port: %d/%d %f\0", i, port_count, current->port_value.ags_port_float);
 
 	port = g_list_prepend(port,
 			      current);
@@ -682,13 +682,31 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
   }
 
   ladspa_conversion = NULL;
+
+  if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
+    if(ladspa_conversion == NULL ||
+       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+      ladspa_conversion = ags_ladspa_conversion_new();
+    }
+
+    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
+  }
+
+  if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
+    if(ladspa_conversion == NULL ||
+       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+      ladspa_conversion = ags_ladspa_conversion_new();
+    }
+
+    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
+  }
   
   if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    ladspa_conversion = ags_ladspa_conversion_new();
-    g_object_set(port,
-	       "conversion\0", ladspa_conversion,
-	       NULL);
-    
+    if(ladspa_conversion == NULL ||
+       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+      ladspa_conversion = ags_ladspa_conversion_new();
+    }
+        
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
   }
 
@@ -696,12 +714,15 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
     if(ladspa_conversion == NULL ||
        !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
-      g_object_set(port,
-		   "conversion\0", ladspa_conversion,
-		   NULL);
     }
     
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+  }
+
+  if(ladspa_conversion != NULL){
+    g_object_set(port,
+		 "conversion\0", ladspa_conversion,
+		 NULL);
   }
 }
 
@@ -753,7 +774,7 @@ ags_recall_dssi_float_to_short(LADSPA_Data *buffer,
   new_buffer = destination;
 
   for(i = 0; i < buffer_size; i++){
-    new_buffer[i] = (signed short) (buffer[lines * i] * 32767.5f);
+    new_buffer[i] = (signed short) ((double) buffer[lines * i] * 32767.5f);
   }
 }
 

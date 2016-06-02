@@ -364,6 +364,8 @@ ags_port_init(AgsPort *port)
   port->port_value_size = sizeof(gdouble);
   port->port_value_length = 1;
 
+  port->port_value.ags_port_double = 0.0;
+  
   pthread_mutexattr_init(&mutexattr);
   pthread_mutexattr_settype(&mutexattr, PTHREAD_MUTEX_RECURSIVE);
 
@@ -654,7 +656,8 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_UINT64){
       port->port_value.ags_port_uint = g_value_get_uint64(value);
     }else if(port->port_value_type == G_TYPE_FLOAT){
-      if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0){
+      if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0 &&
+	 port->conversion != NULL){
 	port->port_value.ags_port_float = (gfloat) ags_conversion_convert(port->conversion,
 									  (double) g_value_get_float(value),
 									  FALSE);
@@ -662,7 +665,8 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
 	port->port_value.ags_port_float = (gfloat) g_value_get_float(value);
       }
     }else if(port->port_value_type == G_TYPE_DOUBLE){
-      if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0){
+      if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0 &&
+	 port->conversion != NULL){
 	port->port_value.ags_port_double = ags_conversion_convert(port->conversion,
 								  g_value_get_double(value),
 								  FALSE);
@@ -721,6 +725,67 @@ ags_port_safe_write(AgsPort *port, GValue *value)
 		port_signals[SAFE_WRITE], 0,
 		value);
   g_object_unref(G_OBJECT(port));
+}
+
+void
+ags_port_safe_write_raw(AgsPort *port, GValue *value)
+{
+  guint overall_size;
+  gpointer data;
+
+  if(port == NULL){
+    return;
+  }
+
+  overall_size = port->port_value_length * port->port_value_size;
+
+  pthread_mutex_lock(port->mutex);
+
+  if(!port->port_value_is_pointer){
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      port->port_value.ags_port_boolean = g_value_get_boolean(value);
+    }else if(port->port_value_type == G_TYPE_INT64){
+      port->port_value.ags_port_int = g_value_get_int64(value);
+    }else if(port->port_value_type == G_TYPE_UINT64){
+      port->port_value.ags_port_uint = g_value_get_uint64(value);
+    }else if(port->port_value_type == G_TYPE_FLOAT){
+      port->port_value.ags_port_float = (gfloat) g_value_get_float(value);
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      port->port_value.ags_port_double = ags_conversion_convert(port->conversion,
+								g_value_get_double(value),
+								FALSE);
+    }else if(port->port_value_type == G_TYPE_POINTER){
+      port->port_value.ags_port_pointer = g_value_get_pointer(value);
+    }else if(port->port_value_type == G_TYPE_OBJECT){
+      port->port_value.ags_port_object = g_value_get_object(value);
+    }else{
+      g_warning("ags_port.c: unknown type\0");
+    }
+  }else{
+    data = g_value_get_pointer(value);
+
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      memcpy(port->port_value.ags_port_boolean_ptr, data, overall_size);
+    }else if(port->port_value_type == G_TYPE_INT64){
+      memcpy(port->port_value.ags_port_int_ptr, data, overall_size);
+    }else if(port->port_value_type == G_TYPE_UINT64){
+      memcpy(port->port_value.ags_port_uint_ptr, data, overall_size);
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      memcpy(port->port_value.ags_port_double_ptr, data, overall_size);
+    }else if(port->port_value_type == G_TYPE_POINTER){
+      port->port_value.ags_port_pointer = data;
+    }else{
+      data = g_value_get_object(value);
+
+      if(port->port_value_type == G_TYPE_OBJECT){
+	port->port_value.ags_port_object = data;
+      }else{
+	g_warning("ags_port.c: unknown type\0");
+      }
+    }
+  }
+
+  pthread_mutex_unlock(port->mutex);
 }
 
 void
