@@ -21,6 +21,8 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/lib/ags_endian.h>
+
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_connectable.h>
@@ -34,6 +36,8 @@
 #include <ags/file/ags_file_id_ref.h>
 
 #include <ags/audio/ags_port.h>
+
+#include <endian.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -611,16 +615,13 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 			       "port-value-is-pointer\0", FALSE,
 			       "port-value-type\0", G_TYPE_FLOAT,
 			       NULL);
-
+	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
+	
 	ags_recall_dssi_load_conversion(recall_dssi,
 					current,
 					port_descriptor->data);
 	
-	current->port_value.ags_port_ladspa = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
-	//	ags_conversion_convert(current->conversion,
-	//		       g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
-	//		       FALSE);
-
+	current->port_value.ags_port_ladspa = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
 	//	g_message("connecting port: %d/%d %f\0", i, port_count, current->port_value.ags_port_float);
 
 	port = g_list_prepend(port,

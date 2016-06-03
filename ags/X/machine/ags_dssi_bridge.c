@@ -309,7 +309,8 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
   dssi_bridge->filename = NULL;
   dssi_bridge->effect = NULL;
   dssi_bridge->effect_index = 0;
-  
+
+  dssi_bridge->port_values = NULL;
   dssi_bridge->dssi_descriptor = NULL;
   
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
@@ -469,8 +470,8 @@ ags_dssi_bridge_connect(AgsConnectable *connectable)
 
   dssi_bridge = AGS_DSSI_BRIDGE(connectable);
 
-  g_signal_connect(G_OBJECT(dssi_bridge->program), "changed\0",
-		   G_CALLBACK(ags_dssi_bridge_program_changed_callback), dssi_bridge);
+  g_signal_connect_after(G_OBJECT(dssi_bridge->program), "changed\0",
+			 G_CALLBACK(ags_dssi_bridge_program_changed_callback), dssi_bridge);
 }
 
 void
@@ -1122,24 +1123,37 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 
       dssi_bridge->ladspa_handle = plugin_descriptor->LADSPA_Plugin->instantiate(plugin_descriptor->LADSPA_Plugin,
 										 samplerate);
-
+      g_message("%d\0", samplerate);
       port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
       port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
 
-      dssi_bridge->port_values = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
+      dssi_bridge->port_values = (LADSPA_Data *) malloc(plugin_descriptor->LADSPA_Plugin->PortCount * sizeof(LADSPA_Data));
       
       for(i = 0; i < port_count; i++){
 	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	    AgsDssiPlugin *dssi_plugin;
+
 	    GList *list;
-	    LADSPA_Data *port_data;
-	    gchar *plugin_name;
+
 	    gchar *specifier;
+	    
+	    dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_bridge->filename, dssi_bridge->effect);
 
-	    hint_descriptor = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].HintDescriptor;
-	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
+	    list = AGS_BASE_PLUGIN(dssi_plugin)->port;
+ 	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
 
+	    while(list != NULL){
+	      if(!g_strcmp0(specifier,
+			    AGS_PORT_DESCRIPTOR(list->data)->port_name)){
+		dssi_bridge->port_values[i] = g_value_get_float(AGS_PORT_DESCRIPTOR(list->data)->default_value);
+		break;
+	      }
+
+	      list = list->next;
+	    }
+	    
 	    plugin_descriptor->LADSPA_Plugin->connect_port(dssi_bridge->ladspa_handle,
 							   i,
 							   &(dssi_bridge->port_values[i]));

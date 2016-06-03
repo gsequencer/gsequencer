@@ -19,6 +19,8 @@
 
 #include <ags/X/machine/ags_dssi_bridge_callbacks.h>
 
+#include <ags/lib/ags_endian.h>
+
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
@@ -34,26 +36,24 @@
 void
 ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *dssi_bridge)
 {
-  AgsLadspaConversion *ladspa_conversion;
-
-  GList *bulk_member, *bulk_member_start;
-  
-  gchar *name;
-  unsigned long bank, program;
-
   GtkTreeIter iter;
 
   if(gtk_combo_box_get_active_iter(combo_box,
 				   &iter)){
+    AgsLadspaConversion *ladspa_conversion;
+
     AgsChannel *channel;
-    
+   
+    GList *bulk_member, *bulk_member_start;
     GList *recall;
     GList *port;
-
+  
+    gchar *name;
     gchar *specifier;
     
     LADSPA_PortDescriptor *port_descriptor;
 
+    guint bank, program;
     unsigned long i;
 
     gboolean initial_run;
@@ -64,10 +64,9 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 		       1, &bank,
 		       2, &program,
 		       -1);
-
     dssi_bridge->dssi_descriptor->select_program(dssi_bridge->ladspa_handle,
-						 bank,
-						 program);
+						 (unsigned long) bank,
+						 (unsigned long) program);
 
 
 #ifdef AGS_DEBUG
@@ -84,37 +83,37 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
       recall = channel->recall;
 
       while((recall = ags_recall_find_type(recall, AGS_TYPE_RECALL_DSSI)) != NULL){
-	AGS_RECALL_DSSI(recall->data)->bank = bank;
-	AGS_RECALL_DSSI(recall->data)->program = program;
+	AGS_RECALL_DSSI(recall->data)->bank = (unsigned long) bank;
+	AGS_RECALL_DSSI(recall->data)->program = (unsigned long) program;
       
 	for(i = 0; i < dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
-	  if((LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
-	      (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	       LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
-	    specifier = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
-	    port = AGS_RECALL(recall->data)->port;
+	  if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
+	    if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
+	       LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+	      specifier = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
+	      port = AGS_RECALL(recall->data)->port;
 
-	    while(port != NULL){
-	      if(!g_strcmp0(AGS_PORT(port->data)->specifier,
-			    specifier)){
-		GValue value = {0,};
-		float port_value;
-		
-		port_value = (float) dssi_bridge->port_values[i];
-		//		g_message("%f\0", dssi_bridge->port_values[i]);
-		
-		g_value_init(&value,
-			     G_TYPE_FLOAT);
-		g_value_set_float(&value,
-				  port_value);
+	      while(port != NULL){
+		if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+			      specifier)){
+		  GValue value = {0,};
 
-		ags_port_safe_write_raw(port->data,
-					&value);
+#ifdef AGS_DEBUG
+		  g_message("%s %f\0", specifier, dssi_bridge->port_values[i]);
+#endif
+		  
+		  g_value_init(&value,
+			       G_TYPE_FLOAT);
+		  g_value_set_float(&value,
+				    dssi_bridge->port_values[i]);
+		  ags_port_safe_write_raw(port->data,
+					  &value);
 		
-		break;
-	      }
+		  break;
+		}
 	
-	      port = port->next;
+		port = port->next;
+	      }
 	    }
 	  }
 	}
@@ -129,12 +128,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     bulk_member_start = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
   
     for(i = 0; i < dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
-      AgsDssiPlugin *dssi_plugin;
-      AgsPortDescriptor *port_descriptor;
-      
-      dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_bridge->filename, dssi_bridge->effect);
-      port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;      
-
       /* find bulk member */
       bulk_member = bulk_member_start;
 

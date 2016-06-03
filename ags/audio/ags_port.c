@@ -658,11 +658,24 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_FLOAT){
       if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0 &&
 	 port->conversion != NULL){
-	port->port_value.ags_port_float = (gfloat) ags_conversion_convert(port->conversion,
-									  (double) g_value_get_float(value),
-									  FALSE);
+	if((AGS_PORT_USE_LADSPA_FLOAT & (port->flags)) == 0){
+	  port->port_value.ags_port_float = (gfloat) ags_conversion_convert(port->conversion,
+									    (double) g_value_get_float(value),
+									    FALSE);
+	}else{
+	  LADSPA_Data val;
+	  
+	  val = g_value_get_float(value);
+	  port->port_value.ags_port_ladspa = (LADSPA_Data) ags_conversion_convert(port->conversion,
+										  (double) val,
+										  FALSE);
+	}
       }else{
-	port->port_value.ags_port_float = (gfloat) g_value_get_float(value);
+	if((AGS_PORT_USE_LADSPA_FLOAT & (port->flags)) == 0){
+	  port->port_value.ags_port_float = (gfloat) g_value_get_float(value);
+	}else{
+	  port->port_value.ags_port_ladspa = (LADSPA_Data) g_value_get_float(value);
+	}
       }
     }else if(port->port_value_type == G_TYPE_DOUBLE){
       if((AGS_PORT_CONVERT_ALWAYS & (port->flags)) != 0 &&
@@ -749,11 +762,13 @@ ags_port_safe_write_raw(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_UINT64){
       port->port_value.ags_port_uint = g_value_get_uint64(value);
     }else if(port->port_value_type == G_TYPE_FLOAT){
-      port->port_value.ags_port_float = (gfloat) g_value_get_float(value);
+      if((AGS_PORT_USE_LADSPA_FLOAT & (port->flags)) == 0){
+	port->port_value.ags_port_float = (gfloat) g_value_get_float(value);
+      }else{
+	port->port_value.ags_port_ladspa = (LADSPA_Data) g_value_get_float(value);
+      }
     }else if(port->port_value_type == G_TYPE_DOUBLE){
-      port->port_value.ags_port_double = ags_conversion_convert(port->conversion,
-								g_value_get_double(value),
-								FALSE);
+      port->port_value.ags_port_double = g_value_get_double(value);
     }else if(port->port_value_type == G_TYPE_POINTER){
       port->port_value.ags_port_pointer = g_value_get_pointer(value);
     }else if(port->port_value_type == G_TYPE_OBJECT){

@@ -188,6 +188,7 @@ libags_h_sources = \
 	$(deprecated_libags_h_sources) \
 	ags/lib/ags_complex.h \
 	ags/lib/ags_conversion.h \
+	ags/lib/ags_endian.h \
 	ags/lib/ags_function.h \
 	ags/lib/ags_parameter.h \
 	ags/lib/ags_string_util.h \
@@ -201,6 +202,7 @@ libags_c_sources = \
 	$(deprecated_libags_c_sources) \
 	ags/lib/ags_complex.c \
 	ags/lib/ags_conversion.c \
+	ags/lib/ags_endian.c \
 	ags/lib/ags_function.c \
 	ags/lib/ags_parameter.c \
 	ags/lib/ags_string_util.c \
