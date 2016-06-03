@@ -406,6 +406,8 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 
   bulk_member->control_port = NULL;
   bulk_member->steps = 0;
+
+  bulk_member->conversion = NULL;
   
   bulk_member->bulk_port = NULL;
   bulk_member->recall_bulk_port = NULL;

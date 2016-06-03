@@ -813,6 +813,8 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	    if(recall_dssi_run->event_buffer == NULL){
 	      struct timeval tv;
 
+	      recall_dssi_run->route_dssi_audio_run = route_dssi_audio_run;
+	      
 	      /* key on */
 	      seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
 	      snd_midi_event_reset_encode(seq_event);	      
@@ -851,7 +853,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	      seq_event->type = SND_SEQ_EVENT_NOTEON;
 
 	      seq_event->data.note.channel = 0;
-	      seq_event->data.note.note = 0x7f & (channel->pad);
+	      seq_event->data.note.note = 0x7f & (selected_channel->pad);
 	      seq_event->data.note.velocity = 127;
 
 	      AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->audio_channel = audio_channel;
@@ -927,8 +929,8 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
   
-    channel = ags_channel_nth(audio->input,
-			      audio_channel);
+  channel = ags_channel_nth(audio->input,
+			    audio_channel);
 
   pthread_mutex_lock(audio_mutex);
 

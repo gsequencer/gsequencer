@@ -24,9 +24,12 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/thread/ags_task.h>
+
+#include <ags/lib/ags_conversion.h>
+
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_port.h>
-#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_BULK_MEMBER                (ags_bulk_member_get_type())
 #define AGS_BULK_MEMBER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BULK_MEMBER, AgsBulkMember))
@@ -37,7 +40,7 @@
 
 #define AGS_BULK_PORT(ptr) ((AgsBulkPort *)(ptr))
 
-#define AGS_BULK_MEMBER_DEFAULT_VERSION "0.7.8\0"
+#define AGS_BULK_MEMBER_DEFAULT_VERSION "0.7.21\0"
 #define AGS_BULK_MEMBER_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
 
 typedef struct _AgsBulkMember AgsBulkMember;
@@ -81,6 +84,8 @@ struct _AgsBulkMember
   gchar *control_port;
 
   guint steps;
+
+  AgsConversion *conversion;
   
   GList *bulk_port;
   GList *recall_bulk_port;

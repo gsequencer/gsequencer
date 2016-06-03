@@ -39,6 +39,10 @@
 #endif 
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_dssi_plugin.h>
+#include <ags/plugin/ags_ladspa_conversion.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -945,6 +949,10 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
+
+      AgsLadspaConversion *ladspa_conversion;
+
+      LADSPA_Data default_value;
       
       GType widget_type;
 
@@ -984,6 +992,47 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
+      /* ladspa conversion */
+      ladspa_conversion = NULL;
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
+      }
+      if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+    
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+      }
+
+      bulk_member->conversion = ladspa_conversion;
+      
+      /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
       }
@@ -994,15 +1043,17 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
+
 	GtkAdjustment *adjustment;
-	float lower_bound, upper_bound;
+
+	LADSPA_Data lower_bound, upper_bound;
 	
 	dial = child_widget;
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
-
+	
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
 		     "adjustment", adjustment,
@@ -1022,8 +1073,18 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 				 lower_bound);
 	gtk_adjustment_set_upper(adjustment,
 				 upper_bound);
+
+
+	default_value = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+
+	if(ladspa_conversion != NULL){
+	  //	  default_value = ags_ladspa_conversion_convert(ladspa_conversion,
+	  //						default_value,
+	  //						TRUE);
+	}
+	
 	gtk_adjustment_set_value(adjustment,
-				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+				 default_value);
       }
 
 #ifdef AGS_DEBUG
@@ -1289,7 +1350,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
-	  
+
+      AgsLadspaConversion *ladspa_conversion;
+      
       GType widget_type;
 
       guint step_count;
@@ -1328,6 +1391,47 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
+      /* ladspa conversion */
+      ladspa_conversion = NULL;
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
+      }
+      if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+    
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+      }
+
+      bulk_member->conversion = ladspa_conversion;
+
+      /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
       }
@@ -1340,7 +1444,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	AgsDial *dial;
 	GtkAdjustment *adjustment;
 
-	float lower_bound, upper_bound;
+	LADSPA_Data lower_bound, upper_bound;
 	LADSPA_Data default_value;
 	
 	dial = child_widget;
@@ -1370,14 +1474,22 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 				 upper_bound);
 
 	default_value = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+
+	if(ladspa_conversion != NULL){
+	  //	  default_value = ags_ladspa_conversion_convert(ladspa_conversion,
+	  //						default_value,
+	  //						TRUE);
+	}
+	
 	g_message(":: %f\0", default_value);
 	gtk_adjustment_set_value(adjustment,
 				 default_value);
+
+	//#ifdef AGS_DEBUG
+	g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
+	//#endif
       }
 
-#ifdef AGS_DEBUG
-      g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
-#endif
 	  
       /* create task */
       add_bulk_member = ags_add_bulk_member_new(effect_bulk,

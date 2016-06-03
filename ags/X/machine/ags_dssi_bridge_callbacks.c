@@ -101,13 +101,13 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 		float port_value;
 		
 		port_value = (float) dssi_bridge->port_values[i];
+		//		g_message("%f\0", dssi_bridge->port_values[i]);
 		
 		g_value_init(&value,
 			     G_TYPE_FLOAT);
 		g_value_set_float(&value,
 				  port_value);
 
-		g_message("%f\0", dssi_bridge->port_values[i]);
 		ags_port_safe_write_raw(port->data,
 					&value);
 		
@@ -133,45 +133,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
       AgsPortDescriptor *port_descriptor;
       
       dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_bridge->filename, dssi_bridge->effect);
-      port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
-      
-      /* ladspa conversion */
-      ladspa_conversion = NULL;
-
-      if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-	if(ladspa_conversion == NULL ||
-	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-	  ladspa_conversion = ags_ladspa_conversion_new();
-	}
-
-	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
-      }
-
-      if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-	if(ladspa_conversion == NULL ||
-	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-	  ladspa_conversion = ags_ladspa_conversion_new();
-	}
-
-	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
-      }
-      if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-	if(ladspa_conversion == NULL ||
-	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-	  ladspa_conversion = ags_ladspa_conversion_new();
-	}
-
-	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
-      }
-
-      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-	if(ladspa_conversion == NULL ||
-	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-	  ladspa_conversion = ags_ladspa_conversion_new();
-	}
-    
-	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
-      }
+      port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;      
 
       /* find bulk member */
       bulk_member = bulk_member_start;
@@ -187,11 +149,13 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	   !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier,
 		      specifier)){
 	  GtkWidget *child_widget;
-	
+
 	  AGS_BULK_MEMBER(bulk_member->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
 
 	  child_widget = gtk_bin_get_child(AGS_BULK_MEMBER(bulk_member->data));
-
+	  
+	  ladspa_conversion = AGS_BULK_MEMBER(bulk_member->data)->conversion;
+	  
 	  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 	    if(dssi_bridge->port_values[i] == 0.0){
 	      gtk_toggle_button_set_active(child_widget,
@@ -201,14 +165,17 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 					   TRUE);
 	    }
 	  }else if(AGS_IS_DIAL(child_widget)){
+	    gdouble val;
+
+	    val = dssi_bridge->port_values[i];
+	    
 	    if(ladspa_conversion != NULL){
-	      AGS_DIAL(child_widget)->adjustment->value = ags_ladspa_conversion_convert(ladspa_conversion,
-											dssi_bridge->port_values[i],
-											TRUE);
-	    }else{
-	      AGS_DIAL(child_widget)->adjustment->value = dssi_bridge->port_values[i];
+	      //	      val = ags_ladspa_conversion_convert(ladspa_conversion,
+	      //				  dssi_bridge->port_values[i],
+	      //				  TRUE);
 	    }
 	    
+	    AGS_DIAL(child_widget)->adjustment->value = val;
 	    ags_dial_draw(child_widget);
 
 #ifdef AGS_DEBUG
@@ -222,11 +189,6 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	}
 
 	bulk_member = bulk_member->next;
-      }
-    
-      /* unref ladspa conversion */
-      if(ladspa_conversion != NULL){
-	g_object_unref(ladspa_conversion);
       }
     }
 

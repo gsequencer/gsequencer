@@ -34,6 +34,8 @@
 #define AGS_IS_MACHINE_SELECTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MACHINE_SELECTION))
 #define AGS_MACHINE_SELECTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_MACHINE_SELECTION, AgsMachineSelectionClass))
 
+#define AGS_MACHINE_SELECTION_INDEX "ags-machine-selection-index\0"
+
 typedef struct _AgsMachineSelection AgsMachineSelection;
 typedef struct _AgsMachineSelectionClass AgsMachineSelectionClass;
 

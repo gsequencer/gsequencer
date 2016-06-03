@@ -4,6 +4,7 @@ ags (0.7.21)
 	* implemented support for integer adjustments of LADSPA, DSSI and Lv2
 	* improved configure.ac
 	* fixed DSSI playback
+	* todo notation loop
 
 ags (0.7.20)
 

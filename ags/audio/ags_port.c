@@ -351,7 +351,7 @@ ags_port_init(AgsPort *port)
 {
   pthread_mutexattr_t mutexattr;
 
-  port->flags = AGS_PORT_CONVERT_ALWAYS;
+  port->flags = 0; // AGS_PORT_CONVERT_ALWAYS;
   
   port->plugin_name = NULL;
   port->specifier = NULL;

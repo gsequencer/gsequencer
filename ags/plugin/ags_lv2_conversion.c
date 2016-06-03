@@ -142,7 +142,7 @@ ags_lv2_conversion_new()
 {
   AgsLv2Conversion *conversion;
   
-  conversion = g_object_new(AGS_TYPE_CONVERSION,
+  conversion = g_object_new(AGS_TYPE_LV2_CONVERSION,
 			    NULL);
 
   return(conversion);
