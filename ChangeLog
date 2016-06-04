@@ -3,8 +3,8 @@ ags (0.7.21)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented support for integer adjustments of LADSPA, DSSI and Lv2
 	* improved configure.ac
-	* fixed DSSI playback
-	* todo notation loop
+	* fixed DSSI playback and bank selection
+	* fixed finding AgsBulkMember ports
 
 ags (0.7.20)
 
