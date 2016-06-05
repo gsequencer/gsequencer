@@ -722,6 +722,8 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
 
   effect_plugin->filename = filename;
   effect_plugin->effect = effect;
+
+  effect_plugin->control_type_name = NULL;
   
   return(effect_plugin);
 }
@@ -736,8 +738,10 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   AgsBulkMember *bulk_member;
   AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
-  GtkAdjustment *adjustment;
 
+  GtkAdjustment *adjustment;
+  AgsEffectBulkPlugin *effect_bulk_plugin;
+  
   AgsChannel *current;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
@@ -763,10 +767,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   guint x, y;
   guint i, j;
   guint k;
+
+  effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
+						    effect);
+  effect_bulk_plugin->control_type_name = control_type_name;
   
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
-				      ags_effect_bulk_plugin_alloc(filename,
-								   effect));
+				      effect_bulk_plugin);
 
   window = gtk_widget_get_ancestor(effect_bulk,
 				   AGS_TYPE_WINDOW);
@@ -1137,8 +1144,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   AgsBulkMember *bulk_member;
   AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
+  
   GtkAdjustment *adjustment;
-
+  AgsEffectBulkPlugin *effect_bulk_plugin;
+  
   AgsChannel *current;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
@@ -1164,10 +1173,13 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   guint x, y;
   guint i, j;
   guint k;
+
+  effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
+						    effect);
+  effect_bulk_plugin->control_type_name = control_type_name;
   
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
-				      ags_effect_bulk_plugin_alloc(filename,
-								   effect));
+				      effect_bulk_plugin);
 
   window = gtk_widget_get_ancestor(effect_bulk,
 				   AGS_TYPE_WINDOW);
@@ -1541,8 +1553,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   AgsBulkMember *bulk_member;
   AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
+  
   GtkAdjustment *adjustment;
-
+  AgsEffectBulkPlugin *effect_bulk_plugin;
+  
   AgsChannel *current;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
@@ -1577,9 +1591,12 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   
   float lower_bound, upper_bound, default_bound;
 
+  effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
+						    effect);
+  effect_bulk_plugin->control_type_name = control_type_name;
+  
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
-				      ags_effect_bulk_plugin_alloc(filename,
-								   effect));
+				      effect_bulk_plugin);
 
   window = gtk_widget_get_ancestor(effect_bulk,
 				   AGS_TYPE_WINDOW);

@@ -102,6 +102,8 @@ struct _AgsEffectBulkPlugin
 {
   gchar *filename;
   gchar *effect;
+  
+  GList *control_type_name;
 };
 
 GType ags_effect_bulk_get_type(void);

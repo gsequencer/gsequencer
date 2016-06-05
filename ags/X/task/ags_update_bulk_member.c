@@ -26,6 +26,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_ladspa.h>
+#include <ags/audio/ags_recall_dssi.h>
 #include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_port.h>
 
@@ -220,7 +221,75 @@ ags_update_bulk_member_launch(AgsTask *task)
 	//TODO:JK: verify list order
 	k = 0;
 
+	/* play */
 	play = current->play;
+	
+	while((play = ags_recall_template_find_all_type(recall,
+							AGS_TYPE_RECALL_LADSPA,
+							AGS_TYPE_RECALL_DSSI,
+							AGS_TYPE_RECALL_LV2,
+							G_TYPE_NONE)) != NULL){
+	  gboolean apply_port;
+
+	  apply_port = FALSE;
+	  
+	  if(AGS_IS_RECALL_LADSPA(play->data)){
+	    if(!g_strcmp0(AGS_RECALL_LADSPA(play->data)->filename,
+			  update_bulk_member->bulk_member->filename) &&
+	       !g_strcmp0(AGS_RECALL_LADSPA(play->data)->effect,
+			  update_bulk_member->bulk_member->effect)){
+	      apply_port = TRUE;
+	    }else{
+	      k += g_list_length(AGS_RECALL(recall->data)->port);
+	    }
+	  }else if(AGS_IS_RECALL_DSSI(play->data)){
+	    if(!g_strcmp0(AGS_RECALL_DSSI(play->data)->filename,
+			  update_bulk_member->bulk_member->filename) &&
+	       !g_strcmp0(AGS_RECALL_DSSI(play->data)->effect,
+			  update_bulk_member->bulk_member->effect)){
+	      apply_port = TRUE;
+	    }else{
+	      k += g_list_length(AGS_RECALL(recall->data)->port);
+	    }
+	  }else if(AGS_IS_RECALL_LV2(play->data)){
+	    if(!g_strcmp0(AGS_RECALL_LV2(play->data)->filename,
+			  update_bulk_member->bulk_member->filename) &&
+	       !g_strcmp0(AGS_RECALL_LV2(play->data)->effect,
+			  update_bulk_member->bulk_member->effect)){
+	      apply_port = TRUE;
+	    }else{
+	      k += g_list_length(AGS_RECALL(recall->data)->port);
+	    }
+	  }
+
+	  /* found effect and filename */
+	  if(apply_port){
+	    port = AGS_RECALL(play->data)->port;
+
+	    while(port != NULL){
+	      bulk_port = ags_bulk_port_alloc(port->data);
+
+	      if(k != 0){
+		update_bulk_member->bulk_member->bulk_port = g_list_insert(update_bulk_member->bulk_member->bulk_port,
+									   bulk_port,
+									   k);
+	      }else{
+		update_bulk_member->bulk_member->bulk_port = g_list_prepend(update_bulk_member->bulk_member->bulk_port,
+									    bulk_port);
+	      }
+		
+	      k++;
+	      port = port->next;
+	    }
+
+	    break;
+	  }
+
+	  /* iterate */
+	  play = play->next;
+	}
+
+	/* recall */
 	recall = current->recall;
 	
 	while((play = ags_recall_template_find_type(play, AGS_TYPE_RECALL_LADSPA)) != NULL){
@@ -228,86 +297,67 @@ ags_update_bulk_member_launch(AgsTask *task)
 						     AGS_TYPE_RECALL_LADSPA,
 						     AGS_TYPE_RECALL_LV2,
 						     G_TYPE_NONE);
-	   
+	  gboolean apply_port;
+
+	  apply_port = FALSE;
+	  
 	  if(AGS_IS_RECALL_LADSPA(play->data)){
 	    if(!g_strcmp0(AGS_RECALL_LADSPA(play->data)->filename,
 			  update_bulk_member->bulk_member->filename) &&
 	       !g_strcmp0(AGS_RECALL_LADSPA(play->data)->effect,
 			  update_bulk_member->bulk_member->effect)){
-	      port = AGS_RECALL(play->data)->port;
-	      recall_port = AGS_RECALL(recall->data)->port;
-
-	      while(port != NULL){
-		bulk_port = ags_bulk_port_alloc(port->data);
-		recall_bulk_port = ags_bulk_port_alloc(recall_port->data);
-		
-		if(k != 0){
-		  update_bulk_member->bulk_member->bulk_port = g_list_insert(update_bulk_member->bulk_member->bulk_port,
-									     bulk_port,
-									     k);
-
-		  update_bulk_member->bulk_member->recall_bulk_port = g_list_insert(update_bulk_member->bulk_member->recall_bulk_port,
-										    recall_bulk_port,
-										    k);
-		}else{
-		  update_bulk_member->bulk_member->bulk_port = g_list_prepend(update_bulk_member->bulk_member->bulk_port,
-									      bulk_port);
-
-		  update_bulk_member->bulk_member->recall_bulk_port = g_list_prepend(update_bulk_member->bulk_member->recall_bulk_port,
-										     recall_bulk_port);
-		}
-		
-		k++;
-		port = port->next;
-		recall_port = recall_port->next;
-	      }
-
-	      break;
+	      apply_port = TRUE;
+	    }else{
+	      k += g_list_length(AGS_RECALL(recall->data)->port);
+	    }
+	  }else if(AGS_IS_RECALL_DSSI(play->data)){
+	    if(!g_strcmp0(AGS_RECALL_DSSI(play->data)->filename,
+			  update_bulk_member->bulk_member->filename) &&
+	       !g_strcmp0(AGS_RECALL_DSSI(play->data)->effect,
+			  update_bulk_member->bulk_member->effect)){
+	      apply_port = TRUE;
 	    }else{
 	      k += g_list_length(AGS_RECALL(recall->data)->port);
 	    }
 	  }else if(AGS_IS_RECALL_LV2(play->data)){
 	    if(!g_strcmp0(AGS_RECALL_LV2(play->data)->filename,
 			  update_bulk_member->bulk_member->filename) &&
-	       !g_strcmp0(AGS_RECALL_LV2(play->data)->uri,
+	       !g_strcmp0(AGS_RECALL_LV2(play->data)->effect,
 			  update_bulk_member->bulk_member->effect)){
-	      port = AGS_RECALL(play->data)->port;
-	      recall_port = AGS_RECALL(recall->data)->port;
-
-	      while(port != NULL){
-		bulk_port = ags_bulk_port_alloc(port->data);
-		recall_bulk_port = ags_bulk_port_alloc(recall_port->data);
-
-		if(k != 0){
-		  update_bulk_member->bulk_member->bulk_port = g_list_insert(update_bulk_member->bulk_member->bulk_port,
-									     bulk_port,
-									     k);
-		  update_bulk_member->bulk_member->recall_bulk_port = g_list_insert(update_bulk_member->bulk_member->recall_bulk_port,
-										    recall_bulk_port,
-										    k);
-		}else{
-		  update_bulk_member->bulk_member->bulk_port = g_list_prepend(update_bulk_member->bulk_member->bulk_port,
-									      bulk_port);
-		  update_bulk_member->bulk_member->recall_bulk_port = g_list_prepend(update_bulk_member->bulk_member->recall_bulk_port,
-										     recall_bulk_port);
-		}
-		
-		k++;
-		port = port->next;
-		recall_port = recall_port->next;
-	      }
-
-	      break;
+	      apply_port = TRUE;
 	    }else{
 	      k += g_list_length(AGS_RECALL(recall->data)->port);
 	    }
 	  }
 
-	  
-	  play = play->next;
+	  /* found effect and filename */
+	  if(apply_port){
+	    recall_port = AGS_RECALL(recall->data)->port;
+
+	    while(port != NULL){
+	      recall_bulk_port = ags_bulk_port_alloc(recall_port->data);
+
+	      if(k != 0){
+		update_bulk_member->bulk_member->recall_bulk_port = g_list_insert(update_bulk_member->bulk_member->recall_bulk_port,
+										  recall_bulk_port,
+										  k);
+	      }else{
+		update_bulk_member->bulk_member->recall_bulk_port = g_list_prepend(update_bulk_member->bulk_member->recall_bulk_port,
+										   recall_bulk_port);
+	      }
+		
+	      k++;
+	      recall_port = recall_port->next;
+	    }
+
+	    break;
+	  }
+
+	  /* iterate */
 	  recall = recall->next;
 	}
 
+	/* iterate */
 	current = current->next;
       }
     }
@@ -326,73 +376,119 @@ ags_update_bulk_member_launch(AgsTask *task)
       
       for(j = audio_channels_old; j < audio_channels; j++){
 	//TODO:JK: verify list order
-	recall = current->recall;
 	play = current->play;
 
 	k = 0;
 	
 	while(play != NULL){
+	  gboolean remove_port;
+
+	  remove_port = FALSE;
+	  
 	  if(AGS_IS_RECALL_LADSPA(play->data)){
 	    if(!g_strcmp0(AGS_RECALL_LADSPA(play->data)->filename,
 			  update_bulk_member->bulk_member->filename) &&
 	       !g_strcmp0(AGS_RECALL_LADSPA(play->data)->effect,
 			  update_bulk_member->bulk_member->effect)){
-	      list = update_bulk_member->bulk_member->bulk_port;
-	    
-	      while(list != NULL){
-		list_next = list->next;
-		port = AGS_RECALL(recall->data)->port;
-	    
-		while(port != NULL){
-		  if(!g_strcmp0(AGS_PORT(port->data)->specifier,
-				update_bulk_member->bulk_member->specifier)){
-		    goto ags_update_bulk_member_launch_REMOVE_LADSPA_CURRENT_END;
-		  }
-		
-		  port = port->next;
-		}
-	      
-		update_bulk_member->bulk_member->bulk_port = g_list_remove(update_bulk_member->bulk_member->bulk_port,
-									   list->data);
-	      
-	      ags_update_bulk_member_launch_REMOVE_LADSPA_CURRENT_END:
-		list = list_next;
-	      }
+	      remove_port = TRUE;
 	    }
 	  }else if(AGS_IS_RECALL_LV2(play->data)){
 	    if(!g_strcmp0(AGS_RECALL_LV2(play->data)->filename,
 			  update_bulk_member->bulk_member->filename) &&
-	       !g_strcmp0(AGS_RECALL_LV2(play->data)->uri,
+	       !g_strcmp0(AGS_RECALL_LV2(play->data)->effect,
 			  update_bulk_member->bulk_member->effect)){
-	      list = update_bulk_member->bulk_member->bulk_port;
-	    
-	      while(list != NULL){
-		list_next = list->next;
-		port = AGS_RECALL(recall->data)->port;
-	    
-		while(port != NULL){
-		  if(!g_strcmp0(AGS_PORT(port->data)->specifier,
-				update_bulk_member->bulk_member->specifier)){
-		    goto ags_update_bulk_member_launch_REMOVE_LV2_CURRENT_END;
-		  }
-		
-		  port = port->next;
-		}
-	      
-		update_bulk_member->bulk_member->bulk_port = g_list_remove(update_bulk_member->bulk_member->bulk_port,
-									   list->data);
-	      
-	      ags_update_bulk_member_launch_REMOVE_LV2_CURRENT_END:
-		list = list_next;
-	      }
+	      remove_port = TRUE;
 	    }
 	  }
 
+	  if(remove_port){
+	    list = update_bulk_member->bulk_member->bulk_port;
+	    
+	    while(list != NULL){
+	      list_next = list->next;
+	      port = AGS_RECALL(recall->data)->port;
+	    
+	      while(port != NULL){
+		if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+			      update_bulk_member->bulk_member->specifier)){
+		  goto ags_update_bulk_member_launch_REMOVE_LADSPA_CURRENT_END;
+		}
+		
+		port = port->next;
+	      }
+	      
+	      update_bulk_member->bulk_member->bulk_port = g_list_remove(update_bulk_member->bulk_member->bulk_port,
+									 list->data);
+	      
+	    ags_update_bulk_member_launch_REMOVE_LADSPA_CURRENT_END:
+	      list = list_next;
+	    }
+	  }
 	  
 	  play = play->next;
-	  recall = recall->next;
 	}
 
+	/* recall */
+	recall = current->recall;
+	
+	k = 0;
+	
+	while(recall != NULL){
+	  gboolean remove_port;
+
+	  remove_port = FALSE;
+	  
+	  if(AGS_IS_RECALL_LADSPA(recall->data)){
+	    if(!g_strcmp0(AGS_RECALL_LADSPA(recall->data)->filename,
+			  update_bulk_member->bulk_member->filename) &&
+	       !g_strcmp0(AGS_RECALL_LADSPA(recall->data)->effect,
+			  update_bulk_member->bulk_member->effect)){
+	      remove_port = TRUE;
+	    }
+	  }else if(AGS_IS_RECALL_DSSI(recall->data)){
+	    if(!g_strcmp0(AGS_RECALL_DSSI(recall->data)->filename,
+			  update_bulk_member->bulk_member->filename) &&
+	       !g_strcmp0(AGS_RECALL_DSSI(recall->data)->effect,
+			  update_bulk_member->bulk_member->effect)){
+	      remove_port = TRUE;
+	    }
+	  }else if(AGS_IS_RECALL_LV2(recall->data)){
+	    if(!g_strcmp0(AGS_RECALL_LV2(recall->data)->filename,
+			  update_bulk_member->bulk_member->filename) &&
+	       !g_strcmp0(AGS_RECALL_LV2(recall->data)->effect,
+			  update_bulk_member->bulk_member->effect)){
+	      remove_port = TRUE;
+	    }
+	  }
+
+	  if(remove_port){
+	    list = update_bulk_member->bulk_member->bulk_port;
+	    
+	    while(list != NULL){
+	      list_next = list->next;
+	      port = AGS_RECALL(recall->data)->port;
+	    
+	      while(port != NULL){
+		if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+			      update_bulk_member->bulk_member->specifier)){
+		  goto ags_update_bulk_member_launch_REMOVE_LV2_CURRENT_END;
+		}
+		
+		port = port->next;
+	      }
+	      
+	      update_bulk_member->bulk_member->bulk_port = g_list_remove(update_bulk_member->bulk_member->bulk_port,
+									 list->data);
+	      
+	    ags_update_bulk_member_launch_REMOVE_LV2_CURRENT_END:
+	      list = list_next;
+	    }
+	  }
+	  
+	  recall = recall->next;
+	}
+	
+	/* iterate */
 	current = current->next;
       }
     }
