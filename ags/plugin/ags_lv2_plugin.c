@@ -1014,9 +1014,9 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
 
   aseq = (LV2_Atom_Sequence *) malloc(sizeof(LV2_Atom_Sequence) + sequence_size);
 
-  aseq->atom.size = 0;
+  aseq->atom.size = sizeof(LV2_Atom_Sequence_Body);
   aseq->atom.type = ags_lv2_urid_manager_map(NULL,
-					     LV2_MIDI__MidiEvent);
+					     LV2_ATOM__Sequence);
 
   aseq->body.unit = ags_lv2_urid_manager_map(NULL,
 					     LV2_MIDI__MidiEvent);
@@ -1105,7 +1105,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
       aev->body.type = ags_lv2_urid_manager_map(NULL,
 						LV2_MIDI__MidiEvent);
 
-      memcpy(LV2_ATOM_BODY(aev), midi_buffer, count * sizeof(unsigned char));
+      memcpy(LV2_ATOM_BODY(&(aev->body)), midi_buffer, count * sizeof(unsigned char));
 
       aseq->atom.size += ((count + 7) & (~7));
       
@@ -1118,6 +1118,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
   }
 
   /* set last empty */
+  aev->body.size = 0;  
   aev->body.type = 0;
   
   return(success);

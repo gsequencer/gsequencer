@@ -790,6 +790,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
     }
 
     /* get dssi run */
+    //FIXME:JK: use filename and effect to identify
     list_recall = ags_recall_template_find_type(selected_channel->recall,
 						AGS_TYPE_RECALL_DSSI);
     channel_dummy = NULL;
@@ -811,8 +812,6 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	    recall_dssi_run = AGS_RECALL_DSSI_RUN(dssi->data);
 	    
 	    if(recall_dssi_run->event_buffer == NULL){
-	      struct timeval tv;
-
 	      recall_dssi_run->route_dssi_audio_run = route_dssi_audio_run;
 	      
 	      /* key on */

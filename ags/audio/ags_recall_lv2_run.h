@@ -56,7 +56,8 @@ struct _AgsRecallLv2Run
   
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
-
+  
+  GObject *route_lv2_audio_run;
   GObject *note;
 };
 
