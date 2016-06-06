@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding="utf-8"?>
+
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 or -->
+<!-- any later version published by the Free Software Foundation; with the -->
+<!-- Invariant Sections being ``GNU General Public License'', with the -->
+<!-- Front-Cover Texts being ``A GNU Manual'', and with the Back-Cover Texts -->
+<!-- as in (a) below.  A copy of the license is included in the section -->
+<!-- entitled ``GNU Free Documentation License''. -->
+<!--  -->
+<!-- (a) The FSF's Back-Cover Text is: ``You have the freedom to -->
+<!-- copy and modify this GNU manual.  Buying copies from the FSF -->
+<!-- supports it in developing GNU and promoting software freedom.'' -->
+
+<preface>
+  <title>Foreword</title>
+  <para>
+    I began to code with C in spring 2002 and hadn't much programming skills, yet.
+    You may ask me why the C programming language? Well, my friend who was already
+    a convient free software user and hacker recomended me it. He told me that C is
+    a standard on Unix like operating systems so it would be a good choice.
+  </para>
+  <para>
+    After started with language basics and several discussions with my friend about
+    pointers he advised me of Gtk+. While I was doing my first steps in GUI programming
+    with C, I was sure to extensively use it and became a persuaded free software user
+    and programmer.
+  </para>
+  <para>
+    A year later I really understood the object orientated matter of GObject and how
+    to write objects and widgets myself. C wasn't like Java where you just couldn't
+    implement no classes just everything was a class or at least a method.
+  </para>
+  <para>
+    First output with AGS happend via Open Sound System device drivers but the entire
+    application lacked of a thread safe concept. But for now you may write tasks.
+  </para>
+  <para>
+    Be part of the fun.
+  </para>
+</preface>

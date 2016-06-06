@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 or -->
+<!-- any later version published by the Free Software Foundation; with the -->
+<!-- Invariant Sections being ``GNU General Public License'', with the -->
+<!-- Front-Cover Texts being ``A GNU Manual'', and with the Back-Cover Texts -->
+<!-- as in (a) below.  A copy of the license is included in the section -->
+<!-- entitled ``GNU Free Documentation License''. -->
+<!--  -->
+<!-- (a) The FSF's Back-Cover Text is: ``You have the freedom to -->
+<!-- copy and modify this GNU manual.  Buying copies from the FSF -->
+<!-- supports it in developing GNU and promoting software freedom.'' -->
+
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>XML Input/Output</title>
+  <para>
+    Saving and restoring your files is done by using XML supporting XPath. The complete
+    persistence layer is described by ags_file.dtd installed on your system. There various
+    classes involved by doing XML IO. It does it in stages as following for reading:
+  </para>
+
+  <orderedlist numeration="lowerroman">
+    <listitem>
+      Parsing the XML tree and map nodes and objects.
+    </listitem>
+    <listitem>
+      Resolving XPath expressions retrieve objects by their nodes.
+    </listitem>
+    <listitem>
+      Do as needed callbacks of AgsFileLaunch to setup up the application.
+    </listitem>
+  </orderedlist>
+
+  <para>
+    Writing files does ommit the last step. The current AgsConfig is going to be embedded
+    in your file. So you can have per project configuration. Certain objects implement
+    AgsPlugin interface to do an abstraction of reading and writing xmlNode.
+  </para>
+
+  <sect1>
+    <title>Writing XML files</title>
+    
+    <para>
+      Writing files is pretty easy. You just have to instantiate AgsFile, set the application
+      context, open it in read-write mode, call ags_file_write() and finally ags_file_close().
+    </para>
+
+    <example>
+      <title>Writing XML</title>
+      <programlisting language="C">
+<xi:include href="../listings/file_write.c" parse="text" />
+      </programlisting>
+    </example>
+  </sect1>
+
+  <sect1>
+    <title>Reading XML files</title>
+    <para>
+      Normally you instantiate a new application context to be used to load objects into. Create
+      a file object by passing the application context and filename. Then open it and read the
+      content. At the end you close the file descriptor. To use your application start the
+      main loop.
+    </para>
+    
+    <example>
+      <title>Reading XML</title>
+      <programlisting language="C">
+<xi:include href="../listings/file_read.c" parse="text" />
+      </programlisting>
+    </example>
+  </sect1>
+</chapter>
