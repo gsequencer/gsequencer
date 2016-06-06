@@ -65,6 +65,23 @@ userdoc = \
 	docs/usersBook/preface.xml
 
 devdoc = \
+	docs/developersBook.xml \
+	docs/developersBook/preface.xml \
+	docs/developersBook/chap1.xml \
+	docs/developersBook/chap2.xml \
+	docs/developersBook/chap3.xml \
+	docs/developersBook/chap4.xml \
+	docs/developersBook/chap5.xml \
+	docs/developersBook/chap6.xml \
+	docs/developersBook/chap7.xml \
+	docs/developersBook/chap8.xml \
+	docs/developersBook/chap9.xml \
+	docs/developersBook/chap10.xml \
+	docs/developersBook/chap11.xml \
+	docs/developersBook/chap12.xml \
+	docs/developersBook/appb.xml
+
+devdoclistings = \
 	docs/listings/add_pattern.c \
 	docs/listings/application_mutex.c \
 	docs/listings/audio_application_context.c \
@@ -86,21 +103,11 @@ devdoc = \
 	docs/listings/pull_thread.c \
 	docs/listings/recycling.c \
 	docs/listings/start_thread.c \
-	docs/developersBook.xml \
-	docs/developersBook/preface.xml \
-	docs/developersBook/chap1.xml \
-	docs/developersBook/chap2.xml \
-	docs/developersBook/chap3.xml \
-	docs/developersBook/chap4.xml \
-	docs/developersBook/chap5.xml \
-	docs/developersBook/chap6.xml \
-	docs/developersBook/chap7.xml \
-	docs/developersBook/chap8.xml \
-	docs/developersBook/chap9.xml \
-	docs/developersBook/chap10.xml \
-	docs/developersBook/chap11.xml \
-	docs/developersBook/chap12.xml \
-	docs/developersBook/appb.xml
+
+devdocimages = \
+	$(top_srcdir)/docs/images/AGS_iterator.png \
+	$(top_srcdir)/docs/images/AGS_recall_lifecycle.png \
+	$(top_srcdir)/docs/images/AGS_super-threaded.png
 
 userdocimages = \
 	$(top_srcdir)/docs/images/ags_export_window.png \
@@ -1442,9 +1449,11 @@ install-data-local:
 
 install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/{images,html}/
 	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
+	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/images/
 	cp html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
-	cp html/developer-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/dev/
+	cp html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/html/
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
