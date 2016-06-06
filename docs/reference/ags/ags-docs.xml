@@ -356,7 +356,6 @@
     <xi:include href="xml/ags_automation_editor.xml"/>
     <xi:include href="xml/ags_automation_editor_callbacks.xml"/>
     <xi:include href="xml/ags_automation_window.xml"/>
-    <xi:include href="xml/ags_automation_window_callbacks.xml"/>
     <xi:include href="xml/ags_bulk_member.xml"/>
     <xi:include href="xml/ags_bulk_member_callbacks.xml"/>
     <xi:include href="xml/ags_dssi_browser.xml"/>
@@ -481,11 +480,8 @@
       <xi:include href="xml/ags_pattern_edit.xml"/>
       <xi:include href="xml/ags_pattern_edit_callbacks.xml"/>
       <xi:include href="xml/ags_scale_area.xml"/>
-      <xi:include href="xml/ags_scale_area_callbacks.xml"/>
-      <xi:include href="xml/ags_scale_area_callbacks.xml"/>
-      <xi:include href="xml/ags_scale_area.xml"/>
-      <xi:include href="xml/ags_scale.xml"/>
       <xi:include href="xml/ags_scale_callbacks.xml"/>
+      <xi:include href="xml/ags_scale.xml"/>
       <xi:include href="xml/ags_scale_callbacks.xml"/>
       <xi:include href="xml/ags_scale.xml"/>
       <xi:include href="xml/ags_sf2_chooser.xml"/>
@@ -523,10 +519,6 @@
       <xi:include href="xml/ags_cell_pattern_callbacks.xml"/>
       <xi:include href="xml/ags_synth.xml"/>
       <xi:include href="xml/ags_synth_callbacks.xml"/>
-      <xi:include href="xml/ags_synth_bridge.xml"/>
-      <xi:include href="xml/ags_synth_output_line.xml"/>
-      <xi:include href="xml/ags_synth_output_line_callbacks.xml"/>
-      <xi:include href="xml/ags_synth_output_pad.xml"/>
       <xi:include href="xml/ags_synth_input_line.xml"/>
       <xi:include href="xml/ags_synth_input_pad.xml"/>
       <xi:include href="xml/ags_oscillator.xml"/>
