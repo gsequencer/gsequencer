@@ -1,3 +1,11 @@
+Advanced Gtk+ Sequencer
+====
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.
+
 jkraehemann@gmail.com
 
 You need a realtime kernel in conjunction with ags in order to do more computing expensive synthesis.
@@ -12,3 +20,69 @@ If you have pulseaudio running you might run `gsequencer` with pasuspender like:
 
 $ pasuspender -- gsequencer
 
+General Notes on Licensing
+====
+
+Following images are used by the documentation and hence are distributed under the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation.
+
+* docs/images/ags_export_window.png
+* docs/images/ags_machine_properties-input.png
+* docs/images/ags_machine_properties-resize_channels.png
+* docs/images/ags_navigation.png
+* docs/images/ags_synth.png
+* docs/images/ags_audio_preferences.png
+* docs/images/ags_ffplayer.png
+* docs/images/ags_ladspa_browser.png
+* docs/images/ags_machine_properties-link_input.png
+* docs/images/ags_matrix.png
+* docs/images/ags_panel.png
+* docs/images/ags-toolbar.png
+* docs/images/ags_drum.png
+* docs/images/ags_generic_preferences.png
+* docs/images/ags_machine_properties-output.png
+* docs/images/ags_mixer.png
+* docs/images/ags_performance_preferences.png
+* docs/images/ags_server_preferences.png
+
+The Advanced Gtk+ Sequencer logo is used by the final binary hence it is applied under the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+* gsequencer.share/images/ags.png
+
+As well the desktop file:
+
+* gsequencer.desktop.in
+
+And so for the glib-object marshallers file:
+
+* ags/object/ags_marshallers.list
+
+Third-party files with uncertain copyright provided by gtk-doc:
+
+* docs/reference/ags/Makefile.am
+* docs/reference/ags/git.mk
+* docs/reference/ags/gtk-doc.make
+* gtk-doc.make
+* m4/gtk-doc.m4
+
+Third-party files with uncertain copyright provided by autotools:
+
+* compile
+* compile.guess
+* config.h.in
+* config.rpath
+* config.sub
+* configure
+* depcomp
+* INSTALL
+* install-sh
+* ltmain.sh
+* Makefile.in
+* missing
+* test-driver
+
+Generated files with uncertain copyright done with glib-genmarshal
+
+ags/object/ags_marshal.c
+ags/object/ags_marshal.h

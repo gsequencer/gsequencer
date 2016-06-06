@@ -1357,10 +1357,6 @@ ags_turtle_read_pn_prefix(gchar *offset,
 	offset += strlen(tmp);
       }
     }
-
-    if(last_is_point){
-      g_warning("ags_turtle.c - syntax error\0");
-    }
   }
   
   return(str);
@@ -1467,10 +1463,6 @@ ags_turtle_read_pn_local(gchar *offset,
 	  offset += strlen(tmp);
 	}
       }
-    }
-
-    if(last_is_point){
-      g_warning("ags_turtle.c - syntax error\0");
     }
   }
   

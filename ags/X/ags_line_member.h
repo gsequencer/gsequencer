@@ -39,22 +39,29 @@ typedef struct _AgsLineMember AgsLineMember;
 typedef struct _AgsLineMemberClass AgsLineMemberClass;
 
 typedef enum{
-  AGS_LINE_MEMBER_DEFAULT_TEMPLATE      = 1,
-  AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1 << 1,
-  AGS_LINE_MEMBER_RESET_BY_TASK         = 1 << 2,
-  AGS_LINE_MEMBER_APPLY_RECALL          = 1 << 3,
-  AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE   = 1 << 4,
-  AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE = 1 << 5,
-  AGS_LINE_MEMBER_CALLBACK_READ_BLOCK   = 1 << 6,
-  AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 << 7,
-}AgsLineMemberFlags;
+  AGS_LINE_MEMBER_CONNECTED             = 1,
+  AGS_LINE_MEMBER_DEFAULT_TEMPLATE      = 1 << 1,
+  AGS_LINE_MEMBER_RESET_BY_ATOMIC       = 1 << 2,
+  AGS_LINE_MEMBER_RESET_BY_TASK         = 1 << 3,
+  AGS_LINE_MEMBER_APPLY_RECALL          = 1 << 4,
+  AGS_LINE_MEMBER_PLAY_CALLBACK_WRITE   = 1 << 5,
+  AGS_LINE_MEMBER_RECALL_CALLBACK_WRITE = 1 << 6,
+  AGS_LINE_MEMBER_CALLBACK_READ_BLOCK   = 1 << 7,
+  AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 << 8,
+}Agslinememberflags;
+
+typedef enum{
+  AGS_LINE_MEMBER_PORT_BOOLEAN   = 1,
+  AGS_LINE_MEMBER_PORT_INTEGER   = 1 <<  1,
+}AgsLineMemberPortFlags;
 
 struct _AgsLineMember
 {
   GtkFrame frame;
 
   guint flags;
-
+  guint port_flags;
+  
   GType widget_type;
   gchar *widget_label;
 
@@ -65,7 +72,9 @@ struct _AgsLineMember
   gchar *specifier;
 
   gchar *control_port;
-  
+
+  guint steps;
+    
   AgsPort *port;
   gpointer port_data;
   gboolean active;

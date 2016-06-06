@@ -492,7 +492,13 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    }
 
 	    /* set default value */
-	    if(LADSPA_IS_HINT_DEFAULT_MINIMUM(hint_descriptor)){
+	    if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
+	      g_value_set_float(port->default_value,
+				0.0);
+	    }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
+	      g_value_set_float(port->default_value,
+				1.0);
+	    }else if(LADSPA_IS_HINT_DEFAULT_MINIMUM(hint_descriptor)){
 	      g_value_set_float(port->default_value,
 				range_hint->LowerBound);
 	    }else if(LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor)){

@@ -1,6 +1,0 @@
-./.deps
-./ags
-./gsequencer
-./midi2xml
-*.o
-libags*.a

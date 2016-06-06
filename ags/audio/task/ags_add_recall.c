@@ -233,7 +233,7 @@ ags_add_recall_launch(AgsTask *task)
 			   add_recall->recall,
 			   add_recall->is_play);
 
-      /* set up playback, sequencer or notation */
+    /* set up playback, sequencer or notation */
     recall_id = AGS_CHANNEL(add_recall->context)->recall_id;
 
     if(!AGS_IS_RECALL_CHANNEL(add_recall->recall)){
@@ -256,7 +256,7 @@ ags_add_recall_launch(AgsTask *task)
 	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
 	}
 
-	/* append to AgsAudio */
+	/* append to AgsChannel */
 	if(add_recall->is_play)
 	  AGS_CHANNEL(add_recall->context)->play = g_list_append(AGS_CHANNEL(add_recall->context)->play, current);
 	else

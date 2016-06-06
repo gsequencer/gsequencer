@@ -160,7 +160,7 @@ ags_machine_selector_selection_response(GtkWidget *machine_selection,
   AgsMachineRadioButton *machine_radio_button, *existing_radio_button;
   GtkVBox *vbox;
   GtkContainer *content_area;
-  GList *list, *list_start, *index, *index_start;;
+  GList *list, *list_start;
 
   if(response == GTK_RESPONSE_ACCEPT){
     /* retrieve machine */
@@ -169,30 +169,21 @@ ags_machine_selector_selection_response(GtkWidget *machine_selection,
 
     if(response == GTK_RESPONSE_ACCEPT){
       list_start =
-	list = gtk_container_get_children(GTK_CONTAINER(AGS_MACHINE_SELECTION(machine_selection)->window->machines));
-      index_start =
-	index = gtk_container_get_children(vbox);
+	list = gtk_container_get_children(vbox);
 
       while(list != NULL){
-	if(AGS_IS_FFPLAYER(list->data) ||
-	   AGS_IS_DRUM(list->data) ||
-	   AGS_IS_MATRIX(list->data) ||
-	   AGS_IS_DSSI_BRIDGE(list->data) ||
-	   (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0)){
-	  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
-	    machine = AGS_MACHINE(list->data);
-
-	    break;
-	  }
-
-	  index = index->next;
+	if(GTK_IS_TOGGLE_BUTTON(list->data) &&
+	   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data))){
+	  machine = g_object_get_data(list->data,
+				      AGS_MACHINE_SELECTION_INDEX);
+	  
+	  break;
 	}
 	
 	list = list->next;
       }
 
       g_list_free(list_start);
-      g_list_free(index_start);
     }
 
     /* retrieve selected */    
@@ -204,14 +195,16 @@ ags_machine_selector_selection_response(GtkWidget *machine_selection,
     list = list->next;
 
     while(list != NULL){
-      if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data))){
-	machine_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
-      }
+      if(GTK_IS_TOGGLE_BUTTON(list->data)){
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data))){
+	  machine_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
+	}
 
-      if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
-	existing_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
+	if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+	  existing_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
+	}
       }
-
+      
       list = list->next;
     }
 
@@ -244,7 +237,7 @@ ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMac
 
   editor = gtk_widget_get_ancestor(machine_selector,
 				   AGS_TYPE_EDITOR);
-
+  
   if(editor->selected_machine != NULL){
     if(gtk_check_menu_item_get_active(menu_item)){
       editor->selected_machine->audio->flags |= AGS_AUDIO_REVERSE_MAPPING;

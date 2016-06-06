@@ -39,6 +39,10 @@
 #endif 
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_dssi_plugin.h>
+#include <ags/plugin/ags_ladspa_conversion.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -718,6 +722,8 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
 
   effect_plugin->filename = filename;
   effect_plugin->effect = effect;
+
+  effect_plugin->control_type_name = NULL;
   
   return(effect_plugin);
 }
@@ -732,8 +738,10 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   AgsBulkMember *bulk_member;
   AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
-  GtkAdjustment *adjustment;
 
+  GtkAdjustment *adjustment;
+  AgsEffectBulkPlugin *effect_bulk_plugin;
+  
   AgsChannel *current;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
@@ -759,10 +767,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   guint x, y;
   guint i, j;
   guint k;
+
+  effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
+						    effect);
+  effect_bulk_plugin->control_type_name = control_type_name;
   
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
-				      ags_effect_bulk_plugin_alloc(filename,
-								   effect));
+				      effect_bulk_plugin);
 
   window = gtk_widget_get_ancestor(effect_bulk,
 				   AGS_TYPE_WINDOW);
@@ -797,11 +808,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
       /* ladspa play */
       recall_container = ags_recall_container_new();
+      ags_audio_add_recall_container(current->audio,
+				     recall_container);
 
-      add_recall_container = ags_add_recall_container_new(current->audio,
-							  recall_container);
-      task = g_list_prepend(task,
-			    add_recall_container);
+      //      add_recall_container = ags_add_recall_container_new(current->audio,
+      //						  recall_container);
+      //      task = g_list_prepend(task,
+      //		    add_recall_container);
 
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
@@ -811,15 +824,25 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
+      AGS_RECALL(recall_ladspa)->flags |= (AGS_RECALL_TEMPLATE |
+					   AGS_RECALL_INPUT_ORIENTATED |
+					   AGS_RECALL_PLAYBACK |
+					   AGS_RECALL_SEQUENCER |
+					   AGS_RECALL_NOTATION |
+					   AGS_RECALL_BULK_MODE);
+
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
       ags_recall_ladspa_load(recall_ladspa);
       port = ags_recall_ladspa_load_ports(recall_ladspa);
 
-      add_recall = ags_add_recall_new(current,
-				      recall_ladspa,
-				      TRUE);
-      task = g_list_prepend(task,
-			    add_recall);
+      ags_channel_add_recall(current,
+			     recall_ladspa,
+			     TRUE);
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_ladspa,
+      //			      TRUE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
@@ -831,20 +854,30 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 		   "recall-container\0", recall_container,
 		   "recall-channel\0", recall_ladspa,
 		   NULL);
-
-      add_recall = ags_add_recall_new(current,
-				      recall_channel_run_dummy,
-				      TRUE);
-      task = g_list_prepend(task,
-			    add_recall);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_INPUT_ORIENTATED |
+						      AGS_RECALL_PLAYBACK |
+						      AGS_RECALL_SEQUENCER |
+						      AGS_RECALL_NOTATION |
+						      AGS_RECALL_BULK_MODE);
+      ags_channel_add_recall(current,
+			     recall_channel_run_dummy,
+			     FALSE);
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_channel_run_dummy,
+      //			      TRUE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       /* ladspa recall */
       recall_container = ags_recall_container_new();
+      ags_audio_add_recall_container(current->audio,
+				     recall_container);
 
-      add_recall_container = ags_add_recall_container_new(current->audio,
-							  recall_container);
-      task = g_list_prepend(task,
-			    add_recall_container);
+      //      add_recall_container = ags_add_recall_container_new(current->audio,
+      //						  recall_container);
+      //      task = g_list_prepend(task,
+      //		    add_recall_container);
 
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
@@ -854,15 +887,24 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
 		   "recall-container\0", recall_container,
 		   NULL);
+      AGS_RECALL(recall_ladspa)->flags |= (AGS_RECALL_TEMPLATE |
+					   AGS_RECALL_INPUT_ORIENTATED |
+					   AGS_RECALL_PLAYBACK |
+					   AGS_RECALL_SEQUENCER |
+					   AGS_RECALL_NOTATION |
+					   AGS_RECALL_BULK_MODE);
       AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
       ags_recall_ladspa_load(recall_ladspa);
       recall_port = ags_recall_ladspa_load_ports(recall_ladspa);
             
-      add_recall = ags_add_recall_new(current,
-				      recall_ladspa,
-				      FALSE);
-      task = g_list_prepend(task,
-			    add_recall);
+      ags_channel_add_recall(current,
+			     recall_ladspa,
+			     FALSE);
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_ladspa,
+      //			      FALSE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
@@ -874,12 +916,20 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 		   "recall-container\0", recall_container,
 		   "recall-channel\0", recall_ladspa,
 		   NULL);
-
-      add_recall = ags_add_recall_new(current,
-				      recall_channel_run_dummy,
-				      FALSE);
-      task = g_list_prepend(task,
-			    add_recall);
+      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
+						      AGS_RECALL_INPUT_ORIENTATED |
+						      AGS_RECALL_PLAYBACK |
+						      AGS_RECALL_SEQUENCER |
+						      AGS_RECALL_NOTATION |
+						      AGS_RECALL_BULK_MODE);
+      ags_channel_add_recall(current,
+			     recall_channel_run_dummy,
+			     FALSE);
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_channel_run_dummy,
+      //			      FALSE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       
       current = current->next;
@@ -910,8 +960,14 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
+
+      AgsLadspaConversion *ladspa_conversion;
+
+      LADSPA_Data default_value;
       
       GType widget_type;
+
+      guint step_count;
       
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -925,6 +981,12 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       }else{
 	widget_type = AGS_TYPE_DIAL;
       }
+      
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      }
 
       /* add bulk member */
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
@@ -937,31 +999,83 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
+      /* ladspa conversion */
+      ladspa_conversion = NULL;
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
+      }
+      if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+    
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+      }
+
+      bulk_member->conversion = ladspa_conversion;
+      
+      /* child widget */
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
+      }
+
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
+
 	GtkAdjustment *adjustment;
-	float lower_bound, upper_bound;
+
+	LADSPA_Data lower_bound, upper_bound;
 	
 	dial = child_widget;
 
 	/* add controls of ports and apply range  */
 	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
-
+	
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
 		     "adjustment", adjustment,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,
@@ -970,8 +1084,18 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 				 lower_bound);
 	gtk_adjustment_set_upper(adjustment,
 				 upper_bound);
+
+
+	default_value = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+
+	if(ladspa_conversion != NULL){
+	  //	  default_value = ags_ladspa_conversion_convert(ladspa_conversion,
+	  //						default_value,
+	  //						TRUE);
+	}
+	
 	gtk_adjustment_set_value(adjustment,
-				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+				 default_value);
       }
 
 #ifdef AGS_DEBUG
@@ -1020,8 +1144,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   AgsBulkMember *bulk_member;
   AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
+  
   GtkAdjustment *adjustment;
-
+  AgsEffectBulkPlugin *effect_bulk_plugin;
+  
   AgsChannel *current;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
@@ -1047,10 +1173,13 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   guint x, y;
   guint i, j;
   guint k;
+
+  effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
+						    effect);
+  effect_bulk_plugin->control_type_name = control_type_name;
   
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
-				      ags_effect_bulk_plugin_alloc(filename,
-								   effect));
+				      effect_bulk_plugin);
 
   window = gtk_widget_get_ancestor(effect_bulk,
 				   AGS_TYPE_WINDOW);
@@ -1082,14 +1211,15 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
-
       /* dssi play */
       recall_container = ags_recall_container_new();
+      ags_audio_add_recall_container(current->audio,
+				     recall_container);
 
-      add_recall_container = ags_add_recall_container_new(current->audio,
-							  recall_container);
-      task = g_list_prepend(task,
-			    add_recall_container);
+      //      add_recall_container = ags_add_recall_container_new(current->audio,
+      //						  recall_container);
+      //      task = g_list_prepend(task,
+      //		    add_recall_container);
 
       recall_dssi = ags_recall_dssi_new(current,
 					filename,
@@ -1097,48 +1227,63 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 					AGS_BASE_PLUGIN(dssi_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_dssi),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "source\0", current,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_dssi)->flags |= (AGS_RECALL_TEMPLATE |
-					 AGS_RECALL_PLAYBACK |
-					 AGS_RECALL_SEQUENCER |
-					 AGS_RECALL_NOTATION);
+      ags_recall_set_flags(AGS_RECALL(recall_dssi), (AGS_RECALL_TEMPLATE |
+						     AGS_RECALL_INPUT_ORIENTATED |
+						     AGS_RECALL_PLAYBACK |
+						     AGS_RECALL_SEQUENCER |
+						     AGS_RECALL_NOTATION |
+						     AGS_RECALL_BULK_MODE));
       ags_recall_dssi_load(recall_dssi);
       port = ags_recall_dssi_load_ports(recall_dssi);
 
-      add_recall = ags_add_recall_new(current,
-				      recall_dssi,
-				      TRUE);
-      task = g_list_prepend(task,
-			    add_recall);
+      ags_channel_add_recall(current,
+			     recall_dssi,
+			     TRUE);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_dssi));
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_dssi,
+      //			      TRUE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_DSSI_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
-						      AGS_RECALL_PLAYBACK |
-						      AGS_RECALL_SEQUENCER |
-						      AGS_RECALL_NOTATION);
+      ags_recall_set_flags(AGS_RECALL(recall_channel_run_dummy), (AGS_RECALL_TEMPLATE |
+								  AGS_RECALL_INPUT_ORIENTATED |
+								  AGS_RECALL_PLAYBACK |
+								  AGS_RECALL_SEQUENCER |
+								  AGS_RECALL_NOTATION |
+								  AGS_RECALL_BULK_MODE));
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
-		   "recall-container\0", recall_container,
+		   "source\0", current,
 		   "recall-channel\0", recall_dssi,
+		   "recall-container\0", recall_container,
 		   NULL);
-
-      add_recall = ags_add_recall_new(current,
-				      recall_channel_run_dummy,
-				      TRUE);
-      task = g_list_prepend(task,
-			    add_recall);
+      ags_channel_add_recall(current,
+			     recall_channel_run_dummy,
+			     TRUE);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_channel_run_dummy,
+      //			      TRUE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       /* dssi recall */
       recall_container = ags_recall_container_new();
+      ags_audio_add_recall_container(current->audio,
+				     recall_container);
 
-      add_recall_container = ags_add_recall_container_new(current->audio,
-							  recall_container);
-      task = g_list_prepend(task,
-			    add_recall_container);
+      //      add_recall_container = ags_add_recall_container_new(current->audio,
+      //						  recall_container);
+      //      task = g_list_prepend(task,
+      //		    add_recall_container);
 
       recall_dssi = ags_recall_dssi_new(current,
 					filename,
@@ -1146,40 +1291,54 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 					AGS_BASE_PLUGIN(dssi_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_dssi),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "source\0", current,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_dssi)->flags |= (AGS_RECALL_TEMPLATE |
-					 AGS_RECALL_PLAYBACK |
-					 AGS_RECALL_SEQUENCER |
-					 AGS_RECALL_NOTATION);
+      ags_recall_set_flags(AGS_RECALL(recall_dssi), (AGS_RECALL_TEMPLATE |
+						     AGS_RECALL_INPUT_ORIENTATED |
+						     AGS_RECALL_PLAYBACK |
+						     AGS_RECALL_SEQUENCER |
+						     AGS_RECALL_NOTATION |
+						     AGS_RECALL_BULK_MODE));
       ags_recall_dssi_load(recall_dssi);
       recall_port = ags_recall_dssi_load_ports(recall_dssi);
       
-      add_recall = ags_add_recall_new(current,
-				      recall_dssi,
-				      FALSE);
-      task = g_list_prepend(task,
-			    add_recall);
+      ags_channel_add_recall(current,
+			     recall_dssi,
+			     FALSE);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_dssi));
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_dssi,
+      //			      FALSE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_DSSI_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
-						      AGS_RECALL_PLAYBACK |
-						      AGS_RECALL_SEQUENCER |
-						      AGS_RECALL_NOTATION);
+      ags_recall_set_flags(AGS_RECALL(recall_channel_run_dummy), (AGS_RECALL_TEMPLATE |
+								  AGS_RECALL_INPUT_ORIENTATED |
+								  AGS_RECALL_PLAYBACK |
+								  AGS_RECALL_SEQUENCER |
+								  AGS_RECALL_NOTATION |
+								  AGS_RECALL_BULK_MODE));
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
-		   "recall-container\0", recall_container,
+		   "source\0", current,
 		   "recall-channel\0", recall_dssi,
+		   "recall-container\0", recall_container,
 		   NULL);
+      ags_channel_add_recall(current,
+			     recall_channel_run_dummy,
+			     FALSE);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
-      add_recall = ags_add_recall_new(current,
-				      recall_channel_run_dummy,
-				      FALSE);
-      task = g_list_prepend(task,
-			    add_recall);
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_channel_run_dummy,
+      //			      FALSE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       
       current = current->next;
@@ -1210,9 +1369,13 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
-	  
+
+      AgsLadspaConversion *ladspa_conversion;
+      
       GType widget_type;
 
+      guint step_count;
+      
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
 	y++;
@@ -1226,6 +1389,12 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	widget_type = AGS_TYPE_DIAL;
       }
 
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      }
+
       /* add bulk member */
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type\0", widget_type,
@@ -1233,18 +1402,69 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 						   "plugin-name\0", g_strdup_printf("dssi-%lu\0", dssi_plugin->unique_id),
 						   "filename\0", filename,
 						   "effect\0", effect,
-						   "specifier\0", g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name),
+						   "specifier\0", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      /* ladspa conversion */
+      ladspa_conversion = NULL;
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
+      }
+      if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+    
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+      }
+
+      bulk_member->conversion = ladspa_conversion;
+
+      /* child widget */
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
+      }
 
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
 	GtkAdjustment *adjustment;
 
-	float lower_bound, upper_bound;
+	LADSPA_Data lower_bound, upper_bound;
+	LADSPA_Data default_value;
 	
 	dial = child_widget;
 
@@ -1258,11 +1478,11 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,
@@ -1271,13 +1491,24 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 				 lower_bound);
 	gtk_adjustment_set_upper(adjustment,
 				 upper_bound);
+
+	default_value = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+
+	if(ladspa_conversion != NULL){
+	  //	  default_value = ags_ladspa_conversion_convert(ladspa_conversion,
+	  //						default_value,
+	  //						TRUE);
+	}
+	
+	g_message(":: %f\0", default_value);
 	gtk_adjustment_set_value(adjustment,
-				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+				 default_value);
+
+	//#ifdef AGS_DEBUG
+	g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
+	//#endif
       }
 
-#ifdef AGS_DEBUG
-      g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
-#endif
 	  
       /* create task */
       add_bulk_member = ags_add_bulk_member_new(effect_bulk,
@@ -1321,8 +1552,10 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   AgsBulkMember *bulk_member;
   AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
+  
   GtkAdjustment *adjustment;
-
+  AgsEffectBulkPlugin *effect_bulk_plugin;
+  
   AgsChannel *current;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
@@ -1357,9 +1590,12 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   
   float lower_bound, upper_bound, default_bound;
 
+  effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
+						    effect);
+  effect_bulk_plugin->control_type_name = control_type_name;
+  
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
-				      ags_effect_bulk_plugin_alloc(filename,
-								   effect));
+				      effect_bulk_plugin);
 
   window = gtk_widget_get_ancestor(effect_bulk,
 				   AGS_TYPE_WINDOW);
@@ -1391,14 +1627,15 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
-
       /* lv2 play */
       recall_container = ags_recall_container_new();
+      ags_audio_add_recall_container(current->audio,
+				     recall_container);
 
-      add_recall_container = ags_add_recall_container_new(current->audio,
-							  recall_container);
-      task = g_list_prepend(task,
-			    add_recall_container);
+      //      add_recall_container = ags_add_recall_container_new(current->audio,
+      //						  recall_container);
+      //      task = g_list_prepend(task,
+      //		    add_recall_container);
 
       recall_lv2 = ags_recall_lv2_new(current,
 				      lv2_plugin->turtle,
@@ -1408,48 +1645,63 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_lv2),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "source\0", current,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_lv2)->flags |= (AGS_RECALL_TEMPLATE |
-					AGS_RECALL_PLAYBACK |
-					AGS_RECALL_SEQUENCER |
-					AGS_RECALL_NOTATION);
+      ags_recall_set_flags(AGS_RECALL(recall_lv2), (AGS_RECALL_TEMPLATE |
+						    AGS_RECALL_INPUT_ORIENTATED |
+						    AGS_RECALL_PLAYBACK |
+						    AGS_RECALL_SEQUENCER |
+						    AGS_RECALL_NOTATION |
+						    AGS_RECALL_BULK_MODE));
       ags_recall_lv2_load(recall_lv2);
       port = ags_recall_lv2_load_ports(recall_lv2);
 
-      add_recall = ags_add_recall_new(current,
-				      recall_lv2,
-				      TRUE);
-      task = g_list_prepend(task,
-			    add_recall);
+      ags_channel_add_recall(current,
+			     recall_lv2,
+			     TRUE);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_lv2,
+      //			      TRUE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_LV2_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
-						      AGS_RECALL_PLAYBACK |
-						      AGS_RECALL_SEQUENCER |
-						      AGS_RECALL_NOTATION);
+      ags_recall_set_flags(AGS_RECALL(recall_channel_run_dummy), (AGS_RECALL_TEMPLATE |
+								  AGS_RECALL_INPUT_ORIENTATED |
+								  AGS_RECALL_PLAYBACK |
+								  AGS_RECALL_SEQUENCER |
+								  AGS_RECALL_NOTATION |
+								  AGS_RECALL_BULK_MODE));
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
-		   "recall-container\0", recall_container,
+		   "source\0", current,
 		   "recall-channel\0", recall_lv2,
+		   "recall-container\0", recall_container,
 		   NULL);
-
-      add_recall = ags_add_recall_new(current,
-				      recall_channel_run_dummy,
-				      TRUE);
-      task = g_list_prepend(task,
-			    add_recall);
+      ags_channel_add_recall(current,
+			     recall_channel_run_dummy,
+			     TRUE);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_channel_run_dummy,
+      //			      TRUE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       /* lv2 recall */
       recall_container = ags_recall_container_new();
+      ags_audio_add_recall_container(current->audio,
+				     recall_container);
 
-      add_recall_container = ags_add_recall_container_new(current->audio,
-							  recall_container);
-      task = g_list_prepend(task,
-			    add_recall_container);
+      //      add_recall_container = ags_add_recall_container_new(current->audio,
+      //						  recall_container);
+      //      task = g_list_prepend(task,
+      //		    add_recall_container);
 
       recall_lv2 = ags_recall_lv2_new(current,
 				      lv2_plugin->turtle,
@@ -1459,41 +1711,54 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
       g_object_set(G_OBJECT(recall_lv2),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
+		   "source\0", current,
 		   "recall-container\0", recall_container,
 		   NULL);
-      AGS_RECALL(recall_lv2)->flags |= (AGS_RECALL_TEMPLATE |
-					AGS_RECALL_PLAYBACK |
-					AGS_RECALL_SEQUENCER |
-					AGS_RECALL_NOTATION);
+      ags_recall_set_flags(AGS_RECALL(recall_lv2), (AGS_RECALL_TEMPLATE |
+						    AGS_RECALL_INPUT_ORIENTATED |
+						    AGS_RECALL_PLAYBACK |
+						    AGS_RECALL_SEQUENCER |
+						    AGS_RECALL_NOTATION |
+						    AGS_RECALL_BULK_MODE));
       ags_recall_lv2_load(recall_lv2);
       recall_port = ags_recall_lv2_load_ports(recall_lv2);
-            
-      add_recall = ags_add_recall_new(current,
-				      recall_lv2,
-				      FALSE);
-      task = g_list_prepend(task,
-			    add_recall);
+      
+      ags_channel_add_recall(current,
+			     recall_lv2,
+			     FALSE);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_lv2,
+      //			      FALSE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
 								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
 								  AGS_TYPE_RECALL_LV2_RUN);
-      AGS_RECALL(recall_channel_run_dummy)->flags |= (AGS_RECALL_TEMPLATE |
-						      AGS_RECALL_PLAYBACK |
-						      AGS_RECALL_SEQUENCER |
-						      AGS_RECALL_NOTATION);
+      ags_recall_set_flags(AGS_RECALL(recall_channel_run_dummy), (AGS_RECALL_TEMPLATE |
+								  AGS_RECALL_INPUT_ORIENTATED |
+								  AGS_RECALL_PLAYBACK |
+								  AGS_RECALL_SEQUENCER |
+								  AGS_RECALL_NOTATION |
+								  AGS_RECALL_BULK_MODE));
       g_object_set(G_OBJECT(recall_channel_run_dummy),
 		   "soundcard\0", AGS_AUDIO(current->audio)->soundcard,
-		   "recall-container\0", recall_container,
+		   "source\0", current,
 		   "recall-channel\0", recall_lv2,
+		   "recall-container\0", recall_container,
 		   NULL);
+      ags_channel_add_recall(current,
+			     recall_channel_run_dummy,
+			     FALSE);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
-      add_recall = ags_add_recall_new(current,
-				      recall_channel_run_dummy,
-				      FALSE);
-      task = g_list_prepend(task,
-			    add_recall);
-
+      //      add_recall = ags_add_recall_new(current,
+      //			      recall_channel_run_dummy,
+      //			      FALSE);
+      //      task = g_list_prepend(task,
+      //		    add_recall);
       
       current = current->next;
     }
@@ -1526,6 +1791,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	  
       GType widget_type;
 
+      guint step_count;
+      
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
 	y++;
@@ -1539,6 +1806,12 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	widget_type = AGS_TYPE_DIAL;
       }
 
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      }
+
       /* add bulk member */
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type\0", widget_type,
@@ -1550,8 +1823,17 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 						   "control-port\0", g_strdup_printf("%d/%d\0",
 										     k,
 										     port_count),
+						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
+      }
 
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
@@ -1571,11 +1853,11 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 		     NULL);
 
 	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / AGS_DIAL_DEFAULT_PRECISION;
+	  step = (upper_bound - lower_bound) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,

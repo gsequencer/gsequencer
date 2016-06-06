@@ -1,8 +1,0 @@
-<svg>
-  <rect x="0" y="0" width="100%" height="100%" rx="0" ry="0" fill="black"/>
-  
-  <svg x="20" y="20" width="100%" height="100%">
-    <filter id="A"><feGaussianBlur stdDeviation="1"/></filter>
-    <rect x="-20" y="-20" width="100%" height="100%" rx="0" ry="0" fill="white" filter="url(#A)"/>
-  </svg>
-</svg>

@@ -963,15 +963,16 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 					       (double) attack +
 					       (double) frame_count) /
 					      (double) audio_signal->buffer_size));
-  
-  if(template->length == 0){
+    
+  audio_signal->last_frame = ((guint) (delay * audio_signal->buffer_size) + frame_count + attack) % audio_signal->buffer_size;
+
+  if(template->length == 0 ||
+     audio_signal->loop_start == audio_signal->loop_end){
     /* release lock */
     pthread_mutex_unlock(recycling_mutex);
 
     return;
   }
-  
-  audio_signal->last_frame = ((guint) (delay * audio_signal->buffer_size) + frame_count + attack) % audio_signal->buffer_size;
 
   /* generic copying */
   stream = g_list_nth(audio_signal->stream_beginning,

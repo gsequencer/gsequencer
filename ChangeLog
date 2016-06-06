@@ -1,3 +1,24 @@
+ags (0.7.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed proper license information and notes in README
+	* included ags_marshallers.list in tarball
+
+ags (0.7.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_update_bulk_member.c to work with DSSI and improved the code
+	* fixed Lv2 playback
+	* fixed Lv2 atom sequence type and Lv2 atom body access in ags_lv2_plugin.c
+
+ags (0.7.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented support for integer adjustments of LADSPA, DSSI and Lv2
+	* improved configure.ac
+	* fixed DSSI playback and bank selection
+	* fixed finding AgsBulkMember ports
+
 ags (0.7.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -73,7 +73,7 @@ void ags_route_dssi_audio_run_resolve_dependencies(AgsRecall *recall);
 AgsRecall* ags_route_dssi_audio_run_duplicate(AgsRecall *recall,
 					      AgsRecallID *recall_id,
 					      guint *n_params, GParameter *parameter);
-void ags_route_dssi_audio_run_run_pre(AgsRecall *recall);
+
 void ags_route_dssi_audio_run_run_post(AgsRecall *recall);
 
 void ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
@@ -85,6 +85,9 @@ void ags_route_dssi_audio_run_write_resolve_dependency(AgsFileLookup *file_looku
 						       GObject *recall);
 void ags_route_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 						      GObject *recall);
+
+void ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
+					AgsNote *note);
 
 /**
  * SECTION:ags_route_dssi_audio_run
@@ -232,7 +235,6 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
 
   recall->resolve_dependencies = ags_route_dssi_audio_run_resolve_dependencies;
   recall->duplicate = ags_route_dssi_audio_run_duplicate;
-  recall->run_pre = ags_route_dssi_audio_run_run_pre;
   recall->run_post = ags_route_dssi_audio_run_run_post;
 }
 
@@ -648,11 +650,11 @@ ags_route_dssi_audio_run_duplicate(AgsRecall *recall,
 }
 
 void
-ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
+ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
+				   AgsNote *note)
 {
   AgsAudio *audio;
   AgsChannel *channel, *selected_channel;
-  AgsNote *note;
   AgsRecallDssiRun *recall_dssi_run;
   AgsRecallID *child_recall_id;
   
@@ -672,15 +674,14 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *channel_mutex;
 
   GList *channel_dummy, *recycling_dummy, *dssi;
-  GList *list_note, *list_note_next, *list_note_start;
   GList *list_recall;
   GList *list;
   
-  snd_midi_event_t *parser;
+  snd_midi_event_t *parser = NULL;
   snd_seq_event_t *seq_event;
 
   gchar *str;
-  unsigned char buffer[7];
+  char *buffer;
   long seq_length;
   long velocity, pressure;
   guint samplerate;
@@ -744,146 +745,139 @@ ags_route_dssi_audio_run_run_pre(AgsRecall *recall)
 
   audio_channel = AGS_CHANNEL(AGS_RECYCLING(recall->recall_id->recycling)->channel)->audio_channel;
   
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) == 0){
-    channel = ags_channel_nth(audio->output,
-			      audio_channel);
+  channel = ags_channel_nth(audio->input,
+			    audio_channel);
+
+  /* prepend note */
+  route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
+						   note);
+  
+  snd_midi_event_new(10, &parser);  //  snd_midi_event_init(parser);
+  snd_midi_event_reset_encode(parser);
+  
+  if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+    selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
   }else{
-    channel = ags_channel_nth(audio->input,
-			      audio_channel);
+    selected_channel = ags_channel_pad_nth(channel, note->y);
   }
 
-  /* feed MIDI to AgsRecallDssiRun */
-  list_note_start = 
-    list_note = route_dssi_audio_run->feed_midi;
-  //  route_dssi_audio_run->feed_midi = NULL;
-  
-  snd_midi_event_new(32,
-		     &parser);
-  snd_midi_event_init(parser);
+  /* get recall id */
+  child_recall_id = NULL;
+    
+  if(selected_channel != NULL){
+    if(selected_channel->link == NULL){
+      list = selected_channel->recall_id;
 
-  while(list_note != NULL){
-    list_note_next = list_note->next;
-    note = AGS_NOTE(list_note->data);
-
-    if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
-      selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
+      while(list != NULL){
+	if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
+	  child_recall_id = (AgsRecallID *) list->data;
+	  break;
+	}
+	  
+	list = list->next;
+      }
     }else{
-      selected_channel = ags_channel_pad_nth(channel, note->y);
+      list = selected_channel->link->recall_id;
+
+      while(list != NULL){
+	if(AGS_RECALL_ID(list->data)->recycling_context->parent->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
+	  child_recall_id = (AgsRecallID *) list->data;
+	  break;
+	}
+	  
+	list = list->next;
+      }
     }
 
-    /* get recall id */
-    child_recall_id = NULL;
-    
-    if(selected_channel != NULL){
-      if(selected_channel->link == NULL){
-	list = selected_channel->recall_id;
-
-	while(list != NULL){
-	  if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
-	    child_recall_id = (AgsRecallID *) list->data;
-	    break;
-	  }
-	  
-	  list = list->next;
-	}
-      }else{
-	list = selected_channel->link->recall_id;
-
-	while(list != NULL){
-	  if(AGS_RECALL_ID(list->data)->recycling_context->parent->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
-	    child_recall_id = (AgsRecallID *) list->data;
-	    break;
-	  }
-	  
-	  list = list->next;
-	}
-      }
-
-      /* get dssi run */
-      list_recall = ags_recall_template_find_type(selected_channel->recall,
-						  AGS_TYPE_RECALL_DSSI);
-      channel_dummy = NULL;
+    /* get dssi run */
+    //FIXME:JK: use filename and effect to identify
+    list_recall = ags_recall_template_find_type(selected_channel->recall,
+						AGS_TYPE_RECALL_DSSI);
+    channel_dummy = NULL;
       
-      if(list_recall != NULL){
-	channel_dummy = AGS_RECALL_CONTAINER(AGS_RECALL(list_recall->data)->container)->recall_channel_run;
-      }
+    if(list_recall != NULL){
+      channel_dummy = AGS_RECALL_CONTAINER(AGS_RECALL(list_recall->data)->container)->recall_channel_run;
+    }
 
-      while(channel_dummy != NULL){
+    while(channel_dummy != NULL){
 
-	if(AGS_RECALL(channel_dummy->data)->recall_id != NULL &&
-	   AGS_RECALL(channel_dummy->data)->recall_id->recycling_context == child_recall_id->recycling_context){
-	  recycling_dummy = AGS_RECALL(channel_dummy->data)->children;
+      if(AGS_RECALL(channel_dummy->data)->recall_id != NULL &&
+	 AGS_RECALL(channel_dummy->data)->recall_id->recycling_context == child_recall_id->recycling_context){
+	recycling_dummy = AGS_RECALL(channel_dummy->data)->children;
 
-	  while(recycling_dummy != NULL){
-	    dssi = AGS_RECALL(recycling_dummy->data)->children;
+	while(recycling_dummy != NULL){
+	  dssi = AGS_RECALL(recycling_dummy->data)->children;
 
-	    while(dssi != NULL){
-	      recall_dssi_run = AGS_RECALL_DSSI_RUN(dssi->data);
-
-	      if(note->x[0] == count_beats_audio_run->notation_counter - 1){
-		if(recall_dssi_run->event_buffer == NULL){		  
-		  /* key on */
-		  seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
-		  snd_midi_event_init(seq_event);
-		  //		  memset(seq_event, 0, sizeof(snd_seq_event_t));
+	  while(dssi != NULL){
+	    recall_dssi_run = AGS_RECALL_DSSI_RUN(dssi->data);
+	    
+	    if(recall_dssi_run->event_buffer == NULL){
+	      recall_dssi_run->route_dssi_audio_run = route_dssi_audio_run;
+	      
+	      /* key on */
+	      seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
+	      snd_midi_event_reset_encode(seq_event);	      
+	      //memset(seq_event, 0, sizeof(snd_seq_event_t));
 		  
-		  /*
-		  seq_length = ags_midi_buffer_util_get_varlength_size(0); // (route_dssi_audio_run->delta_time);
+	      /*
+		velocity = ags_midi_util_envelope_to_velocity(note->attack,
+		note->decay,
+		note->sustain,
+		note->release,
+		note->ratio,
+		samplerate,
+		0, buffer_length);
+		ags_midi_buffer_util_put_key_on(&buffer,
+		0, // play immediately since DSSI doesn't know timing: route_dssi_audio_run->delta_time,
+		0,
+		channel->pad,
+		velocity);
+		seq_length += 3;
 
-		  velocity = ags_midi_util_envelope_to_velocity(note->attack,
-								note->decay,
-								note->sustain,
-								note->release,
-								note->ratio,
-								samplerate,
-								0, buffer_length);
-		  ags_midi_buffer_util_put_key_on(&buffer,
-						  0, // play immediately since DSSI doesn't know timing: route_dssi_audio_run->delta_time,
-						  0,
-						  channel->pad,
-						  velocity);
-		  seq_length += 3;
-		  */
-		  seq_event->type = SND_SEQ_EVENT_NOTEON;
+		clock_gettime(CLOCK_MONOTONIC,
+		&(seq_event->time));
 
-		  seq_event->data.note.channel = 0;
-		  seq_event->data.note.note = 0x7f & (channel->pad);
-		  seq_event->data.note.velocity = 127;
-		  //	  snd_midi_event_encode(parser, &(buffer[1]), seq_length, seq_event);
-
-		  recall_dssi_run->note = note;
+		buffer = (char *) malloc(7 * sizeof(char));
+		velocity = 127;
 		  
-		  recall_dssi_run->event_buffer = (snd_seq_event_t **) malloc(2 * sizeof(snd_seq_event_t *));
-		  recall_dssi_run->event_buffer[0] = seq_event;
-		  recall_dssi_run->event_buffer[1] = NULL;
-		  
-		  recall_dssi_run->event_count = (unsigned long *) malloc(2 * sizeof(unsigned long));
-		  recall_dssi_run->event_count[0] = 1;
-		  recall_dssi_run->event_count[1] = 0;
-		}
-	      }else{
-		if(count_beats_audio_run->notation_counter >= note->x[1] &&
-		   note == recall_dssi_run->note){
-		  /* just stop processing */
-		  route_dssi_audio_run->feed_midi = g_list_remove(route_dssi_audio_run->feed_midi,
-								  note);
-		  
-		  ags_recall_done(recall_dssi_run);
-		}
-	      }
+		ags_midi_buffer_util_put_key_on(buffer,
+		0, // play immediately since DSSI doesn't know timing: route_dssi_audio_run->delta_time,
+		0,
+		selected_channel->pad,
+		velocity);
+		seq_length = 3;
+		snd_midi_event_encode(parser, buffer + 1, 3, seq_event);
+	      */
 
-	      dssi = dssi->next;
+	      seq_event->type = SND_SEQ_EVENT_NOTEON;
+
+	      seq_event->data.note.channel = 0;
+	      seq_event->data.note.note = 0x7f & (selected_channel->pad);
+	      seq_event->data.note.velocity = 127;
+
+	      AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->audio_channel = audio_channel;
+	      recall_dssi_run->note = note;
+		  
+	      recall_dssi_run->event_buffer = (snd_seq_event_t **) malloc(2 * sizeof(snd_seq_event_t *));
+	      recall_dssi_run->event_buffer[0] = seq_event;
+	      recall_dssi_run->event_buffer[1] = NULL;
+		  
+	      recall_dssi_run->event_count = (unsigned long *) malloc(2 * sizeof(unsigned long));
+	      recall_dssi_run->event_count[0] = 1;
+	      recall_dssi_run->event_count[1] = 0;
 	    }
 
-	    recycling_dummy = recycling_dummy->next;
-	  }	 
-	}
-	
-	channel_dummy = channel_dummy->next;
+	    //fixme:jk: remove notes
+
+	    dssi = dssi->next;
+	  }
+
+	  recycling_dummy = recycling_dummy->next;
+	}	 
       }
+	
+      channel_dummy = channel_dummy->next;
     }
-    
-    list_note = list_note_next;
   }
 }
 
@@ -934,13 +928,8 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
   
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    channel = ags_channel_nth(audio->input,
-			      audio_channel);
-  }else{
-    channel = ags_channel_nth(audio->output,
-			      audio_channel);
-  }
+  channel = ags_channel_nth(audio->input,
+			    audio_channel);
 
   pthread_mutex_lock(audio_mutex);
 
@@ -962,10 +951,8 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     //FIXME:JK: should consider delay
     if(note->x[0] == route_dssi_audio_run->count_beats_audio_run->notation_counter){ // && floor(note->stream_delay) == floor(delay)
       //      g_object_ref(note);
-      
-      /* prepend note */
-      route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
-						       note);
+      ags_route_dssi_audio_run_feed_midi(route_dssi_audio_run,
+					 note);      
     }else if(note->x[0] > route_dssi_audio_run->count_beats_audio_run->notation_counter){
       break;
     }

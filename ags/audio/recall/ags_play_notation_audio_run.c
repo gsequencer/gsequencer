@@ -815,7 +815,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	pthread_mutex_lock(application_mutex);
 
 	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
+						 (GObject *) selected_channel);
 	
 	pthread_mutex_unlock(application_mutex);
 
@@ -827,7 +827,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	pthread_mutex_unlock(channel_mutex);
 	
 	//#ifdef AGS_DEBUG	
-	g_message("playing[%u]: %u | %u\n\0", audio_channel, note->x[0], note->y);
+	g_message("playing[%u|%u]: %u | %u\n\0", audio_channel, selected_channel->pad, note->x[0], note->y);
 	//#endif
 
 	while(recycling != selected_channel->last_recycling->next){

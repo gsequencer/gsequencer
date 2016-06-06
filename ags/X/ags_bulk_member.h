@@ -24,9 +24,12 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <ags/thread/ags_task.h>
+
+#include <ags/lib/ags_conversion.h>
+
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_port.h>
-#include <ags/thread/ags_task.h>
 
 #define AGS_TYPE_BULK_MEMBER                (ags_bulk_member_get_type())
 #define AGS_BULK_MEMBER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BULK_MEMBER, AgsBulkMember))
@@ -37,7 +40,7 @@
 
 #define AGS_BULK_PORT(ptr) ((AgsBulkPort *)(ptr))
 
-#define AGS_BULK_MEMBER_DEFAULT_VERSION "0.7.8\0"
+#define AGS_BULK_MEMBER_DEFAULT_VERSION "0.7.21\0"
 #define AGS_BULK_MEMBER_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
 
 typedef struct _AgsBulkMember AgsBulkMember;
@@ -45,18 +48,26 @@ typedef struct _AgsBulkMemberClass AgsBulkMemberClass;
 typedef struct _AgsBulkPort AgsBulkPort;
 
 typedef enum{
-  AGS_BULK_MEMBER_DEFAULT_TEMPLATE      = 1,
-  AGS_BULK_MEMBER_RESET_BY_ATOMIC       = 1 << 1,
-  AGS_BULK_MEMBER_RESET_BY_TASK         = 1 << 2,
-  AGS_BULK_MEMBER_APPLY_RECALL          = 1 << 3,
+  AGS_BULK_MEMBER_CONNECTED             = 1,
+  AGS_BULK_MEMBER_DEFAULT_TEMPLATE      = 1 <<  1,
+  AGS_BULK_MEMBER_RESET_BY_ATOMIC       = 1 <<  2,
+  AGS_BULK_MEMBER_RESET_BY_TASK         = 1 <<  3,
+  AGS_BULK_MEMBER_APPLY_RECALL          = 1 <<  4,
+  AGS_BULK_MEMBER_NO_UPDATE             = 1 <<  5,
 }AgsBulkMemberFlags;
+
+typedef enum{
+  AGS_BULK_MEMBER_PORT_BOOLEAN   = 1,
+  AGS_BULK_MEMBER_PORT_INTEGER   = 1 <<  1,
+}AgsBulkMemberPortFlags;
 
 struct _AgsBulkMember
 {
   GtkFrame frame;
 
   guint flags;
-
+  guint port_flags;
+  
   gchar *version;
   gchar *build_id;
 
@@ -73,6 +84,10 @@ struct _AgsBulkMember
 
   gchar *control_port;
 
+  guint steps;
+
+  AgsConversion *conversion;
+  
   GList *bulk_port;
   GList *recall_bulk_port;
   

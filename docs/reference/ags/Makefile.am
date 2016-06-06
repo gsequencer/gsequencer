@@ -23,7 +23,7 @@ SCANGOBJ_OPTIONS=
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-SCAN_OPTIONS=
+SCAN_OPTIONS=--rebuild-types --rebuild-sections 
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
@@ -92,4 +92,4 @@ TESTS_ENVIRONMENT = \
 TESTS = $(GTKDOC_CHECK)
 endif
 
--include $(top_srcdir)/git.mk
+-include git.mk

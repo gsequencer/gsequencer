@@ -60,7 +60,8 @@ struct _AgsDial
   guint radius;
   guint outline_strength;
   guint scale_precision;
-
+  guint scale_max_precision;
+  
   guint font_size;
   gint button_width;
   gint button_height;

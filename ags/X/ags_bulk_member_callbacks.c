@@ -31,6 +31,10 @@ ags_bulk_member_dial_changed_callback(GtkWidget *dial, AgsBulkMember *bulk_membe
 {
   GtkAdjustment *adjustment;
 
+  if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
+    return;
+  }
+  
   g_object_get(dial,
 	       "adjustment\0", &adjustment,
 	       NULL);
@@ -44,6 +48,10 @@ ags_bulk_member_vscale_changed_callback(GtkWidget *vscale, AgsBulkMember *bulk_m
 {
   GtkAdjustment *adjustment;
 
+  if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
+    return;
+  }
+
   adjustment = gtk_range_get_adjustment(GTK_RANGE(vscale));
   ags_bulk_member_change_port(bulk_member,
 			      (gpointer) &(adjustment->value));
@@ -53,6 +61,10 @@ void
 ags_bulk_member_hscale_changed_callback(GtkWidget *hscale, AgsBulkMember *bulk_member)
 {
   GtkAdjustment *adjustment;
+
+  if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
+    return;
+  }
 
   adjustment = gtk_range_get_adjustment(GTK_RANGE(hscale));
   ags_bulk_member_change_port(bulk_member,
@@ -64,6 +76,10 @@ ags_bulk_member_spin_button_changed_callback(GtkWidget *spin_button, AgsBulkMemb
 {
   GtkAdjustment *adjustment;
 
+  if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
+    return;
+  }
+
   adjustment = gtk_spin_button_get_adjustment(spin_button);
   ags_bulk_member_change_port(bulk_member,
 			      &(adjustment->value));
@@ -73,6 +89,10 @@ void
 ags_bulk_member_check_button_clicked_callback(GtkWidget *check_button, AgsBulkMember *bulk_member)
 {
   gboolean active;
+
+  if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
+    return;
+  }
 
   active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
   ags_bulk_member_change_port(bulk_member,
@@ -84,6 +104,10 @@ ags_bulk_member_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsBulk
 {
   gboolean active;
 
+  if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
+    return;
+  }
+
   active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
   ags_bulk_member_change_port(bulk_member,
 			      &(active));
@@ -93,6 +117,10 @@ void
 ags_bulk_member_button_clicked_callback(GtkWidget *button, AgsBulkMember *bulk_member)
 {
   gboolean active;
+
+  if((AGS_BULK_MEMBER_NO_UPDATE & (bulk_member->flags)) != 0){
+    return;
+  }
 
   ags_bulk_member_change_port(bulk_member,
 			      &(active));

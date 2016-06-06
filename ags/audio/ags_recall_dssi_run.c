@@ -26,6 +26,10 @@
 #include <ags/plugin/ags_dssi_manager.h>
 
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_note.h>
+
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+#include <ags/audio/recall/ags_route_dssi_audio_run.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -44,7 +48,6 @@ void ags_recall_dssi_run_finalize(GObject *gobject);
 
 void ags_recall_dssi_run_run_init_pre(AgsRecall *recall);
 void ags_recall_dssi_run_run_pre(AgsRecall *recall);
-void ags_recall_dssi_run_run_inter(AgsRecall *recall);
 void ags_recall_dssi_run_run_post(AgsRecall *recall);
 
 void ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run);
@@ -126,7 +129,6 @@ ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run)
 
   recall->run_init_pre = ags_recall_dssi_run_run_init_pre;
   recall->run_pre = ags_recall_dssi_run_run_pre;
-  recall->run_inter = ags_recall_dssi_run_run_inter;
   recall->run_post = ags_recall_dssi_run_run_post;
 }
 
@@ -160,6 +162,7 @@ ags_recall_dssi_run_init(AgsRecallDssiRun *recall_dssi_run)
   recall_dssi_run->event_count = NULL;
 
   recall_dssi_run->note = NULL;
+  recall_dssi_run->route_dssi_audio_run = NULL;
 }
 
 void
@@ -218,7 +221,7 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 						    buffer_size *
 						    sizeof(LADSPA_Data));
   }
-  
+
   recall_dssi_run->output = (LADSPA_Data *) malloc(recall_dssi->output_lines *
 						   buffer_size *
 						   sizeof(LADSPA_Data));
@@ -234,39 +237,19 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 
   for(i = 0; i < i_stop; i++){
     /* instantiate dssi */
-    recall_dssi_run->ladspa_handle[i] = (LADSPA_Handle *) recall_dssi->plugin_descriptor->LADSPA_Plugin->instantiate(recall_dssi->plugin_descriptor,
-														     samplerate);
+    recall_dssi_run->ladspa_handle[i] = recall_dssi->plugin_descriptor->LADSPA_Plugin->instantiate(recall_dssi->plugin_descriptor->LADSPA_Plugin,
+												   samplerate);
 
 #ifdef AGS_DEBUG
-    g_message("instantiate DSSI handle\0");
+    g_message("instantiate DSSI handle %d %d\0",
+	      recall_dssi->bank,
+	      recall_dssi->program);
 #endif
-
   }
 
   ags_recall_dssi_run_load_ports(recall_dssi_run);
 
-  /* can't be done in ags_recall_dssi_run_run_init_inter since possebility of overlapping buffers */
-  /* connect audio port */
-  for(i = 0; i < recall_dssi->input_lines; i++){
-    recall_dssi->plugin_descriptor->LADSPA_Plugin->connect_port(recall_dssi_run->ladspa_handle[i],
-								recall_dssi->input_port[i],
-								&(recall_dssi_run->input[i]));
-  }
-  
-  for(i = 0; i < recall_dssi->output_lines; i++){
-    recall_dssi->plugin_descriptor->LADSPA_Plugin->connect_port(recall_dssi_run->ladspa_handle[i],
-								recall_dssi->output_port[i],
-								&(recall_dssi_run->output[i]));
-  }
-
-
   for(i = 0; i < i_stop; i++){
-    if(recall_dssi->plugin_descriptor->select_program != NULL){
-      recall_dssi->plugin_descriptor->select_program(recall_dssi_run->ladspa_handle[i],
-						     recall_dssi->bank,
-						     recall_dssi->program);
-    }
-
     if(recall_dssi->plugin_descriptor->LADSPA_Plugin->activate != NULL){
       recall_dssi->plugin_descriptor->LADSPA_Plugin->activate(recall_dssi_run->ladspa_handle[i]);
     }
@@ -276,41 +259,108 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 #endif
 
   }
+
+  /* select program */
+  if(recall_dssi->plugin_descriptor->select_program != NULL){
+    AgsPort *current;
+    
+    GList *list, *port;
+    
+    gchar *specifier;
+
+    LADSPA_Data *port_data;
+    
+    unsigned long port_count;
+    
+    port = AGS_RECALL(recall_dssi)->port;
+
+    port_count = recall_dssi->plugin_descriptor->LADSPA_Plugin->PortCount;
+    port_data = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
+  
+    for(i = 0; i < port_count; i++){
+      specifier = recall_dssi->plugin_descriptor->LADSPA_Plugin->PortNames[i];
+      list = port;
+
+      while(list != NULL){
+	current = list->data;
+
+	if(!g_strcmp0(specifier,
+		      current->specifier)){
+	  break;
+	}
+
+	list = list->next;
+      }
+
+      if(list == NULL){
+	//	port_data[i] = 0.0;
+
+	//	g_warning("didn't find port\0");
+      }else{
+	port_data[i] = current->port_value.ags_port_ladspa;
+      }
+    }
+    
+    for(i = 0; i < i_stop; i++){
+      recall_dssi->plugin_descriptor->select_program(recall_dssi_run->ladspa_handle[i],
+						     recall_dssi->bank,
+						     recall_dssi->program);
+
+      //      g_message("b p %u %u\0", recall_dssi->bank, recall_dssi->program);
+    }
+
+    /* reset port data */    
+    for(i = 0; i < port_count; i++){
+      specifier = recall_dssi->plugin_descriptor->LADSPA_Plugin->PortNames[i];
+      list = port;
+
+      while(list != NULL){
+	current = list->data;
+
+	if(!g_strcmp0(specifier,
+		      current->specifier)){
+	  current->port_value.ags_port_ladspa = port_data[i];
+	  //	  g_message("%s %f\0", current->specifier, port_data[i]);
+	
+	  break;
+	}
+
+	list = list->next;
+      }
+    }
+
+    free(port_data);
+  }
 }
 
 void
 ags_recall_dssi_run_run_pre(AgsRecall *recall)
 {
-  //empty
-}
-
-void
-ags_recall_dssi_run_run_inter(AgsRecall *recall)
-{
   AgsRecallDssi *recall_dssi;
   AgsRecallDssiRun *recall_dssi_run;
   AgsAudioSignal *audio_signal;
 
-  snd_midi_event_t **event_buffer;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  AgsRouteDssiAudioRun *route_dssi_audio_run;
+
+  snd_seq_event_t **event_buffer;
   unsigned long *event_count;
   
   unsigned long buffer_size;
   unsigned long i, i_stop;
 
   /* call parent */
-  AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_inter(recall);
+  AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_pre(recall);
   
   recall_dssi = AGS_RECALL_DSSI(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   recall_dssi_run = AGS_RECALL_DSSI_RUN(recall);
 
+  route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run);
+  count_beats_audio_run = route_dssi_audio_run->count_beats_audio_run;
+
   /* set up buffer */
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->source;
   buffer_size = audio_signal->buffer_size;
-
-  g_message("%d\0", buffer_size);
-  
-  memset(recall_dssi_run->output, 0, recall_dssi->output_lines * buffer_size * sizeof(LADSPA_Data));
-  memset(recall_dssi_run->input, 0, recall_dssi->input_lines * buffer_size * sizeof(LADSPA_Data));
 
   if(recall_dssi->input_lines < recall_dssi->output_lines){
     i_stop = recall_dssi->output_lines;
@@ -318,7 +368,10 @@ ags_recall_dssi_run_run_inter(AgsRecall *recall)
     i_stop = recall_dssi->input_lines;
   }
 
-  if(audio_signal->stream_current == NULL){
+  if(audio_signal->stream_current == NULL ||
+     AGS_NOTE(recall_dssi_run->note)->x[1] <= count_beats_audio_run->notation_counter){
+    //    g_message("done\0");
+    
     for(i = 0; i < i_stop; i++){
       /* deactivate */
       //TODO:JK: fix-me
@@ -347,10 +400,20 @@ ags_recall_dssi_run_run_inter(AgsRecall *recall)
 	event_count = recall_dssi_run->event_count;
       
 	while(*event_buffer != NULL){
+	  //	  if(event_buffer[0]->type == SND_SEQ_EVENT_NOTEON){
+	  //	    event_buffer[0]->time.tick += buffer_size;
+	  //	  g_message("run\0");
 	  recall_dssi->plugin_descriptor->run_synth(recall_dssi_run->ladspa_handle[i],
-						    buffer_size,
-						    *(event_buffer),
-						    *(event_count));
+						    recall_dssi->output_lines * buffer_size,
+						    event_buffer[0],
+						    event_count[0]);
+	  //	    event_buffer[0]->type = SND_SEQ_EVENT_KEYPRESS;
+	  //	  }
+	  
+	  //	  recall_dssi->plugin_descriptor->run_synth(recall_dssi_run->ladspa_handle[i],
+	  //					    buffer_size,
+	  //					    *(event_buffer),
+	  //					    *(event_count));
 	  
 	  event_buffer++;
 	  event_count++;
@@ -363,9 +426,6 @@ ags_recall_dssi_run_run_inter(AgsRecall *recall)
   }
 
   /* copy data */
-  memset((signed short *) audio_signal->stream_current->data,
-	 0,
-	 buffer_size * sizeof(signed short));
   ags_recall_dssi_float_to_short(recall_dssi_run->output,
 				 audio_signal->stream_current->data,
 				 (guint) audio_signal->buffer_size, (guint) recall_dssi->output_lines);
@@ -393,8 +453,14 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
   AgsRecallDssi *recall_dssi;
   AgsDssiPlugin *dssi_plugin;
   AgsPort *current;
+
   GList *port;
+  GList *list;
+
+  gchar *plugin_name;
+  gchar *specifier;
   gchar *path;
+  
   unsigned long port_count;
   unsigned long i, j, j_stop;
 
@@ -403,12 +469,12 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
   LADSPA_PortRangeHintDescriptor hint_descriptor;
 
   recall_dssi = AGS_RECALL_DSSI(AGS_RECALL_CHANNEL_RUN(AGS_RECALL(recall_dssi_run)->parent->parent)->recall_channel);
-
   port = AGS_RECALL(recall_dssi)->port;
   
   plugin_descriptor = recall_dssi->plugin_descriptor;
 
   port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
+  
   port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
 
   if(recall_dssi->input_lines < recall_dssi->output_lines){
@@ -421,18 +487,16 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
     if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
       if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	 LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	GList *list;
-	LADSPA_Data *port_data;
-	gchar *plugin_name;
-	gchar *specifier;
-
+	LADSPA_Data *port_pointer;
+	
 	hint_descriptor = plugin_descriptor->LADSPA_Plugin->PortRangeHints[i].HintDescriptor;
 	specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
 
 	list = port;
-
+	current = NULL;
+	
 	while(list != NULL){
-	  current = port->data;
+	  current = list->data;
 
 	  if(!g_strcmp0(specifier,
 			current->specifier)){
@@ -441,16 +505,32 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 
 	  list = list->next;
 	}
-
+	
 	for(j = 0; j < j_stop; j++){
-	  g_message("connecting port[%d]: %d/%d\0", j, i, port_count);
-	  port_data = (LADSPA_Data *) &(current->port_value.ags_port_ladspa);
+#ifdef AGS_DEBUG
+	  g_message("connecting port[%d]: %d/%d - %f\0", j, i, port_count, current->port_value.ags_port_ladspa);
+#endif
+	  port_pointer = (LADSPA_Data *) &(current->port_value.ags_port_ladspa);
+	  
 	  recall_dssi->plugin_descriptor->LADSPA_Plugin->connect_port(recall_dssi_run->ladspa_handle[j],
 								      i,
-								      port_data);
+								      port_pointer);
 	}
       }
     }
+  }
+
+  /* connect audio port */
+  for(j = 0; j < recall_dssi->input_lines; j++){
+    recall_dssi->plugin_descriptor->LADSPA_Plugin->connect_port(recall_dssi_run->ladspa_handle[j],
+								recall_dssi->input_port[j],
+								&(recall_dssi_run->input[j]));
+  }
+  
+  for(j = 0; j < recall_dssi->output_lines; j++){
+    recall_dssi->plugin_descriptor->LADSPA_Plugin->connect_port(recall_dssi_run->ladspa_handle[j],
+								recall_dssi->output_port[j],
+								&(recall_dssi_run->output[j]));
   }
 }
 
