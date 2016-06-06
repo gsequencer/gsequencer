@@ -309,10 +309,8 @@ libags_file_h_sources = \
 	ags/file/ags_file_launch.h \
 	ags/file/ags_file_link.h \
 	ags/file/ags_file_lookup.h \
-	ags/file/ags_file_read.h \
 	ags/file/ags_file_stock.h \
-	ags/file/ags_file_util.h \
-	ags/file/ags_file_write.h
+	ags/file/ags_file_util.h
 
 deprecated_libags_file_c_sources =
 
@@ -920,7 +918,6 @@ libags_gui_h_sources = \
 	ags/widget/ags_menu_item.h \
 	ags/widget/ags_option_menu.h \
 	ags/widget/ags_ruler.h \
-	ags/widget/ags_segment.h \
 	ags/widget/ags_table.h \
 	ags/widget/ags_timebar.h \
 	ags/widget/ags_vindicator.h \
@@ -943,7 +940,6 @@ libags_gui_c_sources = \
 	ags/widget/ags_menu_item.c \
 	ags/widget/ags_option_menu.c \
 	ags/widget/ags_ruler.c \
-	ags/widget/ags_segment.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \
 	ags/widget/ags_vindicator.c \
@@ -1246,10 +1242,6 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_pattern_box.h \
 	ags/X/machine/ags_synth_callbacks.h \
 	ags/X/machine/ags_synth.h \
-	ags/X/machine/ags_synth_output_line_callbacks.h \
-	ags/X/machine/ags_synth_output_line.h \
-	ags/X/machine/ags_synth_output_pad.h \
-	ags/X/machine/ags_synth_output_pad_callbacks.h \
 	ags/X/machine/ags_synth_input_line.h \
 	ags/X/machine/ags_synth_input_pad.h
 
