@@ -92,4 +92,4 @@ TESTS_ENVIRONMENT = \
 TESTS = $(GTKDOC_CHECK)
 endif
 
--include git.mk
+-include $(top_srcdir)/git.mk
