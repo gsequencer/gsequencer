@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding="utf-8"?>
+<!DOCTYPE book [
+<!ENTITY win98 "Microsoft Windows 98">
+<!ENTITY java2 "Sun Microsystem's Java 1.2">
+<!ENTITY n160 "Compaq Evo n160">
+<!ENTITY stallman "Richard Stallman">
+<!ENTITY ags "Advanced Gtk+ Sequencer">
+]>
+
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 or -->
+<!-- any later version published by the Free Software Foundation; with the -->
+<!-- Invariant Sections being ``GNU General Public License'', with the -->
+<!-- Front-Cover Texts being ``A GNU Manual'', and with the Back-Cover Texts -->
+<!-- as in (a) below.  A copy of the license is included in the section -->
+<!-- entitled ``GNU Free Documentation License''. -->
+<!--  -->
+<!-- (a) The FSF's Back-Cover Text is: ``You have the freedom to -->
+<!-- copy and modify this GNU manual.  Buying copies from the FSF -->
+<!-- supports it in developing GNU and promoting software freedom.'' -->
+
+<preface>
+  <title>Foreword</title>
+  <para>
+    When I started to use GNU/Linux in 2001 I missed only one thing. A sequencer with a
+    nice GUI. There was already rosegarden available. But who didn't get stuck of midi
+    setup, yet? The time before I was using free software and became an affiliate to its
+    community I was using &win98; on my father's desktop computer and did my first steps
+    in &java2;.
+  </para>
+  <para>
+    My very first own Notebook was a &n160; and it's preinstalled &win98; had to vanish
+    because I became a fellow of &stallman;. Soon, I begun to code and older I became my
+    demands to ags increased. I developed the concept of the underlying audio library
+    myself as not graduated college student.
+  </para>
+  <para>
+    October 2005, I decided to reimplement &ags; from scratch in order to get rid of
+    inherited burden. And it was one big development process until I was almost satisfied
+    with it's design. There was a time in 2007 where I even wanted to replace GObject and
+    Gtk+ dependencies with my own libraries I begun to develop. I'm glad of didn't doing
+    so.
+  </para>
+  <para>
+    Thank you!
+  </para>
+</preface>
