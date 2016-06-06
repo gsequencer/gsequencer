@@ -129,7 +129,7 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_performance_preferences.png \
 	$(top_srcdir)/docs/images/ags_server_preferences.png
 
-EXTRA_DIST += $(manpages) $(userdoc) $(devdoc) $(userdocimages)
+EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings)
 
 EXTRA_DIST += $(top_srcdir)/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl $(top_srcdir)/ags/object/ags_marshallers.list
 
