@@ -102,7 +102,7 @@ devdoclistings = \
 	docs/listings/pcm_info.c \
 	docs/listings/pull_thread.c \
 	docs/listings/recycling.c \
-	docs/listings/start_thread.c \
+	docs/listings/start_thread.c
 
 devdocimages = \
 	$(top_srcdir)/docs/images/AGS_iterator.png \

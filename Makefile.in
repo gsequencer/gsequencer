@@ -432,7 +432,6 @@ am__objects_14 = $(am__objects_1) \
 	ags/widget/libags_gui_0_7_la-ags_menu_item.lo \
 	ags/widget/libags_gui_0_7_la-ags_option_menu.lo \
 	ags/widget/libags_gui_0_7_la-ags_ruler.lo \
-	ags/widget/libags_gui_0_7_la-ags_segment.lo \
 	ags/widget/libags_gui_0_7_la-ags_table.lo \
 	ags/widget/libags_gui_0_7_la-ags_timebar.lo \
 	ags/widget/libags_gui_0_7_la-ags_vindicator.lo \
@@ -1218,8 +1217,9 @@ lib_LTLIBRARIES = libags-1.0.la libags_thread-1.0.la libags_server-0.7.la libags
 EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 gsequencer.1 \
 	midi2xml.1 README gsequencer-documentation \
 	gsequencer.desktop.in docs/reference/ags $(manpages) \
-	$(userdoc) $(userdocimages) \
-	$(top_srcdir)/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl \
+	$(userdoc) $(userdocimages) $(devdoc) $(devdocimages) \
+	$(devdoclistings) $(top_srcdir)/ags/file/ags_file.dtd \
+	$(top_srcdir)/ags.xsl \
 	$(top_srcdir)/ags/object/ags_marshallers.list
 CLEANFILES = $(appdata_DATA)
 man1_MANS = gsequencer.1 midi2xml.1
@@ -1266,6 +1266,34 @@ devdoc = \
 	docs/developersBook/chap11.xml \
 	docs/developersBook/chap12.xml \
 	docs/developersBook/appb.xml
+
+devdoclistings = \
+	docs/listings/add_pattern.c \
+	docs/listings/application_mutex.c \
+	docs/listings/audio_application_context.c \
+	docs/listings/audio.c \
+	docs/listings/complete_example.c \
+	docs/listings/config.c \
+	docs/listings/effects_echo_audio.c \
+	docs/listings/effects_echo_audio_run.c \
+	docs/listings/effects_echo_channel.c \
+	docs/listings/effects_echo_channel_run.c \
+	docs/listings/effects_recall_container.c \
+	docs/listings/file_property.c \
+	docs/listings/file_read.c \
+	docs/listings/file_write.c \
+	docs/listings/linking_prerequisites.c \
+	docs/listings/linking_safe.c \
+	docs/listings/linking_unsafe.c \
+	docs/listings/pcm_info.c \
+	docs/listings/pull_thread.c \
+	docs/listings/recycling.c \
+	docs/listings/start_thread.c
+
+devdocimages = \
+	$(top_srcdir)/docs/images/AGS_iterator.png \
+	$(top_srcdir)/docs/images/AGS_recall_lifecycle.png \
+	$(top_srcdir)/docs/images/AGS_super-threaded.png
 
 userdocimages = \
 	$(top_srcdir)/docs/images/ags_export_window.png \
@@ -1467,10 +1495,8 @@ libags_file_h_sources = \
 	ags/file/ags_file_launch.h \
 	ags/file/ags_file_link.h \
 	ags/file/ags_file_lookup.h \
-	ags/file/ags_file_read.h \
 	ags/file/ags_file_stock.h \
-	ags/file/ags_file_util.h \
-	ags/file/ags_file_write.h
+	ags/file/ags_file_util.h
 
 deprecated_libags_file_c_sources = 
 libags_file_c_sources = \
@@ -2065,7 +2091,6 @@ libags_gui_h_sources = \
 	ags/widget/ags_menu_item.h \
 	ags/widget/ags_option_menu.h \
 	ags/widget/ags_ruler.h \
-	ags/widget/ags_segment.h \
 	ags/widget/ags_table.h \
 	ags/widget/ags_timebar.h \
 	ags/widget/ags_vindicator.h \
@@ -2087,7 +2112,6 @@ libags_gui_c_sources = \
 	ags/widget/ags_menu_item.c \
 	ags/widget/ags_option_menu.c \
 	ags/widget/ags_ruler.c \
-	ags/widget/ags_segment.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \
 	ags/widget/ags_vindicator.c \
@@ -2385,10 +2409,6 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_pattern_box.h \
 	ags/X/machine/ags_synth_callbacks.h \
 	ags/X/machine/ags_synth.h \
-	ags/X/machine/ags_synth_output_line_callbacks.h \
-	ags/X/machine/ags_synth_output_line.h \
-	ags/X/machine/ags_synth_output_pad.h \
-	ags/X/machine/ags_synth_output_pad_callbacks.h \
 	ags/X/machine/ags_synth_input_line.h \
 	ags/X/machine/ags_synth_input_pad.h
 
@@ -3372,9 +3392,6 @@ ags/widget/libags_gui_0_7_la-ags_option_menu.lo:  \
 	ags/widget/$(am__dirstamp) \
 	ags/widget/$(DEPDIR)/$(am__dirstamp)
 ags/widget/libags_gui_0_7_la-ags_ruler.lo: ags/widget/$(am__dirstamp) \
-	ags/widget/$(DEPDIR)/$(am__dirstamp)
-ags/widget/libags_gui_0_7_la-ags_segment.lo:  \
-	ags/widget/$(am__dirstamp) \
 	ags/widget/$(DEPDIR)/$(am__dirstamp)
 ags/widget/libags_gui_0_7_la-ags_table.lo: ags/widget/$(am__dirstamp) \
 	ags/widget/$(DEPDIR)/$(am__dirstamp)
@@ -4636,7 +4653,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_menu_item.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_option_menu.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_ruler.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_segment.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_timebar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_vindicator.Plo@am__quote@
@@ -6394,13 +6410,6 @@ ags/widget/libags_gui_0_7_la-ags_ruler.lo: ags/widget/ags_ruler.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_ruler.c' object='ags/widget/libags_gui_0_7_la-ags_ruler.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_0_7_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_0_7_la-ags_ruler.lo `test -f 'ags/widget/ags_ruler.c' || echo '$(srcdir)/'`ags/widget/ags_ruler.c
-
-ags/widget/libags_gui_0_7_la-ags_segment.lo: ags/widget/ags_segment.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_0_7_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_0_7_la-ags_segment.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_segment.Tpo -c -o ags/widget/libags_gui_0_7_la-ags_segment.lo `test -f 'ags/widget/ags_segment.c' || echo '$(srcdir)/'`ags/widget/ags_segment.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_segment.Tpo ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_segment.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_segment.c' object='ags/widget/libags_gui_0_7_la-ags_segment.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_0_7_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_0_7_la-ags_segment.lo `test -f 'ags/widget/ags_segment.c' || echo '$(srcdir)/'`ags/widget/ags_segment.c
 
 ags/widget/libags_gui_0_7_la-ags_table.lo: ags/widget/ags_table.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_0_7_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_0_7_la-ags_table.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_0_7_la-ags_table.Tpo -c -o ags/widget/libags_gui_0_7_la-ags_table.lo `test -f 'ags/widget/ags_table.c' || echo '$(srcdir)/'`ags/widget/ags_table.c
@@ -8779,7 +8788,9 @@ gsequencer.desktop: gsequencer.desktop.in
 
 html:
 	mkdir -p html/
-	xsltproc --output html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
+	mkdir -p html/{developer-docs,user-docs}
+	xsltproc --output html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
+	xsltproc --output html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
@@ -8796,8 +8807,11 @@ install-data-local:
 
 install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/{images,html}/
 	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
-	cp html/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/images/
+	cp html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	cp html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libgsequencer-0.7.x/html/
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
