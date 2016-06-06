@@ -101,7 +101,7 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_performance_preferences.png \
 	$(top_srcdir)/docs/images/ags_server_preferences.png
 
-EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages)
+EXTRA_DIST += $(manpages) $(userdoc) $(devdoc) $(userdocimages)
 
 EXTRA_DIST += $(top_srcdir)/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl $(top_srcdir)/ags/object/ags_marshallers.list
 
@@ -1402,7 +1402,9 @@ gsequencer.desktop: gsequencer.desktop.in
 
 html:
 	mkdir -p html/
-	xsltproc --output html/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
+	mkdir -p html/{developer-docs,user-docs}
+	xsltproc --output html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
+	xsltproc --output html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
 
 install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
@@ -1420,7 +1422,8 @@ install-data-local:
 install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	cp $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
-	cp html/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	cp html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	cp html/developer-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/dev/
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer

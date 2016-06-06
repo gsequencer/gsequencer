@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding="utf-8"?>
+
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 or -->
+<!-- any later version published by the Free Software Foundation; with the -->
+<!-- Invariant Sections being ``GNU General Public License'', with the -->
+<!-- Front-Cover Texts being ``A GNU Manual'', and with the Back-Cover Texts -->
+<!-- as in (a) below.  A copy of the license is included in the section -->
+<!-- entitled ``GNU Free Documentation License''. -->
+<!--  -->
+<!-- (a) The FSF's Back-Cover Text is: ``You have the freedom to -->
+<!-- copy and modify this GNU manual.  Buying copies from the FSF -->
+<!-- supports it in developing GNU and promoting software freedom.'' -->
+
+<appendix xmlns="http://docbook.org/ns/docbook"
+	  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Related projects</title>
+
+  <variablelist>
+    <title>Project Websites</title>
+    <varlistentry><term><filename>Gtk+</filename></term>
+    <listitem>
+      <para>
+	Gimp Tool Kit - <link xlink:href="http://www.gtk.org">http://www.gtk.org</link>
+      </para>
+    </listitem>
+    </varlistentry>
+    
+    <varlistentry><term><filename>Libinstpatch</filename></term>
+    <listitem>
+      <para>
+	Instrument patch library - <link xlink:href="http://www.swamiproject.org">http://www.swamiproject.org</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>Libxml2</filename></term>
+    <listitem>
+      <para>
+	XML library - <link xlink:href="http://www.xmlsoft.org">http://www.xmlsoft.org</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>Libsndfile</filename></term>
+    <listitem>
+      <para>
+	Sound file library - <link xlink:href="http://www.mega-nerd.com">http://www.mega-nerd.com</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>Alsa</filename></term>
+    <listitem>
+      <para>
+	Advanced Linux Sound Architecture - <link xlink:href="http://www.alsa-project.org">http://www.alsa-project.org</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>JACK</filename></term>
+    <listitem>
+      <para>
+	Jack audio connection kit - <link xlink:href="http://www.jackaudio.org">http://www.jackaudio.org</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>LADSPA</filename></term>
+    <listitem>
+      <para>
+	Linux Audio Developer's Simple Plugin API - <link xlink:href="http://www.ladspa.org">http://www.ladspa.org</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>DSSI</filename></term>
+    <listitem>
+      <para>
+	Disposable Soft Synth Interface - <link xlink:href="http://dssi.sourceforge.net">http://dssi.sourceforge.net</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+    <varlistentry><term><filename>Lv2</filename></term>
+    <listitem>
+      <para>
+	LADSPA version 2 - <link xlink:href="http://www.lv2plug.in">http://www.lv2plug.in</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+  </variablelist>
+</appendix>

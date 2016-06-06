@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 or -->
+<!-- any later version published by the Free Software Foundation; with the -->
+<!-- Invariant Sections being ``GNU General Public License'', with the -->
+<!-- Front-Cover Texts being ``A GNU Manual'', and with the Back-Cover Texts -->
+<!-- as in (a) below.  A copy of the license is included in the section -->
+<!-- entitled ``GNU Free Documentation License''. -->
+<!--  -->
+<!-- (a) The FSF's Back-Cover Text is: ``You have the freedom to -->
+<!-- copy and modify this GNU manual.  Buying copies from the FSF -->
+<!-- supports it in developing GNU and promoting software freedom.'' -->
+
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>Multi-/Super-threaded tree</title>
+  <para>
+    Advanced Gtk+ Sequencer comes with an AgsThread object. It is organized
+    as a tree structure. The API provides many functions to work with it.
+    These threads do the ::clock event where all threads synchronize.
+  </para>
+
+  <para>
+    The AgsTaskThread runs synchronized as well but is going to be waited
+    after syncing to run all tasks. The AgsTask signal ::launch runs
+    asynchronous exclusively. So the task thread implements AgsAsyncQueue
+    interface. Every thread tree shall have at toplevel a thread implementing
+    AgsMainLoop interface.
+  </para>
+
+  <para>
+    There is an object call AgsThreadPool serving prelaunched threads. It
+    returns on pull AgsReturnableThread instances. They can be used with
+    a callback ::safe-run.
+  </para>
+  
+  <sect1>
+    <title>The main loop interface</title>
+    <para>
+      AgsMainLoop should be implemented by toplevel threads. Within a thread
+      tree this is the topmost element. It has various get and set methods
+      you would expect. ::set_tic and ::get_tic is used for synchronization purpose
+      as well ::set_last_sync and ::get_last_sync. ::get_async_queue should return
+      an instance implementing AgsAsyncQueue eg. AgsTaskThread. ::get_application_context
+      returns the AgsApplicationContext.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Threads in general</title>
+    <para>
+      Within thread tree context you have to take care not to hang it up with a dead-lock.
+      Usually you have to use the :start_queue to start threads. Protect it with :start_mutex.
+      Alternatively you may want to use ags_thread_start(). The :start_cond notifies about
+      thread being started.
+    </para>
+
+    <para>
+      The following example creates a thread and does add an other thread to :start_queue.
+      This causes it to be started as well. Note you want to access :start_queue using atomic
+      operations since it is volatile.
+    </para>
+
+    <example>
+      <title>Starting threads</title>
+      <programlisting language="C">
+<xi:include href="../listings/start_thread.c" parse="text" />
+      </programlisting>
+    </example>
+
+    <para>
+      There many other functions not covered like mutex wrappers ags_thread_lock() and
+      ags_thread_unlock(). As doing a closer look to the API there are functions to lock
+      different parts of the tree. But all these functions should be carefully used,
+      since you might run into a dead-lock.
+    </para>
+
+    <para>
+      ags_thread_resume() and ags_suspend() wakes-up or suspends threads. But they
+      both should be used within same tic of ::clock. ags_thread_timelock() is used
+      for suspending computing expensive threads and passing ::clock within its run.
+    </para>
+
+    <para>
+      To find a specific thread type use ags_thread_find(). You can use ags_thread_self()
+      to retrieve your own running thread in case your using Advanced Gtk+ Sequencer
+      thread wrapper.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Pulling threads of thread pool</title>
+    <para>
+      AgsThreadPool serves you instantiated and running threads. To pull an AgsReturnableThread
+      issue ags_thread_pool_pull(). The following example does instantiate a thread pool and
+      starts it. After, it pulls two threads and the callbacks are invoked.
+    </para>
+
+    <example>
+      <title>Pulling threads of thread-pool</title>
+      <programlisting language="C">
+<xi:include href="../listings/pull_thread.c" parse="text" />
+      </programlisting>
+    </example>    
+  </sect1>
+
+  <sect1>
+    <title>Launching tasks</title>
+    <para>
+      It's for thread-safety for sure to run tasks asynchronously exclusive. This means what ever
+      you do it's safe exceptional in view of third-party libraries that might have their own threads.
+      To do your own task you should inherit AgsTask base object and implement ::launch. This signal
+      is invoked after syncing the thread tree.
+    </para>
+
+    <para>
+      You can use either ags_task_thread_append_task() or ags_task_thread_append_tasks() to add one
+      respectively a GList of tasks.
+    </para>
+  </sect1>
+</chapter>
