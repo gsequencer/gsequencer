@@ -44,6 +44,35 @@ any later version published by the Free Software Foundation.
 * docs/images/ags_mixer.png
 * docs/images/ags_performance_preferences.png
 * docs/images/ags_server_preferences.png
+* docs/images/AGS_iterator.png \
+* docs/images/AGS_recall_lifecycle.png \
+* docs/images/AGS_super-threaded.png
+
+Following listings are used by the documentation and hence are distributed under the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation.
+
+* docs/listings/effects_echo_channel.c
+* docs/listings/file_property.c
+* docs/listings/effects_echo_audio.c
+* docs/listings/linking_prerequisites.c
+* docs/listings/linking_safe.c
+* docs/listings/effects_echo_audio_run.c
+* docs/listings/effects_recall_container.c
+* docs/listings/file_write.c
+* docs/listings/add_pattern.c
+* docs/listings/linking_unsafe.c
+* docs/listings/thread_application_context.c
+* docs/listings/effects_echo_channel_run.c
+* docs/listings/audio.c
+* docs/listings/pull_thread.c
+* docs/listings/application_mutex.c
+* docs/listings/audio_application_context.c
+* docs/listings/recycling.c
+* docs/listings/config.c
+* docs/listings/pcm_info.c
+* docs/listings/start_thread.c
+* docs/listings/file_read.c
+* docs/listings/complete_example.c
 
 The Advanced Gtk+ Sequencer logo is used by the final binary hence it is applied under the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
