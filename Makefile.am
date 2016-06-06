@@ -65,6 +65,27 @@ userdoc = \
 	docs/usersBook/preface.xml
 
 devdoc = \
+	docs/listings/add_pattern.c \
+	docs/listings/application_mutex.c \
+	docs/listings/audio_application_context.c \
+	docs/listings/audio.c \
+	docs/listings/complete_example.c \
+	docs/listings/config.c \
+	docs/listings/effects_echo_audio.c \
+	docs/listings/effects_echo_audio_run.c \
+	docs/listings/effects_echo_channel.c \
+	docs/listings/effects_echo_channel_run.c \
+	docs/listings/effects_recall_container.c \
+	docs/listings/file_property.c \
+	docs/listings/file_read.c \
+	docs/listings/file_write.c \
+	docs/listings/linking_prerequisites.c \
+	docs/listings/linking_safe.c \
+	docs/listings/linking_unsafe.c \
+	docs/listings/pcm_info.c \
+	docs/listings/pull_thread.c \
+	docs/listings/recycling.c \
+	docs/listings/start_thread.c \
 	docs/developersBook.xml \
 	docs/developersBook/preface.xml \
 	docs/developersBook/chap1.xml \
