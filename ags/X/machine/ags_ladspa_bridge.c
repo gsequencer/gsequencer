@@ -33,9 +33,13 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall_ladspa.h>
+
+#include <ags/widget/ags_dial.h>
 
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
+#include <ags/X/ags_bulk_member.h>
 
 void ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge);
 void ags_ladspa_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -461,7 +465,82 @@ ags_ladspa_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 void
 ags_ladspa_bridge_launch_task(AgsFileLaunch *file_launch, AgsLadspaBridge *ladspa_bridge)
 {
+  GtkTreeModel *model;
+
+  GtkTreeIter iter;
+
+  GList *list, *list_start;
+  GList *recall;
+
   ags_ladspa_bridge_load(ladspa_bridge);
+
+  /* block update bulk port */
+  list_start = 
+    list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->table);
+
+  while(list != NULL){
+    if(AGS_IS_BULK_MEMBER(list->data)){
+      AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
+    }
+
+    list = list->next;
+  }
+
+  /* update value and unblock update bulk port */
+  recall = NULL;
+  
+  if(AGS_MACHINE(ladspa_bridge)->audio->input != NULL){
+    recall = AGS_MACHINE(ladspa_bridge)->audio->input->recall;
+    
+    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LADSPA)) != NULL){
+      if(!g_strcmp0(AGS_RECALL_LADSPA(recall->data)->filename,
+		  ladspa_bridge->filename) &&
+	 !g_strcmp0(AGS_RECALL_LADSPA(recall->data)->effect,
+		    ladspa_bridge->effect)){
+	break;
+      }
+
+      recall = recall->next;
+    }
+  }
+
+  while(list != NULL){
+    if(AGS_IS_BULK_MEMBER(list->data)){
+      GtkWidget *child_widget;
+      
+      GList *port;
+
+      child_widget = gtk_bin_get_child(list->data);
+      
+      if(recall != NULL){
+	port = AGS_RECALL(recall->data)->port;
+
+	while(port != port->next){
+	  if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
+			AGS_PORT(port->data)->specifier)){
+	    if(AGS_IS_DIAL(child_widget)){
+	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
+				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
+	      ags_dial_draw(child_widget);
+	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+	      gtk_toggle_button_set_active(child_widget,
+					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
+	    }
+
+	    break;
+	  }
+
+	  port = port->next;
+	}
+      }
+     
+      AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 xmlNode*
