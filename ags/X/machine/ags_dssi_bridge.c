@@ -44,6 +44,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recall_factory.h>
 #include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_dssi.h>
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
@@ -55,9 +56,12 @@
 #include <ags/audio/recall/ags_route_dssi_audio.h>
 #include <ags/audio/recall/ags_route_dssi_audio_run.h>
 
+#include <ags/widget/ags_dial.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
+#include <ags/X/ags_bulk_member.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -552,7 +556,109 @@ ags_dssi_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 void
 ags_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsDssiBridge *dssi_bridge)
 {
+  GtkTreeModel *model;
+
+  GtkTreeIter iter;
+
+  GList *list, *list_start;
+  GList *recall;
+
+  gchar *str;
+  
   ags_dssi_bridge_load(dssi_bridge);
+
+  /* block update bulk port */
+  list_start = 
+    list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
+
+  while(list != NULL){
+    if(AGS_IS_BULK_MEMBER(list->data)){
+      AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
+    }
+
+    list = list->next;
+  }
+  
+  /* update program */
+  str = xmlGetProp(file_launch->node,
+		   "program\0");
+
+  model = gtk_combo_box_get_model((GtkComboBox *) dssi_bridge->program);
+
+  if(gtk_tree_model_get_iter_first(model, &iter)){
+    gchar *value;
+    
+    do{
+      gtk_tree_model_get(model, &iter,
+			 0, &value,
+			 -1);
+
+      if(!g_strcmp0(str,
+		    value)){
+	break;
+      }
+    }while(gtk_tree_model_iter_next(model,
+				    &iter));
+
+    gtk_combo_box_set_active_iter((GtkComboBox *) dssi_bridge->program,
+				  &iter);
+  }
+
+  /* update value and unblock update bulk port */
+  recall = NULL;
+  
+  if(AGS_MACHINE(dssi_bridge)->audio->input != NULL){
+    recall = AGS_MACHINE(dssi_bridge)->audio->input->recall;
+    
+    while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_DSSI)) != NULL){
+      if(!g_strcmp0(AGS_RECALL_DSSI(recall->data)->filename,
+		  dssi_bridge->filename) &&
+	 !g_strcmp0(AGS_RECALL_DSSI(recall->data)->effect,
+		    dssi_bridge->effect)){
+	break;
+      }
+
+      recall = recall->next;
+    }
+  }
+
+  while(list != NULL){
+    if(AGS_IS_BULK_MEMBER(list->data)){
+      GtkWidget *child_widget;
+      
+      GList *port;
+
+      child_widget = gtk_bin_get_child(list->data);
+      
+      if(recall != NULL){
+	port = AGS_RECALL(recall->data)->port;
+
+	while(port != port->next){
+	  if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
+			AGS_PORT(port->data)->specifier)){
+	    if(AGS_IS_DIAL(child_widget)){
+	      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
+				       AGS_PORT(port->data)->port_value.ags_port_ladspa);
+	      ags_dial_draw(child_widget);
+	    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+	      gtk_toggle_button_set_active(child_widget,
+					   ((AGS_PORT(port->data)->port_value.ags_port_ladspa != 0.0) ? TRUE: FALSE));
+	    }
+
+	    break;
+	  }
+
+	  port = port->next;
+	}
+      }
+     
+      AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 xmlNode*
@@ -560,9 +666,11 @@ ags_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsDssiBridge *dssi_bridge;
 
+  GtkTreeIter iter;
   xmlNode *node;
-
+  
   gchar *id;
+  gchar *program;
   
   dssi_bridge = AGS_DSSI_BRIDGE(plugin);
 
@@ -581,7 +689,13 @@ ags_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   xmlNewProp(node,
 	     "effect\0",
 	     g_strdup(dssi_bridge->effect));
-  
+
+  if((program = gtk_combo_box_text_get_active_text(dssi_bridge->program)) != NULL){
+    xmlNewProp(node,
+	       "program\0",
+	       g_strdup(program));
+  }
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context\0", file->application_context,

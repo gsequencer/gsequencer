@@ -1,3 +1,8 @@
+ags (0.7.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsLadspaBridge, AgsDssiBridge and AgsLv2Bridge restore from XML
+
 ags (0.7.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

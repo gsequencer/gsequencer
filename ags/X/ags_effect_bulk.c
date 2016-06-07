@@ -2279,7 +2279,8 @@ ags_effect_bulk_resize_pads(AgsEffectBulk *effect_bulk,
 void
 ags_effect_bulk_real_map_recall(AgsEffectBulk *effect_bulk)
 {
-  if((AGS_EFFECT_BULK_MAPPED_RECALL & (effect_bulk->flags)) != 0){
+  if((AGS_MACHINE_PREMAPPED_RECALL & (effect_bulk->flags)) == 0 ||
+     (AGS_EFFECT_BULK_MAPPED_RECALL & (effect_bulk->flags)) != 0){
     return;
   }
 
