@@ -364,7 +364,8 @@ ags_config_real_load_defaults(AgsConfig *config)
 {
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "autosave-thread\0", "false\0");
 
-  ags_config_set_value(config, AGS_CONFIG_THREAD, "model\0", "multi-threaded\0");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "model\0", "super-threaded\0");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "super-threaded-scope\0", "channel\0");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global\0", "ags-thread\0");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent\0", "ags-recycling-thread\0");
 

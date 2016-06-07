@@ -1500,13 +1500,12 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	  //						TRUE);
 	}
 	
-	g_message(":: %f\0", default_value);
 	gtk_adjustment_set_value(adjustment,
 				 default_value);
 
-	//#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
 	g_message("dssi bounds: %f %f\0", lower_bound, upper_bound);
-	//#endif
+#endif
       }
 
 	  
