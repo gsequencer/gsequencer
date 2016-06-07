@@ -1,3 +1,9 @@
+ags (0.7.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed Makefile.am to include entire documentation and having a build
+	* fixed ags_config.c to use working default values
+
 ags (0.7.23)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
