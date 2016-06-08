@@ -24,9 +24,9 @@
 
 <!ELEMENT ags-sf-property EMPTY>
 <!ATTLIST ags-sf-property
+	  type             CDATA     #REQUIRED
 	  name             CDATA     #REQUIRED
 	  value            CDATA     #REQUIRED
-	  type             CDATA     #REQUIRED
 	  >
 
 <!-- GUI -->
