@@ -1698,9 +1698,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 					  10,
 					  NULL);
 	      }
-
-	      machine->bank_0 = bank_0;
-	      machine->bank_1 = bank_1;
 	      
 	      /* toggle pattern */
 	      pattern = channel->pattern->content;
@@ -1782,6 +1779,151 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 				    AgsMachine *machine)
 {
   xmlNode *child;
+
+  xmlChar *str;
+
+  if(AGS_IS_DRUM(machine)){
+    AgsDrum *drum;
+    
+    guint bank_0, bank_1;
+
+    drum = machine;
+
+    /* bank 0 */
+    bank_0 = 0;
+    str = xmlGetProp(file_launch->node,
+		     "bank-0\0");
+
+    if(str != NULL){      
+      bank_0 = g_ascii_strtod(str,
+			      NULL);
+
+      if(bank_0 < 4){
+	gtk_toggle_button_set_active(drum->index0[bank_0],
+				     TRUE);
+      }
+    }
+
+    /* bank 1 */
+    bank_1 = 0;
+    str = xmlGetProp(file_launch->node,
+		     "bank-1\0");
+
+    if(str != NULL){      
+      bank_1 = g_ascii_strtod(str,
+			      NULL);
+
+      if(bank_1 < 12){
+	gtk_toggle_button_set_active(drum->index1[bank_1],
+				     TRUE);
+      }
+    }
+  }else if(AGS_IS_MATRIX(machine)){
+    /* bank 1 */
+    bank_1 = 0;
+    str = xmlGetProp(file_launch->node,
+		     "bank-1\0");
+
+    if(str != NULL){      
+      bank_1 = g_ascii_strtod(str,
+			      NULL);
+
+      if(bank_1 < 9){
+	gtk_toggle_button_set_active(drum->index1[bank_1],
+				     TRUE);
+      }
+    }
+  }else if(AGS_IS_FFPLAYER(machine)){
+    AgsFFPlayer *ffplayer;
+
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    gchar *value;
+
+    ffplayer = machine;
+
+    str = xmlGetProp(file_launch->node,
+		     "filename\0");
+
+    ags_ffplayer_open_filename(ffplayer,
+			       filename);
+
+    /* preset */
+    model = gtk_combo_box_get_model(ffplayer->preset);
+
+    str = xmlGetProp(file_launch->node,
+		     "preset\0");
+
+    if(gtk_tree_model_get_iter_first(model, &iter)){
+      do{
+	gtk_tree_model_get(model, &iter,
+			   0, &value,
+			   -1);
+
+	if(!g_strcmp0(str,
+		      value)){
+	  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->preset,
+					&iter);
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+
+    /* instrument */
+    model = gtk_combo_box_get_model(ffplayer->instrument);
+
+    str = xmlGetProp(file_launch->node,
+		     "instrument\0");
+
+    if(gtk_tree_model_get_iter_first(model, &iter)){
+      do{
+	gtk_tree_model_get(model, &iter,
+			   0, &value,
+			   -1);
+
+	if(!g_strcmp0(str,
+		      value)){
+	  gtk_combo_box_set_active_iter((GtkComboBox *) ffplayer->instrument,
+					&iter);
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+  }else if(AGS_IS_DSSI_BRIDGE(machine)){
+    AgsDssiBridge *dssi_bridge;
+
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    gchar *value;
+
+    dssi_bridge = machine;
+
+    /* preset */
+    model = gtk_combo_box_get_model(ffplayer->program);
+
+    str = xmlGetProp(node,
+		     "program\0");
+
+    if(gtk_tree_model_get_iter_first(model, &iter)){
+      do{
+	gtk_tree_model_get(model, &iter,
+			   0, &value,
+			   -1);
+
+	if(!g_strcmp0(str,
+		      value)){
+	  gtk_combo_box_set_active_iter((GtkComboBox *) dssi_bridge->program,
+					&iter);
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+  }
   
   /* children */
   child = file_launch->node->children;
@@ -2392,21 +2534,77 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 			      nth_line);
   }
 
-  xpath_result = ags_simple_file_find_id_ref_by_xpath(simple_file,
-						      xmlGetProp(file_launch->link));
+  str = xmlGetProp(file_launch->node,
+		   "link\0");
 
-  if(xpath_result != NULL){
-    GError *error;
+  if(!g_ascii_strncasecmp(str,
+			  "file://\0",
+			  8)){
+    AgsAudioFile *audio_file;
+    AgsAudioSignal *audio_signal_source_old;
     
-    link = xpath_result->data;
+    GList *audio_signal_list;
+    
+    gchar *filename;
 
-    error = NULL;
-    ags_channel_set_link(channel,
-			 link,
-			 error);
+    guint file_channel;
 
-    if(error != NULL){
-      g_warning("ags_simple_file_read_line_launch() - %s", error->message);
+    /* filename */
+    filename = g_strdup(&(str[7]));
+
+    /* audio channel to read */
+    file_channel = 0;
+
+    str = xmlGetProp(node,
+		     "file-channel\0");
+
+    if(str != NULL){
+      file_channel = g_ascii_strtoull(str,
+				      10,
+				      NULL);
+    }
+
+    /* read audio signal */
+    audio_file = ags_audio_file_new(filename,
+				    machine->audio->soundcard,
+				    file_audio_channel, 1);
+
+    ags_audio_file_read_audio_signal(audio_file);
+    ags_audio_file_close(audio_file);
+
+    /* add audio signal */
+    audio_signal_list = audio_file->audio_signal;
+
+    AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+    AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) channel->first_recycling;
+    audio_signal_source_old = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+
+    ags_recycling_remove_audio_signal(channel->first_recycling,
+				      (gpointer) audio_signal_source_old);
+    ags_recycling_add_audio_signal(channel->first_recycling,
+				   audio_signal_list->data);
+
+    g_object_unref(G_OBJECT(audio_signal_source_old));
+
+    /* free filename */
+    g_free(filename);
+  }else{
+    xpath_result = ags_simple_file_find_id_ref_by_xpath(simple_file,
+							str);
+
+    if(xpath_result != NULL){
+      GError *error;
+    
+      link = xpath_result->data;
+
+      error = NULL;
+      ags_channel_set_link(channel,
+			   link,
+			   error);
+
+      if(error != NULL){
+	g_warning("ags_simple_file_read_line_launch() - %s", error->message);
+      }
     }
   }
   
@@ -3059,7 +3257,8 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   GList *list;
 
   gchar *id;
-
+  xmlChar *str;
+  
   auto void ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel);
 
   void ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel){
@@ -3145,6 +3344,27 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 					  "reference\0", machine,
 					  NULL));
 
+  if(AGS_IS_FFPLAYER(machine)){
+    AgsFFPlayer *ffplayer;
+
+    ffplayer = machine;
+
+    if(ffplayer->ipatch != NULL &&
+       ffplayer->ipatch->filename != NULL){
+      xmlNewProp(node,
+		 "filename\0",
+		 ffplayer->ipatch->filename);
+
+      xmlNewProp(node,
+		 "preset\0",
+		 gtk_combo_box_text_get_active_text(ffplayer->preset));
+
+      xmlNewProp(node,
+		 "instrument\0",
+		 gtk_combo_box_text_get_active_text(ffplayer->instrument));
+    }
+  }
+  
   //TODO:JK: implement me
   
   /* input */
