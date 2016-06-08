@@ -80,7 +80,6 @@ void ags_simple_file_real_rw_open(AgsSimpleFile *simple_file,
 				  GError **error);
 
 void ags_simple_file_real_write(AgsSimpleFile *simple_file);
-void ags_simple_file_real_write_concurrent(AgsSimpleFile *simple_file);
 void ags_simple_file_real_write_resolve(AgsSimpleFile *simple_file);
 
 void ags_simple_file_real_read(AgsSimpleFile *simple_file);
@@ -139,7 +138,6 @@ enum{
   OPEN_FROM_DATA,
   RW_OPEN,
   WRITE,
-  WRITE_CONCURRENT,
   WRITE_RESOLVE,
   READ,
   READ_RESOLVE,
@@ -295,7 +293,6 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
   simple_file->open_from_data = ags_simple_file_real_open_from_data;
 
   simple_file->write = ags_simple_file_real_write;
-  simple_file->write_concurrent = ags_simple_file_real_write_concurrent;
   simple_file->write_resolve = ags_simple_file_real_write_resolve;
   simple_file->read = ags_simple_file_real_read;
   simple_file->read_resolve = ags_simple_file_real_read_resolve;
@@ -378,15 +375,6 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
 		 G_TYPE_FROM_CLASS(simple_file),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, write),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
-
-  simple_file_signals[WRITE_CONCURRENT] =
-    g_signal_new("write_concurrent\0",
-		 G_TYPE_FROM_CLASS(simple_file),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsSimpleFileClass, write_concurrent),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -494,9 +482,9 @@ ags_simple_file_init(AgsSimpleFile *simple_file)
 
 void
 ags_simple_file_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec)
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
 {
   AgsSimpleFile *simple_file;
 
@@ -585,9 +573,9 @@ ags_simple_file_set_property(GObject *gobject,
 
 void
 ags_simple_file_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec)
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
 {
   AgsSimpleFile *simple_file;
 
@@ -639,205 +627,563 @@ ags_simple_file_finalize(GObject *gobject)
 gchar*
 ags_simple_file_str2md5(gchar *content, guint content_length)
 {
-  //TODO:JK: implement me
+  GChecksum *checksum;
+  gchar *str;
+
+  str = g_compute_checksum_for_string(G_CHECKSUM_MD5,
+				      content,
+				      content_length);
+
+  return(str);
 }
 
 void
 ags_simple_file_add_id_ref(AgsSimpleFile *simple_file, GObject *id_ref)
 {
-  //TODO:JK: implement me
+  if(simple_file == NULL ||
+     id_ref == NULL){
+    return;
+  }
+  
+  g_object_ref(id_ref);
+  simple_file->id_refs = g_list_prepend(simple_file->id_ref,
+					id_ref);
 }
 
 GObject*
 ags_simple_file_find_id_ref_by_node(AgsSimpleFile *simple_file, xmlNode *node)
 {
-  //TODO:JK: implement me
+  AgsFileIdRef *file_id_ref;
+  GList *list;
+
+  if(simple_file == NULL ||
+     node == NULL){
+    return(NULL);
+  }
+  
+  list = file->id_ref;
+
+  while(list != NULL){
+    file_id_ref = AGS_FILE_ID_REF(list->data);
+
+    if(file_id_ref->node == node){
+      return((GObject *) file_id_ref);
+    }
+
+    list = list->next;
+  }
+
+  return(NULL);
 }
 
-GObject*
+GList*
 ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath)
 {
-  //TODO:JK: implement me
+  AgsFileIdRef *file_id_ref;
+
+  xmlXPathContext *xpath_context; 
+  xmlXPathObject *xpath_object;
+  xmlNode **node;
+
+  GList *list;
+  
+  guint i;
+
+  if(simple_file == NULL || xpath == NULL || !g_str_has_prefix(xpath, "xpath=\0")){
+    g_message("invalid xpath: %s", xpath);
+
+    return(NULL);
+  }
+
+  xpath = &(xpath[6]);
+
+  /* Create xpath evaluation context */
+  xpath_context = xmlXPathNewContext(simple_file->doc);
+
+  if(xpath_context == NULL) {
+    g_warning("Error: unable to create new XPath context\0");
+
+    return(NULL);
+  }
+
+  /* Evaluate xpath expression */
+  xpath_object = xmlXPathEval(xpath, xpath_context);
+
+  if(xpath_object == NULL) {
+    g_warning("Error: unable to evaluate xpath expression \"%s\"\0", xpath);
+    xmlXPathFreeContext(xpath_context); 
+
+    return(NULL);
+  }
+
+  node = xpath_object->nodesetval->nodeTab;
+
+  list = NULL;
+  
+  for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+    if(node[i]->type == XML_ELEMENT_NODE){
+      list = g_list_prepend(list,
+			    ags_simple_file_find_id_ref_by_node(simple_file,
+								node[i])));
+  }
+}
+
+if(list == NULL){
+  g_message("no xpath match: %s\0", xpath);
+ }else{
+  list = g_list_reverse(list);
+ }
+  
+return(list);
 }
 
 GObject*
 ags_simple_file_find_id_ref_by_reference(AgsSimpleFile *simple_file, gpointer ref)
 {
-  //TODO:JK: implement me
+  AgsFileIdRef *file_id_ref;
+  
+  GList *list;
+  GList *ref_list;
+  
+  if(simple_file == NULL || ref == NULL){
+    return(NULL);
+  }
+
+  list = simple_file->id_refs;
+  ref_list = NULL;
+  
+  while(list != NULL){
+    file_id_ref = AGS_FILE_ID_REF(list->data);
+
+    if(file_id_ref->ref == ref){
+      ref_list = g_list_prepend(ref_list,
+				file_id_ref);
+    }
+
+    list = list->next;
+  }
+
+  return(ref_list);
 }
 
 void
 ags_simple_file_add_lookup(AgsSimpleFile *simple_file, GObject *file_lookup)
 {
-  //TODO:JK: implement me
+  if(simple_file == NULL || file_lookup == NULL){
+    return;
+  }
+
+  g_object_ref(G_OBJECT(file_lookup));
+
+  simple_file->lookup = g_list_prepend(simple_file->lookup,
+				       file_lookup);
 }
 
 void
 ags_simple_file_add_launch(AgsSimpleFile *simple_file, GObject *file_launch)
 {
-  //TODO:JK: implement me
+  if(simple_file == NULL || file_launch == NULL){
+    return;
+  }
+
+  g_object_ref(G_OBJECT(file_launch));
+
+  simple_file->launch = g_list_prepend(simple_file->launch,
+				       file_launch);
 }
 
 void
 ags_simple_file_real_open(AgsSimpleFile *simple_file,
-			       GError **error)
+			  GError **error)
 {
-  //TODO:JK: implement me
+  if(simple_file == NULL){
+    return;
+  }
+
+  /* parse the file and get the DOM */
+  simple_file->doc = xmlReadFile(simple_file->filename, NULL, 0);
+
+  if(simple_file->doc == NULL){
+    g_warning("ags_simple_file.c - failed to read XML document %s\0", simple_file->filename);
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_SIMPLE_FILE_ERROR,
+		  AGS_SIMPLE_FILE_ERROR_PARSER_FAILURE,
+		  "unable to parse document: %s\n\0",
+		  simple_file->filename);
+    }
+  }else{
+    /*Get the root element node */
+    simple_file->root_node = xmlDocGetRootElement(simple_file->doc);
+  }
 }
 
 void
 ags_simple_file_open(AgsSimpleFile *simple_file,
-			  GError **error)
+		     GError **error)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_SIMPLE_FILE(simple_file));
+
+  g_object_ref(G_OBJECT(simple_file));
+  g_signal_emit(G_OBJECT(simple_file),
+		simple_file_signals[OPEN], 0,
+		error);
+  g_object_unref(G_OBJECT(simple_file));
 }
 
 void
 ags_simple_file_real_open_from_data(AgsSimpleFile *simple_file,
-					 gchar *data, guint length,
-					 GError **error)
+				    gchar *data, guint length,
+				    GError **error)
 {
-  //TODO:JK: implement me
+  if(simple_file == NULL){
+    return;
+  }
+
+  simple_file->doc = xmlReadMemory(data, length, simple_file->filename, NULL, 0);
+
+  if(simple_file->doc == NULL){
+    g_warning("ags_simple_file.c - failed to read XML document %s\0", simple_file->filename);
+
+    if(error != NULL){
+      g_set_error(error,
+		  AGS_SIMPLE_FILE_ERROR,
+		  AGS_SIMPLE_FILE_ERROR_PARSER_FAILURE,
+		  "unable to parse document from data: %s\n\0",
+		  simple_file->filename);
+    }
+  }else{
+    /*Get the root element node */
+    simple_file->root_node = xmlDocGetRootElement(simple_file->doc);
+  }
 }
 
 void
 ags_simple_file_open_from_data(AgsSimpleFile *simple_file,
-				    gchar *data, guint length,
-				    GError **error)
+			       gchar *data, guint length,
+			       GError **error)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_SIMPLE_FILE(simple_file));
+
+  g_object_ref(G_OBJECT(simple_file));
+  g_signal_emit(G_OBJECT(simple_file),
+		simple_file_signals[OPEN_FROM_DATA], 0,
+		data, length,
+		error);
+  g_object_unref(G_OBJECT(simple_file));
 }
 
 void
 ags_simple_file_real_rw_open(AgsSimpleFile *simple_file,
-				  gboolean create,
-				  GError **error)
+			     gboolean create,
+			     GError **error)
 {
-  //TODO:JK: implement me
+  if(simple_file == NULL){
+    return;
+  }
+
+  simple_file->out = fopen(simple_file->filename, "w+\0");
+
+  simple_file->doc = xmlNewDoc("1.0\0");
+  simple_file->root_node = xmlNewNode(NULL, "ags-simple-file\0");
+  xmlDocSetRootElement(simple_file->doc, simple_file->root_node);
 }
 
 void
 ags_simple_file_rw_open(AgsSimpleFile *simple_file,
-			     gboolean create,
-			     GError **error)
+			gboolean create,
+			GError **error)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_SIMPLE_FILE(simple_file));
+
+  g_object_ref(G_OBJECT(simple_file));
+  g_signal_emit(G_OBJECT(simple_file),
+		simple_file_signals[RW_OPEN], 0,
+		create,
+		error);
+  g_object_unref(G_OBJECT(simple_file));
 }
 
 void
 ags_simple_file_open_filename(AgsSimpleFile *simple_file,
-				   gchar *filename)
+			      gchar *filename)
 {
-  //TODO:JK: implement me
+  GError *error;
+  
+  if(simple_file == NULL){
+    return;
+  }
+
+  if(simple_file->filename != NULL){
+    ags_simple_file_close(simple_file);
+  }
+
+  error = NULL;
+  g_object_set(simple_file,
+	       "filename\0", filename,
+	       NULL);
+  ags_simple_file_open(simple_file,
+		       &error);
+
+  if(error != NULL){
+    g_warning(error->message);
+  }
 }
 
 void
 ags_simple_file_close(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  if(simple_file == NULL){
+    return;
+  }
+
+  if(simple_file->out != NULL){
+    fclose(simple_file->out);
+  }
+  
+  /*free the document */
+  xmlFreeDoc(simple_file->doc);
+
+  /*
+   *Free the global variables that may
+   *have been allocated by the parser.
+   */
+  xmlCleanupParser();
+
+  /*
+   * this is to debug memory for regression tests
+   */
+  xmlMemoryDump();
+
+  simple_file->filename = NULL;
 }
 
 void
 ags_simple_file_real_write(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+  
+  xmlNode *node, *child;
+  
+  gchar *id;
+
+  if(simple_file == NULL ||
+     simple_file->root_node == NULL){
+    return;
+  }
+
+  application_context = simple_file->application_context;
+  config = ags_config_get_instance();
+  
+  id = ags_id_generator_create_uuid();
+
+  node = simple_file->root_node;
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_APPLICATION_CONTEXT(application_context)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_APPLICATION_CONTEXT(application_context)->build_id);
+
+  /* add to parent */
+  ags_simple_file_write_config(simple_file,
+			       node,
+			       config);  
+  
+  ags_simple_file_write_window(simple_file,
+			       node,
+			       AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
+
+  /* resolve */
+  ags_simple_file_write_resolve(simple_file);
+
+  /* 
+   * Dumping document to file
+   */
+  //  xmlSaveFormatFileEnc(simple_file->filename, simple_file->doc, "UTF-8\0", 1);
+  xmlDocDumpFormatMemoryEnc(simple_file->doc, &(simple_file->buffer), &size, simple_file->encoding, TRUE);
+
+  fwrite(simple_file->buffer, size, sizeof(xmlChar), simple_file->out);
+  fflush(simple_file->out);
 }
 
 
 void
 ags_simple_file_write(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
-}
+  g_return_if_fail(AGS_IS_SIMPLE_FILE(simple_file));
 
-void
-ags_simple_file_real_write_concurrent(AgsSimpleFile *simple_file)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_simple_file_write_concurrent(AgsSimpleFile *simple_file)
-{
-  //TODO:JK: implement me
+  g_object_ref(G_OBJECT(simple_file));
+  g_signal_emit(G_OBJECT(simple_file),
+		simple_file_signals[WRITE], 0);
+  g_object_unref(G_OBJECT(simple_file));
 }
 
 void
 ags_simple_file_real_write_resolve(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  GList *list;
+  
+  simple_file->lookup = g_list_prepend(simple_file->lookup,
+				       NULL);
+  list = simple_file->lookup;
+
+  while(list != NULL){
+    ags_simple_file_lookup_resolve(AGS_FILE_LOOKUP(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_simple_file_write_resolve(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_SIMPLE_FILE(simple_file));
+
+  g_object_ref(G_OBJECT(simple_file));
+  g_signal_emit(G_OBJECT(simple_file),
+		simple_file_signals[WRITE_RESOLVE], 0);
+  g_object_unref(G_OBJECT(simple_file));
 }
 
 void
 ags_simple_file_real_read(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+
+  xmlNode *root_node, *child;
+
+  root_node = simple_file->root_node;
+  
+  /* child elements */
+  child = root_node->children;
+  application_context = simple_file->application_context;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-sf-config\0",
+		     child->name,
+		     13)){
+	ags_simple_file_read_config(simple_file,
+				    child,
+				    (GObject **) &(application_context->config));
+      }else if(!xmlStrncmp("ags-window\0",
+			   child->name,
+			   11)){
+	ags_simple_file_read_window(simple_file,
+				    child,
+				    (AgsWindow **) &(AGS_XORG_APPLICATION_CONTEXT(application_context)->window));
+      }
+    }
+
+    child = child->next;
+  }
+
+  /* resolve */
+  ags_simple_file_read_resolve(simple_file);
+  
+  g_message("XML simple file resolved\0");
+
+  ags_connectable_connect(AGS_CONNECTABLE(application_context));
+
+  g_message("XML simple file connected\0");
+
+  /* start */
+  ags_simple_file_read_start(simple_file);
 }
 
 void
 ags_simple_file_read(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_SIMPLE_FILE(simple_file));
+
+  g_object_ref(G_OBJECT(simple_file));
+  g_signal_emit(G_OBJECT(simple_file),
+		simple_file_signals[READ], 0);
+  g_object_unref(G_OBJECT(simple_file));
 }
 
 void
 ags_simple_file_real_read_resolve(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  GList *list;
+
+  simple_file->lookup = g_list_prepend(simple_file->lookup,
+				       NULL);
+  list = g_list_reverse(simple_file->lookup);
+  
+  while(list != NULL){
+    ags_simple_file_lookup_resolve(AGS_SIMPLE_FILE_LOOKUP(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_simple_file_read_resolve(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_SIMPLE_FILE(simple_file));
+
+  g_object_ref(G_OBJECT(simple_file));
+  g_signal_emit(G_OBJECT(simple_file),
+		simple_file_signals[READ_RESOLVE], 0);
+  g_object_unref(G_OBJECT(simple_file));
 }
 
 void
 ags_simple_file_real_read_start(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  GList *list;
+
+  list = g_list_reverse(simple_file->launch);
+
+  while(list != NULL){
+    ags_simple_file_launch_start(AGS_SIMPLE_FILE_LAUNCH(list->data));
+
+    list = list->next;
+  }
 }
 
 void
 ags_simple_file_read_start(AgsSimpleFile *simple_file)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_SIMPLE_FILE(simple_file));
+
+  g_object_ref(G_OBJECT(simple_file));
+  g_signal_emit(G_OBJECT(simple_file),
+		simple_file_signals[READ_START], 0);
+  g_object_unref(G_OBJECT(simple_file));
 }
 
 void
 ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, GObject **ags_config)
 {
-  //TODO:JK: implement me
-}
+  AgsConfig *gobject;
 
-void
-ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, GObject *ags_config)
-{
-  //TODO:JK: implement me
-}
+  gchar *id;
 
-void
-ags_simple_file_read_application_context(AgsSimpleFile *simple_file, xmlNode *node, GObject **application_context)
-{
-  //TODO:JK: implement me
-}
+  char *buffer;
+  gsize buffer_length;
 
-void
-ags_simple_file_write_application_context(AgsSimpleFile *simple_file, xmlNode *parent, GObject *application_context)
-{
-  //TODO:JK: implement me
-}
+  gobject = config;
+  gobject->version = xmlGetProp(node,
+				AGS_FILE_VERSION_PROP);
 
-void
-ags_simple_file_read_config(AgsFile *file, xmlNode *node, AgsConfig **config)
-{
-  //TODO:JK: implement me
+  gobject->build_id = xmlGetProp(node,
+				 AGS_FILE_BUILD_ID_PROP);
+
+  buffer = xmlNodeGetContent(node);
+  buffer_length = xmlStrlen(buffer);
+
+  ags_config_load_from_data(gobject,
+			    buffer, buffer_length);
 }
 
 void
@@ -904,6 +1250,59 @@ void
 ags_simple_file_read_automation_editor(AgsFile *file, xmlNode *node, AgsAutomationEditor **automation_editor)
 {
   //TODO:JK: implement me
+}
+
+
+void
+ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, GObject *ags_config)
+{
+  xmlNode *node;
+  xmlNode *cdata;
+
+  gchar *id;
+  char *buffer;
+  gsize buffer_length;
+
+  id = ags_id_generator_create_uuid();
+
+  node = xmlNewNode(NULL,
+		    "ags-config\0");
+
+  ags_simple_file_add_id_ref(simple_file,
+			     g_object_new(AGS_TYPE_FILE_ID_REF,
+					  "application-context\0", simple_file->application_context,
+					  "file\0", simple_file,
+					  "node\0", node,
+					  "xpath\0", g_strdup_printf("xpath=//*[@id='%s']\0", id),
+					  "reference\0", config,
+					  NULL));
+
+  xmlNewProp(node,
+	     AGS_FILE_ID_PROP,
+	     id);
+
+  xmlNewProp(node,
+	     AGS_FILE_VERSION_PROP,
+	     AGS_CONFIG(config)->version);
+
+  xmlNewProp(node,
+	     AGS_FILE_BUILD_ID_PROP,
+	     AGS_CONFIG(config)->build_id);
+
+  xmlAddChild(parent,
+	      node);
+
+  /* cdata */
+  ags_config_to_data(config,
+		     &buffer,
+		     &buffer_length);
+
+  cdata = xmlNewCDataBlock(simple_file->doc,
+			   buffer,
+			   buffer_length);
+
+  xmlAddChild(node,
+	      cdata);
 }
 
 xmlNode*
