@@ -30,6 +30,9 @@
 #include <ags/file/ags_file_launch.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_editor.h>
+#include <ags/X/ags_automation_window.h>
+#include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
@@ -86,40 +89,42 @@ void ags_simple_file_real_read(AgsSimpleFile *simple_file);
 void ags_simple_file_real_read_resolve(AgsSimpleFile *simple_file);
 void ags_simple_file_real_read_start(AgsSimpleFile *simple_file);
 
-void ags_simple_file_read_config(AgsFile *file, xmlNode *node, AgsConfig **config);
-void ags_simple_file_read_property_list(AgsFile *file, xmlNode *node, GList **property);
-void ags_simple_file_read_property(AgsFile *file, xmlNode *node, GParameter **property);
-void ags_simple_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window);
-void ags_simple_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine);
-void ags_simple_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine);
-void ags_simple_file_read_pad_list(AgsFile *file, xmlNode *node, GList **pad);
-void ags_simple_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad);
-void ags_simple_file_read_line_list(AgsFile *file, xmlNode *node, GList **line);
-void ags_simple_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line);
-void ags_simple_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor);
-void ags_simple_file_read_automation_editor(AgsFile *file, xmlNode *node, AgsAutomationEditor **automation_editor);
+void ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **config);
+void ags_simple_file_read_property_list(AgsSimpleFile *simple_file, xmlNode *node, GList **property);
+void ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParameter **property);
+void ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window);
+void ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
+					AgsWindow *window);
+void ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine);
+void ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine **machine);
+void ags_simple_file_read_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList **pad);
+void ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad);
+void ags_simple_file_read_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList **line);
+void ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **line);
+void ags_simple_file_read_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsEditor **editor);
+void ags_simple_file_read_automation_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomationEditor **automation_editor);
 
-xmlNode* ags_simple_file_write_window(AgsFile *file, xmlNode *parent, AgsConfig *config);
-xmlNode* ags_simple_file_write_property_list(AgsFile *file, xmlNode *parent, GList *property);
-xmlNode* ags_simple_file_write_property(AgsFile *file, xmlNode *parent, GParameter *property);
-xmlNode* ags_simple_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window);
-xmlNode* ags_simple_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine);
-xmlNode* ags_simple_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine);
-xmlNode* ags_simple_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad);
-xmlNode* ags_simple_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad);
-xmlNode* ags_simple_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line);
-xmlNode* ags_simple_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line);
-xmlNode* ags_simple_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor);
-xmlNode* ags_simple_file_write_automation_editor(AgsFile *file, xmlNode *parent, AgsAutomationEditor *automation_editor);
+xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsConfig *config);
+xmlNode* ags_simple_file_write_property_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *property);
+xmlNode* ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GParameter *property);
+xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
+xmlNode* ags_simple_file_write_machine_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *machine);
+xmlNode* ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMachine *machine);
+xmlNode* ags_simple_file_write_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *pad);
+xmlNode* ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *pad);
+xmlNode* ags_simple_file_write_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *line);
+xmlNode* ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine *line);
+xmlNode* ags_simple_file_write_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsEditor *editor);
+xmlNode* ags_simple_file_write_automation_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsAutomationEditor *automation_editor);
 
 /**
  * SECTION:ags_file
  * @short_description: read/write XML file
- * @title: AgsFile
+ * @title: AgsSimpleFile
  * @section_id:
  * @include: ags/file/ags_file.h
  *
- * The #AgsFile is an object to read or write files using XML. It
+ * The #AgsSimpleFile is an object to read or write files using XML. It
  * is the persisting layer of Advanced Gtk+ Sequencer.
  */
 
@@ -493,7 +498,7 @@ ags_simple_file_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_FILENAME:
     {
-      gchar *filename;
+      gchar *simple_filename;
 
       filename = g_value_get_string(value);
 
@@ -653,7 +658,7 @@ ags_simple_file_add_id_ref(AgsSimpleFile *simple_file, GObject *id_ref)
 GObject*
 ags_simple_file_find_id_ref_by_node(AgsSimpleFile *simple_file, xmlNode *node)
 {
-  AgsFileIdRef *file_id_ref;
+  AgsSimpleFileIdRef *simple_file_id_ref;
   GList *list;
 
   if(simple_file == NULL ||
@@ -679,7 +684,7 @@ ags_simple_file_find_id_ref_by_node(AgsSimpleFile *simple_file, xmlNode *node)
 GList*
 ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath)
 {
-  AgsFileIdRef *file_id_ref;
+  AgsSimpleFileIdRef *simple_file_id_ref;
 
   xmlXPathContext *xpath_context; 
   xmlXPathObject *xpath_object;
@@ -740,7 +745,7 @@ return(list);
 GObject*
 ags_simple_file_find_id_ref_by_reference(AgsSimpleFile *simple_file, gpointer ref)
 {
-  AgsFileIdRef *file_id_ref;
+  AgsSimpleFileIdRef *simple_file_id_ref;
   
   GList *list;
   GList *ref_list;
@@ -767,7 +772,7 @@ ags_simple_file_find_id_ref_by_reference(AgsSimpleFile *simple_file, gpointer re
 }
 
 void
-ags_simple_file_add_lookup(AgsSimpleFile *simple_file, GObject *file_lookup)
+ags_simple_file_add_lookup(AgsSimpleFile *simple_file, GObject *simple_file_lookup)
 {
   if(simple_file == NULL || file_lookup == NULL){
     return;
@@ -780,7 +785,7 @@ ags_simple_file_add_lookup(AgsSimpleFile *simple_file, GObject *file_lookup)
 }
 
 void
-ags_simple_file_add_launch(AgsSimpleFile *simple_file, GObject *file_launch)
+ags_simple_file_add_launch(AgsSimpleFile *simple_file, GObject *simple_file_launch)
 {
   if(simple_file == NULL || file_launch == NULL){
     return;
@@ -907,7 +912,7 @@ ags_simple_file_rw_open(AgsSimpleFile *simple_file,
 
 void
 ags_simple_file_open_filename(AgsSimpleFile *simple_file,
-			      gchar *filename)
+			      gchar *simple_filename)
 {
   GError *error;
   
@@ -1187,68 +1192,684 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, GObject *
 }
 
 void
-ags_simple_file_read_property_list(AgsFile *file, xmlNode *node, GList **property)
+ags_simple_file_read_property_list(AgsSimpleFile *simple_file, xmlNode *node, GList **property)
 {
+  GParameter *current;
+  GList *list;
+  
+  xmlNode *child;
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-property\0",
+		     11)){
+	current = NULL;
+	ags_simple_file_read_property(simple_file, child, &current);
+	list = g_list_prepend(list, current);
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *property = list;
+}
+
+void
+ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParameter **property)
+{
+  GParameter *pointer;
+
+  xmlChar *str;
+  xmlChar *type;
+  
+  if(*property != NULL){
+    pointer = *property;
+  }else{
+    pointer = (GParameter *) g_new(GParameter,
+				   1);
+    pointer->name = NULL;
+    pointer->value = {0,};
+    
+    *property = pointer;
+  }
+
+  str = xmlGetProp(node,
+		   "name\0");
+
+  if(str != NULL){
+    pointer->name = g_strdup(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "value\0");
+  type = xmlGetProp(node,
+		    "type\0");
+
+  if(str != NULL &&
+     type != NULL){
+    if(!g_strcmp0(type,
+		  "gboolean\0")){
+      g_value_init(pointer->value,
+		   G_TYPE_BOOLEAN);
+      
+      if(!g_strcmp0(str,
+		    "false\0")){
+	g_value_set_boolean(pointer->value,
+			    FALSE);
+      }else{
+	g_value_set_boolean(pointer->value,
+			    TRUE);
+      }
+    }else if(!g_strcmp0(type,
+		  "guint\0")){
+      guint val;
+
+      g_value_init(pointer->value,
+		   G_TYPE_UINT);
+      
+      val = g_ascii_strtoull(str,
+			     10,
+			     NULL);
+
+      g_value_set_uint(pointer->value,
+		       val);
+    }else if(!g_strcmp0(type,
+			"gint\0")){
+      gint val;
+
+      g_value_init(pointer->value,
+		   G_TYPE_UINT);
+      
+      val = g_ascii_strtoll(str,
+			    10,
+			    NULL);
+
+      g_value_set_int(pointer->value,
+		      val);
+    }else if(!g_strcmp0(type,
+			"gdouble\0")){
+      gdouble val;
+      
+      g_value_init(pointer->value,
+		   G_TYPE_DOUBLE);
+
+      val = g_ascii_strtod(str,
+			   NULL);
+
+      g_value_set_double(pointer->value,
+			 val);
+    }else{
+      g_warning("ags_simple_file_read_property() unsupported type - %s\0", type);
+    }
+  }
+}
+
+void
+ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window)
+{
+  AgsWindow *gobject;
+
+  AgsFileLaunch *file_launch;
+  
+  xmlNode *child;
+
+  xmlChar *str;
+  
+  if(*window != NULL){
+    gobject = *window;
+  }else{
+    gobject = ags_window_new(simple_file->application_context);
+
+    *window = gobject;
+  }
+
+  str = xmlGetProp(node,
+		   "filename\0");
+
+  if(str != NULL){
+    gobject->name = g_strdup(str);
+  }
+
+  /* connect */
+  ags_connectable_connect(AGS_CONNECTABLE(gobject));
+  
+  /* children */
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-machine-list\0",
+		     17)){
+	GList *machine_start;
+
+	machine_start = NULL;
+	ags_simple_file_read_machine_list(simple_file,
+					  child,
+					  &machine_start);
+	g_list_free(machine_start);
+      }else if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-editor\0",
+		     11)){
+	ags_simple_file_read_editor(simple_file,
+				    child,
+				    &(window->editor));
+      }else if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-automation-editor\0",
+		     22)){
+	ags_simple_file_read_automation_editor(simple_file,
+					       child,
+					       &(AGS_AUTOMATION_WINDOW(window->automation_window)->automation_editor));
+      }
+    }
+
+    child = child->next;
+  }
+
+  /* launch settings */
+  file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
+					       "node\0", node,
+					       NULL);
+  g_signal_connect(G_OBJECT(file_launch), "start\0",
+		   G_CALLBACK(ags_simple_file_read_window_launch), gobject);
+  ags_simple_file_add_launch(simple_file,
+			     (GObject *) file_launch);
+}
+
+void
+ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
+				   AgsWindow *window)
+{
+  xmlChar *str;
+  
+  gdouble bpm;
+  gdouble loop_start, loop_end;
+  gboolean loop;
+
+  /* bpm */
+  str = xmlGetProp(file_launch->node,
+		   "bpm\0");
+
+  if(str != NULL){
+    bpm = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(window->navigation->bpm,
+			     bpm);
+  }
+
+  /* loop */
+  str = xmlGetProp(file_launch->node,
+		   "bpm\0");
+
+  if(str != NULL){
+    if(g_strcmp(str,
+		"false\0")){
+      gtk_toggle_button_set_active(window->navigation->loop,
+				   TRUE);
+    }
+  }
+  
+  /* loop start */
+  str = xmlGetProp(file_launch->node,
+		   "loop-start\0");
+  
+  if(str != NULL){
+    bpm = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(window->navigation->loop_left_tact,
+			     bpm);
+  }
+
+  /* loop end */
+  str = xmlGetProp(file_launch->node,
+		   "loop-end\0");
+
+  if(str != NULL){
+    bpm = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(window->navigation->loop_right_tact,
+			     bpm);
+  }
+}
+
+void
+ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine)
+{
+  AgsMachine *current;
+  GList *list;
+  
+  xmlNode *child;
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-machine\0",
+		     11)){
+	current = NULL;
+	ags_simple_file_read_machine(simple_file, child, &current);
+	list = g_list_prepend(list, current);
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *machine = list;
+}
+
+void
+ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine **machine)
+{
+  AgsWindow *window;
+  AgsMachine *gobject;
+
+  GObject *soundcard;
+
+  AgsFileLaunch *file_launch;
+
+  xmlNode *child;
+  
+  GList *list;
+  GList *output_pad;
+  GList *input_pad;
+    
+  xmlChar *type_name;
+  xmlChar *str;
+
+  guint audio_channels;
+  guit output_pads, input_pads;
+  
+  type_name = xmlGetProp(node,
+			 AGS_FILE_TYPE_PROP);
+
+  if(*machine != NULL){
+    gobject = *machine;
+  }else{
+    gobject = g_object_new(g_type_from_name(type_name),
+			   NULL);
+
+    *machine = gobject;
+  }
+
+  /* retrieve window */  
+  window = ags_simple_file_find_id_ref_by_node(simple_file,
+					       node->parent->parent);
+  soundcard = AGS_XORG_APPLICATION_CONTEXT(file->application_context)->soundcard->data;
+
+  /* add audio to soundcard */
+  g_object_ref(G_OBJECT(gobject->audio));
+  
+  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+
+  if(g_list_find(list,
+		 gobject->audio) == NULL){
+    list = g_list_prepend(list,
+			  gobject->audio);
+    ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
+			    list);
+  }
+  
+  /* connect AgsAudio */
+  ags_connectable_connect(AGS_CONNECTABLE(gobject->audio));
+  
+  /* retrieve channel allocation */
+  str = xmlGetProp(node,
+		   "channels\0");
+
+  if(str != NULL){
+    audio_channels = g_ascii_strtoull(str,
+				      10,
+				      NULL);
+    ags_audio_set_audio_channels(gobject->audio,
+				 audio_channels);
+  }
+
+  str = xmlGetProp(node,
+		   "input-pads\0");
+
+  if(str != NULL){
+    input_pads = g_ascii_strtoull(str,
+				  10,
+				  NULL);
+    ags_audio_set_pads(gobject->audio,
+		       AGS_TYPE_INPUT,
+		       input_pads);
+  }
+
+  str = xmlGetProp(node,
+		   "output-pads\0");
+
+  if(str != NULL){
+    output_pads = g_ascii_strtoull(str,
+				   10,
+				   NULL);
+    ags_audio_set_pads(gobject->audio,
+		       AGS_TYPE_OUTPUT,
+		       output_pads);
+  }
+
+  /* children */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-pad-list\0",
+		     16)){
+	GList *pad;
+
+	pad = NULL;
+	ags_simple_file_read_pad_list(simple_file,
+				      child,
+				      &pad);
+
+	g_list_free(pad);
+      }else if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-effect-list\0",
+		     19)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-pattern-list\0",
+		     20)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-notation-list\0",
+		     21)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-automation-list\0",
+		     23)){
+	//TODO:JK: implement me
+      }else if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-property-list\0",
+		     21)){
+	//TODO:JK: implement me
+      }
+    }
+
+    child = child->next;
+  }
+
+  ags_connectable_connect(AGS_CONNECTABLE(gobject));
+
+  /* machine specific */  
+  if(AGS_IS_LADSPA_BRIDGE(gobject)){
+    ags_ladspa_bridge_load(gobject);
+  }else if(AGS_IS_DSSI_BRIDGE(gobject)){
+    ags_dssi_bridge_load(gobject);
+  }else if(AGS_IS_LV2_BRIDGE(gobject)){
+    ags_lv2_bridge_load(gobject);
+  }
+
+  gtk_widget_show_all(gobject);
+}
+
+void
+ags_simple_file_read_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList **pad)
+{
+  AgsPad *current;
+  GList *list;
+  
+  xmlNode *child;
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-pad\0",
+		     11)){
+	current = NULL;
+	ags_simple_file_read_pad(simple_file, child, &current);
+	list = g_list_prepend(list, current);
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *pad = list;
+}
+
+void
+ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad)
+{
+  AgsMachine *machine;
+  AgsPad *gobject;
+  
+  AgsFileLaunch *file_launch;
+
+  xmlNode *child;
+
+  GList *list, *list_start;
+    
+  xmlChar *str;
+
+  guint nth_pad;
+  
+  if(*pad != NULL){
+    gobject = *pad;
+
+    nth_pad = gobject->channel->pad;
+  }else{
+    machine = ags_simple_file_get_ref_by_node(node->parent->parent);
+
+    /* get nth pad */
+    nth_pad = 0;
+    str = xmlGetProp(node->parent,
+		     "nth-pad\0");
+
+    if(str != NULL){
+      nth_pad = g_ascii_strtoull(str,
+				 10,
+				 NULL);
+    }
+
+    /* retrieve pad */
+    gobject = NULL;
+    str = xmlGetProp(node->parent,
+		     "is-output\0");
+    
+    if(!g_strcmp0(str,
+		  "false\0")){
+      list_start = gtk_container_get_children(machine->input);
+    }else{
+      list_start = gtk_container_get_children(machine->output);
+    }
+
+    list = g_list_nth(list_start,
+		      nth_pad);
+
+    if(list != NULL){
+      gobject = AGS_PAD(list->data);
+    }
+
+    g_list_free(list_start);
+  }
+  
+  //TODO:JK: implement me
+
+  /* children */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-line-list\0",
+		     17)){
+	GList *line;
+
+	line = NULL;
+	ags_simple_file_read_line_list(simple_file,
+				       child,
+				       &line);
+
+	g_list_free(line);
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+void
+ags_simple_file_read_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList **line)
+{
+  AgsLine *current;
+  GList *list;
+  
+  xmlNode *child;
+
+  child = node->children;
+  list = NULL;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-line\0",
+		     11)){
+	current = NULL;
+	ags_simple_file_read_line(simple_file, child, &current);
+	list = g_list_prepend(list, current);
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *line = list;
+}
+
+void
+ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **line)
+{
+  AgsPad *pad;
+  AgsLine *gobject;
+
+  AgsFileLaunch *file_launch;
+
+  xmlNode *child;
+
+  if(*line != NULL){
+    gobject = *line;
+
+    nth_line = gobject->channel->line;
+  }else{
+    pad = ags_simple_file_get_ref_by_node(node->parent->parent);
+
+    /* get nth line */
+    nth_line = 0;
+    str = xmlGetProp(node->parent,
+		     "nth-line\0");
+
+    if(str != NULL){
+      nth_line = g_ascii_strtoull(str,
+				  10,
+				  NULL);
+    }
+
+    /* retrieve line */
+    gobject = NULL;
+
+    if(pad != NULL){
+      list_start = gtk_container_get_children(pad->expander_set);
+
+      list = g_list_nth(list_start,
+			nth_line);
+
+      if(list != NULL){
+	gobject = AGS_LINE(list->data);
+      }
+
+      g_list_free(list_start);
+    }
+  }
+  
+  //TODO:JK: implement me
+
+  /* children */
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-effect-list\0",
+		     19)){
+	xmlNode *effect_list_child;
+
+	/* effect list children */
+	effect_list_child = child->children;
+
+	while(effect_list_child != NULL){
+	  if(effect_list_child->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(effect_list_child->name,
+			   (xmlChar *) "ags-sf-effect\0",
+			   14)){
+	      AgsFileLaunch *file_launch;
+	      
+	      xmlNode *effect_child;
+
+	      /* effect list children */
+	      effect_child = child->children;
+
+	      while(effect_child != NULL){
+		if(effect_child->type == XML_ELEMENT_NODE){
+		  if(!xmlStrncmp(effect_child->name,
+				 (xmlChar *) "ags-sf-control\0",
+				 15)){
+		    //TODO:JK: implement me
+		  }else if(!xmlStrncmp(effect_child->name,
+				 (xmlChar *) "ags-sf-property-list\0",
+				 15)){
+		    //TODO:JK: implement me
+		  }
+		}
+
+		effect_child = effect_child->next;
+	      }
+	    }
+	  }
+
+	  effect_list_child = effect_list_child->next;
+	}
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-sf-property-list\0",
+			   14)){
+	//TODO:JK: implement me
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+void
+ags_simple_file_read_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsEditor **editor)
+{
+  AgsFileLaunch *file_launch;
+
   //TODO:JK: implement me
 }
 
 void
-ags_simple_file_read_property(AgsFile *file, xmlNode *node, GParameter **property)
+ags_simple_file_read_automation_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomationEditor **automation_editor)
 {
-  //TODO:JK: implement me
-}
+  AgsFileLaunch *file_launch;
 
-void
-ags_simple_file_read_window(AgsFile *file, xmlNode *node, AgsWindow **window)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_simple_file_read_machine_list(AgsFile *file, xmlNode *node, GList **machine)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_simple_file_read_machine(AgsFile *file, xmlNode *node, AgsMachine **machine)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_simple_file_read_pad_list(AgsFile *file, xmlNode *node, GList **pad)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_simple_file_read_pad(AgsFile *file, xmlNode *node, AgsPad **pad)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_simple_file_read_line_list(AgsFile *file, xmlNode *node, GList **line)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_simple_file_read_line(AgsFile *file, xmlNode *node, AgsLine **line)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_simple_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_simple_file_read_automation_editor(AgsFile *file, xmlNode *node, AgsAutomationEditor **automation_editor)
-{
   //TODO:JK: implement me
 }
 
@@ -1306,73 +1927,73 @@ ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, GObjec
 }
 
 xmlNode*
-ags_simple_file_write_window(AgsFile *file, xmlNode *parent, AgsConfig *config)
+ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsConfig *config)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_property_list(AgsFile *file, xmlNode *parent, GList *property)
+ags_simple_file_write_property_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *property)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_property(AgsFile *file, xmlNode *parent, GParameter *property)
+ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GParameter *property)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
+ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
+ags_simple_file_write_machine_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *machine)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_machine(AgsFile *file, xmlNode *parent, AgsMachine *machine)
+ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMachine *machine)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad)
+ags_simple_file_write_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *pad)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
+ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *pad)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
+ags_simple_file_write_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *line)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
+ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine *line)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
+ags_simple_file_write_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsEditor *editor)
 {
   //TODO:JK: implement me
 }
 
 xmlNode*
-ags_simple_file_write_automation_editor(AgsFile *file, xmlNode *parent, AgsAutomationEditor *automation_editor)
+ags_simple_file_write_automation_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsAutomationEditor *automation_editor)
 {
   //TODO:JK: implement me
 }

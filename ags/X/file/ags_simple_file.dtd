@@ -26,12 +26,17 @@
 <!ATTLIST ags-sf-property
 	  name             CDATA     #REQUIRED
 	  value            CDATA     #REQUIRED
+	  type             CDATA     #REQUIRED
 	  >
 
 <!-- GUI -->
-<!ELEMENT ags-sf-window (ags-sf-machine-list*, ags-sf-editor)>
+<!ELEMENT ags-sf-window (ags-sf-machine-list*, ags-sf-editor, ags-sf-automation-editor)>
 <!ATTLIST ags-sf-window
-	  filename        CDATA     #IMPLIED	  
+	  filename        CDATA     #IMPLIED
+	  bpm             NMTOKEN   120
+	  loop            CDATA     "false"
+	  loop-start      NMTOKEN   0
+	  loop-end        NMTOKEN   4
 	  >
 
 <!-- machine -->
@@ -47,6 +52,7 @@
 	  program         CDATA     #IMPLIED
 	  bank_0          NMTOKEN   0
 	  bank_1          NMTOKEN   0
+	  loop            CDATA     "false"
 	  audio_start     NMTOKEN   0
 	  audio_end       NMTOKEN   127
 	  midi_start      NMTOKEN   0
@@ -64,6 +70,7 @@
 
 <!ELEMENT ags-sf-pad (ags-sf-line-list, ags-sf-property-list?)>
 <!ATTLIST ags-sf-pad
+	  nth-pad        NMTOKEN    #REQUIRED
 	  group          NMTOKEN    0
 	  mute           NMTOKEN    0
 	  solo           NMTOKEN    0
@@ -74,6 +81,7 @@
 
 <!ELEMENT ags-sf-line (ags-sf-effect-list, ags-sf-property-list?)>
 <!ATTLIST ags-sf-line
+	  nth-line       NMTOKEN    #REQUIRED
 	  grouped        NMTOKEN    1
 	  link           CDATA      "(null)"
 	  >
@@ -92,6 +100,7 @@
 
 <!ELEMENT ags-sf-control EMPTY>
 <!ATTLIST ags-sf-control
+	  specifier       CDATA    #REQUIRED
 	  value           NMTOKEN  0.0
 	  >
 
@@ -134,7 +143,10 @@
 	  >
 
 <!-- editor -->
-<!ELEMENT ags-editor (ags-sf-property*)>
+<!ELEMENT ags-sf-editor (ags-sf-property*)>
+<!ATTLIST ags-sf-editor
+	  zoom            NMTOKEN   "1/1"
+	  >
 
 <!-- automation editor -->
-<!ELEMENT ags-automation-editor (ags-sf-property*)>
+<!ELEMENT ags-sf-automation-editor (ags-sf-property*)>
