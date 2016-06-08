@@ -44,6 +44,7 @@
 
 <!ELEMENT ags-sf-machine (ags-sf-pad-list*, ags-sf-effect-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?)>
 <!ATTLIST ags-sf-machine
+	  id              CDATA     #REQUIRED
 	  type            CDATA     #REQUIRED
 	  filename        CDATA     #IMPLIED
 	  preset          CDATA     #IMPLIED
@@ -81,18 +82,19 @@
 
 <!ELEMENT ags-sf-line (ags-sf-effect-list, ags-sf-property-list?)>
 <!ATTLIST ags-sf-line
+	  id             CDATA      #REQUIRED
 	  nth-line       NMTOKEN    #REQUIRED
-	  grouped        NMTOKEN    1
+	  is-grouped     CDATA      "true"
 	  link           CDATA      "(null)"
 	  >
 
 <!-- effect -->
 <!ELEMENT ags-sf-effect-list (ags-sf-effect*)>
 <!ATTLIST ags-sf-effect-list
-	  is-bulk-mode     NMTOKEN    #REQUIRED
+	  is-output      CDATA      #REQUIRED  
 	  >
 
-<!ELEMENT ags-sf-effect (ags-sf-control, ags-sf-property-list?)>
+<!ELEMENT ags-sf-effect (ags-sf-control*)>
 <!ATTLIST ags-sf-effect
 	  filename        CDATA     #IMPLIED
 	  effect          CDATA     #IMPLIED
@@ -109,9 +111,9 @@
 
 <!ELEMENT ags-sf-pattern (#PCDATA)>
 <!ATTLIST ags-sf-pattern
-	  line            NMTOKEN  #REQUIRED
-	  bank_0          NMTOKEN  #REQUIRED
-	  bank_1          NMTOKEN  #REQUIRED
+	  nth-line         NMTOKEN  #REQUIRED
+	  bank-0          NMTOKEN  #REQUIRED
+	  bank-1          NMTOKEN  #REQUIRED
 	  >
 
 <!-- notation -->
@@ -150,3 +152,6 @@
 
 <!-- automation editor -->
 <!ELEMENT ags-sf-automation-editor (ags-sf-property*)>
+<!ATTLIST ags-sf-automation-editor
+	  zoom            NMTOKEN   "1/1"
+	  >
