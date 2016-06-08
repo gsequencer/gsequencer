@@ -74,7 +74,7 @@ struct _AgsSimpleFile
   xmlDoc *doc;
   xmlNode *root_node;
 
-  GList *id_refs;
+  GList *id_ref;
   GList *lookup;
   GList *launch;
 
@@ -92,7 +92,6 @@ struct _AgsSimpleFileClass
 		  gboolean create);
 
   void (*write)(AgsSimpleFile *simple_file);
-  void (*write_concurrent)(AgsSimpleFile *simple_file);
   void (*write_resolve)(AgsSimpleFile *simple_file);
 
   void (*read)(AgsSimpleFile *simple_file);
@@ -107,8 +106,8 @@ gchar* ags_simple_file_str2md5(gchar *content, guint content_length);
 void ags_simple_file_add_id_ref(AgsSimpleFile *simple_file, GObject *id_ref);
 
 GObject* ags_simple_file_find_id_ref_by_node(AgsSimpleFile *simple_file, xmlNode *node);
-GObject* ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath);
-GObject* ags_simple_file_find_id_ref_by_reference(AgsSimpleFile *simple_file, gpointer ref);
+GList* ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath);
+GList* ags_simple_file_find_id_ref_by_reference(AgsSimpleFile *simple_file, gpointer ref);
 
 void ags_simple_file_add_lookup(AgsSimpleFile *simple_file, GObject *file_lookup);
 
@@ -130,7 +129,6 @@ void ags_simple_file_close(AgsSimpleFile *simple_file);
 
 /*  */
 void ags_simple_file_write(AgsSimpleFile *simple_file);
-void ags_simple_file_write_concurrent(AgsSimpleFile *simple_file);
 void ags_simple_file_write_resolve(AgsSimpleFile *simple_file);
 
 void ags_simple_file_read(AgsSimpleFile *simple_file);
