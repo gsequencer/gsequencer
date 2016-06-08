@@ -1,0 +1,139 @@
+<!-- Copying and distribution of this file, with or without modification, -->
+<!-- are permitted in any medium without royalty provided the copyright -->
+<!-- notice and this notice are preserved.  This file is offered as-is, -->
+<!-- without any warranty. -->
+
+<!-- root node -->
+<!ELEMENT ags-simple-file (ags-sf-window, ags-sf-config)>
+<!ATTLIST ags-simple-file
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  embedded-audio   CDATA      "FALSE"
+	  >
+
+<!-- program configuration GKeyFile - the same as $(HOME)/.gsequener/ags.conf -->
+<!ELEMENT ags-sf-config (#CDATA)>
+<!ATTLIST ags-sf-config
+	  id               ID         #REQUIRED
+	  version          CDATA      #REQUIRED
+	  build-id         CDATA      #REQUIRED
+	  >
+
+<!-- property -->
+<!ELEMENT ags-sf-property-list (ags-sf-property*)>
+
+<!ELEMENT ags-sf-property EMPTY>
+<!ATTLIST ags-sf-property
+	  name             CDATA     #REQUIRED
+	  value            CDATA     #REQUIRED
+	  >
+
+<!-- GUI -->
+<!ELEMENT ags-sf-window (ags-sf-machine-list*, ags-sf-editor)>
+<!ATTLIST ags-sf-window
+	  filename        CDATA     #IMPLIED	  
+	  >
+
+<!-- machine -->
+<!ELEMENT ags-sf-machine-list (ags-sf-machine*)>
+
+<!ELEMENT ags-sf-machine (ags-sf-pad-list*, ags-sf-effect-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?)>
+<!ATTLIST ags-sf-machine
+	  type            CDATA     #REQUIRED
+	  filename        CDATA     #IMPLIED
+	  preset          CDATA     #IMPLIED
+	  instrument      CDATA     #IMPLIED
+	  midi_device     CDATA     #IMPLIED
+	  bank_0          NMTOKEN   0
+	  bank_1          NMTOKEN   0
+	  audio_start     NMTOKEN   0
+	  audio_end       NMTOKEN   127
+	  midi_start      NMTOKEN   0
+	  midi_end        NMTOKEN   127
+	  channels        NMTOKEN   #IMPLIED
+	  output-pads     NMTOKEN   #IMPLIED
+	  input-pads      NMTOKEN   #IMPLIED
+	  >
+
+<!-- pad -->
+<!ELEMENT ags-sf-pad-list (ags-sf-pad*)>
+<!ATTLIST ags-sf-pad-list
+	  is-output      NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-sf-pad (ags-sf-line-list, ags-sf-property-list?)>
+<!ATTLIST ags-sf-pad
+	  group          NMTOKEN    0
+	  mute           NMTOKEN    0
+	  solo           NMTOKEN    0
+	  >
+
+<!-- line -->
+<!ELEMENT ags-sf-line-list (ags-sf-line*)>
+
+<!ELEMENT ags-sf-line (ags-sf-effect-list, ags-sf-property-list?)>
+<!ATTLIST ags-sf-line
+	  grouped        NMTOKEN    1
+	  link           CDATA      "(null)"
+	  >
+
+<!-- effect -->
+<!ELEMENT ags-sf-effect-list (ags-sf-effect*)>
+<!ATTLIST ags-sf-effect-list
+	  is-bulk-mode     NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-sf-effect (ags-sf-control, ags-sf-property-list?)>
+<!ATTLIST ags-sf-effect
+	  filename        CDATA     #IMPLIED
+	  effect          CDATA     #IMPLIED
+	  >
+
+<!ELEMENT ags-sf-control EMPTY>
+<!ATTLIST ags-sf-control
+	  value           NMTOKEN  0.0
+	  >
+
+<!-- pattern -->
+<!ELEMENT ags-sf-pattern-list (ags-sf-pattern*)>
+
+<!ELEMENT ags-sf-pattern (#PCDATA)>
+<!ATTLIST ags-sf-pattern
+	  line            NMTOKEN  #REQUIRED
+	  bank_0          NMTOKEN  #REQUIRED
+	  bank_1          NMTOKEN  #REQUIRED
+	  >
+
+<!-- notation -->
+<!ELEMENT ags-sf-notation-list (ags-sf-notation*)>
+
+<!ELEMENT ags-sf-notation (ags-sf-note*)>
+<!ATTLIST ags-sf-notation
+	  channel         NMTOKEN  #REQUIRED
+	  >
+
+<!ELEMENT ags-sf-note EMPTY>
+<!ATTLIST ags-sf-note
+	  x0              NMTOKEN  #REQUIRED
+	  x1              NMTOKEN  #REQUIRED
+	  y               NMTOKEN  #REQUIRED
+	  attack          NMTOKEN  #IMPLIED
+	  decay           NMTOKEN  #IMPLIED
+	  sustain         NMTOKEN  #IMPLIED
+	  release         NMTOKEN  #IMPLIED
+	  ratio           NMTOKEN  #IMPLIED
+	  >
+
+<!-- automation -->
+<!ELEMENT ags-sf-automation-list (ags-sf-automation*)>
+
+<!ELEMENT ags-sf-automation (ags-sf-acceleration*)>
+<!ATTLIST ags-sf-automation
+	  channel         NMTOKEN  #REQUIRED
+	  >
+
+<!-- editor -->
+<!ELEMENT ags-editor (ags-sf-property*)>
+
+<!-- automation editor -->
+<!ELEMENT ags-automation-editor (ags-sf-property*)>
