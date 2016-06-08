@@ -86,6 +86,7 @@
 	  nth-line       NMTOKEN    #REQUIRED
 	  is-grouped     CDATA      "true"
 	  link           CDATA      "(null)"
+	  file-channel   NMTOKEN    0
 	  >
 
 <!-- effect -->

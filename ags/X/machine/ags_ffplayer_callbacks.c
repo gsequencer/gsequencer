@@ -109,52 +109,8 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
     gchar *filename;
 
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
-
-    if(g_str_has_suffix(filename, ".sf2\0")){
-      AgsIpatch *ipatch;
-      AgsPlayable *playable;
-      gchar **preset;
-      GError *error;
-
-      /* clear preset and instrument */
-      gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->preset)));
-      gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->instrument)));
-
-      /* Ipatch related */
-      ipatch = g_object_new(AGS_TYPE_IPATCH,
-			    "mode\0", AGS_IPATCH_READ,
-			    "filename\0", filename,
-			    NULL);
-      ffplayer->ipatch = ipatch;
-      ipatch->soundcard = window->soundcard;
-
-      playable = AGS_PLAYABLE(ipatch);
-
-      error = NULL;
-      ags_playable_level_select(playable,
-				0, filename,
-				&error);
-
-      /* select first preset */
-      ipatch->nth_level = 1;
-      preset = ags_playable_sublevel_names(playable);
-
-      error = NULL;
-      ags_playable_level_select(playable,
-				1, *preset,
-				&error);
-
-      /* fill ffplayer->preset */
-      while(preset != NULL && preset[0] != NULL){
-	gtk_combo_box_text_append_text(ffplayer->preset,
-				       *preset);
-
-	preset++;
-      }
-    }
-
-    gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset),
-			     0);
+    ags_ffplayer_open_filename(ffplayer,
+			       filename);
   }
 
   ffplayer->open_dialog = NULL;

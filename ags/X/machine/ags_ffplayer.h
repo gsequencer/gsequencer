@@ -73,6 +73,9 @@ GType ags_ffplayer_get_type(void);
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 // char* ags_ffplayer_sound_string();
 
+void ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
+				gchar *filename);
+
 AgsFFPlayer* ags_ffplayer_new(GObject *soundcard);
 
 #endif /*__AGS_FFPLAYER_H__*/
