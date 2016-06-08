@@ -1144,13 +1144,15 @@ deprecated_libgsequencer_file_h_sources =
 
 libgsequencer_file_h_sources = \
 	$(deprecated_libgsequencer_file_h_sources) \
-	ags/X/file/ags_gui_file_xml.h
+	ags/X/file/ags_gui_file_xml.h \
+	ags/X/file/ags_simple_file_xml.h
 
 deprecated_libgsequencer_file_c_sources =
 
 libgsequencer_file_c_sources = \
 	$(deprecated_libgsequencer_file_c_sources) \
-	ags/X/file/ags_gui_file_xml.c
+	ags/X/file/ags_gui_file_xml.c \
+	ags/X/file/ags_simple_file_xml.c
 
 # libgsequencer-thread - thread
 deprecated_libgsequencer_thread_h_sources =
