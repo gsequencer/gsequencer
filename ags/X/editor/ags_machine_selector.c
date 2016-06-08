@@ -178,6 +178,129 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
+void
+ags_machine_selector_add_index(AgsMachineSelector *machine_selector)
+{
+  AgsMachineRadioButton *machine_radio_button, *group;
+  GList *list, *list_start;
+
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
+  list = list->next;
+
+  if(list == NULL){
+    group = NULL;
+  }else{
+    group = AGS_MACHINE_RADIO_BUTTON(list->data);
+  }
+
+  g_list_free(list_start);
+
+  machine_radio_button = (AgsMachineRadioButton *) g_object_new(AGS_TYPE_MACHINE_RADIO_BUTTON,
+								"group\0", group,
+								NULL);
+  gtk_box_pack_start(GTK_BOX(machine_selector),
+		     GTK_WIDGET(machine_radio_button),
+		     FALSE, FALSE,
+		     0);
+  g_signal_connect_after(G_OBJECT(machine_radio_button), "clicked\0",
+			 G_CALLBACK(ags_machine_selector_radio_changed), machine_selector);
+  gtk_widget_show_all((GtkWidget *) machine_radio_button);
+}
+
+void
+ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
+				  guint nth)
+{
+  AgsEditor *editor;
+  AgsMachineRadioButton *machine_radio_button;
+  GList *list, *list_start;
+
+  editor = gtk_widget_get_ancestor(machine_selector,
+				   AGS_TYPE_EDITOR);
+
+  /* emit changed */
+  machine_radio_button = NULL;
+
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
+  list = list->next;
+
+  list = g_list_nth(list,
+		    nth);
+  
+  if(list != NULL){
+    machine_radio_button = list->data;
+  }
+  
+  g_list_free(list_start);
+  
+  /* destroy edit widgets */
+  if(machine_radio_button != NULL){
+    if(machine_radio_button->machine != NULL){
+      list = editor->editor_child;
+
+      while(list != NULL){
+	if(AGS_EDITOR_CHILD(list->data) == machine_radio_button->machine){
+	  gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->notebook);
+	  gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->meter);
+	  gtk_widget_destroy(AGS_EDITOR_CHILD(list->data)->edit_widget);
+	
+	  break;
+	}
+    
+	list = list->next;
+      }
+    }
+  
+    /**/
+    gtk_widget_destroy(GTK_WIDGET(machine_radio_button));
+  }
+}
+
+void
+ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
+				AgsMachine *machine)
+{
+  AgsMachineRadioButton *machine_radio_button, *existing_radio_button;
+
+  GList *list, *list_start;
+
+  /* retrieve selected */    
+  machine_radio_button = NULL;
+  existing_radio_button = NULL;
+    
+  list_start =
+    list = gtk_container_get_children(GTK_CONTAINER(machine_selector));
+  list = list->next;
+
+  while(list != NULL){
+    if(GTK_IS_TOGGLE_BUTTON(list->data)){
+      if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data))){
+	machine_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
+      }
+
+      if(AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+	existing_radio_button = AGS_MACHINE_RADIO_BUTTON(list->data);
+      }
+    }
+      
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+
+  /* decide if link to editor or change index */
+  if(existing_radio_button != NULL){
+    gtk_button_clicked(existing_radio_button);
+  }else{
+    g_object_set(G_OBJECT(machine_radio_button),
+		 "machine\0", machine,
+		 NULL);
+  }
+}
+
 /**
  * ags_machine_selector_changed:
  * @machine_selector: the #AgsMachineSelector

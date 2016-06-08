@@ -42,7 +42,7 @@
 <!-- machine -->
 <!ELEMENT ags-sf-machine-list (ags-sf-machine*)>
 
-<!ELEMENT ags-sf-machine (ags-sf-pad-list*, ags-sf-effect-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?)>
+<!ELEMENT ags-sf-machine (ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?)>
 <!ATTLIST ags-sf-machine
 	  id              CDATA     #REQUIRED
 	  type            CDATA     #REQUIRED
@@ -106,6 +106,19 @@
 	  specifier       CDATA    #REQUIRED
 	  value           NMTOKEN  0.0
 	  >
+
+<!-- effect pad -->
+<!ELEMENT ags-sf-effect-pad-list (ags-sf-effect-pad*)>
+<!ATTLIST ags-sf-effect-pad-list
+	  is-output      NMTOKEN    #REQUIRED
+	  >
+
+<!ELEMENT ags-sf-effect-pad (ags-sf-line-list)>
+
+<!-- effect line -->
+<!ELEMENT ags-sf-effect-line-list (ags-sf-effect-line*)>
+
+<!ELEMENT ags-sf-effect-line (ags-sf-effect-list)>
 
 <!-- pattern -->
 <!ELEMENT ags-sf-pattern-list (ags-sf-pattern*)>
