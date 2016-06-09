@@ -761,6 +761,20 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   }
 }
 
+gboolean
+ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j)
+{
+  guint n;
+
+  for(n = 0; n < pattern->dim[2]; n++){
+    if(pattern->patter[i][j][n] != 0){
+      return(FALSE);
+    }
+  }
+
+  return(TRUE);
+}
+
 /**
  * ags_pattern_get_bit:
  * @pattern: an #AgsPattern
