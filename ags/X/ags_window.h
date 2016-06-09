@@ -47,10 +47,11 @@ typedef struct _AgsWindowClass AgsWindowClass;
 typedef struct _AgsMachineCounter AgsMachineCounter;
 
 typedef enum{
-  AGS_WINDOW_READY        = 1,
-  AGS_WINDOW_LOADING      = 1 << 1,
-  AGS_WINDOW_SAVING       = 1 << 2,
-  AGS_WINDOW_TERMINATING  = 1 << 3,
+  AGS_WINDOW_CONNECTED    = 1,
+  AGS_WINDOW_READY        = 1 << 1,
+  AGS_WINDOW_LOADING      = 1 << 2,
+  AGS_WINDOW_SAVING       = 1 << 3,
+  AGS_WINDOW_TERMINATING  = 1 << 4,
 }AgsWindowFlags;
 
 struct _AgsWindow

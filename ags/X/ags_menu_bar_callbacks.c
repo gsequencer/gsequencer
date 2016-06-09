@@ -45,6 +45,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_export_window.h>
 
+#include <ags/X/file/ags_simple_file.h>
+
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_drum.h>
@@ -127,25 +129,47 @@ void
 ags_menu_bar_save_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
-  AgsFile *file;
+  AgsApplicationContext *application_context;
   
   GError *error;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
+  application_context = window->application_context;
 
-  //TODO:JK: revise me
-  file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "application-context\0", window->application_context,
-				  "filename\0", window->name,
-				  NULL);
+  if(g_strcmp0(ags_config_get_value(application_context->config,
+				    AGS_CONFIG_GENERIC,
+				    "simple-file\0"),
+	       "false\0")){
+    AgsSimpleFile *simple_file;
 
-  error = NULL;
-  ags_file_rw_open(file,
-		   TRUE,
-		   &error);
-  ags_file_write(file);
-  ags_file_close(file);
-  g_object_unref(G_OBJECT(file));
+    simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+						 "application-context\0", window->application_context,
+						 "filename\0", window->name,
+						 NULL);
+      
+    error = NULL;
+    ags_simple_file_rw_open(simple_file,
+			    TRUE,
+			    &error);
+    ags_simple_file_write(simple_file);
+    ags_simple_file_close(simple_file);
+    g_object_unref(G_OBJECT(simple_file));
+  }else{
+    AgsFile *file;
+
+    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				    "application-context\0", window->application_context,
+				    "filename\0", window->name,
+				    NULL);
+      
+    error = NULL;
+    ags_file_rw_open(file,
+		     TRUE,
+		     &error);
+    ags_file_write(file);
+    ags_file_close(file);
+    g_object_unref(G_OBJECT(file));
+  }
 }
 
 void
@@ -153,16 +177,8 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 {
   AgsWindow *window;
   GtkFileChooserDialog *file_chooser;
-
-  AgsMutexManager *mutex_manager;  
-  AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
   
   gint response;
-  
-  pthread_mutex_t *application_mutex;
         
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) menu_bar);
 
@@ -179,46 +195,56 @@ ags_menu_bar_save_as_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   response = gtk_dialog_run(GTK_DIALOG(file_chooser));
 
   if(response == GTK_RESPONSE_ACCEPT){
-    AgsFile *file;
-    AgsSaveFile *save_file;
-    char *filename;
+    AgsApplicationContext *application_context;
 
+    gchar *filename;
+    
+    GError *error;
+    
     application_context = window->application_context;
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio loop */
-    pthread_mutex_lock(application_mutex);
-
-    audio_loop = application_context->main_loop;
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* get task thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
-							 AGS_TYPE_TASK_THREAD);
-
-    /* get filename and instantiate AgsFile */
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_chooser));
-
-    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context\0", window->application_context,
-				    "filename\0", filename,
-				    NULL);
-
-    window->name = filename;
-    gtk_window_set_title((GtkWindow *) window,
-			 g_strconcat("GSequencer - \0",
-				     window->name,
-				     NULL));
-
-    task_thread = ags_thread_find_type(audio_loop,
-				       AGS_TYPE_TASK_THREAD);
     
-    save_file = ags_save_file_new(file);
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(save_file));
+    if(g_strcmp0(ags_config_get_value(application_context->config,
+				      AGS_CONFIG_GENERIC,
+				      "simple-file\0"),
+		 "false\0")){
+      AgsSimpleFile *simple_file;
+
+      simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+						   "application-context\0", window->application_context,
+						   "filename\0", filename,
+						   NULL);
+      
+      error = NULL;
+      ags_simple_file_rw_open(simple_file,
+			      TRUE,
+			      &error);
+      ags_simple_file_write(simple_file);
+      ags_simple_file_close(simple_file);
+      g_object_unref(G_OBJECT(simple_file));
+    }else{
+      AgsFile *file;
+
+      file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				      "application-context\0", window->application_context,
+				      "filename\0", filename,
+				      NULL);
+      
+      error = NULL;
+      ags_file_rw_open(file,
+		       TRUE,
+		       &error);
+      ags_file_write(file);
+      ags_file_close(file);
+      g_object_unref(G_OBJECT(file));
+    }
+
+    if(window->name != NULL){
+      g_free(window->name);
+    }
+    
+    window->name = g_strdup(filename);
+    gtk_window_set_title((GtkWindow *) window, g_strconcat("GSequencer - \0", window->name, NULL));
   }
 
   gtk_widget_destroy((GtkWidget *) file_chooser);

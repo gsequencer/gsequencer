@@ -764,9 +764,12 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 gboolean
 ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j)
 {
+  guint bitmap_length;
   guint n;
 
-  for(n = 0; n < pattern->dim[2]; n++){
+  bitmap_length = (guint) ceil((double) pattern->dim[2] / (double) (sizeof(guint) * 8));
+
+  for(n = 0; n < bitmap_length; n++){
     if(pattern->pattern[i][j][n] != 0){
       return(FALSE);
     }

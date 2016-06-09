@@ -87,7 +87,6 @@ GList* ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *so
 void ags_xorg_application_context_finalize(GObject *gobject);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
-void ags_xorg_application_context_register_types(AgsApplicationContext *application_context);
 
 void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **application_context);
 xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);

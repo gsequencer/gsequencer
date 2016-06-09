@@ -49,6 +49,8 @@
 	  filename        CDATA     #IMPLIED
 	  preset          CDATA     #IMPLIED
 	  instrument      CDATA     #IMPLIED
+	  plugin-file     CDATA     #IMPLIED
+	  effect          CDATA     #IMPLIED
 	  midi_device     CDATA     #IMPLIED
 	  program         CDATA     #IMPLIED
 	  bank_0          NMTOKEN   0

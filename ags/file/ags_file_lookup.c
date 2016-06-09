@@ -110,7 +110,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
   param_spec = g_param_spec_object("file\0",
 				   "assigned file\0",
 				   "The file it is assigned with\0",
-				   AGS_TYPE_FILE,
+				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILE,

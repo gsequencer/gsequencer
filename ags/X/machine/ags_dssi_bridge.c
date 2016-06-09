@@ -726,6 +726,11 @@ ags_dssi_bridge_set_audio_channels(AgsAudio *audio,
   dssi_bridge = (AgsDssiBridge *) audio->machine;
   machine = AGS_MACHINE(dssi_bridge);
 
+  if(audio->input_pads == 0 &&
+     audio->output_pads == 0){
+    return;
+  }
+  
   machine = AGS_MACHINE(dssi_bridge);
 
   if(audio_channels > audio_channels_old){
@@ -801,7 +806,8 @@ ags_dssi_bridge_set_pads(AgsAudio *audio, GType type,
   
   gboolean grow;
 
-  if(pads == pads_old){
+  if(pads == pads_old ||
+     audio->audio_channels == 0){
     return;
   }
 
@@ -1166,7 +1172,7 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 
   AgsConfig *config;
   
-  GList *list;
+  GList *list, *list_next;
 
   gchar *str;
 
@@ -1201,9 +1207,11 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
   list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
   
   while(list != NULL){
+    list_next = list->next;
+
     gtk_widget_destroy(list->data);
     
-    list = list->next;
+    list = list_next;
   }
 
   g_message("ags_dssi_bridge.c - load %s %s\0",dssi_bridge->filename, dssi_bridge->effect);
@@ -1237,7 +1245,6 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 
       dssi_bridge->ladspa_handle = plugin_descriptor->LADSPA_Plugin->instantiate(plugin_descriptor->LADSPA_Plugin,
 										 samplerate);
-      g_message("%d\0", samplerate);
       port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
       port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
 
