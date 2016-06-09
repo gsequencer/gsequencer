@@ -56,6 +56,10 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
+#include <ags/X/task/ags_simple_file_read.h>
+
+#include <X11/Xlib.h>
+
 #include "config.h"
 
 void ags_signal_handler(int signr);
@@ -256,9 +260,10 @@ main(int argc, char **argv)
   LIBXML_TEST_VERSION;
 
   //ao_initialize();
-
+  XInitThreads();
+  
   gdk_threads_enter();
-  //g_thread_init(NULL);
+  //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
   ipatch_init();
 
@@ -309,6 +314,10 @@ main(int argc, char **argv)
 		 "false\0")){
       AgsSimpleFile *simple_file;
 
+      AgsSimpleFileRead *simple_file_read;
+      
+      GList *start_queue;
+
       GError *error;    
 
       simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
@@ -338,8 +347,50 @@ main(int argc, char **argv)
 	return(0);
       }
     
-      ags_simple_file_read(simple_file);
-      ags_simple_file_close(simple_file);
+      /* start engine */
+      application_context = simple_file->application_context;
+
+      audio_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
+
+      /* wait for audio loop */
+      task_thread = ags_thread_find_type(audio_loop,
+					 AGS_TYPE_TASK_THREAD);
+      AGS_XORG_APPLICATION_CONTEXT(application_context)->thread_pool->parent = task_thread;
+
+      gui_thread = ags_thread_find_type(audio_loop,
+					AGS_TYPE_GUI_THREAD);
+
+      start_queue = NULL;
+      start_queue = g_list_prepend(start_queue,
+				   task_thread);
+      start_queue = g_list_prepend(start_queue,
+				   gui_thread);
+      g_atomic_pointer_set(&(audio_loop->start_queue),
+			   start_queue);
+
+      ags_thread_pool_start(AGS_XORG_APPLICATION_CONTEXT(application_context)->thread_pool);
+      ags_thread_start(audio_loop);
+
+      pthread_mutex_lock(audio_loop->start_mutex);
+
+      if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){
+	
+	g_atomic_int_set(&(audio_loop->start_done),
+			 FALSE);
+      
+	while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
+	      g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
+	  pthread_cond_wait(audio_loop->start_cond,
+			    audio_loop->start_mutex);
+	}
+      }
+    
+      pthread_mutex_unlock(audio_loop->start_mutex);
+
+      /* now start read task */
+      simple_file_read = ags_simple_file_read_new(simple_file);
+      ags_task_thread_append_task(task_thread,
+				  simple_file_read);
     }else{
       AgsFile *file;
 

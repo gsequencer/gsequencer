@@ -634,8 +634,10 @@ ags_machine_connect(AgsConnectable *connectable)
     }
   }else{
     //    machine->flags &= ~AGS_MACHINE_PREMAPPED_RECALL;
+#ifdef AGS_DEBUG
     g_message("find port\0");
-
+#endif
+    
     ags_machine_find_port(machine);
   }
 

@@ -3,6 +3,7 @@ ags (0.7.25)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsLadspaBridge, AgsDssiBridge and AgsLv2Bridge restore from XML
 	* implemented AgsSimpleFile which is much faster than AgsFile
+	* implemented AgsSimpleFileRead task
 
 ags (0.7.24)
 
