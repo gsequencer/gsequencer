@@ -767,7 +767,7 @@ ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j)
   guint n;
 
   for(n = 0; n < pattern->dim[2]; n++){
-    if(pattern->patter[i][j][n] != 0){
+    if(pattern->pattern[i][j][n] != 0){
       return(FALSE);
     }
   }

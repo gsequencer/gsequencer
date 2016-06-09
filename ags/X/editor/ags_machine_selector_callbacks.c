@@ -53,6 +53,8 @@ ags_machine_selector_popup_add_index_callback(GtkWidget *menu_item, AgsMachineSe
 void
 ags_machine_selector_popup_remove_index_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
+  AgsMachineRadioButton *machine_radio_button;
+  
   GList *list, *list_start;
 
   guint nth;

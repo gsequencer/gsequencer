@@ -1183,11 +1183,15 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 			   gchar *filename)
 {
   if(g_str_has_suffix(filename, ".sf2\0")){
+    AgsWindow *window;
+    
     AgsIpatch *ipatch;
     AgsPlayable *playable;
     gchar **preset;
     GError *error;
 
+    window = gtk_widget_get_toplevel(ffplayer);
+    
     /* clear preset and instrument */
     gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->preset)));
     gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(ffplayer->instrument)));
