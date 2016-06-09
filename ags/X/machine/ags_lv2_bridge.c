@@ -731,7 +731,7 @@ ags_lv2_bridge_connect(AgsConnectable *connectable)
   AgsLv2Bridge *lv2_bridge;
 
   GList *list;
-  
+
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
   }
@@ -960,8 +960,11 @@ ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
   /* get machine */
   lv2_bridge = (AgsLv2Bridge *) audio->machine;
   machine = AGS_MACHINE(lv2_bridge);
-
-  machine = AGS_MACHINE(lv2_bridge);
+  
+  if(audio->input_pads == 0 &&
+     audio->output_pads == 0){
+    return;
+  }
 
   if(audio_channels > audio_channels_old){
     /* AgsInput */
@@ -1036,7 +1039,8 @@ ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
   
   gboolean grow;
 
-  if(pads == pads_old){
+  if(pads == pads_old ||
+     audio->audio_channels == 0){
     return;
   }
 
@@ -1074,8 +1078,8 @@ ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
       /* recall */
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	ags_lv2_bridge_input_map_recall(lv2_bridge,
-					 0,
-					 pads_old);
+					0,
+					pads_old);
       }
     }else{
       lv2_bridge->mapped_input_pad = pads;
@@ -1102,8 +1106,8 @@ ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
       /* recall */
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	ags_lv2_bridge_output_map_recall(lv2_bridge,
-					  0,
-					  pads_old);
+					 0,
+					 pads_old);
       }
     }else{
       lv2_bridge->mapped_output_pad = pads;
@@ -1131,8 +1135,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
   GList *list;
   
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
-     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0 ||
-     (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) == 0){
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
 
@@ -1143,104 +1146,106 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
   audio = machine->audio;
 
   /* ags-delay */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-delay\0",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
+  if((AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-delay\0",
+			      0, 0,
+			      0, 0,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_ADD |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL),
+			      0);
 
-  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
+    list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
 
-  if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
-    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+    if(list != NULL){
+      play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+      //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+    }
+  
+    /* ags-count-beats */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-count-beats\0",
+			      0, 0,
+			      0, 0,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_ADD |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL),
+			      0);
+  
+    list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+
+    if(list != NULL){
+      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+
+      /* set dependency */  
+      g_object_set(G_OBJECT(play_count_beats_audio_run),
+		   "delay-audio-run\0", play_delay_audio_run,
+		   NULL);
+      ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
+			window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
+			TRUE);
+    }
+
+    /* ags-route-lv2 */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-route-lv2\0",
+			      0, 0,
+			      0, 0,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_ADD |
+			       AGS_RECALL_FACTORY_RECALL),
+			      0);
+
+    list = ags_recall_find_type(audio->recall, AGS_TYPE_ROUTE_LV2_AUDIO_RUN);
+
+    if(list != NULL){
+      recall_route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(list->data);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_route_lv2_audio_run),
+		   "delay-audio-run\0", play_delay_audio_run,
+		   NULL);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_route_lv2_audio_run),
+		   "count-beats-audio-run\0", play_count_beats_audio_run,
+		   NULL);
+    }
+
+    /* ags-play-notation */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-play-notation\0",
+			      0, 0,
+			      0, 0,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_ADD |
+			       AGS_RECALL_FACTORY_RECALL),
+			      0);
+
+    list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+    if(list != NULL){
+      recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_notation_audio_run),
+		   "delay-audio-run\0", play_delay_audio_run,
+		   NULL);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_notation_audio_run),
+		   "count-beats-audio-run\0", play_count_beats_audio_run,
+		   NULL);
+    }
   }
   
-  /* ags-count-beats */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-count-beats\0",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
-  
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-
-  if(list != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-
-    /* set dependency */  
-    g_object_set(G_OBJECT(play_count_beats_audio_run),
-		 "delay-audio-run\0", play_delay_audio_run,
-		 NULL);
-    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      window->navigation->position_tact->adjustment->value * ags_soundcard_get_delay(AGS_SOUNDCARD(audio->soundcard)),
-		      TRUE);
-  }
-
-  /* ags-route-lv2 */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-route-lv2\0",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
-
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_ROUTE_LV2_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(list->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_route_lv2_audio_run),
-		 "delay-audio-run\0", play_delay_audio_run,
-		 NULL);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_route_lv2_audio_run),
-		 "count-beats-audio-run\0", play_count_beats_audio_run,
-		 NULL);
-  }
-
-  /* ags-play-notation */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play-notation\0",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
-
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "delay-audio-run\0", play_delay_audio_run,
-		 NULL);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "count-beats-audio-run\0", play_count_beats_audio_run,
-		 NULL);
-  }
-
   /* depending on destination */
   ags_lv2_bridge_input_map_recall(lv2_bridge, 0, 0);
 
@@ -1274,61 +1279,63 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_st
   source = ags_channel_nth(audio->input,
 			   audio_channel_start + input_pad_start * audio->audio_channels);
 
-  /* map dependending on output */
-  current = source;
+  if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+    /* map dependending on output */
+    current = source;
 
-  while(current != NULL){
-    /* ags-buffer */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-buffer\0",
-			      audio_channel_start, audio->audio_channels, 
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_RECALL |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+    while(current != NULL){
+      /* ags-buffer */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-buffer\0",
+				audio_channel_start, audio->audio_channels, 
+				current->pad, current->pad + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_RECALL |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
     
-    current = current->next_pad;
+      current = current->next_pad;
+    }
+  
+    /*  */
+    current = source;
+
+    while(current != NULL){
+      /* ags-play */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-play\0",
+				audio_channel_start, audio->audio_channels, 
+				current->pad, current->pad + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      current = current->next_pad;
+    }
+
+    /*  */
+    current = source;
+
+    while(current != NULL){
+      /* ags-stream */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-stream\0",
+				audio_channel_start, audio->audio_channels, 
+				current->pad, current->pad + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_RECALL | 
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      current = current->next_pad;
+    }
   }
   
-  /*  */
-  current = source;
-
-  while(current != NULL){
-    /* ags-play */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-play\0",
-			      audio_channel_start, audio->audio_channels, 
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
-    current = current->next_pad;
-  }
-
-  /*  */
-  current = source;
-
-  while(current != NULL){
-    /* ags-stream */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream\0",
-			      audio_channel_start, audio->audio_channels, 
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
-    current = current->next_pad;
-  }
-
   lv2_bridge->mapped_input_pad = audio->input_pads;
 }
 
@@ -1352,43 +1359,45 @@ ags_lv2_bridge_output_map_recall(AgsLv2Bridge *lv2_bridge, guint audio_channel_s
   source = ags_channel_nth(audio->output,
 			   audio_channel_start + output_pad_start * audio->audio_channels);
 
-  /* remap for input */
-  input = audio->input;
+  if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
+    /* remap for input */
+    input = audio->input;
 
-  while(input != NULL){
-    /* ags-buffer */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-buffer\0",
-			      audio_channel_start, audio->audio_channels, 
-			      input->pad, input->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_RECALL |
-			       AGS_RECALL_FACTORY_REMAP),
-			      0);
+    while(input != NULL){
+      /* ags-buffer */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-buffer\0",
+				audio_channel_start, audio->audio_channels, 
+				input->pad, input->pad + 1,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_RECALL |
+				 AGS_RECALL_FACTORY_REMAP),
+				0);
     
-    input = input->next_pad;
+      input = input->next_pad;
+    }
+
+    current = ags_channel_nth(audio->output,
+			      audio_channel_start + output_pad_start * audio->audio_channels);
+
+    while(current != NULL){
+      /* ags-stream */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-stream\0",
+				audio_channel_start, audio->audio_channels,
+				current->pad, current->pad + 1,
+				(AGS_RECALL_FACTORY_OUTPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_RECALL | 
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      current = current->next_pad;
+    }
   }
-
-  current = ags_channel_nth(audio->output,
-			    audio_channel_start + output_pad_start * audio->audio_channels);
-
-  while(current != NULL){
-    /* ags-stream */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream\0",
-			      audio_channel_start, audio->audio_channels,
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_OUTPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
-    current = current->next_pad;
-  }
-
+  
   lv2_bridge->mapped_output_pad = audio->output_pads;
 }
 
@@ -1445,8 +1454,10 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
 			     str);
   free(str);
 
+#ifdef AGS_DEBUG
   g_message("plugin path - %s\0", plugin_path);
-
+#endif
+  
   gui_uri = ags_lv2ui_manager_find_uri(filename,
 				       lv2_bridge->effect);
 
@@ -1463,7 +1474,7 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 {
   AgsLv2Plugin *lv2_plugin;
   
-  GList *list;
+  GList *list_next, *list;
 
   gchar *uri;
 
@@ -1482,9 +1493,11 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
   list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
   
   while(list != NULL){
+    list_next = list->next;
+    
     gtk_widget_destroy(list->data);
     
-    list = list->next;
+    list = list_next;
   }
 
   ags_lv2_bridge_load_gui(lv2_bridge);

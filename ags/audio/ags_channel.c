@@ -4047,6 +4047,20 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     return;
   }
 
+  if(channel != NULL &&
+     !AGS_IS_CHANNEL(channel)){
+    g_warning("ags_channel_set_link() - unsupported type\0");
+    
+    return;
+  }
+
+  if(link != NULL &&
+     !AGS_IS_CHANNEL(link)){
+    g_warning("ags_channel_set_link() - unsupported type\0");
+    
+    return;
+  }
+  
   if(channel != NULL){
     if(channel->link == link){
       return;

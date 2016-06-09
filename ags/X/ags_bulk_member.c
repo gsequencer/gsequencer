@@ -900,7 +900,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
       pthread_mutex_unlock(port->mutex);
       
-      g_message("change %f\0", g_value_get_float(&value));
+      //      g_message("change %f\0", g_value_get_float(&value));
       ags_port_safe_write(port,
 			  &value);
 

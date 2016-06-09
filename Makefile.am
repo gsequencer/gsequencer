@@ -1145,14 +1145,14 @@ deprecated_libgsequencer_file_h_sources =
 libgsequencer_file_h_sources = \
 	$(deprecated_libgsequencer_file_h_sources) \
 	ags/X/file/ags_gui_file_xml.h \
-	ags/X/file/ags_simple_file_xml.h
+	ags/X/file/ags_simple_file.h
 
 deprecated_libgsequencer_file_c_sources =
 
 libgsequencer_file_c_sources = \
 	$(deprecated_libgsequencer_file_c_sources) \
 	ags/X/file/ags_gui_file_xml.c \
-	ags/X/file/ags_simple_file_xml.c
+	ags/X/file/ags_simple_file.c
 
 # libgsequencer-thread - thread
 deprecated_libgsequencer_thread_h_sources =
@@ -1179,6 +1179,7 @@ libgsequencer_task_h_sources = \
 	ags/X/task/ags_change_tact.h \
 	ags/X/task/ags_display_tact.h \
 	ags/X/task/ags_scroll_on_play.h \
+	ags/X/task/ags_simple_file_read.h \
 	ags/X/task/ags_toggle_led.h \
 	ags/X/task/ags_update_bulk_member.h
 
@@ -1193,6 +1194,7 @@ libgsequencer_task_c_sources = \
 	ags/X/task/ags_change_tact.c \
 	ags/X/task/ags_display_tact.c \
 	ags/X/task/ags_scroll_on_play.c \
+	ags/X/task/ags_simple_file_read.c \
 	ags/X/task/ags_toggle_led.c \
 	ags/X/task/ags_update_bulk_member.c
 
