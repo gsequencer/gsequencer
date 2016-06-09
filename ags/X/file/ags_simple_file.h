@@ -71,6 +71,9 @@ struct _AgsSimpleFile
   gchar *encoding;
   gchar *dtd;
 
+  gchar *audio_format;
+  gchar *audio_encoding;
+
   xmlDoc *doc;
   xmlNode *root_node;
 
@@ -134,13 +137,6 @@ void ags_simple_file_write_resolve(AgsSimpleFile *simple_file);
 void ags_simple_file_read(AgsSimpleFile *simple_file);
 void ags_simple_file_read_resolve(AgsSimpleFile *simple_file);
 void ags_simple_file_read_start(AgsSimpleFile *simple_file);
-
-void ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, GObject **ags_config);
-void ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, GObject *ags_config);
-
-/*  */
-void ags_simple_file_read_application_context(AgsSimpleFile *simple_file, xmlNode *node, GObject **application_context);
-void ags_simple_file_write_application_context(AgsSimpleFile *simple_file, xmlNode *parent, GObject *application_context);
 
 /* */
 AgsSimpleFile* ags_simple_file_new();

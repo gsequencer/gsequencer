@@ -24,6 +24,10 @@
 
 #include <ags/audio/ags_notation.h>
 
+#include <ags/X/ags_editor.h>
+
+#include <ags/X/editor/ags_machine_radio_button.h>
+
 void ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector);
 void ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_selector_init(AgsMachineSelector *machine_selector);
