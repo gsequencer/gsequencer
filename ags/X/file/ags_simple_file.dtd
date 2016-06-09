@@ -127,7 +127,7 @@
 
 <!ELEMENT ags-sf-pattern (#PCDATA)>
 <!ATTLIST ags-sf-pattern
-	  nth-line         NMTOKEN  #REQUIRED
+	  nth-line        NMTOKEN  #REQUIRED
 	  bank-0          NMTOKEN  #REQUIRED
 	  bank-1          NMTOKEN  #REQUIRED
 	  >
