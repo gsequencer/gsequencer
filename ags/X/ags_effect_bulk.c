@@ -1205,7 +1205,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   /*  */
   task = NULL;
-  
+
   /* load plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(filename, effect);
 
@@ -1365,7 +1365,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   port_count = g_list_length(port_descriptor);
   k = 0;
-  
+
   while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
@@ -2109,6 +2109,10 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
     pads = effect_bulk->audio->input_pads;
   }
 
+  if(pads == 0){
+    return;
+  }
+
   /* collect bulk member */
   task = NULL;
 
@@ -2204,6 +2208,11 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 				     AGS_TYPE_TASK_THREAD);
   
   audio_channels = effect_bulk->audio->audio_channels;
+
+  if(audio_channels == 0){
+    return;
+  }
+
   
   /* retrieve channel */
   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){

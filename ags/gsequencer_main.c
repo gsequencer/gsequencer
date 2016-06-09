@@ -52,6 +52,8 @@
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 
+#include <ags/X/file/ags_simple_file.h>
+
 #include <ags/X/thread/ags_gui_thread.h>
 
 #include "config.h"
@@ -301,39 +303,78 @@ main(int argc, char **argv)
   }
   
   if(filename != NULL){
-    AgsFile *file;
+    if(g_strcmp0(ags_config_get_value(application_context->config,
+				      AGS_CONFIG_GENERIC,
+				      "simple-file\0"),
+		 "false\0")){
+      AgsSimpleFile *simple_file;
 
-    GError *error;
+      GError *error;    
+
+      simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+						   "application-context\0", application_context,
+						   "filename\0", filename,
+						   NULL);
+      error = NULL;
+      ags_simple_file_open(simple_file,
+			   &error);
+
+      if(error != NULL){
+	GtkDialog *dialog;
+      
+	g_warning("could not parse file %s\0", simple_file->filename);
+      
+	dialog = gtk_message_dialog_new(NULL,
+					0,
+					GTK_MESSAGE_WARNING,
+					GTK_BUTTONS_OK,
+					"Failed to open '%s'\0",
+					simple_file->filename);
+	gtk_widget_show_all(dialog);
+	g_signal_connect(dialog, "response\0",
+			 G_CALLBACK(gtk_main_quit), NULL);
+	gtk_main();
+
+	return(0);
+      }
     
-    file = g_object_new(AGS_TYPE_FILE,
-			"application-context\0", application_context,
-			"filename\0", filename,
-			NULL);
-    error = NULL;
-    ags_file_open(file,
-		  &error);
+      ags_simple_file_read(simple_file);
+      ags_simple_file_close(simple_file);
+    }else{
+      AgsFile *file;
 
-    if(error != NULL){
-      GtkDialog *dialog;
-      
-      g_warning("could not parse file %s\0", file->filename);
-      
-      dialog = gtk_message_dialog_new(NULL,
-				      0,
-				      GTK_MESSAGE_WARNING,
-				      GTK_BUTTONS_OK,
-				      "Failed to open '%s'\0",
-				      file->filename);
-      gtk_widget_show_all(dialog);
-      g_signal_connect(dialog, "response\0",
-		       G_CALLBACK(gtk_main_quit), NULL);
-      gtk_main();
+      GError *error;
+    
+      file = g_object_new(AGS_TYPE_FILE,
+			  "application-context\0", application_context,
+			  "filename\0", filename,
+			  NULL);
+      error = NULL;
+      ags_file_open(file,
+		    &error);
 
-      return(0);
+      if(error != NULL){
+	GtkDialog *dialog;
+      
+	g_warning("could not parse file %s\0", file->filename);
+      
+	dialog = gtk_message_dialog_new(NULL,
+					0,
+					GTK_MESSAGE_WARNING,
+					GTK_BUTTONS_OK,
+					"Failed to open '%s'\0",
+					file->filename);
+	gtk_widget_show_all(dialog);
+	g_signal_connect(dialog, "response\0",
+			 G_CALLBACK(gtk_main_quit), NULL);
+	gtk_main();
+
+	return(0);
+      }
+    
+      ags_file_read(file);
+      ags_file_close(file);
     }
-    
-    ags_file_read(file);
-    ags_file_close(file);
     
     gui_thread = ags_thread_find_type(application_context->main_loop,
 				      AGS_TYPE_GUI_THREAD);

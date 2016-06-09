@@ -28,6 +28,8 @@
 
 #include <ags/audio/task/ags_save_file.h>
 
+#include <ags/X/file/ags_simple_file.h>
+
 gboolean
 ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
 {
@@ -60,42 +62,48 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   response = gtk_dialog_run(dialog);
 
   if(response == GTK_RESPONSE_YES){
-    AgsFile *file;
-    AgsSaveFile *save_file;
-
-    AgsThread *audio_loop;
-    AgsThread *task_thread;
-    
     AgsApplicationContext *application_context;
-    
-    char *filename;
 
     application_context = window->application_context;
 
-    /* get audio loop */
-    pthread_mutex_lock(application_mutex);
+    if(g_strcmp0(ags_config_get_value(application_context->config,
+				      AGS_CONFIG_GENERIC,
+				      "simple-file\0"),
+		 "false\0")){
+      AgsSimpleFile *simple_file;
 
-    audio_loop = application_context->main_loop;
+      GError *error;
+      
+      simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+						   "application-context\0", window->application_context,
+						   "filename\0", window->name,
+						   NULL);
+      
+      error = NULL;
+      ags_simple_file_rw_open(simple_file,
+			      TRUE,
+			      &error);
+      ags_simple_file_write(simple_file);
+      ags_simple_file_close(simple_file);
+      g_object_unref(G_OBJECT(simple_file));
+    }else{
+      AgsFile *file;
 
-    pthread_mutex_unlock(application_mutex);
-
-    /* get task thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(audio_loop,
-							 AGS_TYPE_TASK_THREAD);
-
-
-    filename = window->name;
-
-    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				    "application-context\0", window->application_context,
-				    "filename\0", g_strdup(filename),
-				    NULL);
-
-    save_file = ags_save_file_new(file);
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(save_file));
-
-    g_object_unref(G_OBJECT(file));
+      GError *error;
+      
+      file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				      "application-context\0", window->application_context,
+				      "filename\0", window->name,
+				      NULL);
+      
+      error = NULL;
+      ags_file_rw_open(file,
+		       TRUE,
+		       &error);
+      ags_file_write(file);
+      ags_file_close(file);
+      g_object_unref(G_OBJECT(file));
+    }
   }
 
   if(response != GTK_RESPONSE_CANCEL){

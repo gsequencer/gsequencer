@@ -326,6 +326,12 @@ ags_window_connect(AgsConnectable *connectable)
 
   window = AGS_WINDOW(connectable);
 
+  if((AGS_WINDOW_CONNECTED & (window->flags)) != 0){
+    return;
+  }
+
+  window->flags |= AGS_WINDOW_CONNECTED;
+  
   g_signal_connect(G_OBJECT(window), "delete_event\0",
 		   G_CALLBACK(ags_window_delete_event_callback), NULL);
 
