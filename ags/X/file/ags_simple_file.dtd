@@ -155,7 +155,15 @@
 
 <!ELEMENT ags-sf-automation (ags-sf-acceleration*)>
 <!ATTLIST ags-sf-automation
-	  channel         NMTOKEN  #REQUIRED
+	  line            NMTOKEN  #REQUIRED
+	  channel-type    CDATA    #REQUIRED
+	  control-name    CATA     #REQUIRED
+	  >
+
+<!ELEMENT ags-sf-acceleration EMPTY>
+<!ATTLIST ags-sf-acceleration
+	  x               NMTOKEN  #REQUIRED
+	  y               NMTOKEN  #REQUIRED	  
 	  >
 
 <!-- editor -->

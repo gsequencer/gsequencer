@@ -4864,13 +4864,69 @@ xmlNode*
 ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsNotation *notation)
 {
   xmlNode *node;
+  xmlNode *child;
 
   GList *list;
 
   node = xmlNewNode(NULL,
 		    "ags-sf-notation\0");
 
-  //TODO:JK: implement me
+  xmlNewProp(node,
+	     "channel\0",
+	     g_strdup_printf("%d\0", notation->audio_channel));
+  
+  list = notation->notes;
+
+  while(list != NULL){
+    child = xmlNewNode(NULL,
+		       "ags-sf-note\0");
+    
+    xmlNewProp(child,
+	       "x0\0",
+	       g_strdup_printf("%d\0",
+			       AGS_NOTE(list->data)->x[0]));
+
+    xmlNewProp(child,
+	       "x1\0",
+	       g_strdup_printf("%d\0",
+			       AGS_NOTE(list->data)->x[1]));
+
+    xmlNewProp(child,
+	       "y\0",
+	       g_strdup_printf("%d\0",
+			       AGS_NOTE(list->data)->y));
+    
+    xmlNewProp(child,
+	       "attack\0",
+	       g_strdup_printf("%f\0",
+			       AGS_NOTE(list->data)->attack));
+    
+    xmlNewProp(child,
+	       "decay\0",
+	       g_strdup_printf("%f\0",
+			       AGS_NOTE(list->data)->decay));
+    
+    xmlNewProp(child,
+	       "sustain\0",
+	       g_strdup_printf("%f\0",
+			       AGS_NOTE(list->data)->sustain));
+    
+    xmlNewProp(child,
+	       "release\0",
+	       g_strdup_printf("%f\0",
+    			       AGS_NOTE(list->data)->release));
+			       
+    xmlNewProp(child,
+	       "ratio\0",
+	       g_strdup_printf("%f\0",
+			       AGS_NOTE(list->data)->ratio));
+        
+    /* add to parent */
+    xmlAddChild(node,
+		child);
+
+    list = list->next;
+  }
 
   /* add to parent */
   xmlAddChild(parent,
@@ -4909,9 +4965,42 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 
   node = xmlNewNode(NULL,
 		    "ags-sf-automation\0");
-  
-  //TODO:JK: implement me
 
+  xmlNewProp(node,
+	     "line\0",
+	     g_strdup_printf("%d\0", automation->line));
+
+  xmlNewProp(node,
+	     "channel-type\0",
+	     g_strdup(g_type_name(automation->channel_type)));
+
+  xmlNewProp(node,
+	     "control-name\0",
+	     g_strdup(automation->control_name));
+
+  list = automation->acceleration;
+
+  while(list != NULL){
+    child = xmlNewNode(NULL,
+		       "ags-sf-acceleration\0");
+
+    xmlNewProp(child,
+	       "x\0",
+	       g_strdup_printf("%d\0",
+			       AGS_ACCELERATION(list->data)->x));
+
+    xmlNewProp(child,
+	       "y\0",
+	       g_strdup_printf("%d\0",
+			       AGS_ACCELERATION(list->data)->y));
+    
+    /* add to parent */
+    xmlAddChild(node,
+		child);
+
+    list = list->next;
+  }
+  
   /* add to parent */
   xmlAddChild(parent,
 	      node);
