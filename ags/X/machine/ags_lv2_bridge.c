@@ -1474,8 +1474,6 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 {
   AgsLv2Plugin *lv2_plugin;
   
-  GList *list_next, *list;
-
   gchar *uri;
 
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_bridge->filename,
@@ -1489,17 +1487,6 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 	       "uri\0", lv2_plugin->uri,
 	       NULL);
   
-  /* clear effect bulk */
-  list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
-  
-  while(list != NULL){
-    list_next = list->next;
-    
-    gtk_widget_destroy(list->data);
-    
-    list = list_next;
-  }
-
   ags_lv2_bridge_load_gui(lv2_bridge);
 }
 

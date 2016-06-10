@@ -736,7 +736,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 {
   AgsWindow *window;
   AgsBulkMember *bulk_member;
-  AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
 
   GtkAdjustment *adjustment;
@@ -1101,14 +1100,18 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 #ifdef AGS_DEBUG
       g_message("ladspa bounds: %f %f\0", lower_bound, upper_bound);
 #endif
-	  
-      /* create task */
-      add_bulk_member = ags_add_bulk_member_new(effect_bulk,
-						bulk_member,
-						x, y,
-						1, 1);
-      task = g_list_prepend(task,
-			    add_bulk_member);
+
+      gtk_table_attach(effect_bulk->table,
+		       bulk_member,
+		       x, x + 1,
+		       y, y + 1,
+		       GTK_FILL, GTK_FILL,
+		       0, 0);
+      ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
+      gtk_widget_show_all(effect_bulk->table);
+
+      /* find ports */
+      ags_bulk_member_find_port(bulk_member);
 
       /* update ports */
       update_bulk_member = ags_update_bulk_member_new(effect_bulk,
@@ -1142,7 +1145,6 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 {
   AgsWindow *window;
   AgsBulkMember *bulk_member;
-  AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
   
   GtkAdjustment *adjustment;
@@ -1508,14 +1510,17 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 #endif
       }
 
-	  
-      /* create task */
-      add_bulk_member = ags_add_bulk_member_new(effect_bulk,
-						bulk_member,
-						x, y,
-						1, 1);
-      task = g_list_prepend(task,
-			    add_bulk_member);
+      gtk_table_attach(effect_bulk->table,
+		       bulk_member,
+		       x, x + 1,
+		       y, y + 1,
+		       GTK_FILL, GTK_FILL,
+		       0, 0);
+      ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
+      gtk_widget_show_all(effect_bulk->table);
+
+      /* find ports */
+      ags_bulk_member_find_port(bulk_member);
 
       /* update ports */
       update_bulk_member = ags_update_bulk_member_new(effect_bulk,
@@ -1549,7 +1554,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 {
   AgsWindow *window;
   AgsBulkMember *bulk_member;
-  AgsAddBulkMember *add_bulk_member;
   AgsUpdateBulkMember *update_bulk_member;
   
   GtkAdjustment *adjustment;
@@ -1872,14 +1876,18 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 #ifdef AGS_DEBUG
       g_message("lv2 bounds: %f %f\0", lower_bound, upper_bound);
 #endif
-	  
-      /* create task */
-      add_bulk_member = ags_add_bulk_member_new(effect_bulk,
-						bulk_member,
-						x, y,
-						1, 1);
-      task = g_list_prepend(task,
-			    add_bulk_member);
+      
+      gtk_table_attach(effect_bulk->table,
+		       bulk_member,
+		       x, x + 1,
+		       y, y + 1,
+		       GTK_FILL, GTK_FILL,
+		       0, 0);
+      ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
+      gtk_widget_show_all(effect_bulk->table);
+
+      /* find ports */
+      ags_bulk_member_find_port(bulk_member);
 
       /* update ports */
       update_bulk_member = ags_update_bulk_member_new(effect_bulk,

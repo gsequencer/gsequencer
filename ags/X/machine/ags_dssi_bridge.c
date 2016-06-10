@@ -1171,8 +1171,6 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
   AgsDssiPlugin *dssi_plugin;
 
   AgsConfig *config;
-  
-  GList *list, *list_next;
 
   gchar *str;
 
@@ -1201,17 +1199,6 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
     free(str);
   }else{
     samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
-
-  /*  */
-  list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(dssi_bridge)->bridge)->bulk_input)->table);
-  
-  while(list != NULL){
-    list_next = list->next;
-
-    gtk_widget_destroy(list->data);
-    
-    list = list_next;
   }
 
   g_message("ags_dssi_bridge.c - load %s %s\0",dssi_bridge->filename, dssi_bridge->effect);

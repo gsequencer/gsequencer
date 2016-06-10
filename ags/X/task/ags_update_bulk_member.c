@@ -203,7 +203,7 @@ ags_update_bulk_member_launch(AgsTask *task)
   }
 
   if(update_bulk_member->new_size > update_bulk_member->old_size){
-    g_message("%s %s\0", update_bulk_member->bulk_member->filename, update_bulk_member->bulk_member->effect);
+    //    g_message("%s %s\0", update_bulk_member->bulk_member->filename, update_bulk_member->bulk_member->effect);
 	      
     /* grow bulk port */
     if(update_bulk_member->pads){

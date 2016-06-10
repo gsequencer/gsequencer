@@ -588,17 +588,11 @@ ags_ladspa_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 void
 ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
 {
-  GList *list;
-
-  list = gtk_container_get_children(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input)->table);
-  
-  while(list != NULL){
-    gtk_widget_destroy(list->data);
-    
-    list = list->next;
-  }
-
+  /* empty */
+#ifdef AGS_DEBUG
   g_message("%s %s\0",ladspa_bridge->filename, ladspa_bridge->effect);
+#endif
+  
   ags_effect_bulk_add_effect(AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->bulk_input,
 			     NULL,
 			     ladspa_bridge->filename,
