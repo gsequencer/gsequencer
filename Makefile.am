@@ -22,7 +22,7 @@ lib_LTLIBRARIES = libags-1.0.la libags_thread-1.0.la libags_server-0.7.la libags
 
 bin_PROGRAMS = gsequencer midi2xml
 
-EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 gsequencer.1 midi2xml.1 README gsequencer-documentation
+EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 midi2xml.1 README gsequencer-documentation
 
 CLEANFILES =
 

@@ -996,7 +996,7 @@ ags_simple_file_open_filename(AgsSimpleFile *simple_file,
 		       &error);
 
   if(error != NULL){
-    g_warning(error->message);
+    g_warning("%s\0", error->message);
   }
 }
 
@@ -5837,7 +5837,9 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
 	       "y\0",
 	       g_strdup_printf("%d\0",
 			       AGS_NOTE(list->data)->y));
-    
+
+    //TODO:JK: uncomment me if implemented
+    /*
     xmlNewProp(child,
 	       "attack\0",
 	       g_strdup_printf("%f\0",
@@ -5862,7 +5864,8 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
 	       "ratio\0",
 	       g_strdup_printf("%f\0",
 			       AGS_NOTE(list->data)->ratio));
-        
+    */
+    
     /* add to parent */
     xmlAddChild(node,
 		child);
