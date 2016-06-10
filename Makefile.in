@@ -567,7 +567,8 @@ am__objects_19 = $(am__objects_1) \
 	ags/X/file/libgsequencer_0_7_la-ags_gui_file_xml.lo \
 	ags/X/file/libgsequencer_0_7_la-ags_simple_file.lo
 am__objects_20 = $(am__objects_1) \
-	ags/X/thread/libgsequencer_0_7_la-ags_gui_thread.lo
+	ags/X/thread/libgsequencer_0_7_la-ags_gui_thread.lo \
+	ags/X/thread/libgsequencer_0_7_la-ags_simple_autosave_thread.lo
 am__objects_21 = $(am__objects_1) \
 	ags/X/task/libgsequencer_0_7_la-ags_add_bulk_member.lo \
 	ags/X/task/libgsequencer_0_7_la-ags_add_line_member.lo \
@@ -577,6 +578,7 @@ am__objects_21 = $(am__objects_1) \
 	ags/X/task/libgsequencer_0_7_la-ags_display_tact.lo \
 	ags/X/task/libgsequencer_0_7_la-ags_scroll_on_play.lo \
 	ags/X/task/libgsequencer_0_7_la-ags_simple_file_read.lo \
+	ags/X/task/libgsequencer_0_7_la-ags_simple_file_write.lo \
 	ags/X/task/libgsequencer_0_7_la-ags_toggle_led.lo \
 	ags/X/task/libgsequencer_0_7_la-ags_update_bulk_member.lo
 am__objects_22 = $(am__objects_1) \
@@ -2303,12 +2305,14 @@ libgsequencer_file_c_sources = \
 deprecated_libgsequencer_thread_h_sources = 
 libgsequencer_thread_h_sources = \
 	$(deprecated_libgsequencer_thread_h_sources) \
-	ags/X/thread/ags_gui_thread.h
+	ags/X/thread/ags_gui_thread.h \
+	ags/X/thread/ags_simple_autosave_thread.h
 
 deprecated_libgsequencer_thread_c_sources = 
 libgsequencer_thread_c_sources = \
 	$(deprecated_libgsequencer_thread_c_sources) \
-	ags/X/thread/ags_gui_thread.c
+	ags/X/thread/ags_gui_thread.c \
+	ags/X/thread/ags_simple_autosave_thread.c
 
 
 # libgsequencer - task
@@ -2323,6 +2327,7 @@ libgsequencer_task_h_sources = \
 	ags/X/task/ags_display_tact.h \
 	ags/X/task/ags_scroll_on_play.h \
 	ags/X/task/ags_simple_file_read.h \
+	ags/X/task/ags_simple_file_write.h \
 	ags/X/task/ags_toggle_led.h \
 	ags/X/task/ags_update_bulk_member.h
 
@@ -2337,6 +2342,7 @@ libgsequencer_task_c_sources = \
 	ags/X/task/ags_display_tact.c \
 	ags/X/task/ags_scroll_on_play.c \
 	ags/X/task/ags_simple_file_read.c \
+	ags/X/task/ags_simple_file_write.c \
 	ags/X/task/ags_toggle_led.c \
 	ags/X/task/ags_update_bulk_member.c
 
@@ -3687,6 +3693,9 @@ ags/X/thread/$(DEPDIR)/$(am__dirstamp):
 ags/X/thread/libgsequencer_0_7_la-ags_gui_thread.lo:  \
 	ags/X/thread/$(am__dirstamp) \
 	ags/X/thread/$(DEPDIR)/$(am__dirstamp)
+ags/X/thread/libgsequencer_0_7_la-ags_simple_autosave_thread.lo:  \
+	ags/X/thread/$(am__dirstamp) \
+	ags/X/thread/$(DEPDIR)/$(am__dirstamp)
 ags/X/task/$(am__dirstamp):
 	@$(MKDIR_P) ags/X/task
 	@: > ags/X/task/$(am__dirstamp)
@@ -3715,6 +3724,9 @@ ags/X/task/libgsequencer_0_7_la-ags_scroll_on_play.lo:  \
 	ags/X/task/$(am__dirstamp) \
 	ags/X/task/$(DEPDIR)/$(am__dirstamp)
 ags/X/task/libgsequencer_0_7_la-ags_simple_file_read.lo:  \
+	ags/X/task/$(am__dirstamp) \
+	ags/X/task/$(DEPDIR)/$(am__dirstamp)
+ags/X/task/libgsequencer_0_7_la-ags_simple_file_write.lo:  \
 	ags/X/task/$(am__dirstamp) \
 	ags/X/task/$(DEPDIR)/$(am__dirstamp)
 ags/X/task/libgsequencer_0_7_la-ags_toggle_led.lo:  \
@@ -4384,9 +4396,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_display_tact.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_scroll_on_play.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_simple_file_read.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_simple_file_write.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_toggle_led.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_update_bulk_member.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/thread/$(DEPDIR)/libgsequencer_0_7_la-ags_gui_thread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/thread/$(DEPDIR)/libgsequencer_0_7_la-ags_simple_autosave_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_1_0_la-ags_acceleration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_1_0_la-ags_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_1_0_la-ags_audio_application_context.Plo@am__quote@
@@ -7174,6 +7188,13 @@ ags/X/thread/libgsequencer_0_7_la-ags_gui_thread.lo: ags/X/thread/ags_gui_thread
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_0_7_la_CFLAGS) $(CFLAGS) -c -o ags/X/thread/libgsequencer_0_7_la-ags_gui_thread.lo `test -f 'ags/X/thread/ags_gui_thread.c' || echo '$(srcdir)/'`ags/X/thread/ags_gui_thread.c
 
+ags/X/thread/libgsequencer_0_7_la-ags_simple_autosave_thread.lo: ags/X/thread/ags_simple_autosave_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_0_7_la_CFLAGS) $(CFLAGS) -MT ags/X/thread/libgsequencer_0_7_la-ags_simple_autosave_thread.lo -MD -MP -MF ags/X/thread/$(DEPDIR)/libgsequencer_0_7_la-ags_simple_autosave_thread.Tpo -c -o ags/X/thread/libgsequencer_0_7_la-ags_simple_autosave_thread.lo `test -f 'ags/X/thread/ags_simple_autosave_thread.c' || echo '$(srcdir)/'`ags/X/thread/ags_simple_autosave_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/thread/$(DEPDIR)/libgsequencer_0_7_la-ags_simple_autosave_thread.Tpo ags/X/thread/$(DEPDIR)/libgsequencer_0_7_la-ags_simple_autosave_thread.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/thread/ags_simple_autosave_thread.c' object='ags/X/thread/libgsequencer_0_7_la-ags_simple_autosave_thread.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_0_7_la_CFLAGS) $(CFLAGS) -c -o ags/X/thread/libgsequencer_0_7_la-ags_simple_autosave_thread.lo `test -f 'ags/X/thread/ags_simple_autosave_thread.c' || echo '$(srcdir)/'`ags/X/thread/ags_simple_autosave_thread.c
+
 ags/X/task/libgsequencer_0_7_la-ags_add_bulk_member.lo: ags/X/task/ags_add_bulk_member.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_0_7_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_0_7_la-ags_add_bulk_member.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_add_bulk_member.Tpo -c -o ags/X/task/libgsequencer_0_7_la-ags_add_bulk_member.lo `test -f 'ags/X/task/ags_add_bulk_member.c' || echo '$(srcdir)/'`ags/X/task/ags_add_bulk_member.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_add_bulk_member.Tpo ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_add_bulk_member.Plo
@@ -7229,6 +7250,13 @@ ags/X/task/libgsequencer_0_7_la-ags_simple_file_read.lo: ags/X/task/ags_simple_f
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_simple_file_read.c' object='ags/X/task/libgsequencer_0_7_la-ags_simple_file_read.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_0_7_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_0_7_la-ags_simple_file_read.lo `test -f 'ags/X/task/ags_simple_file_read.c' || echo '$(srcdir)/'`ags/X/task/ags_simple_file_read.c
+
+ags/X/task/libgsequencer_0_7_la-ags_simple_file_write.lo: ags/X/task/ags_simple_file_write.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_0_7_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_0_7_la-ags_simple_file_write.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_simple_file_write.Tpo -c -o ags/X/task/libgsequencer_0_7_la-ags_simple_file_write.lo `test -f 'ags/X/task/ags_simple_file_write.c' || echo '$(srcdir)/'`ags/X/task/ags_simple_file_write.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_simple_file_write.Tpo ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_simple_file_write.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_simple_file_write.c' object='ags/X/task/libgsequencer_0_7_la-ags_simple_file_write.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_0_7_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_0_7_la-ags_simple_file_write.lo `test -f 'ags/X/task/ags_simple_file_write.c' || echo '$(srcdir)/'`ags/X/task/ags_simple_file_write.c
 
 ags/X/task/libgsequencer_0_7_la-ags_toggle_led.lo: ags/X/task/ags_toggle_led.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_0_7_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_0_7_la-ags_toggle_led.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_0_7_la-ags_toggle_led.Tpo -c -o ags/X/task/libgsequencer_0_7_la-ags_toggle_led.lo `test -f 'ags/X/task/ags_toggle_led.c' || echo '$(srcdir)/'`ags/X/task/ags_toggle_led.c

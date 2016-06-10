@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thwrite/ags_task.h>
+#include <ags/thread/ags_task.h>
 
 #include <ags/X/file/ags_simple_file.h>
 

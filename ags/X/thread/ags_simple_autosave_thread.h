@@ -30,11 +30,11 @@
 #endif 
 
 #define AGS_TYPE_SIMPLE_AUTOSAVE_THREAD                (ags_simple_autosave_thread_get_type())
-#define AGS_SIMPLE_AUTOSAVE_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUTOSAVE_THREAD, AgsSimpleAutosaveThread))
-#define AGS_SIMPLE_AUTOSAVE_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_AUTOSAVE_THREAD, AgsSimpleAutosaveThreadClass))
-#define AGS_IS_SIMPLE_AUTOSAVE_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_AUTOSAVE_THREAD))
-#define AGS_IS_SIMPLE_AUTOSAVE_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUTOSAVE_THREAD))
-#define AGS_SIMPLE_AUTOSAVE_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUTOSAVE_THREAD, AgsSimpleAutosaveThreadClass))
+#define AGS_SIMPLE_AUTOSAVE_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SIMPLE_AUTOSAVE_THREAD, AgsSimpleAutosaveThread))
+#define AGS_SIMPLE_AUTOSAVE_THREAD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SIMPLE_AUTOSAVE_THREAD, AgsSimpleAutosaveThreadClass))
+#define AGS_IS_SIMPLE_AUTOSAVE_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SIMPLE_AUTOSAVE_THREAD))
+#define AGS_IS_SIMPLE_AUTOSAVE_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SIMPLE_AUTOSAVE_THREAD))
+#define AGS_SIMPLE_AUTOSAVE_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SIMPLE_AUTOSAVE_THREAD, AgsSimpleAutosaveThreadClass))
 
 #define AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_JIFFIE (1.0)
 #define AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_DELAY (10)
@@ -46,9 +46,6 @@ typedef struct _AgsSimpleAutosaveThreadClass AgsSimpleAutosaveThreadClass;
 struct _AgsSimpleAutosaveThread
 {
   AgsThread thread;
-
-  volatile guint tic;
-  volatile guint last_sync;
 
   GObject *application_context;
 
