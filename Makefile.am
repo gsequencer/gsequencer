@@ -1159,13 +1159,15 @@ deprecated_libgsequencer_thread_h_sources =
 
 libgsequencer_thread_h_sources = \
 	$(deprecated_libgsequencer_thread_h_sources) \
-	ags/X/thread/ags_gui_thread.h
+	ags/X/thread/ags_gui_thread.h \
+	ags/X/thread/ags_simple_autosave_thread.h
 
 deprecated_libgsequencer_thread_c_sources =
 
 libgsequencer_thread_c_sources = \
 	$(deprecated_libgsequencer_thread_c_sources) \
-	ags/X/thread/ags_gui_thread.c
+	ags/X/thread/ags_gui_thread.c \
+	ags/X/thread/ags_simple_autosave_thread.c
 
 # libgsequencer - task
 deprecated_libgsequencer_task_h_sources =
@@ -1180,6 +1182,7 @@ libgsequencer_task_h_sources = \
 	ags/X/task/ags_display_tact.h \
 	ags/X/task/ags_scroll_on_play.h \
 	ags/X/task/ags_simple_file_read.h \
+	ags/X/task/ags_simple_file_write.h \
 	ags/X/task/ags_toggle_led.h \
 	ags/X/task/ags_update_bulk_member.h
 
@@ -1195,6 +1198,7 @@ libgsequencer_task_c_sources = \
 	ags/X/task/ags_display_tact.c \
 	ags/X/task/ags_scroll_on_play.c \
 	ags/X/task/ags_simple_file_read.c \
+	ags/X/task/ags_simple_file_write.c \
 	ags/X/task/ags_toggle_led.c \
 	ags/X/task/ags_update_bulk_member.c
 
