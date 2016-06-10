@@ -56,6 +56,7 @@
 	  bank_0          NMTOKEN   0
 	  bank_1          NMTOKEN   0
 	  loop            CDATA     "false"
+	  reverse-mapping CDATA     "false"
 	  audio_start     NMTOKEN   0
 	  audio_end       NMTOKEN   127
 	  midi_start      NMTOKEN   0
@@ -82,7 +83,7 @@
 <!-- line -->
 <!ELEMENT ags-sf-line-list (ags-sf-line*)>
 
-<!ELEMENT ags-sf-line (ags-sf-effect-list, ags-sf-property-list?)>
+<!ELEMENT ags-sf-line (ags-sf-effect-list, ags-sf-oscillator?, ags-sf-property-list?)>
 <!ATTLIST ags-sf-line
 	  id             CDATA      #REQUIRED
 	  nth-line       NMTOKEN    #REQUIRED
@@ -108,6 +109,16 @@
 	  specifier       CDATA    #REQUIRED
 	  control-type    CDATA    #IMPLIED
 	  value           NMTOKEN  #IMPLIED
+	  >
+
+<!ELEMENT ags-sf-oscillator EMPTY>
+<!ATTLIST ags-sf-oscillator
+	  wave           CDATA    0
+	  attack         NMTOKEN  0
+	  phase          NMTOKEN  0
+	  frequency      NMTOKEN  27.5
+	  length         NMTOKEN  3200
+	  volume         NMTOKEN  0.2
 	  >
 
 <!-- effect pad -->

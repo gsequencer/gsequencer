@@ -3,9 +3,11 @@ ags (0.7.25)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsLadspaBridge, AgsDssiBridge and AgsLv2Bridge restore from XML
 	* implemented AgsSimpleFile which is much faster than AgsFile
-	* implemented AgsSimpleFileRead task
+	* implemented AgsSimpleFileRead task for reading files using simple API
+	* implemented AgsSimpleFileWrite task for writing files using simple API
+	* implemented AgsSimpleAutosaveThread that makes use of AgsSimpleFile to save its files
 	* implemented :control_type_name parameter of ags_line_add_effect()
-	* fixed duplicated entries in plugins manager
+	* fixed duplicated entries in plugins manager: AgsLadspaManager, AgsDssiManager and AgsLv2Manager
 
 ags (0.7.24)
 

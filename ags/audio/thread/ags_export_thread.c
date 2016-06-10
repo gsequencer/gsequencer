@@ -174,7 +174,7 @@ ags_export_thread_init(AgsExportThread *export_thread)
   gchar *str0, *str1;
   
   thread = (AgsThread *) export_thread;
-
+  
   config = ags_config_get_instance();
   
   str0 = ags_config_get_value(config,
