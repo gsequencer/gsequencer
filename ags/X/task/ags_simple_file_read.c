@@ -58,9 +58,9 @@ ags_simple_file_read_get_type()
     };
 
     ags_type_simple_file_read = g_type_register_static(AGS_TYPE_TASK,
-						  "AgsSimpleFileRead\0",
-						  &ags_simple_file_read_info,
-						  0);
+						       "AgsSimpleFileRead\0",
+						       &ags_simple_file_read_info,
+						       0);
 
     g_type_add_interface_static(ags_type_simple_file_read,
 				AGS_TYPE_CONNECTABLE,
