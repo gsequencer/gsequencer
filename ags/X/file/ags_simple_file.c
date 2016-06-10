@@ -79,6 +79,8 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_synth_input_line.h>
+#include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
@@ -1423,6 +1425,8 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 
   if(str != NULL){
     gobject->name = g_strdup(str);
+
+    gtk_window_set_title((GtkWindow *) gobject, g_strconcat("GSequencer - \0", gobject->name, NULL));
   }
 
   /* connect */
@@ -1691,6 +1695,14 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(gobject),
 		     FALSE, FALSE, 0);
+
+  /* reverse mapping */
+  str = xmlGetProp(node,
+		   "reverse-mapping\0");
+  if(!g_strcmp0(str,
+		"true\0")){
+    gobject->audio->flags |= AGS_AUDIO_REVERSE_MAPPING;
+  }
   
   /* retrieve channel allocation */
   str = xmlGetProp(node,
@@ -2601,8 +2613,78 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   
   guint nth_line;
 
+  auto void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator *oscillator);
   auto void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member);
 
+  void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator *oscillator){
+    xmlChar *str;
+
+    gdouble val;
+    guint nth;
+
+    str = xmlGetProp(node,
+		     "wave\0");
+
+    if(str != NULL){
+      
+      nth = g_ascii_strtoull(str,
+			     NULL,
+			     10);
+      gtk_combo_box_set_active(oscillator->wave,
+			       nth);
+    }
+
+    str = xmlGetProp(node,
+		     "attack\0");
+
+    if(str != NULL){
+      val = g_ascii_strtod(str,
+			   NULL);
+      gtk_adjustment_set_value(oscillator->attack->adjustment,
+			       val);
+    }
+
+    str = xmlGetProp(node,
+		     "frequency\0");
+
+    if(str != NULL){
+      val = g_ascii_strtod(str,
+			   NULL);
+      gtk_adjustment_set_value(oscillator->frequency->adjustment,
+			       val);
+    }
+
+    str = xmlGetProp(node,
+		     "length\0");
+
+    if(str != NULL){
+      val = g_ascii_strtod(str,
+			   NULL);
+      gtk_adjustment_set_value(oscillator->frame_count->adjustment,
+			       val);
+    }
+
+    str = xmlGetProp(node,
+		     "phase\0");
+
+    if(str != NULL){
+      val = g_ascii_strtod(str,
+			   NULL);
+      gtk_adjustment_set_value(oscillator->phase->adjustment,
+			       val);
+    }
+
+    str = xmlGetProp(node,
+		     "volume\0");
+
+    if(str != NULL){
+      val = g_ascii_strtod(str,
+			   NULL);
+      gtk_adjustment_set_value(oscillator->volume->adjustment,
+			      val);
+    }
+  }
+  
   void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member){
     GtkWidget *child_widget;
 
@@ -2741,7 +2823,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 					  "node\0", node,
 					  "reference\0", gobject,
 					  NULL));
-
+  
   /* children */
   child = node->children;
 
@@ -2825,10 +2907,12 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		      if(AGS_IS_LINE_MEMBER(list->data)){
 			line_member = AGS_LINE_MEMBER(list->data);
 			
-			if(!g_strcmp0(line_member->filename,
-				      filename) &&
-			   !g_strcmp0(line_member->effect,
-				      effect) &&
+			if(((filename == NULL && effect == NULL) ||
+			    (strlen(filename) == 0 && strlen(effect) == 0) ||
+			     (!g_strcmp0(line_member->filename,
+					 filename) &&
+			      !g_strcmp0(line_member->effect,
+					 effect))) &&
 			   !g_strcmp0(line_member->specifier,
 				      specifier)){
 			  ags_simple_file_read_line_member(simple_file,
@@ -2855,6 +2939,10 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
 	  effect_list_child = effect_list_child->next;
 	}
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-oscillator\0",
+			   15)){
+	ags_simple_file_read_oscillator(simple_file, child, AGS_SYNTH_INPUT_LINE(gobject)->oscillator);
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-property-list\0",
 			   14)){
@@ -3594,7 +3682,7 @@ ags_simple_file_read_editor_launch(AgsFileLaunch *file_launch,
 	      gtk_button_clicked(list->data);
 	      ags_machine_selector_link_index(editor->machine_selector,
 					      machine);
-
+	      
 	      g_list_free(list_start);
 	    }
 	  }else{
@@ -4539,6 +4627,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   xmlNewProp(node,
 	     (xmlChar *) "bank_1",
 	     (xmlChar *) g_strdup_printf("%d\0", machine->bank_1));
+  
+  if((AGS_AUDIO_REVERSE_MAPPING & (machine->audio->flags)) != 0){
+    xmlNewProp(node,
+	       "reverse-mapping\0",
+	       "true\0");
+  }
 
   xmlNewProp(node,
 	     (xmlChar *) "channels\0",
@@ -4999,7 +5093,42 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 
   gchar *id;
 
+  auto void ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator);
   auto void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
+
+  void ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator){
+    xmlNode *node;
+    
+    node = xmlNewNode(NULL,
+		      "ags-oscillator\0");
+    
+    xmlNewProp(node,
+	       "wave\0",
+	       g_strdup_printf("%d\0", gtk_combo_box_get_active(oscillator->wave)));
+
+    xmlNewProp(node,
+	       "attack\0",
+	       g_strdup_printf("%f\0", oscillator->attack->adjustment->value));
+
+    xmlNewProp(node,
+	       "length\0",
+	       g_strdup_printf("%f\0", oscillator->frame_count->adjustment->value));
+
+    xmlNewProp(node,
+	       "frequency\0",
+	       g_strdup_printf("%f\0", oscillator->frequency->adjustment->value));
+
+    xmlNewProp(node,
+	       "phase\0",
+	       g_strdup_printf("%f\0", oscillator->phase->adjustment->value));
+
+    xmlNewProp(node,
+	       "volume\0",
+	       g_strdup_printf("%f\0", oscillator->volume->adjustment->value));
+
+    xmlAddChild(parent,
+		node);
+  }
   
   void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member){
     GtkWidget *child_widget;
@@ -5122,6 +5251,13 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 	       g_strdup_printf("%d\0", AGS_AUDIO_FILE_LINK(AGS_INPUT(line->channel)->file_link)->audio_channel));
   }
 
+  /* machine specific */
+  if(AGS_IS_SYNTH_INPUT_LINE(line)){
+    ags_simple_file_write_oscillator(simple_file,
+				     node,
+				     AGS_SYNTH_INPUT_LINE(line)->oscillator);
+  }
+  
   /* effect list */
   effect_list_node = NULL;
   effect_node = NULL;

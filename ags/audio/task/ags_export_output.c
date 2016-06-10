@@ -165,7 +165,7 @@ ags_export_output_launch(AgsTask *task)
   filename = export_output->filename;
   tic = export_output->tic;
 
-  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),2
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &dsp_channels,
 			    &samplerate,
 			    NULL,
@@ -175,7 +175,8 @@ ags_export_output_launch(AgsTask *task)
   audio_file = ags_audio_file_new(filename,
 				  soundcard,
 				  0, dsp_channels);
-
+  g_message("dsp - %d\0", dsp_channels);
+  
   audio_file->samplerate = (int) samplerate;
   audio_file->channels = dsp_channels;
 
@@ -190,25 +191,22 @@ ags_export_output_launch(AgsTask *task)
 	       "soundcard\0", soundcard,
 	       "audio-file\0", audio_file,
 	       NULL);
-  ags_thread_start((AgsThread *) export_thread);
 
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(AGS_THREAD(export_thread)->flags)))) == 0){
-    /* wait thread */
-    pthread_mutex_lock(AGS_THREAD(export_thread)->start_mutex);
+    AgsThread *parent;
+    
+    GList *start_queue;
 
-    g_atomic_int_set(&(AGS_THREAD(export_thread)->start_wait),
-		     TRUE);
-	
-    if(g_atomic_int_get(&(AGS_THREAD(export_thread)->start_wait)) == TRUE &&
-       g_atomic_int_get(&(AGS_THREAD(export_thread)->start_done)) == FALSE){
-      while(g_atomic_int_get(&(AGS_THREAD(export_thread)->start_wait)) == TRUE &&
-	    g_atomic_int_get(&(AGS_THREAD(export_thread)->start_done)) == FALSE){
-	pthread_cond_wait(AGS_THREAD(export_thread)->start_cond,
-			  AGS_THREAD(export_thread)->start_mutex);
-      }
-    }
-	
-    pthread_mutex_unlock(AGS_THREAD(export_thread)->start_mutex);
+    parent = g_atomic_pointer_get(&(AGS_THREAD(export_thread)->parent));
+    
+    pthread_mutex_lock(parent->start_mutex);
+    
+    start_queue = g_atomic_pointer_get(&(parent->start_queue));
+    g_atomic_pointer_set(&(parent->start_queue),
+			 g_list_prepend(start_queue,
+					export_thread));
+    
+    pthread_mutex_unlock(parent->start_mutex);
   }else{
     g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
 		    AGS_THREAD_RUNNING);
