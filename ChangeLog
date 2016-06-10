@@ -1,3 +1,14 @@
+ags (0.7.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed format string
+
+ags (0.7.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* removed wrong envelop information from notation in ags_simple_file.c
+	* fixed Makefile.am to include aclocal.m4
+
 ags (0.7.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
