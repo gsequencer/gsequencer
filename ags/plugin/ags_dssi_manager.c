@@ -244,7 +244,7 @@ ags_dssi_manager_load_file(gchar *dssi_path,
   path = g_strdup_printf("%s/%s\0",
 			 dssi_path,
 			 filename);
-
+  
   g_message("ags_dssi_manager.c loading - %s\0", path);
 
   plugin_so = dlopen(path,
@@ -265,12 +265,16 @@ ags_dssi_manager_load_file(gchar *dssi_path,
     
   if(dlerror() == NULL && dssi_descriptor){
     for(i = 0; (plugin_descriptor = dssi_descriptor(i)) != NULL; i++){
-      dssi_plugin = ags_dssi_plugin_new(path,
-					plugin_descriptor->LADSPA_Plugin->Name,
-					i);
-      ags_base_plugin_load_plugin(dssi_plugin);
-      dssi_manager->dssi_plugin = g_list_prepend(dssi_manager->dssi_plugin,
-						 dssi_plugin);
+      if(ags_base_plugin_find_effect(dssi_manager->dssi_plugin,
+				     path,
+				     plugin_descriptor->LADSPA_Plugin->Name) == NULL){
+	dssi_plugin = ags_dssi_plugin_new(path,
+					  plugin_descriptor->LADSPA_Plugin->Name,
+					  i);
+	ags_base_plugin_load_plugin(dssi_plugin);
+	dssi_manager->dssi_plugin = g_list_prepend(dssi_manager->dssi_plugin,
+						   dssi_plugin);
+      }
     }
   }
 

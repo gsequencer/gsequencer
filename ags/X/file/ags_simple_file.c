@@ -2115,8 +2115,6 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     xmlChar *str;
     gchar *value;
 
-    dssi_bridge = machine;
-
     /* program */
     model = gtk_combo_box_get_model(dssi_bridge->program);
 
@@ -2602,6 +2600,57 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   xmlChar *str;
   
   guint nth_line;
+
+  auto void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member);
+
+  void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member){
+    GtkWidget *child_widget;
+
+    xmlChar *str;
+    
+    gdouble val;
+    
+    str = xmlGetProp(node,
+		     "control-type\0");
+
+    if(str != NULL){
+      g_object_set(line_member,
+		   "widget-type\0", g_type_from_name(str),
+		   NULL);
+    }
+
+    child_widget = gtk_bin_get_child(line_member);
+    
+    /* apply value */
+    str = xmlGetProp(node,
+		     "value\0");
+
+    if(str != NULL){
+       if(AGS_IS_DIAL(child_widget)){
+	val = g_ascii_strtod(str,
+			     NULL);
+	gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
+				 val);
+      }else if(GTK_IS_RANGE(child_widget)){
+	val = g_ascii_strtod(str,
+			     NULL);    
+      
+	gtk_adjustment_set_value(GTK_RANGE(child_widget)->adjustment,
+				 val);
+      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+	val = g_ascii_strtod(str,
+			     NULL);    
+      
+	gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
+				 val);
+      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+	gtk_toggle_button_set_active(child_widget,
+				     ((g_strcmp0(str, "false\0")) ? TRUE: FALSE));
+      }else{
+	g_warning("ags_simple_file_read_line() - unknown line member type\0");
+      }
+    }
+  }
   
   if(*line != NULL){
     gobject = *line;
@@ -2704,16 +2753,21 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	 AGS_IS_LINE(gobject)){
 	xmlNode *effect_list_child;
 
+	GList *mapped_filename, *mapped_effect;
+	
 	/* effect list children */
 	effect_list_child = child->children;
 
+	mapped_filename = NULL;
+	mapped_effect = NULL;
+	
 	while(effect_list_child != NULL){
 	  if(effect_list_child->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(effect_list_child->name,
 			   (xmlChar *) "ags-sf-effect\0",
 			   14)){
 	      xmlNode *effect_child;
-	      
+
 	      xmlChar *filename, *effect;
 
 	      filename = xmlGetProp(effect_list_child,
@@ -2722,8 +2776,33 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	      effect = xmlGetProp(effect_list_child,
 				  "effect\0");
 	      
+	      if(filename != NULL &&
+		 effect != NULL){
+		if(g_list_find_custom(mapped_filename,
+				      filename,
+				      g_strcmp0) == NULL ||
+		   g_list_find_custom(mapped_effect,
+				      effect,
+				      g_strcmp0) == NULL){
+		  mapped_filename = g_list_prepend(mapped_filename,
+						   filename);
+		  mapped_effect = g_list_prepend(mapped_effect,
+						 effect);
+
+		  if(AGS_IS_LINE(gobject)){
+		    ags_channel_add_effect(AGS_LINE(gobject)->channel,
+					   filename,
+					   effect);
+		  }else if(AGS_IS_CHANNEL(gobject)){
+		    ags_channel_add_effect(gobject,
+					   filename,
+					   effect);
+		  }
+		}
+	      }
+	      
 	      /* effect list children */
-	      effect_child = child->children;
+	      effect_child = effect_list_child->children;
 
 	      while(effect_child != NULL){
 		if(effect_child->type == XML_ELEMENT_NODE){
@@ -2731,63 +2810,39 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 				 (xmlChar *) "ags-sf-control\0",
 				 15)){
 		    AgsLineMember *line_member;
-		    GtkWidget *child_widget;
 
 		    GList *list_start, *list;
 		    
 		    xmlChar *specifier;
 
-		    gdouble val;
-
 		    specifier = xmlGetProp(effect_child,
 					   "specifier\0");
+		    		       
+		    list =
+		      list_start = gtk_container_get_children(AGS_LINE(gobject)->expander->table);
 
-		    str = xmlGetProp(effect_child,
-				     "value\0");
-
-		    if(str != NULL){
-		      val = g_ascii_strtod(str,
-					   NULL);
-		      
-		      list =
-			list_start = gtk_container_get_children(AGS_LINE(gobject)->expander->table);
-
-		      while(list != NULL){
-			if(AGS_IS_LINE_MEMBER(list->data)){
-			  line_member = AGS_LINE_MEMBER(list->data);
+		    while(list != NULL){
+		      if(AGS_IS_LINE_MEMBER(list->data)){
+			line_member = AGS_LINE_MEMBER(list->data);
 			
-			  if(!g_strcmp0(line_member->filename,
-					filename) &&
-			     !g_strcmp0(line_member->effect,
-					effect) &&
-			     !g_strcmp0(line_member->specifier,
-					specifier)){
-			    child_widget = gtk_bin_get_child(line_member);
-
-			    if(GTK_IS_RANGE(child_widget)){
-			      gtk_adjustment_set_value(GTK_RANGE(child_widget)->adjustment,
-						       val);
-			    }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-			      gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
-						       val);
-			    }else if(AGS_IS_DIAL(child_widget)){
-			      gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-						       val);
-			      ags_dial_draw(child_widget);
-			    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-			      gtk_toggle_button_set_active(child_widget,
-							   ((val != 0.0) ? TRUE: FALSE));
-			    }else{
-			      g_warning("ags_simple_file_read_line_launch() - unknown line member type\0");
-			    }
-			  
-			    break;
-			  }
+			if(!g_strcmp0(line_member->filename,
+				      filename) &&
+			   !g_strcmp0(line_member->effect,
+				      effect) &&
+			   !g_strcmp0(line_member->specifier,
+				      specifier)){
+			  ags_simple_file_read_line_member(simple_file,
+							   effect_child,
+							   line_member);
+			    
+			  break;
 			}
-
-			list = list->next;
 		      }
-		    
+			
+		      list = list->next;		    
+		    }
+
+		    if(list_start != NULL){
 		      g_list_free(list_start);
 		    }
 		  }
@@ -3525,7 +3580,6 @@ ags_simple_file_read_editor_launch(AgsFileLaunch *file_launch,
 	    GList *list_start, *list;
 
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
-	    g_message("%s\0", str);
 
 	    if(str != NULL){
 	      file_id_ref = ags_simple_file_find_id_ref_by_xpath(file_launch->file,
@@ -4353,12 +4407,20 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 				"ags-sf-control\0");
       
       xmlNewProp(control_node,
+		 "control-type\0",
+		 G_OBJECT_TYPE_NAME(child_widget));
+      
+      xmlNewProp(control_node,
 		 "value\0",
 		 ((gtk_toggle_button_get_active(child_widget)) ? g_strdup("true\0"): g_strdup("false\0")));
     }else if(AGS_IS_DIAL(child_widget)){
       control_node = xmlNewNode(NULL,
 				"ags-sf-control\0");
 
+      xmlNewProp(control_node,
+		 "control-type\0",
+		 G_OBJECT_TYPE_NAME(child_widget));
+      
       xmlNewProp(control_node,
 		 "value\0",
 		 g_strdup_printf("%f\0", AGS_DIAL(child_widget)->adjustment->value));
@@ -4397,10 +4459,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     while(list != NULL){
       if(AGS_IS_BULK_MEMBER(list->data)){
-	if(g_list_find(filename,
-		       AGS_BULK_MEMBER(list->data)->filename) == NULL ||
-	   g_list_find(effect,
-		       AGS_BULK_MEMBER(list->data)->effect) == NULL){
+	if(g_list_find_custom(filename,
+			      AGS_BULK_MEMBER(list->data)->filename,
+			      g_strcmp0) == NULL ||
+	   g_list_find_custom(effect,
+			      AGS_BULK_MEMBER(list->data)->effect,
+			      g_strcmp0) == NULL){
 	  GtkWidget *child_widget;
 
 	  if(effect_list_node == NULL){
@@ -4944,17 +5008,25 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     
     /* control node */
     child_widget = gtk_bin_get_child(line_member);
-    
+
     if(GTK_IS_TOGGLE_BUTTON(child_widget)){
       control_node = xmlNewNode(NULL,
 				"ags-sf-control\0");
 
+      xmlNewProp(control_node,
+		 "control-type\0",
+		 G_OBJECT_TYPE_NAME(child_widget));
+    
       xmlNewProp(control_node,
 		 "value\0",
 		 ((gtk_toggle_button_get_active(child_widget)) ? g_strdup("true\0"): g_strdup("false\0")));
     }else if(AGS_IS_DIAL(child_widget)){
       control_node = xmlNewNode(NULL,
 				"ags-sf-control\0");
+
+      xmlNewProp(control_node,
+		 "control-type\0",
+		 G_OBJECT_TYPE_NAME(child_widget));
 
       xmlNewProp(control_node,
 		 "value\0",
@@ -4964,11 +5036,19 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 				"ags-sf-control\0");
 
       xmlNewProp(control_node,
+		 "control-type\0",
+		 G_OBJECT_TYPE_NAME(child_widget));
+
+      xmlNewProp(control_node,
 		 "value\0",
 		 g_strdup_printf("%f\0", GTK_RANGE(child_widget)->adjustment->value));
     }else if(GTK_IS_SPIN_BUTTON(child_widget)){
       control_node = xmlNewNode(NULL,
 				"ags-sf-control\0");
+
+      xmlNewProp(control_node,
+		 "control-type\0",
+		 G_OBJECT_TYPE_NAME(child_widget));
 
       xmlNewProp(control_node,
 		 "value\0",
@@ -5050,8 +5130,8 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
   effect = NULL;
 
   list_start = 
-    list = gtk_container_get_children(line->expander->table);
-
+    list = g_list_reverse(gtk_container_get_children(line->expander->table));
+  
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data)){
       AgsLineMember *line_member;
@@ -5077,7 +5157,15 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 
 	effect = g_list_prepend(effect,
 				AGS_LINE_MEMBER(list->data)->effect);
-	  
+
+	xmlNewProp(effect_node,
+		   "filename\0",
+		   AGS_LINE_MEMBER(list->data)->filename);
+
+	xmlNewProp(effect_node,
+		   "effect\0",
+		   AGS_LINE_MEMBER(list->data)->effect);
+	
 	ags_simple_file_write_control(simple_file, effect_node, list->data);
 	  
 	/* add to parent */

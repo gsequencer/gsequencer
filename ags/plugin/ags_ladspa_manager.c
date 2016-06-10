@@ -243,7 +243,7 @@ ags_ladspa_manager_load_file(gchar *ladspa_path,
   path = g_strdup_printf("%s/%s\0",
 			 ladspa_path,
 			 filename);
-
+  
   g_message("ags_ladspa_manager.c loading - %s\0", path);
 
   plugin_so = dlopen(path,
@@ -263,12 +263,16 @@ ags_ladspa_manager_load_file(gchar *ladspa_path,
     
   if(dlerror() == NULL && ladspa_descriptor){
     for(i = 0; (plugin_descriptor = ladspa_descriptor(i)) != NULL; i++){
-      ladspa_plugin = ags_ladspa_plugin_new(path,
-					    plugin_descriptor->Name,
-					    i);
-      ags_base_plugin_load_plugin(ladspa_plugin);
-      ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
-						     ladspa_plugin);
+      if(ags_base_plugin_find_effect(ladspa_manager->ladspa_plugin,
+				     path,
+				     plugin_descriptor->Name) == NULL){
+	ladspa_plugin = ags_ladspa_plugin_new(path,
+					      plugin_descriptor->Name,
+					      i);
+	ags_base_plugin_load_plugin(ladspa_plugin);
+	ladspa_manager->ladspa_plugin = g_list_prepend(ladspa_manager->ladspa_plugin,
+						       ladspa_plugin);
+      }
     }
   }
 

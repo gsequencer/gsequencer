@@ -722,6 +722,12 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	widget_type = AGS_TYPE_DIAL;
       }
 
+      if(control_type_name != NULL){
+	widget_type = g_type_from_name(control_type_name->data);
+
+	control_type_name = control_type_name->next;
+      }
+      
       step_count = AGS_DIAL_DEFAULT_PRECISION;
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
@@ -888,6 +894,12 @@ ags_line_add_lv2_effect(AgsLine *line,
 	widget_type = AGS_TYPE_DIAL;
       }
 
+      if(control_type_name != NULL){
+	widget_type = g_type_from_name(control_type_name->data);
+
+	control_type_name = control_type_name->next;
+      }
+      
       step_count = AGS_DIAL_DEFAULT_PRECISION;
 
       if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
