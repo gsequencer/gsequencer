@@ -27,6 +27,8 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/file/ags_simple_file.h>
+
 #include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -231,16 +233,21 @@ void
 ags_preferences_apply(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
+
+  AgsApplicationContext *application_context;
   AgsConfig *config;
-  AgsFile *file;
+
+  gchar *filename;
+
   struct passwd *pw;
   uid_t uid;
-  gchar *filename;
+
   gchar **argv;
   GError *error;
 
   preferences = AGS_PREFERENCES(applicable);
-
+  application_context = AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context);
+  
   config = ags_config_get_instance();
 
   ags_applicable_apply(AGS_APPLICABLE(preferences->generic_preferences));
@@ -258,12 +265,31 @@ ags_preferences_apply(AgsApplicable *applicable)
 			     AGS_DEFAULT_DIRECTORY,
 			     AGS_PREFERENCES_DEFAULT_FILENAME);
     
-  file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
-				  "application-context\0", AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context),
-				  "filename\0", filename,
-				  NULL);
-  ags_file_write(file);
-  g_object_unref(file);
+
+  if(g_strcmp0(ags_config_get_value(application_context->config,
+				    AGS_CONFIG_GENERIC,
+				    "simple-file\0"),
+	       "false\0")){
+    AgsSimpleFile *simple_file;
+    
+    simple_file = (AgsFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+					   "application-context\0", application_context,
+					   "filename\0", filename,
+					   NULL);
+    
+    ags_file_write(simple_file);
+    g_object_unref(simple_file);
+  }else{
+    AgsFile *file;
+    
+    file = (AgsFile *) g_object_new(AGS_TYPE_FILE,
+				    "application-context\0", application_context,
+				    "filename\0", filename,
+				    NULL);
+    
+    ags_file_write(file);
+    g_object_unref(file);
+  }
   
   error = NULL;
 
@@ -271,7 +297,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 					     filename),
 			     &error);
 
-  ags_application_context_quit(AGS_APPLICATION_CONTEXT(AGS_WINDOW(preferences->window)->application_context));
+  ags_application_context_quit(application_context);
 }
 
 void
