@@ -174,8 +174,8 @@ ags_simple_autosave_thread_init(AgsSimpleAutosaveThread *simple_autosave_thread)
 			     AGS_DEFAULT_DIRECTORY,
 			     AGS_SIMPLE_AUTOSAVE_THREAD_DEFAULT_FILENAME);
 
-  if((offset = g_strstr(filename,
-			"{PID}")) != NULL){
+  if((offset = strstr(filename,
+		      "{PID}")) != NULL){
     gchar *tmp0, *tmp1;
 
     tmp0 = filename;

@@ -392,6 +392,21 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /* AgsAutosaveThread */
   xorg_application_context->autosave_thread = NULL;
   
+  if(!g_strcmp0(ags_config_get_value(AGS_APPLICATION_CONTEXT(xorg_application_context)->config,
+				     AGS_CONFIG_GENERIC,
+				     "autosave-thread\0"),
+	       "true\0")){
+    if(g_strcmp0(ags_config_get_value(AGS_APPLICATION_CONTEXT(xorg_application_context)->config,
+				      AGS_CONFIG_GENERIC,
+				      "simple-file\0"),
+		 "false\0")){
+      xorg_application_context->autosave_thread = ags_autosave_thread_new(xorg_application_context);
+      ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				    xorg_application_context->autosave_thread,
+				    TRUE, TRUE);
+    }
+  }
+  
   /* AgsThreadPool */
   xorg_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
 }
