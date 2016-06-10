@@ -496,12 +496,35 @@ ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
   free(port_descriptor);
 }
 
+/**
+ * ags_base_plugin_find_filename:
+ */
 GList*
 ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
 {
   while(base_plugin != NULL){
     if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->filename,
 			   filename)){
+      return(base_plugin);
+    }
+
+    base_plugin = base_plugin->next;
+  }
+
+  return(NULL);
+}
+
+/**
+ * ags_base_plugin_find_effect:
+ */
+GList*
+ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
+{
+  while(base_plugin != NULL){
+    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->filename,
+			   filename) &&
+       !g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->effect,
+			   effect)){
       return(base_plugin);
     }
 

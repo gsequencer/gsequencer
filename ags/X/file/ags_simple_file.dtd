@@ -8,7 +8,7 @@
 <!ATTLIST ags-simple-file
 	  version          CDATA      #REQUIRED
 	  build-id         CDATA      #REQUIRED
-	  embedded-audio   CDATA      "FALSE"
+	  embedded-audio   CDATA      "false"
 	  >
 
 <!-- program configuration GKeyFile - the same as $(HOME)/.gsequener/ags.conf -->
@@ -106,7 +106,8 @@
 <!ELEMENT ags-sf-control EMPTY>
 <!ATTLIST ags-sf-control
 	  specifier       CDATA    #REQUIRED
-	  value           NMTOKEN  0.0
+	  control-type    CDATA    #IMPLIED
+	  value           NMTOKEN  #IMPLIED
 	  >
 
 <!-- effect pad -->

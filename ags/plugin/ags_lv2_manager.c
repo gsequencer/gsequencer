@@ -520,22 +520,26 @@ ags_lv2_manager_load_file(AgsTurtle *turtle,
 	    break;
 	  }
 
-	  g_message("ags_lv2_manager.c loading - %s::%s as %s\0",
-		    path,
-		    turtle->filename,
-		    effect);
-
-	  lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
-				    "turtle\0", turtle,
-				    "filename\0", path,
-				    "effect\0", effect,
-				    "uri\0", uri,
-				    "effect-index\0", i,
-				    NULL);
-	  ags_base_plugin_load_plugin(lv2_plugin);
-	  lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
-						   lv2_plugin);
-
+	  if(ags_base_plugin_find_effect(lv2_manager->lv2_plugin,
+					 path,
+					 effect) == NULL){
+	    g_message("ags_lv2_manager.c loading - %s::%s as %s\0",
+		      path,
+		      turtle->filename,
+		      effect);
+	    
+	    lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
+				      "turtle\0", turtle,
+				      "filename\0", path,
+				      "effect\0", effect,
+				      "uri\0", uri,
+				      "effect-index\0", i,
+				      NULL);
+	    ags_base_plugin_load_plugin(lv2_plugin);
+	    lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
+						     lv2_plugin);
+	  }
+	  
 	  break;
 	}
       }  

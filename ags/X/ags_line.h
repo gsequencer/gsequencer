@@ -79,8 +79,9 @@ struct _AgsLineClass
   void (*set_channel)(AgsLine *line, AgsChannel *channel);
 
   void (*group_changed)(AgsLine *line);
-
+  
   GList* (*add_effect)(AgsLine *line,
+		       GList *control_type_name,
 		       gchar *filename,
 		       gchar *effect);
   void (*remove_effect)(AgsLine *line,

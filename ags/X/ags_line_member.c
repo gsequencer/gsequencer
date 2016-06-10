@@ -465,8 +465,14 @@ ags_line_member_set_property(GObject *gobject,
   case PROP_WIDGET_TYPE:
     {
       GtkWidget *child, *new_child;
+
+      GtkAdjustment *adjustment;
+      
       GType widget_type;
 
+      gboolean active;
+      
+      //TODO:JK: verify me
       widget_type = g_value_get_ulong(value);
 
       if(widget_type == line_member->widget_type){
@@ -475,6 +481,25 @@ ags_line_member_set_property(GObject *gobject,
 
       child = gtk_bin_get_child(GTK_BIN(line_member));
 
+      /* preserver previous range */
+      adjustment = NULL;
+      active = FALSE;
+    
+      if(GTK_IS_RANGE(child)){
+	adjustment = GTK_RANGE(child)->adjustment;
+      }else if(GTK_IS_SPIN_BUTTON(child)){
+	adjustment = GTK_SPIN_BUTTON(child)->adjustment;
+      }else if(AGS_IS_DIAL(child)){
+	adjustment = AGS_DIAL(child)->adjustment;
+      }else if(GTK_IS_TOGGLE_BUTTON(child)){
+	active = gtk_toggle_button_get_active(child);
+      }
+      
+      if(adjustment != NULL){
+	g_object_ref(adjustment);
+      }
+      
+      /* destroy old */
       if(child != NULL){
 	gtk_widget_destroy(child);
       }
@@ -493,10 +518,43 @@ ags_line_member_set_property(GObject *gobject,
 				    2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
 				    2 * (dial->radius + dial->outline_strength + 1));
       }
-      
+
+      /* set range */
+      if(GTK_IS_RANGE(new_child)){
+	gtk_adjustment_set_lower(GTK_RANGE(new_child)->adjustment,
+				 adjustment->lower);
+	gtk_adjustment_set_upper(GTK_RANGE(new_child)->adjustment,
+				 adjustment->upper);
+
+	gtk_adjustment_set_value(GTK_RANGE(new_child)->adjustment,
+				 adjustment->value);
+      }else if(GTK_IS_SPIN_BUTTON(new_child)){
+	gtk_adjustment_set_lower(GTK_SPIN_BUTTON(new_child)->adjustment,
+				 adjustment->lower);
+	gtk_adjustment_set_upper(GTK_SPIN_BUTTON(new_child)->adjustment,
+				 adjustment->upper);
+
+	gtk_adjustment_set_value(GTK_SPIN_BUTTON(new_child)->adjustment,
+				 adjustment->value);
+      }else if(AGS_IS_DIAL(new_child)){
+	gtk_adjustment_set_lower(AGS_DIAL(new_child)->adjustment,
+				 adjustment->lower);
+	gtk_adjustment_set_upper(AGS_DIAL(new_child)->adjustment,
+				 adjustment->upper);
+
+	gtk_adjustment_set_value(AGS_DIAL(new_child)->adjustment,
+				 adjustment->value);
+	ags_dial_draw(new_child);
+      }else if(GTK_IS_TOGGLE_BUTTON(new_child)){
+	gtk_toggle_button_set_active(new_child,
+				     active);
+      }else{
+	g_warning("ags_line_member_set_property() - unknown child type %s\0", g_type_name(widget_type));
+      }
+
+      /* add */
       gtk_container_add(GTK_CONTAINER(line_member),
 			new_child);
-			
     }
     break;
   case PROP_WIDGET_LABEL:

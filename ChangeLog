@@ -4,6 +4,8 @@ ags (0.7.25)
 	* fixed AgsLadspaBridge, AgsDssiBridge and AgsLv2Bridge restore from XML
 	* implemented AgsSimpleFile which is much faster than AgsFile
 	* implemented AgsSimpleFileRead task
+	* implemented :control_type_name parameter of ags_line_add_effect()
+	* fixed duplicated entries in plugins manager
 
 ags (0.7.24)
 
