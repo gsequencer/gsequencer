@@ -665,11 +665,13 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   GList *current_position;
   GList *list;
 
+  gchar *str;
+
+  guint notation_counter;
   guint audio_channel;
   guint samplerate;
   guint buffer_length;
   guint i;
-  gchar *str;
   
   GValue value = {0,};
 
@@ -718,16 +720,20 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   soundcard = (GObject *) audio->soundcard;
   list = audio->notation;//(GList *) g_value_get_pointer(&value);
+
+  pthread_mutex_unlock(audio_mutex);
   
   if(list == NULL){
-    pthread_mutex_unlock(audio_mutex);
-
     return;
   }
 
   //FIXME:JK: nth_run isn't best joice
-  audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
+  pthread_mutex_lock(audio_mutex);
   
+  audio_channel = AGS_CHANNEL(AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel)->audio_channel;
+
+  pthread_mutex_unlock(audio_mutex);
+
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
     channel = ags_channel_nth(audio->input,
 			      audio_channel);
@@ -744,11 +750,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   
   pthread_mutex_unlock(application_mutex);
 
-  pthread_mutex_lock(soundcard_mutex);
-
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
+  application_context = ags_application_context_get_instance();
   
   /*  */
   pthread_mutex_lock(application_mutex);
@@ -760,21 +762,32 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   timestamp_thread = (AgsTimestampThread *) ags_thread_find_type(main_loop,
 								 AGS_TYPE_TIMESTAMP_THREAD);
   
+  pthread_mutex_lock(audio_mutex);
+  
   //TODO:JK: make it advanced
   notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
     //						   timestamp_thread->timestamp)->data);
 
   current_position = notation->notes; // start_loop
+  notation_counter = play_notation_audio_run->count_beats_audio_run->notation_counter;
   
+  pthread_mutex_unlock(audio_mutex);
+
   while(current_position != NULL){
     AgsRecallID *child_recall_id;
     GList *list;
 
-        
-    if(current_position != NULL){
-      note = AGS_NOTE(current_position->data);
+    guint note_x0;
     
-      if(note->x[0] == play_notation_audio_run->count_beats_audio_run->notation_counter){
+    if(current_position != NULL){
+      pthread_mutex_lock(audio_mutex);
+      
+      note = AGS_NOTE(current_position->data);
+      note_x0 = note->x[0];
+      
+      pthread_mutex_unlock(audio_mutex);
+  
+      if(note_x0 == notation_counter){
 	if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
 	  selected_channel = ags_channel_pad_nth(channel, audio->input_pads - note->y - 1);
 	}else{
@@ -826,9 +839,9 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	pthread_mutex_unlock(channel_mutex);
 	
-	//#ifdef AGS_DEBUG	
+#ifdef AGS_DEBUG	
 	g_message("playing[%u|%u]: %u | %u\n\0", audio_channel, selected_channel->pad, note->x[0], note->y);
-	//#endif
+#endif
 
 	while(recycling != selected_channel->last_recycling->next){
 	  /* lookup recycling mutex */
@@ -882,15 +895,17 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	  pthread_mutex_unlock(recycling_mutex);
 	}
-      }else if(note->x[0] > play_notation_audio_run->count_beats_audio_run->notation_counter){
+      }else if(note_x0 > notation_counter){
 	break;
       }
     }
     
+    pthread_mutex_lock(audio_mutex);
+    
     current_position = current_position->next;
-  }
 
-  pthread_mutex_unlock(audio_mutex);
+    pthread_mutex_unlock(audio_mutex);
+  }
 }
 
 void

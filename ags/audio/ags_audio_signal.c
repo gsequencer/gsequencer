@@ -843,8 +843,9 @@ ags_audio_signal_finalize(GObject *gobject)
   g_message("finalize AgsAudioSignal\0");
 #endif
 
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0)
+  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
     g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n\0");
+  }
 
   if(audio_signal->soundcard != NULL)
     g_object_unref(audio_signal->soundcard);
@@ -857,7 +858,7 @@ ags_audio_signal_finalize(GObject *gobject)
 
   if(audio_signal->stream_beginning != NULL){
     g_list_free_full(audio_signal->stream_beginning,
-		     g_free);
+		     free);
   }
 
   /* call parent */

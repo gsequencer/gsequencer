@@ -39,7 +39,7 @@
 #define AGS_IS_TASK_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TASK_THREAD))
 #define AGS_TASK_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_TASK_THREAD, AgsTaskThreadClass))
 
-#define AGS_TASK_THREAD_DEFAULT_JIFFIE (250.0)
+#define AGS_TASK_THREAD_DEFAULT_JIFFIE (AGS_THREAD_MAX_PRECISION)
 
 typedef struct _AgsTaskThread AgsTaskThread;
 typedef struct _AgsTaskThreadClass AgsTaskThreadClass;
@@ -72,6 +72,8 @@ struct _AgsTaskThread
 struct _AgsTaskThreadClass
 {
   AgsThreadClass thread;
+
+  void (*clear_cache)(AgsTaskThread *task_thread);
 };
 
 struct _AgsTaskThreadAppend
@@ -84,6 +86,8 @@ GType ags_task_thread_get_type();
 
 void ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task);
 void ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list);
+
+void ags_task_thread_clear_cache(AgsTaskThread *task_thread);
 
 AgsTaskThread* ags_task_thread_new();
 

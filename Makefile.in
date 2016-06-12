@@ -1219,11 +1219,11 @@ AM_CPPFLAGS = -include /usr/include/errno.h -I$(top_srcdir) -DDESTDIR=\"$(DESTDI
 # the previous manual Makefile
 lib_LTLIBRARIES = libags-1.0.la libags_thread-1.0.la libags_server-0.7.la libags_audio-1.0.la libags_gui-0.7.la libgsequencer-0.7.la
 EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 \
-	gsequencer.1 midi2xml.1 README gsequencer-documentation \
-	gsequencer.desktop.in docs/reference/ags $(manpages) \
-	$(userdoc) $(userdocimages) $(devdoc) $(devdocimages) \
-	$(devdoclistings) $(top_srcdir)/ags/file/ags_file.dtd \
-	$(top_srcdir)/ags.xsl \
+	gsequencer.1 midi2xml.1 README ags_example.xml \
+	gsequencer-documentation gsequencer.desktop.in \
+	docs/reference/ags $(manpages) $(userdoc) $(userdocimages) \
+	$(devdoc) $(devdocimages) $(devdoclistings) \
+	$(top_srcdir)/ags/file/ags_file.dtd $(top_srcdir)/ags.xsl \
 	$(top_srcdir)/ags/object/ags_marshallers.list
 CLEANFILES = $(appdata_DATA)
 man1_MANS = gsequencer.1 midi2xml.1
@@ -1237,7 +1237,7 @@ appdatadir = $(datadir)/applications
 appdata_DATA = gsequencer.desktop
 otherincludedir = $(includedir)/ags
 nobase_include_HEADERS = $(libags_1_0_la_HEADERS_0) $(libags_thread_1_0_la_HEADERS_0) $(libags_server_0_7_la_HEADERS_0) $(libags_audio_1_0_la_HEADERS_0) $(libags_gui_0_7_la_HEADERS_0) $(libgsequencer_0_7_la_HEADERS_0)
-doc_DATA = README
+doc_DATA = README ags_example.xml
 
 # documentation
 manpages = \

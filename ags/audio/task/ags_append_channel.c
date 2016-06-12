@@ -226,7 +226,7 @@ ags_append_channel_launch(AgsTask *task)
 	start_queue = g_list_prepend(start_queue,
 				     AGS_PLAYBACK(channel->playback)->channel_thread[0]);
 	
-	if(AGS_PLAYBACK(channel->playback)->channel_thread[0]->parent == NULL){
+	if(g_atomic_pointer_get(&(AGS_PLAYBACK(channel->playback)->channel_thread[0]->parent)) == NULL){
 	  ags_thread_add_child_extended(audio_loop,
 					AGS_PLAYBACK(channel->playback)->channel_thread[0],
 					TRUE, TRUE);

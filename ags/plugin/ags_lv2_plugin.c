@@ -932,6 +932,8 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 
   for(i = 0; i < event_count; i++){
     if(offset >= AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size){
+      snd_midi_event_free(midi_event);
+      
       return(FALSE);
     }
 
@@ -948,6 +950,8 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
     }
     
     if(AGS_LV2_EVENT_BUFFER(event_buffer)->size + padded_buffer_size >= buffer_size){
+      snd_midi_event_free(midi_event);
+      
       return(FALSE);
     }
     
@@ -966,7 +970,9 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
       
     offset += (padded_buffer_size + sizeof(LV2_Event));
   }
-  
+
+  snd_midi_event_free(midi_event);
+
   return(success);
 }
 
@@ -1091,6 +1097,8 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 
   for(i = 0; i < event_count; i++){
     if(aev >= atom_sequence + sequence_size){
+      snd_midi_event_free(midi_event);
+      
       return(FALSE);
     }
   
@@ -1116,6 +1124,8 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
       break;
     }
   }
+
+  snd_midi_event_free(midi_event);
 
   /* set last empty */
   aev->body.size = 0;  

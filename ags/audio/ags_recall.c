@@ -1246,20 +1246,31 @@ ags_recall_finalize(GObject *gobject)
     //    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
   }
 
-  //  if(recall->name != NULL)
-  //    g_free(recall->name);
+  //  if(recall->name != NULL){
+    //    g_free(recall->name);
+  //  }
 
   g_list_free_full(recall->dependencies,
 		   g_object_unref);
 
   g_list_free_full(recall->children,
 		   g_object_unref);
-
+  
   if(recall->container != NULL){
     ags_packable_unpack(recall);
   }
 
+  
+  if(recall->child_parameters != NULL){
+    g_free(recall->child_parameters);
+  }
+
+  g_list_free_full(recall->port,
+		   g_object_unref);
+
   if(recall->parent != NULL){
+    ags_recall_remove_child(recall->parent,
+			    recall);
     //TODO:JK: implement me
   }
 

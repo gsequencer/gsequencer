@@ -681,7 +681,6 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   snd_seq_event_t *seq_event;
 
   gchar *str;
-  char *buffer;
   long seq_length;
   long velocity, pressure;
   guint samplerate;
@@ -879,6 +878,8 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
       channel_dummy = channel_dummy->next;
     }
   }
+
+  snd_midi_event_free(parser);
 }
 
 void

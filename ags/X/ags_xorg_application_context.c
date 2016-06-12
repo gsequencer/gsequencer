@@ -43,6 +43,7 @@
 #include <ags/audio/jack/ags_jack_midiin.h>
 #include <ags/audio/jack/ags_jack_server.h>
 
+#include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
@@ -92,6 +93,9 @@ void ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **a
 xmlNode* ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *application_context);
 
 void ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationContext *application_context);
+
+void ags_xorg_application_context_clear_cache(AgsTaskThread *task_thread,
+					      gpointer data);
 
 static gpointer ags_xorg_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_xorg_application_context_parent_connectable_interface;
@@ -369,6 +373,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
 				TRUE, TRUE);
+  g_signal_connect(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread, "clear-cache\0",
+		   G_CALLBACK(ags_xorg_application_context_clear_cache), NULL);
+
   
   /* AgsSoundcardThread */
   xorg_application_context->soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);
@@ -579,6 +586,10 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_iterator_thread_get_type();
   ags_recycling_thread_get_type();
 
+  /*  */
+  ags_audio_file_get_type();
+  ags_audio_file_link_get_type();
+  
   /* register recalls */
   ags_recall_channel_run_dummy_get_type();
 
@@ -879,6 +890,21 @@ ags_xorg_application_context_write(AgsFile *file, xmlNode *parent, GObject *appl
 			AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
 
   return(node);
+}
+
+void
+ags_xorg_application_context_clear_cache(AgsTaskThread *task_thread,
+					 gpointer data)
+{
+  gdk_threads_enter();
+
+  //TODO:JK: improve me
+  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+  pango_cairo_font_map_set_default(NULL);
+  //  cairo_debug_reset_static_data();
+  //  FcFini();
+
+  gdk_threads_leave();
 }
 
 AgsXorgApplicationContext*

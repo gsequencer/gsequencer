@@ -848,6 +848,8 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 							seq_event,
 							1);
 	      }
+
+	      free(seq_event);
 	    }
 
 	    lv2 = lv2->next;
@@ -860,6 +862,8 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
       channel_dummy = channel_dummy->next;
     }
   }
+
+  snd_midi_event_free(parser);
 }
 
 void

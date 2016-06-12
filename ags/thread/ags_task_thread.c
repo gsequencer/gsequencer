@@ -62,8 +62,14 @@ void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, 
  * The #AgsTaskThread acts as task queue thread.
  */
 
+enum{
+  CLEAR_CACHE,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_task_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
+static guint task_thread_signals[LAST_SIGNAL];
 
 GType
 ags_task_thread_get_type()
@@ -130,6 +136,26 @@ ags_task_thread_class_init(AgsTaskThreadClass *task_thread)
 
   thread->start = ags_task_thread_start;
   thread->run = ags_task_thread_run;
+
+  /* AgsTaskThread */
+  task_thread->clear_cache = NULL;
+
+  /* signals */
+  /**
+   * AgsTaskThread::clear-cache:
+   * @task_thread: the object playing.
+   *
+   * The ::clear-cache signal is invoked to clear the cache libraries might have been allocated.
+   */
+  task_thread_signals[CLEAR_CACHE] =
+    g_signal_new("clear-cache\0",
+		 G_TYPE_FROM_CLASS (task_thread),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsTaskThreadClass, clear_cache),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
 }
 
 void
@@ -422,10 +448,7 @@ ags_task_thread_run(AgsThread *thread)
   pthread_mutex_unlock(task_thread->run_mutex);
   
   /* clean-up */
-  //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-  //  pango_cairo_font_map_set_default(NULL);
-  //  cairo_debug_reset_static_data();
-  //  FcFini();
+  ags_task_thread_clear_cache(task_thread);
 }
 
 void
@@ -589,6 +612,25 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
 		  AGS_RETURNABLE_THREAD_IN_USE);
   
   pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
+}
+
+/**
+ * ags_task_thread_clear_cache:
+ * @task_thread: the #AgsTaskThread
+ *
+ * Clear cache signal.
+ *
+ * Since: 0.7.28
+ */
+void
+ags_task_thread_clear_cache(AgsTaskThread *task_thread)
+{
+  g_return_if_fail(AGS_IS_TASK_THREAD(task_thread));
+
+  g_object_ref(task_thread);
+  g_signal_emit(task_thread,
+		task_thread_signals[CLEAR_CACHE], 0);
+  g_object_unref(task_thread);
 }
 
 /**

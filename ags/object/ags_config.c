@@ -371,7 +371,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent\0", "ags-recycling-thread\0");
 
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "samplerate\0", "44100\0");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "buffer-size\0", "940\0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "buffer-size\0", "944\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "pcm-channels\0", "2\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "dsp-channels\0", "2\0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD, "alsa-handle\0", "hw:0,0\0");
