@@ -210,6 +210,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 		   0, 0,
 		   1, 1);
   widget = gtk_bin_get_child(GTK_BIN(line_member));
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw, (gpointer) widget);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_set(widget,

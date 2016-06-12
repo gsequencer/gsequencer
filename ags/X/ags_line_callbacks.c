@@ -327,8 +327,6 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   AgsPort *port;
 
-  AgsChangeIndicator *change_indicator;
-
   AgsMutexManager *mutex_manager;
   AgsThread *audio_loop;
   AgsTaskThread *task_thread;
@@ -343,7 +341,7 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
-  
+
   gdk_threads_enter();
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
@@ -374,7 +372,13 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data) &&
        AGS_LINE_MEMBER(list->data)->widget_type == AGS_TYPE_VINDICATOR){
+      GtkAdjustment *adjustment;
 
+      GMainContext *main_context;
+
+      GMutex mutex;
+      GCond cond;
+      
       child = GTK_BIN(list->data)->child;
 
       /* get port */
@@ -399,12 +403,15 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
       peak = g_value_get_double(&value);
       g_value_unset(&value);
 
-      //      if(peak_channel_run->recall_id->recycling_context->parent == NULL)
-	//	g_message("%f\0", peak);
+      /* apply */
+      main_context = g_main_context_default();
 
-      /* change indicator */
-      change_indicator = ags_change_indicator_new((AgsIndicator *) child,
-						  peak);
+      g_object_get(child,
+		   "adjustment\0", &adjustment,
+		   NULL);
+
+      gtk_adjustment_set_value(adjustment,
+			       peak);
 
       break;
     }
@@ -413,9 +420,6 @@ ags_line_peak_run_post_callback(AgsRecall *peak_channel_run,
   }
 
   g_list_free(list_start);
-
-  ags_task_thread_append_task(task_thread,
-			      (AgsTask *) change_indicator);
 
   gdk_threads_leave();
 }

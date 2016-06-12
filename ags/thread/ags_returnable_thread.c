@@ -22,6 +22,7 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_thread_pool.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <pthread.h>
 #include <stdio.h>
@@ -163,6 +164,8 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
   g_atomic_int_set(&(returnable_thread->flags),
 		   AGS_RETURNABLE_THREAD_RUN_ONCE);
 
+  returnable_thread->thread_pool = NULL;
+  
   returnable_thread->reset_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(returnable_thread->reset_mutex, NULL);
   
@@ -188,7 +191,7 @@ ags_returnable_thread_disconnect(AgsConnectable *connectable)
 
 void
 ags_returnable_thread_finalize(GObject *gobject)
-{
+{  
   //  pthread_mutex_destroy(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
   free(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
   
@@ -207,13 +210,17 @@ ags_returnable_thread_run(AgsThread *thread)
 {
   AgsReturnableThread *returnable_thread;
   AgsThreadPool *thread_pool;
+  AgsTaskThread *task_thread;
   GList *tmplist;
 
+  gboolean unref_thread;
   //  g_message("reset:0\0");
   
   /* retrieve some variables */
   returnable_thread = AGS_RETURNABLE_THREAD(thread);
   thread_pool = (AgsThreadPool *) returnable_thread->thread_pool;
+  
+  unref_thread = FALSE;
   
   /* safe run */
   if((AGS_RETURNABLE_THREAD_IN_USE & (g_atomic_int_get(&(returnable_thread->flags)))) != 0){
@@ -226,7 +233,17 @@ ags_returnable_thread_run(AgsThread *thread)
       
       g_atomic_int_and(&(AGS_THREAD(returnable_thread)->flags),
 		       (~AGS_THREAD_RUNNING));
+
+      unref_thread = TRUE;
     }
+
+    task_thread = ags_thread_find_type(ags_thread_get_toplevel(AGS_THREAD_POOL(returnable_thread->thread_pool)->parent),
+				       AGS_TYPE_TASK_THREAD);
+    ags_task_thread_clear_cache(task_thread);
+  }
+
+  if(unref_thread){
+    g_object_unref(thread);
   }
 }
 

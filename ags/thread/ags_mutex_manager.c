@@ -205,6 +205,8 @@ ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
 		      lock_object);
 
   pthread_mutex_unlock(mutex);
+
+  free(mutex);
   
   return(TRUE);
 }

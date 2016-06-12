@@ -530,7 +530,11 @@ void
 ags_devout_init(AgsDevout *devout)
 {
   AgsMutexManager *mutex_manager;
-
+  
+  AgsConfig *config;
+  
+  gchar *str;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t attr;
@@ -563,8 +567,56 @@ ags_devout_init(AgsDevout *devout)
   devout->dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
   devout->pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
   devout->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  devout->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   devout->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  devout->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  /* read config */
+  config = ags_config_get_instance();
+
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "dsp-channels\0");
+
+  if(str != NULL){
+    devout->dsp_channels = g_ascii_strtoull(str,
+					    NULL,
+					    10);
+    g_free(str);
+  }
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "pcm-channels\0");
+
+  if(str != NULL){
+    devout->pcm_channels = g_ascii_strtoull(str,
+					    NULL,
+					    10);
+	  
+    g_free(str);
+  }
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate\0");
+  
+  if(str != NULL){
+    devout->samplerate = g_ascii_strtoull(str,
+					  NULL,
+					  10);
+    free(str);
+  }
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size\0");
+  if(str != NULL){
+    devout->buffer_size = g_ascii_strtoull(str,
+					   NULL,
+					   10);
+    free(str);
+  }
 
   //  devout->out.oss.device = NULL;
   devout->out.alsa.handle = NULL;

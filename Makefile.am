@@ -22,7 +22,7 @@ lib_LTLIBRARIES = libags-1.0.la libags_thread-1.0.la libags_server-0.7.la libags
 
 bin_PROGRAMS = gsequencer midi2xml
 
-EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 midi2xml.1 README gsequencer-documentation
+EXTRA_DIST = gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 midi2xml.1 README ags_example.xml gsequencer-documentation
 
 CLEANFILES =
 
@@ -47,7 +47,7 @@ otherincludedir = $(includedir)/ags
 nobase_include_HEADERS = $(libags_1_0_la_HEADERS_0) $(libags_thread_1_0_la_HEADERS_0) $(libags_server_0_7_la_HEADERS_0) $(libags_audio_1_0_la_HEADERS_0) $(libags_gui_0_7_la_HEADERS_0) $(libgsequencer_0_7_la_HEADERS_0)
 
 docdir = $(datadir)/docs/gsequencer
-doc_DATA = README
+doc_DATA = README ags_example.xml
 
 # documentation
 manpages = \

@@ -1,3 +1,12 @@
+ags (0.7.28)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed worst memory leaks
+	* refactored gsequencer_main.c because it was a mess
+	* refactored peak callback to use g_timeout_add() giving better performance
+	* improved timer support
+	* provided example file
+
 ags (0.7.27)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

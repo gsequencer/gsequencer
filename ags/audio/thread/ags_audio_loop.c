@@ -951,7 +951,8 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop, AgsPlayback
     pthread_mutex_lock(channel_thread->done_mutex);
   
     if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0 &&
-       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
+       (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0 &&
+       (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
       
       if((AGS_CHANNEL_THREAD_WAIT_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) != 0){
 	g_atomic_int_and(&(channel_thread->flags),

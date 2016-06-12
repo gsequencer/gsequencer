@@ -212,6 +212,9 @@ ags_recall_lv2_run_finalize(GObject *gobject)
   free(recall_lv2_run->output);
   free(recall_lv2_run->input);
 
+  AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi,
+											  recall_lv2_run->note);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_recall_lv2_run_parent_class)->finalize(gobject);
 }
@@ -344,6 +347,8 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 											  path,
 											  feature);
   AGS_LV2_WORKER(worker_handle)->handle = recall_lv2_run->lv2_handle[0];
+
+  free(path);
   
 #ifdef AGS_DEBUG
   g_message("instantiate LV2 handle\0");

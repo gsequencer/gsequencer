@@ -374,13 +374,17 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
     source = sndfile->buffer;
   }
 
-  buffer = (signed short *) malloc((size_t) sndfile->info->frames *
-				   sizeof(signed short));
-
-  for(i = 0; i < sndfile->info->frames; i++){
-    buffer[i] = source[i * sndfile->info->channels + channel];
+  if(sndfile->info->frames != 0){
+    buffer = (signed short *) malloc((size_t) sndfile->info->frames *
+				     sizeof(signed short));
+    
+    for(i = 0; i < sndfile->info->frames; i++){
+      buffer[i] = source[i * sndfile->info->channels + channel];
+    }
+  }else{
+    buffer = NULL;
   }
-
+  
   return(buffer);
 }
 

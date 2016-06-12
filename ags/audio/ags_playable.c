@@ -508,8 +508,39 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 		    &error);
 
   if(soundcard == NULL){
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    AgsConfig *config;
+
+    gchar *str;
+    
+    config = ags_config_get_instance();
+
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "samplerate\0");
+    
+    if(str != NULL){
+      samplerate = g_ascii_strtoull(str,
+				    NULL,
+				    10);
+
+      g_free(str);
+    }else{
+      samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    }
+
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "buffer-size\0");
+    
+    if(str != NULL){
+      buffer_size = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+      
+      g_free(str);
+    }else{
+      buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    }
   }else{
     application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
@@ -579,8 +610,8 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 
     if(buffer != NULL){
       stream = audio_signal->stream_beginning;
-    
-      for(j = 0; j < j_stop; j++){
+
+      for(j = 0; j < j_stop && stream != NULL; j++){
 	for(k = 0; k < buffer_size; k++){
 	  ((short *) stream->data)[k] = buffer[j * buffer_size + k];
 	}

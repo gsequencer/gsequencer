@@ -1232,6 +1232,14 @@ ags_line_find_next_grouped(GList *line)
   return(line);
 }
 
+gboolean
+ags_line_indicator_queue_draw(GtkWidget *widget)
+{
+  gtk_widget_queue_draw(widget);
+  
+  return(TRUE);
+}
+
 /**
  * ags_line_new:
  * @pad: the parent pad

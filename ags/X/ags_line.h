@@ -111,6 +111,8 @@ GList* ags_line_find_port(AgsLine *line);
 
 GList* ags_line_find_next_grouped(GList *line);
 
+gboolean ags_line_indicator_queue_draw(GtkWidget *widget);
+
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);
 
 #endif /*__AGS_LINE_H__*/

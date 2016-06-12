@@ -236,8 +236,11 @@ ags_apply_synth_launch(AgsTask *task)
   free(str);
   
   wave = (gint) apply_synth->wave;
-  g_message("wave = %d\n\0", wave);
 
+#ifdef AGS_DEBUG
+  g_message("wave = %d\n\0", wave);
+#endif
+  
   /* some settings */
   frequency = apply_synth->frequency;
 
@@ -286,7 +289,9 @@ ags_apply_synth_launch(AgsTask *task)
     stream = g_list_nth(audio_signal->stream_beginning, stream_start);
     
     if(stream->next != NULL){
+#ifdef AGS_DEBUG
       g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[0]);
+#endif
       ags_apply_synth_launch_write(attack,
 				   current_frequency, current_phase[0], buffer_size - attack,
 				   volume);
@@ -304,7 +309,9 @@ ags_apply_synth_launch(AgsTask *task)
     
     for(j = 1; stream->next != NULL; j++){
       current_phase[1] = (j * buffer_size + current_phase[0]) % (samplerate / current_frequency);
+#ifdef AGS_DEBUG
       g_message("freq = %u, phase = %u\n\0", current_frequency, current_phase[1]);
+#endif
       
       ags_apply_synth_launch_write(0,
 				   frequency, current_phase[1], buffer_size,

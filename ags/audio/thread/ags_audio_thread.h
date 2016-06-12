@@ -36,7 +36,7 @@
 #define AGS_IS_AUDIO_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUDIO_THREAD))
 #define AGS_AUDIO_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_AUDIO_THREAD, AgsAudioThreadClass))
 
-#define AGS_AUDIO_THREAD_DEFAULT_JIFFIE (48.0)
+#define AGS_AUDIO_THREAD_DEFAULT_JIFFIE (ceil(AGS_SOUNDCARD_DEFAULT_SAMPLERATE / AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE))
 
 typedef struct _AgsAudioThread AgsAudioThread;
 typedef struct _AgsAudioThreadClass AgsAudioThreadClass;

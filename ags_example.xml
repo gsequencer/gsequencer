@@ -1,0 +1,2316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ags-simple-file id="7963bf7c-2f98-11e6-ac50-ba3cd039f33f" version="0.7.27" build-id="CEST 13-10-2015 04:33">
+  <ags-sf-config id="7963c03a-2f98-11e6-ac50-ba3cd039f33f" version="0.7.0" build-id="CEST 13-10-2015 01:19"><![CDATA[[generic]
+autosave-thread=false
+simple-file=true
+
+[thread]
+model=super-threaded
+super-threaded-scope=channel
+lock-global=ags-thread
+lock-parent=ags-recycling-thread
+
+[soundcard]
+samplerate=44100
+buffer-size=940
+pcm-channels=2
+dsp-channels=2
+alsa-handle=hw:0,0
+
+[recall]
+auto-sense=true
+]]></ags-sf-config>
+  <ags-sf-window filename="/home/joelkraehemann/ags_example.xml" bpm="120.000000" loop="true" loop-start="0.000000" loop-end="4.000000">
+    <ags-sf-machine-list>
+      <ags-sf-machine id="7963c288-2f98-11e6-ac50-ba3cd039f33f" type="AgsPanel" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="1">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad id="7963c33c-2f98-11e6-ac50-ba3cd039f33f" nth-pad="0" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963c3aa-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" is-grouped="true" link="xpath=//ags-sf-line[@id='7963e308-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963c56c-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" is-grouped="true" link="xpath=//ags-sf-line[@id='7963e3a8-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkCheckButton" value="false" specifier="./muted[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963c648-2f98-11e6-ac50-ba3cd039f33f" nth-line="0"/>
+              <ags-sf-line id="7963c6b6-2f98-11e6-ac50-ba3cd039f33f" nth-line="1"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0"/>
+          <ags-sf-notation channel="1"/>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="7963c738-2f98-11e6-ac50-ba3cd039f33f" type="AgsMixer" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="8">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad id="7963c7ce-2f98-11e6-ac50-ba3cd039f33f" nth-pad="0" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963c832-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" is-grouped="true" link="xpath=//ags-sf-line[@id='7964171a-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963ca8a-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" is-grouped="true" link="xpath=//ags-sf-line[@id='796417c4-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963cc1a-2f98-11e6-ac50-ba3cd039f33f" nth-pad="1" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963cc88-2f98-11e6-ac50-ba3cd039f33f" nth-line="2" is-grouped="true" link="xpath=//ags-sf-line[@id='79644af0-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963ce04-2f98-11e6-ac50-ba3cd039f33f" nth-line="3" is-grouped="true" link="xpath=//ags-sf-line[@id='79644b90-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963cf80-2f98-11e6-ac50-ba3cd039f33f" nth-pad="2" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963cfe4-2f98-11e6-ac50-ba3cd039f33f" nth-line="4" is-grouped="true" link="xpath=//ags-sf-line[@id='79648c5e-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963d156-2f98-11e6-ac50-ba3cd039f33f" nth-line="5" is-grouped="true" link="xpath=//ags-sf-line[@id='79648ce0-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963d2d2-2f98-11e6-ac50-ba3cd039f33f" nth-pad="3" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963d336-2f98-11e6-ac50-ba3cd039f33f" nth-line="6" is-grouped="true" link="xpath=//ags-sf-line[@id='79650530-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963d4a8-2f98-11e6-ac50-ba3cd039f33f" nth-line="7" is-grouped="true" link="xpath=//ags-sf-line[@id='79650602-2f98-11e6-ac50-ba3cd039f33f']">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963d62e-2f98-11e6-ac50-ba3cd039f33f" nth-pad="4" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963d692-2f98-11e6-ac50-ba3cd039f33f" nth-line="8" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963d7dc-2f98-11e6-ac50-ba3cd039f33f" nth-line="9" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963d926-2f98-11e6-ac50-ba3cd039f33f" nth-pad="5" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963d980-2f98-11e6-ac50-ba3cd039f33f" nth-line="10" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963dac0-2f98-11e6-ac50-ba3cd039f33f" nth-line="11" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963dc3c-2f98-11e6-ac50-ba3cd039f33f" nth-pad="6" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963dc96-2f98-11e6-ac50-ba3cd039f33f" nth-line="12" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963de8a-2f98-11e6-ac50-ba3cd039f33f" nth-line="13" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963e024-2f98-11e6-ac50-ba3cd039f33f" nth-pad="7" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963e088-2f98-11e6-ac50-ba3cd039f33f" nth-line="14" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963e1c8-2f98-11e6-ac50-ba3cd039f33f" nth-line="15" is-grouped="true">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963e308-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" link="xpath=//ags-sf-line[@id='7963c3aa-2f98-11e6-ac50-ba3cd039f33f']"/>
+              <ags-sf-line id="7963e3a8-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" link="xpath=//ags-sf-line[@id='7963c56c-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0"/>
+          <ags-sf-notation channel="1"/>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="7963e43e-2f98-11e6-ac50-ba3cd039f33f" type="AgsDrum" bank_0="0" bank_1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="16">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad id="7963e4e8-2f98-11e6-ac50-ba3cd039f33f" nth-pad="0" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963e542-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/909_xOver_1.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.860000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963e696-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/909_xOver_1.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="0.860000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963e7e0-2f98-11e6-ac50-ba3cd039f33f" nth-pad="1" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963e83a-2f98-11e6-ac50-ba3cd039f33f" nth-line="2" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/am_sine_01_2.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963e984-2f98-11e6-ac50-ba3cd039f33f" nth-line="3" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/am_sine_01_2.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963eae2-2f98-11e6-ac50-ba3cd039f33f" nth-pad="2" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963eb3c-2f98-11e6-ac50-ba3cd039f33f" nth-line="4" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_01.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963ec86-2f98-11e6-ac50-ba3cd039f33f" nth-line="5" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_01.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963edda-2f98-11e6-ac50-ba3cd039f33f" nth-pad="3" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963ee5c-2f98-11e6-ac50-ba3cd039f33f" nth-line="6" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_02.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963efb0-2f98-11e6-ac50-ba3cd039f33f" nth-line="7" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/chh_02.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963f0fa-2f98-11e6-ac50-ba3cd039f33f" nth-pad="4" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963f15e-2f98-11e6-ac50-ba3cd039f33f" nth-line="8" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_01.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963f2b2-2f98-11e6-ac50-ba3cd039f33f" nth-line="9" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_01.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963f406-2f98-11e6-ac50-ba3cd039f33f" nth-pad="5" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963f46a-2f98-11e6-ac50-ba3cd039f33f" nth-line="10" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_08_01.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963f5b4-2f98-11e6-ac50-ba3cd039f33f" nth-line="11" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/drum_08_01.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963f708-2f98-11e6-ac50-ba3cd039f33f" nth-pad="6" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963f76c-2f98-11e6-ac50-ba3cd039f33f" nth-line="12" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/fx_18-2.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963f938-2f98-11e6-ac50-ba3cd039f33f" nth-line="13" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/fx_18-2.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963fa96-2f98-11e6-ac50-ba3cd039f33f" nth-pad="7" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963faf0-2f98-11e6-ac50-ba3cd039f33f" nth-line="14" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_ohh_soft.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963fc4e-2f98-11e6-ac50-ba3cd039f33f" nth-line="15" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_ohh_soft.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7963fda2-2f98-11e6-ac50-ba3cd039f33f" nth-pad="8" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7963fe06-2f98-11e6-ac50-ba3cd039f33f" nth-line="16" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_perc_01.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7963ff5a-2f98-11e6-ac50-ba3cd039f33f" nth-line="17" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_perc_01.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="796400b8-2f98-11e6-ac50-ba3cd039f33f" nth-pad="9" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964011c-2f98-11e6-ac50-ba3cd039f33f" nth-line="18" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_xO_7.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="79640298-2f98-11e6-ac50-ba3cd039f33f" nth-line="19" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/juno6_xO_7.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="796403ec-2f98-11e6-ac50-ba3cd039f33f" nth-pad="10" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="79640450-2f98-11e6-ac50-ba3cd039f33f" nth-line="20" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sim_k02-0.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7964061c-2f98-11e6-ac50-ba3cd039f33f" nth-line="21" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sim_k02-0.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="7964077a-2f98-11e6-ac50-ba3cd039f33f" nth-pad="11" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="796407de-2f98-11e6-ac50-ba3cd039f33f" nth-line="22" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sw_01.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="79640932-2f98-11e6-ac50-ba3cd039f33f" nth-line="23" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/sw_01.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="79640a86-2f98-11e6-ac50-ba3cd039f33f" nth-pad="12" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="79640ae0-2f98-11e6-ac50-ba3cd039f33f" nth-line="24" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/synth_01.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="79640c3e-2f98-11e6-ac50-ba3cd039f33f" nth-line="25" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/synth_01.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="79640d9c-2f98-11e6-ac50-ba3cd039f33f" nth-pad="13" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="79640df6-2f98-11e6-ac50-ba3cd039f33f" nth-line="26" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/tom_01.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="79640f54-2f98-11e6-ac50-ba3cd039f33f" nth-line="27" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/tom_01.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="796410a8-2f98-11e6-ac50-ba3cd039f33f" nth-pad="14" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641102-2f98-11e6-ac50-ba3cd039f33f" nth-line="28" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_clap1.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="79641260-2f98-11e6-ac50-ba3cd039f33f" nth-line="29" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_clap1.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="796413b4-2f98-11e6-ac50-ba3cd039f33f" nth-pad="15" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964140e-2f98-11e6-ac50-ba3cd039f33f" nth-line="30" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_tom1.wav" file-channel="0">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+              <ags-sf-line id="7964156c-2f98-11e6-ac50-ba3cd039f33f" nth-line="31" is-grouped="true" filename="file:///usr/share/hydrogen/data/drumkits/Synthie-1/xp909_tom1.wav" file-channel="1">
+                <ags-sf-effect-list>
+                  <ags-sf-effect filename="" effect="">
+                    <ags-sf-control control-type="GtkVScale" value="1.000000" specifier="./volume[0]"/>
+                  </ags-sf-effect>
+                </ags-sf-effect-list>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad id="796416b6-2f98-11e6-ac50-ba3cd039f33f" nth-pad="0" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964171a-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" is-grouped="true" link="xpath=//ags-sf-line[@id='7963c832-2f98-11e6-ac50-ba3cd039f33f']"/>
+              <ags-sf-line id="796417c4-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" is-grouped="true" link="xpath=//ags-sf-line[@id='7963ca8a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0">
+            <ags-sf-note x0="0" x1="1" y="0"/>
+            <ags-sf-note x0="8" x1="9" y="3"/>
+            <ags-sf-note x0="16" x1="17" y="0"/>
+            <ags-sf-note x0="24" x1="25" y="3"/>
+            <ags-sf-note x0="32" x1="33" y="0"/>
+            <ags-sf-note x0="40" x1="41" y="3"/>
+            <ags-sf-note x0="48" x1="49" y="0"/>
+            <ags-sf-note x0="56" x1="57" y="3"/>
+          </ags-sf-notation>
+          <ags-sf-notation channel="1">
+            <ags-sf-note x0="0" x1="1" y="0"/>
+            <ags-sf-note x0="8" x1="9" y="3"/>
+            <ags-sf-note x0="16" x1="17" y="0"/>
+            <ags-sf-note x0="24" x1="25" y="3"/>
+            <ags-sf-note x0="32" x1="33" y="0"/>
+            <ags-sf-note x0="40" x1="41" y="3"/>
+            <ags-sf-note x0="48" x1="49" y="0"/>
+            <ags-sf-note x0="56" x1="57" y="3"/>
+          </ags-sf-notation>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="79641a30-2f98-11e6-ac50-ba3cd039f33f" type="AgsMatrix" bank_0="0" bank_1="0" reverse-mapping="true" channels="1" output-pads="2" input-pads="78">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641ad0-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" link="xpath=//ags-sf-line[@id='79645068-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="1">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641ba2-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" link="xpath=//ags-sf-line[@id='79645108-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="2">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641c2e-2f98-11e6-ac50-ba3cd039f33f" nth-line="2" link="xpath=//ags-sf-line[@id='796451b2-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="3">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641cba-2f98-11e6-ac50-ba3cd039f33f" nth-line="3" link="xpath=//ags-sf-line[@id='79645234-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="4">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641d64-2f98-11e6-ac50-ba3cd039f33f" nth-line="4" link="xpath=//ags-sf-line[@id='79645360-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="5">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641df0-2f98-11e6-ac50-ba3cd039f33f" nth-line="5" link="xpath=//ags-sf-line[@id='7964540a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="6">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641e9a-2f98-11e6-ac50-ba3cd039f33f" nth-line="6" link="xpath=//ags-sf-line[@id='79645496-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="7">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641f26-2f98-11e6-ac50-ba3cd039f33f" nth-line="7" link="xpath=//ags-sf-line[@id='79645554-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="8">
+            <ags-sf-line-list>
+              <ags-sf-line id="79641fb2-2f98-11e6-ac50-ba3cd039f33f" nth-line="8" link="xpath=//ags-sf-line[@id='796455e0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="9">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964205c-2f98-11e6-ac50-ba3cd039f33f" nth-line="9" link="xpath=//ags-sf-line[@id='7964568a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="10">
+            <ags-sf-line-list>
+              <ags-sf-line id="796420e8-2f98-11e6-ac50-ba3cd039f33f" nth-line="10" link="xpath=//ags-sf-line[@id='79645716-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="11">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642192-2f98-11e6-ac50-ba3cd039f33f" nth-line="11" link="xpath=//ags-sf-line[@id='796457b6-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="12">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642228-2f98-11e6-ac50-ba3cd039f33f" nth-line="12" link="xpath=//ags-sf-line[@id='7964587e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="13">
+            <ags-sf-line-list>
+              <ags-sf-line id="796422d2-2f98-11e6-ac50-ba3cd039f33f" nth-line="13" link="xpath=//ags-sf-line[@id='7964590a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="14">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642368-2f98-11e6-ac50-ba3cd039f33f" nth-line="14" link="xpath=//ags-sf-line[@id='796459c8-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="15">
+            <ags-sf-line-list>
+              <ags-sf-line id="796423ea-2f98-11e6-ac50-ba3cd039f33f" nth-line="15" link="xpath=//ags-sf-line[@id='79645a54-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="16">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642494-2f98-11e6-ac50-ba3cd039f33f" nth-line="16" link="xpath=//ags-sf-line[@id='79645af4-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="17">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964252a-2f98-11e6-ac50-ba3cd039f33f" nth-line="17" link="xpath=//ags-sf-line[@id='79645b80-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="18">
+            <ags-sf-line-list>
+              <ags-sf-line id="796425d4-2f98-11e6-ac50-ba3cd039f33f" nth-line="18" link="xpath=//ags-sf-line[@id='79645c0c-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="19">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964266a-2f98-11e6-ac50-ba3cd039f33f" nth-line="19" link="xpath=//ags-sf-line[@id='79645cd4-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="20">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642700-2f98-11e6-ac50-ba3cd039f33f" nth-line="20" link="xpath=//ags-sf-line[@id='79645d56-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="21">
+            <ags-sf-line-list>
+              <ags-sf-line id="796427aa-2f98-11e6-ac50-ba3cd039f33f" nth-line="21" link="xpath=//ags-sf-line[@id='79645e14-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="22">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642836-2f98-11e6-ac50-ba3cd039f33f" nth-line="22" link="xpath=//ags-sf-line[@id='79645ea0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="23">
+            <ags-sf-line-list>
+              <ags-sf-line id="796428f4-2f98-11e6-ac50-ba3cd039f33f" nth-line="23" link="xpath=//ags-sf-line[@id='79645f2c-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="24">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642980-2f98-11e6-ac50-ba3cd039f33f" nth-line="24" link="xpath=//ags-sf-line[@id='79645fd6-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="25">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642a2a-2f98-11e6-ac50-ba3cd039f33f" nth-line="25" link="xpath=//ags-sf-line[@id='79646062-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="26">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642ae8-2f98-11e6-ac50-ba3cd039f33f" nth-line="26" link="xpath=//ags-sf-line[@id='79646102-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="27">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642b74-2f98-11e6-ac50-ba3cd039f33f" nth-line="27" link="xpath=//ags-sf-line[@id='7964618e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="28">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642c78-2f98-11e6-ac50-ba3cd039f33f" nth-line="28" link="xpath=//ags-sf-line[@id='7964621a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="29">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642d36-2f98-11e6-ac50-ba3cd039f33f" nth-line="29" link="xpath=//ags-sf-line[@id='796462c4-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="30">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642dc2-2f98-11e6-ac50-ba3cd039f33f" nth-line="30" link="xpath=//ags-sf-line[@id='79646346-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="31">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642e4e-2f98-11e6-ac50-ba3cd039f33f" nth-line="31" link="xpath=//ags-sf-line[@id='796463f0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="32">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642ef8-2f98-11e6-ac50-ba3cd039f33f" nth-line="32" link="xpath=//ags-sf-line[@id='796464ae-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="33">
+            <ags-sf-line-list>
+              <ags-sf-line id="79642f84-2f98-11e6-ac50-ba3cd039f33f" nth-line="33" link="xpath=//ags-sf-line[@id='7964654e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="34">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643042-2f98-11e6-ac50-ba3cd039f33f" nth-line="34" link="xpath=//ags-sf-line[@id='796465da-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="35">
+            <ags-sf-line-list>
+              <ags-sf-line id="796430ce-2f98-11e6-ac50-ba3cd039f33f" nth-line="35" link="xpath=//ags-sf-line[@id='79646684-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="36">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643150-2f98-11e6-ac50-ba3cd039f33f" nth-line="36" link="xpath=//ags-sf-line[@id='79646710-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="37">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643218-2f98-11e6-ac50-ba3cd039f33f" nth-line="37" link="xpath=//ags-sf-line[@id='796467b0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="38">
+            <ags-sf-line-list>
+              <ags-sf-line id="796432cc-2f98-11e6-ac50-ba3cd039f33f" nth-line="38" link="xpath=//ags-sf-line[@id='79646864-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="39">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643358-2f98-11e6-ac50-ba3cd039f33f" nth-line="39" link="xpath=//ags-sf-line[@id='796468f0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="40">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643402-2f98-11e6-ac50-ba3cd039f33f" nth-line="40" link="xpath=//ags-sf-line[@id='79646990-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="41">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643498-2f98-11e6-ac50-ba3cd039f33f" nth-line="41" link="xpath=//ags-sf-line[@id='79646a1c-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="42">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643524-2f98-11e6-ac50-ba3cd039f33f" nth-line="42" link="xpath=//ags-sf-line[@id='79646ac6-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="43">
+            <ags-sf-line-list>
+              <ags-sf-line id="796435d8-2f98-11e6-ac50-ba3cd039f33f" nth-line="43" link="xpath=//ags-sf-line[@id='79646b48-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="44">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643664-2f98-11e6-ac50-ba3cd039f33f" nth-line="44" link="xpath=//ags-sf-line[@id='79646bf2-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="45">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964370e-2f98-11e6-ac50-ba3cd039f33f" nth-line="45" link="xpath=//ags-sf-line[@id='79646c7e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="46">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964379a-2f98-11e6-ac50-ba3cd039f33f" nth-line="46" link="xpath=//ags-sf-line[@id='79646d0a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="47">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643826-2f98-11e6-ac50-ba3cd039f33f" nth-line="47" link="xpath=//ags-sf-line[@id='79646db4-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="48">
+            <ags-sf-line-list>
+              <ags-sf-line id="796438da-2f98-11e6-ac50-ba3cd039f33f" nth-line="48" link="xpath=//ags-sf-line[@id='79646e36-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="49">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643966-2f98-11e6-ac50-ba3cd039f33f" nth-line="49" link="xpath=//ags-sf-line[@id='79646ee0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="50">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643a1a-2f98-11e6-ac50-ba3cd039f33f" nth-line="50" link="xpath=//ags-sf-line[@id='79646f6c-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="51">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643ab0-2f98-11e6-ac50-ba3cd039f33f" nth-line="51" link="xpath=//ags-sf-line[@id='79646fee-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="52">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643b5a-2f98-11e6-ac50-ba3cd039f33f" nth-line="52" link="xpath=//ags-sf-line[@id='7964708e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="53">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643be6-2f98-11e6-ac50-ba3cd039f33f" nth-line="53" link="xpath=//ags-sf-line[@id='7964711a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="54">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643c72-2f98-11e6-ac50-ba3cd039f33f" nth-line="54" link="xpath=//ags-sf-line[@id='796471ce-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="55">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643d30-2f98-11e6-ac50-ba3cd039f33f" nth-line="55" link="xpath=//ags-sf-line[@id='7964728c-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="56">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643dbc-2f98-11e6-ac50-ba3cd039f33f" nth-line="56" link="xpath=//ags-sf-line[@id='79647318-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="57">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643e66-2f98-11e6-ac50-ba3cd039f33f" nth-line="57" link="xpath=//ags-sf-line[@id='796473cc-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="58">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643ee8-2f98-11e6-ac50-ba3cd039f33f" nth-line="58" link="xpath=//ags-sf-line[@id='7964744e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="59">
+            <ags-sf-line-list>
+              <ags-sf-line id="79643f74-2f98-11e6-ac50-ba3cd039f33f" nth-line="59" link="xpath=//ags-sf-line[@id='796474f8-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="60">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964401e-2f98-11e6-ac50-ba3cd039f33f" nth-line="60" link="xpath=//ags-sf-line[@id='7964757a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="61">
+            <ags-sf-line-list>
+              <ags-sf-line id="796440a0-2f98-11e6-ac50-ba3cd039f33f" nth-line="61" link="xpath=//ags-sf-line[@id='79647606-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="62">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644140-2f98-11e6-ac50-ba3cd039f33f" nth-line="62" link="xpath=//ags-sf-line[@id='796476b0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="63">
+            <ags-sf-line-list>
+              <ags-sf-line id="796441f4-2f98-11e6-ac50-ba3cd039f33f" nth-line="63" link="xpath=//ags-sf-line[@id='7964775a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="64">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644280-2f98-11e6-ac50-ba3cd039f33f" nth-line="64" link="xpath=//ags-sf-line[@id='796477fa-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="65">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964430c-2f98-11e6-ac50-ba3cd039f33f" nth-line="65" link="xpath=//ags-sf-line[@id='79647886-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="66">
+            <ags-sf-line-list>
+              <ags-sf-line id="796443b6-2f98-11e6-ac50-ba3cd039f33f" nth-line="66" link="xpath=//ags-sf-line[@id='79647912-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="67">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644442-2f98-11e6-ac50-ba3cd039f33f" nth-line="67" link="xpath=//ags-sf-line[@id='79647a3e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="68">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644500-2f98-11e6-ac50-ba3cd039f33f" nth-line="68" link="xpath=//ags-sf-line[@id='79647af2-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="69">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964458c-2f98-11e6-ac50-ba3cd039f33f" nth-line="69" link="xpath=//ags-sf-line[@id='79647bb0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="70">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644618-2f98-11e6-ac50-ba3cd039f33f" nth-line="70" link="xpath=//ags-sf-line[@id='79647c50-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="71">
+            <ags-sf-line-list>
+              <ags-sf-line id="796446c2-2f98-11e6-ac50-ba3cd039f33f" nth-line="71" link="xpath=//ags-sf-line[@id='79647cdc-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="72">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964474e-2f98-11e6-ac50-ba3cd039f33f" nth-line="72" link="xpath=//ags-sf-line[@id='79647d68-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="73">
+            <ags-sf-line-list>
+              <ags-sf-line id="796447ee-2f98-11e6-ac50-ba3cd039f33f" nth-line="73" link="xpath=//ags-sf-line[@id='79647e08-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="74">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964487a-2f98-11e6-ac50-ba3cd039f33f" nth-line="74" link="xpath=//ags-sf-line[@id='79647e94-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="75">
+            <ags-sf-line-list>
+              <ags-sf-line id="796448fc-2f98-11e6-ac50-ba3cd039f33f" nth-line="75" link="xpath=//ags-sf-line[@id='79647f3e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="76">
+            <ags-sf-line-list>
+              <ags-sf-line id="796449ce-2f98-11e6-ac50-ba3cd039f33f" nth-line="76" link="xpath=//ags-sf-line[@id='79647fd4-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="77">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644a5a-2f98-11e6-ac50-ba3cd039f33f" nth-line="77" link="xpath=//ags-sf-line[@id='79648056-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644af0-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" link="xpath=//ags-sf-line[@id='7963cc88-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="1">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644b90-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" link="xpath=//ags-sf-line[@id='7963ce04-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0">
+            <ags-sf-note x0="4" x1="5" y="17"/>
+            <ags-sf-note x0="12" x1="13" y="14"/>
+            <ags-sf-note x0="20" x1="21" y="13"/>
+            <ags-sf-note x0="28" x1="29" y="16"/>
+            <ags-sf-note x0="36" x1="37" y="14"/>
+            <ags-sf-note x0="44" x1="45" y="9"/>
+            <ags-sf-note x0="52" x1="53" y="9"/>
+            <ags-sf-note x0="60" x1="61" y="8"/>
+          </ags-sf-notation>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="79644d02-2f98-11e6-ac50-ba3cd039f33f" type="AgsSynth" bank_0="0" bank_1="0" channels="1" output-pads="78" input-pads="2">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad id="79644db6-2f98-11e6-ac50-ba3cd039f33f" nth-pad="0" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644e1a-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" is-grouped="true">
+                <ags-oscillator wave="0" attack="0.000000" length="3200.000000" frequency="27.500000" phase="0.000000" volume="0.200000"/>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad id="79644f0a-2f98-11e6-ac50-ba3cd039f33f" nth-pad="1" group="true" mute="false" solo="false">
+            <ags-sf-line-list>
+              <ags-sf-line id="79644f8c-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" is-grouped="true">
+                <ags-oscillator wave="0" attack="0.000000" length="3200.000000" frequency="27.500000" phase="0.000000" volume="0.200000"/>
+              </ags-sf-line>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645068-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" link="xpath=//ags-sf-line[@id='79641ad0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="1">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645108-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" link="xpath=//ags-sf-line[@id='79641ba2-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="2">
+            <ags-sf-line-list>
+              <ags-sf-line id="796451b2-2f98-11e6-ac50-ba3cd039f33f" nth-line="2" link="xpath=//ags-sf-line[@id='79641c2e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="3">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645234-2f98-11e6-ac50-ba3cd039f33f" nth-line="3" link="xpath=//ags-sf-line[@id='79641cba-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="4">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645360-2f98-11e6-ac50-ba3cd039f33f" nth-line="4" link="xpath=//ags-sf-line[@id='79641d64-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="5">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964540a-2f98-11e6-ac50-ba3cd039f33f" nth-line="5" link="xpath=//ags-sf-line[@id='79641df0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="6">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645496-2f98-11e6-ac50-ba3cd039f33f" nth-line="6" link="xpath=//ags-sf-line[@id='79641e9a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="7">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645554-2f98-11e6-ac50-ba3cd039f33f" nth-line="7" link="xpath=//ags-sf-line[@id='79641f26-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="8">
+            <ags-sf-line-list>
+              <ags-sf-line id="796455e0-2f98-11e6-ac50-ba3cd039f33f" nth-line="8" link="xpath=//ags-sf-line[@id='79641fb2-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="9">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964568a-2f98-11e6-ac50-ba3cd039f33f" nth-line="9" link="xpath=//ags-sf-line[@id='7964205c-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="10">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645716-2f98-11e6-ac50-ba3cd039f33f" nth-line="10" link="xpath=//ags-sf-line[@id='796420e8-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="11">
+            <ags-sf-line-list>
+              <ags-sf-line id="796457b6-2f98-11e6-ac50-ba3cd039f33f" nth-line="11" link="xpath=//ags-sf-line[@id='79642192-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="12">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964587e-2f98-11e6-ac50-ba3cd039f33f" nth-line="12" link="xpath=//ags-sf-line[@id='79642228-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="13">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964590a-2f98-11e6-ac50-ba3cd039f33f" nth-line="13" link="xpath=//ags-sf-line[@id='796422d2-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="14">
+            <ags-sf-line-list>
+              <ags-sf-line id="796459c8-2f98-11e6-ac50-ba3cd039f33f" nth-line="14" link="xpath=//ags-sf-line[@id='79642368-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="15">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645a54-2f98-11e6-ac50-ba3cd039f33f" nth-line="15" link="xpath=//ags-sf-line[@id='796423ea-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="16">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645af4-2f98-11e6-ac50-ba3cd039f33f" nth-line="16" link="xpath=//ags-sf-line[@id='79642494-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="17">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645b80-2f98-11e6-ac50-ba3cd039f33f" nth-line="17" link="xpath=//ags-sf-line[@id='7964252a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="18">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645c0c-2f98-11e6-ac50-ba3cd039f33f" nth-line="18" link="xpath=//ags-sf-line[@id='796425d4-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="19">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645cd4-2f98-11e6-ac50-ba3cd039f33f" nth-line="19" link="xpath=//ags-sf-line[@id='7964266a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="20">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645d56-2f98-11e6-ac50-ba3cd039f33f" nth-line="20" link="xpath=//ags-sf-line[@id='79642700-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="21">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645e14-2f98-11e6-ac50-ba3cd039f33f" nth-line="21" link="xpath=//ags-sf-line[@id='796427aa-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="22">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645ea0-2f98-11e6-ac50-ba3cd039f33f" nth-line="22" link="xpath=//ags-sf-line[@id='79642836-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="23">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645f2c-2f98-11e6-ac50-ba3cd039f33f" nth-line="23" link="xpath=//ags-sf-line[@id='796428f4-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="24">
+            <ags-sf-line-list>
+              <ags-sf-line id="79645fd6-2f98-11e6-ac50-ba3cd039f33f" nth-line="24" link="xpath=//ags-sf-line[@id='79642980-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="25">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646062-2f98-11e6-ac50-ba3cd039f33f" nth-line="25" link="xpath=//ags-sf-line[@id='79642a2a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="26">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646102-2f98-11e6-ac50-ba3cd039f33f" nth-line="26" link="xpath=//ags-sf-line[@id='79642ae8-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="27">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964618e-2f98-11e6-ac50-ba3cd039f33f" nth-line="27" link="xpath=//ags-sf-line[@id='79642b74-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="28">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964621a-2f98-11e6-ac50-ba3cd039f33f" nth-line="28" link="xpath=//ags-sf-line[@id='79642c78-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="29">
+            <ags-sf-line-list>
+              <ags-sf-line id="796462c4-2f98-11e6-ac50-ba3cd039f33f" nth-line="29" link="xpath=//ags-sf-line[@id='79642d36-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="30">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646346-2f98-11e6-ac50-ba3cd039f33f" nth-line="30" link="xpath=//ags-sf-line[@id='79642dc2-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="31">
+            <ags-sf-line-list>
+              <ags-sf-line id="796463f0-2f98-11e6-ac50-ba3cd039f33f" nth-line="31" link="xpath=//ags-sf-line[@id='79642e4e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="32">
+            <ags-sf-line-list>
+              <ags-sf-line id="796464ae-2f98-11e6-ac50-ba3cd039f33f" nth-line="32" link="xpath=//ags-sf-line[@id='79642ef8-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="33">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964654e-2f98-11e6-ac50-ba3cd039f33f" nth-line="33" link="xpath=//ags-sf-line[@id='79642f84-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="34">
+            <ags-sf-line-list>
+              <ags-sf-line id="796465da-2f98-11e6-ac50-ba3cd039f33f" nth-line="34" link="xpath=//ags-sf-line[@id='79643042-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="35">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646684-2f98-11e6-ac50-ba3cd039f33f" nth-line="35" link="xpath=//ags-sf-line[@id='796430ce-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="36">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646710-2f98-11e6-ac50-ba3cd039f33f" nth-line="36" link="xpath=//ags-sf-line[@id='79643150-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="37">
+            <ags-sf-line-list>
+              <ags-sf-line id="796467b0-2f98-11e6-ac50-ba3cd039f33f" nth-line="37" link="xpath=//ags-sf-line[@id='79643218-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="38">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646864-2f98-11e6-ac50-ba3cd039f33f" nth-line="38" link="xpath=//ags-sf-line[@id='796432cc-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="39">
+            <ags-sf-line-list>
+              <ags-sf-line id="796468f0-2f98-11e6-ac50-ba3cd039f33f" nth-line="39" link="xpath=//ags-sf-line[@id='79643358-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="40">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646990-2f98-11e6-ac50-ba3cd039f33f" nth-line="40" link="xpath=//ags-sf-line[@id='79643402-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="41">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646a1c-2f98-11e6-ac50-ba3cd039f33f" nth-line="41" link="xpath=//ags-sf-line[@id='79643498-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="42">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646ac6-2f98-11e6-ac50-ba3cd039f33f" nth-line="42" link="xpath=//ags-sf-line[@id='79643524-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="43">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646b48-2f98-11e6-ac50-ba3cd039f33f" nth-line="43" link="xpath=//ags-sf-line[@id='796435d8-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="44">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646bf2-2f98-11e6-ac50-ba3cd039f33f" nth-line="44" link="xpath=//ags-sf-line[@id='79643664-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="45">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646c7e-2f98-11e6-ac50-ba3cd039f33f" nth-line="45" link="xpath=//ags-sf-line[@id='7964370e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="46">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646d0a-2f98-11e6-ac50-ba3cd039f33f" nth-line="46" link="xpath=//ags-sf-line[@id='7964379a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="47">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646db4-2f98-11e6-ac50-ba3cd039f33f" nth-line="47" link="xpath=//ags-sf-line[@id='79643826-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="48">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646e36-2f98-11e6-ac50-ba3cd039f33f" nth-line="48" link="xpath=//ags-sf-line[@id='796438da-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="49">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646ee0-2f98-11e6-ac50-ba3cd039f33f" nth-line="49" link="xpath=//ags-sf-line[@id='79643966-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="50">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646f6c-2f98-11e6-ac50-ba3cd039f33f" nth-line="50" link="xpath=//ags-sf-line[@id='79643a1a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="51">
+            <ags-sf-line-list>
+              <ags-sf-line id="79646fee-2f98-11e6-ac50-ba3cd039f33f" nth-line="51" link="xpath=//ags-sf-line[@id='79643ab0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="52">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964708e-2f98-11e6-ac50-ba3cd039f33f" nth-line="52" link="xpath=//ags-sf-line[@id='79643b5a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="53">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964711a-2f98-11e6-ac50-ba3cd039f33f" nth-line="53" link="xpath=//ags-sf-line[@id='79643be6-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="54">
+            <ags-sf-line-list>
+              <ags-sf-line id="796471ce-2f98-11e6-ac50-ba3cd039f33f" nth-line="54" link="xpath=//ags-sf-line[@id='79643c72-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="55">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964728c-2f98-11e6-ac50-ba3cd039f33f" nth-line="55" link="xpath=//ags-sf-line[@id='79643d30-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="56">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647318-2f98-11e6-ac50-ba3cd039f33f" nth-line="56" link="xpath=//ags-sf-line[@id='79643dbc-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="57">
+            <ags-sf-line-list>
+              <ags-sf-line id="796473cc-2f98-11e6-ac50-ba3cd039f33f" nth-line="57" link="xpath=//ags-sf-line[@id='79643e66-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="58">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964744e-2f98-11e6-ac50-ba3cd039f33f" nth-line="58" link="xpath=//ags-sf-line[@id='79643ee8-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="59">
+            <ags-sf-line-list>
+              <ags-sf-line id="796474f8-2f98-11e6-ac50-ba3cd039f33f" nth-line="59" link="xpath=//ags-sf-line[@id='79643f74-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="60">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964757a-2f98-11e6-ac50-ba3cd039f33f" nth-line="60" link="xpath=//ags-sf-line[@id='7964401e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="61">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647606-2f98-11e6-ac50-ba3cd039f33f" nth-line="61" link="xpath=//ags-sf-line[@id='796440a0-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="62">
+            <ags-sf-line-list>
+              <ags-sf-line id="796476b0-2f98-11e6-ac50-ba3cd039f33f" nth-line="62" link="xpath=//ags-sf-line[@id='79644140-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="63">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964775a-2f98-11e6-ac50-ba3cd039f33f" nth-line="63" link="xpath=//ags-sf-line[@id='796441f4-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="64">
+            <ags-sf-line-list>
+              <ags-sf-line id="796477fa-2f98-11e6-ac50-ba3cd039f33f" nth-line="64" link="xpath=//ags-sf-line[@id='79644280-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="65">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647886-2f98-11e6-ac50-ba3cd039f33f" nth-line="65" link="xpath=//ags-sf-line[@id='7964430c-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="66">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647912-2f98-11e6-ac50-ba3cd039f33f" nth-line="66" link="xpath=//ags-sf-line[@id='796443b6-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="67">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647a3e-2f98-11e6-ac50-ba3cd039f33f" nth-line="67" link="xpath=//ags-sf-line[@id='79644442-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="68">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647af2-2f98-11e6-ac50-ba3cd039f33f" nth-line="68" link="xpath=//ags-sf-line[@id='79644500-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="69">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647bb0-2f98-11e6-ac50-ba3cd039f33f" nth-line="69" link="xpath=//ags-sf-line[@id='7964458c-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="70">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647c50-2f98-11e6-ac50-ba3cd039f33f" nth-line="70" link="xpath=//ags-sf-line[@id='79644618-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="71">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647cdc-2f98-11e6-ac50-ba3cd039f33f" nth-line="71" link="xpath=//ags-sf-line[@id='796446c2-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="72">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647d68-2f98-11e6-ac50-ba3cd039f33f" nth-line="72" link="xpath=//ags-sf-line[@id='7964474e-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="73">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647e08-2f98-11e6-ac50-ba3cd039f33f" nth-line="73" link="xpath=//ags-sf-line[@id='796447ee-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="74">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647e94-2f98-11e6-ac50-ba3cd039f33f" nth-line="74" link="xpath=//ags-sf-line[@id='7964487a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="75">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647f3e-2f98-11e6-ac50-ba3cd039f33f" nth-line="75" link="xpath=//ags-sf-line[@id='796448fc-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="76">
+            <ags-sf-line-list>
+              <ags-sf-line id="79647fd4-2f98-11e6-ac50-ba3cd039f33f" nth-line="76" link="xpath=//ags-sf-line[@id='796449ce-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="77">
+            <ags-sf-line-list>
+              <ags-sf-line id="79648056-2f98-11e6-ac50-ba3cd039f33f" nth-line="77" link="xpath=//ags-sf-line[@id='79644a5a-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0"/>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="7964810a-2f98-11e6-ac50-ba3cd039f33f" type="AgsFFPlayer" bank_0="0" bank_1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="11" filename="/usr/share/sounds/sf2/FluidR3_GM.sf2" preset="Coupled Harpsichord" instrument="Harpsichord/GS">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964824a-2f98-11e6-ac50-ba3cd039f33f" nth-line="0"/>
+              <ags-sf-line id="796482b8-2f98-11e6-ac50-ba3cd039f33f" nth-line="1"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="1">
+            <ags-sf-line-list>
+              <ags-sf-line id="79648358-2f98-11e6-ac50-ba3cd039f33f" nth-line="2"/>
+              <ags-sf-line id="796483bc-2f98-11e6-ac50-ba3cd039f33f" nth-line="3"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="2">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964842a-2f98-11e6-ac50-ba3cd039f33f" nth-line="4"/>
+              <ags-sf-line id="7964848e-2f98-11e6-ac50-ba3cd039f33f" nth-line="5"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="3">
+            <ags-sf-line-list>
+              <ags-sf-line id="79648524-2f98-11e6-ac50-ba3cd039f33f" nth-line="6"/>
+              <ags-sf-line id="79648588-2f98-11e6-ac50-ba3cd039f33f" nth-line="7"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="4">
+            <ags-sf-line-list>
+              <ags-sf-line id="79648614-2f98-11e6-ac50-ba3cd039f33f" nth-line="8"/>
+              <ags-sf-line id="79648678-2f98-11e6-ac50-ba3cd039f33f" nth-line="9"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="5">
+            <ags-sf-line-list>
+              <ags-sf-line id="796486dc-2f98-11e6-ac50-ba3cd039f33f" nth-line="10"/>
+              <ags-sf-line id="79648740-2f98-11e6-ac50-ba3cd039f33f" nth-line="11"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="6">
+            <ags-sf-line-list>
+              <ags-sf-line id="796487c2-2f98-11e6-ac50-ba3cd039f33f" nth-line="12"/>
+              <ags-sf-line id="79648826-2f98-11e6-ac50-ba3cd039f33f" nth-line="13"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="7">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964888a-2f98-11e6-ac50-ba3cd039f33f" nth-line="14"/>
+              <ags-sf-line id="7964890c-2f98-11e6-ac50-ba3cd039f33f" nth-line="15"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="8">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964897a-2f98-11e6-ac50-ba3cd039f33f" nth-line="16"/>
+              <ags-sf-line id="796489e8-2f98-11e6-ac50-ba3cd039f33f" nth-line="17"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="9">
+            <ags-sf-line-list>
+              <ags-sf-line id="79648a4c-2f98-11e6-ac50-ba3cd039f33f" nth-line="18"/>
+              <ags-sf-line id="79648ace-2f98-11e6-ac50-ba3cd039f33f" nth-line="19"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="10">
+            <ags-sf-line-list>
+              <ags-sf-line id="79648b5a-2f98-11e6-ac50-ba3cd039f33f" nth-line="20"/>
+              <ags-sf-line id="79648bbe-2f98-11e6-ac50-ba3cd039f33f" nth-line="21"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="79648c5e-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" link="xpath=//ags-sf-line[@id='7963cfe4-2f98-11e6-ac50-ba3cd039f33f']"/>
+              <ags-sf-line id="79648ce0-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" link="xpath=//ags-sf-line[@id='7963d156-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-effect-pad-list is-output="false">
+          <ags-sf-effect-pad id="79648d8a-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79648dd0-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79648e2a-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79648e66-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79648ea2-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79648ee8-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79648f24-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79648f60-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79648f9c-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79648fd8-2f98-11e6-ac50-ba3cd039f33f"/>
+          <ags-sf-effect-pad id="79649028-2f98-11e6-ac50-ba3cd039f33f"/>
+        </ags-sf-effect-pad-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0"/>
+          <ags-sf-notation channel="1"/>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+      <ags-sf-machine id="79649082-2f98-11e6-ac50-ba3cd039f33f" type="AgsDssiBridge" bank_0="0" bank_1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="128" plugin-file="/usr/lib/dssi/xsynth-dssi.so" effect="Xsynth DSSI plugin" program="Xylophone">
+        <ags-sf-pad-list is-output="false">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649172-2f98-11e6-ac50-ba3cd039f33f" nth-line="0"/>
+              <ags-sf-line id="796491d6-2f98-11e6-ac50-ba3cd039f33f" nth-line="1"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="1">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964928a-2f98-11e6-ac50-ba3cd039f33f" nth-line="2"/>
+              <ags-sf-line id="796492ee-2f98-11e6-ac50-ba3cd039f33f" nth-line="3"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="2">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649384-2f98-11e6-ac50-ba3cd039f33f" nth-line="4"/>
+              <ags-sf-line id="796493e8-2f98-11e6-ac50-ba3cd039f33f" nth-line="5"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="3">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649456-2f98-11e6-ac50-ba3cd039f33f" nth-line="6"/>
+              <ags-sf-line id="796494ce-2f98-11e6-ac50-ba3cd039f33f" nth-line="7"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="4">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649532-2f98-11e6-ac50-ba3cd039f33f" nth-line="8"/>
+              <ags-sf-line id="79649596-2f98-11e6-ac50-ba3cd039f33f" nth-line="9"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="5">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649618-2f98-11e6-ac50-ba3cd039f33f" nth-line="10"/>
+              <ags-sf-line id="7964967c-2f98-11e6-ac50-ba3cd039f33f" nth-line="11"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="6">
+            <ags-sf-line-list>
+              <ags-sf-line id="796496ea-2f98-11e6-ac50-ba3cd039f33f" nth-line="12"/>
+              <ags-sf-line id="79649744-2f98-11e6-ac50-ba3cd039f33f" nth-line="13"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="7">
+            <ags-sf-line-list>
+              <ags-sf-line id="796497d0-2f98-11e6-ac50-ba3cd039f33f" nth-line="14"/>
+              <ags-sf-line id="79649834-2f98-11e6-ac50-ba3cd039f33f" nth-line="15"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="8">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649898-2f98-11e6-ac50-ba3cd039f33f" nth-line="16"/>
+              <ags-sf-line id="7964991a-2f98-11e6-ac50-ba3cd039f33f" nth-line="17"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="9">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649988-2f98-11e6-ac50-ba3cd039f33f" nth-line="18"/>
+              <ags-sf-line id="796499ec-2f98-11e6-ac50-ba3cd039f33f" nth-line="19"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="10">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649a8c-2f98-11e6-ac50-ba3cd039f33f" nth-line="20"/>
+              <ags-sf-line id="79649af0-2f98-11e6-ac50-ba3cd039f33f" nth-line="21"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="11">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649b54-2f98-11e6-ac50-ba3cd039f33f" nth-line="22"/>
+              <ags-sf-line id="79649bc2-2f98-11e6-ac50-ba3cd039f33f" nth-line="23"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="12">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649c4e-2f98-11e6-ac50-ba3cd039f33f" nth-line="24"/>
+              <ags-sf-line id="79649cb2-2f98-11e6-ac50-ba3cd039f33f" nth-line="25"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="13">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649d16-2f98-11e6-ac50-ba3cd039f33f" nth-line="26"/>
+              <ags-sf-line id="79649d8e-2f98-11e6-ac50-ba3cd039f33f" nth-line="27"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="14">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649dfc-2f98-11e6-ac50-ba3cd039f33f" nth-line="28"/>
+              <ags-sf-line id="79649e7e-2f98-11e6-ac50-ba3cd039f33f" nth-line="29"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="15">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649eec-2f98-11e6-ac50-ba3cd039f33f" nth-line="30"/>
+              <ags-sf-line id="79649f50-2f98-11e6-ac50-ba3cd039f33f" nth-line="31"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="16">
+            <ags-sf-line-list>
+              <ags-sf-line id="79649fd2-2f98-11e6-ac50-ba3cd039f33f" nth-line="32"/>
+              <ags-sf-line id="7964a036-2f98-11e6-ac50-ba3cd039f33f" nth-line="33"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="17">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a09a-2f98-11e6-ac50-ba3cd039f33f" nth-line="34"/>
+              <ags-sf-line id="7964a16c-2f98-11e6-ac50-ba3cd039f33f" nth-line="35"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="18">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a202-2f98-11e6-ac50-ba3cd039f33f" nth-line="36"/>
+              <ags-sf-line id="7964a270-2f98-11e6-ac50-ba3cd039f33f" nth-line="37"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="19">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a2d4-2f98-11e6-ac50-ba3cd039f33f" nth-line="38"/>
+              <ags-sf-line id="7964a356-2f98-11e6-ac50-ba3cd039f33f" nth-line="39"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="20">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a3c4-2f98-11e6-ac50-ba3cd039f33f" nth-line="40"/>
+              <ags-sf-line id="7964a41e-2f98-11e6-ac50-ba3cd039f33f" nth-line="41"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="21">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a496-2f98-11e6-ac50-ba3cd039f33f" nth-line="42"/>
+              <ags-sf-line id="7964a50e-2f98-11e6-ac50-ba3cd039f33f" nth-line="43"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="22">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a5a4-2f98-11e6-ac50-ba3cd039f33f" nth-line="44"/>
+              <ags-sf-line id="7964a608-2f98-11e6-ac50-ba3cd039f33f" nth-line="45"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="23">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a68a-2f98-11e6-ac50-ba3cd039f33f" nth-line="46"/>
+              <ags-sf-line id="7964a6ee-2f98-11e6-ac50-ba3cd039f33f" nth-line="47"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="24">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a75c-2f98-11e6-ac50-ba3cd039f33f" nth-line="48"/>
+              <ags-sf-line id="7964a7b6-2f98-11e6-ac50-ba3cd039f33f" nth-line="49"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="25">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a842-2f98-11e6-ac50-ba3cd039f33f" nth-line="50"/>
+              <ags-sf-line id="7964a8a6-2f98-11e6-ac50-ba3cd039f33f" nth-line="51"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="26">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964a90a-2f98-11e6-ac50-ba3cd039f33f" nth-line="52"/>
+              <ags-sf-line id="7964a98c-2f98-11e6-ac50-ba3cd039f33f" nth-line="53"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="27">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964aa0e-2f98-11e6-ac50-ba3cd039f33f" nth-line="54"/>
+              <ags-sf-line id="7964aa72-2f98-11e6-ac50-ba3cd039f33f" nth-line="55"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="28">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964aafe-2f98-11e6-ac50-ba3cd039f33f" nth-line="56"/>
+              <ags-sf-line id="7964ab58-2f98-11e6-ac50-ba3cd039f33f" nth-line="57"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="29">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964abc6-2f98-11e6-ac50-ba3cd039f33f" nth-line="58"/>
+              <ags-sf-line id="7964ac5c-2f98-11e6-ac50-ba3cd039f33f" nth-line="59"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="30">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964acc0-2f98-11e6-ac50-ba3cd039f33f" nth-line="60"/>
+              <ags-sf-line id="7964ad24-2f98-11e6-ac50-ba3cd039f33f" nth-line="61"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="31">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964ada6-2f98-11e6-ac50-ba3cd039f33f" nth-line="62"/>
+              <ags-sf-line id="7964ae14-2f98-11e6-ac50-ba3cd039f33f" nth-line="63"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="32">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964ae78-2f98-11e6-ac50-ba3cd039f33f" nth-line="64"/>
+              <ags-sf-line id="7964aee6-2f98-11e6-ac50-ba3cd039f33f" nth-line="65"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="33">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964af7c-2f98-11e6-ac50-ba3cd039f33f" nth-line="66"/>
+              <ags-sf-line id="7964afe0-2f98-11e6-ac50-ba3cd039f33f" nth-line="67"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="34">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b044-2f98-11e6-ac50-ba3cd039f33f" nth-line="68"/>
+              <ags-sf-line id="7964b0bc-2f98-11e6-ac50-ba3cd039f33f" nth-line="69"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="35">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b12a-2f98-11e6-ac50-ba3cd039f33f" nth-line="70"/>
+              <ags-sf-line id="7964b18e-2f98-11e6-ac50-ba3cd039f33f" nth-line="71"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="36">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b1fc-2f98-11e6-ac50-ba3cd039f33f" nth-line="72"/>
+              <ags-sf-line id="7964b274-2f98-11e6-ac50-ba3cd039f33f" nth-line="73"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="37">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b2e2-2f98-11e6-ac50-ba3cd039f33f" nth-line="74"/>
+              <ags-sf-line id="7964b346-2f98-11e6-ac50-ba3cd039f33f" nth-line="75"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="38">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b3c8-2f98-11e6-ac50-ba3cd039f33f" nth-line="76"/>
+              <ags-sf-line id="7964b42c-2f98-11e6-ac50-ba3cd039f33f" nth-line="77"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="39">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b49a-2f98-11e6-ac50-ba3cd039f33f" nth-line="78"/>
+              <ags-sf-line id="7964b51c-2f98-11e6-ac50-ba3cd039f33f" nth-line="79"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="40">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b58a-2f98-11e6-ac50-ba3cd039f33f" nth-line="80"/>
+              <ags-sf-line id="7964b602-2f98-11e6-ac50-ba3cd039f33f" nth-line="81"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="41">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b670-2f98-11e6-ac50-ba3cd039f33f" nth-line="82"/>
+              <ags-sf-line id="7964b6d4-2f98-11e6-ac50-ba3cd039f33f" nth-line="83"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="42">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b742-2f98-11e6-ac50-ba3cd039f33f" nth-line="84"/>
+              <ags-sf-line id="7964b7ba-2f98-11e6-ac50-ba3cd039f33f" nth-line="85"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="43">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b832-2f98-11e6-ac50-ba3cd039f33f" nth-line="86"/>
+              <ags-sf-line id="7964b896-2f98-11e6-ac50-ba3cd039f33f" nth-line="87"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="44">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b92c-2f98-11e6-ac50-ba3cd039f33f" nth-line="88"/>
+              <ags-sf-line id="7964b990-2f98-11e6-ac50-ba3cd039f33f" nth-line="89"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="45">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964b9f4-2f98-11e6-ac50-ba3cd039f33f" nth-line="90"/>
+              <ags-sf-line id="7964ba58-2f98-11e6-ac50-ba3cd039f33f" nth-line="91"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="46">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964bada-2f98-11e6-ac50-ba3cd039f33f" nth-line="92"/>
+              <ags-sf-line id="7964bb3e-2f98-11e6-ac50-ba3cd039f33f" nth-line="93"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="47">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964bbac-2f98-11e6-ac50-ba3cd039f33f" nth-line="94"/>
+              <ags-sf-line id="7964bc4c-2f98-11e6-ac50-ba3cd039f33f" nth-line="95"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="48">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964bcb0-2f98-11e6-ac50-ba3cd039f33f" nth-line="96"/>
+              <ags-sf-line id="7964bd14-2f98-11e6-ac50-ba3cd039f33f" nth-line="97"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="49">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964bd96-2f98-11e6-ac50-ba3cd039f33f" nth-line="98"/>
+              <ags-sf-line id="7964bdfa-2f98-11e6-ac50-ba3cd039f33f" nth-line="99"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="50">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964be68-2f98-11e6-ac50-ba3cd039f33f" nth-line="100"/>
+              <ags-sf-line id="7964bec2-2f98-11e6-ac50-ba3cd039f33f" nth-line="101"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="51">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964bf4e-2f98-11e6-ac50-ba3cd039f33f" nth-line="102"/>
+              <ags-sf-line id="7964bfa8-2f98-11e6-ac50-ba3cd039f33f" nth-line="103"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="52">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c03e-2f98-11e6-ac50-ba3cd039f33f" nth-line="104"/>
+              <ags-sf-line id="7964c0a2-2f98-11e6-ac50-ba3cd039f33f" nth-line="105"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="53">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c106-2f98-11e6-ac50-ba3cd039f33f" nth-line="106"/>
+              <ags-sf-line id="7964c192-2f98-11e6-ac50-ba3cd039f33f" nth-line="107"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="54">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c1f6-2f98-11e6-ac50-ba3cd039f33f" nth-line="108"/>
+              <ags-sf-line id="7964c25a-2f98-11e6-ac50-ba3cd039f33f" nth-line="109"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="55">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c2e6-2f98-11e6-ac50-ba3cd039f33f" nth-line="110"/>
+              <ags-sf-line id="7964c34a-2f98-11e6-ac50-ba3cd039f33f" nth-line="111"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="56">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c3b8-2f98-11e6-ac50-ba3cd039f33f" nth-line="112"/>
+              <ags-sf-line id="7964c412-2f98-11e6-ac50-ba3cd039f33f" nth-line="113"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="57">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c49e-2f98-11e6-ac50-ba3cd039f33f" nth-line="114"/>
+              <ags-sf-line id="7964c50c-2f98-11e6-ac50-ba3cd039f33f" nth-line="115"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="58">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c570-2f98-11e6-ac50-ba3cd039f33f" nth-line="116"/>
+              <ags-sf-line id="7964c5e8-2f98-11e6-ac50-ba3cd039f33f" nth-line="117"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="59">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c656-2f98-11e6-ac50-ba3cd039f33f" nth-line="118"/>
+              <ags-sf-line id="7964c6ba-2f98-11e6-ac50-ba3cd039f33f" nth-line="119"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="60">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c728-2f98-11e6-ac50-ba3cd039f33f" nth-line="120"/>
+              <ags-sf-line id="7964c7aa-2f98-11e6-ac50-ba3cd039f33f" nth-line="121"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="61">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964c908-2f98-11e6-ac50-ba3cd039f33f" nth-line="122"/>
+              <ags-sf-line id="7964c976-2f98-11e6-ac50-ba3cd039f33f" nth-line="123"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="62">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964ca02-2f98-11e6-ac50-ba3cd039f33f" nth-line="124"/>
+              <ags-sf-line id="7964ca66-2f98-11e6-ac50-ba3cd039f33f" nth-line="125"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="63">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964cad4-2f98-11e6-ac50-ba3cd039f33f" nth-line="126"/>
+              <ags-sf-line id="7964cb2e-2f98-11e6-ac50-ba3cd039f33f" nth-line="127"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="64">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964cbba-2f98-11e6-ac50-ba3cd039f33f" nth-line="128"/>
+              <ags-sf-line id="7964cc28-2f98-11e6-ac50-ba3cd039f33f" nth-line="129"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="65">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964ccaa-2f98-11e6-ac50-ba3cd039f33f" nth-line="130"/>
+              <ags-sf-line id="7964cd0e-2f98-11e6-ac50-ba3cd039f33f" nth-line="131"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="66">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964cd7c-2f98-11e6-ac50-ba3cd039f33f" nth-line="132"/>
+              <ags-sf-line id="7964cdd6-2f98-11e6-ac50-ba3cd039f33f" nth-line="133"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="67">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964ce62-2f98-11e6-ac50-ba3cd039f33f" nth-line="134"/>
+              <ags-sf-line id="7964cec6-2f98-11e6-ac50-ba3cd039f33f" nth-line="135"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="68">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964cf2a-2f98-11e6-ac50-ba3cd039f33f" nth-line="136"/>
+              <ags-sf-line id="7964cfa2-2f98-11e6-ac50-ba3cd039f33f" nth-line="137"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="69">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d010-2f98-11e6-ac50-ba3cd039f33f" nth-line="138"/>
+              <ags-sf-line id="7964d06a-2f98-11e6-ac50-ba3cd039f33f" nth-line="139"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="70">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d0f6-2f98-11e6-ac50-ba3cd039f33f" nth-line="140"/>
+              <ags-sf-line id="7964d150-2f98-11e6-ac50-ba3cd039f33f" nth-line="141"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="71">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d1be-2f98-11e6-ac50-ba3cd039f33f" nth-line="142"/>
+              <ags-sf-line id="7964d222-2f98-11e6-ac50-ba3cd039f33f" nth-line="143"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="72">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d2ae-2f98-11e6-ac50-ba3cd039f33f" nth-line="144"/>
+              <ags-sf-line id="7964d312-2f98-11e6-ac50-ba3cd039f33f" nth-line="145"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="73">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d394-2f98-11e6-ac50-ba3cd039f33f" nth-line="146"/>
+              <ags-sf-line id="7964d416-2f98-11e6-ac50-ba3cd039f33f" nth-line="147"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="74">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d484-2f98-11e6-ac50-ba3cd039f33f" nth-line="148"/>
+              <ags-sf-line id="7964d4e8-2f98-11e6-ac50-ba3cd039f33f" nth-line="149"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="75">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d54c-2f98-11e6-ac50-ba3cd039f33f" nth-line="150"/>
+              <ags-sf-line id="7964d5ce-2f98-11e6-ac50-ba3cd039f33f" nth-line="151"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="76">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d63c-2f98-11e6-ac50-ba3cd039f33f" nth-line="152"/>
+              <ags-sf-line id="7964d6a0-2f98-11e6-ac50-ba3cd039f33f" nth-line="153"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="77">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d740-2f98-11e6-ac50-ba3cd039f33f" nth-line="154"/>
+              <ags-sf-line id="7964d7a4-2f98-11e6-ac50-ba3cd039f33f" nth-line="155"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="78">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d830-2f98-11e6-ac50-ba3cd039f33f" nth-line="156"/>
+              <ags-sf-line id="7964d894-2f98-11e6-ac50-ba3cd039f33f" nth-line="157"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="79">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d902-2f98-11e6-ac50-ba3cd039f33f" nth-line="158"/>
+              <ags-sf-line id="7964d97a-2f98-11e6-ac50-ba3cd039f33f" nth-line="159"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="80">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964d9e8-2f98-11e6-ac50-ba3cd039f33f" nth-line="160"/>
+              <ags-sf-line id="7964da4c-2f98-11e6-ac50-ba3cd039f33f" nth-line="161"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="81">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964daba-2f98-11e6-ac50-ba3cd039f33f" nth-line="162"/>
+              <ags-sf-line id="7964db3c-2f98-11e6-ac50-ba3cd039f33f" nth-line="163"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="82">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964dbaa-2f98-11e6-ac50-ba3cd039f33f" nth-line="164"/>
+              <ags-sf-line id="7964dc04-2f98-11e6-ac50-ba3cd039f33f" nth-line="165"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="83">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964dc90-2f98-11e6-ac50-ba3cd039f33f" nth-line="166"/>
+              <ags-sf-line id="7964dcf4-2f98-11e6-ac50-ba3cd039f33f" nth-line="167"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="84">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964dd58-2f98-11e6-ac50-ba3cd039f33f" nth-line="168"/>
+              <ags-sf-line id="7964ddbc-2f98-11e6-ac50-ba3cd039f33f" nth-line="169"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="85">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964de3e-2f98-11e6-ac50-ba3cd039f33f" nth-line="170"/>
+              <ags-sf-line id="7964dea2-2f98-11e6-ac50-ba3cd039f33f" nth-line="171"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="86">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964df06-2f98-11e6-ac50-ba3cd039f33f" nth-line="172"/>
+              <ags-sf-line id="7964df88-2f98-11e6-ac50-ba3cd039f33f" nth-line="173"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="87">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964dff6-2f98-11e6-ac50-ba3cd039f33f" nth-line="174"/>
+              <ags-sf-line id="7964e05a-2f98-11e6-ac50-ba3cd039f33f" nth-line="175"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="88">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e0f0-2f98-11e6-ac50-ba3cd039f33f" nth-line="176"/>
+              <ags-sf-line id="7964e15e-2f98-11e6-ac50-ba3cd039f33f" nth-line="177"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="89">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e1c2-2f98-11e6-ac50-ba3cd039f33f" nth-line="178"/>
+              <ags-sf-line id="7964e24e-2f98-11e6-ac50-ba3cd039f33f" nth-line="179"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="90">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e2b2-2f98-11e6-ac50-ba3cd039f33f" nth-line="180"/>
+              <ags-sf-line id="7964e316-2f98-11e6-ac50-ba3cd039f33f" nth-line="181"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="91">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e398-2f98-11e6-ac50-ba3cd039f33f" nth-line="182"/>
+              <ags-sf-line id="7964e3fc-2f98-11e6-ac50-ba3cd039f33f" nth-line="183"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="92">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e474-2f98-11e6-ac50-ba3cd039f33f" nth-line="184"/>
+              <ags-sf-line id="7964e4f6-2f98-11e6-ac50-ba3cd039f33f" nth-line="185"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="93">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e55a-2f98-11e6-ac50-ba3cd039f33f" nth-line="186"/>
+              <ags-sf-line id="7964e5c8-2f98-11e6-ac50-ba3cd039f33f" nth-line="187"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="94">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e654-2f98-11e6-ac50-ba3cd039f33f" nth-line="188"/>
+              <ags-sf-line id="7964e6b8-2f98-11e6-ac50-ba3cd039f33f" nth-line="189"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="95">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e726-2f98-11e6-ac50-ba3cd039f33f" nth-line="190"/>
+              <ags-sf-line id="7964e78a-2f98-11e6-ac50-ba3cd039f33f" nth-line="191"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="96">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e80c-2f98-11e6-ac50-ba3cd039f33f" nth-line="192"/>
+              <ags-sf-line id="7964e870-2f98-11e6-ac50-ba3cd039f33f" nth-line="193"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="97">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e8d4-2f98-11e6-ac50-ba3cd039f33f" nth-line="194"/>
+              <ags-sf-line id="7964e956-2f98-11e6-ac50-ba3cd039f33f" nth-line="195"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="98">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964e9ba-2f98-11e6-ac50-ba3cd039f33f" nth-line="196"/>
+              <ags-sf-line id="7964ea46-2f98-11e6-ac50-ba3cd039f33f" nth-line="197"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="99">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964eab4-2f98-11e6-ac50-ba3cd039f33f" nth-line="198"/>
+              <ags-sf-line id="7964eb2c-2f98-11e6-ac50-ba3cd039f33f" nth-line="199"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="100">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964eb9a-2f98-11e6-ac50-ba3cd039f33f" nth-line="200"/>
+              <ags-sf-line id="7964ebfe-2f98-11e6-ac50-ba3cd039f33f" nth-line="201"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="101">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964ec8a-2f98-11e6-ac50-ba3cd039f33f" nth-line="202"/>
+              <ags-sf-line id="7964ecee-2f98-11e6-ac50-ba3cd039f33f" nth-line="203"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="102">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964ed84-2f98-11e6-ac50-ba3cd039f33f" nth-line="204"/>
+              <ags-sf-line id="7964edf2-2f98-11e6-ac50-ba3cd039f33f" nth-line="205"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="103">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964ee60-2f98-11e6-ac50-ba3cd039f33f" nth-line="206"/>
+              <ags-sf-line id="7964eec4-2f98-11e6-ac50-ba3cd039f33f" nth-line="207"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="104">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964efdc-2f98-11e6-ac50-ba3cd039f33f" nth-line="208"/>
+              <ags-sf-line id="7964f054-2f98-11e6-ac50-ba3cd039f33f" nth-line="209"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="105">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f0c2-2f98-11e6-ac50-ba3cd039f33f" nth-line="210"/>
+              <ags-sf-line id="7964f11c-2f98-11e6-ac50-ba3cd039f33f" nth-line="211"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="106">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f1a8-2f98-11e6-ac50-ba3cd039f33f" nth-line="212"/>
+              <ags-sf-line id="7964f20c-2f98-11e6-ac50-ba3cd039f33f" nth-line="213"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="107">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f27a-2f98-11e6-ac50-ba3cd039f33f" nth-line="214"/>
+              <ags-sf-line id="7964f2f2-2f98-11e6-ac50-ba3cd039f33f" nth-line="215"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="108">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f360-2f98-11e6-ac50-ba3cd039f33f" nth-line="216"/>
+              <ags-sf-line id="7964f3c4-2f98-11e6-ac50-ba3cd039f33f" nth-line="217"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="109">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f446-2f98-11e6-ac50-ba3cd039f33f" nth-line="218"/>
+              <ags-sf-line id="7964f4aa-2f98-11e6-ac50-ba3cd039f33f" nth-line="219"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="110">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f50e-2f98-11e6-ac50-ba3cd039f33f" nth-line="220"/>
+              <ags-sf-line id="7964f57c-2f98-11e6-ac50-ba3cd039f33f" nth-line="221"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="111">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f612-2f98-11e6-ac50-ba3cd039f33f" nth-line="222"/>
+              <ags-sf-line id="7964f676-2f98-11e6-ac50-ba3cd039f33f" nth-line="223"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="112">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f6da-2f98-11e6-ac50-ba3cd039f33f" nth-line="224"/>
+              <ags-sf-line id="7964f752-2f98-11e6-ac50-ba3cd039f33f" nth-line="225"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="113">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f7d4-2f98-11e6-ac50-ba3cd039f33f" nth-line="226"/>
+              <ags-sf-line id="7964f838-2f98-11e6-ac50-ba3cd039f33f" nth-line="227"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="114">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f89c-2f98-11e6-ac50-ba3cd039f33f" nth-line="228"/>
+              <ags-sf-line id="7964f93c-2f98-11e6-ac50-ba3cd039f33f" nth-line="229"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="115">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964f9aa-2f98-11e6-ac50-ba3cd039f33f" nth-line="230"/>
+              <ags-sf-line id="7964fa04-2f98-11e6-ac50-ba3cd039f33f" nth-line="231"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="116">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964fa72-2f98-11e6-ac50-ba3cd039f33f" nth-line="232"/>
+              <ags-sf-line id="7964facc-2f98-11e6-ac50-ba3cd039f33f" nth-line="233"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="117">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964fb58-2f98-11e6-ac50-ba3cd039f33f" nth-line="234"/>
+              <ags-sf-line id="7964fbbc-2f98-11e6-ac50-ba3cd039f33f" nth-line="235"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="118">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964fc20-2f98-11e6-ac50-ba3cd039f33f" nth-line="236"/>
+              <ags-sf-line id="7964fca2-2f98-11e6-ac50-ba3cd039f33f" nth-line="237"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="119">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964fd06-2f98-11e6-ac50-ba3cd039f33f" nth-line="238"/>
+              <ags-sf-line id="7964fd6a-2f98-11e6-ac50-ba3cd039f33f" nth-line="239"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="120">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964fdd8-2f98-11e6-ac50-ba3cd039f33f" nth-line="240"/>
+              <ags-sf-line id="7964fe50-2f98-11e6-ac50-ba3cd039f33f" nth-line="241"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="121">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964febe-2f98-11e6-ac50-ba3cd039f33f" nth-line="242"/>
+              <ags-sf-line id="7964ff22-2f98-11e6-ac50-ba3cd039f33f" nth-line="243"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="122">
+            <ags-sf-line-list>
+              <ags-sf-line id="7964ffa4-2f98-11e6-ac50-ba3cd039f33f" nth-line="244"/>
+              <ags-sf-line id="79650008-2f98-11e6-ac50-ba3cd039f33f" nth-line="245"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="123">
+            <ags-sf-line-list>
+              <ags-sf-line id="7965006c-2f98-11e6-ac50-ba3cd039f33f" nth-line="246"/>
+              <ags-sf-line id="796500da-2f98-11e6-ac50-ba3cd039f33f" nth-line="247"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="124">
+            <ags-sf-line-list>
+              <ags-sf-line id="79650184-2f98-11e6-ac50-ba3cd039f33f" nth-line="248"/>
+              <ags-sf-line id="796501e8-2f98-11e6-ac50-ba3cd039f33f" nth-line="249"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="125">
+            <ags-sf-line-list>
+              <ags-sf-line id="7965024c-2f98-11e6-ac50-ba3cd039f33f" nth-line="250"/>
+              <ags-sf-line id="796502ce-2f98-11e6-ac50-ba3cd039f33f" nth-line="251"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="126">
+            <ags-sf-line-list>
+              <ags-sf-line id="79650332-2f98-11e6-ac50-ba3cd039f33f" nth-line="252"/>
+              <ags-sf-line id="79650396-2f98-11e6-ac50-ba3cd039f33f" nth-line="253"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+          <ags-sf-pad nth-pad="127">
+            <ags-sf-line-list>
+              <ags-sf-line id="79650422-2f98-11e6-ac50-ba3cd039f33f" nth-line="254"/>
+              <ags-sf-line id="79650486-2f98-11e6-ac50-ba3cd039f33f" nth-line="255"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-pad-list is-output="true">
+          <ags-sf-pad nth-pad="0">
+            <ags-sf-line-list>
+              <ags-sf-line id="79650530-2f98-11e6-ac50-ba3cd039f33f" nth-line="0" link="xpath=//ags-sf-line[@id='7963d336-2f98-11e6-ac50-ba3cd039f33f']"/>
+              <ags-sf-line id="79650602-2f98-11e6-ac50-ba3cd039f33f" nth-line="1" link="xpath=//ags-sf-line[@id='7963d4a8-2f98-11e6-ac50-ba3cd039f33f']"/>
+            </ags-sf-line-list>
+          </ags-sf-pad>
+        </ags-sf-pad-list>
+        <ags-sf-effect-list is-output="false">
+          <ags-sf-effect filename="/usr/lib/dssi/xsynth-dssi.so" effect="Xsynth DSSI plugin">
+            <ags-sf-control control-type="AgsDial" value="440.000000" specifier="Tuning"/>
+            <ags-sf-control control-type="AgsDial" value="0.490000" specifier="Volume"/>
+            <ags-sf-control control-type="AgsDial" value="0.984375" specifier="Glide Rate"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="VCF Mode"/>
+            <ags-sf-control control-type="AgsDial" value="1.983030" specifier="VCF Resonance"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="VCF Cutoff"/>
+            <ags-sf-control control-type="AgsDial" value="50.000000" specifier="EG2 VCF Cutoff Mod"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="EG2 Osc Pitch Mod"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="EG2 Velocity Sens"/>
+            <ags-sf-control control-type="AgsDial" value="0.000023" specifier="EG2 Release Rate"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="EG2 Sustain Level"/>
+            <ags-sf-control control-type="AgsDial" value="0.000028" specifier="EG2 Decay Rate"/>
+            <ags-sf-control control-type="AgsDial" value="0.091201" specifier="EG2 Attack Rate"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="EG1 VCF Cutoff Mod"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="EG1 Osc Pitch Mod"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="EG1 Velocity Sens"/>
+            <ags-sf-control control-type="AgsDial" value="0.000275" specifier="EG1 Release Rate"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="EG1 Sustain Level"/>
+            <ags-sf-control control-type="AgsDial" value="0.000275" specifier="EG1 Decay Rate"/>
+            <ags-sf-control control-type="AgsDial" value="0.069183" specifier="EG1 Attack Rate"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="LFO VCF Cutoff Mod"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="LFO Osc Pitch Mod"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="LFO Waveform"/>
+            <ags-sf-control control-type="AgsDial" value="0.100000" specifier="LFO Frequency"/>
+            <ags-sf-control control-type="AgsDial" value="0.500000" specifier="Oscillator Balance"/>
+            <ags-sf-control control-type="GtkToggleButton" value="false" specifier="Oscillator Sync"/>
+            <ags-sf-control control-type="AgsDial" value="0.500000" specifier="OSC2 Pulse Width"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="OSC2 Waveform"/>
+            <ags-sf-control control-type="AgsDial" value="4.000000" specifier="OSC2 Pitch"/>
+            <ags-sf-control control-type="AgsDial" value="0.500000" specifier="OSC1 Pulse Width"/>
+            <ags-sf-control control-type="AgsDial" value="0.000000" specifier="OSC1 Waveform"/>
+            <ags-sf-control control-type="AgsDial" value="1.000000" specifier="OSC1 Pitch"/>
+          </ags-sf-effect>
+        </ags-sf-effect-list>
+        <ags-sf-notation-list>
+          <ags-sf-notation channel="0">
+            <ags-sf-note x0="0" x1="4" y="26"/>
+            <ags-sf-note x0="8" x1="12" y="26"/>
+            <ags-sf-note x0="16" x1="20" y="26"/>
+            <ags-sf-note x0="24" x1="28" y="24"/>
+            <ags-sf-note x0="32" x1="36" y="26"/>
+            <ags-sf-note x0="40" x1="44" y="26"/>
+            <ags-sf-note x0="48" x1="52" y="26"/>
+            <ags-sf-note x0="56" x1="60" y="21"/>
+          </ags-sf-notation>
+          <ags-sf-notation channel="1">
+            <ags-sf-note x0="0" x1="4" y="26"/>
+            <ags-sf-note x0="8" x1="12" y="26"/>
+            <ags-sf-note x0="16" x1="20" y="26"/>
+            <ags-sf-note x0="24" x1="28" y="24"/>
+            <ags-sf-note x0="32" x1="36" y="26"/>
+            <ags-sf-note x0="40" x1="44" y="26"/>
+            <ags-sf-note x0="48" x1="52" y="26"/>
+            <ags-sf-note x0="56" x1="60" y="21"/>
+          </ags-sf-notation>
+        </ags-sf-notation-list>
+      </ags-sf-machine>
+    </ags-sf-machine-list>
+    <ags-sf-editor zoom="1:4">
+      <ags-sf-property-list>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='7963e43e-2f98-11e6-ac50-ba3cd039f33f']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='79641a30-2f98-11e6-ac50-ba3cd039f33f']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='7964810a-2f98-11e6-ac50-ba3cd039f33f']"/>
+        <ags-sf-property name="machine" value="xpath=//ags-sf-machine[@id='79649082-2f98-11e6-ac50-ba3cd039f33f']"/>
+      </ags-sf-property-list>
+    </ags-sf-editor>
+    <ags-sf-automation-editor zoom="1:1"/>
+  </ags-sf-window>
+</ags-simple-file>

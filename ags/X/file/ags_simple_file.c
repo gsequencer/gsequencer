@@ -1143,9 +1143,70 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
       if(!xmlStrncmp("ags-sf-config\0",
 		     child->name,
 		     13)){
+	GObject *soundcard;
+	AgsConfig *config;
+
+	gchar *str;
+	
+	guint dsp_channels;
+	guint samplerate;
+	guint buffer_size;
+	guint format;
+
+	config = application_context->config;
 	ags_simple_file_read_config(simple_file,
 				    child,
-				    (GObject **) &(application_context->config));
+				    (GObject **) &config);
+
+	/* reset presets of soundcard */
+	soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
+
+	dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
+	format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+	samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+	buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+	/* read config */
+	config = ags_config_get_instance();
+
+
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "dsp-channels\0");
+
+	if(str != NULL){
+	  dsp_channels = g_ascii_strtoull(str,
+					  NULL,
+					  10);
+	  g_free(str);
+	}
+  
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "samplerate\0");
+  
+	if(str != NULL){
+	  samplerate = g_ascii_strtoull(str,
+					NULL,
+					10);
+	  free(str);
+	}
+
+	str = ags_config_get_value(config,
+				   AGS_CONFIG_SOUNDCARD,
+				   "buffer-size\0");
+	if(str != NULL){
+	  buffer_size = g_ascii_strtoull(str,
+					 NULL,
+					 10);
+	  free(str);
+	}
+
+	ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+				  dsp_channels,
+				  samplerate,
+				  buffer_size,
+				  format);
       }else if(!xmlStrncmp("ags-sf-window\0",
 			   child->name,
 			   14)){
@@ -1252,6 +1313,8 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   buffer = xmlNodeGetContent(node);
   buffer_length = xmlStrlen(buffer);
 
+  g_message("%s\0", buffer);
+  
   ags_config_load_from_data(gobject,
 			    buffer, buffer_length);
 }

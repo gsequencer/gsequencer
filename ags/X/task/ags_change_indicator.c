@@ -134,7 +134,6 @@ void
 ags_change_indicator_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_change_indicator_parent_class)->finalize(gobject);
-
   /* empty */
 }
 
