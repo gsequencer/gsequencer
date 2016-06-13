@@ -56,11 +56,7 @@ void ags_editor_get_property(GObject *gobject,
 void ags_editor_finalize(GObject *gobject);
 void ags_editor_connect(AgsConnectable *connectable);
 void ags_editor_disconnect(AgsConnectable *connectable);
-void ags_editor_destroy(GtkObject *object);
-void ags_editor_show(GtkWidget *widget);
 
-void ags_editor_real_audio_channels_changed(AgsEditor *editor, guint audio_channels);
-void ags_editor_real_pads_changed(AgsEditor *editor, guint pads);
 void ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine);
 
 /**
@@ -240,10 +236,12 @@ ags_editor_init(AgsEditor *editor)
   editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_paned_pack2((GtkPaned *) paned, (GtkWidget *) editor->table, TRUE, FALSE);
   
+  /* currenty selected widgets */
   editor->current_notebook = NULL;  
   editor->current_meter = NULL;
   editor->current_edit_widget = NULL;
 
+  /* offset */
   editor->tact_counter = 0;
   editor->current_tact = 0.0;
 }
@@ -265,12 +263,18 @@ ags_editor_set_property(GObject *gobject,
 
       soundcard = (AgsSoundcard *) g_value_get_object(value);
 
-      if(editor->soundcard == soundcard)
+      if(editor->soundcard == soundcard){
 	return;
+      }
 
-      if(soundcard != NULL)
+      if(editor->soundcard != NULL){
+	g_object_unref(editor->soundcard);
+      }
+      
+      if(soundcard != NULL){
 	g_object_ref(soundcard);
-
+      }
+      
       editor->soundcard = soundcard;
     }
     break;
@@ -309,15 +313,18 @@ ags_editor_finalize(GObject *gobject)
 void
 ags_editor_connect(AgsConnectable *connectable)
 {
-  AgsWindow *window;
   AgsEditor *editor;
-  GtkHPaned *hpaned;
 
   editor = AGS_EDITOR(connectable);
-  window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
+
+  if((AGS_EDITOR_CONNECTED & (editor->flags)) != 0){
+    return;
+  }
+
+  editor->flags |= AGS_EDITOR_CONNECTED;
 
   /*  */
-  g_signal_connect(window->soundcard, "tic\0",
+  g_signal_connect(editor->soundcard, "tic\0",
 		   ags_editor_tic_callback, editor);
 
   
@@ -428,6 +435,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 		     0, 0);
 
     for(i = 0; i < machine->audio->audio_channels; i++){
+      //TODO:JK: make it advanced
       ags_notebook_insert_tab(editor_child->notebook,
 			      i);
       AGS_NOTEBOOK_TAB(editor_child->notebook->tabs->data)->notation = g_list_nth(machine->audio->notation,
@@ -484,10 +492,12 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
 
     editor_child = child->data;
 
+    /* reset */
     editor->current_notebook = editor_child->notebook;
     editor->current_meter = editor_child->meter;
     editor->current_edit_widget = editor_child->edit_widget;
 
+    /* show */
     gtk_widget_show_all(editor_child->notebook);
     gtk_widget_show_all(editor_child->meter);
     gtk_widget_show_all(editor_child->edit_widget);

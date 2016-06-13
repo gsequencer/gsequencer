@@ -5764,25 +5764,7 @@ ags_file_read_automation_editor(AgsFile *file, xmlNode *node, AgsAutomationEdito
       }else if(!xmlStrncmp(child->name,
 			   "ags-automation-edit\0",
 			   20)){
-	if(!xmlStrncmp(xmlGetProp(child,
-				  "scope\0"),
-		       "audio\0",
-		       6)){
-	  ags_file_read_automation_edit(file,
-					child,
-					&(gobject->audio_automation_edit));
-	}else if(!xmlStrncmp(xmlGetProp(child,
-					"scope\0"),
-			     "output\0",
-			     6)){
-	  ags_file_read_automation_edit(file,
-					child,
-					&(gobject->output_automation_edit));
-	}else{
-	  ags_file_read_automation_edit(file,
-					child,
-					&(gobject->input_automation_edit));
-	}
+	//TODO:JK: implement me
       }
     }
 
@@ -5826,18 +5808,7 @@ ags_file_write_automation_editor(AgsFile *file, xmlNode *parent, AgsAutomationEd
   ags_file_write_automation_toolbar(file,
 				    node,
 				    automation_editor->automation_toolbar);
-
-  ags_file_write_automation_edit(file,
-				 node,
-				 automation_editor->audio_automation_edit);
-
-  ags_file_write_automation_edit(file,
-				 node,
-				 automation_editor->output_automation_edit);
-
-  ags_file_write_automation_edit(file,
-				 node,
-				 automation_editor->input_automation_edit);
+  //TODO:JK: implement me
 }
 
 void
