@@ -294,10 +294,10 @@ ags_note_edit_connect(AgsConnectable *connectable)
 						 AGS_TYPE_EDITOR);
 
   if(editor != NULL && editor->selected_machine != NULL){
-    g_signal_connect(editor->selected_machine->audio, "set-audio-channels\0",
-		     G_CALLBACK(ags_note_edit_set_audio_channels_callback), note_edit);
-    g_signal_connect(editor->selected_machine->audio, "set-pads\0",
-		     G_CALLBACK(ags_note_edit_set_pads_callback), note_edit);
+    g_signal_connect_after(editor->selected_machine->audio, "set-audio-channels\0",
+			   G_CALLBACK(ags_note_edit_set_audio_channels_callback), note_edit);
+    g_signal_connect_after(editor->selected_machine->audio, "set-pads\0",
+			   G_CALLBACK(ags_note_edit_set_pads_callback), note_edit);
   }
   
   g_signal_connect_after((GObject *) note_edit->drawing_area, "expose_event\0",

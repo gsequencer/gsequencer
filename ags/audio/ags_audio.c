@@ -1892,7 +1892,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   }
   
   void ags_audio_set_audio_channels_grow(GType type){
-    AgsChannel *channel, *start, *current;
+    AgsChannel *channel, *start, *current, *pad_next;
     AgsRecycling *first_recycling, *last_recycling;
 	  
     guint pads;
@@ -1921,14 +1921,18 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	if(start == NULL){
 	  start = channel;
 
-	  if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
+	  if(type == AGS_TYPE_OUTPUT){
 	    audio->output = channel;
 	  }else{
 	    audio->input = channel;
 	  }
 	}
-	
+
 	if(j * audio_channels + i != 0){
+	  if(i == audio_channels_old){
+	    pad_next = ags_channel_nth(start, j * audio_channels)->next_pad;
+	  }
+
 	  /* set prev */
 	  channel->prev = ags_channel_nth(start, j * audio_channels + i - 1);
 
@@ -1939,13 +1943,17 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  
 	  pthread_mutex_unlock(application_mutex);
 	  
-	  pthread_mutex_lock(prev_mutex);
+	  pthread_mutex_lock(prev_mutex);  
+
+	  if(i == audio_channels - 1){
+	    channel->next = pad_next;
+	  }
 	  
 	  channel->prev->next = channel;
 
 	  pthread_mutex_unlock(prev_mutex);
 	}
-	
+
 	if(j != 0){
 	  /* set prev pad */
 	  channel->prev_pad = ags_channel_pad_nth(ags_channel_nth(start,
@@ -2386,7 +2394,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     guint i, j;
     
-    if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
+    if(type == AGS_TYPE_OUTPUT){
       start = audio->output;
     }else{
       start = audio->input;
@@ -2400,7 +2408,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 					      NULL);
 	if(start == NULL){
 	  /* set first channel in AgsAudio */
-	  if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
+	  if(type == AGS_TYPE_OUTPUT){
 	    start = 
 	      audio->output = channel;
 	  }else{
@@ -2412,7 +2420,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	if(j * audio->audio_channels + i != 0){
 	  /* set prev */
 	  channel->prev = ags_channel_nth(start, j * audio->audio_channels + i - 1);
-
+	  
 	  pthread_mutex_lock(application_mutex);
 	  
 	  prev_mutex = ags_mutex_manager_lookup(mutex_manager,

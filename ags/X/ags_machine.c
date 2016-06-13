@@ -816,10 +816,14 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     
     pthread_mutex_unlock(audio_mutex);
 
+    list_input_pad_start = 
+      list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
+
+    list_output_pad_start = 
+	list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
+
     /* AgsInput */
     if(machine->input != NULL){
-      list_input_pad_start = 
-	list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
       /* get input */
       pthread_mutex_lock(audio_mutex);
 
@@ -866,14 +870,10 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	  list_input_pad = list_input_pad->next;
 	}
       }
-
-      g_list_free(list_input_pad_start);
     }
 
     /* AgsOutput */
     if(machine->output != NULL){
-      list_output_pad_start = 
-	list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
       /* get output */
       pthread_mutex_lock(audio_mutex);
 
@@ -919,8 +919,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	  list_output_pad = list_output_pad->next;
 	}
       }
-
-      g_list_free(list_output_pad_start);
     }
 
     /* show all */
@@ -949,12 +947,13 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	}
       }else{
 	if(machine->input != NULL){
-	  GList *list_input_line;
-	  
+	  GList *list_input_line, *list_input_line_start;
+
 	  list_input_pad = list_input_pad_start;
 
 	  while(list_input_pad != NULL){
-	    list_input_line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_input_pad->data)->expander_set));
+	    list_input_line_start =
+	      list_input_line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_input_pad->data)->expander_set));
 	    list_input_line = g_list_nth(list_input_line,
 					 audio_channels_old);
 	    
@@ -963,6 +962,8 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	      list_input_line = list_input_line->next;
 	    }
+
+	    g_list_free(list_input_line_start);
 	    
 	    list_input_pad = list_input_pad->next;
 	  }
@@ -990,6 +991,9 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	}	
       }
     }
+    
+    g_list_free(list_input_pad_start);
+    g_list_free(list_output_pad_start);
   }else if(audio_channels < audio_channels_old){
     /* shrink lines */
     list_output_pad_start = 
