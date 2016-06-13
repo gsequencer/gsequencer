@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
@@ -105,11 +106,11 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
   
     automation = automation_editor->selected_machine->audio->automation;
 
-    if(automation_edit == automation_editor->audio_automation_edit){
+    if(automation_edit == automation_editor->current_audio_automation_edit){
       is_audio = TRUE;
-    }else if(automation_edit == automation_editor->output_automation_edit){
+    }else if(automation_edit == automation_editor->current_output_automation_edit){
       is_output = TRUE;
-    }else if(automation_edit == automation_editor->input_automation_edit){
+    }else if(automation_edit == automation_editor->current_input_automation_edit){
       is_input = TRUE;
     }
 
@@ -138,7 +139,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
       if(is_output){
 	GList *list;
 
-	list = g_list_nth(automation_editor->output_notebook->tabs,
+	list = g_list_nth(automation_editor->current_output_notebook->tabs,
 			  AGS_AUTOMATION(automation->data)->line);
 	  
 	if(!gtk_toggle_button_get_active(AGS_NOTEBOOK_TAB(list->data)->toggle)){
@@ -151,7 +152,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
       if(is_input){
 	GList *list;
 
-	list = g_list_nth(automation_editor->input_notebook->tabs,
+	list = g_list_nth(automation_editor->current_input_notebook->tabs,
 			  AGS_AUTOMATION(automation->data)->line);
 	  
 	if(!gtk_toggle_button_get_active(AGS_NOTEBOOK_TAB(list->data)->toggle)){
@@ -258,11 +259,11 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     automation = automation_editor->selected_machine->audio->automation;
     i = automation_edit->current_area->y;
 
-    if(automation_edit == automation_editor->audio_automation_edit){
+    if(automation_edit == automation_editor->current_audio_automation_edit){
       is_audio = TRUE;
-    }else if(automation_edit == automation_editor->output_automation_edit){
+    }else if(automation_edit == automation_editor->current_output_automation_edit){
       is_output = TRUE;
-    }else if(automation_edit == automation_editor->input_automation_edit){
+    }else if(automation_edit == automation_editor->current_input_automation_edit){
       is_input = TRUE;
     }
       
@@ -272,7 +273,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       if(is_output){
 	GList *list;
 
-	list = g_list_nth(automation_editor->output_notebook->tabs,
+	list = g_list_nth(automation_editor->current_output_notebook->tabs,
 			  AGS_AUTOMATION(automation->data)->line);
 	  
 	if(!gtk_toggle_button_get_active(AGS_NOTEBOOK_TAB(list->data)->toggle)){
@@ -285,7 +286,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       if(is_input){
 	GList *list;
 
-	list = g_list_nth(automation_editor->input_notebook->tabs,
+	list = g_list_nth(automation_editor->current_input_notebook->tabs,
 			  AGS_AUTOMATION(automation->data)->line);
 	  
 	if(!gtk_toggle_button_get_active(AGS_NOTEBOOK_TAB(list->data)->toggle)){
@@ -417,11 +418,11 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
     automation = automation_editor->selected_machine->audio->automation;
     i = automation_edit->current_area->y;
 
-    if(automation_edit == automation_editor->audio_automation_edit){
+    if(automation_edit == automation_editor->current_audio_automation_edit){
       is_audio = TRUE;
-    }else if(automation_edit == automation_editor->output_automation_edit){
+    }else if(automation_edit == automation_editor->current_output_automation_edit){
       is_output = TRUE;
-    }else if(automation_edit == automation_editor->input_automation_edit){
+    }else if(automation_edit == automation_editor->current_input_automation_edit){
       is_input = TRUE;
     }
       
@@ -431,7 +432,7 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
       if(is_output){
 	GList *list;
 
-	list = g_list_nth(automation_editor->output_notebook->tabs,
+	list = g_list_nth(automation_editor->current_output_notebook->tabs,
 			  AGS_AUTOMATION(automation->data)->line);
 	  
 	if(!gtk_toggle_button_get_active(AGS_NOTEBOOK_TAB(list->data)->toggle)){
@@ -444,7 +445,7 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
       if(is_input){
 	GList *list;
 
-	list = g_list_nth(automation_editor->input_notebook->tabs,
+	list = g_list_nth(automation_editor->current_input_notebook->tabs,
 			  AGS_AUTOMATION(automation->data)->line);
 	  
 	if(!gtk_toggle_button_get_active(AGS_NOTEBOOK_TAB(list->data)->toggle)){

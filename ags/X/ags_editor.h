@@ -51,8 +51,11 @@
 
 typedef struct _AgsEditor AgsEditor;
 typedef struct _AgsEditorClass AgsEditorClass;
-
 typedef struct _AgsEditorChild AgsEditorChild;
+
+typedef enum{
+  AGS_EDITOR_CONNECTED    = 1,
+}AgsEditorFlags;
 
 struct _AgsEditor
 {

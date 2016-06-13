@@ -85,6 +85,7 @@ struct _AgsNotebookTab
   guint flags;
 
   GObject *notation;
+  GList *automation;
   
   GtkToggleButton *toggle;
 };

@@ -183,6 +183,7 @@ ags_notebook_tab_alloc()
   notebook_tab->flags = 0;
 
   notebook_tab->notation = NULL;
+  notebook_tab->automation = NULL;
   
   notebook_tab->toggle = NULL;
 

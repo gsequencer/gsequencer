@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/editor/ags_automation_toolbar.h>
@@ -411,66 +412,66 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 	  (!found_audio || !found_output || !found_input)){
       if(AGS_AUTOMATION(list->data)->channel_type == G_TYPE_NONE &&
 	 !found_audio){
-	scale_area = ags_scale_area_new(automation_editor->audio_scale,
+	scale_area = ags_scale_area_new(automation_editor->current_audio_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
 					AGS_AUTOMATION(list->data)->upper,
 					AGS_AUTOMATION(list->data)->steps);
-	ags_scale_add_area(automation_editor->audio_scale,
+	ags_scale_add_area(automation_editor->current_audio_scale,
 			   scale_area);
-	gtk_widget_queue_draw(automation_editor->audio_scale);
+	gtk_widget_queue_draw(automation_editor->current_audio_scale);
 	
-	automation_area = ags_automation_area_new(automation_editor->audio_automation_edit->drawing_area,
+	automation_area = ags_automation_area_new(AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->drawing_area,
 						  audio,
 						  G_TYPE_NONE,
 						  control_name);
-	ags_automation_edit_add_area(automation_editor->audio_automation_edit,
+	ags_automation_edit_add_area(automation_editor->current_audio_automation_edit,
 				     automation_area);
-	gtk_widget_queue_draw(automation_editor->audio_automation_edit->drawing_area);
+	gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->drawing_area);
 
 	found_audio = TRUE;
       }
 
       if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_OUTPUT &&
 	 !found_output){
-	scale_area = ags_scale_area_new(automation_editor->output_scale,
+	scale_area = ags_scale_area_new(automation_editor->current_output_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
 					AGS_AUTOMATION(list->data)->upper,
 					AGS_AUTOMATION(list->data)->steps);
-	ags_scale_add_area(automation_editor->output_scale,
+	ags_scale_add_area(automation_editor->current_output_scale,
 			   scale_area);
-	gtk_widget_queue_draw(automation_editor->output_scale);
+	gtk_widget_queue_draw(automation_editor->current_output_scale);
 	
-	automation_area = ags_automation_area_new(automation_editor->output_automation_edit->drawing_area,
+	automation_area = ags_automation_area_new(AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->drawing_area,
 						  audio,
 						  AGS_TYPE_OUTPUT,
 						  control_name);
-	ags_automation_edit_add_area(automation_editor->output_automation_edit,
+	ags_automation_edit_add_area(automation_editor->current_output_automation_edit,
 				     automation_area);
-	gtk_widget_queue_draw(automation_editor->output_automation_edit->drawing_area);
+	gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->drawing_area);
 	
 	found_output = TRUE;
       }
 
       if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_INPUT &&
 	 !found_input){
-	scale_area = ags_scale_area_new(automation_editor->input_scale,
+	scale_area = ags_scale_area_new(automation_editor->current_input_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
 					AGS_AUTOMATION(list->data)->upper,
 					AGS_AUTOMATION(list->data)->steps);
-	ags_scale_add_area(automation_editor->input_scale,
+	ags_scale_add_area(automation_editor->current_input_scale,
 			   scale_area);
-	gtk_widget_queue_draw(automation_editor->input_scale);
+	gtk_widget_queue_draw(automation_editor->current_input_scale);
 	
-	automation_area = ags_automation_area_new(automation_editor->input_automation_edit->drawing_area,
+	automation_area = ags_automation_area_new(AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->drawing_area,
 						  audio,
 						  AGS_TYPE_INPUT,
 						  control_name);
-	ags_automation_edit_add_area(automation_editor->input_automation_edit,
+	ags_automation_edit_add_area(automation_editor->current_input_automation_edit,
 				     automation_area);
-	gtk_widget_queue_draw(automation_editor->input_automation_edit->drawing_area);
+	gtk_widget_queue_draw(AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->drawing_area);
 	
 	found_input = TRUE;
       }
@@ -485,8 +486,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     GList *automation_area;
 
     /* remove audio port */
-    automation_edit = automation_editor->audio_automation_edit;
-    scale = automation_editor->audio_scale;
+    automation_edit = automation_editor->current_audio_automation_edit;
+    scale = automation_editor->current_audio_scale;
 
     scale_area = ags_scale_area_find_specifier(scale->scale_area,
 					       control_name);
@@ -505,8 +506,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
     
     /* remove output port */
-    automation_edit = automation_editor->output_automation_edit;
-    scale = automation_editor->output_scale;
+    automation_edit = automation_editor->current_output_automation_edit;
+    scale = automation_editor->current_output_scale;
     
     scale_area = ags_scale_area_find_specifier(scale->scale_area,
 					       control_name);
@@ -525,8 +526,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
 
     /* remove input port */
-    automation_edit = automation_editor->input_automation_edit;
-    scale = automation_editor->input_scale;
+    automation_edit = automation_editor->current_input_automation_edit;
+    scale = automation_editor->current_input_scale;
     
     scale_area = ags_scale_area_find_specifier(scale->scale_area,
 					       control_name);

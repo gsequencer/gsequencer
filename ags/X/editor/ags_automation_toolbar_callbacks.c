@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/editor/ags_automation_toolbar_callbacks.h>
@@ -133,28 +134,28 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   automation_toolbar->zoom_history = history;
 
   /* refresh automation edit */
-  if(automation_editor->audio_automation_edit != NULL){
-    automation_editor->audio_automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-    ags_automation_edit_reset_horizontally(automation_editor->audio_automation_edit,
+  if(automation_editor->current_audio_automation_edit != NULL){
+    AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+    ags_automation_edit_reset_horizontally(automation_editor->current_audio_automation_edit,
 					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
 					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
-    automation_editor->audio_automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
+    AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
   }
   
-  if(automation_editor->output_automation_edit != NULL){
-    automation_editor->output_automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-    ags_automation_edit_reset_horizontally(automation_editor->output_automation_edit,
+  if(automation_editor->current_output_automation_edit != NULL){
+    AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+    ags_automation_edit_reset_horizontally(automation_editor->current_output_automation_edit,
 					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
 					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
-    automation_editor->output_automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
+    AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
   }
 
-  if(automation_editor->input_automation_edit != NULL){
-    automation_editor->input_automation_edit->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-    ags_automation_edit_reset_horizontally(automation_editor->input_automation_edit,
+  if(automation_editor->current_input_automation_edit != NULL){
+    AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
+    ags_automation_edit_reset_horizontally(automation_editor->current_input_automation_edit,
 					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
 					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
-    automation_editor->input_automation_edit->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
+    AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
   }
 }
 

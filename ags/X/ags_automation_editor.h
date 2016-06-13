@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __AGS_AUTOMATION_EDITOR_H__
@@ -37,8 +38,18 @@
 #define AGS_IS_AUTOMATION_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_AUTOMATION_EDITOR))
 #define AGS_AUTOMATION_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_AUTOMATION_EDITOR, AgsAutomationEditorClass))
 
+#define AGS_AUTOMATION_EDITOR_CHILD(ptr) ((AgsAutomationEditorChild *)(ptr))
+
+#define AGS_AUTOMATION_EDITOR_DEFAULT_VERSION "0.7.29\0"
+#define AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID "Mon Jun 13 11:50:58 UTC 2016\0"
+
 typedef struct _AgsAutomationEditor AgsAutomationEditor;
 typedef struct _AgsAutomationEditorClass AgsAutomationEditorClass;
+typedef struct _AgsAutomationEditorChild AgsAutomationEditorChild;
+  
+typedef enum{
+  AGS_AUTOMATION_EDITOR_CONNECTED    = 1,
+}AgsAutomationEditorFlags;
 
 struct _AgsAutomationEditor
 {
@@ -49,24 +60,31 @@ struct _AgsAutomationEditor
   gchar *version;
   gchar *build_id;
 
+  GObject *soundcard;
+  
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
 
   AgsAutomationToolbar *automation_toolbar;
 
+  GList *automation_editor_child;
   GtkTable *audio_table;
-  AgsScale *audio_scale;
-  AgsAutomationEdit *audio_automation_edit;
-
   GtkTable *output_table;
-  AgsScale *output_scale;
-  AgsNotebook *output_notebook;
-  AgsAutomationEdit *output_automation_edit;
-
   GtkTable *input_table;
-  AgsScale *input_scale;
-  AgsNotebook *input_notebook;
-  AgsAutomationEdit *input_automation_edit;
+  
+  AgsScale *current_audio_scale;
+  GtkWidget *current_audio_automation_edit;
+
+  AgsNotebook *current_output_notebook;
+  AgsScale *current_output_scale;
+  GtkWidget *current_output_automation_edit;
+
+  AgsNotebook *current_input_notebook;
+  AgsScale *current_input_scale;
+  GtkWidget *current_input_automation_edit;
+
+  guint tact_counter;
+  gdouble current_tact;
 };
 
 struct _AgsAutomationEditorClass
@@ -77,10 +95,38 @@ struct _AgsAutomationEditorClass
 			  AgsMachine *machine);
 };
 
+struct _AgsAutomationEditorChild
+{
+  AgsMachine *machine;
+  
+  AgsScale *audio_scale;
+  AgsAutomationEdit *audio_automation_edit;
+
+  AgsScale *output_scale;
+  AgsNotebook *output_notebook;
+  AgsAutomationEdit *output_automation_edit;
+
+  AgsScale *input_scale;
+  AgsNotebook *input_notebook;
+  AgsAutomationEdit *input_automation_edit;
+};
+  
 GType ags_automation_editor_get_type(void);
+
+AgsAutomationEditorChild* ags_automation_editor_child_alloc(AgsMachine *machine,
+							    AgsScale *audio_scale, AgsAutomationEdit *audio_automation_edit,
+							    AgsNotebook *output_notebook, AgsScale *output_scale, AgsAutomationEdit *output_automation_edit,
+							    AgsNotebook *input_notebook, AgsScale *input_scale, AgsAutomationEdit *input_automation_edit);
 
 void ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor,
 					   AgsMachine *machine);
+
+void ags_automation_editor_select_all(AgsAutomationEditor *automation_editor);
+
+void ags_automation_editor_paste(AgsAutomationEditor *automation_editor);
+void ags_automation_editor_copy(AgsAutomationEditor *automation_editor);
+void ags_automation_editor_cut(AgsAutomationEditor *automation_editor);
+void ags_automation_editor_invert(AgsAutomationEditor *automation_editor);
 
 AgsAutomationEditor* ags_automation_editor_new();
 
