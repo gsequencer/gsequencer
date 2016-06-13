@@ -107,6 +107,7 @@ struct _AgsRecall
   guint n_params;
 
   GList *port;
+  GList *automation_port;
   
   GList *handlers;
 };
@@ -115,6 +116,10 @@ struct _AgsRecallClass
 {
   GObjectClass object;
 
+  void (*load_automation)(AgsRecall *recall,
+			  GList *automation_port);
+  void (*unload_automation)(AgsRecall *recall);
+  
   void (*resolve_dependencies)(AgsRecall *recall);
 
   void (*run_init_pre)(AgsRecall *recall);
@@ -161,6 +166,10 @@ struct _AgsRecallHandler
 GType ags_recall_get_type();
 
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
+
+void ags_recall_load_automation(AgsRecall *recall,
+				GList *automation_port);
+void ags_recall_unload_automation(AgsRecall *recall);
 
 void ags_recall_resolve_dependencies(AgsRecall *recall);
 void ags_recall_child_added(AgsRecall *parent, AgsRecall *child);

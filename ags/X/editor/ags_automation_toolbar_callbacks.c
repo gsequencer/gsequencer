@@ -28,6 +28,8 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
 {
   AgsAutomation *automation;
 
+  g_message("load\0");
+  
   /* load ports */
   ags_automation_toolbar_load_port(automation_editor->automation_toolbar);
 }

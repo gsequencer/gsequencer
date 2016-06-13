@@ -26,6 +26,9 @@
 #include <ags/object/ags_packable.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_recall_container.h>
 
 void ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel);
@@ -46,6 +49,9 @@ gboolean ags_recall_channel_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_channel_unpack(AgsPackable *packable);
 void ags_recall_channel_finalize(GObject *gobject);
 
+void ags_recall_channel_load_automation(AgsRecall *recall,
+					GList *automation_port);
+void ags_recall_channel_unload_automation(AgsRecall *recall);
 void ags_recall_channel_automate(AgsRecall *recall);
 AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
 					AgsRecallID *recall_id,
@@ -171,6 +177,8 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
    /* AgsRecallClass */
    recall = (AgsRecallClass *) recall_channel;
 
+   recall->load_automation = ags_recall_channel_load_automation;
+   recall->unload_automation = ags_recall_channel_unload_automation;
    recall->automate = ags_recall_channel_automate;
    recall->duplicate = ags_recall_channel_duplicate;
  }
@@ -390,6 +398,76 @@ ags_recall_channel_unpack(AgsPackable *packable)
   g_object_unref(recall_container);
 
   return(FALSE);
+}
+
+void
+ags_recall_channel_load_automation(AgsRecall *recall,
+				   GList *automation_port)
+{
+  AgsChannel *channel;
+
+  AgsAutomation *current;
+
+  GList *automation;
+  
+  GType channel_type;
+
+  channel = AGS_RECALL_CHANNEL(recall)->source;
+
+  automation = AGS_AUDIO(channel->audio)->automation;
+  
+  if(AGS_IS_OUTPUT(channel)){
+    channel_type = AGS_TYPE_OUTPUT;
+  }else{
+    channel_type = AGS_TYPE_INPUT;
+  }
+  
+  while(automation_port != NULL){
+    if(ags_automation_find_port(automation,
+				automation_port->data) == NULL){
+      current = ags_automation_new(channel->audio,
+				   channel->line,
+				   channel_type,
+				   AGS_PORT(automation_port->data)->specifier);
+    }
+    
+    automation_port = automation_port->next;
+  }
+
+  if(recall->automation_port == NULL){
+    recall->automation_port = automation_port;
+  }else{
+    recall->automation_port = g_list_concat(recall->automation_port,
+					    automation_port);
+  }
+}
+
+void
+ags_recall_channel_unload_automation(AgsRecall *recall)
+{
+  AgsAudio *audio;
+  AgsChannel *channel;
+
+  AgsAutomation *current;
+
+  GList *automation;
+  GList *automation_port;
+  
+  channel = AGS_RECALL_CHANNEL(recall)->source;
+  audio = AGS_AUDIO(channel->audio);
+  
+  automation = audio->automation;
+  automation_port = recall->automation_port;
+    
+  while(automation_port != NULL){
+    if((current = ags_automation_find_port(audio->automation,
+					   automation_port->data)) != NULL){
+      audio->automation = g_list_remove(audio->automation,
+					current);
+    }
+    
+    automation_port = automation_port->next;
+  }
 }
 
 void
