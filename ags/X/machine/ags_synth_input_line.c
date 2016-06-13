@@ -58,6 +58,9 @@ void ags_synth_input_line_resolve_line(AgsFileLookup *file_lookup,
 				       AgsSynthInputLine *synth_input_line);
 xmlNode* ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
+void ags_synth_input_line_show(GtkWidget *line);
+void ags_synth_input_line_show_all(GtkWidget *line);
+
 void ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_synth_input_line_map_recall(AgsLine *line,
 				     guint output_pad_start);
@@ -125,8 +128,15 @@ void
 ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line)
 {
   AgsLineClass *line;
-
+  GtkWidgetClass *widget;
+  
   ags_synth_input_line_parent_class = g_type_class_peek_parent(synth_input_line);
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) synth_input_line;
+
+  widget->show = ags_synth_input_line_show;
+  widget->show_all = ags_synth_input_line_show_all;
 
   /* AgsLineClass */
   line = AGS_LINE_CLASS(synth_input_line);
@@ -257,6 +267,22 @@ void
 ags_synth_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 {
   AGS_SYNTH_INPUT_LINE(plugin)->xml_type = xml_type;
+}
+
+void
+ags_synth_input_line_show(GtkWidget *line)
+{
+  GTK_WIDGET_CLASS(ags_synth_input_line_parent_class)->show(line);
+
+  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
+}
+
+void
+ags_synth_input_line_show_all(GtkWidget *line)
+{
+  GTK_WIDGET_CLASS(ags_synth_input_line_parent_class)->show_all(line);
+
+  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }
 
 void

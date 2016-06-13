@@ -443,7 +443,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
       gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(editor_child->notebook->tabs->data)->toggle,
 				   TRUE);
     }
-
+    ags_connectable_connect(AGS_CONNECTABLE(editor_child->notebook));
     gtk_widget_show_all(editor_child->notebook);
     
     pads = machine->audio->input_pads;

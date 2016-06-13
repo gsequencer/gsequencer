@@ -953,7 +953,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
 	  while(list_input_pad != NULL){
 	    list_input_line_start =
-	      list_input_line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_input_pad->data)->expander_set));
+	      list_input_line = g_list_reverse(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_input_pad->data)->expander_set)));
 	    list_input_line = g_list_nth(list_input_line,
 					 audio_channels_old);
 	    
@@ -971,12 +971,14 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	
 	/* AgsOutput */
 	if(machine->output != NULL){
-	  GList *list_output_line;
+	  GList *list_output_line, *list_output_line_start;
 
+	  
 	  list_output_pad = list_output_pad_start;
 	  
 	  while(list_output_pad != NULL){
-	    list_output_line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_output_pad->data)->expander_set));
+	    list_output_line_start = 
+	      list_output_line = g_list_reverse(gtk_container_get_children(GTK_CONTAINER(AGS_PAD(list_output_pad->data)->expander_set)));
 	    list_output_line = g_list_nth(list_output_line,
 					 audio_channels_old);
 	    
