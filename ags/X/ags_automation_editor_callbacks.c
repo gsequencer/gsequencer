@@ -48,27 +48,6 @@ ags_automation_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_par
   if(old_parent != NULL){
     return;
   }
-
-  /* audio */
-  AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-  
-  ags_automation_edit_reset_horizontally(AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit), AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR);
-  
-  AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
-
-  /* output */
-  AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-  
-  ags_automation_edit_reset_horizontally(AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit), AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR);
-  
-  AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
-
-  /* input */
-  AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-  
-  ags_automation_edit_reset_horizontally(AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit), AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR);
-  
-  AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
 }
 
 void

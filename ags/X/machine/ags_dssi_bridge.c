@@ -736,12 +736,12 @@ ags_dssi_bridge_set_audio_channels(AgsAudio *audio,
   if(audio_channels > audio_channels_old){
     /* AgsInput */
     channel = audio->input;
-
+    
     while(channel != NULL){
       next_pad = channel->next_pad;
-      channel = ags_channel_pad_nth(channel,
-				    audio_channels_old);
-
+      channel = ags_channel_nth(channel,
+				audio_channels_old);
+      
       while(channel != next_pad){
 	audio_signal = ags_audio_signal_new(audio->soundcard,
 					    channel->first_recycling,
@@ -753,7 +753,7 @@ ags_dssi_bridge_set_audio_channels(AgsAudio *audio,
 				       1);
 	ags_recycling_add_audio_signal(channel->first_recycling,
 				       audio_signal);
-	
+
 	channel = channel->next;
       }
     }

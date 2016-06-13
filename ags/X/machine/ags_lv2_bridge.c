@@ -972,8 +972,8 @@ ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
 
     while(channel != NULL){
       next_pad = channel->next_pad;
-      channel = ags_channel_pad_nth(channel,
-				    audio_channels_old);
+      channel = ags_channel_nth(channel,
+				audio_channels_old);
 
       while(channel != next_pad){
 	audio_signal = ags_audio_signal_new(audio->soundcard,

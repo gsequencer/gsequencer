@@ -1,3 +1,9 @@
+ags (0.7.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_audio_set_audio_channels() to do proper setup
+	* fixed ags_lv2_bridge_set_audio_channels() and ags_dssi_bridge_set_audio_channels() to iterate correctly
+
 ags (0.7.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
