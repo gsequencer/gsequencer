@@ -1929,8 +1929,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	}
 
 	if(j * audio_channels + i != 0){
-	  if(i == audio_channels_old){
+	  if(audio_channels_old != 0 &&
+	     i == audio_channels_old){
 	    pad_next = ags_channel_nth(start, j * audio_channels)->next_pad;
+	  }else{
+	    pad_next = NULL;
 	  }
 
 	  /* set prev */
@@ -1945,7 +1948,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  
 	  pthread_mutex_lock(prev_mutex);  
 
-	  if(i == audio_channels - 1){
+	  if(audio_channels_old != 0 &&
+	     i == audio_channels - 1){
 	    channel->next = pad_next;
 	  }
 	  

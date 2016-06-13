@@ -56,6 +56,7 @@ gchar* ags_panel_input_line_get_xml_type(AgsPlugin *plugin);
 void ags_panel_input_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 
 void ags_panel_input_line_show(GtkWidget *line);
+void ags_panel_input_line_show_all(GtkWidget *line);
 
 void ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel);
 void ags_panel_input_line_group_changed(AgsLine *line);
@@ -139,6 +140,7 @@ ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line)
   widget = (GtkWidgetClass *) panel_input_line;
 
   widget->show = ags_panel_input_line_show;
+  widget->show_all = ags_panel_input_line_show_all;
 
   /* AgsLineClass */
   line = AGS_LINE_CLASS(panel_input_line);
@@ -244,6 +246,14 @@ void
 ags_panel_input_line_show(GtkWidget *line)
 {
   GTK_WIDGET_CLASS(ags_panel_input_line_parent_class)->show(line);
+
+  gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
+}
+
+void
+ags_panel_input_line_show_all(GtkWidget *line)
+{
+  GTK_WIDGET_CLASS(ags_panel_input_line_parent_class)->show_all(line);
 
   gtk_widget_hide(GTK_WIDGET(AGS_LINE(line)->group));
 }

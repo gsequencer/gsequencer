@@ -56,12 +56,12 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
 
   length = g_list_length(notebook->tabs);
   
-  if(adjustment->value + adjustment->step_increment < adjustment->upper){
+  if(adjustment->value + adjustment->step_increment < adjustment->upper - adjustment->page_size){
     gtk_adjustment_set_value(adjustment,
 			     adjustment->value + adjustment->step_increment);
   }else{
     gtk_adjustment_set_value(adjustment,
-			     adjustment->upper);
+			     adjustment->upper - adjustment->page_size);
   }
 
   gdk_window_invalidate_rect(gtk_viewport_get_view_window(notebook->viewport),

@@ -624,7 +624,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 
 	ags_expander_set_add(pad->expander_set,
 			     (GtkWidget *) line,
-			     j, i / pad->cols,
+			     j, floor(i / pad->cols),
 			     1, 1);
 	
 	/* iterate */
