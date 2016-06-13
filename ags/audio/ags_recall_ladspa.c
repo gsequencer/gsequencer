@@ -341,6 +341,17 @@ ags_recall_ladspa_get_property(GObject *gobject,
 void
 ags_recall_ladspa_connect(AgsConnectable *connectable)
 {
+  AgsRecall *recall;
+
+  recall = AGS_RECALL(connectable);
+  
+  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
+    return;
+  }
+
+  ags_recall_load_automation(recall,
+			     g_list_copy(recall->port));
+  
   ags_recall_ladspa_parent_connectable_interface->connect(connectable);
 }
 
