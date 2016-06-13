@@ -1043,6 +1043,8 @@ ags_recall_disconnect(AgsConnectable *connectable)
   }
 
   recall->flags &= (~AGS_RECALL_CONNECTED);
+
+  ags_recall_unload_automation(recall);
 }
 
 gboolean

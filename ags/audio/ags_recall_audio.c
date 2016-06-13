@@ -368,6 +368,8 @@ ags_recall_audio_load_automation(AgsRecall *recall,
 				   0,
 				   G_TYPE_NONE,
 				   AGS_PORT(automation_port->data)->specifier);
+      ags_audio_add_automation(audio,
+			       current);
     }
     
     automation_port = automation_port->next;
@@ -392,12 +394,15 @@ ags_recall_audio_unload_automation(AgsRecall *recall)
   while(automation_port != NULL){
     if((current = ags_automation_find_port(audio->automation,
 					   automation_port->data)) != NULL){
-      audio->automation = g_list_remove(audio->automation,
-					current);
+      ags_audio_remove_automation(audio,
+				  current);
     }
     
     automation_port = automation_port->next;
   }
+
+  g_list_free(recall->automation_port);
+  recall->automation_port = NULL;
 }
 
 void

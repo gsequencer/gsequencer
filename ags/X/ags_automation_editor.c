@@ -445,6 +445,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   automation_editor->current_input_scale = NULL;
   automation_editor->current_input_automation_edit = NULL;
 
+  if(machine == NULL){
+    return;
+  }
+
   /* instantiate automation edit */
   if(child == NULL){
     AgsAutomationEditorChild *automation_editor_child;
@@ -536,7 +540,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 		     GTK_FILL|GTK_EXPAND, GTK_FILL,
 		     0, 0);
 
-    for(i = 0; i < machine->audio->input_lines; i++){
+    for(i = 0; machine != NULL && i < machine->audio->input_lines; i++){
       ags_notebook_insert_tab(automation_editor_child->input_notebook,
 			      i);
       gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->input_notebook->tabs->data)->toggle,

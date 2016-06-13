@@ -810,11 +810,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       ags_audio_add_recall_container(current->audio,
 				     recall_container);
 
-      //      add_recall_container = ags_add_recall_container_new(current->audio,
-      //						  recall_container);
-      //      task = g_list_prepend(task,
-      //		    add_recall_container);
-
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
 					    effect,
@@ -829,19 +824,12 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					   AGS_RECALL_SEQUENCER |
 					   AGS_RECALL_NOTATION |
 					   AGS_RECALL_BULK_MODE);
-
-      AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
       ags_recall_ladspa_load(recall_ladspa);
       port = ags_recall_ladspa_load_ports(recall_ladspa);
-
       ags_channel_add_recall(current,
 			     recall_ladspa,
 			     TRUE);
-      //      add_recall = ags_add_recall_new(current,
-      //			      recall_ladspa,
-      //			      TRUE);
-      //      task = g_list_prepend(task,
-      //		    add_recall);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
@@ -862,22 +850,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       ags_channel_add_recall(current,
 			     recall_channel_run_dummy,
 			     FALSE);
-      //      add_recall = ags_add_recall_new(current,
-      //			      recall_channel_run_dummy,
-      //			      TRUE);
-      //      task = g_list_prepend(task,
-      //		    add_recall);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
       /* ladspa recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(current->audio,
 				     recall_container);
 
-      //      add_recall_container = ags_add_recall_container_new(current->audio,
-      //						  recall_container);
-      //      task = g_list_prepend(task,
-      //		    add_recall_container);
-
       recall_ladspa = ags_recall_ladspa_new(current,
 					    filename,
 					    effect,
@@ -892,18 +871,12 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					   AGS_RECALL_SEQUENCER |
 					   AGS_RECALL_NOTATION |
 					   AGS_RECALL_BULK_MODE);
-      AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
       ags_recall_ladspa_load(recall_ladspa);
       recall_port = ags_recall_ladspa_load_ports(recall_ladspa);
-            
       ags_channel_add_recall(current,
 			     recall_ladspa,
 			     FALSE);
-      //      add_recall = ags_add_recall_new(current,
-      //			      recall_ladspa,
-      //			      FALSE);
-      //      task = g_list_prepend(task,
-      //		    add_recall);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
@@ -924,11 +897,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       ags_channel_add_recall(current,
 			     recall_channel_run_dummy,
 			     FALSE);
-      //      add_recall = ags_add_recall_new(current,
-      //			      recall_channel_run_dummy,
-      //			      FALSE);
-      //      task = g_list_prepend(task,
-      //		    add_recall);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
 
       
       current = current->next;
