@@ -145,6 +145,10 @@ GList* ags_automation_get_current(AgsAutomation *automation);
 gchar** ags_automation_get_specifier_unique(GList *automation);
 GList* ags_automation_find_specifier(GList *automation,
 				     gchar *specifier);
+GList* ags_automation_find_specifier_with_type_and_line(GList *automation,
+							gchar *specifier,
+							GType channel_type,
+							guint line);
 
 void ags_automation_get_value(AgsAutomation *automation,
 			      guint x,

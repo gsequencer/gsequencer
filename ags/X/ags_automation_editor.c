@@ -500,6 +500,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 				   TRUE);
     }
 
+    ags_connectable_connect(AGS_CONNECTABLE(automation_editor_child->output_notebook));
     gtk_widget_show_all(automation_editor_child->output_notebook);
 
     automation_editor_child->output_scale = 
@@ -542,6 +543,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 				   TRUE);
     }
 
+    ags_connectable_connect(AGS_CONNECTABLE(automation_editor_child->input_notebook));
     gtk_widget_show_all(automation_editor_child->input_notebook);
 
     automation_editor_child->input_scale = 

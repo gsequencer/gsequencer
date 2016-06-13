@@ -23,6 +23,7 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_packable.h>
 
+#include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_recall_container.h>
 
 void ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio);
@@ -43,6 +44,9 @@ gboolean ags_recall_audio_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_audio_unpack(AgsPackable *packable);
 void ags_recall_audio_finalize(GObject *gobject);
 
+void ags_recall_audio_load_automation(AgsRecall *recall,
+				      GList *automation_port);
+void ags_recall_audio_unload_automation(AgsRecall *recall);
 void ags_recall_audio_automate(AgsRecall *recall);
 AgsRecall* ags_recall_audio_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
@@ -151,6 +155,8 @@ ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_audio;
 
+  recall->load_automation = ags_recall_audio_load_automation;
+  recall->unload_automation = ags_recall_audio_unload_automation;
   recall->automate = ags_recall_audio_automate;
   recall->duplicate = ags_recall_audio_duplicate;
 }
@@ -339,6 +345,59 @@ ags_recall_audio_finalize(GObject *gobject)
     g_object_unref(G_OBJECT(recall_audio->audio));
 
   G_OBJECT_CLASS(ags_recall_audio_parent_class)->finalize(gobject);
+}
+
+void
+ags_recall_audio_load_automation(AgsRecall *recall,
+				 GList *automation_port)
+{
+  AgsAudio *audio;
+
+  AgsAutomation *current;
+
+  GList *automation;
+  
+  audio = AGS_RECALL_AUDIO(recall)->audio;
+
+  automation = audio->automation;
+  
+  while(automation_port != NULL){
+    if(ags_automation_find_port(automation,
+				automation_port->data) == NULL){
+      current = ags_automation_new(audio,
+				   0,
+				   G_TYPE_NONE,
+				   AGS_PORT(automation_port->data)->specifier);
+    }
+    
+    automation_port = automation_port->next;
+  }
+}
+
+void
+ags_recall_audio_unload_automation(AgsRecall *recall)
+{
+  AgsAudio *audio;
+
+  AgsAutomation *current;
+  
+  GList *automation;
+  GList *automation_port;
+  
+  audio = AGS_RECALL_AUDIO(recall)->audio;
+
+  automation = audio->automation;
+  automation_port = recall->automation_port;
+  
+  while(automation_port != NULL){
+    if((current = ags_automation_find_port(audio->automation,
+					   automation_port->data)) != NULL){
+      audio->automation = g_list_remove(audio->automation,
+					current);
+    }
+    
+    automation_port = automation_port->next;
+  }
 }
 
 void

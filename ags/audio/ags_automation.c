@@ -1597,6 +1597,39 @@ ags_automation_find_specifier(GList *automation,
   return(automation);
 }
 
+/**
+ * ags_automation_find_specifier:
+ * @automation: a #GList-struct containing #AgsAutomation
+ * @specifier: the string specifier to find
+ * @channel_type: the channel type
+ * @line: the line
+ *
+ * Find port specifier with channel type and line.
+ *
+ * Returns: Next matching #GList-struct
+ *
+ * Since: 0.7.30
+ */
+GList*
+ags_automation_find_specifier_with_type_and_line(GList *automation,
+						 gchar *specifier,
+						 GType channel_type,
+						 guint line)
+{
+  while(automation != NULL){
+    if(!g_ascii_strcasecmp(AGS_AUTOMATION(automation->data)->control_name,
+			   specifier) &&
+       AGS_AUTOMATION(automation->data)->channel_type == channel_type &&
+       AGS_AUTOMATION(automation->data)->line == AGS_AUTOMATION(automation->data)->line){
+      break;
+    }
+
+    automation = automation->next;
+  }
+
+  return(automation);
+}
+
 void
 ags_automation_get_value(AgsAutomation *automation,
 			 guint x,
