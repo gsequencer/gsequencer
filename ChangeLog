@@ -1,3 +1,11 @@
+ags (0.7.31)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation editor drawing while setting value with a different lower bound than 0.0
+	* fixed setting value on AgsAcceleration likewise above
+	* fixed freed name string of AgsMachine
+	* optimized drawing of values by ommiting already drawn values within AgsAutomationArea
+
 ags (0.7.30)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

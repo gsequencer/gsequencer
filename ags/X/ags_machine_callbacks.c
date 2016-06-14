@@ -240,8 +240,9 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
   gchar *text;
 
   if(response == GTK_RESPONSE_ACCEPT){
-    if(machine->name != NULL)
-      free(machine->name);
+    if(machine->name != NULL){
+      g_free(machine->name);
+    }
 
     text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data), 0, -1);
     machine->name = g_strdup(text);
