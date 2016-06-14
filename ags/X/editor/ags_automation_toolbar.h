@@ -53,9 +53,9 @@ struct _AgsAutomationToolbar
   GtkToggleButton *clear;
   GtkToggleButton *select;
 
-  GtkMenuItem *copy;
-  GtkMenuItem *cut;
-  GtkMenuItem *paste;
+  GtkButton *copy;
+  GtkButton *cut;
+  GtkButton *paste;
 
   guint zoom_history;
   GtkComboBox *zoom;

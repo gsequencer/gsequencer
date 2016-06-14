@@ -312,12 +312,141 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
   double tact;
   guint x, y;
 
-  auto void ags_automation_edit_drawing_area_button_press_event_move_point(cairo_t *cr);
+  auto void ags_automation_edit_drawing_area_button_press_event_delete_point(cairo_t *cr);
+  auto void ags_automation_edit_drawing_area_button_press_event_select(cairo_t *cr);
 
-  void ags_automation_edit_drawing_area_button_press_event_move_point(cairo_t *cr){
+  void ags_automation_edit_drawing_area_button_press_event_delete_point(cairo_t *cr){
+    AgsNotebook *notebook;
+    
+    AgsAcceleration *current_acceleration, *acceleration;
+
+    GList *list, *list_start;
+    GList *automation;
+
+    GType *channel_type;
+
+    gdouble range;
+    gdouble acceleration_y;
+    guint line;
+    guint i;
+    gboolean is_audio, is_output, is_input;
+  
+    if(automation_edit == automation_editor->current_audio_automation_edit){
+      notebook = NULL;
+      channel_type = G_TYPE_NONE;
+
+      is_audio = TRUE;
+    }else if(automation_edit == automation_editor->current_output_automation_edit){
+      notebook = automation_editor->current_output_notebook;
+      channel_type = AGS_TYPE_OUTPUT;
+      
+      is_output = TRUE;
+    }else if(automation_edit == automation_editor->current_input_automation_edit){
+      notebook = automation_editor->current_input_notebook;
+      channel_type = AGS_TYPE_INPUT;
+      
+      is_input = TRUE;
+    }
+
+    /* find automation area */
+    list =
+      list_start = g_list_reverse(g_list_copy(automation_edit->automation_area));
+    i = 0;
+    line = 0;
+    
+    while(list != NULL){
+      if(i + AGS_AUTOMATION_AREA(list->data)->height > y){
+	automation_edit->current_area = AGS_AUTOMATION_AREA(list->data);
+	break;
+      }
+
+      i = i + AGS_AUTOMATION_AREA(list->data)->height + AGS_AUTOMATION_EDIT_DEFAULT_MARGIN;
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+
+    if(list == NULL){
+      return;
+    }
+      
+    /* match specifier */
+    if(channel_type == G_TYPE_NONE){
+      automation = automation_editor->selected_machine->audio->automation;
+
+      while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									   automation_edit->current_area->control_name,
+									   channel_type,
+									   0)) != NULL){
+	if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
+	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	}else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
+	  range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
+	}else{
+	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	}
+
+	if(range == 0.0){
+	  automation = automation->next;
+	  g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	
+	  continue;
+	}
+	
+	/* check steps */
+	if(AGS_AUTOMATION(automation->data)->steps < automation_edit->current_area->height){
+	  y = (guint) round((y - i) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps));
+	}
+      
+	ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+						       x, acceleration_y);
+
+	automation = automation->next;
+      }
+
+    }else{
+      line = 0;
+    
+      while((line = ags_notebook_next_active_tab(notebook,
+						 line)) != -1){
+	automation = automation_editor->selected_machine->audio->automation;
+
+	while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									     automation_edit->current_area->control_name,
+									     channel_type,
+									     line)) != NULL){
+	  if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
+	    range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	  }else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
+	    range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
+	  }else{
+	    range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	  }
+
+	  if(range == 0.0){
+	    automation = automation->next;
+	    g_warning("ags_automation_edit_callbacks.c - range = 0.0\0");
+	
+	    continue;
+	  }
+
+	  /* check steps */
+	  acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i)) / automation_edit->current_area->height * AGS_AUTOMATION(automation->data)->steps / range;
+	  ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+							 x, acceleration_y);
+
+	  automation = automation->next;
+	}
+
+	line++;
+      }
+    }    
+  }
+
+  void ags_automation_edit_drawing_area_button_press_event_select(cairo_t *cr){
     //TODO:JK: implement me
   }
-  
+
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);
 
@@ -330,7 +459,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_toolbar->zoom));
     tact = exp2((double) gtk_combo_box_get_active(automation_toolbar->zoom) - 2.0);
 
-    x = (guint) GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + (guint) event->x;
+    x = (guint) (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + (guint) event->x) / tact;
     y = (guint) GTK_RANGE(automation_edit->vscrollbar)->adjustment->value + (guint) event->y;
 
     if((AGS_AUTOMATION_EDIT_POSITION_CURSOR & (automation_edit->flags)) != 0){
@@ -339,27 +468,10 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       //TODO:JK: implement me
     }else if((AGS_AUTOMATION_EDIT_ADDING_ACCELERATION & (automation_edit->flags)) != 0){
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_ADDING_ACCELERATION);
-
-      if(automation_edit->current_area != NULL){
-	cr = gdk_cairo_create(widget->window);
-	cairo_push_group(cr);
-    
-	ags_automation_edit_drawing_area_button_press_event_move_point(cr);
-	ags_automation_edit_paint(automation_edit,
-				  cr);
-
-	cairo_pop_group_to_source(cr);
-	cairo_paint(cr);
-
-	automation_edit->current_area = NULL;
-	
-	automation_edit->edit_x = 0;
-	automation_edit->edit_y = 0;
-      }
     }else if((AGS_AUTOMATION_EDIT_DELETING_ACCELERATION & (automation_edit->flags)) != 0){
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_DELETING_ACCELERATION);
-
-      //TODO:JK: implement me
+      ags_automation_edit_drawing_area_button_press_event_delete_point(cr);
+      gtk_widget_queue_draw(automation_edit->drawing_area);
     }else if((AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS & (automation_edit->flags)) != 0){
       automation_edit->flags &= (~AGS_AUTOMATION_EDIT_SELECTING_ACCELERATIONS);
 

@@ -133,6 +133,10 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 									       GTK_ICON_SIZE_LARGE_TOOLBAR),
 					   "relief\0", GTK_RELIEF_NONE,
 					   NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
+			    (GtkWidget *) automation_toolbar->clear,
+			    "select automation\0",
+			    NULL);
   
   automation_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					    "image\0", gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL,
