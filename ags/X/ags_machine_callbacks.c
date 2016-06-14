@@ -244,10 +244,9 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
       free(machine->name);
 
     text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data), 0, -1);
-    machine->name = text;
+    machine->name = g_strdup(text);
 
     gtk_frame_set_label((GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data, g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL));
-    g_free(text);
   }
   
   machine->rename = NULL;

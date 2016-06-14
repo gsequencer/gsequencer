@@ -425,11 +425,31 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 
   GType channel_type;
 
-  gdouble range;
   guint line;
   guint width;
   gdouble x0, x1;
+  gdouble range;
+  guint n_tab;
+  gdouble *tab_x, *tab_y;
+  gdouble *prev_tab_x, *prev_tab_y;
+  
+  auto gboolean ags_automation_area_draw_automation_find_tab(gdouble x, gdouble y, gdouble prev_x, gdouble prev_y);
 
+  gboolean ags_automation_area_draw_automation_find_tab(gdouble x, gdouble y, gdouble prev_x, gdouble prev_y){
+    guint i;
+    
+    for(i = 0; i < n_tab; i++){
+      if(tab_x[i] == x &&
+	 tab_y[i] == y &&
+	 prev_tab_x[i] == prev_x &&
+	 prev_tab_y[i] == prev_y){
+	return(TRUE);
+      }
+    }
+    
+    return(FALSE);
+  }
+  
   automation_editor = gtk_widget_get_ancestor(automation_area->drawing_area,
 					      AGS_TYPE_AUTOMATION_EDITOR);
   automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
@@ -451,6 +471,12 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 
   x0 = x_offset;
   x1 = x0 + width;
+
+  n_tab = 0;
+  prev_tab_x = NULL;
+  prev_tab_y = NULL;
+  tab_x = NULL;
+  tab_y = NULL;
   
   /* match specifier */
   if(channel_type == G_TYPE_NONE){
@@ -491,11 +517,46 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	}
     
 	if(prev != NULL){
-	  ags_automation_area_draw_surface(automation_area, cr,
-					   x_offset, y_offset,
-					   prev->x, (prev->y - AGS_AUTOMATION(automation->data)->lower) * automation_area->height / range / AGS_AUTOMATION(automation->data)->steps,
-					   current->x, (current->y - AGS_AUTOMATION(automation->data)->lower) * automation_area->height / range / AGS_AUTOMATION(automation->data)->steps,
-					   AGS_AUTOMATION(automation->data)->steps);
+	  gdouble x, y;
+	  gdouble prev_x, prev_y;
+
+	  x = current->x;
+	  y = ((automation_area->height / AGS_AUTOMATION(automation->data)->steps) * (current->y - AGS_AUTOMATION(automation->data)->lower));
+	  prev_x = prev->x;
+	  prev_y = ((automation_area->height / AGS_AUTOMATION(automation->data)->steps) * (prev->y - AGS_AUTOMATION(automation->data)->lower));
+
+	  if(!ags_automation_area_draw_automation_find_tab(x, y, prev_x, prev_y)){
+	    if(n_tab == 0){
+	      tab_x = (gdouble *) malloc(sizeof(gdouble));
+	      tab_y = (gdouble *) malloc(sizeof(gdouble));
+	      
+	      prev_tab_x = (gdouble *) malloc(sizeof(gdouble));
+	      prev_tab_y = (gdouble *) malloc(sizeof(gdouble));
+	    }else{
+	      tab_x = (gdouble *) realloc(tab_x,
+					  (n_tab + 1) * sizeof(gdouble));
+	      tab_y = (gdouble *) realloc(tab_y,
+					  (n_tab + 1) * sizeof(gdouble));
+	      
+	      prev_tab_x = (gdouble *) realloc(prev_tab_x,
+					       (n_tab + 1) * sizeof(gdouble));
+	      prev_tab_y = (gdouble *) realloc(prev_tab_y,
+					       (n_tab + 1) * sizeof(gdouble));
+	    }
+
+	    tab_x[n_tab] = x;
+	    tab_y[n_tab] = y;
+	    prev_tab_x[n_tab] = prev_x;
+	    prev_tab_y[n_tab] = prev_y;
+	    
+	    ags_automation_area_draw_surface(automation_area, cr,
+					     x_offset, y_offset,
+					     prev_x, prev_y,
+					     x, y,
+					     AGS_AUTOMATION(automation->data)->steps);
+
+	    n_tab++;
+	  }
 	}
 
 	if(current->x >= x1){
@@ -547,11 +608,46 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	  }
     
 	  if(prev != NULL){
-	    ags_automation_area_draw_surface(automation_area, cr,
-					     x_offset, y_offset,
-					     prev->x, (prev->y - AGS_AUTOMATION(automation->data)->lower) * automation_area->height / range / AGS_AUTOMATION(automation->data)->steps,
-					     current->x, (current->y - AGS_AUTOMATION(automation->data)->lower) * automation_area->height / range / AGS_AUTOMATION(automation->data)->steps,
-					     AGS_AUTOMATION(automation->data)->steps);
+	    gdouble x, y;
+	    gdouble prev_x, prev_y;
+
+	    x = current->x;
+	    y = ((automation_area->height / AGS_AUTOMATION(automation->data)->steps) * (current->y - AGS_AUTOMATION(automation->data)->lower));
+	    prev_x = prev->x;
+	    prev_y = ((automation_area->height / AGS_AUTOMATION(automation->data)->steps) * (prev->y - AGS_AUTOMATION(automation->data)->lower));
+
+	    if(!ags_automation_area_draw_automation_find_tab(x, y, prev_x, prev_y)){
+	      if(n_tab == 0){
+		tab_x = (gdouble *) malloc(sizeof(gdouble));
+		tab_y = (gdouble *) malloc(sizeof(gdouble));
+	      
+		prev_tab_x = (gdouble *) malloc(sizeof(gdouble));
+		prev_tab_y = (gdouble *) malloc(sizeof(gdouble));
+	      }else{
+		tab_x = (gdouble *) realloc(tab_x,
+					    (n_tab + 1) * sizeof(gdouble));
+		tab_y = (gdouble *) realloc(tab_y,
+					    (n_tab + 1) * sizeof(gdouble));
+	      
+		prev_tab_x = (gdouble *) realloc(prev_tab_x,
+						 (n_tab + 1) * sizeof(gdouble));
+		prev_tab_y = (gdouble *) realloc(prev_tab_y,
+						 (n_tab + 1) * sizeof(gdouble));
+	      }
+
+	      tab_x[n_tab] = x;
+	      tab_y[n_tab] = y;
+	      prev_tab_x[n_tab] = prev_x;
+	      prev_tab_y[n_tab] = prev_y;
+	      
+	      ags_automation_area_draw_surface(automation_area, cr,
+					       x_offset, y_offset,
+					       prev_x, prev_y,
+					       x, y,
+					       AGS_AUTOMATION(automation->data)->steps);
+
+	      n_tab++;
+	    }
 	  }
 
 	  if(current->x >= x1){
@@ -567,6 +663,13 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 
       line++;
     }
+  }
+
+  if(n_tab != 0){
+    free(tab_x);
+    free(tab_y);
+    free(prev_tab_x);
+    free(prev_tab_y);
   }
 }
 
@@ -622,29 +725,49 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   /* find y */
   pos_y = automation_area->y - y_offset;
 
+  /* clip x */
+  if(x0 < 0.0){
+    x0 = 0.0;
+  }
+
+  if(x1 < 0.0){
+    x1 = 0.0;
+  }
+  
+  if(tact * (x1 - x0) > width){
+    x1 = width / tact;
+  }
+
+  /* clip y */
+  if(y0 < 0.0){
+    y0 = 0.0;
+  }
+
+  if(y1 < 0.0){
+    y1 = 0.0;
+  }
+
+  if(y0 > automation_area->height){
+    y0 = automation_area->height;
+  }
+
+  if(y1 > automation_area->height){
+    y1 = automation_area->height;
+  }
+  
+  /*  */
   cairo_set_source_rgba(cr, 1.0, 1.0, 0.0, 0.2);
 
   /* area */
-  if(y0 < y1){
-    cairo_rectangle(cr,
-		    tact * (x0 - pos_x), pos_y + automation_area->height - y0,
-		    tact * (x1 - x0), y0);
-    cairo_arc(cr,
-	      tact * (x0 - pos_x), pos_y + automation_area->height - y0,
-	      1.2,
-	      0.0,
-	      2.0 * M_PI);
-  }else{
-    cairo_rectangle(cr,
-		    tact * (x0 - pos_x), pos_y + automation_area->height - y0,
-		    tact * (x1 - x0), y0);
-    cairo_arc(cr,
-	      tact * (x0 - pos_x), pos_y + automation_area->height - y0,
-	      1.2,
-	      0.0,
-	      2.0 * M_PI);
-  }
-  
+  cairo_rectangle(cr,
+		  tact * (x0 - pos_x), pos_y + automation_area->height - y0,
+		  tact * (x1 - x0), y0);
+  cairo_arc(cr,
+	    tact * (x0 - pos_x), pos_y + automation_area->height - y0,
+	    1.2,
+	    0.0,
+	    2.0 * M_PI);
+
   cairo_fill(cr);
 }
 
@@ -654,6 +777,14 @@ ags_automation_area_paint(AgsAutomationArea *automation_area,
 			  gdouble x_offset, gdouble y_offset)
 {
   if(GTK_WIDGET_VISIBLE(automation_area->drawing_area)){    
+    if(x_offset < 0.0){
+      x_offset = 0.0;
+    }
+    
+    if(y_offset < 0.0){
+      y_offset = 0.0;
+    }
+
     ags_automation_area_draw_strip(automation_area,
 				   cr,
 				   x_offset, y_offset);
