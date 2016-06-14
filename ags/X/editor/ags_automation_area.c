@@ -30,6 +30,8 @@
 
 #include <ags/X/editor/ags_automation_edit.h>
 
+#include <math.h>
+
 void ags_automation_area_class_init(AgsAutomationAreaClass *automation_area);
 void ags_automation_area_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_area_init(AgsAutomationArea *automation_area);
@@ -614,28 +616,33 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
   height = (gdouble) automation_area->height;
 
-  tact = 1.0; //TODO:JK: verify me
-
   /* find x */
   pos_x = x_offset;
   
   /* find y */
   pos_y = automation_area->y - y_offset;
-  
-  x0 = x0 / tact;
-  x1 = x1 / tact;
 
-  cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
+  cairo_set_source_rgba(cr, 1.0, 1.0, 0.0, 0.2);
 
   /* area */
   if(y0 < y1){
     cairo_rectangle(cr,
-		    x0 - pos_x, pos_y + automation_area->height - y1,
-		    x1 - x0, y1);
+		    tact * (x0 - pos_x), pos_y + automation_area->height - y0,
+		    tact * (x1 - x0), y0);
+    cairo_arc(cr,
+	      tact * (x0 - pos_x), pos_y + automation_area->height - y0,
+	      1.2,
+	      0.0,
+	      2.0 * M_PI);
   }else{
     cairo_rectangle(cr,
-		    x0 - pos_x, pos_y + automation_area->height - y0,
-		    x1 - x0, y0);
+		    tact * (x0 - pos_x), pos_y + automation_area->height - y0,
+		    tact * (x1 - x0), y0);
+    cairo_arc(cr,
+	      tact * (x0 - pos_x), pos_y + automation_area->height - y0,
+	      1.2,
+	      0.0,
+	      2.0 * M_PI);
   }
   
   cairo_fill(cr);

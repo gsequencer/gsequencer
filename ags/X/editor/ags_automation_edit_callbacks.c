@@ -184,13 +184,13 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	}
       
 	current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
-							 x * tact, y,
+							 x, y,
 							 FALSE);
 
 	/* add acceleration */
 	if(current_acceleration == NULL){
 	  acceleration = ags_acceleration_new();
-	  acceleration->x = x * tact;
+	  acceleration->x = x;
 	  acceleration->y = y;
       
 	  ags_automation_add_acceleration(automation->data,
@@ -231,13 +231,13 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	  acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i)) / automation_edit->current_area->height * AGS_AUTOMATION(automation->data)->steps / range;
 
 	  current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
-							   x * tact, acceleration_y,
+							   x, acceleration_y,
 							   FALSE);
 
 	  /* add acceleration */
 	  if(current_acceleration == NULL){
 	    acceleration = ags_acceleration_new();
-	    acceleration->x = x * tact;
+	    acceleration->x = x;
 	    acceleration->y = AGS_AUTOMATION(automation->data)->lower + acceleration_y;
       
 	    ags_automation_add_acceleration(automation->data,
@@ -265,7 +265,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_toolbar->zoom));
     tact = exp2((double) gtk_combo_box_get_active(automation_toolbar->zoom) - 2.0);
 
-    x = (guint) GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + (guint) event->x;
+    x = (guint) (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + (guint) event->x) / tact;
     y = (guint) GTK_RANGE(automation_edit->vscrollbar)->adjustment->value + (guint) event->y;
 
     if(automation_toolbar->selected_edit_mode == automation_toolbar->position){
