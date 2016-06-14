@@ -179,7 +179,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	}
 	
 	/* check steps */
-	acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
+	acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i) + (0.5 * automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
 	        
 	current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
 							 x, y,
@@ -226,7 +226,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	  }
 
 	  /* check steps */
-	  acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
+	  acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i) + (0.5 * automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
 	  
 	  current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
 							   x, acceleration_y,
@@ -392,7 +392,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	}
 	
 	/* check steps */
-	acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
+	acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i) + (0.5 * automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
 	ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
 						       x, acceleration_y);
 
@@ -426,7 +426,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	  }
 
 	  /* check steps */
-	  acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
+	  acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i) + (0.5 * automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
 	  ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
 							 x, acceleration_y);
 
