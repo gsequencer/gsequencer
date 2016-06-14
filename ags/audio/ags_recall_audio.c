@@ -368,6 +368,9 @@ ags_recall_audio_load_automation(AgsRecall *recall,
 				   0,
 				   G_TYPE_NONE,
 				   AGS_PORT(automation_port->data)->specifier);
+      g_object_set(current,
+		   "port\0", automation_port->data,
+		   NULL);
       ags_audio_add_automation(audio,
 			       current);
     }

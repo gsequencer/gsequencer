@@ -219,7 +219,8 @@ ags_editor_init(AgsEditor *editor)
 					  "spacing\0", 0,
 					  NULL);
   editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
-				      AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
+				      AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO |
+				      AGS_MACHINE_SELECTOR_NOTATION);
   gtk_label_set_label(editor->machine_selector->label,
 		      "notation\0");
   

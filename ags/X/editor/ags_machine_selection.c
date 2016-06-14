@@ -108,6 +108,8 @@ ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection)
 void
 ags_machine_selection_init(AgsMachineSelection *machine_selection)
 {
+  machine_selection->flags = 0;
+  
   g_object_set(G_OBJECT(machine_selection),
 	       "modal\0", TRUE,
 	       "title\0", g_strdup("select machines\0"),
@@ -154,11 +156,26 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
   while(list != NULL){
     GtkRadioButton *radio_button;
 
-    if(AGS_IS_FFPLAYER(list->data) ||
-       AGS_IS_DRUM(list->data) ||
-       AGS_IS_MATRIX(list->data)  ||
-       AGS_IS_DSSI_BRIDGE(list->data) ||
-       (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0)){
+    if((AGS_MACHINE_SELECTION_NOTATION & (machine_selection->flags)) != 0){
+      if(AGS_IS_FFPLAYER(list->data) ||
+	 AGS_IS_DRUM(list->data) ||
+	 AGS_IS_MATRIX(list->data)  ||
+	 AGS_IS_DSSI_BRIDGE(list->data) ||
+	 (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0)){
+	radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
+										      g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
+	g_object_set_data(radio_button,
+			  AGS_MACHINE_SELECTION_INDEX, list->data);
+	gtk_box_pack_start(GTK_BOX(vbox),
+			   GTK_WIDGET(radio_button),
+			   FALSE, FALSE,
+			   0);
+      
+	if(group == NULL){
+	  group = radio_button;
+	}
+      }
+    }else if((AGS_MACHINE_SELECTION_AUTOMATION & (machine_selection->flags)) != 0){
       radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
 										    g_strdup_printf("%s: %s\0",  G_OBJECT_TYPE_NAME(list->data), AGS_MACHINE(list->data)->name));
       g_object_set_data(radio_button,
@@ -194,7 +211,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
   AgsMachineRadioButton *machine_radio_button;
   GtkVBox *vbox;
   GtkRadioButton *group;
-  GList *list, *list_start, *index, *index_start;
+  GList *list, *list_start;
   gint response;
 
   machine_selector = machine_selection->window->editor->machine_selector;
@@ -208,30 +225,20 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
 
   if(response == GTK_RESPONSE_ACCEPT){
     list_start = 
-      list = gtk_container_get_children(GTK_CONTAINER(machine_selection->window->machines));
-    index_start = 
-      index = gtk_container_get_children((GtkContainer *) vbox);
+      list = gtk_container_get_children((GtkContainer *) vbox);
 
-    while(index != NULL){
-      if(AGS_IS_FFPLAYER(list->data)
-	 || AGS_IS_DRUM(list->data) ||
-	 AGS_IS_MATRIX(list->data) ||
-	 AGS_IS_DSSI_BRIDGE(list->data) ||
-	 (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0)){
-	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(index->data))){
-	  machine = AGS_MACHINE(list->data);
+    while(list != NULL){
+      if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data))){
+	machine = g_object_get_data(list->data,
+				    AGS_MACHINE_SELECTION_INDEX);
 	  
-	  break;
-	}
-
-	index = index->next;
+	break;
       }
       
       list = list->next;
     }
 
     g_list_free(list_start);
-    g_list_free(index_start);
 
     machine_radio_button = NULL;
     list_start =

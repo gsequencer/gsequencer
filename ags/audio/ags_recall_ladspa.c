@@ -406,6 +406,8 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	}
 
 	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
+	
+	current->port_descriptor = port_descriptor->data;
 	ags_recall_ladspa_load_conversion(recall_ladspa,
 					  current,
 					  port_descriptor->data);
@@ -622,6 +624,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 			       NULL);
 	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
 	
+	current->port_descriptor = port_descriptor->data;	
 	ags_recall_ladspa_load_conversion(recall_ladspa,
 					  current,
 					  port_descriptor->data);

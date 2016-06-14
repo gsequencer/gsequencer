@@ -64,6 +64,7 @@ struct _AgsPort
 
   pthread_mutex_t *mutex;
 
+  gpointer port_descriptor;
   AgsConversion *conversion;
   
   union _AgsPortValue{

@@ -504,6 +504,7 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	  list = list->next;
 	}
 
+	current->port_descriptor = port_descriptor->data;
 	ags_recall_lv2_load_conversion(recall_lv2,
 				       current,
 				       port_descriptor->data);
@@ -757,6 +758,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 			       "port-value-type\0", G_TYPE_FLOAT,
 			       NULL);
 
+	current->port_descriptor = port_descriptor->data;
 	ags_recall_lv2_load_conversion(recall_lv2,
 				       current,
 				       port_descriptor->data);

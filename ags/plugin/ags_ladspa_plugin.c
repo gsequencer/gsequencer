@@ -358,6 +358,11 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
 	g_value_init(port->default_value,
 		     G_TYPE_FLOAT);
+	g_value_init(port->lower_value,
+		     G_TYPE_FLOAT);
+	g_value_init(port->upper_value,
+		     G_TYPE_FLOAT);
+	
 	g_value_set_float(port->default_value,
 			  0.0);
 	
@@ -376,14 +381,10 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	    }
 	  }else{
 	    /* set lower */
-	    g_value_init(port->lower_value,
-			 G_TYPE_FLOAT);
 	    g_value_set_float(port->lower_value,
 			      range_hint->LowerBound);
 	    
 	    /* set upper */
-	    g_value_init(port->upper_value,
-			 G_TYPE_FLOAT);
 	    g_value_set_float(port->upper_value,
 			      range_hint->UpperBound);
 

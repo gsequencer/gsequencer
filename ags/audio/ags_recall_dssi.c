@@ -411,6 +411,7 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 	  list = list->next;
 	}
 
+	current->port_descriptor = port_descriptor->data;
 	ags_recall_dssi_load_conversion(recall_dssi,
 					current,
 					port_descriptor->data);
@@ -628,6 +629,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 			       NULL);
 	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
 	
+	current->port_descriptor = port_descriptor->data;
 	ags_recall_dssi_load_conversion(recall_dssi,
 					current,
 					port_descriptor->data);

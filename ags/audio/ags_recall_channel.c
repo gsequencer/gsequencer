@@ -429,6 +429,9 @@ ags_recall_channel_load_automation(AgsRecall *recall,
 				   channel->line,
 				   channel_type,
 				   AGS_PORT(automation_port->data)->specifier);
+      g_object_set(current,
+		   "port\0", automation_port->data,
+		   NULL);
       ags_audio_add_automation(channel->audio,
 			       current);
     }

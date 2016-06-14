@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/editor/ags_automation_area.h>
@@ -21,6 +22,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_automation.h>
 
 #include <ags/X/ags_automation_editor.h>
@@ -286,7 +289,7 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
 
   cairo_set_line_width(cr, 1.0);
 
-  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 4.0);
+  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
 
   y = (gdouble) automation_area->y - y_offset;
   
@@ -409,24 +412,68 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 				    cairo_t *cr,
 				    gdouble x_offset, gdouble y_offset)
 {
+  AgsAutomationEditor *automation_editor;
+  AgsAutomationEdit *automation_edit;
+  AgsNotebook *notebook;    
+
   AgsAcceleration *current, *prev;
 
   GList *automation;
+  GList *list;
 
+  GType channel_type;
+
+  gdouble range;
+  guint line;
   guint width;
   gdouble x0, x1;
-  GList *list;
+
+  automation_editor = gtk_widget_get_ancestor(automation_area->drawing_area,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
+					    AGS_TYPE_AUTOMATION_EDIT);
+
+  if(automation_edit == automation_editor->current_audio_automation_edit){
+    notebook = NULL;
+    channel_type = G_TYPE_NONE;
+  }else if(automation_edit == automation_editor->current_output_automation_edit){
+    notebook = automation_editor->current_output_notebook;
+    channel_type = AGS_TYPE_OUTPUT;
+  }else if(automation_edit == automation_editor->current_input_automation_edit){
+    notebook = automation_editor->current_input_notebook;
+    channel_type = AGS_TYPE_INPUT;
+  }
   
+  /*  */
   width = GTK_WIDGET(automation_area->drawing_area)->allocation.width;
 
   x0 = x_offset;
   x1 = x0 + width;
+  
+  /* match specifier */
+  if(channel_type == G_TYPE_NONE){
+    automation = automation_area->audio->automation;
 
-  automation = automation_area->audio->automation;
+    while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									 automation_area->control_name,
+									 channel_type,
+									 0)) != NULL){
+      
+      if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
+	range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+      }else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
+	range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
+      }else{
+	range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+      }
 
-  while((automation = ags_automation_find_specifier(automation,
-						    automation_area->control_name)) != NULL){
-    if(AGS_AUTOMATION(automation->data)->channel_type == automation_area->channel_type){
+      if(range == 0.0){
+	automation = automation->next;
+	g_warning("ags_automation_area.c - range = 0.0\0");
+	
+	continue;
+      }
+
       /*  */
       list = AGS_AUTOMATION(automation->data)->acceleration;
       prev = NULL;
@@ -444,8 +491,8 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	if(prev != NULL){
 	  ags_automation_area_draw_surface(automation_area, cr,
 					   x_offset, y_offset,
-					   prev->x, prev->y,
-					   current->x, current->y,
+					   prev->x, (prev->y - AGS_AUTOMATION(automation->data)->lower) * automation_area->height / range / AGS_AUTOMATION(automation->data)->steps,
+					   current->x, (current->y - AGS_AUTOMATION(automation->data)->lower) * automation_area->height / range / AGS_AUTOMATION(automation->data)->steps,
 					   AGS_AUTOMATION(automation->data)->steps);
 	}
 
@@ -457,8 +504,67 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	list = list->next;
       }
     }
+  }else{
+    line = 0;
     
-    automation = automation->next;
+    while((line = ags_notebook_next_active_tab(notebook,
+					       line)) != -1){
+      automation = automation_area->audio->automation;
+
+      while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									   automation_area->control_name,
+									   channel_type,
+									   line)) != NULL){
+	if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
+	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	}else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
+	  range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
+	}else{
+	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	}
+
+	if(range == 0.0){
+	  automation = automation->next;
+	  g_warning("ags_automation_area.c - range = 0.0\0");
+	
+	  continue;
+	}
+
+	/*  */
+	list = AGS_AUTOMATION(automation->data)->acceleration;
+	prev = NULL;
+
+	while(list != NULL){
+	  current = AGS_ACCELERATION(list->data);
+
+	  if(current->x < x0){
+	    prev = current;
+	    list = list->next;
+
+	    continue;
+	  }
+    
+	  if(prev != NULL){
+	    ags_automation_area_draw_surface(automation_area, cr,
+					     x_offset, y_offset,
+					     prev->x, (prev->y - AGS_AUTOMATION(automation->data)->lower) * automation_area->height / range / AGS_AUTOMATION(automation->data)->steps,
+					     current->x, (current->y - AGS_AUTOMATION(automation->data)->lower) * automation_area->height / range / AGS_AUTOMATION(automation->data)->steps,
+					     AGS_AUTOMATION(automation->data)->steps);
+	  }
+
+	  if(current->x >= x1){
+	    break;
+	  }
+    
+	  prev = current;
+	  list = list->next;
+	}
+    
+	automation = automation->next;
+      }
+
+      line++;
+    }
   }
 }
 
@@ -486,51 +592,52 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
 				 guint steps)
 {
   AgsAutomationEditor *automation_editor;
-  
-  gdouble width, height;
-  gdouble tact;
+  AgsAutomationEdit *automation_edit;
 
-  automation_editor = gtk_widget_get_ancestor(automation_area,
-					      AGS_TYPE_AUTOMATION_EDITOR);
+  GList *list;
+
+  double tact_factor, zoom_factor;
+  double tact;
+  gdouble width, height;
+  gdouble pos_x, pos_y;
   
+  automation_editor = gtk_widget_get_ancestor(automation_area->drawing_area,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_edit = gtk_widget_get_ancestor(automation_area->drawing_area,
+					    AGS_TYPE_AUTOMATION_EDIT);
+  
+  zoom_factor = 1.0 / 4.0;
+
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
+
   width = (gdouble) GTK_WIDGET(automation_area->drawing_area)->allocation.width;
   height = (gdouble) automation_area->height;
 
   tact = 1.0; //TODO:JK: verify me
-  
-  y0 += automation_area->y - y_offset;
-  y1 += automation_area->y - y_offset;
 
-  x0 = x0 / tact - x_offset;
-  x1 = x1 / tact - x_offset;
+  /* find x */
+  pos_x = x_offset;
   
+  /* find y */
+  pos_y = automation_area->y - y_offset;
+  
+  x0 = x0 / tact;
+  x1 = x1 / tact;
+
   cairo_set_source_rgb(cr, 1.0, 1.0, 0.0);
 
   /* area */
-  cairo_rectangle(cr,
-		  x0, automation_area->height,
-		  x1 - x0, ((y0 < y1) ? y0: y1));
-  cairo_fill(cr);
-
-  if(steps > automation_area->height){
-    /* acceleration */
-    cairo_move_to(cr,
-		  x0, y0);
-    cairo_line_to(cr,
-		  x1, y1);
-
-    if(y0 > y1){
-      cairo_line_to(cr,
-		    x0, y0);
-    }else{
-      cairo_line_to(cr,
-		    x1, y1);
-    }
+  if(y0 < y1){
+    cairo_rectangle(cr,
+		    x0 - pos_x, pos_y + automation_area->height - y1,
+		    x1 - x0, y1);
   }else{
-    guint i, i_stop;
+    cairo_rectangle(cr,
+		    x0 - pos_x, pos_y + automation_area->height - y0,
+		    x1 - x0, y0);
   }
   
-  cairo_close_path(cr);
   cairo_fill(cr);
 }
 

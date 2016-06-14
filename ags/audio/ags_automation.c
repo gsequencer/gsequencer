@@ -25,6 +25,8 @@
 
 #include <ags/thread/ags_timestamp.h>
 
+#include <ags/plugin/ags_base_plugin.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
 
@@ -370,7 +372,7 @@ ags_automation_init(AgsAutomation *automation)
   automation->channel_type = G_TYPE_NONE;
   automation->control_name = NULL;
 
-  automation->steps = 1;
+  automation->steps = 8;
   automation->upper = 1.0;
   automation->lower = 0.0;
   automation->default_value = 0.0;
@@ -497,6 +499,19 @@ ags_automation_set_property(GObject *gobject,
       }
 
       automation->port = port;
+
+      if(port->port_descriptor != NULL){
+	automation->lower = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->lower_value);
+	automation->upper = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->upper_value);
+
+	if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port->port_descriptor)->flags)) != 0){
+	  automation->steps = 1;
+	}else if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port->port_descriptor)->flags)) != 0){
+	  automation->steps = AGS_PORT_DESCRIPTOR(port->port_descriptor)->scale_steps;
+	}else{
+	  automation->steps = AGS_AUTOMATION_DEFAULT_PRECISION;
+	}
+      }
     }
     break;
   case PROP_STEPS:
@@ -800,48 +815,36 @@ ags_automation_add_acceleration(AgsAutomation *automation,
 				AgsAcceleration *acceleration,
 				gboolean use_selection_list)
 {
-  GList *list, *prev_match, *current;
+  GList *list, *list_new;
 
-  if(!use_selection_list){
-    list = automation->acceleration;
-  }else{
-    list = automation->selection;
-  }
-  
-  prev_match = NULL;
-  
-  while(list != NULL){
-    if(AGS_ACCELERATION(list->data) <= acceleration->x){
-      prev_match = list;
-    }else{
-      break;
+  auto gint ags_automation_add_acceleration_compare_function(gpointer a, gpointer b);
+
+  gint ags_automation_add_acceleration_compare_function(gpointer a, gpointer b){
+    if(AGS_ACCELERATION(a)->x == AGS_ACCELERATION(b)->x){
+      return(0);
     }
-    
-    list = list->next;
+
+    if(AGS_ACCELERATION(a)->x < AGS_ACCELERATION(b)->x){
+      return(-1);
+    }else{
+      return(1);
+    }
   }
 
-  current = g_list_alloc();
-  current->data = acceleration;
+  if(acceleration == NULL){
+    return;
+  }
+
+  g_object_ref(acceleration);
   
-  if(prev_match == NULL){
-    if(!use_selection_list){
-      automation->acceleration = current;
-    }else{
-      automation->selection = current;
-    }
-    
-    if(list != NULL){
-      current->next = list;
-      list->prev = current;
-    }
+  if(use_selection_list){
+    automation->selection = g_list_insert_sorted(automation->selection,
+						 acceleration,
+						 (GCompareFunc) ags_automation_add_acceleration_compare_function);
   }else{
-    prev_match->next = current;
-    current->prev = prev_match;
-    
-    if(list != NULL){
-      list->prev = current;
-      current->next = list;
-    }
+    automation->acceleration = g_list_insert_sorted(automation->acceleration,
+						    acceleration,
+						    (GCompareFunc) ags_automation_add_acceleration_compare_function);
   }
 }
 
