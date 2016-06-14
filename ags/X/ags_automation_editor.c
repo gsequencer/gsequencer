@@ -1,19 +1,20 @@
-/* AGS - Advanced GTK Sequencer
- * Copyright (C) 2014 Joël Krähemann
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * GSequencer is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ags/X/ags_automation_editor.h>
@@ -197,11 +198,12 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   automation_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
-					  "homogeneous\0", FALSE,
-					  "spacing\0", 0,
-					  NULL);
+						     "homogeneous\0", FALSE,
+						     "spacing\0", 0,
+						     NULL);
   automation_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING |
-				      AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO);
+						 AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO |
+						 AGS_MACHINE_SELECTOR_AUTOMATION);
   gtk_label_set_label(automation_editor->machine_selector->label,
 		      "automation\0");
   
@@ -488,9 +490,9 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     /* output */
     automation_editor_child->output_notebook = 
       automation_editor->current_output_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
-							       "homogeneous\0", FALSE,
-							       "spacing\0", 0,
-							       NULL);
+								"homogeneous\0", FALSE,
+								"spacing\0", 0,
+								NULL);
     g_object_ref(automation_editor_child->output_notebook);
     gtk_table_attach(automation_editor->output_table, (GtkWidget *) automation_editor_child->output_notebook,
 		     0, 3, y, y + 1,

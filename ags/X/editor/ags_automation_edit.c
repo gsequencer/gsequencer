@@ -392,11 +392,11 @@ ags_automation_edit_paint(AgsAutomationEdit *automation_edit,
   y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
 
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-  cairo_rectangle(cr, 0.0, 0.0, (double) GTK_WIDGET(automation_edit->drawing_area)->allocation.width, (double) GTK_WIDGET(automation_edit->drawing_area)->allocation.height);
+  cairo_rectangle(cr, 0.0, 0.0, GTK_WIDGET(automation_edit->drawing_area)->allocation.width, GTK_WIDGET(automation_edit->drawing_area)->allocation.height);
   cairo_fill(cr);
 
   automation_area = automation_edit->automation_area;
-
+  
   while(automation_area != NULL){
     ags_automation_area_paint(automation_area->data,
 			      cr,

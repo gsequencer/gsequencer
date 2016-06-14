@@ -103,6 +103,13 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
   window = list->data;
 
   machine_selection = (AgsMachineSelection *) ags_machine_selection_new(window);
+
+  if((AGS_MACHINE_SELECTOR_NOTATION & (machine_selector->flags)) != 0){
+    machine_selection->flags |= AGS_MACHINE_SELECTION_NOTATION;
+  }else if((AGS_MACHINE_SELECTOR_AUTOMATION & (machine_selector->flags)) != 0){
+    machine_selection->flags |= AGS_MACHINE_SELECTION_AUTOMATION;
+  }
+  
   ags_machine_selection_load_defaults(machine_selection);
   g_signal_connect(G_OBJECT(machine_selection), "response\0",
 		   G_CALLBACK(ags_machine_selector_selection_response), machine_selector);

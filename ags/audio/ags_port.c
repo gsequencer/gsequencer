@@ -372,6 +372,7 @@ ags_port_init(AgsPort *port)
   port->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(port->mutex, &mutexattr);
 
+  port->port_descriptor = NULL;
   port->conversion = ags_conversion_new();
 }
 

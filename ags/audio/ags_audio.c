@@ -1912,6 +1912,12 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     /* grow */
     for(j = 0; j < pads; j++){
+      if(audio_channels_old != 0){
+	pad_next = ags_channel_nth(start, j * audio_channels)->next_pad;
+      }else{
+	pad_next = NULL;
+      }
+
       for(i = audio_channels_old; i < audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio\0", (GObject *) audio,
@@ -1929,13 +1935,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	}
 
 	if(j * audio_channels + i != 0){
-	  if(audio_channels_old != 0 &&
-	     i == audio_channels_old){
-	    pad_next = ags_channel_nth(start, j * audio_channels)->next_pad;
-	  }else{
-	    pad_next = NULL;
-	  }
-
 	  /* set prev */
 	  channel->prev = ags_channel_nth(start, j * audio_channels + i - 1);
 
