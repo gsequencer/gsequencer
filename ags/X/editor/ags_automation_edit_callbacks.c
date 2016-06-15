@@ -108,7 +108,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     GList *list, *list_start;
     GList *automation;
 
-    GType *channel_type;
+    GType channel_type;
 
     gdouble gui_y, acceleration_y;
 
@@ -376,7 +376,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     GList *list, *list_start;
     GList *automation;
 
-    GType *channel_type;
+    GType channel_type;
 
     gdouble gui_y, acceleration_y;
 

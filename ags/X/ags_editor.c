@@ -617,11 +617,12 @@ ags_editor_paste(AgsEditor *editor)
   
   AgsNotation *notation;
 
-  xmlDocPtr clipboard;
-  xmlNodePtr audio_node, notation_node;
+  xmlDoc *clipboard;
+  xmlNode *audio_node, *notation_node;
   cairo_t *cr;
   
   gchar *buffer;
+
   guint position_x, position_y;
   gint first_x, last_x;
   gboolean paste_from_position;
@@ -629,9 +630,9 @@ ags_editor_paste(AgsEditor *editor)
   auto gint ags_editor_paste_read_notation();
   
   gint ags_editor_paste_read_notation(){
-    xmlXPathContextPtr xpathCtxt;
-    xmlXPathObjectPtr xpathObj;
-    xmlNodeSetPtr nodes;
+    xmlXPathContext *xpathCtxt;
+    xmlXPathObject *xpathObj;
+    xmlNodeSet *nodes;
     GList *notation_list;
 
     guint first_x;
@@ -681,6 +682,7 @@ ags_editor_paste(AgsEditor *editor)
 					     TRUE, position_x,
 					     TRUE, position_y);
 
+	  /* get boundaries */
 	  child = nodes->nodeTab[i]->children;
 	  current_x = 0;
 	  
@@ -732,6 +734,7 @@ ags_editor_paste(AgsEditor *editor)
 					     FALSE, 0,
 					     FALSE, 0);
 
+	  /* get boundaries */
 	  child = nodes->nodeTab[i]->children;
 	  current_x = 0;
 	  
@@ -912,11 +915,13 @@ ags_editor_copy(AgsEditor *editor)
   
   AgsNotation *notation;
 
+  xmlDoc *clipboard;
+  xmlNode *audio_node, *notation_node;
+
   GList *list_notation;
-  xmlDocPtr clipboard;
-  xmlNodePtr audio_node, notation_node;
 
   xmlChar *buffer;
+
   int size;
   gint i;
 

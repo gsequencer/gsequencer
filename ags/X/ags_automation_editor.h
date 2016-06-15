@@ -67,6 +67,8 @@ struct _AgsAutomationEditor
 
   AgsAutomationToolbar *automation_toolbar;
 
+  GtkNotebook *notebook;
+
   GList *automation_editor_child;
   GtkTable *audio_table;
   GtkTable *output_table;
