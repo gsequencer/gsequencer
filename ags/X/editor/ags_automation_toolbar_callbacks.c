@@ -37,21 +37,26 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
 void
 ags_automation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
 {
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+  
   if(toggle_button == automation_toolbar->selected_edit_mode){
     if(!gtk_toggle_button_get_active(toggle_button)){
       gtk_toggle_button_set_active(toggle_button, TRUE);
     }
-
-    //TODO:JK: implement me
   }else if(gtk_toggle_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = automation_toolbar->selected_edit_mode;
     automation_toolbar->selected_edit_mode = toggle_button;
     gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
-
-    //TODO:JK: implement me
   }
+
+  gtk_widget_queue_draw(automation_editor->current_audio_automation_edit);
+  gtk_widget_queue_draw(automation_editor->current_output_automation_edit);
+  gtk_widget_queue_draw(automation_editor->current_input_automation_edit);
 }
 
 void
