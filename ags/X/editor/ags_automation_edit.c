@@ -384,10 +384,22 @@ void
 ags_automation_edit_paint(AgsAutomationEdit *automation_edit,
 			  cairo_t *cr)
 {
-  GList *automation_area;
-
-  gdouble x_offset, y_offset;
+  AgsAutomationEditor *automation_editor;
   
+  GList *automation_area;
+  
+  double tact_factor, zoom_factor;
+  double tact;
+  gdouble x_offset, y_offset;
+
+  automation_editor = gtk_widget_get_ancestor(automation_edit,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+
+  zoom_factor = 1.0 / 4.0;
+
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
+
   x_offset = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
   y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
 
@@ -403,6 +415,26 @@ ags_automation_edit_paint(AgsAutomationEdit *automation_edit,
 			      x_offset, y_offset);
 
     automation_area = automation_area->next;
+  }
+
+  if(automation_editor->automation_toolbar->selected_edit_mode == automation_editor->automation_toolbar->position){
+    double line_width;
+
+    line_width = cairo_get_line_width(cr);
+    
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+    cairo_set_line_width(cr,
+			 1.0);
+    cairo_move_to(cr, (tact * (gdouble) automation_edit->edit_x) - 1.25 - x_offset, 0.0);
+    cairo_line_to(cr, (tact * (gdouble) automation_edit->edit_x) - 1.25 - x_offset, GTK_WIDGET(automation_edit->drawing_area)->allocation.height);
+    
+    cairo_move_to(cr, (tact * (gdouble) automation_edit->edit_x) + 1.25 - x_offset, 0.0);
+    cairo_line_to(cr, (tact * (gdouble) automation_edit->edit_x) + 1.25 - x_offset, GTK_WIDGET(automation_edit->drawing_area)->allocation.height);
+    
+    cairo_stroke(cr);
+
+    cairo_set_line_width(cr,
+			 line_width);
   }
 }
 

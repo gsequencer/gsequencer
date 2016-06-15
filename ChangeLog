@@ -1,7 +1,10 @@
 ags (0.7.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed disapearing automation
+	* fixed disapearing automation caused by missing tact factor appliance
+	* fixed y value in ags_automation.c to gdouble because it was y previously
+	* improved remove of notes by specify number of attempts until giving up
+	* implemented cursor in automation editor
 	* ...
 
 ags (0.7.33)

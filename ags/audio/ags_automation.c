@@ -381,14 +381,14 @@ ags_automation_init(AgsAutomation *automation)
 
   acceleration = ags_acceleration_new();
   acceleration->x = 0;
-  acceleration->y = 0;
+  acceleration->y = 0.0;
   ags_automation_add_acceleration(automation,
 				  acceleration,
 				  FALSE);
 
   acceleration = ags_acceleration_new();
   acceleration->x = AGS_AUTOMATION_DEFAULT_LENGTH;
-  acceleration->y = 0;
+  acceleration->y = 0.0;
   ags_automation_add_acceleration(automation,
 				  acceleration,
 				  FALSE);
@@ -862,7 +862,7 @@ ags_automation_add_acceleration(AgsAutomation *automation,
  */
 gboolean
 ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
-					       guint x, guint y)
+					       guint x, gdouble y)
 {
   GList *list, *current;
   gboolean retval;
@@ -952,7 +952,7 @@ ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAccelerati
  */ 
 AgsAcceleration*
 ags_automation_find_point(AgsAutomation *automation,
-			  guint x, guint y,
+			  guint x, gdouble y,
 			  gboolean use_selection_list)
 {
   GList *acceleration;
@@ -991,8 +991,8 @@ ags_automation_find_point(AgsAutomation *automation,
  */
 GList*
 ags_automation_find_region(AgsAutomation *automation,
-			   guint x0, guint y0,
-			   guint x1, guint y1,
+			   guint x0, gdouble y0,
+			   guint x1, gdouble y1,
 			   gboolean use_selection_list)
 {
   AgsAcceleration *current;
@@ -1066,7 +1066,7 @@ ags_automation_free_selection(AgsAutomation *automation)
  */ 
 void
 ags_automation_add_point_to_selection(AgsAutomation *automation,
-				      guint x, guint y,
+				      guint x, gdouble y,
 				      gboolean replace_current_selection)
 {
   AgsAcceleration *acceleration;
@@ -1113,7 +1113,7 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
  */ 
 void
 ags_automation_remove_point_from_selection(AgsAutomation *automation,
-					   guint x, guint y)
+					   guint x, gdouble y)
 {
   AgsAcceleration *acceleration;
 
@@ -1133,8 +1133,8 @@ ags_automation_remove_point_from_selection(AgsAutomation *automation,
 
 void
 ags_automation_add_region_to_selection(AgsAutomation *automation,
-				       guint x0, guint y0,
-				       guint x1, guint y1,
+				       guint x0, gdouble y0,
+				       guint x1, gdouble y1,
 				       gboolean replace_current_selection)
 {
   AgsAcceleration *acceleration;
@@ -1191,8 +1191,8 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
  */ 
 void
 ags_automation_remove_region_from_selection(AgsAutomation *automation,
-					    guint x0, guint y0,
-					    guint x1, guint y1)
+					    guint x0, gdouble y0,
+					    guint x1, gdouble y1)
 {
   AgsAcceleration *acceleration;
   GList *region;
@@ -1328,7 +1328,7 @@ void
 ags_automation_insert_from_clipboard(AgsAutomation *automation,
 				     xmlNode *automation_node,
 				     gboolean reset_x_offset, guint x_offset,
-				     gboolean reset_y_offset, guint y_offset)
+				     gboolean reset_y_offset, gdouble y_offset)
 {
   char *program, *version, *type, *format;
   char *base_frequency;
@@ -1338,13 +1338,13 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 							       xmlNode *root_node, char *version,
 							       char *x_boundary, char *y_boundary,
 							       gboolean reset_x_offset, guint x_offset,
-							       gboolean reset_y_offset, guint y_offset);
+							       gboolean reset_y_offset, gdouble y_offset);
   
   void ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
 							  xmlNode *root_node, char *version,
 							  char *x_boundary, char *y_boundary,
 							  gboolean reset_x_offset, guint x_offset,
-							  gboolean reset_y_offset, guint y_offset){
+							  gboolean reset_y_offset, gdouble y_offset){
     AgsAcceleration *acceleration;
     xmlNode *node;
     char *endptr;

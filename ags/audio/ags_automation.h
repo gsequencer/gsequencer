@@ -105,35 +105,35 @@ void ags_automation_add_acceleration(AgsAutomation *automation,
 				     gboolean use_selection_list);
 
 gboolean ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
-							guint x, guint y);
+							guint x, gdouble y);
 
 GList* ags_automation_get_selection(AgsAutomation *automation);
 
 gboolean ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAcceleration *acceleration);
 
 AgsAcceleration* ags_automation_find_point(AgsAutomation *automation,
-					   guint x, guint y,
+					   guint x, gdouble y,
 					   gboolean use_selection_list);
 GList* ags_automation_find_region(AgsAutomation *automation,
-				  guint x0, guint y0,
-				  guint x1, guint y1,
+				  guint x0, gdouble y0,
+				  guint x1, gdouble y1,
 				  gboolean use_selection_list);
 
 void ags_automation_free_selection(AgsAutomation *automation);
 
 void ags_automation_add_point_to_selection(AgsAutomation *automation,
-					   guint x, guint y,
+					   guint x, gdouble y,
 					   gboolean replace_current_selection);
 void ags_automation_remove_point_from_selection(AgsAutomation *automation,
-						guint x, guint y);
+						guint x, gdouble y);
 
 void ags_automation_add_region_to_selection(AgsAutomation *automation,
-					    guint x0, guint y0,
-					    guint x1, guint y1,
+					    guint x0, gdouble y0,
+					    guint x1, gdouble y1,
 					    gboolean replace_current_selection);
 void ags_automation_remove_region_from_selection(AgsAutomation *automation,
-						 guint x0, guint y0,
-						 guint x1, guint y1);
+						 guint x0, gdouble y0,
+						 guint x1, gdouble y1);
 
 xmlNode* ags_automation_copy_selection(AgsAutomation *automation);
 xmlNode* ags_automation_cut_selection(AgsAutomation *automation);
@@ -141,7 +141,7 @@ xmlNode* ags_automation_cut_selection(AgsAutomation *automation);
 void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 					  xmlNodePtr content,
 					  gboolean reset_x_offset, guint x_offset,
-					  gboolean reset_y_offset, guint y_offset);
+					  gboolean reset_y_offset, gdouble y_offset);
 
 GList* ags_automation_get_current(AgsAutomation *automation);
 

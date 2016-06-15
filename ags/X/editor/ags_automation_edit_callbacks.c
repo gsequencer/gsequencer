@@ -318,6 +318,11 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 
     if(automation_toolbar->selected_edit_mode == automation_toolbar->position){
       automation_edit->flags |= AGS_AUTOMATION_EDIT_POSITION_CURSOR;
+
+      automation_edit->edit_x = x;
+      automation_edit->edit_y = y;
+      
+      gtk_widget_queue_draw(automation_edit->drawing_area);
     }else if(automation_toolbar->selected_edit_mode == automation_toolbar->edit){
       automation_edit->flags |= AGS_AUTOMATION_EDIT_ADDING_ACCELERATION;
 
@@ -331,8 +336,8 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
       
-      automation_edit->edit_x = x * tact;
-      automation_edit->edit_y = y * tact;
+      automation_edit->edit_x = x;
+      automation_edit->edit_y = y;
     }else if(automation_toolbar->selected_edit_mode == automation_toolbar->clear){
       automation_edit->flags |= AGS_AUTOMATION_EDIT_DELETING_ACCELERATION;
     }else if(automation_toolbar->selected_edit_mode == automation_toolbar->select){
@@ -380,9 +385,10 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     gdouble c_upper, c_lower, c_range;
 
     guint line;
-    guint i;
+    guint n_attempts;
+    guint i, n, m;
     gboolean is_audio, is_output, is_input;
-  
+    
     if(automation_edit == automation_editor->current_audio_automation_edit){
       notebook = NULL;
       channel_type = G_TYPE_NONE;
@@ -400,6 +406,8 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       is_input = TRUE;
     }
 
+    n_attempts = 3;
+    
     /* find automation area */
     list =
       list_start = g_list_reverse(g_list_copy(automation_edit->automation_area));
@@ -471,9 +479,27 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	}
 	
 	/* remove acceleration */
-	ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
-						       x, val);
+	if(!ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+							   x, val)){
+	  
+	  for(m = 0; m < tact * n_attempts; m++){
+	    for(n = 0; n < n_attempts; n++){
+	      if(m % 2 == 1){
+		if(ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+								  x - (m / 2), val - ((n % 2 == 1) ? -(n / 2): -1 * (n / 2)))){
+		  goto remove_SUCCESS_0;
+		}
+	      }else{
+		if(ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+								  x + (m / 2), val - ((n % 2 == 1) ? -(n / 2): -1 * (n / 2)))){
+		  goto remove_SUCCESS_0;
+		}
+	      }
+	    }
+	  }
+	}
 
+      remove_SUCCESS_0:	
 	automation = automation->next;
       }
 
@@ -529,9 +555,27 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	  }
 	
 	  /* remove acceleration */
-	  ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
-							 x, acceleration_y);
+	  if(!ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+							     x, val)){
+	  
+	    for(m = 0; m < tact * n_attempts; m++){
+	      for(n = 0; n < n_attempts; n++){
+		if(m % 2 == 1){
+		  if(ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+								    x - (m / 2), val - ((n % 2 == 1) ? -(n / 2): -1 * (n / 2)))){
+		    goto remove_SUCCESS_1;
+		  }
+		}else{
+		  if(ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
+								    x + (m / 2), val - ((n % 2 == 1) ? -(n / 2): -1 * (n / 2)))){
+		    goto remove_SUCCESS_1;
+		  }
+		}
+	      }
+	    }
+	  }
 
+	remove_SUCCESS_1:
 	  automation = automation->next;
 	}
 
