@@ -1,3 +1,13 @@
+ags (0.7.32)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed remove of menu after rename of AgsMachine
+	* fixed update editor and automation editor after rename
+	* fixed automation data
+	* fixed missing XPath preamble of automation editor's machine radio button
+	* fixed NULL pointer access in ags_automation_toolbar_apply_port()
+	* implemented save/restore of ports within automation editor
+
 ags (0.7.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -111,7 +111,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     GType *channel_type;
 
     gdouble range;
-    gdouble acceleration_y;
+    gdouble gui_y, acceleration_y;
     guint line;
     guint i;
     gboolean is_audio, is_output, is_input;
@@ -179,7 +179,8 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	}
 	
 	/* check steps */
-	acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i) + (0.5 * automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
+	gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
+	acceleration_y = (gdouble) AGS_AUTOMATION(automation->data)->lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
 	        
 	current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
 							 x, y,
@@ -226,8 +227,9 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	  }
 
 	  /* check steps */
-	  acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i) + (0.5 * automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
-	  
+	  gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
+	  acceleration_y = (gdouble) AGS_AUTOMATION(automation->data)->lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+
 	  current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
 							   x, acceleration_y,
 							   FALSE);
@@ -324,7 +326,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     GType *channel_type;
 
     gdouble range;
-    gdouble acceleration_y;
+    gdouble gui_y, acceleration_y;
     guint line;
     guint i;
     gboolean is_audio, is_output, is_input;
@@ -392,7 +394,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	}
 	
 	/* check steps */
-	acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i) + (0.5 * automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
+	gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
+	acceleration_y = (gdouble) AGS_AUTOMATION(automation->data)->lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+
 	ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
 						       x, acceleration_y);
 
@@ -426,7 +430,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	  }
 
 	  /* check steps */
-	  acceleration_y = (gdouble) (automation_edit->current_area->height - (y - i) + (0.5 * automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps)) / (automation_edit->current_area->height / AGS_AUTOMATION(automation->data)->steps) - AGS_AUTOMATION(automation->data)->lower;
+	  gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
+	  acceleration_y = (gdouble) AGS_AUTOMATION(automation->data)->lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+	  
 	  ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
 							 x, acceleration_y);
 

@@ -357,7 +357,8 @@ ags_machine_init(AgsMachine *machine)
   machine->automation_port = NULL;
 
   machine->popup = ags_machine_popup_new(machine);
-
+  g_object_ref(machine->popup);
+  
   menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
 				  "label\0", "machine\0",
 				  "menu\0", machine->popup,

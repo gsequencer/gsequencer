@@ -240,6 +240,13 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
   gchar *text;
 
   if(response == GTK_RESPONSE_ACCEPT){
+    AgsWindow *window;
+    GtkMenuToolButton *menu_tool_button;
+
+    GList *list, *list_start;
+    
+    window = gtk_widget_get_toplevel(machine);
+    
     if(machine->name != NULL){
       g_free(machine->name);
     }
@@ -247,7 +254,55 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
     text = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data), 0, -1);
     machine->name = g_strdup(text);
 
-    gtk_frame_set_label((GtkFrame *) gtk_container_get_children((GtkContainer *) machine)->data, g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL));
+    gtk_menu_tool_button_set_menu((GtkFrame *) gtk_bin_get_child((GtkBin *) machine),
+				  NULL);
+    gtk_widget_destroy(gtk_frame_get_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine)));
+    menu_tool_button = g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+				    "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
+				    "menu\0", machine->popup,
+				    NULL);
+    gtk_frame_set_label_widget((GtkFrame *) gtk_bin_get_child((GtkBin *) machine),
+			       menu_tool_button);
+    gtk_widget_show_all(menu_tool_button);
+    
+    /* update editor */
+    list =
+      list_start = gtk_container_get_children(window->editor->machine_selector);
+
+    while(list != NULL){
+      if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) &&
+	 AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+	g_object_set(list->data,
+		     "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
+		     NULL);
+
+	break;
+      }
+
+      list = list->next;
+    }
+    
+    g_list_free(list_start);
+
+    /* update automation editor */
+    list =
+      list_start = gtk_container_get_children(window->automation_window->automation_editor->machine_selector);
+    list = list->next;
+
+    while(list != NULL){
+      if(AGS_IS_MACHINE_RADIO_BUTTON(list->data) &&
+	 AGS_MACHINE_RADIO_BUTTON(list->data)->machine == machine){
+	g_object_set(list->data,
+		     "label\0", g_strconcat(G_OBJECT_TYPE_NAME(machine), ": \0", text, NULL),
+		     NULL);
+
+	break;
+      }
+
+      list = list->next;
+    }
+    
+    g_list_free(list_start);
   }
   
   machine->rename = NULL;

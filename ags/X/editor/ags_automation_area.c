@@ -521,9 +521,9 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	  gdouble prev_x, prev_y;
 
 	  x = current->x;
-	  y = ((automation_area->height / AGS_AUTOMATION(automation->data)->steps) * (current->y - AGS_AUTOMATION(automation->data)->lower));
+	  y = ((automation_area->height) * ((1.0 / range) * ((current->y - AGS_AUTOMATION(automation->data)->lower))));
 	  prev_x = prev->x;
-	  prev_y = ((automation_area->height / AGS_AUTOMATION(automation->data)->steps) * (prev->y - AGS_AUTOMATION(automation->data)->lower));
+	  prev_y = ((automation_area->height) * ((1.0 / range) * ((prev->y - AGS_AUTOMATION(automation->data)->lower))));
 
 	  if(!ags_automation_area_draw_automation_find_tab(x, y, prev_x, prev_y)){
 	    if(n_tab == 0){
@@ -612,9 +612,9 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	    gdouble prev_x, prev_y;
 
 	    x = current->x;
-	    y = ((automation_area->height / AGS_AUTOMATION(automation->data)->steps) * (current->y - AGS_AUTOMATION(automation->data)->lower));
+	    y = ((automation_area->height) * ((1.0 / range) * ((current->y - AGS_AUTOMATION(automation->data)->lower))));
 	    prev_x = prev->x;
-	    prev_y = ((automation_area->height / AGS_AUTOMATION(automation->data)->steps) * (prev->y - AGS_AUTOMATION(automation->data)->lower));
+	    prev_y = ((automation_area->height) * ((1.0 / range) * ((prev->y - AGS_AUTOMATION(automation->data)->lower))));
 
 	    if(!ags_automation_area_draw_automation_find_tab(x, y, prev_x, prev_y)){
 	      if(n_tab == 0){

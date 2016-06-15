@@ -60,7 +60,7 @@ struct _AgsAcceleration
 
   // gui format, convert easy to visualization
   guint x;
-  guint y;
+  gdouble y;
 
   gchar *name;
 };
