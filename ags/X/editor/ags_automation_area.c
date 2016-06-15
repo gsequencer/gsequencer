@@ -434,6 +434,8 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
   gdouble *prev_tab_x, *prev_tab_y;
   gdouble upper, lower, range;
   gdouble c_upper, c_lower, c_range;
+  double tact_factor, zoom_factor;
+  double tact;
   
   auto gboolean ags_automation_area_draw_automation_find_tab(gdouble x, gdouble y, gdouble prev_x, gdouble prev_y);
 
@@ -467,7 +469,12 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
     notebook = automation_editor->current_input_notebook;
     channel_type = AGS_TYPE_INPUT;
   }
-  
+
+  zoom_factor = 1.0 / 4.0;
+
+  tact_factor = exp2(8.0 - (double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom));
+  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
+
   /*  */
   width = GTK_WIDGET(automation_area->drawing_area)->allocation.width;
 
@@ -479,7 +486,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
   prev_tab_y = NULL;
   tab_x = NULL;
   tab_y = NULL;
-  
+
   /* match specifier */
   if(channel_type == G_TYPE_NONE){
     automation = automation_area->audio->automation;
@@ -522,7 +529,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
       while(list != NULL){
 	current = AGS_ACCELERATION(list->data);
 
-	if(current->x < x0){
+	if(tact * current->x < x0){
 	  prev = current;
 	  list = list->next;
 
@@ -635,7 +642,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	while(list != NULL){
 	  current = AGS_ACCELERATION(list->data);
 
-	  if(current->x < x0){
+	  if(tact * current->x < x0){
 	    prev = current;
 	    list = list->next;
 
@@ -801,7 +808,7 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
   /* area */
   cairo_rectangle(cr,
 		  (tact * x0) - pos_x, pos_y + automation_area->height - y0,
-		  tact * (x1 - x0), y0);
+		  (tact * x1) - (tact * x0), y0);
   cairo_arc(cr,
 	    (tact * x0) - pos_x, pos_y + automation_area->height - y0,
 	    1.2,
