@@ -863,12 +863,105 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 	  g_value_set_uint64(&value,
 			     ((guint *) port_data)[0]);
 	}else if(port->port_value_type == G_TYPE_FLOAT){
+	  gfloat val;
+	  
+	  val = ((gdouble *) port_data)[0];
+	  
+	  if(bulk_member->conversion != NULL){
+	    gfloat upper, lower, range, step;
+	    gfloat c_upper, c_lower, c_range;
+
+	    gboolean success;
+
+	    success = FALSE;
+	    
+	    if(AGS_IS_DIAL(gtk_bin_get_child(bulk_member))){
+	      AgsDial *dial;
+
+	      dial = gtk_bin_get_child(bulk_member);
+
+	      upper = dial->adjustment->upper;
+	      lower = dial->adjustment->lower;
+
+	      success = TRUE;
+	    }else{
+	      g_warning("unsupported child type in conversion\0");
+	    }
+
+	    if(success){
+	      range = upper - lower;
+	      step = range / val;
+
+	      val = ags_conversion_convert(bulk_member->conversion,
+					   val,
+					   FALSE);
+	      c_upper = ags_conversion_convert(bulk_member->conversion,
+					       upper,
+					       FALSE);
+	      c_lower = ags_conversion_convert(bulk_member->conversion,
+					       lower,
+					       FALSE);
+	      c_range = c_upper - c_lower;
+
+	    
+	      val = ags_conversion_convert(bulk_member->conversion,
+					   c_lower + (c_range / step),
+					   TRUE);
+	    }
+	  }
+	  
 	  g_value_init(&value,
 		       G_TYPE_FLOAT);
 
 	  g_value_set_float(&value,
-			     ((gdouble *) port_data)[0]);
+			     val);
 	}else if(port->port_value_type == G_TYPE_DOUBLE){
+	  gdouble val;
+	  
+	  val = ((gdouble *) port_data)[0];
+	  
+	  if(bulk_member->conversion != NULL){
+	    gdouble upper, lower, range, step;
+	    gdouble c_upper, c_lower, c_range;
+
+	    gboolean success;
+
+	    success = FALSE;
+	    
+	    if(AGS_IS_DIAL(gtk_bin_get_child(bulk_member))){
+	      AgsDial *dial;
+
+	      dial = gtk_bin_get_child(bulk_member);
+
+	      upper = dial->adjustment->upper;
+	      lower = dial->adjustment->lower;
+
+	      success = TRUE;
+	    }else{
+	      g_warning("unsupported child type in conversion\0");
+	    }
+
+	    if(success){
+	      range = upper - lower;
+	      step = range / val;
+
+	      val = ags_conversion_convert(bulk_member->conversion,
+					   val,
+					   FALSE);
+	      c_upper = ags_conversion_convert(bulk_member->conversion,
+					       upper,
+					       FALSE);
+	      c_lower = ags_conversion_convert(bulk_member->conversion,
+					       lower,
+					       FALSE);
+	      c_range = c_upper - c_lower;
+	    
+	      val = ags_conversion_convert(bulk_member->conversion,
+					   c_lower + (c_range / step),
+					   TRUE);
+	    }
+	  }
+
 	  g_value_init(&value,
 		       G_TYPE_DOUBLE);
 

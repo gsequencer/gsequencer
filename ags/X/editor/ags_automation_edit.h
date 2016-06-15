@@ -41,6 +41,7 @@
 
 #define AGS_AUTOMATION_EDIT_MAX_CONTROLS (64 * 1200)
 #define AGS_AUTOMATION_EDIT_DEFAULT_MARGIN (8)
+#define AGS_AUTOMATION_EDIT_DEFAULT_WIDTH (64)
 
 typedef struct _AgsAutomationEdit AgsAutomationEdit;
 typedef struct _AgsAutomationEditClass AgsAutomationEditClass;

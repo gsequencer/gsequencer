@@ -428,10 +428,12 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
   guint line;
   guint width;
   gdouble x0, x1;
-  gdouble range;
+  gdouble val;
   guint n_tab;
   gdouble *tab_x, *tab_y;
   gdouble *prev_tab_x, *prev_tab_y;
+  gdouble upper, lower, range;
+  gdouble c_upper, c_lower, c_range;
   
   auto gboolean ags_automation_area_draw_automation_find_tab(gdouble x, gdouble y, gdouble prev_x, gdouble prev_y);
 
@@ -486,18 +488,29 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 									 automation_area->control_name,
 									 channel_type,
 									 0)) != NULL){
-      
-      if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
-	range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
-      }else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
-	range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
+      upper = AGS_AUTOMATION(automation->data)->upper;
+      lower = AGS_AUTOMATION(automation->data)->lower;
+	
+      range = upper - lower;
+
+      if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					 upper,
+					 FALSE);
+	c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					 lower,
+					 FALSE);
+	c_range = c_upper - c_lower;
       }else{
-	range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	c_upper = upper;
+	c_lower = lower;
+
+	c_range = range;
       }
 
-      if(range == 0.0){
+      if(c_range == 0.0){
 	automation = automation->next;
-	g_warning("ags_automation_area.c - range = 0.0\0");
+	g_warning("ags_automation_area.c - c_range = 0.0\0");
 	
 	continue;
       }
@@ -521,9 +534,19 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	  gdouble prev_x, prev_y;
 
 	  x = current->x;
-	  y = ((automation_area->height) * ((1.0 / range) * ((current->y - AGS_AUTOMATION(automation->data)->lower))));
+
+	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+				       current->y,
+				       FALSE);
+	  y = ((automation_area->height) * ((1.0 / c_range) * ((val - c_lower))));
+	    
 	  prev_x = prev->x;
-	  prev_y = ((automation_area->height) * ((1.0 / range) * ((prev->y - AGS_AUTOMATION(automation->data)->lower))));
+
+	    
+	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+				       prev->y,
+				       FALSE);
+	  prev_y = ((automation_area->height) * ((1.0 / c_range) * ((val - c_lower))));
 
 	  if(!ags_automation_area_draw_automation_find_tab(x, y, prev_x, prev_y)){
 	    if(n_tab == 0){
@@ -578,17 +601,29 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 									   automation_area->control_name,
 									   channel_type,
 									   line)) != NULL){
-	if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
-	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
-	}else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
-	  range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
-	}else{
-	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
-	}
+	upper = AGS_AUTOMATION(automation->data)->upper;
+	lower = AGS_AUTOMATION(automation->data)->lower;
+	
+	range = upper - lower;
 
-	if(range == 0.0){
+	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	  c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					   upper,
+					   FALSE);
+	  c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					   lower,
+					   FALSE);
+	  c_range = c_upper - c_lower;
+	}else{
+	  c_upper = upper;
+	  c_lower = lower;
+
+	  c_range = range;
+	}
+	  
+	if(c_range == 0.0){
 	  automation = automation->next;
-	  g_warning("ags_automation_area.c - range = 0.0\0");
+	  g_warning("ags_automation_area.c - c_range = 0.0\0");
 	
 	  continue;
 	}
@@ -612,9 +647,18 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	    gdouble prev_x, prev_y;
 
 	    x = current->x;
-	    y = ((automation_area->height) * ((1.0 / range) * ((current->y - AGS_AUTOMATION(automation->data)->lower))));
+
+	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					 current->y,
+					 FALSE);
+	    y = ((automation_area->height) * ((1.0 / c_range) * ((val - c_lower))));
+	    
 	    prev_x = prev->x;
-	    prev_y = ((automation_area->height) * ((1.0 / range) * ((prev->y - AGS_AUTOMATION(automation->data)->lower))));
+	    
+	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					 prev->y,
+					 FALSE);
+	    prev_y = ((automation_area->height) * ((1.0 / c_range) * ((val - c_lower))));
 
 	    if(!ags_automation_area_draw_automation_find_tab(x, y, prev_x, prev_y)){
 	      if(n_tab == 0){
@@ -734,10 +778,6 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
     x1 = 0.0;
   }
   
-  if(tact * (x1 - x0) > width){
-    x1 = width / tact;
-  }
-
   /* clip y */
   if(y0 < 0.0){
     y0 = 0.0;
@@ -760,10 +800,10 @@ ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr
 
   /* area */
   cairo_rectangle(cr,
-		  tact * (x0 - pos_x), pos_y + automation_area->height - y0,
+		  (tact * x0) - pos_x, pos_y + automation_area->height - y0,
 		  tact * (x1 - x0), y0);
   cairo_arc(cr,
-	    tact * (x0 - pos_x), pos_y + automation_area->height - y0,
+	    (tact * x0) - pos_x, pos_y + automation_area->height - y0,
 	    1.2,
 	    0.0,
 	    2.0 * M_PI);

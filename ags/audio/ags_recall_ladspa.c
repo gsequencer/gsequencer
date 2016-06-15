@@ -694,25 +694,47 @@ ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
   }
 
   ladspa_conversion = NULL;
+
+  if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
+    if(ladspa_conversion == NULL ||
+       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+      ladspa_conversion = ags_ladspa_conversion_new();
+    }
+
+    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
+  }
+
+  if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
+    if(ladspa_conversion == NULL ||
+       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+      ladspa_conversion = ags_ladspa_conversion_new();
+    }
+
+    ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
+  }
   
   if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    ladspa_conversion = ags_ladspa_conversion_new();
-    g_object_set(port,
-		 "conversion\0", ladspa_conversion,
-		 NULL);
-    
+    if(ladspa_conversion == NULL ||
+       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+      ladspa_conversion = ags_ladspa_conversion_new();
+    }
+        
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
   }
 
   if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL){
+    if(ladspa_conversion == NULL ||
+       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
-      g_object_set(port,
-		   "conversion\0", ladspa_conversion,
-		   NULL);
     }
     
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+  }
+
+  if(ladspa_conversion != NULL){
+    g_object_set(port,
+		 "conversion\0", ladspa_conversion,
+		 NULL);
   }
 }
 

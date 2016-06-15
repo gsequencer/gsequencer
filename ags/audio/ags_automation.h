@@ -49,7 +49,8 @@ typedef struct _AgsAutomation AgsAutomation;
 typedef struct _AgsAutomationClass AgsAutomationClass;
 
 typedef enum{
-  AGS_AUTOMATION_BYPASS               = 1,
+  AGS_AUTOMATION_CONNECTED            = 1,
+  AGS_AUTOMATION_BYPASS               = 1 <<  1,
 }AgsAutomationFlags;
 
 struct _AgsAutomation

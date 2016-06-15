@@ -509,7 +509,8 @@ ags_recall_channel_automate(AgsRecall *recall)
     automation = ags_automation_find_port(automation,
 					  port->data);
     
-    if(automation != NULL){
+    if(automation != NULL &&
+       (AGS_AUTOMATION_BYPASS & (AGS_AUTOMATION(automation->data)->flags)) == 0){
       GValue value = {0,};
 
       ags_automation_get_value(automation->data,
