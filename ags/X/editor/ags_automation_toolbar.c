@@ -380,7 +380,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       }
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
-    specifier[length] = NULL;
+
+    if(specifier != NULL){
+      specifier[length] = NULL;
+    }
   }
 
   if(machine->automation_port != NULL){
@@ -390,7 +393,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   /* apply */
   machine->automation_port = specifier;
   
-  if(g_strv_contains(specifier,
+  if(specifier != NULL &&
+     g_strv_contains(specifier,
 		     control_name)){
     AgsScaleArea *scale_area;
     AgsAutomationArea *automation_area;

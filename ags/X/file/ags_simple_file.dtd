@@ -42,7 +42,7 @@
 <!-- machine -->
 <!ELEMENT ags-sf-machine-list (ags-sf-machine*)>
 
-<!ELEMENT ags-sf-machine (ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?)>
+<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?)>
 <!ATTLIST ags-sf-machine
 	  id              CDATA     #REQUIRED
 	  type            CDATA     #REQUIRED
@@ -64,6 +64,13 @@
 	  channels        NMTOKEN   #IMPLIED
 	  output-pads     NMTOKEN   #IMPLIED
 	  input-pads      NMTOKEN   #IMPLIED
+	  >
+
+<!ELEMENT ags-sf-automated-port-list (ags-sf-automated-port*)>
+
+<!ELEMENT ags-sf-automated-port EMPTY>
+<!ATTLIST ags-sf-automated-port
+	  specifier       CDATA     #REQUIRED
 	  >
 
 <!-- pad -->
