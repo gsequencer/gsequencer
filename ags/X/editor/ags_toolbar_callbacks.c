@@ -154,29 +154,15 @@ ags_toolbar_select_callback(GtkToggleButton *toggle_button, AgsToolbar *toolbar)
 void
 ags_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsToolbar *toolbar)
 {
-  AgsMachine *machine;
   AgsEditor *editor;
-
-  AgsNotation *notation;
-
-  GList *list_notation;
-  xmlDocPtr clipboard;
-  xmlNodePtr audio_node, notation_node;
-
-  xmlChar *buffer;
-  int size;
-  gint i;
-  gint selected_channel;
 
   /* add notation to root node */
   editor = AGS_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(toolbar), AGS_TYPE_EDITOR));
 
-  if((machine = editor->selected_machine) != NULL){
-    if(widget == (GtkWidget *) toolbar->copy){
-      ags_editor_copy(editor);
-    }else{
-      ags_editor_cut(editor);
-    }
+  if(widget == (GtkWidget *) toolbar->copy){
+    ags_editor_copy(editor);
+  }else{
+    ags_editor_cut(editor);
   }
 }
 

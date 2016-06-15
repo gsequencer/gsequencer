@@ -110,13 +110,25 @@ ags_automation_toolbar_select_callback(GtkToggleButton *toggle_button, AgsAutoma
 void
 ags_automation_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar)
 {
-  //TODO:JK: implement me
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar), AGS_TYPE_AUTOMATION_EDITOR));
+
+  if(widget == (GtkWidget *) automation_toolbar->copy){
+    ags_automation_editor_copy(automation_editor);
+  }else{
+    ags_automation_editor_cut(automation_editor);
+  }
 }
 
 void
 ags_automation_toolbar_paste_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar)
 {
-  //TODO:JK: implement me
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar), AGS_TYPE_AUTOMATION_EDITOR));
+
+  ags_automation_editor_paste(automation_editor);
 }
 
 void
