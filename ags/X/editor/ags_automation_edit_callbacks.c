@@ -110,8 +110,12 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 
     GType *channel_type;
 
-    gdouble range;
     gdouble gui_y, acceleration_y;
+
+    gdouble val;
+    gdouble upper, lower, range, step;
+    gdouble c_upper, c_lower, c_range;
+
     guint line;
     guint i;
     gboolean is_audio, is_output, is_input;
@@ -163,12 +167,24 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 									   automation_edit->current_area->control_name,
 									   channel_type,
 									   0)) != NULL){
-	if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
-	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
-	}else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
-	  range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
+	upper = AGS_AUTOMATION(automation->data)->upper;
+	lower = AGS_AUTOMATION(automation->data)->lower;
+	
+	range = upper - lower;
+
+	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	  c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					   upper,
+					   FALSE);
+	  c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					   lower,
+					   FALSE);
+	  c_range = c_upper - c_lower;
 	}else{
-	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	  c_upper = upper;
+	  c_lower = lower;
+
+	  c_range = range;
 	}
 
 	if(range == 0.0){
@@ -177,20 +193,30 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 	
 	  continue;
 	}
-	
+
 	/* check steps */
 	gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	acceleration_y = (gdouble) AGS_AUTOMATION(automation->data)->lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
-	        
+	acceleration_y = (gdouble) c_lower + (c_range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+
+	/* conversion */
+	val = acceleration_y;
+
+	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+				       val,
+				       TRUE);
+	}
+	
+	/* find existing */
 	current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
-							 x, y,
+							 x, val,
 							 FALSE);
 
 	/* add acceleration */
 	if(current_acceleration == NULL){
 	  acceleration = ags_acceleration_new();
 	  acceleration->x = x;
-	  acceleration->y = y;
+	  acceleration->y = val;
       
 	  ags_automation_add_acceleration(automation->data,
 					  acceleration,
@@ -211,12 +237,24 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 									     automation_edit->current_area->control_name,
 									     channel_type,
 									     line)) != NULL){
-	  if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
-	    range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
-	  }else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
-	    range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
+	  upper = AGS_AUTOMATION(automation->data)->upper;
+	  lower = AGS_AUTOMATION(automation->data)->lower;
+	
+	  range = upper - lower;
+
+	  if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	    c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					     upper,
+					     FALSE);
+	    c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					     lower,
+					     FALSE);
+	    c_range = c_upper - c_lower;
 	  }else{
-	    range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	    c_upper = upper;
+	    c_lower = lower;
+
+	    c_range = range;
 	  }
 
 	  if(range == 0.0){
@@ -228,17 +266,27 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 
 	  /* check steps */
 	  gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	  acceleration_y = (gdouble) AGS_AUTOMATION(automation->data)->lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+	  acceleration_y = (gdouble) c_lower + (c_range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
 
+	  /* conversion */
+	  val = acceleration_y;
+
+	  if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					 val,
+					 TRUE);
+	  }
+	
+	  /* add acceleration */
 	  current_acceleration = ags_automation_find_point(AGS_AUTOMATION(automation->data),
-							   x, acceleration_y,
+							   x, val,
 							   FALSE);
 
 	  /* add acceleration */
 	  if(current_acceleration == NULL){
 	    acceleration = ags_acceleration_new();
 	    acceleration->x = x;
-	    acceleration->y = AGS_AUTOMATION(automation->data)->lower + acceleration_y;
+	    acceleration->y = val;
       
 	    ags_automation_add_acceleration(automation->data,
 					    acceleration,
@@ -325,8 +373,12 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 
     GType *channel_type;
 
-    gdouble range;
     gdouble gui_y, acceleration_y;
+
+    gdouble val;
+    gdouble upper, lower, range, step;
+    gdouble c_upper, c_lower, c_range;
+
     guint line;
     guint i;
     gboolean is_audio, is_output, is_input;
@@ -378,12 +430,24 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 									   automation_edit->current_area->control_name,
 									   channel_type,
 									   0)) != NULL){
-	if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
-	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
-	}else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
-	  range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
+	upper = AGS_AUTOMATION(automation->data)->upper;
+	lower = AGS_AUTOMATION(automation->data)->lower;
+	
+	range = upper - lower;
+
+	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	  c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					   upper,
+					   FALSE);
+	  c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					   lower,
+					   FALSE);
+	  c_range = c_upper - c_lower;
 	}else{
-	  range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	  c_upper = upper;
+	  c_lower = lower;
+
+	  c_range = range;
 	}
 
 	if(range == 0.0){
@@ -392,13 +456,23 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 	
 	  continue;
 	}
-	
+
 	/* check steps */
 	gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	acceleration_y = (gdouble) AGS_AUTOMATION(automation->data)->lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+	acceleration_y = (gdouble) c_lower + (c_range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
 
+	/* conversion */
+	val = acceleration_y;
+
+	if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+				       val,
+				       TRUE);
+	}
+	
+	/* remove acceleration */
 	ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
-						       x, acceleration_y);
+						       x, val);
 
 	automation = automation->next;
       }
@@ -414,12 +488,24 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 									     automation_edit->current_area->control_name,
 									     channel_type,
 									     line)) != NULL){
-	  if(AGS_AUTOMATION(automation->data)->upper >= 0.0 && AGS_AUTOMATION(automation->data)->lower >= 0.0){
-	    range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
-	  }else if(AGS_AUTOMATION(automation->data)->upper < 0.0 && AGS_AUTOMATION(automation->data)->lower < 0.0){
-	    range = -1.0 * (AGS_AUTOMATION(automation->data)->lower - AGS_AUTOMATION(automation->data)->upper);
+	  upper = AGS_AUTOMATION(automation->data)->upper;
+	  lower = AGS_AUTOMATION(automation->data)->lower;
+	
+	  range = upper - lower;
+
+	  if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	    c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					     upper,
+					     FALSE);
+	    c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					     lower,
+					     FALSE);
+	    c_range = c_upper - c_lower;
 	  }else{
-	    range = (AGS_AUTOMATION(automation->data)->upper - AGS_AUTOMATION(automation->data)->lower);
+	    c_upper = upper;
+	    c_lower = lower;
+
+	    c_range = range;
 	  }
 
 	  if(range == 0.0){
@@ -431,8 +517,18 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 
 	  /* check steps */
 	  gui_y = AGS_AUTOMATION(automation->data)->steps - round(((gdouble) AGS_AUTOMATION(automation->data)->steps / automation_edit->current_area->height) * (gdouble) (y - i));
-	  acceleration_y = (gdouble) AGS_AUTOMATION(automation->data)->lower + (range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
-	  
+	  acceleration_y = (gdouble) c_lower + (c_range / AGS_AUTOMATION(automation->data)->steps  * gui_y);
+
+	  /* conversion */
+	  val = acceleration_y;
+
+	  if(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion != NULL){
+	    val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
+					 val,
+					 TRUE);
+	  }
+	
+	  /* remove acceleration */
 	  ags_automation_remove_acceleration_at_position(AGS_AUTOMATION(automation->data),
 							 x, acceleration_y);
 

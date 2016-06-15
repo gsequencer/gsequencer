@@ -363,7 +363,7 @@ ags_automation_init(AgsAutomation *automation)
 {
   AgsAcceleration *acceleration;
   
-  automation->flags = 0;
+  automation->flags = AGS_AUTOMATION_BYPASS;
 
   automation->timestamp = NULL;
 

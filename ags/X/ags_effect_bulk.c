@@ -25,13 +25,6 @@
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_ladspa_plugin.h>
-#include <ags/plugin/ags_dssi_manager.h>
-#include <ags/plugin/ags_dssi_plugin.h>
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2_plugin.h>
-
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
 #else
@@ -39,9 +32,17 @@
 #endif 
 #include <ags/thread/ags_task_thread.h>
 
+#include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_ladspa_plugin.h>
+#include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_dssi_plugin.h>
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_plugin.h>
+
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_dssi_plugin.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
+#include <ags/plugin/ags_lv2_conversion.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -1401,6 +1402,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
       }
+      
       if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	if(ladspa_conversion == NULL ||
 	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
@@ -1633,11 +1635,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     recall_lv2,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
-      //      add_recall = ags_add_recall_new(current,
-      //			      recall_lv2,
-      //			      TRUE);
-      //      task = g_list_prepend(task,
-      //		    add_recall);
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
@@ -1659,11 +1656,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     recall_channel_run_dummy,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
-      //      add_recall = ags_add_recall_new(current,
-      //			      recall_channel_run_dummy,
-      //			      TRUE);
-      //      task = g_list_prepend(task,
-      //		    add_recall);
 
       /* lv2 recall */
       recall_container = ags_recall_container_new();
@@ -1699,11 +1691,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     recall_lv2,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
-      //      add_recall = ags_add_recall_new(current,
-      //			      recall_lv2,
-      //			      FALSE);
-      //      task = g_list_prepend(task,
-      //		    add_recall);
 
       /* dummy */
       recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
@@ -1725,12 +1712,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     recall_channel_run_dummy,
 			     FALSE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
-
-      //      add_recall = ags_add_recall_new(current,
-      //			      recall_channel_run_dummy,
-      //			      FALSE);
-      //      task = g_list_prepend(task,
-      //		    add_recall);
       
       current = current->next;
     }
@@ -1760,7 +1741,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
-	  
+
+      AgsLv2Conversion *lv2_conversion;
+      
       GType widget_type;
 
       guint step_count;
@@ -1799,6 +1782,21 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
+      /* lv2 conversion */
+      lv2_conversion = NULL;
+
+      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(lv2_conversion == NULL ||
+	   !AGS_IS_LV2_CONVERSION(lv2_conversion)){
+	  lv2_conversion = ags_lv2_conversion_new();
+	}
+    
+	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
+      }
+
+      bulk_member->conversion = lv2_conversion;
+
+      /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
       }

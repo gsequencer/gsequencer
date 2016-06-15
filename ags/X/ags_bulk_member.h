@@ -24,9 +24,9 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/thread/ags_task.h>
-
 #include <ags/lib/ags_conversion.h>
+
+#include <ags/thread/ags_task.h>
 
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_port.h>

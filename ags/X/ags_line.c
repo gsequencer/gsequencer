@@ -25,11 +25,6 @@
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_plugin.h>
 
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_ladspa_plugin.h>
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2_plugin.h>
-
 #ifdef AGS_USE_LINUX_THREADS
 #include <ags/thread/ags_thread-kthreads.h>
 #else
@@ -37,6 +32,13 @@
 #endif 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
+
+#include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_ladspa_plugin.h>
+#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_ladspa_conversion.h>
+#include <ags/plugin/ags_lv2_conversion.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_ladspa.h>
@@ -711,7 +713,9 @@ ags_line_add_ladspa_effect(AgsLine *line,
   while(port_descriptor != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
-      
+
+      AgsLadspaConversion *ladspa_conversion;
+
       GType widget_type;
 
       guint step_count;
@@ -749,6 +753,47 @@ ags_line_add_ladspa_effect(AgsLine *line,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
 
+      /* ladspa conversion */
+      ladspa_conversion = NULL;
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
+      }
+      if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
+      }
+
+      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+    
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+      }
+
+      line_member->conversion = ladspa_conversion;
+
+      /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	line_member->port_flags = AGS_LINE_MEMBER_PORT_BOOLEAN;
       }
@@ -883,7 +928,9 @@ ags_line_add_lv2_effect(AgsLine *line,
 	port != NULL){
     if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
       GtkWidget *child_widget;
-	  
+
+      AgsLv2Conversion *lv2_conversion;
+      
       GType widget_type;
 
       guint step_count;
@@ -920,7 +967,22 @@ ags_line_add_lv2_effect(AgsLine *line,
 						   "steps\0", step_count,
 						   NULL);
       child_widget = ags_line_member_get_widget(line_member);
-      
+
+      /* lv2 conversion */
+      lv2_conversion = NULL;
+
+      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(lv2_conversion == NULL ||
+	   !AGS_IS_LV2_CONVERSION(lv2_conversion)){
+	  lv2_conversion = ags_lv2_conversion_new();
+	}
+    
+	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
+      }
+
+      line_member->conversion = lv2_conversion;
+
+      /* child widget */
       if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	line_member->port_flags = AGS_LINE_MEMBER_PORT_BOOLEAN;
       }

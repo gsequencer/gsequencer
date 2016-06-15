@@ -115,13 +115,13 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
 
   lv2_conversion = AGS_LV2_CONVERSION(conversion);
 
-  if(!reverse){
+  if(reverse){
     if((AGS_LV2_CONVERSION_LOGARITHMIC & (lv2_conversion->flags)) != 0){
-      value = exp(log(value));
+      value = log(value);
     }
   }else{
     if((AGS_LV2_CONVERSION_LOGARITHMIC & (lv2_conversion->flags)) != 0){
-      value = exp(log(value) * (1.0 / M_E));
+      value = exp(value);
     }
   }
   

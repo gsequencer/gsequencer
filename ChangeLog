@@ -1,3 +1,11 @@
+ags (0.7.33)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* using AgsConversion in ags_line_member.c and ags_bulk_member.c if available
+	* using bypass flag in ags_recall_audio_automate() and ags_recall_channel_automate()
+	* using AgsConversion in automation editor
+	* implemented reset of AGS_AUTOMATION_BYPASS in automation toolbar
+
 ags (0.7.32)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -160,7 +160,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_WIDTH, 1.0);
   automation_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->hscrollbar,

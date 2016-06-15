@@ -419,6 +419,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 	  (!found_audio || !found_output || !found_input)){
       if(AGS_AUTOMATION(list->data)->channel_type == G_TYPE_NONE &&
 	 !found_audio){
+	AGS_AUTOMATION(list->data)->flags &= AGS_AUTOMATION_BYPASS;
+	
 	scale_area = ags_scale_area_new(automation_editor->current_audio_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
@@ -441,6 +443,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_OUTPUT &&
 	 !found_output){
+	AGS_AUTOMATION(list->data)->flags &= AGS_AUTOMATION_BYPASS;
+	
 	scale_area = ags_scale_area_new(automation_editor->current_output_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
@@ -463,6 +467,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       if(AGS_AUTOMATION(list->data)->channel_type == AGS_TYPE_INPUT &&
 	 !found_input){
+	AGS_AUTOMATION(list->data)->flags &= AGS_AUTOMATION_BYPASS;
+	
 	scale_area = ags_scale_area_new(automation_editor->current_input_scale,
 					control_name,
 					AGS_AUTOMATION(list->data)->lower,
@@ -489,9 +495,32 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     AgsAutomationEdit *automation_edit;
     AgsScale *scale;
     
+    AgsAudio *audio;
+
     GList *scale_area;
     GList *automation_area;
 
+    GList *list;
+
+    gboolean found_audio, found_output, found_input;
+    
+    audio = machine->audio;
+    list = audio->automation;
+    
+    /* add port */
+    found_audio = FALSE;
+    found_output = FALSE;
+    found_input = FALSE;
+
+    /* set bypass */
+    while((list = ags_automation_find_specifier(list,
+						control_name)) != NULL &&
+	  (!found_audio || !found_output || !found_input)){
+      AGS_AUTOMATION(list->data)->flags |= AGS_AUTOMATION_BYPASS;
+      
+      list = list->next;
+    }
+    
     /* remove audio port */
     automation_edit = automation_editor->current_audio_automation_edit;
     scale = automation_editor->current_audio_scale;
