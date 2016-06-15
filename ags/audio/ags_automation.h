@@ -135,6 +135,8 @@ void ags_automation_remove_region_from_selection(AgsAutomation *automation,
 						 guint x0, gdouble y0,
 						 guint x1, gdouble y1);
 
+void ags_automation_add_all_to_selection(AgsAutomation *automation);
+
 xmlNode* ags_automation_copy_selection(AgsAutomation *automation);
 xmlNode* ags_automation_cut_selection(AgsAutomation *automation);
 

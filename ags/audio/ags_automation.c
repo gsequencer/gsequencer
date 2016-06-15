@@ -1215,6 +1215,26 @@ ags_automation_remove_region_from_selection(AgsAutomation *automation,
   g_list_free(region);
 }
 
+void
+ags_automation_add_all_to_selection(AgsAutomation *automation)
+{
+  GList *acceleration;
+
+  if(automation == NULL ||
+     automation->acceleration == NULL){
+    return;
+  }
+  
+  acceleration = automation->acceleration;
+  acceleration = acceleration->next;
+  
+  while(acceleration->next != NULL){
+    AGS_ACCELERATION(acceleration->data)->flags |= AGS_ACCELERATION_IS_SELECTED;
+    
+    acceleration = acceleration->next;
+  }
+}
+
 /**
  * ags_automation_copy_selection:
  * @automation: an #AgsAutomation
@@ -1231,8 +1251,9 @@ ags_automation_copy_selection(AgsAutomation *automation)
   AgsAcceleration *acceleration;
   xmlNode *automation_node, *current_acceleration;
   GList *selection;
-  guint x_boundary, y_boundary;
-
+  guint x_boundary;
+  gdouble y_boundary;
+  
   selection = automation->selection;
 
   /* create root node */
@@ -1242,15 +1263,17 @@ ags_automation_copy_selection(AgsAutomation *automation)
   xmlNewProp(automation_node, BAD_CAST "type\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_TYPE);
   xmlNewProp(automation_node, BAD_CAST "version\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_VERSION);
   xmlNewProp(automation_node, BAD_CAST "format\0", BAD_CAST AGS_AUTOMATION_CLIPBOARD_FORMAT);
+  xmlNewProp(automation_node, "control-name\0", automation->control_name);
+  xmlNewProp(automation_node, "line\0", g_strdup_printf("%u\0", automation->line));
 
   selection = automation->selection;
 
   if(selection != NULL){
     x_boundary = AGS_ACCELERATION(selection->data)->x;
-    y_boundary = G_MAXUINT;
+    y_boundary = G_MAXDOUBLE;
   }else{
     x_boundary = 0;
-    y_boundary = 0;
+    y_boundary = 0.0;
   }
 
   while(selection != NULL){
@@ -1258,16 +1281,17 @@ ags_automation_copy_selection(AgsAutomation *automation)
     current_acceleration = xmlNewChild(automation_node, NULL, BAD_CAST "acceleration\0", NULL);
 
     xmlNewProp(current_acceleration, BAD_CAST "x\0", BAD_CAST g_strdup_printf("%u\0", acceleration->x));
-    xmlNewProp(current_acceleration, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%u\0", acceleration->y));
+    xmlNewProp(current_acceleration, BAD_CAST "y\0", BAD_CAST g_strdup_printf("%f\0", acceleration->y));
 
-    if(y_boundary > acceleration->y)
+    if(y_boundary > acceleration->y){
       y_boundary = acceleration->y;
+    }
 
     selection = selection->next;
   }
 
-  xmlNewProp(automation_node, BAD_CAST "x_boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
-  xmlNewProp(automation_node, BAD_CAST "y_boundary\0", BAD_CAST g_strdup_printf("%u\0", y_boundary));
+  xmlNewProp(automation_node, BAD_CAST "x-boundary\0", BAD_CAST g_strdup_printf("%u\0", x_boundary));
+  xmlNewProp(automation_node, BAD_CAST "y-boundary\0", BAD_CAST g_strdup_printf("%f\0", y_boundary));
   
   return(automation_node);
 }
@@ -1511,10 +1535,10 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
       if(!xmlStrncmp("AgsAutomationNativePiano\0", format, 22)){
 	AgsAcceleration *acceleration;
 	
-	base_frequency = xmlGetProp(automation_node, "base_frequency\0");
+	base_frequency = xmlGetProp(automation_node, "base-frequency\0");
 
-	x_boundary = xmlGetProp(automation_node, "x_boundary\0");
-	y_boundary = xmlGetProp(automation_node, "y_boundary\0");
+	x_boundary = xmlGetProp(automation_node, "x-boundary\0");
+	y_boundary = xmlGetProp(automation_node, "y-boundary\0");
 
 	ags_automation_insert_from_clipboard_version_0_4_3(automation,
 							   automation_node, version,

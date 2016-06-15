@@ -23,7 +23,14 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+
 #include <ags/X/ags_window.h>
+
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
 void ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor);
 void ags_automation_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -171,7 +178,6 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 {
   GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
-  GtkNotebook *notebook;
   
   g_signal_connect_after((GObject *) automation_editor, "parent-set\0",
 			 G_CALLBACK(ags_automation_editor_parent_set_callback), automation_editor);
@@ -218,26 +224,26 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   automation_editor->automation_editor_child = NULL;
 
-  notebook = gtk_notebook_new();
+  automation_editor->notebook = gtk_notebook_new();
   gtk_paned_pack2((GtkPaned *) paned,
-		  (GtkWidget *) notebook,
+		  (GtkWidget *) automation_editor->notebook,
 		  TRUE, FALSE);
   
   /* audio */
   automation_editor->audio_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_notebook_append_page(notebook,
+  gtk_notebook_append_page(automation_editor->notebook,
 			   automation_editor->audio_table,
 			   gtk_label_new("audio\0"));
   
   /* output */
   automation_editor->output_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_notebook_append_page(notebook,
+  gtk_notebook_append_page(automation_editor->notebook,
 			   automation_editor->output_table,
 			   gtk_label_new("output\0"));
 
   /* input */
   automation_editor->input_table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_notebook_append_page(notebook,
+  gtk_notebook_append_page(automation_editor->notebook,
 			   automation_editor->input_table,
 			   gtk_label_new("input\0"));
 
@@ -627,31 +633,734 @@ ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, Ag
 void
 ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
 {
-  //TODO:JK: implement me
+  AgsNotebook *notebook;  
+  AgsAutomationEdit *current_edit_widget;
+
+  GList *list, *list_start;
+  GList *automation;
+  
+  GType channel_type;
+
+  guint current_page;
+  guint line;
+  gboolean is_audio, is_output, is_input;
+
+  current_page = gtk_notebook_get_current_page(automation_editor->notebook);
+
+  switch(current_page){
+  case 0:
+    {
+      notebook = NULL;
+      current_edit_widget = automation_editor->current_audio_automation_edit;
+
+      channel_type = G_TYPE_NONE;
+
+      is_audio = TRUE;
+    }
+    break;
+  case 1:
+    {
+      notebook = automation_editor->current_output_notebook;
+      current_edit_widget = automation_editor->current_output_automation_edit;
+
+      channel_type = AGS_TYPE_OUTPUT;
+      
+      is_output = TRUE;
+    }
+    break;
+  case 2:
+    {
+      notebook = automation_editor->current_input_notebook;
+      current_edit_widget = automation_editor->current_input_automation_edit;
+
+      channel_type = AGS_TYPE_INPUT;
+      
+      is_input = TRUE;
+    }
+    break;
+  }
+
+  /*  */
+  if(automation_editor->selected_machine != NULL &&
+     current_edit_widget != NULL &&
+     current_edit_widget->automation_area != NULL){    
+    list =
+      list_start = g_list_reverse(g_list_copy(current_edit_widget->automation_area));
+    
+    if(channel_type == G_TYPE_NONE){
+      automation = automation_editor->selected_machine->audio->automation;
+
+      while(list != NULL){
+	while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									     AGS_AUTOMATION_AREA(list->data)->control_name,
+									     channel_type,
+									     0)) != NULL){
+	  ags_automation_add_all_to_selection(automation->data);
+	  
+	  automation = automation->next;
+	}
+
+	list = list->next;
+      }
+    }else{
+      while(list != NULL){
+	line = 0;
+	
+	while((line = ags_notebook_next_active_tab(notebook,
+						   line)) != -1){
+	  automation = automation_editor->selected_machine->audio->automation;
+
+	  while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									       AGS_AUTOMATION_AREA(list->data)->control_name,
+									       channel_type,
+									       line)) != NULL){
+	    ags_automation_add_all_to_selection(automation->data);
+	  
+	    automation = automation->next;
+	  }
+	  
+	  line = line++;
+	}
+
+	list = list->next;
+      }
+    }
+
+    gtk_widget_queue_draw(current_edit_widget);
+    
+    g_list_free(list_start);
+  }
 }
 
 void
 ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 {
-  //TODO:JK: implement me
+  AgsNotebook *notebook;  
+  AgsAutomationEdit *current_edit_widget;
+
+  xmlDoc *clipboard;
+  xmlNode *audio_node, *automation_node;
+  
+  GType channel_type;
+
+  gchar *buffer;
+
+  guint current_page;
+  guint line;
+  guint position_x;
+  gint first_x, last_x;
+  gboolean is_audio, is_output, is_input;
+  gboolean paste_from_position;
+
+  auto gint ags_automation_editor_paste_read_automation();
+  
+  gint ags_automation_editor_paste_read_automation(){
+    xmlXPathContext *xpathCtxt;
+    xmlXPathObject *xpathObj;
+    xmlNodeSet *nodeset;
+
+    GList *automation;
+
+    xmlChar *control_name;
+    
+    guint first_x;
+    guint i, size;
+    guint line;
+    
+    xpathCtxt = xmlXPathNewContext(clipboard);
+    xpathObj = xmlXPathEvalExpression("/audio/automation\0", xpathCtxt);
+
+    first_x = -1;
+    
+    if(xpathObj != NULL){
+      guint current_x;
+
+      if(channel_type == G_TYPE_NONE){
+	nodeset = xpathObj->nodesetval;
+	
+	size = (nodeset != NULL) ? nodeset->nodeNr: 0;
+
+	for(i = 0; i < size; i++){
+	  control_name = xmlGetProp(nodeset->nodeTab[i],
+				    "control-name");
+
+	  automation = automation_editor->selected_machine->audio->automation;
+	  automation = ags_automation_find_specifier_with_type_and_line(automation,
+									control_name,
+									channel_type,
+									0);
+	  
+	  if(paste_from_position){
+	    xmlNode *child;
+	    
+	    guint x_boundary;
+
+	    ags_automation_insert_from_clipboard(automation->data,
+						 nodeset->nodeTab[i],
+						 TRUE, position_x,
+						 FALSE, 0.0);
+	    
+	    /* get boundaries */
+	    child = nodeset->nodeTab[i]->children;
+	    current_x = 0;
+	  
+	    while(child != NULL){
+	      if(child->type == XML_ELEMENT_NODE){
+		if(!xmlStrncmp(child->name,
+			       "acceleration\0",
+			       5)){
+		  guint tmp;
+
+		  tmp = g_ascii_strtoull(xmlGetProp(child,
+						    "x\0"),
+					 NULL,
+					 10);
+
+		  if(tmp > current_x){
+		    current_x = tmp;
+		  }
+		}
+	      }
+
+	      child = child->next;
+	    }
+
+	    x_boundary = g_ascii_strtoull(xmlGetProp(nodeset->nodeTab[i],
+						     "x-boundary\0"),
+					  NULL,
+					  10);
+
+	    if(first_x == -1 || x_boundary < first_x){
+	      first_x = x_boundary;
+	    }
+	  
+	    if(position_x > x_boundary){
+	      current_x += (position_x - x_boundary);
+	    }else{
+	      current_x -= (x_boundary - position_x);
+	    }
+	  
+	    if(current_x > last_x){
+	      last_x = current_x;
+	    }
+	  }else{
+	    xmlNode *child;
+	    
+	    ags_automation_insert_from_clipboard(automation->data,
+						 nodeset->nodeTab[i],
+						 FALSE, 0.0,
+						 FALSE, 0.0);
+
+
+	    child = nodeset->nodeTab[i]->children;
+	    current_x = 0;
+	  
+	    while(child != NULL){
+	      if(child->type == XML_ELEMENT_NODE){
+		if(!xmlStrncmp(child->name,
+			       "acceleration\0",
+			       5)){
+		  guint tmp;
+
+		  tmp = g_ascii_strtoull(xmlGetProp(child,
+						    "x\0"),
+					 NULL,
+					 10);
+
+		  if(tmp > current_x){
+		    current_x = tmp;
+		  }
+		}
+	      }
+
+	      child = child->next;
+	    }
+
+	    if(current_x > last_x){
+	      last_x = current_x;
+	    }
+	  }
+	}
+      }else{
+	xmlChar *str;
+	
+	nodeset = xpathObj->nodesetval;
+	
+	size = (nodeset != NULL) ? nodeset->nodeNr: 0;
+	line = 0;
+
+	for(i = 0; i < size; i++){
+	  control_name = xmlGetProp(nodeset->nodeTab[i],
+				    "control-name");
+
+	  line = 0;
+	  str = xmlGetProp(nodeset->nodeTab[i],
+			   "line");
+
+	  if(str != NULL){
+	    line = g_ascii_strtoull(str,
+				    NULL,
+				    10);
+	  }
+	  
+	  automation = automation_editor->selected_machine->audio->automation;
+	  automation = ags_automation_find_specifier_with_type_and_line(automation,
+									control_name,
+									channel_type,
+									line);
+	  
+	  if(paste_from_position){
+	    xmlNode *child;
+	    
+	    guint x_boundary;
+
+	    ags_automation_insert_from_clipboard(automation->data,
+						 nodeset->nodeTab[i],
+						 TRUE, position_x,
+						 FALSE, 0.0);
+	    
+	    /* get boundaries */
+	    child = nodeset->nodeTab[i]->children;
+	    current_x = 0;
+	  
+	    while(child != NULL){
+	      if(child->type == XML_ELEMENT_NODE){
+		if(!xmlStrncmp(child->name,
+			       "acceleration\0",
+			       5)){
+		  guint tmp;
+
+		  tmp = g_ascii_strtoull(xmlGetProp(child,
+						    "x\0"),
+					 NULL,
+					 10);
+
+		  if(tmp > current_x){
+		    current_x = tmp;
+		  }
+		}
+	      }
+
+	      child = child->next;
+	    }
+
+	    x_boundary = g_ascii_strtoull(xmlGetProp(nodeset->nodeTab[i],
+						     "x-boundary\0"),
+					  NULL,
+					  10);
+
+	    if(first_x == -1 || x_boundary < first_x){
+	      first_x = x_boundary;
+	    }
+	  
+	    if(position_x > x_boundary){
+	      current_x += (position_x - x_boundary);
+	    }else{
+	      current_x -= (x_boundary - position_x);
+	    }
+	  
+	    if(current_x > last_x){
+	      last_x = current_x;
+	    }
+	  }else{
+	    xmlNode *child;
+	    
+	    ags_automation_insert_from_clipboard(automation->data,
+						 nodeset->nodeTab[i],
+						 FALSE, 0.0,
+						 FALSE, 0.0);
+
+
+	    child = nodeset->nodeTab[i]->children;
+	    current_x = 0;
+	  
+	    while(child != NULL){
+	      if(child->type == XML_ELEMENT_NODE){
+		if(!xmlStrncmp(child->name,
+			       "acceleration\0",
+			       5)){
+		  guint tmp;
+
+		  tmp = g_ascii_strtoull(xmlGetProp(child,
+						    "x\0"),
+					 NULL,
+					 10);
+
+		  if(tmp > current_x){
+		    current_x = tmp;
+		  }
+		}
+	      }
+
+	      child = child->next;
+	    }
+
+	    if(current_x > last_x){
+	      last_x = current_x;
+	    }
+	  }
+	}
+      }
+
+      xmlXPathFreeObject(xpathObj);
+    }
+
+    return(first_x);
+  }
+  
+  current_page = gtk_notebook_get_current_page(automation_editor->notebook);
+
+  switch(current_page){
+  case 0:
+    {
+      notebook = NULL;
+      current_edit_widget = automation_editor->current_audio_automation_edit;
+
+      channel_type = G_TYPE_NONE;
+
+      is_audio = TRUE;
+    }
+    break;
+  case 1:
+    {
+      notebook = automation_editor->current_output_notebook;
+      current_edit_widget = automation_editor->current_output_automation_edit;
+
+      channel_type = AGS_TYPE_OUTPUT;
+      
+      is_output = TRUE;
+    }
+    break;
+  case 2:
+    {
+      notebook = automation_editor->current_input_notebook;
+      current_edit_widget = automation_editor->current_input_automation_edit;
+
+      channel_type = AGS_TYPE_INPUT;
+      
+      is_input = TRUE;
+    }
+    break;
+  }
+
+  /* get clipboard */
+  buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+    
+  if(buffer == NULL){
+    return;
+  }
+
+  /*  */
+  if(automation_editor->selected_machine != NULL &&
+     current_edit_widget != NULL &&
+     current_edit_widget->automation_area != NULL){
+
+    if(automation_editor->automation_toolbar->selected_edit_mode == automation_editor->automation_toolbar->position){
+      last_x = 0;
+      paste_from_position = TRUE;
+
+      position_x = current_edit_widget->edit_x;
+    }else{
+      paste_from_position = FALSE;
+    }
+    
+    /* get xml tree */
+    clipboard = xmlReadMemory(buffer, strlen(buffer),
+			      NULL, "UTF-8\0",
+			      0);
+    audio_node = xmlDocGetRootElement(clipboard);
+
+    /* read automation */
+    first_x = -1;
+
+    if(first_x == -1){
+      first_x = 0;
+    }
+    
+    while(audio_node != NULL){
+      if(audio_node->type == XML_ELEMENT_NODE && !xmlStrncmp("audio\0", audio_node->name, 6)){
+
+	automation_node = audio_node->children;
+	
+	first_x = ags_automation_editor_paste_read_automation();
+	
+	break;
+      }
+      
+      audio_node = audio_node->next;
+    }    
+
+    /* reset cursor */
+    if(paste_from_position){
+      current_edit_widget->edit_x = (16.0 * AGS_AUTOMATION_EDIT_DEFAULT_WIDTH) * ceil((double) last_x / (16.0 * AGS_AUTOMATION_EDIT_DEFAULT_WIDTH));
+    }
+
+    xmlFreeDoc(clipboard); 
+    
+    /* redraw */
+    gtk_widget_queue_draw(current_edit_widget);
+  }
 }
 
 void
 ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 {
-  //TODO:JK: implement me
+  AgsNotebook *notebook;  
+  AgsAutomationEdit *current_edit_widget;
+
+  xmlDoc *clipboard;
+  xmlNode *audio_node, *automation_node;
+
+  GList *list, *list_start;
+  GList *automation;
+
+  GType channel_type;
+
+  xmlChar *buffer;
+
+  guint current_page;
+  guint line;
+  int size;
+  gboolean is_audio, is_output, is_input;
+
+  current_page = gtk_notebook_get_current_page(automation_editor->notebook);
+
+  switch(current_page){
+  case 0:
+    {
+      notebook = NULL;
+      current_edit_widget = automation_editor->current_audio_automation_edit;
+
+      channel_type = G_TYPE_NONE;
+
+      is_audio = TRUE;
+    }
+    break;
+  case 1:
+    {
+      notebook = automation_editor->current_output_notebook;
+      current_edit_widget = automation_editor->current_output_automation_edit;
+
+      channel_type = AGS_TYPE_OUTPUT;
+      
+      is_output = TRUE;
+    }
+    break;
+  case 2:
+    {
+      notebook = automation_editor->current_input_notebook;
+      current_edit_widget = automation_editor->current_input_automation_edit;
+
+      channel_type = AGS_TYPE_INPUT;
+      
+      is_input = TRUE;
+    }
+    break;
+  }
+
+  /*  */
+  if(automation_editor->selected_machine != NULL &&
+     current_edit_widget != NULL &&
+     current_edit_widget->automation_area != NULL){    
+    /* create document */
+    clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+    /* create root node */
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    xmlDocSetRootElement(clipboard, audio_node);
+
+    /* find automation to copy */
+    list =
+      list_start = g_list_reverse(g_list_copy(current_edit_widget->automation_area));
+    
+    if(channel_type == G_TYPE_NONE){
+      automation = automation_editor->selected_machine->audio->automation;
+
+      while(list != NULL){
+	while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									     AGS_AUTOMATION_AREA(list->data)->control_name,
+									     channel_type,
+									     0)) != NULL){
+	  automation_node = ags_automation_copy_selection(automation->data);
+	  xmlAddChild(audio_node,
+		      automation_node);
+
+	  automation = automation->next;
+	}
+
+	list = list->next;
+      }
+    }else{
+      while(list != NULL){
+	line = 0;
+	
+	while((line = ags_notebook_next_active_tab(notebook,
+						   line)) != -1){
+	  automation = automation_editor->selected_machine->audio->automation;
+
+	  while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									       AGS_AUTOMATION_AREA(list->data)->control_name,
+									       channel_type,
+									       line)) != NULL){
+	    automation_node = ags_automation_copy_selection(automation->data);
+	    xmlAddChild(audio_node,
+			automation_node);
+	  
+	    automation = automation->next;
+	  }
+	  
+	  line = line++;
+	}
+
+	list = list->next;
+      }
+    }
+    
+    g_list_free(list_start);
+
+    /* write to clipboard */
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+			   buffer, size);
+    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+
+    xmlFreeDoc(clipboard);
+  }
 }
 
 void
 ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 {
-  //TODO:JK: implement me
+  AgsNotebook *notebook;  
+  AgsAutomationEdit *current_edit_widget;
+
+  xmlDoc *clipboard;
+  xmlNode *audio_node, *automation_node;
+
+  GList *list, *list_start;
+  GList *automation;
+
+  GType channel_type;
+
+  xmlChar *buffer;
+
+  guint current_page;
+  guint line;
+  int size;
+  gboolean is_audio, is_output, is_input;
+
+  current_page = gtk_notebook_get_current_page(automation_editor->notebook);
+
+  switch(current_page){
+  case 0:
+    {
+      notebook = NULL;
+      current_edit_widget = automation_editor->current_audio_automation_edit;
+
+      channel_type = G_TYPE_NONE;
+
+      is_audio = TRUE;
+    }
+    break;
+  case 1:
+    {
+      notebook = automation_editor->current_output_notebook;
+      current_edit_widget = automation_editor->current_output_automation_edit;
+
+      channel_type = AGS_TYPE_OUTPUT;
+      
+      is_output = TRUE;
+    }
+    break;
+  case 2:
+    {
+      notebook = automation_editor->current_input_notebook;
+      current_edit_widget = automation_editor->current_input_automation_edit;
+
+      channel_type = AGS_TYPE_INPUT;
+      
+      is_input = TRUE;
+    }
+    break;
+  }
+
+  /*  */
+  if(automation_editor->selected_machine != NULL &&
+     current_edit_widget != NULL &&
+     current_edit_widget->automation_area != NULL){    
+    /* create document */
+    clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+
+    /* create root node */
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio\0");
+    xmlDocSetRootElement(clipboard, audio_node);
+
+    /* find automation to copy */
+    list =
+      list_start = g_list_reverse(g_list_copy(current_edit_widget->automation_area));
+    
+    if(channel_type == G_TYPE_NONE){
+      automation = automation_editor->selected_machine->audio->automation;
+
+      while(list != NULL){
+	while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									     AGS_AUTOMATION_AREA(list->data)->control_name,
+									     channel_type,
+									     0)) != NULL){
+	  automation_node = ags_automation_cut_selection(automation->data);
+	  xmlAddChild(audio_node,
+		      automation_node);
+	  
+	  automation = automation->next;
+	}
+
+	list = list->next;
+      }
+    }else{
+      while(list != NULL){
+	line = 0;
+	
+	while((line = ags_notebook_next_active_tab(notebook,
+						   line)) != -1){
+	  automation = automation_editor->selected_machine->audio->automation;
+
+	  while((automation = ags_automation_find_specifier_with_type_and_line(automation,
+									       AGS_AUTOMATION_AREA(list->data)->control_name,
+									       channel_type,
+									       line)) != NULL){
+	    automation_node = ags_automation_cut_selection(automation->data);
+	    xmlAddChild(audio_node,
+			automation_node);
+	  
+	    automation = automation->next;
+	  }
+	  
+	  line = line++;
+	}
+
+	list = list->next;
+      }
+    }
+    
+    g_list_free(list_start);
+
+    /* write to clipboard */
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8\0", TRUE);
+    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+			   buffer, size);
+    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+
+    xmlFreeDoc(clipboard);
+
+    /* redraw */
+    gtk_widget_queue_draw(current_edit_widget);
+  }
 }
 
 void
 ags_automation_editor_invert(AgsAutomationEditor *automation_editor)
 {
-  //TODO:JK: implement me
+  g_message("ags_automation_editor_invert() - not implemented\0");
 }
 
 /**
