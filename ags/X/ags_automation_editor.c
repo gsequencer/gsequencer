@@ -753,7 +753,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
   gboolean paste_from_position;
 
   auto gint ags_automation_editor_paste_read_automation();
-  
+
   gint ags_automation_editor_paste_read_automation(){
     xmlXPathContext *xpathCtxt;
     xmlXPathObject *xpathObj;
@@ -882,27 +882,45 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	  }
 	}
       }else{
+	GHashTable *line_table;
+
 	xmlChar *str;
+
+	GValue *line_value;
 	
 	nodeset = xpathObj->nodesetval;
 	
 	size = (nodeset != NULL) ? nodeset->nodeNr: 0;
-	line = 0;
+	line_table = g_hash_table_new_full(g_str_hash, g_str_equal,
+					   NULL,
+					   (GDestroyNotify) g_free);
 
 	for(i = 0; i < size; i++){
 	  control_name = xmlGetProp(nodeset->nodeTab[i],
 				    "control-name");
 
+	  /* get line */
 	  line = 0;
-	  str = xmlGetProp(nodeset->nodeTab[i],
-			   "line");
+	  line_value = g_hash_table_lookup(line_table,
+					   control_name);
 
-	  if(str != NULL){
-	    line = g_ascii_strtoull(str,
-				    NULL,
-				    10);
+	  if(line_value == NULL){
+	    line_value = g_new0(GValue,
+				1);
+	    g_value_init(line_value,
+			 G_TYPE_UINT);
+
+	    g_hash_table_insert(line_table,
+				control_name,
+				line_value);
+	  }else{
+	    line = g_value_get_uint(line_value);
 	  }
-	  
+
+	  g_value_set_uint(line_value,
+			   line++);
+
+	  /*  */
 	  automation = automation_editor->selected_machine->audio->automation;
 	  automation = ags_automation_find_specifier_with_type_and_line(automation,
 									control_name,
@@ -1000,6 +1018,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	    }
 	  }
 	}
+	
+	g_object_unref(line_table);
       }
 
       xmlXPathFreeObject(xpathObj);

@@ -5,6 +5,7 @@ ags (0.7.34)
 	* fixed y value in ags_automation.c to gdouble because it was y previously
 	* improved remove of notes by specify number of attempts until giving up
 	* implemented cursor in automation editor
+	* implemented copy, cut and paste in AgsAutomationEditor
 	* ...
 
 ags (0.7.33)
