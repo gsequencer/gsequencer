@@ -1357,6 +1357,102 @@ ags_automation_cut_selection(AgsAutomation *automation)
 }
 
 void
+ags_automation_merge_clipboard(xmlNode *audio_node,
+			       xmlNode *automation_node)
+{
+  xmlNode *find_automation;
+  xmlNode *find_acceleration;
+  xmlNode *child;
+
+  auto gboolean ags_automation_merge_clipboard_find_acceleration(xmlNode *automation_node,
+								 xmlChar *x,
+								 xmlChar *y);
+  
+  gboolean ags_automation_merge_clipboard_find_acceleration(xmlNode *automation_node,
+							    xmlChar *x,
+							    xmlChar *y){
+    xmlNode *child;
+    
+    child = automation_node->children;
+  
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp(child->name,
+		       "acceleration\0",
+		       13)){
+	  if(!xmlStrcmp(xmlGetProp(child,
+				   "x\0"),
+			x) &&
+	     !xmlStrcmp(xmlGetProp(child,
+				   "y\0"),
+			y)){
+	    return(TRUE);
+	  }
+	}
+      }
+
+      child = child->next;
+    }
+    
+    return(FALSE);
+  }
+  
+  if(audio_node == NULL ||
+     automation_node == NULL){
+    return;
+  }
+
+  find_automation = audio_node->children;
+
+  while(find_automation != NULL){
+    if(find_automation->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(find_automation->name,
+		     "automation\0",
+		     11)){
+	if(!xmlStrcmp(xmlGetProp(find_automation,
+				 "line\0"),
+		      xmlGetProp(automation_node,
+				 "line"))){
+	  break;
+	}
+      }
+    }
+
+    find_automation = find_automation->next;
+  }
+
+  if(find_automation == NULL){
+    xmlAddChild(audio_node,
+		xmlCopyNode(automation_node,
+			    1));
+    
+    return;
+  }
+
+  child = automation_node->children;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "acceleration\0",
+		     13)){
+	if(!ags_automation_merge_clipboard_find_acceleration(find_automation,
+							     xmlGetProp(child,
+									"x\0"),
+							     xmlGetProp(child,
+									"y\0"))){
+	  xmlAddChild(find_automation,
+		      xmlCopyNode(child,
+				  1));
+	}
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+void
 ags_automation_insert_from_clipboard(AgsAutomation *automation,
 				     xmlNode *automation_node,
 				     gboolean reset_x_offset, guint x_offset,
@@ -1382,7 +1478,8 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
     char *endptr;
     guint x_boundary_val, y_boundary_val;
     char *x, *y;
-    guint x_val, y_val;
+    guint x_val;
+    gdouble y_val;
     guint base_x_difference, base_y_difference;
     gboolean subtract_x, subtract_y;
 
@@ -1468,7 +1565,8 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 	  continue;
 
 	errno = 0;
-	y_val = strtoul(y, &endptr, 10);
+	y_val = strtod(y,
+		       &endptr);
 
 	if(errno == ERANGE){
 	  continue;
@@ -1514,8 +1612,10 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 	acceleration->x = x_val;
 	acceleration->y = y_val;
 
-	g_message("adding acceleration at: [%u|%u]\n\0", x_val, y_val);
-
+#ifdef AGS_DEBUG
+	g_message("adding acceleration at: [%u|%f]\n\0", x_val, y_val);
+#endif
+	
 	ags_automation_add_acceleration(automation,
 					acceleration,
 					FALSE);

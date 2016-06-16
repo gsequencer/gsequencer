@@ -183,6 +183,12 @@ ags_automation_edit_connect(AgsConnectable *connectable)
 
   automation_edit = AGS_AUTOMATION_EDIT(connectable);
 
+  if((AGS_AUTOMATION_EDIT_CONNECTED & (automation_edit->flags)) != 0){
+    return;
+  }
+  
+  automation_edit->flags |= AGS_AUTOMATION_EDIT_CONNECTED;
+  
   /*  */
   g_signal_connect_after((GObject *) automation_edit->drawing_area, "expose_event\0",
 			 G_CALLBACK (ags_automation_edit_drawing_area_expose_event), (gpointer) automation_edit);

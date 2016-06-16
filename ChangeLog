@@ -1,6 +1,7 @@
 ags (0.7.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed clip-board by merging values since automation ports can occur multiple times
 	* implemented selection of automation editor
 
 ags (0.7.34)
